@@ -13,3 +13,9 @@ Firebase project `shield-calls-isaac` is the existing shared hosted trial, not a
 Keep secrets in the approved local secret file or secret manager; never print, commit, or paste their values into chat. Use synthetic callers for development. Do not include `.env*` secrets, participant data, private artifacts, signed URLs, or service-account keys in commits. Existing example environment files contain placeholders and may be tracked.
 
 Preserve the architecture's bounded screening, application-owned routing, private acceptance, and deadline invariants. Run relevant regression checks for policy changes and keep production/live-service activation separate from local verification.
+
+## Continue the questioning-loop work
+
+When asked to finish, improve, evaluate, or keep working on caller questioning, follow `docs/QUESTIONING-LOOP-HANDOFF.md` and resume from `docs/QUESTIONING-LOOP-PROGRESS.md`. The objective is a working implementation with measured evidence, not another plan or a passing 16-case smoke suite. Implement, test, diagnose, and improve the next unmet milestone; continue through available work without asking the user to choose routine next steps. Keep fixed questions and the single shared clarification/recovery allowance.
+
+Update the progress file after each meaningful iteration and before ending a session, including exact commands, candidate versions, results, remaining failures, and the next concrete action. Separate automated completion, model evaluation, and real-call validation. A skipped test, unavailable credential, trial-account limitation, or unreviewed label is outstanding work, not a pass. If one lane is blocked, continue independent implementation/tests. Stop claiming completion until the handoff's acceptance gates have actual evidence; never weaken tests or routing rules merely to make the report green.

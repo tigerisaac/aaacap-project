@@ -1,5 +1,7 @@
 # Shield documentation — collaborator start here
 
+To finish caller questioning, follow the [agent continuation playbook](QUESTIONING-LOOP-HANDOFF.md) and update the [progress checkpoint](QUESTIONING-LOOP-PROGRESS.md). They define the implementation/evaluation cycle and the evidence required for completion.
+
 ## Purpose and status
 
 Shield screens forwarded telephone calls before offering an unfamiliar caller to a participant. The proposed design uses a short, bounded interview to collect the caller's claimed identity and general purpose, applies routing rules in application code, and requires the participant's private keypad acceptance before connecting a call. Screening does not authenticate callers or guarantee that a caller is safe.
