@@ -1,0 +1,7 @@
+// Copy to Local.xcconfig for debug builds, or ReleaseLocal.xcconfig for release.
+// Use a host without a protocol or trailing slash. Never put provider secrets in the app.
+SHIELD_API_SCHEME = https
+SHIELD_API_HOST = api.your-domain.com
+SHIELD_MESSAGE_FILTER_HOST = api.your-domain.com
+// Signing inherits org.isaaczhang.Shield and Wheema, Inc. from Base.xcconfig.
+// Override both here only when intentionally using a different app/team.

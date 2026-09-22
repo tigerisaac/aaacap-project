@@ -1,0 +1,27 @@
+{
+  "id": "replace-with-tested-profile-id",
+  "name": "Carrier / phone / iOS / region",
+  "configuration": "Record carrier plan, iOS build, unknown-caller setting, Live Voicemail, Focus, Wi-Fi Calling, SIM configuration.",
+  "activationSteps": [
+    "Replace with carrier-confirmed activation steps. Do not guess dialing codes."
+  ],
+  "restorationSteps": [
+    "Replace with carrier-confirmed restoration steps and voicemail recovery checks."
+  ],
+  "testedAt": null,
+  "evidenceReference": "Replace with restricted evidence reference, without personal details.",
+  "checks": {
+    "knownCallerRings": false,
+    "unknownCallerForwards": false,
+    "shieldCallbackRings": false,
+    "digitOneConnects": false,
+    "silenceDoesNotConnect": false,
+    "wrongDigitDoesNotConnect": false,
+    "nativeVoicemailDoesNotConnect": false,
+    "callerAbandonmentCancelsCallback": false,
+    "shieldCallbackCannotLoop": false,
+    "secondCallDoesNotOffer": false,
+    "focusAndLockScreenChecked": false,
+    "carrierVoicemailRestores": false
+  }
+}

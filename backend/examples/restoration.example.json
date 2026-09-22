@@ -1,0 +1,7 @@
+{
+  "participantId": "PARTICIPANT_UUID",
+  "evidenceReference": "Restricted evidence reference for post-restoration calls and carrier voicemail.",
+  "forwardingDisabled": false,
+  "ordinaryCallsVerified": false,
+  "carrierVoicemailVerified": false
+}

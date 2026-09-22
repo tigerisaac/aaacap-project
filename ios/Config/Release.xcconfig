@@ -1,0 +1,8 @@
+#include "Base.xcconfig"
+#include? "ReleaseLocal.xcconfig"
+SWIFT_COMPILATION_MODE = wholemodule
+SWIFT_OPTIMIZATION_LEVEL = -O
+SHIELD_API_SCHEME = https
+SHIELD_ALLOW_LOCAL_NETWORKING = NO
+SHIELD_DEMO_TOKEN =
+SHIELD_APNS_ENVIRONMENT = production

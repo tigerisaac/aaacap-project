@@ -1,0 +1,35 @@
+import SwiftUI
+import Combine
+
+@main
+struct ShieldApp: App {
+    @UIApplicationDelegateAdaptor(NotificationDelegate.self) private var notificationDelegate
+    @State private var model = AppState()
+    @Environment(\.scenePhase) private var scenePhase
+
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environment(model)
+                .tint(ShieldTheme.action)
+                .task { await model.restoreSession() }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active, model.signedIn {
+                        Task { await model.refresh() }
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .shieldPushToken)) { notification in
+                    guard let token = notification.object as? String, !model.isDemo else { return }
+                    let people = model.people
+                    Task {
+                        do {
+                            for person in people {
+                                let _: APIResponses.Empty = try await model.api.send("/api/devices", method: "POST",
+                                    body: APIClient.payload(["token": token]), participantID: person.id)
+                            }
+                        } catch { model.handle(error) }
+                    }
+                }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+# Managed PostgreSQL and TLS reverse proxy are configured separately.
+services:
+  shield:
+    build:
+      context: ..
+    env_file: ../.env.production
+    environment:
+      NODE_ENV: production
+      SHIELD_MODE: live
+      HOST: 0.0.0.0
+      PORT: 3000
+    ports:
+      - "127.0.0.1:3000:3000"
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 90s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

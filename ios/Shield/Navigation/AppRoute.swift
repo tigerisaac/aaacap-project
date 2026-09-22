@@ -1,0 +1,5 @@
+import Foundation
+
+enum AppRoute: Hashable {
+    case settings, setup, savedNumbers, trustedNumbers, sharing, help
+}

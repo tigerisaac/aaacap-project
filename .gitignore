@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+!.env.twilio-trial.example
+!.env.openrouter.example
+!.env.speech.example
+.data/
+coverage/
+.DS_Store
+*.log
+*.xcuserstate
+xcuserdata/
+DerivedData/
+ios/Config/Local.xcconfig
+ios/Config/ReleaseLocal.xcconfig
+artifacts/
+operator-input/
+artifacts/private/
+.impeccable/mocks/
+
+# Local Firebase cache and design build state
+.firebase/
+.impeccable/build/

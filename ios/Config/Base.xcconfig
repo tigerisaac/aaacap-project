@@ -1,0 +1,18 @@
+IPHONEOS_DEPLOYMENT_TARGET = 26.0
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+CLANG_ENABLE_MODULES = YES
+CLANG_ENABLE_OBJC_ARC = YES
+CODE_SIGN_STYLE = Automatic
+MARKETING_VERSION = 0.1.0
+CURRENT_PROJECT_VERSION = 1
+// Shared by the app, message extension, and UI tests in every configuration.
+SHIELD_APP_BUNDLE_ID = org.isaaczhang.Shield
+SHIELD_API_SCHEME = https
+SHIELD_API_HOST = shield-calls-isaac.web.app
+SHIELD_MESSAGE_FILTER_HOST = api.shield.example
+SHIELD_AUTH_HOST = shield-calls-isaac.firebaseapp.com
+SHIELD_DEMO_TOKEN =
+SHIELD_ALLOW_LOCAL_NETWORKING = NO
+// Wheema, Inc.
+DEVELOPMENT_TEAM = 6R6HMW3DWN

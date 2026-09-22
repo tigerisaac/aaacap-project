@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "details": [
+      { "appIDs": ["6R6HMW3DWN.org.isaaczhang.Shield"], "components": [
+        { "/": "/__/auth/links", "comment": "Firebase email sign-in links" },
+        { "/": "/__/auth/action", "comment": "Firebase email sign-in actions" }
+      ] }
+    ]
+  },
+  "messagefilter": { "apps": ["6R6HMW3DWN.org.isaaczhang.Shield"] }
+}
