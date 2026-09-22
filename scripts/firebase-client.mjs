@@ -1,6 +1,9 @@
 import { createRequire } from 'node:module';
-// Reuse the user's official Firebase CLI login; never export credentials to shell output.
-const require = createRequire('/opt/homebrew/lib/node_modules/firebase-tools/package.json');
+// Reuse the signed-in user's Firebase CLI login from the pinned local dependency.
+// This adapter uses CLI internals; validate it when upgrading firebase-tools.
+// Never export credentials or complete provider responses to shell output.
+const localRequire = createRequire(import.meta.url);
+const require = createRequire(localRequire.resolve('firebase-tools/package.json'));
 const { getGlobalDefaultAccount } = require('./lib/auth.js');
 const { requireAuth } = require('./lib/requireAuth.js');
 export const { Client } = require('./lib/apiv2.js');
