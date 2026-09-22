@@ -42,6 +42,9 @@ The app’s **Held** list describes calls the service did not connect. It is not
 
 ## Read next
 
+- [Collaborator orientation and proposed screening requirements](docs/README.md)
+- [Codex, Firebase, Twilio, and OpenRouter setup](docs/COLLABORATOR-SETUP.md)
+- [FTC caller benchmarks and multi-turn evaluation plan](docs/caller-evaluation-plan.md)
 - [Implementation status and verification](docs/IMPLEMENTATION-STATUS.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Enrollment, operations, restoration and deletion](docs/OPERATIONS.md)
