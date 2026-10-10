@@ -33,9 +33,9 @@ Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime confi
 6. **Private offer.** When the person answers, only they hear a short summary: "Shield screened a call about … This does not verify who is calling. Press 1 to connect, or 2 for voicemail." Only digit 1 on that exact call leg bridges the two people. Connected calls are limited to 5 minutes in the pilot.
 7. **After the call.** The call appears in the app's history with its outcome. Voicemails are downloaded from Telnyx, encrypted, stored, and deleted from Telnyx. Call records expire after 30 days.
 
-### Connected-call protection (opt-in)
+### Connected-call protection
 
-This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has turned it on in the app. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx `<Transcription>` then sends both sides' final text to `/forwarding/:secret/monitor/:id`. Text is kept encrypted only while the call lasts. Each new piece of speech queues one check by `monitorConnectedCall`.
+This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has saved current consent in the app. After email sign-in, main onboarding selects protection by default and lets the owner turn it off before tapping Continue. Continue saves the choice; existing explicit opt-outs are preserved, and Settings can change it later. Helpers do not choose consent for someone else. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx `<Transcription>` then sends both sides' final text to `/forwarding/:secret/monitor/:id`. Text is kept encrypted only while the call lasts. Each new piece of speech queues one check by `monitorConnectedCall`.
 
 If the caller clearly asks for a code, password, identity number, payment, remote access, secrecy or an investment, Shield redirects the person's leg to a short spoken warning. That ends the call. Model failures never end a call.
 

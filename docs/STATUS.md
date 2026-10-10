@@ -12,6 +12,7 @@ Read back from production on October 10:
 | Firebase Functions (codebase `shield`) | `shieldApi`, `cleanupShield`, `ingestForwardingVoicemail`, `monitorConnectedCall` |
 | Runtime config | `SHIELD_RUNTIME` v5: Telnyx only, live screening on, connected-call protection on at the server. Twilio and OpenRouter keys removed. |
 | Announcement audio | Prerecorded Soniox Grace: 25 generic 24 kHz WAV files on Hosting, with Functions backup. `shieldApi` revision `shieldapi-00012-heq`, updated October 10 at 15:52 UTC. All 50 primary/backup URLs verified HTTP 200, `audio/wav`, matching original SHA-256; public health ready. |
+| Protection onboarding | Default-selected choice after email sign-in; Continue saves consent or opt-out. `shieldApi` revision `shieldapi-00013-seb`, deployed October 10 at 22:11 UTC; ACTIVE and public health ready. Signed app installed on enrolled iPhone. |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
 | Carrier forwarding | Enabled October 10 with owner approval: Tello confirmed registration for unanswered, busy and unreachable conditions to Shield. Carrier routing has not been independently rechecked after the owner’s restoration/setup activity. Latest October 10 readback: backend stage checks and screening window active until 22:11 UTC; no active call. The owner started that session through setup. |
@@ -51,6 +52,8 @@ Read back from production on October 10:
 
 
 October 10 completion validation: the end-to-end guided setup and Done/later-restoration UI tests both passed. The synthetic completion screenshot was inspected in simulator. Typecheck/build, 94 unit tests and 47 Firebase emulator tests passed. The signed normal build was installed and launched on the enrolled iPhone without changing its saved progress or session. No carrier setting or live backend deployment changed in this pass.
+
+- Connected-call protection onboarding (October 10): main onboarding after email sign-in selects protection by default, with an optional off toggle and explicit Continue to save current consent. Existing opt-outs are preserved, stale enabled consent prompts again, and helpers cannot choose for someone else. Typecheck/build, 94 unit tests, 48 Firebase emulator tests and all five final targeted UI tests passed. Default and largest-text/dark screens were inspected in simulator; the signed normal app was installed and launched on the enrolled iPhone. No owner monitoring preference or carrier setting was changed. With owner approval, only `shieldApi` was deployed successfully: revision `shieldapi-00013-seb`, ACTIVE at 22:11:03 UTC, public health HTTP 200/ready. Connected-call protection end to end remains unverified.
 
 ## Not yet verified
 

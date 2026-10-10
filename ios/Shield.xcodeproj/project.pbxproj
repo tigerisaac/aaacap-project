@@ -62,6 +62,13 @@
 			"path" = "Shield/Design/ShieldTheme.swift";
 			"sourceTree" = "<group>";
 		};
+		"5BF93ED07DF33DC08E74C2F6" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ProtectionOnboardingView.swift";
+			"path" = "Shield/Features/Auth/ProtectionOnboardingView.swift";
+			"sourceTree" = "<group>";
+		};
 		"AF68FFCC03DCF2C80566003E" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -732,6 +739,7 @@
 			"isa" = "PBXGroup";
 			"name" = "Auth";
 			"children" = (
+				"5BF93ED07DF33DC08E74C2F6",
 				"AF68FFCC03DCF2C80566003E",
 			);
 			"sourceTree" = "<group>";
@@ -1088,6 +1096,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "9B50FD165DCA17481F96D7B9";
 		};
+		"F3A5E82EF60A78319C8C9A42" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5BF93ED07DF33DC08E74C2F6";
+		};
 		"A24D4CC817A1F9E1788F530C" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "AF68FFCC03DCF2C80566003E";
@@ -1396,6 +1408,7 @@
 				"1022DF582A9057A43AA3AB43",
 				"F86A6C11C2FEC4AD2FC9AD1A",
 				"47E8755FFAE0AA45244F164C",
+				"F3A5E82EF60A78319C8C9A42",
 				"A24D4CC817A1F9E1788F530C",
 				"388616114660F6FDB2586909",
 				"1A859C307E78E30D570BEADB",

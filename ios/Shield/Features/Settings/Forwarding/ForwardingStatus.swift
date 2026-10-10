@@ -12,6 +12,7 @@ struct ForwardingStatus: Decodable, Sendable {
         let available: Bool
         let enabled: Bool
         let consentVersion: String
+        var choiceRecorded: Bool? = nil
     }
     var monitoring: Monitoring? = nil
     var probe: Probe? = nil

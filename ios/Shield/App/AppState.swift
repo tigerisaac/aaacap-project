@@ -22,6 +22,9 @@ final class AppState {
     var showingError = false
     var service: ServiceConfiguration?
     var selectedTab = 0
+    var protectionOnboarding: ForwardingStatus.Monitoring?
+    var protectionParticipantID: UUID?
+    private var protectionChoiceGeneration = 0
     private var sessionGeneration = 0
 
     var person: Person? { people.first { $0.id == selectedPersonID } }
@@ -34,6 +37,11 @@ final class AppState {
         self.api = APIClient(configuration: configuration)
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--uitesting-preview") || ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") { exploreDemo() }
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-protection-onboarding") {
+            exploreDemo()
+            protectionParticipantID = selectedPersonID
+            protectionOnboarding = .init(available: true, enabled: false, consentVersion: "ui-test", choiceRecorded: false)
+        }
         #endif
     }
 
@@ -48,6 +56,8 @@ final class AppState {
     }
 
     func exploreDemo() {
+        protectionOnboarding = nil
+        protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = true
         isDemo = true
@@ -58,6 +68,8 @@ final class AppState {
     }
 
     func didSignIn() async {
+        protectionOnboarding = nil
+        protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = false
         signedIn = true
@@ -65,12 +77,17 @@ final class AppState {
     }
 
     func select(_ person: Person) async {
+        protectionOnboarding = nil
+        protectionParticipantID = nil
         selectedPersonID = person.id
         overview = nil
         calls = []
         nextCursor = nil
         filter = .all
-        if isPreview { loadPreview() } else { await loadContext() }
+        if isPreview { loadPreview() } else {
+            await loadProtectionOnboarding(generation: sessionGeneration)
+            await loadContext()
+        }
     }
 
     func refresh() async {
@@ -99,8 +116,46 @@ final class AppState {
                     UIApplication.shared.registerForRemoteNotifications()
                 }
             }
+            await loadProtectionOnboarding(generation: generation)
             await loadContext()
         } catch { if generation == sessionGeneration { handle(error) } }
+    }
+
+    private func loadProtectionOnboarding(generation: Int) async {
+        guard let id = selectedPersonID, isOwner, !isDemo else { return }
+        let choiceGeneration = protectionChoiceGeneration
+        guard let status: ForwardingStatus = try? await api.send("/api/forwarding", participantID: id),
+              generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
+              signedIn, selectedPersonID == id else { return }
+        if let monitoring = status.monitoring, monitoring.available, monitoring.choiceRecorded == false {
+            protectionParticipantID = id
+            protectionOnboarding = monitoring
+        } else {
+            protectionOnboarding = nil
+            protectionParticipantID = nil
+        }
+    }
+
+    func completeProtectionOnboarding(enabled: Bool, participantID: UUID, version: String) async throws {
+        guard signedIn, selectedPersonID == participantID, protectionParticipantID == participantID else {
+            throw APIError.invalidResponse
+        }
+        let generation = sessionGeneration
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-protection-onboarding") {
+            if ProcessInfo.processInfo.arguments.contains("--protection-save-fails") { throw APIError.invalidResponse }
+            protectionOnboarding = nil
+            protectionParticipantID = nil
+            return
+        }
+        #endif
+        let body: [String: Any] = enabled ? ["enabled": true, "version": version] : ["enabled": false]
+        let _: APIResponses.Empty = try await api.send("/api/forwarding/monitoring", method: "POST",
+            body: APIClient.payload(body), participantID: participantID)
+        guard generation == sessionGeneration, selectedPersonID == participantID else { return }
+        protectionChoiceGeneration += 1
+        protectionOnboarding = nil
+        protectionParticipantID = nil
     }
 
     func loadContext() async {
@@ -154,6 +209,8 @@ final class AppState {
         overview = nil
         calls = []
         service = nil
+        protectionOnboarding = nil
+        protectionParticipantID = nil
         selectedTab = 0
         errorMessage = nil
         showingError = false

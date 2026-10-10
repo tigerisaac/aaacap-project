@@ -20,7 +20,7 @@ struct RootView: View {
         #endif
     }
     private var previewColorScheme: ColorScheme? {
-        guard isForwardingPreview else { return nil }
+        guard isForwardingPreview || ProcessInfo.processInfo.arguments.contains("--uitesting-protection-onboarding") else { return nil }
         return ProcessInfo.processInfo.arguments.contains("--uitesting-dark") ? .dark : .light
     }
     var body: some View {
@@ -65,6 +65,8 @@ struct RootView: View {
                     ForwardingSetupView()
                         .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.caption).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
                 }
+            } else if model.signedIn, let monitoring = model.protectionOnboarding, let participantID = model.protectionParticipantID {
+                ProtectionOnboardingView(monitoring: monitoring, participantID: participantID)
             } else if let contactDemoAction, model.signedIn, model.isOwner {
                 NavigationStack { SharedContactsView(demoAction: contactDemoAction) }
             } else if model.signedIn {

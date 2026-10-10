@@ -102,6 +102,8 @@ struct SignInView: View {
                         }
 
                         if !codeSent {
+                            Text("After signing in, you can choose protection for calls you accept.")
+                                .font(.subheadline).foregroundStyle(.secondary)
                             Button("View demo") { model.exploreDemo() }
                                 .font(.subheadline)
                                 .frame(minHeight: 44)

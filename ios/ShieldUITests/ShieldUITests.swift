@@ -57,6 +57,64 @@ final class ShieldUITests: XCTestCase {
         capture(app, name: "Today large text")
     }
 
+    func testProtectionOnboardingDefaultsOnAndContinues() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding"]
+        app.launch()
+        let toggle = app.switches["onboarding-protection-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertEqual(toggle.value as? String, "1")
+        capture(app, name: "Onboarding protection default")
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
+        XCTAssertFalse(toggle.exists)
+    }
+
+    func testProtectionOnboardingCanBeTurnedOff() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding"]
+        app.launch()
+        let toggle = app.switches["onboarding-protection-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "0")
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
+    }
+
+    func testProtectionSaveFailureKeepsTheChoiceVisible() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding", "--protection-save-fails"]
+        app.launch()
+        XCTAssertTrue(app.switches["onboarding-protection-toggle"].waitForExistence(timeout: 5))
+        app.switches["onboarding-protection-toggle"].tap()
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.alerts["Couldn’t save your choice"].waitForExistence(timeout: 5))
+        app.alerts.buttons["OK"].tap()
+        XCTAssertEqual(app.switches["onboarding-protection-toggle"].value as? String, "0")
+        XCTAssertFalse(app.staticTexts["demoBanner"].exists)
+        XCTAssertTrue(app.buttons["onboarding-protection-continue"].isEnabled)
+    }
+
+    func testProtectionOnboardingLargestTextInDarkMode() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let toggle = app.switches["onboarding-protection-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        let scroll = app.scrollViews.firstMatch
+        let continueButton = app.buttons["onboarding-protection-continue"]
+        for _ in 0..<8 {
+            if toggle.isHittable && toggle.frame.minY >= scroll.frame.minY && toggle.frame.maxY <= continueButton.frame.minY { break }
+            scroll.swipeUp()
+        }
+        XCTAssertTrue(toggle.isHittable)
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "0")
+        XCTAssertTrue(app.buttons["onboarding-protection-continue"].isHittable)
+        capture(app, name: "Onboarding protection largest text dark")
+    }
+
     private func capture(_ app: XCUIApplication, name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name

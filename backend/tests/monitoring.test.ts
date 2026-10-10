@@ -71,16 +71,25 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   afterAll(async () => { await db.terminate(); await deleteApp(admin); });
 
   it('is off until the owner opts in with the current consent, and only when the service offers it', async () => {
-    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring).toEqual({ available: true, enabled: false, consentVersion: MONITORING_CONSENT });
+    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring).toEqual({ available: true, enabled: false, consentVersion: MONITORING_CONSENT, choiceRecorded: false });
     expect((await app.inject({ method: 'POST', url: '/api/forwarding/monitoring', headers: headers(), payload: { enabled: true } })).statusCode).toBe(400);
     expect((await app.inject({ method: 'POST', url: '/api/forwarding/monitoring', headers: headers(), payload: { enabled: true, version: 'old' } })).statusCode).toBe(400);
     expect((await app.inject({ method: 'POST', url: '/api/forwarding/monitoring', headers: headers('stranger'), payload: { enabled: true, version: MONITORING_CONSENT } })).statusCode).toBeGreaterThanOrEqual(403);
     expect((await optIn()).json()).toEqual({ enabled: true });
-    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring.enabled).toBe(true);
+    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring).toMatchObject({ enabled: true, choiceRecorded: true });
     expect((await optIn(false)).json()).toEqual({ enabled: false });
+    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring).toMatchObject({ enabled: false, choiceRecorded: true });
     await app.close(); config = cloudSchema.parse(base); await build();
     expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring).toMatchObject({ available: false, enabled: false });
     expect((await optIn()).statusCode).toBe(409);
+  });
+  it('asks for the onboarding choice again when an enabled consent is outdated', async () => {
+    await s.personRef(config.TRIAL_PARTICIPANT_ID).update({ callMonitoring: { enabled: true, consent: 'old' } });
+    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring)
+      .toMatchObject({ enabled: false, choiceRecorded: false });
+    expect((await optIn()).statusCode).toBe(200);
+    expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().monitoring)
+      .toMatchObject({ enabled: true, choiceRecorded: true });
   });
   it('offers calls exactly as before when the owner has not opted in', async () => {
     const { id, offer } = await connect();

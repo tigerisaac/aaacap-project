@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Owner opt-in for checking accepted calls while they happen. Off unless turned on here.
+/// Change the owner’s saved onboarding choice for checking accepted calls while they happen.
 struct CallProtectionView: View {
     @Environment(AppState.self) private var model
     @State private var status: ForwardingStatus?
