@@ -88,7 +88,7 @@ It returns the voice model, decision model and `policyVersion`. It doesn't prove
 
 Redeploy the functions after either change.
 
-Current production values (`SHIELD_RUNTIME` v4):
+Current production values (`SHIELD_RUNTIME` v5):
 - live screening on
 - call monitoring on at the server, but not yet turned on in the app
 

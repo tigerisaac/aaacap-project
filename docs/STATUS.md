@@ -1,6 +1,6 @@
 # Status
 
-Updated October 10, 2026. Shield is a supervised single-recipient pilot. It screens calls only during test windows the owner opens, and it isn't cleared for anyone else's phone.
+Updated October 10, 2026, after Twilio and Gemini were retired. Shield is a supervised single-recipient pilot. It screens calls only during test windows the owner opens, and it isn't cleared for anyone else's phone.
 
 ## Deployed now
 
@@ -8,10 +8,11 @@ Read back from production on October 10:
 
 | Piece | State |
 |---|---|
-| Live bridge `shield-live` | Revision `shield-live-00005`, policy `2026-10-09-general-v14`, `gpt-live-1` + `gpt-6-luna`, OpenAI key version 2 |
+| Live bridge `shield-live` | Revision `shield-live-00006`, policy `2026-10-09-general-v14`, `gpt-live-1` + `gpt-6-luna`, OpenAI key version 2 |
 | Firebase Functions (codebase `shield`) | `shieldApi`, `cleanupShield`, `ingestForwardingVoicemail`, `monitorConnectedCall` |
-| Runtime config | `SHIELD_RUNTIME` v4: Telnyx forwarding, live screening on, connected-call protection on at the server |
+| Runtime config | `SHIELD_RUNTIME` v5: Telnyx only, live screening on, connected-call protection on at the server. Twilio and OpenRouter keys removed. |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
+| Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
 | Carrier forwarding | Off. It was removed after the September 24 demo. |
 | Last real call | September 29, 2026 (a voicemail) |
 
