@@ -8,6 +8,7 @@ import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
 import { forwardingNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { CallMonitor, warningText } from './monitoring.js';
 import { VoiceResponse } from './texml.js';
+import { announcementResponse } from './announcements.js';
 
 export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string) => Promise<{ to: string; from: string; status: string }>; lookupForwardingInbound?: (sid: string) => Promise<{ from: string; to: string; direction: string; status: string }>;
   callMonitor?: CallMonitor };
@@ -20,7 +21,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
   const inboundLookup = deps.lookupForwardingInbound ?? (sid => telnyx.call(sid));
   const monitor = deps.callMonitor ?? new CallMonitor(f, telnyx);
   const callback = (step: string, id?: string) => `${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/${step}${id ? `/${id}` : ''}`;
-  const xml = () => new VoiceResponse();
+  const xml = announcementResponse;
   const hangup = (message?: string) => { const r = xml(); if (message) r.say(message); r.hangup(); return r.toString(); };
   const voicemail = (call: ForwardingCall, afterLiveScreening = false) => {
     const r = xml();
@@ -180,6 +181,9 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       }
       return xml().toString();
     });
-    voice.post('/forwarding/:secret/fallback', async () => hangup('Shield is temporarily unavailable. Please try again later.'));
+    // Keep the provider's error fallback independent of prerecorded audio.
+    voice.post('/forwarding/:secret/fallback', async () => {
+      const r = new VoiceResponse(); r.say('Shield is temporarily unavailable. Please try again later.'); r.hangup(); return r.toString();
+    });
   });
 }

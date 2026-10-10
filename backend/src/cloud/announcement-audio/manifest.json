@@ -1,0 +1,227 @@
+[
+  {
+    "file": "01-greeting.wav",
+    "text": "I'm Shield, an AI call assistant. Who's calling, and what is the call about?",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 4.61,
+    "sample_rate": 24000,
+    "sha256": "a247f9c47c615f6da7fb45cdb52bbb0ba41aeb33d3937934e6bff2542e656319"
+  },
+  {
+    "file": "02-hold.wav",
+    "text": "Please hold while Shield offers your call.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 2.3,
+    "sample_rate": 24000,
+    "sha256": "05f7ee2e32709261f42261d43265476fd5f8ac0457133be1d1b8b0cc83ef654c"
+  },
+  {
+    "file": "03-hold-monitoring.wav",
+    "text": "Please hold while Shield offers your call. If it connects, an AI assistant will transcribe the call to help protect against fraud.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 7.34,
+    "sample_rate": 24000,
+    "sha256": "a796f1b3f8cfe910df155107a228c9acd62092e6671870d86bfc97b77b07b1b7"
+  },
+  {
+    "file": "04-voicemail.wav",
+    "text": "You have reached Shield voicemail. Please leave a message after the tone. Press pound when finished.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 6.14,
+    "sample_rate": 24000,
+    "sha256": "f531c365de6bf5e758638a79382468fd926c3d23f5501679c8534ee71947eb30"
+  },
+  {
+    "file": "05-voicemail-after-screening.wav",
+    "text": "Sorry, Shield couldn't put your call through right now. Please leave a message after the tone, and press pound when you're finished.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 6.49,
+    "sample_rate": 24000,
+    "sha256": "f70aa3c06e126b7d6f6f0c60159a6ae96b11f0c2bd7563951327c8b6833fcf88"
+  },
+  {
+    "file": "06-unavailable.wav",
+    "text": "Shield is temporarily unavailable. Please try again later.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 3.75,
+    "sample_rate": 24000,
+    "sha256": "4444a32a2232fc4a8cb22b95878fc1e247602a0c0a124a6331a007ecde12afcc"
+  },
+  {
+    "file": "07-not-ready.wav",
+    "text": "Shield is not ready to receive this call. Please try again later.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 3.84,
+    "sample_rate": 24000,
+    "sha256": "24670cf2ffc8a246053da06c69679776cf5b640d71469a92d42eb503dead2523"
+  },
+  {
+    "file": "08-cannot-connect.wav",
+    "text": "This person cannot take this call. Please contact them through a number or service they already know.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 5.63,
+    "sample_rate": 24000,
+    "sha256": "3449c74b02be6a62780f007aa911b41ddaf6f3c19d41ab229619b75f1f2d59fb"
+  },
+  {
+    "file": "09-goodbye.wav",
+    "text": "Thank you. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 1.19,
+    "sample_rate": 24000,
+    "sha256": "07898af95a6393cc4111dc17ba7418cb97b8ac6abbad1bfed0726d93e4c3a4f6"
+  },
+  {
+    "file": "10-sound-check.wav",
+    "text": "Hello, this is your Shield sound check. If you can hear me, press 1 on your phone keypad.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 5.8,
+    "sample_rate": 24000,
+    "sha256": "11bfb1ef76f9f95835a05e5ce73975d6da64b4d60b45eacc70a9abca0c133191"
+  },
+  {
+    "file": "11-sound-check-passed.wav",
+    "text": "Your sound check passed. Shield has saved the result. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 4.61,
+    "sample_rate": 24000,
+    "sha256": "0ee72caf4dd4401c4094711990b618dfd84d7b129456c24ac1a2c499eb4ea77a"
+  },
+  {
+    "file": "offer-appointment.wav",
+    "text": "Shield screened a call about Appointment reminder. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 7.85,
+    "sample_rate": 24000,
+    "sha256": "7cf53fa03936a2cdd46b2b78b5dbb6046588f9f0905f0cfa696ce3551ea94fdb"
+  },
+  {
+    "file": "offer-delivery.wav",
+    "text": "Shield screened a call about Delivery update. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 7.77,
+    "sample_rate": 24000,
+    "sha256": "8124da9fd8a619199ca0bb8c6d145e8cb35557d652de011717fc7cf54c337fdf"
+  },
+  {
+    "file": "offer-prescription.wav",
+    "text": "Shield screened a call about Prescription notification. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 8.19,
+    "sample_rate": 24000,
+    "sha256": "7fa2f5bd64948446fb248e25b56647a56292282905232a2f018f7bc6c6fae7c3"
+  },
+  {
+    "file": "offer-personal.wav",
+    "text": "Shield screened a call about Personal call. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 8.19,
+    "sample_rate": 24000,
+    "sha256": "0f2cfc1675c077f0ae7d6545361d6c9bed6bb60470f4e4308cfe1e3c80615104"
+  },
+  {
+    "file": "offer-other.wav",
+    "text": "Shield screened a call about Unfamiliar caller. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 8.28,
+    "sample_rate": 24000,
+    "sha256": "18c76fd0f176ebe024c3b1d61b3aa7d1c6e48a2ecbaf8e68f5b582adaf66733a"
+  },
+  {
+    "file": "offer-unknown.wav",
+    "text": "Shield screened a call about Unfamiliar caller. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 8.96,
+    "sample_rate": 24000,
+    "sha256": "6899de94a730c2fb3b1e0d860d70f9c1109e5267f1849b5eddff0b61ed32a1ef"
+  },
+  {
+    "file": "offer-fallback.wav",
+    "text": "Shield screened a call about a routine matter. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 8.11,
+    "sample_rate": 24000,
+    "sha256": "1f6a42817174d0d75ce798808ab23b00fff2090c1fb41f19ddbc19a4db13c493"
+  },
+  {
+    "file": "warning-code_or_password.wav",
+    "text": "This is Shield. I ended this call because the caller asked for a code or password. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.99,
+    "sample_rate": 24000,
+    "sha256": "c23754a76e3417313422484e58247c317fca9312badaa5749e7dda6a66fc4b2c"
+  },
+  {
+    "file": "warning-payment_or_transfer.wav",
+    "text": "This is Shield. I ended this call because the caller asked for a payment or money transfer. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.82,
+    "sample_rate": 24000,
+    "sha256": "9647e51a2af511e5df9a029f3e32a64ef471ab6c3732c1a311442e345a865bd9"
+  },
+  {
+    "file": "warning-remote_access.wav",
+    "text": "This is Shield. I ended this call because the caller asked for access to your computer or phone. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.82,
+    "sample_rate": 24000,
+    "sha256": "f95461cf036319aacf001ecd2485840005bcf6a2c1e2dee5dc95f4c1f2fc2ea5"
+  },
+  {
+    "file": "warning-identity_numbers.wav",
+    "text": "This is Shield. I ended this call because the caller asked for account or identity numbers. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 15.36,
+    "sample_rate": 24000,
+    "sha256": "ea360686600c4167d5a85afa1d35357cf870635521b0226e743193c4c953cde6"
+  },
+  {
+    "file": "warning-secrecy.wav",
+    "text": "This is Shield. I ended this call because the caller asked you to keep the call secret. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.06,
+    "sample_rate": 24000,
+    "sha256": "f152ca11080985da7ba9a26e1df67e0ba601833f528ce85fe056dc34ecfb9aa9"
+  },
+  {
+    "file": "warning-investment.wav",
+    "text": "This is Shield. I ended this call because the caller pitched an investment. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.31,
+    "sample_rate": 24000,
+    "sha256": "d9838e7577ea1a10f46d658391d0b12659efb00118d641b098e706d8f9b8007a"
+  },
+  {
+    "file": "warning-fallback.wav",
+    "text": "This is Shield. I ended this call because the call matched a common scam. Banks, government offices and companies do not ask for this on a call. If you know the caller, call them back on a number you trust. Goodbye.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.06,
+    "sample_rate": 24000,
+    "sha256": "4f47ad7f4a5ab766efc64bb2e4fe9b95e3326b75452749a835d8f3ecd4ccaf4f"
+  }
+]

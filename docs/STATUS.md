@@ -34,7 +34,7 @@ Read back from production on October 10:
   - red-team text: 107/108 legitimate, 181/183 harmful
   - see [Screening](SCREENING.md)
 - Connected-call protection checks in text: 36/36 real conversations kept, 36/36 scams stopped.
-- Unit tests: 153 passed (79 need the Firestore emulator). Emulator integration tests are run separately with `npm run test:firebase`.
+- Soniox announcement integration (local, October 10): `npm run check` passed (94 unit tests, typecheck and build); `npm run test:firebase` passed all 47 emulator tests. All 25 Hosting audio assets and 25 packaged backup assets match the approved recordings. Not deployed or verified on a real phone call.
 
 ## Not yet verified
 
@@ -57,7 +57,7 @@ Read back from production on October 10:
 
    Call the Telnyx number directly, or set up forwarding again ([Operations](OPERATIONS.md#phone-forwarding-tello-pilot)).
 2. **Legal review of connected-call protection** before anyone besides the owner uses it. This covers all-party-consent rules and recent AI-transcription wiretap cases, and confirming the caller disclosure and privacy text. The server switch is already on; `node scripts/enable-call-monitoring.mjs --off` withdraws it.
-3. **Better voice.** Fixed prompts use Telnyx's default voice. Audition a third-party TTS option against GPT Live's `marin` over a real phone line, then run a short listening session with seniors ([Architecture → Voice and speech](ARCHITECTURE.md#voice-and-speech)).
+3. **Better voice.** Locally prepared: 25 prerecorded Soniox Grace announcements with Hosting playback, a packaged Functions audio backup, and unchanged GPT Live `marin`. Not deployed yet. Deploy after owner approval, verify every primary and backup asset URL, then audition the transition to `marin` over a real phone line and run a short listening session with seniors ([Architecture → Voice and speech](ARCHITECTURE.md#voice-and-speech)).
 4. **Real voices and more held-out cases.** Every result so far is synthetic. Add held-out text probes (cheap) rather than growing the main benchmark past 25 cases.
 5. **Decide whether the scam-guidance lookup earns its delay.** It's built and limited to official sites, but nobody has measured whether it changes decisions.
 6. **Senior rehearsal, then a 5–10 person pilot,** with consent, known windows and immediate rollback.

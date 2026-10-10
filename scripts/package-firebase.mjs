@@ -14,6 +14,10 @@ for (const file of ['auth', 'crypto', 'firebase-auth']) {
   await copyFile(`dist/${file}.js`, `${destination}/lib/${file}.js`);
 }
 for (const file of await readdir('dist/cloud')) if (file.endsWith('.js')) await copyFile(`dist/cloud/${file}`, `${destination}/lib/cloud/${file}`);
+await mkdir(`${destination}/lib/cloud/announcement-audio`, { recursive: true });
+for (const file of await readdir('dist/cloud/announcement-audio')) {
+  if (file.endsWith('.wav') || file === 'manifest.json') await copyFile(`dist/cloud/announcement-audio/${file}`, `${destination}/lib/cloud/announcement-audio/${file}`);
+}
 const root = JSON.parse(await readFile('package.json', 'utf8'));
 const packages = ['fastify', '@fastify/helmet', 'firebase-admin', 'firebase-functions', 'libphonenumber-js', 'openai', 'zod'];
 await writeFile(`${destination}/package.json`, JSON.stringify({ name: 'shield-firebase', private: true, type: 'module',

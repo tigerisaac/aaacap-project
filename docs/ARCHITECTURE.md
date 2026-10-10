@@ -24,7 +24,7 @@ Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime confi
 
 1. **Forwarding.** The person's carrier (Tello in the pilot) conditionally forwards unanswered, busy and unreachable calls to the Telnyx number. On the iPhone, *Screen Unknown Callers = Silence* sends unknown callers straight to that path while contacts ring normally.
 2. **Admission.** Telnyx fetches `/forwarding/:secret/inbound`. Shield checks the webhook signature and looks the call up in Telnyx before trusting it. The call is screened only if a supervised test window is open, which allows at most 10 screenings in 30 minutes and one call at a time. Numbers in the person's synced contacts, every call outside a window, and every call while live screening is switched off go to voicemail instead. Above 50 forwarded calls in a day, Shield turns calls away.
-3. **Greeting and stream.** TeXML plays a fixed greeting with `<Say>` ("I'm Shield, an AI call assistant. Who's calling, and what is the call about?") and starts a one-way `<Stream>` to the `shield-live` bridge. The stream URL carries a short-lived signed ticket for that call only. Nothing is recorded.
+3. **Greeting and stream.** TeXML plays a prerecorded Soniox Grace greeting with `<Play>` ("I'm Shield, an AI call assistant. Who's calling, and what is the call about?") and starts a one-way `<Stream>` to the `shield-live` bridge. The stream URL carries a short-lived signed ticket for that call only. Nothing is recorded.
 4. **Screening.** The bridge relays caller audio to GPT Live. GPT Live listens, asks at most two short questions, and delegates to the decision model through the `screen_call` tool. The decision model may make one bounded lookup of official scam guidance (`research_scam_pattern`). Every decision must quote the caller's own words, and the bridge checks that quote against the transcript. See [Screening](SCREENING.md).
 5. **Outcome.** The bridge records the decision in Firestore and redirects the Telnyx call:
    - **Approve:** the caller hears "Please hold while Shield offers your call," and Shield dials the person.
@@ -45,16 +45,15 @@ There are three voice paths today:
 
 | What the caller or recipient hears | How it's produced |
 |---|---|
-| Greeting, hold, recipient summary and "press 1", voicemail prompt, warnings | Telnyx TeXML `<Say>` with no voice selected, so Telnyx's default voice |
+| Greeting, hold, recipient summary and "press 1", voicemail prompt, warnings | Prerecorded Soniox Grace WAV files, played with Telnyx TeXML `<Play>` |
 | Screening conversation (questions and acknowledgements) | GPT Live, voice `marin` |
 | Keypad and probe tones | TeXML `<Play digits>` |
 
-The fixed prompts are the obvious place to improve quality. We're considering a third-party TTS provider for them. The options are:
+The approved recordings and exact scripts are in `backend/src/cloud/announcement-audio/`. All 25 files are generic: purpose categories and warning categories contain no caller or recipient details. Soniox is used only to generate assets; the call runtime needs no Soniox key. Originals are 24 kHz mono PCM WAV, not the 8 kHz listening previews.
 
-- **A provider voice through Telnyx `<Say>`.** This is the smallest change.
-- **Pre-generated audio for fixed, generic prompts, played with `<Play>`.** The September Soniox experiment did this. Its code (`backend/src/speech.ts`) is in git history from before October 10.
+Build verifies each recording's SHA-256 and copies it to versioned Firebase Hosting URLs plus the Functions package. `<Play failoverUrl>` retries a missing static asset using `/public/speech/<version>/<file>` served from that package. Playback does not continue on error: if both sources fail, the call cannot advance silently past a disclosure or acceptance instruction. The application's provider-error fallback remains ordinary Telnyx `<Say>` followed by hangup; provider fallback behavior on a playback error still needs a real-call check. Unrecognized or newly changed text uses `<Say>` until an approved recording is added. Never generate personalized audio into the public catalog.
 
-Whichever we choose has to sound close enough to `marin` that the hand-off from greeting to conversation isn't jarring. It also has to survive 8 kHz phone audio. Personalized prompts must never go into a public cache. If audio fails to play, the call must still deliver the consent and "press 1" instructions. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
+Deploy Hosting assets and Functions together after approval, and check all primary and backup audio URLs before opening a test window. These changes are prepared locally on October 10; they have not been deployed or verified on a real call. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
 
 ## Data
 

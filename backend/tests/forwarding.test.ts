@@ -38,6 +38,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
       ? { 'telnyx-signature-ed25519': sign(null, Buffer.from(`${timestamp}|${payload}`), keys.privateKey).toString('base64'), 'telnyx-timestamp': timestamp }
       : {}) }, payload });
   };
+  it('serves only approved generic audio from the packaged fallback route', async () => {
+    const response = await app.inject({ url: '/public/speech/soniox-grace-2026-10-10/01-greeting.wav' });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toContain('audio/wav');
+    expect(response.rawPayload.toString('ascii', 0, 4)).toBe('RIFF');
+    expect((await app.inject({ url: '/public/speech/soniox-grace-2026-10-10/unknown.wav' })).statusCode).toBe(404);
+    expect((await post('fallback')).body).toContain('<Say>Shield is temporarily unavailable.');
+  });
   const offer = async (bind = true) => {
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);
     await live.finish(c.id, approve);
@@ -89,7 +97,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await post(`probe/${probe.id}`, { CallSid: sid(9), From: from, To: config.TRIAL_VERIFIED_CALLER })).body).toContain('<Hangup');
     const outbound = { CallSid: sid(8), From: number, To: config.TRIAL_VERIFIED_CALLER };
     expect((await post(`probe/${probe.id}`, outbound, false)).statusCode).toBe(403);
-    expect((await post(`probe/${probe.id}`, outbound)).body).toContain('press 1');
+    expect((await post(`probe/${probe.id}`, outbound)).body).toContain('/10-sound-check.wav');
     await post(`probe-confirm/${probe.id}`, { ...outbound, CallSid: sid(7), Digits: '1' });
     expect((await f.control.get()).data()!.probe.state).toBe('waiting');
     await post(`probe-confirm/${probe.id}`, { ...outbound, Digits: '1' });
@@ -140,13 +148,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await f.find(sid()))!.childSid).toBeUndefined();
     const child = { CallSid: sid(2), ParentCallSid: sid(), From: number, To: config.TRIAL_VERIFIED_CALLER, CallStatus: 'in-progress' };
     await Promise.all([post(`child/${id}`, child), post(`child/${id}`, child)]);
-    expect((await post(`whisper/${id}`, { CallSid: sid(2) })).body).toContain('Press 1');
+    expect((await post(`whisper/${id}`, { CallSid: sid(2) })).body).toContain('/offer-personal.wav');
     expect((await post(`accept/${id}`, { CallSid: sid(2), Digits: '1' })).body).not.toContain('<Hangup');
   });
   it('rejects the wrong application and requires renewed provider consent', async () => {
     expect((await post('inbound', { ConnectionId: '999999999999' })).statusCode).toBe(403);
     await s.personRef(config.TRIAL_PARTICIPANT_ID).update({ forwardingConsent: 'old-provider-consent' });
-    expect((await post('inbound')).body).toContain('not ready');
+    expect((await post('inbound')).body).toContain('/07-not-ready.wav');
     expect((await db.collection('callSessions').get()).empty).toBe(true);
   });
   it('requires authentic provider signatures and rejects loopback numbers', async () => {
@@ -176,7 +184,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   it('offers only the fixed enrolled recipient, requires the bound child and press 1', async () => {
     const id = await offer();
     expect((await post(`accept/${id}`, { CallSid: sid(2), Digits: '1' })).body).toContain('<Hangup');
-    const whisper = await post(`whisper/${id}`, { CallSid: sid(2) }); expect(whisper.body).toContain('Press 1');
+    const whisper = await post(`whisper/${id}`, { CallSid: sid(2) }); expect(whisper.body).toContain('/offer-personal.wav');
     expect((await post(`accept/${id}`, { CallSid: sid(3), Digits: '1' })).body).toContain('<Hangup');
     const accepted = await post(`accept/${id}`, { CallSid: sid(2), Digits: '1' }); expect(accepted.body).not.toContain('<Hangup');
     expect((await f.find(sid()))!.acceptedAt).toBe(now);
@@ -273,7 +281,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect(saved).toMatchObject({ state: 'voicemail', outcome: 'voicemail', reason });
     expect(afterScreening(config, saved)).toEqual({ Url: `${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/voicemail/${c.id}`, Method: 'POST' });
     const xml = (await post(`voicemail/${c.id}`)).body;
-    expect(xml).toContain('<Stop><Stream name="shield-live"'); expect(xml).toContain('couldn'); expect(xml).toContain('<Record');
+    expect(xml).toContain('<Stop><Stream name="shield-live"'); expect(xml).toContain('/05-voicemail-after-screening.wav'); expect(xml).toContain('<Record');
     expect((await post(`voicemail/${c.id}`, { CallSid: sid(7) })).body).not.toContain('<Record');
     await f.recording(sid(), '20123456-1234-4321-1234-000000000001', 12);
     expect((await f.find(sid()))!.voicemail).toMatchObject({ duration: 12, status: 'pending' });

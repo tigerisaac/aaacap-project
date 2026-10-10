@@ -266,7 +266,7 @@ describe('Single-call streaming capability', () => {
     expect(xml).toContain('<Pause length="85"/><Hangup/>');
     expect(xml).toContain('enableReconnect="false"');
     expect(xml).not.toMatch(/Record|Gather/);
-    expect(xml.indexOf("<Say>I'm Shield, an AI call assistant.")).toBeLessThan(xml.indexOf('<Start>'));
+    expect(xml).toContain('/01-greeting.wav</Play><Start>');
     expect(xml).not.toContain(config.TRIAL_PROXY_SECRET);
   });
 });

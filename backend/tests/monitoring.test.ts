@@ -91,7 +91,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   });
   it('discloses to the caller, then transcribes both sides with the configured engine', async () => {
     await optIn(); const { id, offer } = await connect(false);
-    expect(offer).toMatch(/an AI assistant will transcribe the call[^<]*<\/Say><Start><Transcription/);
+    expect(offer).toMatch(/03-hold-monitoring\.wav<\/Play><Start><Transcription/);
     expect(offer).toContain('transcriptionEngine="Parakeet"'); expect(offer).toContain('transcriptionTracks="both"');
     expect(offer).toContain(`transcriptionCallback="${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/monitor/${id}"`);
     expect((await s.callRef(id).get()).data()!.monitoringStartedAt).toBe(now);
@@ -148,7 +148,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     expect((await db.collection('monitoredCalls').doc(id).get()).exists).toBe(false);
     expect((await post(`monitor-warning/${id}`, { CallSid: sid() })).body).not.toContain('code or password');
     const warning = (await post(`monitor-warning/${id}`, { CallSid: sid(2) })).body;
-    expect(warning).toContain('asked for a code or password'); expect(warning).not.toContain('six digit'); expect(warning).toContain('<Hangup');
+    expect(warning).toContain('/warning-code_or_password.wav'); expect(warning).not.toContain('six digit'); expect(warning).toContain('<Hangup');
     expect((await post(`dial-ended/${id}`, { DialCallSid: sid(2), DialCallStatus: 'completed' })).body).not.toContain('<Record');
     const calls = (await app.inject({ url: '/api/calls?filter=connected', headers: headers() })).json().calls;
     expect(calls[0]).toMatchObject({ title: 'Shield ended a connected call', reasonCode: 'monitor_intervened', monitored: true });

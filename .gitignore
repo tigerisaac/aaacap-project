@@ -20,6 +20,9 @@ operator-input/
 artifacts/private/
 .impeccable/mocks/
 
+# Generated from the approved announcement assets during build
+deploy/firebase/public/speech/
+
 # Local Firebase cache and design build state
 .firebase/
 .impeccable/build/

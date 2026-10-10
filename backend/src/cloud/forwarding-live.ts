@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { announcementResponse } from './announcements.js';
 import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
 import type { LiveDecision, StopReason } from '../live/policy.js';
 import type { CloudConfig } from './config.js';
@@ -16,7 +17,11 @@ export function liveStreamXML(config: CloudConfig, call: ForwardingCall, now: nu
   const url = `${config.LIVE_BRIDGE_URL.replace('https:', 'wss:')}/media/${call.id}/${expiry}/${streamTicket(config, call.id, expiry)}`;
   // The carrier delivers the disclosure before streaming, even if Live starts slowly.
   // Start + a carrier-side deadline survives a bridge process crash. No recording.
-  return `<?xml version="1.0" encoding="UTF-8"?><Response><Say>I'm Shield, an AI call assistant. Who's calling, and what is the call about?</Say><Start><Stream name="shield-live" url="${url}" track="inbound_track" codec="PCMU" bidirectionalMode="rtp" bidirectionalCodec="PCMU" bidirectionalSamplingRate="8000" enableReconnect="false" /></Start><Pause length="85"/><Hangup/></Response>`;
+  const r = announcementResponse();
+  r.say("I'm Shield, an AI call assistant. Who's calling, and what is the call about?");
+  r.start().stream({ name: 'shield-live', url, track: 'inbound_track', codec: 'PCMU', bidirectionalMode: 'rtp',
+    bidirectionalCodec: 'PCMU', bidirectionalSamplingRate: 8000, enableReconnect: false });
+  r.pause({ length: 85 }); r.hangup(); return r.toString();
 }
 
 export class ForwardingLive {
