@@ -15,7 +15,7 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         case .forward1: "When your line is busy"
         case .forward2: "When you have no signal"
         case .test: "Check your forwarding"
-        case .checks: "Your call checks"
+        case .checks: "Setup complete"
         case .restore: "Restore your phone"
         }
     }

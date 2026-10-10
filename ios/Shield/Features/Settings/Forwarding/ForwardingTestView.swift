@@ -6,15 +6,22 @@ struct ForwardingTestView: View {
         VStack(alignment: .leading, spacing: 24) {
             Label(status.ringTestAt == nil ? "Sound check still needed" : "Sound check received", systemImage: status.ringTestAt == nil ? "circle" : "checkmark.circle.fill")
             Label(status.forwardingTestAt == nil ? "Forwarding check still needed" : "A forwarded call reached Shield", systemImage: status.forwardingTestAt == nil ? "circle" : "checkmark.circle.fill")
-            Text("Next: a conversation with someone you know").font(.title2.bold())
-            Text("Have them call your mobile from an unknown number. They’ll say their name and why they’re calling. Answer the Shield callback and press 1.")
-            Text("Check that you can hear each other. Then try declining a call and playing its voicemail. A saved contact should still ring normally.").foregroundStyle(ForwardingStyle.secondaryText)
-            Text("Busy and no-signal routing also need testing. These initial checks do not enable always-on protection.").foregroundStyle(ForwardingStyle.secondaryText)
+            Text("Your forwarding stays connected when you tap Done.").font(.title3)
+            Text("To disconnect Shield later, choose Restore my phone in Setup options.")
+                .foregroundStyle(ForwardingStyle.secondaryText)
+            Label(status.active ? "Screening test is active" : "Screening test is paused", systemImage: status.active ? "waveform" : "pause.circle")
+            Text(status.active ? "Screening runs during the current 30-minute test session. These checks don’t enable always-on protection." : "Forwarding remains connected. Outside a screening session, forwarded callers can leave a message with Shield.")
+                .foregroundStyle(ForwardingStyle.secondaryText)
+            DisclosureGroup("More call checks you can do later") {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("During a screening session, have someone you know call your mobile from an unknown number. Answer the Shield callback and press 1. Check that you can hear each other.")
+                    Text("Then try declining a call and playing its voicemail. A saved contact should still ring normally. Busy and no-signal routing also need testing.")
+                }.padding(.top, 8).foregroundStyle(ForwardingStyle.secondaryText)
+            }
             if let latest = status.latestEvents.last {
                 Label(eventLabel(latest.kind), systemImage: "waveform")
                 Text("Call activity updates automatically.").font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
             }
-            Text("Finish this test with the restoration steps below.").foregroundStyle(ForwardingStyle.secondaryText)
         }
     }
     private func eventLabel(_ kind: String) -> String {

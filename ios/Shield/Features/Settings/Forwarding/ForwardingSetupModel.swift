@@ -45,6 +45,11 @@ final class ForwardingSetupModel {
                 status = .uiTestFixture
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-settings") { step = .settings }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-code") { step = .forward0 }
+                if ProcessInfo.processInfo.arguments.contains("--forwarding-start-checks") {
+                    step = .checks
+                    status?.ringTestAt = .now
+                    status?.forwardingTestAt = .now
+                }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-restore") {
                     step = .restore
                     let key = "shield-restoration-step-" + ForwardingStatus.uiTestFixture.participantId.uuidString

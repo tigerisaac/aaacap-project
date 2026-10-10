@@ -14,7 +14,7 @@ Read back from production on October 10:
 | Announcement audio | Prerecorded Soniox Grace: 25 generic 24 kHz WAV files on Hosting, with Functions backup. `shieldApi` revision `shieldapi-00012-heq`, updated October 10 at 15:52 UTC. All 50 primary/backup URLs verified HTTP 200, `audio/wav`, matching original SHA-256; public health ready. |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
-| Carrier forwarding | Enabled October 10 with owner approval: Tello confirmed registration for unanswered, busy and unreachable conditions to Shield. Incoming-call delivery remains unverified. Screening test window closed; backend stage remains restore. |
+| Carrier forwarding | Enabled October 10 with owner approval: Tello confirmed registration for unanswered, busy and unreachable conditions to Shield. Carrier routing has not been independently rechecked after the owner’s restoration/setup activity. Latest October 10 readback: backend stage checks and screening window active until 22:11 UTC; no active call. The owner started that session through setup. |
 | Last real call | September 29, 2026 (a voicemail) |
 
 ## Verified on real calls
@@ -46,6 +46,11 @@ Read back from production on October 10:
 - iOS compact handoff and return guide (October 10): forwarding and restoration now show three short instructions, then “Check Tello’s result” after returning. Retry recopies the same code and restores the guide; returning never advances or verifies a connection. These transitions and Phone opening were physically inspected with synthetic fixtures, without dialing. Ten of eleven initial UI tests passed; after correcting the largest-text test’s scrolling target, all four final targeted tests passed. Typecheck/build, 94 unit tests, and 47 Firebase emulator tests passed. The signed normal build was reinstalled and launched. Carrier forwarding and the closed test window were unchanged.
 
 - iOS guided restoration (October 10): replaced the final static Settings instructions with two explicit setting confirmations, then ordinary-call and normal-voicemail checks and a Done state. Already-completed settings can be confirmed directly. Progress persists per participant through app relaunch; returning from Settings never advances it. Three targeted restoration tests passed before and after the layout refinement, including largest accessibility text in dark mode. Synthetic Settings/call-check screens were inspected on the enrolled phone. Typecheck/build, 94 unit tests and 47 Firebase emulator tests passed. The signed normal app was installed and launched. No real calls, carrier resets or phone-setting changes were performed in this pass. The owner’s screenshot showed the old final restoration screen; current carrier routing has not been read back or independently verified.
+
+- iOS setup completion (October 10): Done dismisses setup and leaves forwarding/session state untouched. Restoration is a separate Setup options action with explicit confirmation. The completion screen retains call-check results and reports the timed session’s current state. The consent instructions no longer require restoration at setup completion. Backend always-on and multi-user behavior remain unchanged.
+
+
+October 10 completion validation: the end-to-end guided setup and Done/later-restoration UI tests both passed. The synthetic completion screenshot was inspected in simulator. Typecheck/build, 94 unit tests and 47 Firebase emulator tests passed. The signed normal build was installed and launched on the enrolled iPhone without changing its saved progress or session. No carrier setting or live backend deployment changed in this pass.
 
 ## Not yet verified
 

@@ -49,7 +49,7 @@ struct ForwardingSetupView: View {
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
-            if model.status != nil { ForwardingActions(model: model, app: app, confirmRestore: $confirmRestore) }
+            if model.status != nil { ForwardingActions(model: model, app: app) }
         }
         .navigationTitle(model.step.progress).navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(model.step.previous != nil)

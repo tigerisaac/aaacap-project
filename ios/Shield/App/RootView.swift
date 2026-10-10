@@ -3,6 +3,7 @@ import UIKit
 
 struct RootView: View {
     @Environment(AppState.self) private var model
+    @State private var previewSetupPresented = true
 
     private var contactDemoAction: String? {
         #if DEBUG
@@ -50,7 +51,16 @@ struct RootView: View {
 
     @ViewBuilder private var content: some View {
             @Bindable var model = model
-            if isForwardingPreview {
+            if isForwardingPreview && ProcessInfo.processInfo.arguments.contains("--forwarding-navigation-test") {
+                NavigationStack {
+                    Button("Open phone setup") { previewSetupPresented = true }
+                        .accessibilityIdentifier("forwarding-preview-home")
+                        .navigationDestination(isPresented: $previewSetupPresented) {
+                            ForwardingSetupView()
+                                .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.caption).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
+                        }
+                }
+            } else if isForwardingPreview {
                 NavigationStack {
                     ForwardingSetupView()
                         .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.caption).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }

@@ -3,13 +3,13 @@ import SwiftUI
 struct ForwardingActions: View {
     @Bindable var model: ForwardingSetupModel
     let app: AppState
-    @Binding var confirmRestore: Bool
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 4) {
             if model.step != .restore {
                 Button {
-                    if model.step == .checks { confirmRestore = true }
+                    if model.step == .checks { dismiss() }
                     else { Task { await model.primaryAction(app) } }
                 } label: {
                     HStack(spacing: 12) {
@@ -50,7 +50,7 @@ struct ForwardingActions: View {
             if model.probeWaiting { return "Checking automatically…" }
             if model.probe != nil { return "Try the call again" }
             return model.step == .ring ? "Call me now" : "Check forwarding now"
-        case .checks: return "Finish and restore my phone"
+        case .checks: return "Done"
         default: return "Continue"
         }
     }
