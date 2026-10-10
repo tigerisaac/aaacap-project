@@ -18,7 +18,7 @@ struct ForwardingCodeView: View {
                     .accessibilityIdentifier("forwarding-code")
                 if model.codePreparedStep == model.step {
                     SetupInstruction(number: 1, title: "Tap Open beside Phone", detail: "Use the Phone banner below, then choose Keypad. If the banner doesn’t appear, open the green Phone app from your Home Screen.")
-                    SetupInstruction(number: 2, title: "Hold above the numbers and paste", detail: "Touch and hold the blank area above the keypad, then choose Paste. Check that every star and the final # are included.")
+                    SetupInstruction(number: 2, title: "Tap above the numbers, then Paste", detail: "Tap the area above the keypad and choose Paste. If Paste doesn’t appear, touch and hold there. Check that every star and the final # are included.")
                     SetupInstruction(number: 3, title: "Tap Call and wait for Tello", detail: "Continue here only after Tello says Setting Registration Succeeded for Voice Call Forwarding.")
                     Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
                         .frame(minHeight: 44).disabled(model.working)

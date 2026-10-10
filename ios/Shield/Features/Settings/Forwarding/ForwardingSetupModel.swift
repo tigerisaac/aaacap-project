@@ -43,7 +43,12 @@ final class ForwardingSetupModel {
                 status = .uiTestFixture
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-settings") { step = .settings }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-code") { step = .forward0 }
+                if ProcessInfo.processInfo.arguments.contains("--forwarding-start-restore") {
+                    step = .restore
+                    UserDefaults.standard.removeObject(forKey: "shield-restoration-step-" + ForwardingStatus.uiTestFixture.participantId.uuidString)
+                }
             }
+            preparePhoneHandoff()
             return
         }
         #endif
@@ -64,6 +69,7 @@ final class ForwardingSetupModel {
             if status == nil { error = nil }
             status = result
             if result.restorationRequested { step = .restore }
+            preparePhoneHandoff()
         } catch is CancellationError {} catch { self.error = error.localizedDescription }
     }
 
@@ -123,6 +129,15 @@ final class ForwardingSetupModel {
 
     func copyCode(showPhoneLauncher: Bool = true) {
         guard let code, !working else { return }
+        prepareCode(code, showPhoneLauncher: showPhoneLauncher)
+    }
+
+    private func preparePhoneHandoff() {
+        guard codePreparedStep != step, let code else { return }
+        prepareCode(code, showPhoneLauncher: true)
+    }
+
+    private func prepareCode(_ code: String, showPhoneLauncher: Bool) {
         PhoneAppLink.copy(code: code)
         codePreparedStep = step
         #if DEBUG

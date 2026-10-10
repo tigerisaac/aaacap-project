@@ -21,8 +21,7 @@ final class ForwardingUITests: XCTestCase {
         for title in ["When you don’t answer", "When your line is busy", "When you have no signal"] {
             expect(app, title)
             XCTAssertTrue(app.staticTexts["forwarding-code"].exists)
-            tapPrimary(app)
-            XCTAssertTrue(app.staticTexts["Your code is copied"].exists)
+            XCTAssertTrue(app.staticTexts["Your code is copied"].waitForExistence(timeout: 5))
             if title == "When you don’t answer" { capture(app, "Guided Tello code") }
             tapPrimary(app)
         }
@@ -81,8 +80,6 @@ final class ForwardingUITests: XCTestCase {
     }
     func testCopyRequiresCarrierConfirmationAndResetsForNextCode() {
         let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy Tello code")
-        tapPrimary(app)
         expect(app, "Your code is copied")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
@@ -91,9 +88,32 @@ final class ForwardingUITests: XCTestCase {
         expect(app, "When you don’t answer")
         tapPrimary(app)
         expect(app, "When your line is busy")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy Tello code")
-        XCTAssertFalse(app.staticTexts["forwarding-code-copied"].exists)
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
+        XCTAssertTrue(app.staticTexts["forwarding-code-copied"].exists)
+        XCTAssertEqual(app.staticTexts["forwarding-code"].label, "**67*12025550100#")
+        app.terminate()
+        let resumed = launch(["--forwarding-start-code"], title: "When you don’t answer")
+        expect(resumed, "Your code is copied")
+        XCTAssertFalse(resumed.staticTexts["Check your forwarding"].exists)
     }
+    func testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed() {
+        let app = launch(["--forwarding-start-restore"], title: "Restore your phone")
+        XCTAssertTrue(app.staticTexts["forwarding-reset-code"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
+        XCTAssertEqual(app.buttons["forwarding-reset-continue"].label, "Tello confirmed this reset")
+        app.buttons["forwarding-reset-copy"].tap()
+        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
+        app.buttons["forwarding-reset-continue"].tap()
+        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##67#")
+        XCTAssertEqual(app.buttons["forwarding-reset-continue"].label, "Tello confirmed this reset")
+        app.buttons["forwarding-reset-continue"].tap()
+        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##62#")
+        app.buttons["forwarding-reset-continue"].tap()
+        expect(app, "Restore your original iPhone settings")
+        XCTAssertFalse(app.staticTexts["forwarding-reset-code"].exists)
+        XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
+    }
+
     private func launch(_ extra: [String] = [], title: String = "Let’s set up Shield") -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-forwarding"] + extra

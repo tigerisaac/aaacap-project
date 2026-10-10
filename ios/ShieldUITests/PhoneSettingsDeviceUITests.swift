@@ -11,8 +11,6 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-code"]
         app.launch()
         XCTAssertTrue(app.buttons["forwarding-continue"].waitForExistence(timeout: 15))
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy Tello code")
-        app.buttons["forwarding-continue"].tap()
         XCTAssertTrue(app.staticTexts["forwarding-code-copied"].waitForExistence(timeout: 10))
         XCTAssertTrue(observer.calls.isEmpty, "Copying a code must not create a call")
         XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
