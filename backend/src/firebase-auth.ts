@@ -2,7 +2,7 @@ import { applicationDefault, getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { z } from 'zod';
 import { HttpError, type AuthProvider, type Identity } from './auth.js';
-import type { Config } from './config.js';
+import type { CloudConfig } from './cloud/config.js';
 
 type FirebaseAdmin = Pick<Auth, 'verifyIdToken' | 'revokeRefreshTokens'>;
 const sessionSchema = z.object({ idToken: z.string().min(1), refreshToken: z.string().min(1),
@@ -10,7 +10,7 @@ const sessionSchema = z.object({ idToken: z.string().min(1), refreshToken: z.str
 
 export class FirebaseAuth implements AuthProvider {
   private admin?: FirebaseAdmin;
-  constructor(private readonly config: Pick<Config, 'FIREBASE_PROJECT_ID' | 'FIREBASE_WEB_API_KEY' | 'IOS_BUNDLE_ID'>,
+  constructor(private readonly config: Pick<CloudConfig, 'FIREBASE_PROJECT_ID' | 'FIREBASE_WEB_API_KEY' | 'IOS_BUNDLE_ID'>,
     private readonly request: typeof fetch = fetch, admin?: FirebaseAdmin) {
     this.admin = admin;
   }

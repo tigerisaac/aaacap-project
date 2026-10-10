@@ -4,7 +4,6 @@ import { defineSecret } from 'firebase-functions/params';
 import { onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
-import { createScreener } from '../screening.js';
 import { cloudSchema } from './config.js';
 import { CloudStore } from './store.js';
 import type { buildCloudApp } from './app.js';
@@ -23,15 +22,15 @@ function getStore() {
   return store;
 }
 let appPromise: ReturnType<typeof buildCloudApp> | undefined;
-export const shieldApi = onRequest({ ...options, invoker: 'public', concurrency: 20 }, async (request, response) => {
+// The API needs the OpenAI key only for the Check tab.
+export const shieldApi = onRequest({ ...options, secrets: [runtime, openaiKey], invoker: 'public', concurrency: 20 }, async (request, response) => {
   try {
-    // Background screening/cleanup do not need Fastify, Firebase Auth or the Twilio SDK.
-    appPromise ??= import('./app.js').then(({ buildCloudApp }) => buildCloudApp(getStore(), {
-      reportWebhookTiming: timing => console.info(JSON.stringify({ event: 'trial_webhook_timing', ...timing }))
-    })).catch(error => { appPromise = undefined; throw error; });
+    // Background functions do not need Fastify or Firebase Auth, so the HTTP app loads lazily.
+    appPromise ??= import('./app.js').then(({ buildCloudApp }) => buildCloudApp(getStore(), { openaiApiKey: openaiKey.value() }))
+      .catch(error => { appPromise = undefined; throw error; });
     const app = await appPromise;
     const headers: Record<string, string> = {};
-    for (const name of ['authorization', 'content-type', 'x-shield-participant', 'x-twilio-signature', 'telnyx-signature-ed25519', 'telnyx-timestamp']) {
+    for (const name of ['authorization', 'content-type', 'x-shield-participant', 'telnyx-signature-ed25519', 'telnyx-timestamp']) {
       const value = request.headers[name]; if (typeof value === 'string') headers[name] = value;
     }
     const result = await app.inject({ method: request.method as 'GET' | 'POST' | 'DELETE', url: request.originalUrl,
@@ -41,9 +40,6 @@ export const shieldApi = onRequest({ ...options, invoker: 'public', concurrency:
   } catch {
     response.status(503).set('Cache-Control', 'no-store').send({ error: { code: 'service_unavailable' } });
   }
-});
-export const screenCall = onDocumentCreated({ ...options, document: 'screeningJobs/{callId}', retry: false, concurrency: 4 }, async event => {
-  const data = getStore(); await data.processJob(event.params.callId, createScreener(data.config));
 });
 export const cleanupShield = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 04:00', timeZone: 'America/Chicago',
   retryCount: 0 }, async () => { await getStore().cleanup(); });

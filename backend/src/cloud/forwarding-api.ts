@@ -13,7 +13,7 @@ const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
 export async function registerForwardingAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, deps: ProbeDependencies = {}) {
   const probes = new ForwardingProbes(store);
-  const f = new ForwardingStore(store), consent = forwardingConsent(store.config);
+  const f = new ForwardingStore(store), consent = forwardingConsent;
   const monitoringAvailable = new CallMonitor(f).available;
   const owner = async (request: FastifyRequest) => {
     const selected = request.headers['x-shield-participant'];
@@ -30,7 +30,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       prepared, active, probe: probes.publicState(control), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
       liveScreening: store.config.LIVE_SCREENING_ENABLED,
       monitoring: { available: monitoringAvailable, enabled: monitoringAvailable && monitoringEnabledFor(p), consentVersion: MONITORING_CONSENT },
-      voiceProvider: store.config.FORWARDING_PROVIDER === 'telnyx' ? 'Telnyx' : 'Twilio',
+      voiceProvider: 'Telnyx',
       consentVersion: consent, consented: p.forwardingConsent === consent,
       phoneVerified: !!p.phoneVerifiedAt, stage: stages.includes(p.forwardingStage) ? p.forwardingStage : 'overview',
       restorationRequested: p.status === 'restoring', lastTestAt: at(control?.lastTestAt),
@@ -54,7 +54,6 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   app.post('/api/forwarding/probe', async request => {
     await owner(request);
     const { kind } = z.object({ kind: z.enum(['ring', 'forwarding']) }).strict().parse(request.body);
-    if (store.config.FORWARDING_PROVIDER !== 'telnyx' && !deps.startForwardingProbe) throw new HttpError(409, 'probe_unavailable');
     const probe = await probes.reserve(kind);
     if (probe) {
       // No automatic retries: a timeout may still mean the provider placed the call.

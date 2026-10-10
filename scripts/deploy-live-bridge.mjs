@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir, copyFile, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, copyFile, readdir, rm } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { Client, connect, project } from './firebase-client.mjs';
@@ -12,11 +12,13 @@ const runtimeIdentity = `shield-runtime@${project}.iam.gserviceaccount.com`;
 await connect();
 const command = process.argv[2] ?? 'status';
 if (command === 'build') {
-  const stage = 'artifacts/live-bridge'; await mkdir(`${stage}/lib/live`, { recursive: true }); await mkdir(`${stage}/lib/cloud`, { recursive: true });
-  for (const file of ['auth', 'crypto', 'firebase-auth', 'model-config', 'screening', 'speech']) await copyFile(`dist/${file}.js`, `${stage}/lib/${file}.js`);
+  // Start clean so modules deleted from the source never linger in the image.
+  const stage = 'artifacts/live-bridge'; await rm(stage, { recursive: true, force: true });
+  await mkdir(`${stage}/lib/live`, { recursive: true }); await mkdir(`${stage}/lib/cloud`, { recursive: true });
+  for (const file of ['auth', 'crypto', 'firebase-auth']) await copyFile(`dist/${file}.js`, `${stage}/lib/${file}.js`);
   for (const dir of ['cloud','live']) for (const file of await readdir(`dist/${dir}`)) if (file.endsWith('.js')) await copyFile(`dist/${dir}/${file}`, `${stage}/lib/${dir}/${file}`);
   const root = JSON.parse(await readFile('package.json', 'utf8'));
-  const names = ['fastify','@fastify/formbody','@fastify/helmet','firebase-admin','firebase-functions','libphonenumber-js','openai','twilio','zod','ws'];
+  const names = ['fastify','@fastify/helmet','firebase-admin','firebase-functions','libphonenumber-js','openai','zod','ws'];
   await writeFile(`${stage}/package.json`, JSON.stringify({name:'shield-live-bridge',private:true,type:'module',overrides:root.overrides,
     dependencies:Object.fromEntries(names.map(name=>[name,root.dependencies[name]]))}));
   await writeFile(`${stage}/Dockerfile`, 'FROM node:22-slim\nWORKDIR /app\nCOPY package.json ./\nRUN npm install --omit=dev --ignore-scripts\nCOPY lib ./lib\nUSER node\nCMD ["node", "lib/live/server.js"]\n');

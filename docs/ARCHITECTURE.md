@@ -14,6 +14,7 @@ Current as of October 10, 2026. Shield answers unfamiliar calls that a person's 
 | Connected-call protection (opt-in) | Telnyx transcription plus Firebase Function `monitorConnectedCall` (`gpt-6-luna`) | `backend/src/cloud/monitoring.ts` |
 | Voicemail ingestion | Firebase Function `ingestForwardingVoicemail` | `backend/src/cloud/forwarding-recordings.ts` |
 | Cleanup | Firebase Function `cleanupShield`, daily at 04:00 Central | `backend/src/cloud/store.ts` |
+| Check tab (paste a text to check it) | `shieldApi` calling `gpt-6-luna`; the text isn't stored | `backend/src/cloud/message-check.ts` |
 | Data and sign-in | Firestore (default database, us-central1), Firebase Authentication email links | `backend/src/cloud/store.ts`, `forwarding-store.ts` |
 | iPhone app | SwiftUI, iOS 26+ | `ios/` (see [ios/README.md](../ios/README.md)) |
 
@@ -22,7 +23,7 @@ Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime confi
 ## How a call flows
 
 1. **Forwarding.** The person's carrier (Tello in the pilot) conditionally forwards unanswered, busy and unreachable calls to the Telnyx number. On the iPhone, *Screen Unknown Callers = Silence* sends unknown callers straight to that path while contacts ring normally.
-2. **Admission.** Telnyx fetches `/forwarding/:secret/inbound`. Shield checks the webhook signature and looks the call up in Telnyx before trusting it. The call is screened only if a supervised test window is open, which allows at most 10 screenings in 30 minutes and one call at a time. Numbers in the person's synced contacts, and every call outside a window, go to voicemail instead. Above 50 forwarded calls in a day, Shield turns calls away.
+2. **Admission.** Telnyx fetches `/forwarding/:secret/inbound`. Shield checks the webhook signature and looks the call up in Telnyx before trusting it. The call is screened only if a supervised test window is open, which allows at most 10 screenings in 30 minutes and one call at a time. Numbers in the person's synced contacts, every call outside a window, and every call while live screening is switched off go to voicemail instead. Above 50 forwarded calls in a day, Shield turns calls away.
 3. **Greeting and stream.** TeXML plays a fixed greeting with `<Say>` ("I'm Shield, an AI call assistant. Who's calling, and what is the call about?") and starts a one-way `<Stream>` to the `shield-live` bridge. The stream URL carries a short-lived signed ticket for that call only. Nothing is recorded.
 4. **Screening.** The bridge relays caller audio to GPT Live. GPT Live listens, asks at most two short questions, and delegates to the decision model through the `screen_call` tool. The decision model may make one bounded lookup of official scam guidance (`research_scam_pattern`). Every decision must quote the caller's own words, and the bridge checks that quote against the transcript. See [Screening](SCREENING.md).
 5. **Outcome.** The bridge records the decision in Firestore and redirects the Telnyx call:
@@ -51,7 +52,7 @@ There are three voice paths today:
 The fixed prompts are the obvious place to improve quality. We're considering a third-party TTS provider for them. The options are:
 
 - **A provider voice through Telnyx `<Say>`.** This is the smallest change.
-- **Pre-generated audio for fixed, generic prompts, played with `<Play>`.** The September Soniox experiment did this, and its code is still in `backend/src/speech.ts` and `backend/scripts/prepare-speech.ts`.
+- **Pre-generated audio for fixed, generic prompts, played with `<Play>`.** The September Soniox experiment did this. Its code (`backend/src/speech.ts`) is in git history from before October 10.
 
 Whichever we choose has to sound close enough to `marin` that the hand-off from greeting to conversation isn't jarring. It also has to survive 8 kHz phone audio. Personalized prompts must never go into a public cache. If audio fails to play, the call must still deliver the consent and "press 1" instructions. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
 
@@ -65,13 +66,10 @@ Firestore holds the following. Clients can't read or write it directly (deny-all
 - **`forwardingRecordings`:** voicemail ingestion jobs. Audio is stored encrypted.
 - **`monitoredCalls`, `monitorChecks`:** connected-call protection transcripts and check jobs, deleted when the call ends.
 
-## Legacy paths still in the code
+## Retired
 
-These are kept but aren't the current product:
+Shield retired these on October 10, 2026. They're in git history and the [archive](archive/README.md):
 
-- **Twilio forwarding and the Twilio "trial" route** (`/trial/...`, `backend/src/cloud/voice.ts`). `FORWARDING_PROVIDER` is `telnyx` in production. Twilio credentials are still in the runtime config.
-- **Gather-based screening with Gemini through OpenRouter** (`screenCall` function, `backend/src/screening.ts`). It's only used when `LIVE_SCREENING_ENABLED` is off.
-- **The always-on PostgreSQL server** (`backend/src/main.ts`, `operator-main.ts`, `deploy/google-cloud/`). The owner declined it on cost. Don't deploy it.
-- **Local demo mode** (`npm run demo:setup`, `npm run dev`). This uses embedded PGlite and synthetic data for app development.
-
-The September design documents behind these paths are in [archive/](archive/README.md).
+- **Twilio.** This covered the September direct-call trial and Twilio forwarding. TeXML is now built by Shield's own `backend/src/cloud/texml.ts`, and its output is byte-identical to what the Twilio library produced.
+- **Gemini through OpenRouter.** This covered the Gather-based fallback screener and the `screenCall` function. Calls that GPT Live can't screen now go to voicemail, and the Check tab uses `gpt-6-luna`.
+- **The always-on PostgreSQL server and local demo backend.** The app keeps its offline **Explore the demo** mode.

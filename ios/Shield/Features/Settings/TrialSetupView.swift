@@ -18,23 +18,6 @@ struct TrialSetupView: View {
                 .foregroundStyle(.secondary)
         } header: { Text("Phone setup") }
         Section {
-            Label(setup.trial?.active == true ? "Trial ready" : "Trial session ended",
-                  systemImage: setup.trial?.active == true ? "checkmark.circle.fill" : "clock.fill")
-                .font(.headline).foregroundStyle(setup.trial?.active == true ? ShieldTheme.connected : ShieldTheme.held)
-            Text("Call the test number from your verified phone. Your introduction is screened and the result appears in Calls.")
-                .foregroundStyle(.secondary)
-            LabeledContent("Test number", value: setup.shieldNumber)
-            LabeledContent("Your phone", value: setup.phone)
-            if let trial = setup.trial {
-                LabeledContent("Calls left", value: trial.remainingCalls.formatted())
-                if trial.active, let expires = trial.expiresAt {
-                    LabeledContent("Session ends", value: expires.formatted(date: .omitted, time: .shortened))
-                }
-            }
-        } header: { Text("Direct-call trial") } footer: {
-            Text("This direct-call check only screens introductions. Use Phone setup above for the separate forwarding test.")
-        }
-        Section {
             Button(setup.status == "paused" ? "Resume trial" : "Pause trial",
                    systemImage: setup.status == "paused" ? "play.circle" : "pause.circle", action: togglePause)
                 .disabled(working)

@@ -1,14 +1,13 @@
-import { recordingProvider, validRecordingId, type VoiceProvider } from './forwarding-provider.js';
+import { recordingProvider, validRecordingId } from './forwarding-provider.js';
 import { CloudStore } from './store.js';
 
 /** Verify provider ownership, download from an approved origin, encrypt, and remove its copy. */
 export async function ingestForwardingRecording(store: CloudStore, sid: string) {
-  if (!validRecordingId('twilio', sid) && !validRecordingId('telnyx', sid)) throw new Error('invalid_recording_id');
+  if (!validRecordingId(sid)) throw new Error('invalid_recording_id');
   const ref = store.db.collection('forwardingRecordings').doc(sid), job = (await ref.get()).data();
   if (!job || job.status === 'done') return;
-  const provider: VoiceProvider = job.provider ?? 'twilio';
-  if (!['twilio', 'telnyx'].includes(provider) || !validRecordingId(provider, sid)) throw new Error('invalid_recording_provider');
-  const client = recordingProvider(store.config, provider);
+  if (job.provider !== 'telnyx') throw new Error('invalid_recording_provider');
+  const client = recordingProvider(store.config);
   const callRef = store.callRef(job.callId), call = (await callRef.get()).data();
   if (job.status !== 'stored' && job.expiresAt > store.now() && call && !call.voicemailDeletedAt) {
     const response = await client.fetch(sid, job.parentSid);

@@ -12,7 +12,6 @@ SHIELD_API_SCHEME = https
 SHIELD_API_HOST = shield-calls-isaac.web.app
 SHIELD_MESSAGE_FILTER_HOST = api.shield.example
 SHIELD_AUTH_HOST = shield-calls-isaac.firebaseapp.com
-SHIELD_DEMO_TOKEN =
 SHIELD_ALLOW_LOCAL_NETWORKING = NO
 // Wheema, Inc.
 DEVELOPMENT_TEAM = 6R6HMW3DWN

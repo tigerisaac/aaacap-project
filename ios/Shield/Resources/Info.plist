@@ -31,8 +31,6 @@
 	<string>$(SHIELD_AUTH_HOST)</string>
 	<key>ShieldAPIScheme</key>
 	<string>$(SHIELD_API_SCHEME)</string>
-	<key>ShieldDemoToken</key>
-	<string>$(SHIELD_DEMO_TOKEN)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

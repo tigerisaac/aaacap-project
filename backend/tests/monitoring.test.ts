@@ -5,20 +5,19 @@ import { generateKeyPairSync, sign } from 'node:crypto';
 import { forwardingNumber } from '../src/cloud/forwarding-provider.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { ForwardingStore, forwardingConsent } from '../src/cloud/forwarding-store.js';
+import { ForwardingLive } from '../src/cloud/forwarding-live.js';
 import { CallMonitor, MONITORING_CONSENT, type Assessment } from '../src/cloud/monitoring.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import type { AuthProvider } from '../src/auth.js';
-import { extractionSchema } from '../src/screening.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection (Firestore emulator)', () => {
   const project = 'demo-shield-monitoring';
   const keys = generateKeyPairSync('ed25519');
   const base = { FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-    TWILIO_ACCOUNT_SID: `AC${'a'.repeat(32)}`, TWILIO_AUTH_TOKEN: 'b'.repeat(32), TRIAL_PROXY_SECRET: 'c'.repeat(64),
-    TRIAL_TWILIO_NUMBER: '+12025550100', TRIAL_VERIFIED_CALLER: '+12025550101',
+    TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+12025550101',
     TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
-    FORWARDING_PROVIDER: 'telnyx', TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8),
+    LIVE_SCREENING_ENABLED: true, LIVE_BRIDGE_URL: 'https://shield-live-test.a.run.app', TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8),
     TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109',
     TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64') };
   let config = cloudSchema.parse({ ...base, CALL_MONITORING_ENABLED: true });
@@ -30,8 +29,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   const update = vi.fn<(sid: string, body: Record<string, string>) => Promise<void>>();
   const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {} };
   const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': config.TRIAL_PARTICIPANT_ID });
-  const routine = extractionSchema.parse({ purpose: 'personal', sensitiveAccountIssue: { value: 'absent', evidence: null },
-    familyMoneyEmergency: { value: 'absent', evidence: null }, prohibitedRequests: [], uncertainty: [] });
   const post = (step: string, extra: Record<string, string> = {}, signed = true) => {
     const url = `/forwarding/${config.TRIAL_PROXY_SECRET}/${step}`;
     const params = { AccountSid: config.TELNYX_ACCOUNT_ID!, CallSid: sid(), From: from, To: number, Direction: 'inbound', ...extra };
@@ -41,11 +38,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   };
   const optIn = (enabled = true) => app.inject({ method: 'POST', url: '/api/forwarding/monitoring', headers: headers(),
     payload: enabled ? { enabled: true, version: MONITORING_CONSENT } : { enabled: false } });
-  /** Screen a routine caller, offer it, bind her leg and press 1. Returns the call id and the offer TeXML. */
+  /** Approve a routine caller through live screening, offer it, bind her leg and press 1. Returns the call id and the offer TeXML. */
   const connect = async (accept = true) => {
-    await post('inbound'); const c = (await f.find(sid()))!;
-    await post('introduction', { SpeechResult: 'Calling about lunch tomorrow.' });
-    await s.processJob(c.id, { version: 'test', async extract() { return routine; } });
+    await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);
+    await live.finish(c.id, { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true });
     const offer = (await post('result')).body;
     await post(`child/${c.id}`, { CallSid: sid(2), ParentCallSid: sid(), From: number, To: config.TRIAL_VERIFIED_CALLER, CallStatus: 'ringing' });
     await post(`whisper/${c.id}`, { CallSid: sid(2) });
@@ -66,7 +62,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     config = cloudSchema.parse({ ...base, CALL_MONITORING_ENABLED: true });
     now = Date.now(); await build();
     await s.personRef(config.TRIAL_PARTICIPANT_ID).set({ id: config.TRIAL_PARTICIPANT_ID, ownerUid: 'owner', status: 'setup', phoneVerifiedAt: now,
-      forwardingConsent: forwardingConsent(config), nameEnc: s.vault.seal('Test', `person:${config.TRIAL_PARTICIPANT_ID}:name`),
+      forwardingConsent, nameEnc: s.vault.seal('Test', `person:${config.TRIAL_PARTICIPANT_ID}:name`),
       phoneEnc: s.vault.seal(config.TRIAL_VERIFIED_CALLER, `person:${config.TRIAL_PARTICIPANT_ID}:phone`) });
     await f.control.set({ provisioned: true, enabled: true, dataPlanConfirmed: true, restorationGuide: ['Restore saved carrier settings'],
       allowAnyCaller: true, used: 0, expiresAt: now + 1800_000 });

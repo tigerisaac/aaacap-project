@@ -4,7 +4,7 @@ Start with [Architecture](ARCHITECTURE.md), then [Status](STATUS.md).
 
 | Doc | What it covers |
 |---|---|
-| [Architecture](ARCHITECTURE.md) | Components (Telnyx, GPT Live bridge, Firebase), how a call flows, voice and TTS, data, legacy paths |
+| [Architecture](ARCHITECTURE.md) | Components (Telnyx, GPT Live bridge, Firebase), how a call flows, voice and TTS, data, what was retired |
 | [Status](STATUS.md) | What's deployed, what's been verified on real calls, open work in priority order |
 | [Screening](SCREENING.md) | How the screener decides, what each outcome does, rules for changing the policy, test suites and commands |
 | [Operations](OPERATIONS.md) | Secrets, deploying functions and the bridge, feature switches, test windows, inspection, phone forwarding and restoration |

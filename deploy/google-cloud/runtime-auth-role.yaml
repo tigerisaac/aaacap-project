@@ -1,6 +1,0 @@
-title: Shield session verification
-description: Verify Firebase users and revoke sessions when they sign out.
-stage: GA
-includedPermissions:
-  - firebaseauth.users.get
-  - firebaseauth.users.update

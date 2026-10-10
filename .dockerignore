@@ -1,7 +1,0 @@
-**
-!package.json
-!package-lock.json
-!backend/
-!backend/src/
-!backend/src/**
-!backend/tsconfig.json

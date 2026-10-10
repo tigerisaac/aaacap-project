@@ -11,9 +11,8 @@ const timestamp = '1780000000', now = Number(timestamp) * 1000;
 const raw = Buffer.from('CallSid=hello&SpeechResult=hello+there');
 const signature = sign(null, Buffer.concat([Buffer.from(`${timestamp}|`), raw]), keys.privateKey).toString('base64');
 const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-  TWILIO_ACCOUNT_SID: `AC${'a'.repeat(32)}`, TWILIO_AUTH_TOKEN: 'b'.repeat(32), TRIAL_PROXY_SECRET: 'c'.repeat(64),
-  TRIAL_TWILIO_NUMBER: '+12025550100', TRIAL_VERIFIED_CALLER: '+12025550101',
-  TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64), FORWARDING_PROVIDER: 'telnyx',
+  TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+12025550101',
+  TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
   TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'private-test-key-value', TELNYX_PUBLIC_KEY: publicKey,
   TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109', TELNYX_RECORDING_HOSTS: ['media.example.com'] });
 const sid = '10123456-1234-4321-1234-000000000001', recId = '20123456-1234-4321-1234-000000000001';
@@ -56,9 +55,9 @@ describe('Telnyx authenticated voice adapter', () => {
     await app.close();
   });
   it('accepts documented opaque call IDs but never path separators', () => {
-    expect(validCallId('telnyx', sid)).toBe(true);
-    expect(validCallId('telnyx', 'v3:abc_DEFG-12345678')).toBe(true);
-    expect(validCallId('telnyx', 'v3:abc/../Calls/other')).toBe(false);
+    expect(validCallId(sid)).toBe(true);
+    expect(validCallId('v3:abc_DEFG-12345678')).toBe(true);
+    expect(validCallId('v3:abc/../Calls/other')).toBe(false);
   });
   it('requires account and call identity in authenticated lookups', async () => {
     const mock = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ account_sid: config.TELNYX_ACCOUNT_ID, sid, from: '+12025550109', to: '+12025550101', status: 'in-progress', direction: 'outbound' }));

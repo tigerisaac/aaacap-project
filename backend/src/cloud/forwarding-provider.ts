@@ -1,14 +1,10 @@
 import { createPublicKey, verify } from 'node:crypto';
-import twilio from 'twilio';
 import type { CloudConfig } from './config.js';
 
-export type VoiceProvider = 'twilio' | 'telnyx';
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-export const forwardingNumber = (c: CloudConfig) => c.FORWARDING_PROVIDER === 'telnyx' ? c.TELNYX_NUMBER! : c.TRIAL_TWILIO_NUMBER;
-export const validCallId = (provider: VoiceProvider, value: string) => provider === 'twilio'
-  ? /^CA[a-f0-9]{32}$/i.test(value) : uuid.test(value) || /^v[23]:[a-zA-Z0-9_-]{10,512}$/.test(value);
-export const validRecordingId = (provider: VoiceProvider, value: string) => provider === 'twilio'
-  ? /^RE[a-f0-9]{32}$/i.test(value) : uuid.test(value);
+export const forwardingNumber = (c: CloudConfig) => c.TELNYX_NUMBER;
+export const validCallId = (value: string) => uuid.test(value) || /^v[23]:[a-zA-Z0-9_-]{10,512}$/.test(value);
+export const validRecordingId = (value: string) => uuid.test(value);
 
 /** Telnyx signs timestamp|exact request bytes, not a reserialized form or JSON object. */
 export function verifyTelnyx(publicKey: string, signature: unknown, timestamp: unknown, raw: Buffer | undefined, now = Date.now()) {
@@ -34,7 +30,7 @@ export class TelnyxVoice {
     return response.json();
   }
   async update(sid: string, body: { Status: 'completed' } | { Url: string; Method: 'POST' }) {
-    if (!validCallId('telnyx', sid)) throw new Error('invalid_call_id');
+    if (!validCallId(sid)) throw new Error('invalid_call_id');
     const response = await this.fetcher(`https://api.telnyx.com/v2/texml/Accounts/${this.config.TELNYX_ACCOUNT_ID}/Calls/${encodeURIComponent(sid)}`, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(2500),
       headers: { authorization: `Bearer ${this.config.TELNYX_API_KEY}`, 'content-type': 'application/x-www-form-urlencoded' },
@@ -51,13 +47,13 @@ export class TelnyxVoice {
       StatusCallbackEvent: 'initiated ringing answered completed', Timeout: 40, TimeLimit: 30, Record: false });
   }
   async call(sid: string) {
-    if (!validCallId('telnyx', sid)) throw new Error('invalid_call_id');
+    if (!validCallId(sid)) throw new Error('invalid_call_id');
     const c = await this.request(`Calls/${encodeURIComponent(sid)}`);
     if (c.account_sid !== this.config.TELNYX_ACCOUNT_ID || c.sid !== sid) throw new Error('call_mismatch');
     return { from: c.from as string, to: c.to as string, status: c.status as string, direction: c.direction as string };
   }
   async recording(sid: string, parentSid: string) {
-    if (!validRecordingId('telnyx', sid)) throw new Error('invalid_recording_id');
+    if (!validRecordingId(sid)) throw new Error('invalid_recording_id');
     const r = await this.request(`Recordings/${sid}.json`);
     if (r.account_sid !== this.config.TELNYX_ACCOUNT_ID || r.sid !== sid || r.call_sid !== parentSid
       || r.source !== 'RecordVerb' || r.status !== 'completed' || !Number.isFinite(Number(r.duration)) || Number(r.duration) < 0 || Number(r.duration) > 65) throw new Error('recording_mismatch');
@@ -70,27 +66,12 @@ export class TelnyxVoice {
     return this.fetcher(url, { redirect: 'error', signal: AbortSignal.timeout(10000) });
   }
   async deleteRecording(sid: string) {
-    if (!validRecordingId('telnyx', sid)) throw new Error('invalid_recording_id');
+    if (!validRecordingId(sid)) throw new Error('invalid_recording_id');
     await this.request(`Recordings/${sid}.json`, 'DELETE');
   }
 }
 
-export function recordingProvider(c: CloudConfig, provider: VoiceProvider) {
-  if (provider === 'telnyx') {
-    const client = new TelnyxVoice(c);
-    return { fetch: (sid: string, parent: string) => client.recording(sid, parent), remove: (sid: string) => client.deleteRecording(sid) };
-  }
-  const client = twilio(c.TWILIO_ACCOUNT_SID, c.TWILIO_AUTH_TOKEN, { timeout: 5000, autoRetry: false });
-  return {
-    async fetch(sid: string, parentSid: string) {
-      const r = await client.recordings(sid).fetch();
-      if (r.callSid !== parentSid || r.accountSid !== c.TWILIO_ACCOUNT_SID || r.source !== 'RecordVerb') throw new Error('recording_mismatch');
-      return fetch(`https://api.twilio.com/2010-04-01/Accounts/${c.TWILIO_ACCOUNT_SID}/Recordings/${sid}.mp3`, {
-        redirect: 'error', signal: AbortSignal.timeout(10000), headers: { authorization: `Basic ${Buffer.from(`${c.TWILIO_ACCOUNT_SID}:${c.TWILIO_AUTH_TOKEN}`).toString('base64')}` }
-      });
-    },
-    async remove(sid: string) {
-      try { await client.recordings(sid).remove(); } catch (error) { if ((error as { status?: number }).status !== 404) throw error; }
-    }
-  };
+export function recordingProvider(c: CloudConfig) {
+  const client = new TelnyxVoice(c);
+  return { fetch: (sid: string, parent: string) => client.recording(sid, parent), remove: (sid: string) => client.deleteRecording(sid) };
 }

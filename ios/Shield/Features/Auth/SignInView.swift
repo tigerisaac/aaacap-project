@@ -109,17 +109,6 @@ struct SignInView: View {
                         }
                     }
 
-                    #if DEBUG
-                    if !codeSent && model.configuration.demoToken != nil {
-                        HStack {
-                            Button("Local participant") { Task { working = true; await model.connectLocalDemo(); working = false } }
-                            Spacer()
-                            Button("Local caregiver") { Task { working = true; await model.connectLocalDemo(caregiver: true); working = false } }
-                        }
-                        .font(.caption).buttonStyle(.bordered).controlSize(.large)
-                        .disabled(working)
-                    }
-                    #endif
                 }
                 .padding(28)
                 .frame(maxWidth: 520, alignment: .leading)

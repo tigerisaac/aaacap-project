@@ -29,6 +29,6 @@ npm run check
 
 `npm run check` runs the typecheck, the unit tests and the build. `npm run test:firebase` adds the Firestore emulator integration tests.
 
-For app work without any live services, `npm run demo:setup` and then `npm run dev` start a local backend with synthetic history. `npm run ios:generate` generates the Xcode project; open `ios/Shield.xcodeproj` and run the **Shield** scheme. The app's **Explore the demo** mode works offline. Demo mode never places calls or contacts OpenAI.
+For app work, `npm run ios:generate` generates the Xcode project; open `ios/Shield.xcodeproj` and run the **Shield** scheme. The app's **Explore the demo** mode works offline with synthetic data. It never places calls or contacts any service.
 
 Live checks and deployment use the shared Google Cloud project `shield-calls-isaac`. Read [Operations](docs/OPERATIONS.md) before running anything that touches it.

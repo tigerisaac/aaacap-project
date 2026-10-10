@@ -5,14 +5,13 @@ Native SwiftUI, iOS 26+, Swift 6. No third-party app frameworks. The project con
 ## Open and run
 
 ```sh
-npm run demo:setup
 npm run ios:generate
 open ios/Shield.xcodeproj
 ```
 
 Select the shared **Shield** scheme and an iPhone simulator, then press **⌘R**. On 2026-09-21 the license blocker was cleared, the simulator build passed with Xcode 27, and Xcode launched Shield on an iPhone 17 running iOS 27. Installation and the running app process were independently verified. The source navigator is grouped by app feature. Automated UI tests and a rendered/accessibility review remain to be run; simulator-window inspection timed out, so no visual approval is claimed.
 
-Use **Explore the demo** for offline synthetic activity. For the connected local demo, run `npm run dev` on the Mac and choose **Local participant** or **Local caregiver** in the debug app. Setup writes a random local bearer token into gitignored `Config/Local.xcconfig`; release configuration clears the token and excludes these buttons. Demo mode never changes phone routing or places calls.
+Use **Explore the demo** for offline synthetic activity. Demo mode never changes phone routing or places calls. To use real data, point `Config/Local.xcconfig` at `shield-calls-isaac.web.app` and sign in with the email link.
 
 `scripts/generate-xcode-project.mjs` deterministically recreates the project from the Swift/resource directories. Re-run it when adding files. Do not keep manual project-only edits; put build changes in the generator or xcconfig. Regenerate original icon and color assets with `node scripts/generate-ios-assets.mjs`.
 
@@ -26,7 +25,7 @@ Automatic signing uses **Wheema, Inc.** (`6R6HMW3DWN`) in both Debug and Release
 
 On 2026-09-21, the Debug build for the connected physical iPhone passed using existing local provisioning profiles. Both the app and embedded extension passed signature verification under Wheema, Inc.; both profiles include the connected phone. Release signing settings resolve to the same team and bundle IDs. This verifies development signing, not App Store distribution or live-service behavior.
 
-Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` for debug and `Config/ReleaseLocal.xcconfig` for release, or edit an existing local file to preserve its demo settings. Set the HTTPS host and message-filter host; bundle ID and Apple team ID inherit from `Base.xcconfig`. Never include Telnyx, Twilio, Firebase administrative, OpenRouter, Soniox, OpenAI or APNs private keys in these files or the app.
+Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` for debug and `Config/ReleaseLocal.xcconfig` for release, or edit an existing local file. Set the HTTPS host and message-filter host; bundle ID and Apple team ID inherit from `Base.xcconfig`. Never include Telnyx, Twilio, Firebase administrative, OpenRouter, Soniox, OpenAI or APNs private keys in these files or the app.
 
 Register the containing app and `.Messages` extension with matching bundle IDs and signing. Enable Associated Domains for the app/extension and Push Notifications for the app. Set the backend’s `APPLE_TEAM_ID=6R6HMW3DWN` and `IOS_BUNDLE_ID=org.isaaczhang.Shield` to match. The app’s association is `messagefilter:YOUR_HOST`; the extension’s deferral URL is `https://YOUR_HOST/sms/classify`.
 

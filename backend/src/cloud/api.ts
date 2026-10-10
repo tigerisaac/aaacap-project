@@ -4,10 +4,12 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { bearer, HttpError, type AuthProvider } from '../auth.js';
 import { normalizePhone } from '../crypto.js';
-import { purposes, reasonCopy, screen, type Screener } from '../screening.js';
+import { purposes, reasonCopy } from './copy.js';
+import { checkMessage, type MessageChecker } from './message-check.js';
 import { CONSENT_VERSION, RETENTION_MS } from './config.js';
 import { CloudStore, type Call, type Person } from './store.js';
 import { normalizeSharedPhone, sharedContactsSchema, syncSharedContacts } from './shared-contacts.js';
+import { forwardingNumber } from './forwarding-provider.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -23,12 +25,12 @@ export function cloudCallDTO(store: CloudStore, call: Call) {
     callerNumber: store.vault.open(call.callerEnc, `call:${call.id}:caller`),
     title: reason === 'routine' ? (purposes[call.purpose as keyof typeof purposes] ?? copy.title) : copy.title,
     outcome: abandoned ? 'missed' : call.outcome, reasonCode: reason,
-    detail: reason === 'routine' ? (forwarding ? 'The introduction looked routine. Connection requires you to answer and press 1.' : 'The introduction looked routine. Transfers are not enabled in this trial; no call was connected.') : copy.detail,
+    detail: reason === 'routine' ? (forwarding ? 'The introduction looked routine. Connection requires you to answer and press 1.' : 'The introduction looked routine. No call was connected.') : copy.detail,
     nextStep: reason === 'routine' ? 'This result does not verify the caller’s identity.' : copy.action,
     monitored: !!call.monitoringStartedAt, acceptedAt: at(call.acceptedAt), endedAt: at(call.completedAt ?? (abandoned ? call.createdAt + (forwarding ? 450_000 : 120_000) : null)), voicemail: call.voicemail ? { ...call.voicemail, heardAt: at(call.voicemail.heardAt) } : null };
 }
 
-export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, screener: Screener) {
+export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, checker: MessageChecker) {
   const identify = async (request: FastifyRequest) => (await auth.identify(bearer(request))).subject;
   const access = async (request: FastifyRequest, owner = false) => {
     const raw = request.headers['x-shield-participant'];
@@ -112,13 +114,10 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   });
   app.get('/api/setup', async request => {
     const ctx = await access(request, true); const p = ctx.participant;
-    const trial = (await store.db.doc('trial/control').get()).data();
-    return { participantId: p.id, name: store.name(p), phone: store.phone(p), shieldNumber: store.config.TRIAL_TWILIO_NUMBER,
+    return { participantId: p.id, name: store.name(p), phone: store.phone(p), shieldNumber: forwardingNumber(store.config),
       status: p.status, isOwner: true, isTrial: true, consentVersion: CONSENT_VERSION, consented: p.consentVersion === CONSENT_VERSION,
       phoneVerified: !!p.phoneVerifiedAt, lastTestAt: null, restoredAt: null, routingTestUntil: null,
-      liveServiceEnabled: false, carrierProfile: null, supportEmail: null,
-      trial: { active: !!trial?.enabled && trial.expiresAt > store.now() && trial.used < 10,
-        expiresAt: at(trial?.expiresAt), remainingCalls: Math.max(0, 10 - (trial?.used ?? 10)) } };
+      liveServiceEnabled: false, carrierProfile: null, supportEmail: null, trial: null };
   });
   app.post('/api/setup/consent', async request => {
     const ctx = await access(request, true);
@@ -136,9 +135,8 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   app.post('/api/account/delete', async request => {
     const ctx = await access(request, true);
     if (ctx.participant.forwardingConsent) throw new HttpError(409, 'restore_forwarding_before_deletion');
-    // Direct-call trial has no carrier changes.
     await store.personRef(ctx.participant.id).update({ status: 'offboarded' });
-    for (const collection of ['callSessions', 'screeningJobs', 'grants', 'memberships']) {
+    for (const collection of ['callSessions', 'grants', 'memberships']) {
       const docs = await store.db.collection(collection).where('participantId', '==', ctx.participant.id).get();
       if (!docs.empty) {
         const writer = store.db.bulkWriter(); docs.docs.forEach(doc => writer.delete(doc.ref)); await writer.close();
@@ -243,7 +241,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     const ctx = await access(request);
     const { text } = z.object({ text: z.string().trim().min(3).max(6000), analysisConsent: z.literal(true) }).parse(request.body);
     await store.quota([[`manual:${ctx.uid}`, 30], ['classifications:global', 100]]);
-    const decision = await screen(screener, text, store.config.MODEL_TIMEOUT_MS);
+    const decision = await checkMessage(checker, text);
     const copy: Record<string, [string, string]> = {
       routine: ['Check independently', 'No listed sensitive request was detected. This does not establish who sent the message.'],
       prohibited_request: ['Don’t act on this yet', 'A request involving sensitive information, device access, money, or secrecy was detected.'],

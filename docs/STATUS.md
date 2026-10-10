@@ -9,7 +9,7 @@ Read back from production on October 10:
 | Piece | State |
 |---|---|
 | Live bridge `shield-live` | Revision `shield-live-00005`, policy `2026-10-09-general-v14`, `gpt-live-1` + `gpt-6-luna`, OpenAI key version 2 |
-| Firebase Functions (codebase `shield`) | `shieldApi`, `screenCall`, `cleanupShield`, `ingestForwardingVoicemail`, `monitorConnectedCall` |
+| Firebase Functions (codebase `shield`) | `shieldApi`, `cleanupShield`, `ingestForwardingVoicemail`, `monitorConnectedCall` |
 | Runtime config | `SHIELD_RUNTIME` v4: Telnyx forwarding, live screening on, connected-call protection on at the server |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Carrier forwarding | Off. It was removed after the September 24 demo. |
@@ -61,7 +61,9 @@ Read back from production on October 10:
 5. **Decide whether the scam-guidance lookup earns its delay.** It's built and limited to official sites, but nobody has measured whether it changes decisions.
 6. **Senior rehearsal, then a 5–10 person pilot,** with consent, known windows and immediate rollback.
 7. **Housekeeping:**
-   - update `collaborator:setup` and `collaborator:check`, which still target OpenRouter and Twilio
-   - decide whether to retire the legacy Twilio, Gemini and PostgreSQL code paths
+   - release the Twilio number and close the Twilio account
+   - delete the OpenRouter key
+
+   The code that used them was retired on October 10.
 
 The full pilot plan and its gates are in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).

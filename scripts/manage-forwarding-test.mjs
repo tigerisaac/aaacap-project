@@ -1,5 +1,4 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import twilio from 'twilio';
 import { connect, firestore, documentRoot, fields } from './firebase-client.mjs';
 import { forwardingConsent } from '../dist/cloud/forwarding-store.js';
 import { verifyTelnyxSetup } from './telnyx-provider.mjs';
@@ -16,7 +15,7 @@ async function main() {
   const decodeFields = f => Object.fromEntries(Object.entries(f).map(([k, v]) => [k, decode(v)]));
   const read = async path => { try { return decodeFields((await db.get(path)).body.fields ?? {}); } catch (e) { if (e.status === 404) return {}; throw e; } };
   const patch = (path, data) => db.patch(path, { fields: fields(data) }, { queryParams: new URLSearchParams(Object.keys(data).map(key => ['updateMask.fieldPaths', key])) });
-  const consent = forwardingConsent(config);
+  const consent = forwardingConsent;
   const [person, control] = await Promise.all([read(personPath), read(controlPath)]);
   if (!person.ownerUid || !person.phoneVerifiedAt) throw new Error('verified_owner_required');
   if (command === 'status') {
@@ -37,33 +36,12 @@ async function main() {
     await patch(personPath, { status: 'restoring', forwardingStage: 'restore' });
     console.log('Callbacks disabled. Carrier restoration and physical verification are still required.'); return;
   }
-  const provider = twilio(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN, { timeout: 5000, autoRetry: false });
-  let numbers = [];
-  if (config.FORWARDING_PROVIDER === 'telnyx') await verifyTelnyxSetup(config);
-  else {
-    const [account, owned] = await Promise.all([provider.api.accounts(config.TWILIO_ACCOUNT_SID).fetch(),
-      provider.incomingPhoneNumbers.list({ phoneNumber: config.TRIAL_TWILIO_NUMBER })]);
-    if (account.status !== 'active' || account.type !== 'Full' || owned.length !== 1 || !owned[0].capabilities.voice) throw new Error('paid_voice_number_required');
-    numbers = owned;
-  }
+  await verifyTelnyxSetup(config);
   if (command === 'prepare') {
     if (control.activeCallId) throw new Error('call_still_active');
     const guide = JSON.parse(await readFile('artifacts/private/tello-restoration.json', 'utf8'));
     if (!guide.originalSettingsRecorded || !Array.isArray(guide.steps) || guide.steps.length < 3 || guide.steps.some(s => typeof s !== 'string' || !s.trim())) throw new Error('restoration_guide_required');
-    if (config.FORWARDING_PROVIDER !== 'telnyx') {
-    const number = numbers[0];
-    const backup = { numberSid: number.sid, voiceUrl: number.voiceUrl, voiceMethod: number.voiceMethod,
-      voiceFallbackUrl: number.voiceFallbackUrl, voiceFallbackMethod: number.voiceFallbackMethod,
-      statusCallback: number.statusCallback, statusCallbackMethod: number.statusCallbackMethod };
-    const backupPath = `artifacts/private/forwarding-number-${number.sid}.json`;
-    try { await writeFile(backupPath, JSON.stringify(backup), { flag: 'wx', mode: 0o600 }); } catch (e) { if (e.code !== 'EEXIST') throw e; }
-    const url = step => `${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/${step}`;
-    await provider.incomingPhoneNumbers(number.sid).update({ voiceUrl: url('inbound'), voiceMethod: 'POST',
-      voiceFallbackUrl: url('fallback'), voiceFallbackMethod: 'POST', statusCallback: url('status'), statusCallbackMethod: 'POST' });
-    const saved = await provider.incomingPhoneNumbers(number.sid).fetch();
-    if (saved.voiceUrl !== url('inbound') || saved.statusCallback !== url('status')) throw new Error('webhook_readback_failed');
-    }
-    await patch(controlPath, { provisioned: true, provider: config.FORWARDING_PROVIDER ?? 'twilio', enabled: false, blocker: null, restorationGuide: guide.steps,
+    await patch(controlPath, { provisioned: true, provider: 'telnyx', enabled: false, blocker: null, restorationGuide: guide.steps,
       dataPlanConfirmed: !!control.dataPlanConfirmed, preparedAt: Date.now() });
     console.log('Regular voice number configured and read back. The callback window remains closed.'); return;
   }

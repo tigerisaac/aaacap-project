@@ -1,13 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { DecodedIdToken } from 'firebase-admin/auth';
 import { FirebaseAuth } from '../src/firebase-auth.js';
-import { loadConfig } from '../src/config.js';
+import { cloudSchema } from '../src/cloud/config.js';
 
-const environment = { SHIELD_MODE: 'live', PUBLIC_BASE_URL: 'https://shield.example.com',
-  DATA_ENCRYPTION_KEY: 'ab'.repeat(32), DATABASE_URL: 'postgres://localhost/test',
-  TWILIO_ACCOUNT_SID: `AC${'a'.repeat(32)}`, TWILIO_AUTH_TOKEN: 'synthetic-token',
-  AUTH_PROVIDER: 'firebase', FIREBASE_PROJECT_ID: 'shield-test-project', FIREBASE_WEB_API_KEY: 'synthetic-project-key' };
-const config = loadConfig(environment);
+const config = { FIREBASE_PROJECT_ID: 'shield-test-project', FIREBASE_WEB_API_KEY: 'synthetic-project-key', IOS_BUNDLE_ID: 'org.isaaczhang.Shield' };
 const claims = { uid: 'verified-user', email_verified: true } as DecodedIdToken;
 const admin = () => ({ verifyIdToken: vi.fn(async () => claims), revokeRefreshTokens: vi.fn(async () => {}) });
 
@@ -64,11 +60,11 @@ describe('Firebase authentication', () => {
     await expect(new FirebaseAuth(config, request, admin()).verifyCode('person@example.com', 'oob-code'))
       .rejects.toMatchObject({ code: 'sign_in_failed' });
   });
-  it('requires Firebase configuration and refuses the auth emulator in live mode', () => {
-    expect(loadConfig(environment).AUTH_PROVIDER).toBe('firebase');
-    expect(() => loadConfig({ ...environment, FIREBASE_PROJECT_ID: '' })).toThrow();
-    expect(() => loadConfig({ ...environment, FIREBASE_WEB_API_KEY: '' })).toThrow();
-    expect(() => loadConfig({ ...environment, FIREBASE_PROJECT_ID: 'other.example/path' })).toThrow();
-    expect(() => loadConfig({ ...environment, FIREBASE_AUTH_EMULATOR_HOST: 'localhost:9099' })).toThrow();
+  it('requires the Firebase web key in runtime configuration and fails closed without it', async () => {
+    expect(() => cloudSchema.shape.FIREBASE_WEB_API_KEY.parse('')).toThrow();
+    const request = vi.fn<typeof fetch>();
+    await expect(new FirebaseAuth({ ...config, FIREBASE_WEB_API_KEY: '' }, request, admin()).verifyCode('person@example.com', 'oob-code'))
+      .rejects.toMatchObject({ code: 'sign_in_unavailable' });
+    expect(request).not.toHaveBeenCalled();
   });
 });

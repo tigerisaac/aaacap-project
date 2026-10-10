@@ -5,8 +5,8 @@ How to deploy, switch features, run supervised test calls, and inspect what happ
 ## Access and secrets
 
 - **Google identity.** Operator scripts reuse your Firebase CLI login through `scripts/firebase-client.mjs`, which loads `firebase-tools` from this repo's dev dependencies. Sign in once with `npx firebase login`. The scripts call Google REST APIs directly; `gcloud` isn't needed.
-- **`SHIELD_RUNTIME` (Secret Manager).** One JSON document with all runtime configuration: Telnyx credentials and number, feature flags, the encryption key, the recipient's number, and the legacy Twilio and OpenRouter settings. Scripts that change it add a new version and never print values.
-- **`SHIELD_OPENAI_API_KEY` (Secret Manager).** Used by the live bridge and `monitorConnectedCall`. The bridge pins an explicit version in `scripts/deploy-live-bridge.mjs` (currently version 2). A new key isn't live until you update that pin and redeploy the bridge.
+- **`SHIELD_RUNTIME` (Secret Manager).** One JSON document with all runtime configuration: Telnyx credentials and number, feature flags, the encryption key and the recipient's number. Scripts that change it add a new version and never print values.
+- **`SHIELD_OPENAI_API_KEY` (Secret Manager).** Used by the live bridge, `monitorConnectedCall` and the Check tab in `shieldApi`. The bridge pins an explicit version in `scripts/deploy-live-bridge.mjs` (currently version 2). A new key isn't live until you update that pin and redeploy the bridge.
 - **Private local files** go in `artifacts/private/` (gitignored), for example `firebase-runtime.json` and `live-deploy.json`.
 - **Never print, commit or paste** keys, tokens, phone numbers, transcripts or signed webhook URLs.
 
@@ -20,7 +20,7 @@ npm run check
 npm run test:firebase
 ```
 
-`npm run check` runs the onboarding test, the typecheck, the unit tests and the build. `npm run test:firebase` runs the Firestore emulator integration tests for the API, forwarding and monitoring. Neither proves carrier audio or screening accuracy. For those, see [Screening](SCREENING.md).
+`npm run check` runs the typecheck, the unit tests and the build. `npm run test:firebase` runs the Firestore emulator integration tests for the API, forwarding and monitoring. Neither proves carrier audio or screening accuracy. For those, see [Screening](SCREENING.md).
 
 ## Deploy Firebase Functions
 
@@ -83,13 +83,12 @@ It returns the voice model, decision model and `policyVersion`. It doesn't prove
 
 | Switch | Turn on | Turn off |
 |---|---|---|
-| Live GPT screening (`LIVE_SCREENING_ENABLED`, `LIVE_BRIDGE_URL`) | `node scripts/enable-live-demo.mjs`. It refuses unless voice benchmark results for the current policy version and the deployed bridge image match. | Edit `SHIELD_RUNTIME`. With it off, Telnyx calls fall back to Gather + Gemini screening. |
+| Live GPT screening (`LIVE_SCREENING_ENABLED`, `LIVE_BRIDGE_URL`) | `node scripts/enable-live-demo.mjs`. It refuses unless voice benchmark results for the current policy version and the deployed bridge image match. | Edit `SHIELD_RUNTIME`. With it off, every forwarded caller gets voicemail. |
 | Connected-call protection (`CALL_MONITORING_ENABLED`) | `node scripts/enable-call-monitoring.mjs`, then the owner opts in on the app's Connected-call protection screen | `node scripts/enable-call-monitoring.mjs --off` |
 
 Redeploy the functions after either change.
 
 Current production values (`SHIELD_RUNTIME` v4):
-- `FORWARDING_PROVIDER=telnyx`
 - live screening on
 - call monitoring on at the server, but not yet turned on in the app
 
@@ -164,5 +163,3 @@ npx firebase login
 ```bash
 npm run check
 ```
-
-`npm run collaborator:setup` and `npm run collaborator:check` still target the September OpenRouter and Twilio setup and need updating.

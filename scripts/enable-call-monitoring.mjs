@@ -10,7 +10,6 @@ try {
   const stored = (await secrets.get(`${path}/versions/latest:access`)).body;
   const current = JSON.parse(Buffer.from(stored.payload.data, 'base64').toString());
   const updated = cloudSchema.parse({ ...current, CALL_MONITORING_ENABLED: enabled });
-  if (updated.FORWARDING_PROVIDER !== 'telnyx') throw new Error('telnyx_required');
   let version = stored.name;
   if (current.CALL_MONITORING_ENABLED !== enabled) {
     version = (await secrets.post(`${path}:addVersion`, { payload: { data: Buffer.from(JSON.stringify({ ...current, CALL_MONITORING_ENABLED: enabled })).toString('base64') } })).body.name;

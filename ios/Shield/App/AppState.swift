@@ -64,18 +64,6 @@ final class AppState {
         await refresh()
     }
 
-    #if DEBUG
-    func connectLocalDemo(caregiver: Bool = false) async {
-        do {
-            try await api.connectDemo(caregiver: caregiver)
-            sessionGeneration += 1
-            isPreview = false
-            signedIn = true
-            await refresh()
-        } catch { handle(error) }
-    }
-    #endif
-
     func select(_ person: Person) async {
         selectedPersonID = person.id
         overview = nil

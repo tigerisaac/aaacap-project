@@ -1,29 +1,26 @@
-import twilio from 'twilio';
 import { liveStreamXML } from './forwarding-live.js';
 import type { FastifyInstance } from 'fastify';
 import { secureEqual } from '../crypto.js';
-import { purposes } from '../screening.js';
+import { purposes } from './copy.js';
 import { CloudStore } from './store.js';
 import { ForwardingProbes } from './forwarding-probes.js';
 import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
 import { forwardingNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { CallMonitor, warningText } from './monitoring.js';
+import { VoiceResponse } from './texml.js';
 
-export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string) => Promise<{
-  parentCallSid?: string | null; to: string; from: string; status: string;
-}>; lookupForwardingInbound?: (sid: string) => Promise<{ from: string; to: string; direction: string; status: string }>;
+export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string) => Promise<{ to: string; from: string; status: string }>; lookupForwardingInbound?: (sid: string) => Promise<{ from: string; to: string; direction: string; status: string }>;
   callMonitor?: CallMonitor };
 
 export async function registerForwardingVoice(app: FastifyInstance, store: CloudStore, deps: ForwardingVoiceDependencies = {}) {
-  const f = new ForwardingStore(store), config = store.config, kind = config.FORWARDING_PROVIDER;
+  const f = new ForwardingStore(store), config = store.config;
   const probes = new ForwardingProbes(store);
   const number = forwardingNumber(config), telnyx = new TelnyxVoice(config);
-  const provider = twilio(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN, { timeout: 3000, autoRetry: false });
-  const childLookup = deps.lookupForwardingChild ?? (sid => kind === 'telnyx' ? telnyx.call(sid) : provider.calls(sid).fetch());
+  const childLookup = deps.lookupForwardingChild ?? (sid => telnyx.call(sid));
   const inboundLookup = deps.lookupForwardingInbound ?? (sid => telnyx.call(sid));
   const monitor = deps.callMonitor ?? new CallMonitor(f, telnyx);
   const callback = (step: string, id?: string) => `${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/${step}${id ? `/${id}` : ''}`;
-  const xml = () => new twilio.twiml.VoiceResponse();
+  const xml = () => new VoiceResponse();
   const hangup = (message?: string) => { const r = xml(); if (message) r.say(message); r.hangup(); return r.toString(); };
   const voicemail = (call: ForwardingCall, afterLiveScreening = false) => {
     const r = xml();
@@ -31,40 +28,29 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       r.stop().stream({ name: 'shield-live' });
       r.say('Sorry, Shield couldn\'t put your call through right now. Please leave a message after the tone, and press pound when you\'re finished.');
     } else r.say('You have reached Shield voicemail. Please leave a message after the tone. Press pound when finished.');
-    r.record({ maxLength: 60, timeout: kind === 'telnyx' ? 0 : 5, finishOnKey: '#', playBeep: true,
-      ...(kind === 'telnyx' ? { channels: 'single', format: 'mp3' } : { trim: 'trim-silence' as const }), method: 'POST',
+    r.record({ maxLength: 60, timeout: 0, finishOnKey: '#', playBeep: true, channels: 'single', format: 'mp3', method: 'POST',
       action: callback('recorded', call.id), recordingStatusCallback: callback('recording', call.id), recordingStatusCallbackMethod: 'POST' });
     r.hangup(); return r.toString();
-  };
-  const waiting = (seconds: number, announce = false) => {
-    const r = xml(); if (announce) r.say('One moment while Shield checks your introduction.');
-    r.pause({ length: seconds }); r.redirect({ method: 'POST' }, callback('result')); return r.toString();
   };
   await app.register(async voice => {
     voice.addHook('preValidation', async (request, reply) => {
       const body = request.body as Record<string, string> | undefined;
       const { secret, id } = request.params as { secret: string; id?: string };
       if (id && !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)) return reply.code(403).type('text/xml').send(hangup());
-      const signature = request.headers['x-twilio-signature'];
       const validBody = body && typeof body === 'object' && !Array.isArray(body) && Object.values(body).every(v => typeof v === 'string');
       const valid = /^[a-f0-9]{64}$/.test(secret ?? '') && secureEqual(secret, config.TRIAL_PROXY_SECRET)
-        && validBody && validCallId(kind, body.CallSid ?? '')
-        && (kind === 'telnyx'
-          ? body.AccountSid === config.TELNYX_ACCOUNT_ID && (!body.ConnectionId || body.ConnectionId === config.TELNYX_APPLICATION_ID)
-            && verifyTelnyx(config.TELNYX_PUBLIC_KEY!, request.headers['telnyx-signature-ed25519'], request.headers['telnyx-timestamp'], request.rawFormBody, store.now())
-          : body.AccountSid === config.TWILIO_ACCOUNT_SID && typeof signature === 'string'
-            && twilio.validateRequest(config.TWILIO_AUTH_TOKEN, signature, `${config.PUBLIC_BASE_URL}${request.raw.url}`, body));
+        && validBody && validCallId(body.CallSid ?? '')
+        && body.AccountSid === config.TELNYX_ACCOUNT_ID && (!body.ConnectionId || body.ConnectionId === config.TELNYX_APPLICATION_ID)
+        && verifyTelnyx(config.TELNYX_PUBLIC_KEY, request.headers['telnyx-signature-ed25519'], request.headers['telnyx-timestamp'], request.rawFormBody, store.now());
       if (!valid) return reply.code(403).type('text/xml').send(hangup());
       reply.type('text/xml');
     });
     voice.post('/forwarding/:secret/inbound', async request => {
       const b = request.body as Record<string, string>;
       if (b.To !== number || !/^\+1\d{10}$/.test(b.From ?? '')) return hangup();
-      if (kind === 'telnyx') {
-        // TeXML does not promise Direction on its instruction-fetch webhook.
-        let remote; try { remote = await inboundLookup(b.CallSid!); } catch { return hangup(); }
-        if (remote.from !== b.From || remote.to !== number || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
-      } else if (b.Direction !== 'inbound') return hangup();
+      // TeXML does not promise Direction on its instruction-fetch webhook, so ask Telnyx.
+      let remote; try { remote = await inboundLookup(b.CallSid!); } catch { return hangup(); }
+      if (remote.from !== b.From || remote.to !== number || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
       if (b.From === number) {
         const probe = await probes.incoming(b.CallSid!);
         if (!probe) return hangup();
@@ -74,12 +60,9 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       }
       const call = await f.begin(b.CallSid!, b.From!);
       if (!call) return hangup('Shield is not ready to receive this call. Please try again later.');
+      // Only live screening makes a call eligible, so every other call is offered voicemail here.
       if (call.state === 'voicemail') return voicemail(call);
-      if (config.LIVE_SCREENING_ENABLED && kind === 'telnyx') return liveStreamXML(config, call, store.now());
-      const r = xml(); const g = r.gather({ input: ['speech'], language: 'en-US', timeout: 6, speechTimeout: '1',
-        ...(kind === 'telnyx' ? { transcriptionEngine: 'Telnyx' } : { actionOnEmptyResult: true }), action: callback('introduction'), method: 'POST' });
-      g.say('This person uses Shield to screen calls. Please say your name and why you are calling.');
-      r.redirect({ method: 'POST' }, callback('introduction')); return r.toString();
+      return liveStreamXML(config, call, store.now());
     });
     voice.post('/forwarding/:secret/probe/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
@@ -107,42 +90,28 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       }
       return xml().toString();
     });
-    voice.post('/forwarding/:secret/introduction', async request => {
-      const b = request.body as Record<string, string>, call = await f.find(b.CallSid!);
-      if (!call || call.state !== 'screening') return hangup();
-      if (!b.SpeechResult?.trim() || b.SpeechResult.length > 6000) {
-        const next = await f.transition(call.id, c => c.state !== 'screening' ? undefined : { state: 'voicemail', outcome: 'voicemail', reason: 'no_introduction',
-          events: [...c.events, { kind: 'voicemail_offered', at: store.now() }] });
-        return next ? voicemail(next) : hangup();
-      }
-      return await store.introduction(b.CallSid!, b.SpeechResult) === 'queued' ? waiting(1, true) : hangup();
-    });
     voice.post('/forwarding/:secret/result', async request => {
-      const original = await f.find((request.body as Record<string, string>).CallSid!); if (!original) return hangup();
-      const { call, pauseSeconds } = original.screeningModel === 'gpt-live-1' && original.state === 'offering'
-        ? { call: original, pauseSeconds: undefined } : await f.result(original.id); if (!call) return hangup();
-      if (pauseSeconds) return waiting(pauseSeconds);
+      const call = await f.find((request.body as Record<string, string>).CallSid!); if (!call) return hangup();
       if (call.state === 'voicemail') return voicemail(call);
       if (call.state !== 'offering') return hangup('This person cannot take this call. Please contact them through a number or service they already know.');
       const r = xml();
-      if (original.screeningModel === 'gpt-live-1') r.stop().stream({ name: 'shield-live' });
+      if (call.screeningModel === 'gpt-live-1') r.stop().stream({ name: 'shield-live' });
       const monitored = await monitor.begin(call.id);
       // The caller hears the disclosure before transcription starts; only the accepted conversation is checked.
       r.say(monitored ? 'Please hold while Shield offers your call. If it connects, an AI assistant will transcribe the call to help protect against fraud.'
         : 'Please hold while Shield offers your call.');
       if (monitored) r.start().transcription({ transcriptionEngine: config.MONITOR_TRANSCRIPTION_ENGINE, transcriptionTracks: 'both',
-        transcriptionCallback: callback('monitor', call.id), transcriptionCallbackMethod: 'POST' } as Parameters<ReturnType<typeof r.start>['transcription']>[0]);
+        transcriptionCallback: callback('monitor', call.id), transcriptionCallbackMethod: 'POST' });
       const dial = r.dial({ callerId: number, answerOnBridge: true, timeout: 20, timeLimit: 300,
         action: callback('dial-ended', call.id), method: 'POST' });
-      dial.number({ url: callback('whisper', call.id), method: 'POST', ...(kind === 'telnyx' ? {
-        statusCallback: callback('child', call.id), statusCallbackMethod: 'POST', statusCallbackEvent: ['initiated', 'ringing', 'answered']
-      } : {}) }, config.TRIAL_VERIFIED_CALLER);
+      dial.number({ url: callback('whisper', call.id), method: 'POST',
+        statusCallback: callback('child', call.id), statusCallbackMethod: 'POST', statusCallbackEvent: ['initiated', 'ringing', 'answered'] }, config.TRIAL_VERIFIED_CALLER);
       r.hangup(); return r.toString();
     });
     voice.post('/forwarding/:secret/child/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
-      if (kind === 'telnyx' && b.From === number && b.To === config.TRIAL_VERIFIED_CALLER
-        && validCallId(kind, b.ParentCallSid ?? '') && b.ParentCallSid !== b.CallSid
+      if (b.From === number && b.To === config.TRIAL_VERIFIED_CALLER
+        && validCallId(b.ParentCallSid ?? '') && b.ParentCallSid !== b.CallSid
         && ['initiated', 'ringing', 'in-progress'].includes(b.CallStatus ?? '')) {
         await f.bindChild(id, b.CallSid!, b.ParentCallSid!);
       }
@@ -152,17 +121,11 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
       let child; try { child = await childLookup(b.CallSid!); } catch { return hangup(); }
       if (child.from !== number || child.to !== config.TRIAL_VERIFIED_CALLER || child.status !== 'in-progress') return hangup();
-      let parent = 'parentCallSid' in child ? child.parentCallSid : undefined;
-      if (kind === 'telnyx') {
-        // Bind from an authenticated child-status event, never from an unverified URL parameter.
-        const bound = (await store.callRef(id).get()).data() as ForwardingCall | undefined;
-        if (bound?.provider !== 'telnyx' || bound.childSid !== b.CallSid) return hangup();
-        parent = bound.parentSid;
-      }
-      if (!parent) return hangup();
-      const call = await f.whisper(id, b.CallSid!, parent); if (!call) return hangup();
-      const r = xml(); const g = r.gather({ input: ['dtmf'], numDigits: 1, timeout: 7, ...(kind === 'twilio' ? { actionOnEmptyResult: true } : {}),
-        method: 'POST', action: callback('accept', id) });
+      // Bind from an authenticated child-status event, never from an unverified URL parameter.
+      const bound = (await store.callRef(id).get()).data() as ForwardingCall | undefined;
+      if (bound?.provider !== 'telnyx' || bound.childSid !== b.CallSid) return hangup();
+      const call = await f.whisper(id, b.CallSid!, bound.parentSid); if (!call) return hangup();
+      const r = xml(); const g = r.gather({ input: ['dtmf'], numDigits: 1, timeout: 7, method: 'POST', action: callback('accept', id) });
       g.say(`Shield screened a call about ${purposes[call.purpose as keyof typeof purposes] ?? 'a routine matter'}. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.`);
       r.hangup(); return r.toString();
     });
@@ -204,7 +167,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     });
     voice.post('/forwarding/:secret/recording/:id', async request => {
       const b = request.body as Record<string, string>, call = await f.find(b.CallSid!);
-      if (call?.id === (request.params as { id: string }).id && b.RecordingStatus === 'completed' && validRecordingId(kind, b.RecordingSid ?? '')) {
+      if (call?.id === (request.params as { id: string }).id && b.RecordingStatus === 'completed' && validRecordingId(b.RecordingSid ?? '')) {
         await f.recording(b.CallSid!, b.RecordingSid!, Number(b.RecordingDuration));
       }
       return xml().toString();

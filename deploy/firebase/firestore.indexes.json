@@ -35,11 +35,6 @@
   ],
   "fieldOverrides": [
     {
-      "collectionGroup": "screeningJobs",
-      "fieldPath": "transcriptEnc",
-      "indexes": []
-    },
-    {
       "collectionGroup": "callSessions",
       "fieldPath": "callerEnc",
       "indexes": []

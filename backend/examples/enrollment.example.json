@@ -1,8 +1,0 @@
-{
-  "authSubject": "SUPABASE_USER_UUID",
-  "name": "PARTICIPANT_NAME",
-  "phone": "PARTICIPANT_E164_NUMBER",
-  "shieldNumber": "OWNED_TWILIO_E164_NUMBER",
-  "carrierProfileId": "replace-with-tested-profile-id",
-  "phoneOwnershipEvidence": "Restricted evidence reference for an in-person or otherwise verified phone ownership check."
-}

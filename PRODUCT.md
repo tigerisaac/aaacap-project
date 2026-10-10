@@ -8,7 +8,7 @@ ios
 
 ## Stack
 
-Native SwiftUI companion; TypeScript backend on Firebase (Functions, Firestore, Auth, Hosting); Telnyx for telephony; OpenAI GPT Live for voice screening through a Cloud Run bridge. See docs/ARCHITECTURE.md. The local backend uses embedded PostgreSQL only in demo mode.
+Native SwiftUI companion; TypeScript backend on Firebase (Functions, Firestore, Auth, Hosting); Telnyx for telephony; OpenAI GPT Live for voice screening through a Cloud Run bridge. See docs/ARCHITECTURE.md.
 
 ## Users
 

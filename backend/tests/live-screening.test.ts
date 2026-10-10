@@ -3,7 +3,7 @@ import { ScreeningSession } from '../src/live/session.js';
 import { permittedDecision, supportedQuote, liveSessionConfig, LIVE_LIMITS } from '../src/live/policy.js';
 import { streamTicket, validStreamTicket, liveStreamXML } from '../src/cloud/forwarding-live.js';
 import type { CloudConfig } from '../src/cloud/config.js';
-import { reasonCopy } from '../src/screening.js';
+import { reasonCopy } from '../src/cloud/copy.js';
 
 const routine = { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true };
 const scam = { ...routine, action: 'block', reason: 'scam', evidence: 'send me your login code' };

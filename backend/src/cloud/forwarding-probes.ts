@@ -35,7 +35,7 @@ export class ForwardingProbes {
   }
   private requireReady(c: FirebaseFirestore.DocumentData | undefined, p: FirebaseFirestore.DocumentData | undefined) {
     if (!c?.provisioned || !c.dataPlanConfirmed || !c.restorationGuide?.length || p?.status !== 'setup'
-      || !p.phoneVerifiedAt || p.forwardingConsent !== forwardingConsent(this.store.config)
+      || !p.phoneVerifiedAt || p.forwardingConsent !== forwardingConsent
       || this.store.phone(p as Person) !== this.store.config.TRIAL_VERIFIED_CALLER) throw new HttpError(409, 'setup_not_ready');
   }
   async reserve(kind: ProbeKind) {
@@ -79,7 +79,7 @@ export class ForwardingProbes {
       const [control, person] = await tx.getAll(this.f.control, s.personRef(s.config.TRIAL_PARTICIPANT_ID));
       const c = control!.data(), p = c?.probe as SetupProbe | undefined;
       if (!p || p.id !== id || p.state !== 'waiting' || p.expiresAt <= s.now() || !c?.enabled || c.expiresAt <= s.now()
-        || person!.data()?.status !== 'setup' || person!.data()?.forwardingConsent !== forwardingConsent(s.config)) return;
+        || person!.data()?.status !== 'setup' || person!.data()?.forwardingConsent !== forwardingConsent) return;
       const patch = update(p); if (!patch) return;
       const next = { ...p, ...patch };
       tx.update(this.f.control, { probe: next, ...(patch.state === 'passed' ? { [p.kind === 'ring' ? 'ringTestAt' : 'forwardingTestAt']: s.now() } : {}) });

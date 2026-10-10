@@ -73,7 +73,7 @@ type MonitorDoc = { callId: string; participantId: string; transcriptEnc: string
 export class CallMonitor {
   constructor(readonly forwarding: ForwardingStore, readonly telnyx: Pick<TelnyxVoice, 'update'> = new TelnyxVoice(forwarding.store.config)) {}
   get store() { return this.forwarding.store; }
-  get available() { const c = this.store.config; return c.CALL_MONITORING_ENABLED && c.FORWARDING_PROVIDER === 'telnyx'; }
+  get available() { return this.store.config.CALL_MONITORING_ENABLED; }
   monitorRef(id: string) { return this.store.db.collection('monitoredCalls').doc(id); }
   jobRef(id: string) { return this.store.db.collection('monitorChecks').doc(id); }
 

@@ -1,6 +1,6 @@
 # Shield repository context
 
-Shield is Telnyx call control, GPT Live screening (a Cloud Run WebSocket bridge) and a Firebase backend (Functions, Firestore, Auth, Hosting), plus a SwiftUI iPhone app. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/STATUS.md](docs/STATUS.md) before changing anything. Everything in `docs/archive/` describes earlier designs (Twilio, Gemini, PostgreSQL, the fixed-question "questioning loop"). Don't follow those docs as current instructions or resume their missions.
+Shield is Telnyx call control, GPT Live screening (a Cloud Run WebSocket bridge) and a Firebase backend (Functions, Firestore, Auth, Hosting), plus a SwiftUI iPhone app. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/STATUS.md](docs/STATUS.md) before changing anything. Everything in `docs/archive/` describes earlier designs (Twilio, Gemini, PostgreSQL, the fixed-question "questioning loop"), all retired. Don't follow those docs as current instructions or resume their missions.
 
 ## Working in this repo
 
@@ -15,7 +15,7 @@ Shield is Telnyx call control, GPT Live screening (a Cloud Run WebSocket bridge)
 - `firebase deploy`
 - `enable-live-demo.mjs` and `enable-call-monitoring.mjs`
 - `manage-forwarding-test.mjs` `open` and `close`
-- `provision-firebase.mjs`, `finalize-firebase.mjs` and `activate-cloud-trial.mjs`
+- `finalize-firebase.mjs`
 
 Ask the owner before running any of them. Read-only checks are safe: `check-live-calls.mjs`, `check-monitoring.mjs`, `check-live-access.mjs` and the bridge's `/ready`.
 

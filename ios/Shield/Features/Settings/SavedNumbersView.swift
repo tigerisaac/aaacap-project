@@ -38,7 +38,6 @@ struct SavedNumbersView: View {
             } footer: {
                 Text(kind == .destinations
                      ? "Use a number from a card, statement, or official website."
-                     : model.isTrial ? "Saved for your reference. Trial calls are screened regardless of saved contacts."
                      : "Missed calls from these numbers go to voicemail without a second ring. Caller ID can be copied.")
             }
         }

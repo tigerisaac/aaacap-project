@@ -136,14 +136,4 @@ actor APIClient {
             _ = try? await session.data(for: request)
         }
     }
-
-    #if DEBUG
-    func connectDemo(caregiver: Bool) async throws {
-        guard let token = configuration.demoToken else { throw APIError.unconfigured }
-        let service: ServiceConfiguration = try await send("/public/config", authenticated: false)
-        guard service.mode == "demo" else { throw APIError.unconfigured }
-        sessionGeneration += 1
-        tokens = AuthTokens(accessToken: token + (caregiver ? ".caregiver" : ""), refreshToken: "", expiresIn: 3600)
-    }
-    #endif
 }
