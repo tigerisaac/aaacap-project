@@ -60,12 +60,11 @@ Read back from production on October 10:
    - a monitored call
 
    Call the Telnyx number directly, or set up forwarding again ([Operations](OPERATIONS.md#phone-forwarding-tello-pilot)).
-2. **Legal review of connected-call protection** before anyone besides the owner uses it. This covers all-party-consent rules and recent AI-transcription wiretap cases, and confirming the caller disclosure and privacy text. The server switch is already on; `node scripts/enable-call-monitoring.mjs --off` withdraws it.
-3. **Voice listening check.** Deployed October 10: 25 prerecorded Soniox Grace announcements with Hosting playback, a packaged Functions audio backup, and unchanged GPT Live `marin`. All primary and backup URLs verified. Audition the transition to `marin` over a real phone line, including a playback failure, then run a short listening session with seniors ([Architecture → Voice and speech](ARCHITECTURE.md#voice-and-speech)).
-4. **Real voices and more held-out cases.** Every result so far is synthetic. Add held-out text probes (cheap) rather than growing the main benchmark past 25 cases.
-5. **Decide whether the scam-guidance lookup earns its delay.** It's built and limited to official sites, but nobody has measured whether it changes decisions.
-6. **Senior rehearsal, then a 5–10 person pilot,** with consent, known windows and immediate rollback.
-7. **Housekeeping:**
+2. **Voice listening check.** Deployed October 10: 25 prerecorded Soniox Grace announcements with Hosting playback, a packaged Functions audio backup, and unchanged GPT Live `marin`. All primary and backup URLs verified. Audition the transition to `marin` over a real phone line, including a playback failure, then run a short listening session with seniors ([Architecture → Voice and speech](ARCHITECTURE.md#voice-and-speech)).
+3. **Real voices and more held-out cases.** Every result so far is synthetic. Add held-out text probes (cheap) rather than growing the main benchmark past 25 cases.
+4. **Decide whether the scam-guidance lookup earns its delay.** It's built and limited to official sites, but nobody has measured whether it changes decisions.
+5. **Senior rehearsal, then the ten-person pilot.** See the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md).
+6. **Housekeeping:**
    - release the Twilio number and close the Twilio account
    - delete the OpenRouter key
 

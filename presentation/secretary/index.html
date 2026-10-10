@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shield Secretary Scenes</title>
+<style>
+  :root {
+    --bg: #F7F7F2; --ink: #1C1E1D; --ink2: #5E6360;
+    --action: #224CC5; --action-dark: #1B3FA6; --action-tint: #E5EBFA;
+    --held: #B53742; --held-tint: #F7E3E5;
+    --conn: #076C5C; --conn-bright: #74DDC6; --conn-tint: #DDF1EB;
+    --violet: #7244B9; --line: #CFCABD;
+    --skin: #E3A880; --skin-2: #D4946B; --hair: #2C2633;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0F1110; }
+  body.render { background: var(--bg); }
+  #stage {
+    position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden;
+    background: var(--bg); color: var(--ink); transform-origin: 0 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  svg#art { position: absolute; inset: 0; }
+  .ic { width: 100%; height: 100%; display: block; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Title */
+  #title { position: absolute; left: 120px; top: 70px; }
+  #title .eyebrow { font-size: 26px; font-weight: 650; color: var(--action); height: 34px; }
+  #title .h { font-size: 60px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; margin-top: 4px; }
+
+  /* Caller */
+  #caller { position: absolute; left: 330px; top: 650px; width: 0; height: 0; }
+  #caller .av {
+    position: absolute; left: -90px; top: -90px; width: 180px; height: 180px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 84px; font-weight: 600; color: #fff;
+  }
+  #caller .av.placeholder { background: rgba(255,255,255,.6); border: 4px dashed #C9C4B6; color: #A8A397; }
+  #caller .av.placeholder .ph { width: 64px; height: 64px; }
+  #caller .av.mom { background: linear-gradient(160deg, #8F67D2, #6A3DB0); }
+  #caller .av.unknown { background: linear-gradient(160deg, #A0A8B8, #6E7688); }
+  #caller .dead-badge {
+    position: absolute; left: 34px; top: 30px; width: 58px; height: 58px; border-radius: 50%;
+    background: var(--held); color: #fff; padding: 13px; box-shadow: 0 0 0 6px var(--bg);
+  }
+  #caller .nm { position: absolute; left: -220px; width: 440px; top: 116px; text-align: center; font-size: 32px; font-weight: 650; }
+  #caller .sb {
+    position: absolute; left: -220px; width: 440px; top: 160px; display: flex; gap: 8px;
+    justify-content: center; align-items: center; font-size: 24px; color: var(--ink2);
+  }
+  #caller .sb .si { width: 26px; height: 26px; }
+  #caller .sb.teal { color: var(--conn); font-weight: 600; }
+  #caller .sb.red { color: var(--held); font-weight: 600; }
+
+  /* Phone */
+  #phone {
+    position: absolute; left: 1492px; top: 390px; width: 256px; height: 520px; border-radius: 48px;
+    background: #1B1D1C; padding: 9px; transform-origin: 50% 60%;
+    box-shadow: 0 30px 60px rgba(28,30,29,.16), inset 0 0 0 2px #333735;
+  }
+  #phone .screen { position: relative; width: 100%; height: 100%; border-radius: 39px; overflow: hidden; background: #000; }
+  .island { position: absolute; top: 11px; left: 50%; width: 78px; height: 23px; margin-left: -39px; border-radius: 12px; background: #000; }
+  .scr { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; color: #fff; text-align: center; }
+  .homebar { position: absolute; bottom: 8px; left: 50%; width: 92px; height: 5px; margin-left: -46px; border-radius: 3px; background: rgba(255,255,255,.6); }
+  #scr-idle { background: linear-gradient(165deg, #D9E2FA 0%, #EEF0F4 55%, #F5EFE4 100%); color: #20242E; }
+  #scr-idle .date { margin-top: 62px; font-size: 15px; font-weight: 600; opacity: .75; }
+  #scr-idle .clock { font-size: 72px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; margin-top: 2px; }
+  #scr-idle .homebar { background: rgba(0,0,0,.35); }
+  .dark { background: linear-gradient(170deg, #3A3550 0%, #17161D 70%); }
+  .shieldbg { background: linear-gradient(170deg, #26398A 0%, #101836 72%); }
+  .tealbg { background: linear-gradient(170deg, #0E4A40 0%, #0A1A17 72%); }
+  .redbg { background: linear-gradient(170deg, #5A1F27 0%, #1C0D10 72%); }
+  .ph-sub { font-size: 13px; color: rgba(255,255,255,.62); margin-top: 4px; }
+  .ph-av { width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center; font-size: 42px; font-weight: 600; background: linear-gradient(160deg, #8F67D2, #6A3DB0); margin-top: 16px; }
+  .ph-name { font-size: 26px; font-weight: 650; margin-top: 12px; line-height: 1.15; padding: 0 14px; }
+  .ph-status { font-size: 15px; font-weight: 600; margin-top: 6px; color: var(--conn-bright); }
+  .ph-btns { position: absolute; bottom: 52px; left: 0; right: 0; display: flex; justify-content: space-around; padding: 0 14px; }
+  .btn { width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; padding: 16px; color: #fff; }
+  .btn.decline { background: #FF3B30; }
+  .btn.decline svg { transform: rotate(135deg); }
+  .btn.accept { background: #34C759; }
+  .btn.end { position: absolute; bottom: 44px; left: 50%; margin-left: -31px; }
+  .ph-ctrls { position: absolute; bottom: 130px; display: flex; gap: 16px; }
+  .ph-ctrls span { width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.16); }
+  .ph-head { display: flex; align-items: center; gap: 7px; margin-top: 52px; font-size: 16px; font-weight: 650; }
+  .ph-head .hi { width: 22px; height: 22px; }
+  .ph-card { margin: 18px 14px 0; padding: 14px 12px 15px; border-radius: 18px; background: rgba(255,255,255,.1); width: calc(100% - 28px); }
+  .ph-card .k { font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.3; }
+  .ph-card .v { font-size: 23px; font-weight: 700; line-height: 1.15; margin: 6px 0 8px; }
+  .ph-card .v.sm { font-size: 17px; margin: 0 0 6px; }
+  .keys { position: absolute; bottom: 48px; display: flex; gap: 26px; }
+  .key { position: relative; width: 76px; height: 76px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .key b { font-size: 34px; font-weight: 500; line-height: 1; }
+  .key span { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-top: 3px; }
+  .key.k1 { background: var(--conn-bright); color: #06302A; }
+  .key.k2 { background: rgba(255,255,255,.16); }
+  .key i { position: absolute; inset: 0; border-radius: 50%; border: 3px solid #fff; opacity: 0; }
+  .online { display: flex; align-items: center; gap: 8px; margin-top: 18px; padding: 8px 12px; border-radius: 16px; background: rgba(116,221,198,.16); color: var(--conn-bright); font-size: 12.5px; font-weight: 650; }
+  .online .wv { width: 20px; height: 16px; }
+  .ended-ic { width: 70px; height: 70px; border-radius: 50%; background: #E2475A; padding: 16px; margin-top: 62px; color: #fff; }
+  #scr-ended .ph-name { color: #FFB3B4; }
+
+  /* Status chips */
+  .chip {
+    position: absolute; top: 950px; display: flex; align-items: center; gap: 12px; height: 56px;
+    padding: 0 26px 0 18px; border-radius: 28px; font-size: 24px; font-weight: 650; white-space: nowrap;
+    background: #fff; color: var(--ink2); box-shadow: 0 6px 18px rgba(28,30,29,.08), 0 0 0 1px rgba(28,30,29,.06);
+  }
+  .chip .ci { width: 28px; height: 28px; flex: none; }
+  .chip.blue { background: var(--action-tint); color: var(--action); box-shadow: none; }
+  .chip.teal { background: var(--conn-tint); color: var(--conn); box-shadow: none; }
+  .chip.red { background: var(--held-tint); color: var(--held); box-shadow: none; }
+  #chipS { left: 960px; }
+  #chipP { left: 1620px; }
+
+  /* Speech bubbles */
+  .bubble {
+    position: absolute; width: max-content; max-width: 600px; padding: 16px 26px 22px; border-radius: 28px;
+    font-size: 29px; line-height: 1.3; font-weight: 500; box-shadow: 0 14px 34px rgba(28,30,29,.12);
+  }
+  .bubble::after { content: ""; position: absolute; bottom: -11px; width: 28px; height: 28px; background: inherit; transform: rotate(45deg); border-radius: 5px; z-index: -1; }
+  .bubble .who { font-size: 17px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+  .bubble .txt .u { color: transparent; }
+  .bubble.shield { background: var(--action); color: #fff; }
+  .bubble.shield .who { color: #BFD0FF; }
+  .bubble.warn { background: var(--held); color: #fff; }
+  .bubble.warn .who { color: #FFD2D5; }
+  .bubble.caller { background: #fff; color: var(--ink); }
+  .bubble.caller .who { color: #7A7F7B; }
+  .bubble.you { background: var(--conn-tint); color: #0B3B33; }
+  .bubble.you .who { color: var(--conn); }
+  #bS { left: 960px; top: 392px; transform-origin: 50% 100%; }
+  #bS::after { left: 50%; margin-left: -14px; }
+  #bC { left: 90px; top: 532px; max-width: 520px; transform-origin: 240px 100%; }
+  #bC::after { left: 226px; }
+  #bY { right: 120px; top: 368px; max-width: 420px; transform-origin: 100% 100%; }
+  #bY::after { right: 114px; }
+
+  /* What the secretary has learned so far */
+  #notes {
+    position: absolute; left: 1206px; top: 428px; width: 276px; padding: 17px 18px 19px; border-radius: 22px;
+    background: #fff; box-shadow: 0 12px 30px rgba(28,30,29,.10), 0 0 0 1px rgba(28,30,29,.05); transform-origin: 0 50%;
+  }
+  #notes .nh { font-size: 14px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); }
+  #notes .row { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  #notes .st { flex: none; width: 38px; height: 38px; border-radius: 50%; padding: 8px; }
+  #notes .lb { font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8A8F8B; }
+  #notes .vl { font-size: 22px; font-weight: 650; line-height: 1.2; margin-top: 1px; }
+  #notes .row.empty .st { border: 2.5px dashed #CFCABD; }
+  #notes .row.empty .vl { color: #B3AEA2; }
+  #notes .row.asking .st { background: var(--action-tint); color: var(--action); }
+  #notes .row.asking .vl { color: var(--action); }
+  #notes .row.ok .st { background: #ECEAE3; color: var(--ink2); }
+  #notes .row.flag .st { background: var(--held-tint); color: var(--held); }
+  #notes .row.flag .vl { color: var(--held); }
+
+  #foot { position: absolute; left: 120px; bottom: 30px; font-size: 22px; color: var(--ink2); }
+
+  /* Presenter HUD (browser only) */
+  #hud {
+    position: fixed; right: 18px; bottom: 16px; padding: 8px 14px; border-radius: 10px; font: 600 13px -apple-system, system-ui, sans-serif;
+    color: #fff; background: rgba(0,0,0,.55); opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  #hud.show { opacity: 1; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="art" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+    <defs>
+      <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>
+    </defs>
+
+    <!-- Phone lines (drawn under the stations so their ends tuck in) -->
+    <g id="lines" fill="none" stroke-linecap="round">
+      <path id="A-base" d="M400 650 L735 650" stroke="var(--line)" stroke-width="5" stroke-dasharray="2 14"/>
+      <path id="B-base" d="M1185 650 L1500 650" stroke="var(--line)" stroke-width="5" stroke-dasharray="2 14"/>
+      <g id="A-col">
+        <path id="A-blue" d="M400 650 L735 650" stroke="var(--action)" stroke-width="7"/>
+        <path id="A-teal" d="M735 650 L400 650" stroke="var(--conn)" stroke-width="7"/>
+        <path id="A-red" d="M735 650 L400 650" stroke="var(--held)" stroke-width="7"/>
+      </g>
+      <g id="B-col">
+        <path id="B-blue" d="M1185 650 L1500 650" stroke="var(--action)" stroke-width="7"/>
+        <path id="B-teal" d="M1500 650 L1185 650" stroke="var(--conn)" stroke-width="7"/>
+      </g>
+      <path id="arc" d="M380 600 C560 230 1380 230 1510 560" stroke="var(--conn)" stroke-width="7"/>
+    </g>
+
+    <!-- Ringing pulses behind the caller -->
+    <g id="rings" fill="none" stroke-width="4">
+      <circle id="ring0" cx="330" cy="650" r="92"/>
+      <circle id="ring1" cx="330" cy="650" r="92"/>
+    </g>
+
+    <!-- Secretary station -->
+    <circle id="backdrop" cx="960" cy="650" r="240" fill="var(--action-tint)"/>
+    <g transform="translate(960 650)">
+      <g id="sec">
+        <ellipse cx="0" cy="203" rx="232" ry="12" fill="#1C1E1D" opacity=".06"/>
+
+        <!-- Torso -->
+        <rect x="-15" y="-98" width="30" height="34" rx="8" fill="var(--skin-2)"/>
+        <path d="M-100 80 L-100 -8 C-100 -44 -72 -66 -34 -70 L34 -70 C72 -66 100 -44 100 -8 L100 80 Z" fill="var(--action)"/>
+        <path d="M-24 -70 L24 -70 L0 -26 Z" fill="#fff"/>
+        <path d="M-24 -70 L0 -26 L-13 -14 L-42 -64 Z" fill="var(--action-dark)"/>
+        <path d="M24 -70 L0 -26 L13 -14 L42 -64 Z" fill="var(--action-dark)"/>
+        <g transform="translate(56 -28)">
+          <path d="M0 -13 L11 -9 L10 4 L0 13 L-10 4 L-11 -9 Z" fill="#fff"/>
+          <path d="M-5 0 L-1 4 L6 -4" stroke="var(--conn)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+
+        <!-- Head (pivots at the neck) -->
+        <g id="head">
+          <ellipse cx="0" cy="-149" rx="61" ry="60" fill="var(--hair)"/>
+          <circle cx="0" cy="-206" r="25" fill="var(--hair)"/>
+          <circle cx="-53" cy="-134" r="11" fill="var(--skin-2)"/>
+          <circle cx="53" cy="-134" r="11" fill="var(--skin-2)"/>
+          <circle cx="0" cy="-137" r="53" fill="var(--skin)"/>
+          <path d="M-54 -136 C-58 -190 58 -198 54 -136 C46 -162 18 -176 -8 -170 C-28 -166 -44 -152 -54 -136 Z" fill="var(--hair)"/>
+          <ellipse id="eyeL" cx="-19" cy="-131" rx="5.5" ry="7" fill="#2A2530"/>
+          <ellipse id="eyeR" cx="19" cy="-131" rx="5.5" ry="7" fill="#2A2530"/>
+          <path id="browL" d="M-29 -149 Q-19 -154 -9 -149" stroke="var(--hair)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path id="browR" d="M9 -149 Q19 -154 29 -149" stroke="var(--hair)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="-31" cy="-114" r="9" fill="#F07F6B" opacity=".28"/>
+          <circle cx="31" cy="-114" r="9" fill="#F07F6B" opacity=".28"/>
+          <path id="mSmile" d="M-13 -110 Q0 -99 13 -110" stroke="#8B3A2C" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path id="mFlat" d="M-10 -106 L10 -106" stroke="#8B3A2C" stroke-width="4" fill="none" stroke-linecap="round" opacity="0"/>
+          <ellipse id="mOpen" cx="0" cy="-106" rx="9" ry="3" fill="#7B2B22" opacity="0"/>
+
+          <!-- Headset: on the head at 1, resting on the desk at 0 -->
+          <g id="headset">
+            <path d="M-58 -134 C-58 -222 58 -222 58 -134" stroke="#23262E" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <rect x="-69" y="-155" width="21" height="40" rx="9" fill="#23262E"/>
+            <rect x="48" y="-155" width="21" height="40" rx="9" fill="#23262E"/>
+            <path d="M-60 -117 Q-54 -98 -26 -101" stroke="#23262E" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <circle cx="-22" cy="-101" r="6.5" fill="#23262E"/>
+            <circle id="led" cx="-58" cy="-135" r="4.5" fill="var(--conn-bright)" opacity="0"/>
+          </g>
+        </g>
+
+        <!-- Arms rotate about the shoulders -->
+        <g id="armL">
+          <line x1="-86" y1="-45" x2="-86" y2="58" stroke="#1E43AF" stroke-width="30" stroke-linecap="round"/>
+          <rect x="-101" y="63" width="30" height="7" rx="3" fill="#fff"/>
+          <circle class="fist" cx="-86" cy="84" r="15" fill="var(--skin)"/>
+          <g class="palm" opacity="0" stroke="var(--skin)" stroke-linecap="round">
+            <ellipse cx="-86" cy="86" rx="16" ry="17" fill="var(--skin)" stroke="none"/>
+            <line x1="-97" y1="92" x2="-97" y2="110" stroke-width="8"/>
+            <line x1="-90" y1="94" x2="-90" y2="116" stroke-width="8"/>
+            <line x1="-82" y1="94" x2="-82" y2="116" stroke-width="8"/>
+            <line x1="-75" y1="92" x2="-75" y2="109" stroke-width="8"/>
+            <line x1="-101" y1="80" x2="-110" y2="92" stroke-width="8"/>
+          </g>
+        </g>
+        <g id="armR">
+          <line x1="86" y1="-45" x2="86" y2="58" stroke="#1E43AF" stroke-width="30" stroke-linecap="round"/>
+          <rect x="71" y="63" width="30" height="7" rx="3" fill="#fff"/>
+          <circle class="fist" cx="86" cy="84" r="15" fill="var(--skin)"/>
+          <g class="palm" opacity="0" stroke="var(--skin)" stroke-linecap="round">
+            <ellipse cx="86" cy="86" rx="16" ry="17" fill="var(--skin)" stroke="none"/>
+            <line x1="97" y1="92" x2="97" y2="110" stroke-width="8"/>
+            <line x1="90" y1="94" x2="90" y2="116" stroke-width="8"/>
+            <line x1="82" y1="94" x2="82" y2="116" stroke-width="8"/>
+            <line x1="75" y1="92" x2="75" y2="109" stroke-width="8"/>
+            <line x1="101" y1="80" x2="110" y2="92" stroke-width="8"/>
+          </g>
+        </g>
+
+        <!-- Desk -->
+        <rect x="-205" y="78" width="410" height="117" rx="14" fill="#E9E3D5"/>
+        <rect x="-226" y="62" width="452" height="24" rx="12" fill="#D6CEBC"/>
+        <rect x="-74" y="112" width="148" height="46" rx="12" fill="var(--action)"/>
+        <text x="0" y="143" text-anchor="middle" font-size="21" font-weight="700" letter-spacing="3.5" fill="#fff">SHIELD</text>
+
+        <!-- Mug -->
+        <path d="M-190 32 C-205 32 -205 54 -190 54" stroke="#3FA897" stroke-width="6" fill="none"/>
+        <rect x="-190" y="22" width="36" height="41" rx="7" fill="#5CC4B0"/>
+        <g id="steam" stroke="#B9B3A5" stroke-width="3.5" fill="none" stroke-linecap="round">
+          <path d="M-179 12 C-185 4 -173 -4 -179 -12"/>
+          <path d="M-165 10 C-171 2 -159 -6 -165 -14"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- Moving call signals and the cut marker -->
+    <g id="pA"><circle r="17" filter="url(#glow)" opacity=".55"/><circle r="9" fill="#fff" stroke-width="5"/></g>
+    <g id="pB"><circle r="17" filter="url(#glow)" opacity=".55"/><circle r="9" fill="#fff" stroke-width="5"/></g>
+    <g id="pArc"><circle r="17" filter="url(#glow)" opacity=".55"/><circle r="9" fill="#fff" stroke-width="5"/></g>
+    <g id="xA">
+      <circle r="25" fill="var(--held)" stroke="var(--bg)" stroke-width="6"/>
+      <path d="M-8 -8 L8 8 M8 -8 L-8 8" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <div id="title"><div class="eyebrow"></div><div class="h"></div></div>
+
+  <div id="caller">
+    <div class="av"></div>
+    <div class="dead-badge"></div>
+    <div class="nm"></div>
+    <div class="sb"></div>
+  </div>
+
+  <div id="phone"><div class="screen">
+    <div class="scr" id="scr-idle">
+      <div class="date">Thursday, October 15</div>
+      <div class="clock">9:41</div>
+      <div class="homebar"></div>
+    </div>
+    <div class="scr dark" id="scr-incoming">
+      <div class="ph-sub" style="margin-top:60px">Incoming call</div>
+      <div class="ph-av">M</div>
+      <div class="ph-name">Mom</div>
+      <div class="ph-sub">mobile</div>
+      <div class="ph-btns"><div class="btn decline" data-icon="phone"></div><div class="btn accept" id="acc" data-icon="phone"></div></div>
+      <div class="homebar"></div>
+    </div>
+    <div class="scr dark" id="scr-momOn">
+      <div class="ph-av" style="margin-top:78px">M</div>
+      <div class="ph-name">Mom</div>
+      <div class="ph-status">Connected</div>
+      <div class="ph-ctrls"><span></span><span></span><span></span></div>
+      <div class="btn decline end" data-icon="phone"></div>
+      <div class="homebar"></div>
+    </div>
+    <div class="scr shieldbg" id="scr-offer">
+      <div class="ph-head"><span class="hi" data-icon="shield"></span>Shield</div>
+      <div class="ph-sub">Incoming call</div>
+      <div class="ph-card">
+        <div class="k">Shield screened a call about</div>
+        <div class="v">Appointment reminder</div>
+        <div class="k">This does not verify who is calling.</div>
+      </div>
+      <div class="keys">
+        <div class="key k1" id="key1"><b>1</b><span>Connect</span><i id="tap"></i></div>
+        <div class="key k2"><b>2</b><span>Voicemail</span></div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+    <div class="scr tealbg" id="scr-shieldOn">
+      <div class="ph-head"><span class="hi" data-icon="shield"></span>Screened by Shield</div>
+      <div class="ph-name" style="margin-top:34px">Appointment reminder</div>
+      <div class="ph-status">Connected</div>
+      <div class="online" id="online"><svg class="wv" viewBox="0 0 20 16"></svg>Shield is on the line</div>
+      <div class="ph-ctrls"><span></span><span></span><span></span></div>
+      <div class="btn decline end" data-icon="phone"></div>
+      <div class="homebar"></div>
+    </div>
+    <div class="scr redbg" id="scr-ended">
+      <div class="ended-ic" data-icon="hand"></div>
+      <div class="ph-name">Call ended</div>
+      <div class="ph-card">
+        <div class="v sm">Shield ended this call.</div>
+        <div class="k">The caller asked for a code or password. Call back on a number you trust.</div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+    <div class="island"></div>
+  </div></div>
+
+  <div id="notes">
+    <div class="nh">What the caller says</div>
+    <div class="row" id="row-who"><span class="st"></span><div><div class="lb">Who</div><div class="vl"></div></div></div>
+    <div class="row" id="row-why"><span class="st"></span><div><div class="lb">Why</div><div class="vl"></div></div></div>
+  </div>
+
+  <div class="chip" id="chipS"><span class="ci"></span><span class="ct"></span></div>
+  <div class="chip" id="chipP"><span class="ci"></span><span class="ct"></span></div>
+
+  <div class="bubble" id="bC"><div class="who"></div><div class="txt"></div></div>
+  <div class="bubble" id="bY"><div class="who"></div><div class="txt"></div></div>
+  <div class="bubble" id="bS"><div class="who"></div><div class="txt"></div></div>
+
+  <div id="foot">Optional. Callers are told the call will be transcribed.</div>
+</div>
+<div id="hud"></div>
+
+<script>
+/* ---------- Icons ---------- */
+const ICONS = {
+  shield: '<path d="M12 3l7 2.6v5.6c0 4.4-3 8-7 9.8-4-1.8-7-5.4-7-9.8V5.6L12 3z"/><path d="M8.9 12.1l2.2 2.2 4.2-4.5"/>',
+  person: '<circle cx="12" cy="8" r="3.8"/><path d="M4.8 20.2c.9-3.7 3.7-5.8 7.2-5.8s6.3 2.1 7.2 5.8"/>',
+  headphones: '<path d="M4 15.5V12a8 8 0 0 1 16 0v3.5"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/>',
+  'headphones-slash': '<path d="M4 15.5V12a8 8 0 0 1 16 0v3.5"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/><path d="M3 3l18 18"/>',
+  'bell-slash': '<path d="M18 16H6l1.6-2.2V11a4.4 4.4 0 0 1 8.8 0v2.8z"/><path d="M10.2 19.2a2 2 0 0 0 3.6 0"/><path d="M3.5 3.5l17 17"/>',
+  phone: '<path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.4a10.6 10.6 0 0 0 6.4 6.4l1.4-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.6 16.6 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  arrow: '<path d="M4.5 12h14"/><path d="M13 6l6 6-6 6"/>',
+  hand: '<path d="M8 13V6.6a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.6V5a1.5 1.5 0 0 1 3 0v6.6"/><path d="M14 11.6V6.6a1.5 1.5 0 0 1 3 0V14c0 4-2.6 7-6.2 7-2.4 0-4-1.1-5.3-3.2L4 15c-.7-1.2.8-2.6 1.9-1.6L8 15.5"/>',
+  lock: '<rect x="5" y="11" width="14" height="9.5" rx="2.2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/>',
+  x: '<path d="M7 7l10 10M17 7L7 17"/>',
+  question: '<path d="M8.6 8.6a3.5 3.5 0 0 1 6.8 1.1c0 2.4-3.4 2.9-3.4 5"/><path d="M12 18.6h.01"/>',
+  bang: '<path d="M12 5.5v8.5"/><path d="M12 18.6h.01"/>',
+  ask: '<path d="M4.5 6.5h15v9.5h-8l-4.5 3.5V16H4.5z"/><path d="M10.4 9.4a1.7 1.7 0 0 1 3.3.5c0 1.2-1.7 1.4-1.7 2.4"/><path d="M12 14h.01"/>',
+  wave: '',
+};
+const icon = name => `<svg class="ic" viewBox="0 0 24 24">${ICONS[name] || ''}</svg>`;
+document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
+document.querySelector('#caller .dead-badge').innerHTML = icon('x');
+
+/* ---------- Timeline engine ---------- */
+const EASE = {
+  lin: p => p,
+  in: p => p * p * p,
+  out: p => 1 - Math.pow(1 - p, 3),
+  out4: p => 1 - Math.pow(1 - p, 4),
+  inout: p => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+  back: p => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); },
+};
+
+const BASE = {
+  'title.op': 0, 'title.y': 0, 'title.eyebrow': '', 'title.text': '',
+  'backdrop.op': 0, 'backdrop.s': 0.92, 'sec.op': 0, 'sec.y': 30,
+  headset: 1, led: 0, ledPulse: 0, look: 0, nod: 0, shake: 0, talk: 0, stern: 0,
+  'armL.a': 8, 'armR.a': -8, palmL: 0, palmR: 0, wave: 0,
+  'caller.op': 0, 'caller.s': 0.8, 'caller.kind': 'placeholder', 'caller.name': 'Any caller',
+  'caller.sub': '', 'caller.subIcon': '', 'caller.subTone': '', 'caller.dead': 0, ring: 0,
+  'phone.op': 0, 'phone.y': 24, wob: 0, acc: 0, key1: 0, tap: 0, onLine: 0,
+  'scr.idle': 1, 'scr.incoming': 0, 'scr.momOn': 0, 'scr.offer': 0, 'scr.shieldOn': 0, 'scr.ended': 0,
+  'A.base.op': 0, 'B.base.op': 0, 'A.op': 1, 'B.op': 1,
+  'A.blue': 0, 'A.teal': 0, 'A.red': 0, 'A.brk': 0, 'B.blue': 0, 'B.teal': 0, 'arc.d': 0, 'arc.op': 1,
+  pA: 0, 'pA.op': 0, 'pA.c': 'blue', pB: 0, 'pB.op': 0, 'pB.c': 'blue', pArc: 0, 'pArc.op': 0, 'pArc.c': 'teal', xA: 0,
+  'foot.op': 0,
+  'notes.op': 0, 'notes.s': 0.92,
+  'who.state': 'empty', 'who.val': '', 'who.pop': 1, 'why.state': 'empty', 'why.val': '', 'why.pop': 1,
+};
+for (const c of ['chipS', 'chipP']) Object.assign(BASE, { [`${c}.op`]: 0, [`${c}.s`]: 1, [`${c}.text`]: '', [`${c}.tone`]: '', [`${c}.icon`]: '' });
+for (const b of ['bS', 'bC', 'bY']) Object.assign(BASE, { [`${b}.op`]: 0, [`${b}.s`]: 1, [`${b}.text`]: '', [`${b}.tone`]: 'caller', [`${b}.who`]: '', [`${b}.type`]: 1, [`${b}.dim`]: 0, [`${b}.hl`]: 0, [`${b}.hlr`]: null });
+
+const SCENES = [];
+function scene(id, label, build) {
+  const tw = [];
+  const a = {
+    to(key, val, at, dur = 0.5, ease = 'out') { tw.push({ key, val, at, dur, ease }); },
+    set(key, val, at) { tw.push({ key, val, at, dur: 0, set: true }); },
+  };
+  build(a);
+  tw.forEach((x, i) => { x.i = i; });
+  tw.sort((p, q) => p.at - q.at || p.i - q.i);
+  const end = Math.max(...tw.map(x => x.at + x.dur));
+  SCENES.push({ id, label, tw, dur: Math.round((end + 0.8) * 30) / 30 });
+}
+function apply(s, sc, t) {
+  for (const x of sc.tw) {
+    if (t < x.at) break;
+    if (x.set || x.dur === 0) { s[x.key] = x.val; continue; }
+    const from = s[x.key];
+    const p = Math.min(1, (t - x.at) / x.dur);
+    s[x.key] = from + (x.val - from) * EASE[x.ease](p);
+  }
+}
+
+/* Scene helpers */
+function titleSwap(a, at, eyebrow, text) {
+  a.to('title.op', 0, at, 0.22, 'in'); a.to('title.y', -12, at, 0.22, 'in');
+  const m = at + 0.23;
+  a.set('title.eyebrow', eyebrow, m); a.set('title.text', text, m); a.set('title.y', 14, m);
+  a.to('title.op', 1, m + 0.02, 0.45, 'out'); a.to('title.y', 0, m + 0.02, 0.6, 'out4');
+}
+function chip(a, c, at, text, tone, ic) {
+  a.to(`${c}.op`, 0, at, 0.16, 'in');
+  const m = at + 0.17;
+  a.set(`${c}.text`, text, m); a.set(`${c}.tone`, tone, m); a.set(`${c}.icon`, ic, m); a.set(`${c}.s`, 0.8, m);
+  a.to(`${c}.op`, 1, m, 0.25, 'out'); a.to(`${c}.s`, 1, m, 0.5, 'back');
+}
+function chipHide(a, c, at) { a.to(`${c}.op`, 0, at, 0.25, 'in'); }
+function callerSwap(a, at, cfg) {
+  a.to('caller.op', 0, at, 0.22, 'in'); a.to('caller.s', 0.6, at, 0.22, 'in');
+  const m = at + 0.24;
+  a.set('caller.kind', cfg.kind, m); a.set('caller.name', cfg.name, m); a.set('caller.sub', cfg.sub, m);
+  a.set('caller.subIcon', cfg.subIcon || '', m); a.set('caller.subTone', cfg.subTone || '', m); a.set('caller.dead', 0, m);
+  a.to('caller.op', 1, m + 0.05, 0.3); a.to('caller.s', 1, m + 0.05, 0.6, 'back');
+}
+function callerEnded(a, at) {
+  a.to('caller.dead', 1, at, 0.5);
+  a.set('caller.sub', 'Call ended', at); a.set('caller.subTone', 'red', at); a.set('caller.subIcon', 'x', at);
+}
+function say(a, b, at, text, o) {
+  for (const [k, v] of [['text', text], ['tone', o.tone], ['who', o.who], ['type', 0], ['dim', 0], ['hl', 0], ['hlr', o.hl || null], ['s', 0.9]]) a.set(`${b}.${k}`, v, at);
+  a.to(`${b}.op`, 1, at, 0.25, 'out'); a.to(`${b}.s`, 1, at, 0.5, 'back');
+  a.to(`${b}.type`, 1, at + 0.12, o.dur, 'lin');
+  if (o.talk) { a.to('talk', 1, at + 0.12, 0.12); a.to('talk', 0, at + 0.12 + o.dur, 0.15); }
+}
+function unsay(a, b, at) { a.to(`${b}.op`, 0, at, 0.2, 'in'); }
+/* One conversational turn: the other speaker's bubble dims, this speaker's old bubble is replaced */
+function turn(a, b, at, text, o) {
+  const other = b === 'bS' ? 'bC' : 'bS';
+  a.to(`${other}.dim`, 1, at, 0.3);
+  unsay(a, b, at);
+  say(a, b, at + 0.25, text, o);
+}
+function note(a, row, at, state, val = '') {
+  a.set(`${row}.state`, state, at); a.set(`${row}.val`, val, at);
+  a.set(`${row}.pop`, 0, at); a.to(`${row}.pop`, 1, at, 0.5, 'back');
+}
+function notesShow(a, at) {
+  note(a, 'who', at, 'empty'); note(a, 'why', at, 'empty');
+  a.set('notes.s', 0.92, at); a.to('notes.op', 1, at, 0.3); a.to('notes.s', 1, at, 0.5, 'back');
+}
+function screen(a, at, from, to) { a.to(`scr.${from}`, 0, at, 0.3); a.to(`scr.${to}`, 1, at, 0.3); }
+function signal(a, p, line, at, dur, color) {
+  a.set(p, 0, at); a.set(`${p}.c`, color, at);
+  a.to(line, 1, at, dur, 'inout'); a.to(`${p}.op`, 1, at, 0.1); a.to(p, 1, at, dur, 'inout'); a.to(`${p}.op`, 0, at + dur, 0.2);
+}
+const span = (text, phrase) => { const i = text.indexOf(phrase); return [i, i + phrase.length]; };
+
+/* ---------- Scenes ---------- */
+const GREETING = "I'm Shield, an AI call assistant. Who's calling, and what is the call about?";
+
+scene('meet-your-secretary', 'Meet your secretary', a => {
+  titleSwap(a, 0.15, 'Shield', 'A secretary for your phone calls');
+  a.to('backdrop.op', 1, 0.5, 0.6); a.to('backdrop.s', 1, 0.5, 0.9, 'out4');
+  a.to('sec.op', 1, 0.75, 0.5); a.to('sec.y', 0, 0.75, 0.8, 'out4');
+  a.to('caller.op', 1, 1.25, 0.4); a.to('caller.s', 1, 1.25, 0.6, 'back');
+  a.to('phone.op', 1, 1.45, 0.4); a.to('phone.y', 0, 1.45, 0.7, 'out4');
+  a.to('A.base.op', 1, 1.9, 0.5); a.to('B.base.op', 1, 2.05, 0.5);
+  chip(a, 'chipS', 2.2, 'Shield, your secretary', 'blue', 'shield');
+  chip(a, 'chipP', 2.35, 'You', '', 'person');
+  a.to('armR.a', -150, 2.7, 0.5, 'out'); a.to('palmR', 1, 2.8, 0.15);
+  a.to('wave', 1, 2.95, 0.25); a.to('wave', 0, 4.1, 0.25);
+  a.to('armR.a', -8, 4.35, 0.55, 'inout'); a.to('palmR', 0, 4.65, 0.15);
+});
+
+scene('contacts-ring-through', 'Contacts ring straight through', a => {
+  titleSwap(a, 0, 'Trusted contacts', 'Contacts ring straight through');
+  callerSwap(a, 0.25, { kind: 'mom', name: 'Mom', sub: 'In your contacts', subIcon: 'check', subTone: 'teal' });
+  a.to('ring', 1, 1.0, 0.3);
+  a.to('look', -1, 0.9, 0.3);
+  a.to('headset', 0, 1.25, 0.85, 'inout');
+  chip(a, 'chipS', 1.8, 'Not listening', '', 'headphones-slash');
+  a.to('A.base.op', 0.3, 1.8, 0.4); a.to('B.base.op', 0.3, 1.8, 0.4);
+  signal(a, 'pArc', 'arc.d', 2.15, 1.3, 'teal');
+  a.to('look', 1, 2.6, 0.5, 'inout');
+  screen(a, 3.4, 'idle', 'incoming');
+  a.to('wob', 1, 3.45, 0.1); a.to('wob', 0, 4.9, 0.15);
+  chip(a, 'chipP', 3.5, 'Ringing', 'teal', 'phone');
+  a.to('acc', 1, 4.95, 0.1); a.to('acc', 0, 5.1, 0.15);
+  a.to('ring', 0, 5.0, 0.3);
+  screen(a, 5.1, 'incoming', 'momOn');
+  chip(a, 'chipP', 5.2, 'Connected', 'teal', 'check');
+  a.to('look', 0, 5.6, 0.4);
+});
+
+scene('unknown-callers', 'Unknown callers get questioned', a => {
+  titleSwap(a, 0, 'Unknown callers', 'Shield questions them first');
+  chipHide(a, 'chipP', 0.1); chipHide(a, 'chipS', 0.1);
+  screen(a, 0.2, 'momOn', 'idle');
+  a.to('arc.op', 0, 0.1, 0.4); a.set('arc.d', 0, 0.55); a.set('arc.op', 1, 0.55);
+  a.to('A.base.op', 1, 0.4, 0.4); a.to('B.base.op', 1, 0.4, 0.4);
+  callerSwap(a, 0.15, { kind: 'unknown', name: 'Unknown number', sub: '(212) 555-0142' });
+  a.to('ring', 1, 1.0, 0.3); a.to('ring', 0, 2.3, 0.3);
+  a.to('headset', 1, 0.8, 0.85, 'inout'); a.to('led', 1, 1.65, 0.3);
+  a.to('look', -1, 1.2, 0.4);
+  signal(a, 'pA', 'A.blue', 1.45, 0.7, 'blue');
+  chip(a, 'chipS', 1.75, 'Screening the call', 'blue', 'headphones');
+  chip(a, 'chipP', 2.0, 'Your phone stays quiet', '', 'bell-slash');
+  notesShow(a, 2.2);
+  say(a, 'bS', 2.4, GREETING, { tone: 'shield', who: 'Shield', dur: 2.3, talk: true });
+  turn(a, 'bC', 5.0, "Hi, I'm calling from the tax office.", { tone: 'caller', who: 'Caller', dur: 1.1 });
+  note(a, 'who', 6.5, 'ok', 'Tax office');
+  note(a, 'why', 7.0, 'asking');
+  chip(a, 'chipS', 7.0, 'Asking a follow-up', 'blue', 'ask');
+  turn(a, 'bS', 7.1, 'What is the call about?', { tone: 'shield', who: 'Shield · follow-up', dur: 0.8, talk: true });
+});
+
+scene('scam-ends', 'Scams: Shield ends the call', a => {
+  titleSwap(a, 0, 'If it sounds like a scam', 'Shield ends the call');
+  const SCAM = "You owe back taxes. Pay today with gift cards, or you'll be arrested.";
+  turn(a, 'bC', 0.3, SCAM, { tone: 'caller', who: 'Caller', dur: 2.1, hl: span(SCAM, 'Pay today with gift cards') });
+  a.to('bC.hl', 1, 2.85, 0.35);
+  note(a, 'why', 3.0, 'flag', 'Gift card payment');
+  a.to('stern', 1, 3.2, 0.25); a.to('shake', 1, 3.25, 0.12); a.to('shake', 0, 3.95, 0.15);
+  a.to('armL.a', 140, 4.0, 0.4, 'out'); a.to('palmL', 1, 4.1, 0.15);
+  a.to('A.red', 1, 4.15, 0.45, 'inout');
+  a.to('A.brk', 1, 4.65, 0.35, 'out'); a.to('xA', 1, 4.65, 0.45, 'back');
+  callerEnded(a, 4.65);
+  a.to('bC.op', 0, 4.75, 0.3); a.to('bS.op', 0, 4.75, 0.3); a.to('led', 0, 4.75, 0.3);
+  chip(a, 'chipS', 4.8, 'Held · call ended', 'red', 'hand');
+  chip(a, 'chipP', 5.1, 'Your phone never rang', 'teal', 'check');
+  a.to('armL.a', 8, 5.5, 0.55, 'inout'); a.to('palmL', 0, 5.8, 0.15);
+  a.to('stern', 0, 5.6, 0.3); a.to('look', 0, 5.6, 0.4);
+});
+
+scene('routine-offered', 'Routine calls: you decide', a => {
+  titleSwap(a, 0, 'If it sounds routine', 'Shield offers you the call');
+  chipHide(a, 'chipS', 0.1); chipHide(a, 'chipP', 0.1);
+  a.to('xA', 0, 0.1, 0.2, 'in'); a.to('A.op', 0, 0.1, 0.3); a.to('notes.op', 0, 0.1, 0.25);
+  for (const k of ['A.blue', 'A.red', 'A.brk']) a.set(k, 0, 0.45);
+  a.set('A.op', 1, 0.45);
+  callerSwap(a, 0.15, { kind: 'unknown', name: 'Unknown number', sub: '(312) 555-0187' });
+  a.to('ring', 1, 0.95, 0.3); a.to('ring', 0, 2.0, 0.3);
+  a.to('led', 1, 1.0, 0.3); a.to('look', -1, 1.0, 0.4);
+  signal(a, 'pA', 'A.blue', 1.15, 0.6, 'blue');
+  chip(a, 'chipS', 1.35, 'Screening the call', 'blue', 'headphones');
+  chip(a, 'chipP', 1.55, 'Your phone stays quiet', '', 'bell-slash');
+  notesShow(a, 1.6);
+  say(a, 'bS', 1.8, GREETING, { tone: 'shield', who: 'Shield', dur: 1.0, talk: true });
+  turn(a, 'bC', 3.0, "Hi, I'm calling to confirm your appointment tomorrow.", { tone: 'caller', who: 'Caller', dur: 1.4 });
+  note(a, 'why', 4.8, 'ok', 'Appointment');
+  note(a, 'who', 5.2, 'asking');
+  chip(a, 'chipS', 5.2, 'Asking a follow-up', 'blue', 'ask');
+  turn(a, 'bS', 5.25, "Thanks. Who's calling, please?", { tone: 'shield', who: 'Shield · follow-up', dur: 0.8, talk: true });
+  turn(a, 'bC', 6.5, "This is Maria from Dr. Lee's office.", { tone: 'caller', who: 'Caller', dur: 1.0 });
+  note(a, 'who', 7.9, 'ok', "Dr. Lee's office");
+  a.to('nod', 1, 8.1, 0.1); a.to('nod', 0, 8.8, 0.2);
+  turn(a, 'bS', 8.2, 'Please hold while Shield offers your call.', { tone: 'shield', who: 'Shield', dur: 1.1, talk: true });
+  a.to('look', 1, 8.9, 0.4);
+  a.to('armR.a', -80, 8.9, 0.45, 'out'); a.to('palmR', 1, 9.0, 0.15);
+  chip(a, 'chipS', 9.1, 'Offering it to you', 'blue', 'arrow');
+  signal(a, 'pB', 'B.blue', 9.2, 0.7, 'blue');
+  screen(a, 9.9, 'idle', 'offer');
+  a.to('wob', 1, 9.95, 0.1); a.to('wob', 0, 11.3, 0.15);
+  chip(a, 'chipP', 10.0, 'You decide', 'blue', 'phone');
+  a.to('armR.a', -8, 10.2, 0.55, 'inout'); a.to('palmR', 0, 10.5, 0.15);
+  a.to('key1', 1, 11.5, 0.1); a.to('key1', 0, 11.7, 0.2); a.to('tap', 1, 11.5, 0.55, 'out');
+  screen(a, 11.9, 'offer', 'shieldOn');
+  a.to('B.teal', 1, 11.95, 0.45, 'inout'); a.to('A.teal', 1, 12.3, 0.45, 'inout');
+  chip(a, 'chipP', 12.0, 'Connected', 'teal', 'check');
+  chip(a, 'chipS', 12.3, 'Call connected', 'teal', 'check');
+  a.to('bC.op', 0, 12.3, 0.3); a.to('bS.op', 0, 12.3, 0.3); a.to('notes.op', 0, 12.3, 0.3);
+  a.to('look', 0, 12.7, 0.4);
+});
+
+scene('stays-on-the-line', 'Shield stays on the line', a => {
+  titleSwap(a, 0, 'After you connect', 'Shield stays on the line');
+  a.to('foot.op', 1, 0.4, 0.5);
+  chip(a, 'chipS', 0.5, 'Listening for risky requests', 'teal', 'wave');
+  a.to('ledPulse', 1, 0.6, 0.3);
+  a.to('onLine', 1, 0.8, 0.4);
+  say(a, 'bC', 1.2, "Great, you're all set for 10 a.m. tomorrow.", { tone: 'caller', who: 'Caller', dur: 1.2 });
+  say(a, 'bY', 2.7, 'Perfect, thank you!', { tone: 'you', who: 'You', dur: 0.6 });
+  unsay(a, 'bC', 3.7);
+  a.to('bY.dim', 1, 3.8, 0.3);
+  const RISK = "One more thing. To confirm it's you, read me the 6-digit code we just texted.";
+  say(a, 'bC', 3.95, RISK, { tone: 'caller', who: 'Caller', dur: 2.4, hl: span(RISK, 'read me the 6-digit code') });
+  a.to('bC.hl', 1, 6.4, 0.3);
+  a.to('look', -1, 6.2, 0.3);
+  a.to('stern', 1, 6.55, 0.2); a.to('ledPulse', 0, 6.55, 0.2);
+  a.to('armL.a', 140, 6.6, 0.35, 'out'); a.to('palmL', 1, 6.7, 0.15);
+  chip(a, 'chipS', 6.6, 'Stepping in', 'red', 'hand');
+  a.to('A.red', 1, 6.85, 0.45, 'inout');
+  a.to('A.brk', 1, 7.3, 0.35, 'out'); a.to('xA', 1, 7.3, 0.45, 'back');
+  callerEnded(a, 7.3);
+  a.to('bC.op', 0, 7.35, 0.3); a.to('bY.op', 0, 7.35, 0.3);
+  say(a, 'bS', 7.25, 'This is Shield. I ended this call because the caller asked for a code or password.', { tone: 'warn', who: 'Shield', dur: 2.2, talk: true });
+  a.to('onLine', 0, 7.6, 0.3);
+  screen(a, 7.7, 'shieldOn', 'ended');
+  chip(a, 'chipS', 9.6, 'Stepped in · call ended', 'red', 'hand');
+  a.to('B.op', 0, 9.6, 0.5);
+  chip(a, 'chipP', 9.75, 'Code kept private', 'teal', 'lock');
+  a.to('armL.a', 8, 9.9, 0.55, 'inout'); a.to('palmL', 0, 10.2, 0.15);
+  a.to('stern', 0, 10.0, 0.3); a.to('look', 1, 10.1, 0.4);
+});
+
+/* Start state of each scene = end state of the one before */
+const START = [];
+{
+  const s = { ...BASE };
+  for (const sc of SCENES) { START.push({ ...s }); apply(s, sc, Infinity); }
+}
+function stateAt(k, t) { const s = { ...START[k] }; apply(s, SCENES[k], t); return s; }
+
+/* ---------- Rendering ---------- */
+const $ = sel => document.querySelector(sel);
+const el = {
+  title: $('#title'), eyebrow: $('#title .eyebrow'), h: $('#title .h'),
+  backdrop: $('#backdrop'), sec: $('#sec'), head: $('#head'), headset: $('#headset'), led: $('#led'),
+  eyeL: $('#eyeL'), eyeR: $('#eyeR'), browL: $('#browL'), browR: $('#browR'),
+  mSmile: $('#mSmile'), mFlat: $('#mFlat'), mOpen: $('#mOpen'),
+  armL: $('#armL'), armR: $('#armR'), steam: $('#steam'),
+  caller: $('#caller'), av: $('#caller .av'), dead: $('#caller .dead-badge'), nm: $('#caller .nm'), sb: $('#caller .sb'),
+  ring0: $('#ring0'), ring1: $('#ring1'),
+  phone: $('#phone'), acc: $('#acc'), key1: $('#key1'), tap: $('#tap'), online: $('#online'), onlineWave: $('#online .wv'),
+  A: ['A-blue', 'A-teal', 'A-red'].map(id => document.getElementById(id)),
+  Acol: $('#A-col'), Bcol: $('#B-col'), Abase: $('#A-base'), Bbase: $('#B-base'),
+  Bblue: $('#B-blue'), Bteal: $('#B-teal'), arc: $('#arc'),
+  pA: $('#pA'), pB: $('#pB'), pArc: $('#pArc'), xA: $('#xA'), foot: $('#foot'), notes: $('#notes'),
+};
+const SCREENS = ['idle', 'incoming', 'momOn', 'offer', 'shieldOn', 'ended'];
+const screenEl = Object.fromEntries(SCREENS.map(n => [n, document.getElementById(`scr-${n}`)]));
+const LEN = { A: el.A[0].getTotalLength(), B: el.Bblue.getTotalLength(), arc: el.arc.getTotalLength() };
+const COLORS = { blue: '#224CC5', teal: '#076C5C', red: '#B53742', violet: '#7244B9', grey: '#7A8292' };
+const cache = new Map();
+function once(key, value, fn) { if (cache.get(key) !== value) { cache.set(key, value); fn(value); } }
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+function blinkAmount(t) {
+  const ph = ((t % 4) + 4) % 4;
+  return Math.max(0, 1 - Math.abs(ph - 3.86) / 0.08);
+}
+function waveBars(t, n, w, h) {
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const bh = h * (0.3 + 0.7 * Math.abs(Math.sin(2 * Math.PI * 1.3 * t + i * 1.1)));
+    out += `<rect x="${i * (w / n) + 1}" y="${(h - bh) / 2}" width="${w / n - 2.2}" height="${bh}" rx="1.4" fill="currentColor"/>`;
+  }
+  return out;
+}
+function drawLine(path, len, d, brk) {
+  path.style.visibility = d <= 0.001 ? 'hidden' : 'visible';
+  if (d <= 0.001) return;
+  if (brk > 0 && d >= 0.999) {
+    const g = 64 * brk, half = (len - g) / 2;
+    path.setAttribute('stroke-dasharray', `${half} ${g} ${half} ${len}`);
+  } else {
+    path.setAttribute('stroke-dasharray', `${d * len} ${len + 1}`);
+  }
+}
+function placePacket(g, path, len, p, op, color) {
+  g.setAttribute('opacity', op);
+  if (op <= 0) return;
+  const pt = path.getPointAtLength(p * len);
+  g.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+  const c = COLORS[color];
+  g.children[0].setAttribute('fill', c);
+  g.children[1].setAttribute('stroke', c);
+}
+function drawTyped(node, text, frac, hlr, hl) {
+  const n = Math.round(text.length * frac);
+  const cuts = new Set([0, n, text.length]);
+  if (hlr) { cuts.add(hlr[0]); cuts.add(hlr[1]); }
+  const pts = [...cuts].sort((x, y) => x - y);
+  let html = '';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [p, q] = [pts[i], pts[i + 1]];
+    if (q <= p) continue;
+    const typed = p < n;
+    const inHl = hlr && p >= hlr[0] && q <= hlr[1] && hl > 0;
+    let style = '';
+    if (inHl) style = ` style="background:rgba(181,55,66,${0.14 * hl});box-shadow:inset 0 -3px 0 rgba(181,55,66,${hl});border-radius:4px"`;
+    html += `<span class="${typed ? 't' : 'u'}"${style}>${esc(text.slice(p, q))}</span>`;
+  }
+  node.innerHTML = html;
+}
+
+function draw(s, t) {
+  // Title
+  el.title.style.opacity = s['title.op'];
+  el.title.style.transform = `translateY(${s['title.y']}px)`;
+  once('eyebrow', s['title.eyebrow'], v => { el.eyebrow.textContent = v; });
+  once('title', s['title.text'], v => { el.h.textContent = v; });
+
+  // Secretary
+  el.backdrop.setAttribute('opacity', s['backdrop.op']);
+  el.backdrop.setAttribute('transform', `translate(960 650) scale(${s['backdrop.s']}) translate(-960 -650)`);
+  el.sec.setAttribute('opacity', s['sec.op']);
+  el.sec.setAttribute('transform', `translate(0 ${s['sec.y']})`);
+  const shake = s.shake * 7 * Math.sin(2 * Math.PI * 3.4 * t);
+  const nod = s.nod * 6 * (0.5 - 0.5 * Math.cos(2 * Math.PI * 2.6 * t));
+  el.head.setAttribute('transform', `translate(0 ${nod}) rotate(${shake} 0 -90)`);
+  const blink = blinkAmount(t);
+  for (const [eye, x] of [[el.eyeL, -19], [el.eyeR, 19]]) {
+    eye.setAttribute('cx', x + s.look * 3.4);
+    eye.setAttribute('ry', 7 - 6 * blink);
+  }
+  el.browL.setAttribute('transform', `rotate(${14 * s.stern} -19 -150) translate(0 ${3 * s.stern})`);
+  el.browR.setAttribute('transform', `rotate(${-14 * s.stern} 19 -150) translate(0 ${3 * s.stern})`);
+  const open = s.talk * (0.5 + 0.5 * Math.sin(2 * Math.PI * 5.2 * t));
+  el.mOpen.setAttribute('opacity', s.talk);
+  el.mOpen.setAttribute('ry', 2 + 6.5 * open);
+  el.mSmile.setAttribute('opacity', (1 - s.talk) * (1 - s.stern));
+  el.mFlat.setAttribute('opacity', (1 - s.talk) * s.stern);
+  const off = 1 - s.headset;
+  const lift = 40 * Math.sin(Math.PI * off);
+  el.headset.setAttribute('transform',
+    `translate(${168 * off} ${195 * off - lift}) translate(0 -160) rotate(${-12 * off}) scale(${1 - 0.28 * off}) translate(0 160)`);
+  const pulse = s.ledPulse > 0 ? 1 - s.ledPulse * 0.6 * (0.5 + 0.5 * Math.sin(2 * Math.PI * 1.4 * t)) : 1;
+  el.led.setAttribute('opacity', s.led * pulse);
+  el.armL.setAttribute('transform', `rotate(${s['armL.a']} -86 -45)`);
+  el.armR.setAttribute('transform', `rotate(${s['armR.a'] + s.wave * 16 * Math.sin(2 * Math.PI * 2.2 * t)} 86 -45)`);
+  for (const [arm, p] of [[el.armL, s.palmL], [el.armR, s.palmR]]) {
+    arm.querySelector('.palm').setAttribute('opacity', p);
+    arm.querySelector('.fist').setAttribute('opacity', 1 - p);
+  }
+  const sp = (t % 2) / 2;
+  el.steam.setAttribute('opacity', 0.55 + 0.35 * Math.sin(2 * Math.PI * sp));
+  el.steam.setAttribute('transform', `translate(0 ${-3 * Math.sin(2 * Math.PI * sp)})`);
+
+  // Lines
+  el.Abase.setAttribute('opacity', s['A.base.op']);
+  el.Bbase.setAttribute('opacity', s['B.base.op']);
+  el.Acol.setAttribute('opacity', s['A.op']);
+  el.Bcol.setAttribute('opacity', s['B.op']);
+  drawLine(el.A[0], LEN.A, s['A.blue'], s['A.brk']);
+  drawLine(el.A[1], LEN.A, s['A.teal'], s['A.brk']);
+  drawLine(el.A[2], LEN.A, s['A.red'], s['A.brk']);
+  drawLine(el.Bblue, LEN.B, s['B.blue'], 0);
+  drawLine(el.Bteal, LEN.B, s['B.teal'], 0);
+  drawLine(el.arc, LEN.arc, s['arc.d'], 0);
+  el.arc.setAttribute('opacity', s['arc.op']);
+  placePacket(el.pA, el.A[0], LEN.A, s.pA, s['pA.op'], s['pA.c']);
+  placePacket(el.pB, el.Bblue, LEN.B, s.pB, s['pB.op'], s['pB.c']);
+  placePacket(el.pArc, el.arc, LEN.arc, s.pArc, s['pArc.op'], s['pArc.c']);
+  el.xA.setAttribute('opacity', s.xA > 0.01 ? 1 : 0);
+  el.xA.setAttribute('transform', `translate(567 650) scale(${Math.max(0.001, s.xA)})`);
+
+  // Caller
+  el.caller.style.opacity = s['caller.op'];
+  el.caller.style.transform = `scale(${s['caller.s']})`;
+  once('caller.kind', s['caller.kind'], v => {
+    el.av.className = `av ${v}`;
+    el.av.innerHTML = v === 'placeholder' ? `<span class="ph">${icon('phone')}</span>` : v === 'mom' ? 'M' : '?';
+  });
+  once('caller.name', s['caller.name'], v => { el.nm.textContent = v; });
+  once('caller.sub', [s['caller.sub'], s['caller.subIcon'], s['caller.subTone']].join('|'), () => {
+    el.sb.className = `sb ${s['caller.subTone']}`;
+    el.sb.innerHTML = (s['caller.subIcon'] ? `<span class="si">${icon(s['caller.subIcon'])}</span>` : '') + esc(s['caller.sub']);
+  });
+  el.av.style.filter = `grayscale(${s['caller.dead']}) brightness(${1 + 0.32 * s['caller.dead']})`;
+  el.dead.style.opacity = s['caller.dead'];
+  el.dead.style.transform = `scale(${0.5 + 0.5 * s['caller.dead']})`;
+  const ringColor = COLORS[s['caller.kind'] === 'mom' ? 'violet' : 'blue'];
+  [el.ring0, el.ring1].forEach((r, i) => {
+    const ph = (t * 0.9 + i * 0.5) % 1;
+    r.setAttribute('r', 92 + 70 * ph);
+    r.setAttribute('stroke', ringColor);
+    r.setAttribute('opacity', s.ring * (1 - ph) * 0.5);
+  });
+
+  // Phone
+  el.phone.style.opacity = s['phone.op'];
+  el.phone.style.transform = `translateY(${s['phone.y']}px) rotate(${s.wob * 2.6 * Math.sin(2 * Math.PI * 11 * t)}deg)`;
+  for (const n of SCREENS) screenEl[n].style.opacity = s[`scr.${n}`];
+  el.acc.style.transform = `scale(${1 - 0.12 * s.acc})`;
+  el.acc.style.filter = `brightness(${1 + 0.25 * s.acc})`;
+  el.key1.style.transform = `scale(${1 - 0.1 * s.key1})`;
+  el.key1.style.filter = `brightness(${1 + 0.2 * s.key1})`;
+  el.tap.style.opacity = s.tap > 0 && s.tap < 1 ? (1 - s.tap) * 0.9 : 0;
+  el.tap.style.transform = `scale(${1 + 0.6 * s.tap})`;
+  el.online.style.opacity = s.onLine;
+  if (s.onLine > 0) el.onlineWave.innerHTML = waveBars(t, 5, 20, 16);
+
+  // Chips
+  for (const c of ['chipS', 'chipP']) {
+    const node = document.getElementById(c);
+    node.style.opacity = s[`${c}.op`];
+    node.style.transform = `translate(-50%, -50%) scale(${s[`${c}.s`]})`;
+    once(`${c}.tone`, s[`${c}.tone`], v => { node.className = `chip ${v}`; });
+    once(`${c}.text`, s[`${c}.text`], v => { node.querySelector('.ct').textContent = v; });
+    once(`${c}.icon`, s[`${c}.icon`], v => { node.querySelector('.ci').innerHTML = v === 'wave' ? '<svg class="ic" viewBox="0 0 24 24" style="stroke:none"></svg>' : icon(v); });
+    if (s[`${c}.icon`] === 'wave') node.querySelector('.ci svg').innerHTML = waveBars(t, 5, 24, 20).replace(/y="/g, 'transform="translate(0 2)" y="');
+  }
+
+  // Bubbles
+  const anchor = { bS: 'translate(-50%, -100%)', bC: 'translate(0, -100%)', bY: 'translate(0, -100%)' };
+  for (const b of ['bS', 'bC', 'bY']) {
+    const node = document.getElementById(b);
+    node.style.opacity = s[`${b}.op`] * (1 - 0.55 * s[`${b}.dim`]);
+    node.style.transform = `${anchor[b]} scale(${s[`${b}.s`]})`;
+    node.style.visibility = s[`${b}.op`] > 0.001 ? 'visible' : 'hidden';
+    once(`${b}.tone`, s[`${b}.tone`], v => { node.className = `bubble ${v}`; });
+    once(`${b}.who`, s[`${b}.who`], v => { node.querySelector('.who').textContent = v; });
+    once(`${b}.txt`, [s[`${b}.text`], s[`${b}.type`].toFixed(3), s[`${b}.hl`].toFixed(3)].join('|'), () => {
+      drawTyped(node.querySelector('.txt'), s[`${b}.text`], s[`${b}.type`], s[`${b}.hlr`], s[`${b}.hl`]);
+    });
+  }
+  el.foot.style.opacity = s['foot.op'];
+
+  // What the caller says
+  el.notes.style.opacity = s['notes.op'];
+  el.notes.style.transform = `scale(${s['notes.s']})`;
+  for (const r of ['who', 'why']) {
+    const row = document.getElementById(`row-${r}`);
+    const state = s[`${r}.state`];
+    once(`${r}.row`, `${state}|${s[`${r}.val`]}`, () => {
+      row.className = `row ${state}`;
+      row.querySelector('.st').innerHTML = { empty: '', asking: icon('question'), ok: icon('check'), flag: icon('bang') }[state];
+      row.querySelector('.vl').textContent = state === 'empty' ? 'Not said yet' : state === 'asking' ? 'Asking…' : `“${s[`${r}.val`]}”`;
+    });
+    const breathe = state === 'asking' ? 1 + 0.09 * Math.sin(2 * Math.PI * 1.5 * t) : 1;
+    row.querySelector('.st').style.transform = `scale(${(0.5 + 0.5 * s[`${r}.pop`]) * breathe})`;
+  }
+}
+
+/* ---------- Render hooks (used by render.mjs) ---------- */
+window.SCENE_INFO = SCENES.map(sc => ({ id: sc.id, label: sc.label, dur: sc.dur }));
+window.seek = (k, t) => draw(stateAt(k, t), t);
+window.seekBlank = () => draw({ ...BASE }, 0);
+/* A settled still for the Google Slides build: every tween that has started by T is
+   shown finished, and looping motion (talking, blinking, buzzing) is frozen. */
+window.still = (k, T, over = {}) => {
+  const s = { ...START[k] };
+  for (const x of SCENES[k].tw) if (x.at <= T) s[x.key] = x.val;
+  Object.assign(s, { talk: 0, shake: 0, nod: 0, wave: 0, wob: 0, 'pA.op': 0, 'pB.op': 0, 'pArc.op': 0, tap: 1 }, over);
+  draw(s, 0.37);
+};
+
+/* ---------- Presenter player ---------- */
+const params = new URLSearchParams(location.search);
+const stage = $('#stage');
+if (params.has('render')) {
+  document.body.classList.add('render');
+} else {
+  const fit = () => {
+    const k = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(${(innerWidth - 1920 * k) / 2}px, ${(innerHeight - 1080 * k) / 2}px) scale(${k})`;
+  };
+  addEventListener('resize', fit); fit();
+
+  let cur = -1, startedAt = 0;
+  const hud = $('#hud');
+  let hudTimer;
+  const showHud = () => {
+    hud.textContent = cur < 0 ? 'Press → to start' : `${cur + 1} / ${SCENES.length} · ${SCENES[cur].label}   ← →  R replay  F full screen`;
+    hud.classList.add('show'); clearTimeout(hudTimer); hudTimer = setTimeout(() => hud.classList.remove('show'), 2200);
+  };
+  const play = k => { cur = k; startedAt = performance.now(); showHud(); };
+  const showEnd = k => { cur = k; startedAt = performance.now() - SCENES[k].dur * 1000; showHud(); };
+  const next = () => { if (cur < SCENES.length - 1) play(cur + 1); };
+  const prev = () => { if (cur > 0) showEnd(cur - 1); else { cur = -1; showHud(); } };
+  addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'r' || e.key === 'R') { if (cur >= 0) play(cur); }
+    else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+    else if (/^[1-9]$/.test(e.key) && +e.key <= SCENES.length) play(+e.key - 1);
+  });
+  addEventListener('click', next);
+  addEventListener('mousemove', showHud);
+
+  const frozen = params.has('scene') ? [+params.get('scene') - 1, +(params.get('t') ?? 0)] : null;
+  if (frozen) cur = frozen[0];
+  const tick = now => {
+    if (frozen) window.seek(frozen[0], frozen[1]);
+    else if (cur < 0) window.seekBlank();
+    else window.seek(cur, (now - startedAt) / 1000);
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  showHud();
+}
+</script>
+</body>
+</html>

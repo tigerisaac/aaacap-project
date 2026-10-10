@@ -1,0 +1,14 @@
+{
+  "name": "shield-secretary-scenes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs",
+    "slides": "node build-slides.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.64.0",
+    "pngjs": "^7.0.0",
+    "pptxgenjs": "^4.0.1"
+  }
+}
