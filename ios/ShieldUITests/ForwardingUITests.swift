@@ -114,6 +114,31 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
     }
 
+    func testReturningChangesInstructionsButNeverConfirmsCarrierChange() {
+        let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.staticTexts["forwarding-carrier-result"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
+        XCTAssertFalse(app.staticTexts["When your line is busy"].exists)
+        XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
+        app.buttons["forwarding-phone-reopen"].tap()
+        XCTAssertFalse(app.staticTexts["forwarding-carrier-result"].exists)
+        XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
+        capture(app, "Phone return and retry")
+    }
+
+    func testCarrierCodeAtLargestTextInDarkMode() {
+        let app = launch(["--forwarding-start-code", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], title: "When you don’t answer")
+        XCTAssertTrue(app.buttons["forwarding-continue"].isHittable)
+        XCTAssertEqual(app.staticTexts["forwarding-code"].label, "**61*12025550100#")
+        let retry = app.buttons["forwarding-phone-reopen"]
+        for _ in 0..<6 where !retry.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        XCTAssertTrue(retry.isHittable)
+        capture(app, "Carrier code largest text dark")
+    }
+
     private func launch(_ extra: [String] = [], title: String = "Let’s set up Shield") -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-forwarding"] + extra

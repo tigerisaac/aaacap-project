@@ -78,6 +78,7 @@ struct ForwardingSetupView: View {
         .onChange(of: model.step) { _, _ in headingFocused = true }
         .onChange(of: scenePhase) { _, phase in
             model.settingsSceneChanged(isActive: phase == .active)
+            model.codeSceneChanged(isActive: phase == .active, isBackground: phase == .background)
             if phase == .background && model.showingPhoneLauncher { leftForPhone = true }
             if phase == .active && leftForPhone {
                 model.showingPhoneLauncher = false

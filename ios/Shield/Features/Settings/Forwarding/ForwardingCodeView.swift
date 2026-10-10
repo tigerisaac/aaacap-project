@@ -17,9 +17,7 @@ struct ForwardingCodeView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("forwarding-code")
                 if model.codePreparedStep == model.step {
-                    SetupInstruction(number: 1, title: "Tap Open beside Phone", detail: "Use the Phone banner below, then choose Keypad. If the banner doesn’t appear, open the green Phone app from your Home Screen.")
-                    SetupInstruction(number: 2, title: "Tap above the numbers, then Paste", detail: "Tap the area above the keypad and choose Paste. If Paste doesn’t appear, touch and hold there. Check that every star and the final # are included.")
-                    SetupInstruction(number: 3, title: "Tap Call and wait for Tello", detail: "Continue here only after Tello says Setting Registration Succeeded for Voice Call Forwarding.")
+                    PhoneCodeGuide(returned: model.codeReturnedStep == model.step)
                     Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
                         .frame(minHeight: 44).disabled(model.working)
                         .accessibilityIdentifier("forwarding-copy-code")
@@ -31,10 +29,10 @@ struct ForwardingCodeView: View {
                         .frame(minHeight: 44).disabled(model.working)
                         .accessibilityIdentifier("forwarding-phone-reopen")
                 }
-                Button("The code didn’t work", systemImage: "questionmark.circle") { model.showingHelp.toggle() }
+                Button("Need help?", systemImage: "questionmark.circle") { model.showingHelp.toggle() }
                     .frame(minHeight: 44)
                 if model.showingHelp {
-                    Text("Check your mobile signal and include every star and the final #. If Tello reports an error again, stop here. You can restore your phone from Setup options above.")
+                    Text("No banner? Open the green Phone app from your Home Screen. If Paste doesn’t appear, touch and hold above the keypad. Include every star and the final #. If Tello reports an error again, stop here and use Restore my phone in Setup options.")
                         .foregroundStyle(ForwardingStyle.secondaryText)
                 }
             } else {

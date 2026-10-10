@@ -9,6 +9,8 @@ final class ForwardingSetupModel {
     var working = false
     var error: String?
     var codePreparedStep: ForwardingStep?
+    var codeReturnedStep: ForwardingStep?
+    private var pendingCodeReturn: ForwardingStep?
     var showingPhoneLauncher = false
     var showingHelp = false
     var settingsDestination = PhoneSettingsLink.preferredDestination
@@ -61,6 +63,8 @@ final class ForwardingSetupModel {
                 loaded = true
                 participantID = id
                 codePreparedStep = nil
+                codeReturnedStep = nil
+                pendingCodeReturn = nil
                 showingPhoneLauncher = false
                 if UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue {
                     settingsReturned = true
@@ -116,6 +120,8 @@ final class ForwardingSetupModel {
         let reuseSettingsVisit = step == .settings && next == .liveVoicemail && settingsReturned
         step = next
         codePreparedStep = nil
+        codeReturnedStep = nil
+        pendingCodeReturn = nil
         showingPhoneLauncher = false
         settingsReturned = reuseSettingsVisit
         if reuseSettingsVisit && !isUITest { UserDefaults.standard.set(next.rawValue, forKey: settingsVisitKey) }
@@ -140,6 +146,7 @@ final class ForwardingSetupModel {
     private func prepareCode(_ code: String, showPhoneLauncher: Bool) {
         PhoneAppLink.copy(code: code)
         codePreparedStep = step
+        if showPhoneLauncher { codeReturnedStep = nil }
         #if DEBUG
         showingPhoneLauncher = showPhoneLauncher && (!isUITest || ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone"))
         #else
@@ -147,6 +154,15 @@ final class ForwardingSetupModel {
         #endif
         error = nil
         // Copying never confirms a carrier change or advances the step.
+    }
+
+    func codeSceneChanged(isActive: Bool, isBackground: Bool) {
+        if isBackground, codePreparedStep == step, code != nil { pendingCodeReturn = step }
+        if isActive {
+            if pendingCodeReturn == step, code != nil { codeReturnedStep = step }
+            pendingCodeReturn = nil
+        }
+        // A return changes the instructions, never carrier progress or verification.
     }
 
     func openPhoneSettings() async {
