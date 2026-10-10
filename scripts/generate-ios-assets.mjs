@@ -6,7 +6,7 @@ const assets = path.resolve(import.meta.dirname, '../ios/Shield/Resources/Assets
 const writeJSON = async (directory, value) => { await mkdir(directory, { recursive: true }); await writeFile(path.join(directory, 'Contents.json'), JSON.stringify(value, null, 2) + '\n'); };
 const info = { author: 'xcode', version: 1 };
 await writeJSON(assets, { info });
-const colors = { Action: ['#224CC5', '#9BB3FF'], Held: ['#B53742', '#FF9B9C'], Connected: ['#076C5C', '#74DDC6'], Message: ['#7244B9', '#CAAEFF'], Surface: ['#F3F5FB', '#151820'] };
+const colors = { Action: ['#224CC5', '#9BB3FF'], Held: ['#B53742', '#FF9B9C'], Connected: ['#076C5C', '#74DDC6'], Message: ['#7244B9', '#CAAEFF'], Surface: ['#F7F7F2', '#171918'] };
 for (const [name, pair] of Object.entries(colors)) {
   const colors = pair.map((hex, index) => ({ idiom: 'universal', ...(index ? { appearances: [{ appearance: 'luminosity', value: 'dark' }] } : {}),
     color: { 'color-space': 'srgb', components: { red: `0x${hex.slice(1, 3)}`, green: `0x${hex.slice(3, 5)}`, blue: `0x${hex.slice(5, 7)}`, alpha: '1.000' } } }));

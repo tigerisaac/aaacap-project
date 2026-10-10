@@ -51,3 +51,5 @@ The app’s **Held** list describes calls the service did not connect. It is not
 - [Original architecture plan](docs/Shield_Implementation_Plan_v1.md)
 
 The dedicated Firebase project is linked to Blaze with Firestore and Firebase Auth initialized. The scale-to-zero backend is deployed and its auth/history and model-job integration checks pass; the Firebase-connected iPhone build is installed. Twilio now uses Firebase, the Mac server/tunnel are stopped, and a real hosted call completed screening and saved history. The user confirmed hearing the result and seeing the call in Shield after verified-email sign-in. See the [serverless deployment status](docs/FIREBASE-SERVERLESS-PLAN.md). The older PostgreSQL transfer/voicemail runtime is not the selected hosting plan. Keep both full live-service switches off until the relevant checks pass. No provider secrets belong in the app.
+
+The current trial uses Twilio speech and Gemini screening. Soniox is disabled. See [call latency](docs/CALL-LATENCY.md) for the shorter waits, startup changes and measured results.

@@ -1,6 +1,6 @@
 ---
 name: Shield
-description: A colorful native call companion for participants and people they choose to share with.
+description: A calm native call companion for participants and people they choose to share with.
 colors:
   action-light: "#224CC5"
   action-dark: "#9BB3FF"
@@ -10,8 +10,8 @@ colors:
   connected-dark: "#74DDC6"
   message-light: "#7244B9"
   message-dark: "#CAAEFF"
-  surface-light: "#F3F5FB"
-  surface-dark: "#151820"
+  surface-light: "#F7F7F2"
+  surface-dark: "#171918"
 typography:
   display:
     fontFamily: "system-ui"
@@ -30,7 +30,7 @@ typography:
     fontWeight: 600
 rounded:
   outcome-control: "16pt"
-  call-symbol: "14pt"
+  call-symbol: "23pt"
 spacing:
   tight: "4pt"
   compact: "6pt"
@@ -63,13 +63,13 @@ components:
     padding: "{spacing.inset}"
   outcome-badge:
     typography: "{typography.label}"
-    padding: "6pt 9pt"
+    padding: "0"
   call-symbol:
     rounded: "{rounded.call-symbol}"
     width: "46pt"
     height: "46pt"
   call-row:
-    padding: "6pt 0"
+    padding: "10pt 0"
   person-picker:
     textColor: "{colors.action-light}"
   demo-banner:
@@ -82,9 +82,11 @@ components:
 
 ## Overview
 
-**Creative North Star: "Public-library wayfinding"**
+**Current direction: quiet, human, and direct.**
 
-Shield uses short, familiar labels and distinct colors to help someone find a call, understand its outcome, and choose a next step. Native navigation and system typography carry the interface. The direction appears through tint, SF Symbols, and lightly colored outcome controls rather than a literal library theme.
+The September 21 redesign reduces introductory copy and decorative labels. Shield is a private beta, not a commercial onboarding experience. Sign-in uses a compact wordmark and a short native heading, followed directly by the email field and Continue. There is no tagline, hero typography, or promotional copy. After sending a link, show the address once, one short instruction, and secondary Resend link / Change email actions. Hide the email field and demo entry while waiting for a link. Today uses readable sentence-case section headings and a shared neutral summary surface. Outcome text retains its meaning and color without a surrounding badge. This native implementation supersedes earlier schematic browser previews.
+
+Shield uses short, familiar labels and distinct colors to help someone find a call, understand its outcome, and choose a next step. Native navigation and system typography carry the interface. The direction appears through tint, SF Symbols, and restrained outcome accents rather than a literal library theme.
 
 Participants and caregivers use the same four destinations. A visible person selector and explicit sharing labels establish whose activity is in view. Copy stays brief in ordinary use; consent, call uncertainty, and service restoration retain the explanation needed to make a decision.
 
@@ -95,7 +97,7 @@ Participants and caregivers use the same four destinations. A visible person sel
 - System text styles, symbol-and-text outcomes, and layouts that can stack when space is tight.
 - Explicit participant control, sharing scope, and sample-data labels.
 
-**Evidence boundary:** Extracted from the current `ios/Shield` SwiftUI source and `Assets.xcassets` on 2026-09-21, after source review corrections. This is code-led documentation, with no approved visual comp. A subsequent Xcode simulator build and launch passed; rendered, Dark Mode, Dynamic Type, VoiceOver, and device review remain outstanding. Native behavior and final geometry still require that pass. The frontmatter records source values; `pt` means native layout points. The sidecar's browser snippets are schematic documentation previews, not screenshots or replacements for SwiftUI.
+**Evidence boundary:** Updated from the SwiftUI implementation on 2026-09-21. Xcode simulator build passed. Four UI tests passed in both light and dark appearance: call details, participant switching, email-field validation/demo entry, and largest-text welcome navigation. Screenshots were inspected for welcome, keyboard, Today, Calls, and large text. Subsequent copy, heading-contrast, and fixed-size decorative-icon changes were rebuilt successfully. VoiceOver, physical-device layouts, live email delivery, and service behavior were not validated by this design pass. Earlier browser sidecar previews are historical and do not specify this redesign.
 
 ## Colors
 
@@ -116,10 +118,10 @@ Color identifies actions and outcomes while system primary and secondary foregro
 
 ### Neutral
 
-- **Cool surface** (`Surface`; `surface-light` / `surface-dark`): the sign-in canvas and the Today, Calls, Check, People, and call-detail list backgrounds.
+- **Warm neutral surface** (`Surface`; `surface-light` / `surface-dark`): the sign-in canvas and the Today, Calls, Check, People, and call-detail list backgrounds.
 - **System foregrounds and containers:** `.primary`, `.secondary`, and native List/Form surfaces remain semantic SwiftUI styles. Missed calls use `.secondary`. Settings and forms keep their system backgrounds; do not substitute a sampled hex for an adaptive system color.
 
-Outcome controls and the demo banner use their accent at 10% opacity. Outcome badges and call-symbol backgrounds use 12%; the Today setup row and call-detail summary use 8%. These are transparent overlays, not separate palette primitives.
+Call-symbol backgrounds use the outcome accent at 12%; the Today setup symbol and call-detail summary use 8%. Weekly counts sit together on a semantic system card. Outcome labels have no background, and the demo banner uses the neutral canvas.
 
 The sidecar's tonal strips are synthesized OKLCH illustrations for the documentation panel. The app implements only the paired asset colors above; the intermediate strip colors are not app tokens.
 
@@ -129,12 +131,12 @@ Source: `Design/ShieldTheme.swift`, `Models/CallOutcome.swift`, and the five col
 
 ## Typography
 
-The native system font supplies all interface text. In the portable frontmatter, `system-ui` denotes this choice; implementation uses SwiftUI text styles and San Francisco. There is no custom font, fixed body size, custom tracking, or custom line-height scale.
+Native system fonts supply all interface text. The welcome heading and wordmark use the native semibold title2 style with Dynamic Type. Other screens use semantic system styles; weekly counts use the rounded large-title design.
 
 | Role | Source style | Use |
 | --- | --- | --- |
-| Display | Native navigation titles; `.largeTitle.bold()` on sign-in | Screen identity and Shield wordmark |
-| Title | `.title2.bold()` | Outcome counts and call-detail title |
+| Display | Native navigation titles; native title2 on sign-in | Screen identity and Shield wordmark |
+| Title | Rounded `.largeTitle` for counts; `.title2.bold()` for detail | Outcome counts and call-detail title |
 | Headline | `.headline` | Call names, person names, section content emphasis, primary action labels |
 | Body | Default text / `.body` | Call explanations, form content, next steps |
 | Supporting | `.subheadline`, with semibold only for emphasized actions | Numbers, person-sharing scope, short supporting copy |
@@ -156,11 +158,11 @@ Custom text actions such as Exit, See all, person selection, invitation actions,
 
 ## Elevation & Depth
 
-The app defines no custom shadow or blur tokens. Low-opacity color distinguishes the main outcome controls and summary rows; native grouped surfaces separate supporting content. Navigation bars, sheets, menus, and dialogs retain the operating system's materials and depth. There is no custom motion curve or duration: pushes, sheets, and control feedback use platform behavior. Reduced Motion behavior remains unverified because the app has not run locally.
+The app defines no custom shadow or blur tokens. Low-opacity color distinguishes the main outcome controls and summary rows; native grouped surfaces separate supporting content. Navigation bars, sheets, menus, and dialogs retain the operating system's materials and depth. There is no custom motion curve or duration: pushes, sheets, and control feedback use platform behavior. Reduced Motion and VoiceOver behavior were not separately audited.
 
 ## Shapes
 
-The two repeated custom shapes are the softly rounded outcome control and call-symbol tile, recorded in the frontmatter. Outcome badges use SwiftUI's Capsule, so their ends remain rounded as content grows. Native buttons, fields, menus, lists, and sheets retain system corner geometry. Do not copy a preview's browser radius into those controls.
+Call-symbol backgrounds are circles. Welcome fields and the primary button use a 14-point radius and at least 56 points of height. Outcome labels are unboxed. Other native menus, lists, sheets, and forms retain system geometry.
 
 The sign-in emblem's larger enclosure is specific to that screen and is not a reusable container token. The asset catalog contains a single universal app-icon raster; it does not establish an illustration system. In-app iconography uses SF Symbols.
 
@@ -168,11 +170,11 @@ The sign-in emblem's larger enclosure is specific to that screen and is not a re
 
 ### Buttons
 
-Primary submission uses `.borderedProminent` with the application tint. Sign-in also uses `.controlSize(.large)`; Check supplies a full-width label with a minimum height. Secondary actions use `.bordered` or standard native text buttons. Loading labels and ProgressView explain busy states, while `.disabled` blocks duplicate or incomplete submissions. Destructive actions use `role: .destructive` and native confirmations. Hover, keyboard focus, pressed treatment, and disabled appearance are system owned.
+Primary submission uses `.borderedProminent` with the application tint. Sign-in has a full-width custom 56-point button with adaptive foreground contrast and a quieter disabled fill; Check supplies a full-width label with a minimum height. Secondary actions use `.bordered` or standard native text buttons. Loading labels and ProgressView explain busy states, while `.disabled` blocks duplicate or incomplete submissions. Destructive actions use `role: .destructive` and native confirmations. Hover, keyboard focus, pressed treatment, and disabled appearance are system owned.
 
 ### Inputs / Fields
 
-Sign-in uses rounded-border TextField controls with email and one-time-code content types and keyboard choices. Entry sheets and Sharing use Form fields, native Picker and Toggle controls. Check uses a labeled TextEditor and PhotosPicker; the placeholder is hidden from accessibility because the editor already has an explicit label. Focus is managed with FocusState where needed. Validation disables submission; errors appear in the root native alert. There is no custom error-border system.
+Sign-in uses concise placeholder labels with explicit accessibility labels, 56-point minimum rounded containers, and an accent border on focus, with email and one-time-code content types and keyboard choices. Entry sheets and Sharing use Form fields, native Picker and Toggle controls. Check uses a labeled TextEditor and PhotosPicker; the placeholder is hidden from accessibility because the editor already has an explicit label. Focus is managed with FocusState where needed. Validation disables submission; errors appear in the root native alert. There is no custom error-border system.
 
 ### Navigation
 
@@ -180,9 +182,9 @@ The four tab labels are **Today**, **Calls**, **Check**, and **People**, each wi
 
 ### Outcome controls and badges
 
-The three Today controls show a symbol, a bold count, and a short label: Held, Connected, Messages. They are buttons that open the corresponding Calls filter. Their accessibility label combines count, category, and “this week”; the hint explains that activating them shows calls.
+The three Today controls share one neutral surface and show a rounded count above a small symbol and label: Held, Connected, Messages. They are buttons that open the corresponding Calls filter. Their accessibility label combines count, category, and “this week”; the hint explains that activating them shows calls.
 
-`OutcomeBadge` combines a system symbol and caption label inside a lightly colored capsule. The actual call labels are Screening, Offered, Connected, Held, Check first, Message, and Missed. Held and Check first share the raised-hand symbol and color. The Held filter includes both states; Messages includes calls with voicemail. Preserve these distinctions instead of inventing a safety score or replacing uncertainty with “safe.”
+`OutcomeBadge` combines a system symbol and colored caption label without a container. The actual call labels are Screening, Offered, Connected, Held, Check first, Message, and Missed. Held and Check first share the raised-hand symbol and color. The Held filter includes both states; Messages includes calls with voicemail. Preserve these distinctions instead of inventing a safety score or replacing uncertainty with “safe.”
 
 ### Call rows and detail
 
@@ -198,7 +200,7 @@ Participant-only setup and sharing actions are conditional on ownership. Caregiv
 
 ### Demo, loading, and empty states
 
-The persistent DemoBanner says **Demo · sample activity** and provides an Exit action. Setup and sample results also identify demo content. System ProgressView, ContentUnavailableView, pull-to-refresh, and the root alert provide loading, empty, retry, and error feedback. Sample voicemail explicitly says it has no recording. Keep evidence labels as visible content rather than relying on a color or developer-only indicator.
+The persistent DemoBanner says **Demo** (accessibility label: “Demo, sample activity”) and provides an Exit action. Setup and sample results also identify demo content. System ProgressView, ContentUnavailableView, pull-to-refresh, and the root alert provide loading, empty, retry, and error feedback. Sample voicemail explicitly says it has no recording. Keep evidence labels as visible content rather than relying on a color or developer-only indicator.
 
 ## Do's and Don'ts
 
@@ -219,3 +221,8 @@ The persistent DemoBanner says **Demo · sample activity** and provides an Exit 
 - Don't replace system foreground colors with sampled fixed colors or add a custom type scale based on screenshot measurements.
 - Don't promote sign-in-only decoration or preview-only styles into global design tokens.
 - Don't claim compilation, visual approval, or accessibility validation from this source extraction.
+
+
+## Home simplification
+
+Home prioritizes recent calls over weekly totals. Phone setup is one actionable status row, with trial screening explicitly limited to the test number. Zero-only weekly summaries are hidden. Home call rows show the summary, outcome, and actual call time; phone numbers remain in Calls and call details, and replace unhelpful “Not enough information” summaries. Each outcome has one icon, and the timestamp uses readable subheadline text. Today’s calls show a local clock time, yesterday’s include “Yesterday,” and older calls include the date and time. Full dates are supplied to accessibility. The screening/verification explanation lives in call details.

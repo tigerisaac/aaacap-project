@@ -5,7 +5,8 @@ struct DemoBanner: View {
 
     var body: some View {
         HStack {
-            Label("Demo · sample activity", systemImage: "sparkle")
+            Label("Demo", systemImage: "play.circle")
+                .accessibilityLabel("Demo, sample activity")
                 .accessibilityIdentifier("demoBanner")
                 .font(.caption.weight(.semibold))
             Spacer()
@@ -15,6 +16,6 @@ struct DemoBanner: View {
         }
         .foregroundStyle(ShieldTheme.action)
         .padding(.horizontal, 20)
-        .background(ShieldTheme.action.opacity(0.10))
+        .background(ShieldTheme.surface)
     }
 }

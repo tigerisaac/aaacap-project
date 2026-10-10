@@ -12,4 +12,5 @@ struct CallRecord: Codable, Identifiable, Hashable, Sendable {
     let acceptedAt: Date?
     let endedAt: Date?
     let voicemail: Voicemail?
+    var monitored: Bool? = nil
 }

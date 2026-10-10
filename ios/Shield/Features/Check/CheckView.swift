@@ -15,10 +15,6 @@ struct CheckView: View {
         NavigationShell {
             List {
                 Section {
-                    Label("Not sure about a message?", systemImage: "text.magnifyingglass")
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(ShieldTheme.action)
-                        .padding(.vertical, 10)
                     TextEditor(text: $text)
                         .frame(minHeight: 160)
                         .focused($editing)

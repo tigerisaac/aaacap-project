@@ -6,7 +6,7 @@ The current Twilio trial provides 75 voice minutes and permits speech gathering 
 
 ## Hosted Firebase trial
 
-The serverless replacement is deployed at `shield-calls-isaac.web.app`; see [the Firebase runbook](FIREBASE-SERVERLESS-PLAN.md). It keeps the same private verified-caller restriction but stores call state, budgets and iOS history in Firestore. Gemini runs in an awaited event function, and Soniox prompts are static Hosting assets. Live auth/history tests passed and a synthetic event completed in 4,644 ms. The Firebase-connected app is installed on the iPhone.
+The serverless replacement is deployed at `shield-calls-isaac.web.app`; see [the Firebase runbook](FIREBASE-SERVERLESS-PLAN.md). It keeps the same private verified-caller restriction but stores call state, budgets and iOS history in Firestore. Gemini runs in an awaited event function. Twilio now speaks the fixed prompts; Soniox is disabled at the user's request. Live auth/history tests passed and an earlier synthetic event completed in 4,644 ms. The Firebase-connected app is installed on the iPhone. The follow-up window at 20:44:55 America/Chicago on September 21 expires at 21:44:55; [latency changes and measurements](CALL-LATENCY.md) track the current revision.
 
 Twilio’s Inbound → Custom POST webhook now points at Firebase; the console confirmed “Test scenario saved.” The Mac listener and tunnel are stopped. One ten-call window opened on September 21 at 18:31:34 America/Chicago and expires at 19:31:34. Firestore recorded the first real call, its `routine/appointment` result after 4,288 ms, and the result callback; the encrypted job was removed. The user confirmed hearing the result and seeing “Appointment reminder,” “Missed,” and the real caller number in Shield. Firebase confirms the owner’s verified-email sign-in. “Missed” reflects that the trial never connected the call to the participant. Do not print the private webhook URL or reset the window during troubleshooting. A later supervised window requires an explicit `node scripts/activate-cloud-trial.mjs` operation; expiry never reopens access automatically.
 
@@ -54,9 +54,11 @@ The caller's synthetic speech transcript goes to OpenRouter and the selected Goo
 
 The introduction callback immediately returns “One moment” and a bounded TwiML redirect. A single model request runs within the configured deadline; authenticated result callbacks retrieve the fixed verdict. This avoids blocking Twilio's five-second fetch window. The flow stays below the trial's ten-hop limit, performs no model retry, and never transfers the call. An unavailable model is reported as unavailable, never cleared as routine. The server logs only the route, fixed reason code, and elapsed time.
 
-## Soniox playback
+## Optional Soniox playback (currently disabled)
 
 `TTS_PROVIDER=soniox` selects cached Soniox audio for every spoken trial prompt. The voice is Adrian (`tts-rt-v2`); the greeting is exactly “Hello, what's your reason for calling?” and lasts about 2.35 seconds. `npm run speech:prepare` generates missing fixed prompts using the backend-only key. Audio is MP3 at 24 kHz/64 kbps. Completed assets are cached by recipe and verified by content hash, so calls do not perform TTS generation or pay for it repeatedly.
+
+The active Firebase call flow always uses Twilio `<Say>` and no longer deploys these audio files. The legacy local trial is also set to `TTS_PROVIDER=twilio`. This optional implementation is retained only for a deliberate future switch back.
 
 Public `/speech/<hash>.mp3` URLs contain only fixed product copy and no webhook secret. Unknown filenames, path traversal, private manifests and arbitrary generation requests are not served. No caller or model text is synthesized. Twilio `<Gather>` continues to provide speech recognition. Switching to Soniox STT would require a different audio integration; it has not been enabled.
 
@@ -70,7 +72,7 @@ This setup does not make the physical iPhone's existing localhost demo connectio
 
 - On 2026-09-21, the existing credential was saved through a one-time localhost password form to a gitignored file with mode `0600`. A read-only Twilio API request authenticated successfully and confirmed an active Trial account. No deposit, upgrade, outbound call, or number purchase was made.
 - Automated trial tests cover signature and account/number checks, tampering, callback order/replay, missing speech, expiration and call budgets, HTTPS requirements, and avoiding unsupported TwiML verbs.
-- Latest local verification: 95 backend tests across nine files, plus ten Firestore emulator integration tests, type checking and compilation passed, including model, trial, cached audio and Firebase-auth contracts.
+- Latest local verification: 95 backend tests across nine files, plus twelve Firestore emulator integration tests, type checking and compilation passed, including model, trial, optional cached audio and Firebase-auth contracts.
 - After explicit approval for the test number, call metadata, and synthetic introduction transcript to pass through Cloudflare, the temporary HTTPS tunnel and receiver were started. Public checks returned 200/ready for `/healthz`, 403 for an unsigned `/voice/inbound`, and 404 for `/api/calls`.
 - Twilio's Inbound → Custom configuration was saved with the HTTPS `/voice/inbound` endpoint and POST method. Reloading the console and reopening Inbound confirmed that the URL and method persisted. After the first two inbound attempts, the console showed 73 free voice minutes.
 - Real inbound calls appeared in the Twilio API, but the trial log panel remained empty. A retry with fixed-code diagnostics reached Shield and was rejected with `missing_signature`. The public health endpoint remained reachable. Twilio's Monitor alerts API was unavailable on this trial; no upgrade was attempted.

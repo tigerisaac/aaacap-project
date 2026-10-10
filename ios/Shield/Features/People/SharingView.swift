@@ -13,8 +13,6 @@ struct SharingView: View {
     var body: some View {
         Form {
             Section {
-                Label("Your circle. Your choice.", systemImage: "person.2.fill")
-                    .font(.headline).foregroundStyle(ShieldTheme.message)
                 TextField("Their name", text: $label)
                     .textContentType(.givenName)
                 Toggle("Include voicemail", isOn: $canListen)

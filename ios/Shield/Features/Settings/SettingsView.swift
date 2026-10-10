@@ -11,9 +11,10 @@ struct SettingsView: View {
             if model.isOwner {
                 Section("Your phone") {
                     NavigationLink(value: AppRoute.setup) { Label("Setup & call offers", systemImage: "phone.circle") }
-                    NavigationLink(value: AppRoute.trustedNumbers) { Label("Saved contacts", systemImage: "person.crop.square") }
+                    NavigationLink(value: AppRoute.trustedNumbers) { Label("Shared contacts", systemImage: "person.crop.square") }
                     NavigationLink(value: AppRoute.savedNumbers) { Label("Independent numbers", systemImage: "building.2.crop.circle") }
                     NavigationLink(value: AppRoute.sharing) { Label("Sharing", systemImage: "person.2") }
+                    NavigationLink { CallProtectionView() } label: { Label("Connected-call protection", systemImage: "waveform.badge.magnifyingglass") }
                 }
             }
             Section {

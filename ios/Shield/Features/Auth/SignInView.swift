@@ -13,79 +13,104 @@ struct SignInView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    Image(systemName: "phone.bubble.fill")
-                        .font(.largeTitle.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .padding(24)
-                        .background(ShieldTheme.action, in: .rect(cornerRadius: 28))
-                        .accessibilityHidden(true)
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Shield").font(.largeTitle.bold())
-                        Text("A clearer picture\nof your calls.")
-                            .font(.title2.weight(.medium))
-                        Text("For you and the people you care about.")
-                            .font(.body).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 36) {
+                    HStack(spacing: 11) {
+                        Image(systemName: "phone.bubble.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(ShieldTheme.action)
+                            .frame(width: 44, height: 44)
+                            .background(ShieldTheme.action.opacity(0.09), in: .rect(cornerRadius: 14))
+                            .accessibilityHidden(true)
+                        Text("Shield").font(.title2.weight(.semibold))
                     }
 
-                    VStack(alignment: .leading, spacing: 16) {
-                        if codeSent && !usesEmailLink {
-                            Text("Check your email").font(.headline)
-                            TextField("Verification code", text: $code)
-                                .textContentType(.oneTimeCode)
-                                .keyboardType(.numberPad)
-                                .textFieldStyle(.roundedBorder)
-                                .focused($focusedField, equals: .code)
-                                .accessibilityLabel("Email verification code")
-                        } else {
-                            TextField("Email address", text: $email)
-                                .textContentType(.emailAddress)
-                                .keyboardType(.emailAddress)
-                                .textInputAutocapitalization(.never)
-                                .autocorrectionDisabled()
-                                .textFieldStyle(.roundedBorder)
-                                .focused($focusedField, equals: .email)
-                                .accessibilityLabel("Email address")
-                        }
-                        if codeSent && usesEmailLink {
-                            Label(code.isEmpty ? "Open the sign-in link in your email." : "Confirm your email to finish signing in.", systemImage: "envelope.open")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        Button {
-                            Task { await submit() }
-                        } label: {
-                            HStack {
-                                Spacer()
-                                if working { ProgressView().tint(.white) }
-                                Text(buttonTitle).fontWeight(.semibold)
-                                Spacer()
+                    VStack(alignment: .leading, spacing: 24) {
+                        Text(waitingForLink ? "Check your email" : codeSent && !usesEmailLink ? "Enter code" : "Sign in")
+                            .font(.title2.weight(.semibold))
+                            .accessibilityAddTraits(.isHeader)
+
+                        if waitingForLink {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(email)
+                                    .font(.body.weight(.medium))
+                                    .textSelection(.enabled)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Text("Open the link to sign in.")
+                                    .font(.subheadline).foregroundStyle(.secondary)
                             }
-                            .padding(.vertical, 8)
+                            ViewThatFits(in: .horizontal) {
+                                HStack(spacing: 24) { emailActions }
+                                VStack(alignment: .leading, spacing: 4) { emailActions }
+                            }
+                        } else {
+                            VStack(alignment: .leading, spacing: 12) {
+                                if codeSent && usesEmailLink {
+                                    Text("Confirm the email used for this link.")
+                                        .font(.subheadline).foregroundStyle(.secondary)
+                                }
+                                Group {
+                                    if codeSent && !usesEmailLink {
+                                        TextField("Verification code", text: $code)
+                                            .textContentType(.oneTimeCode)
+                                            .keyboardType(.numberPad)
+                                            .focused($focusedField, equals: .code)
+                                            .accessibilityLabel("Email verification code")
+                                    } else {
+                                        TextField("Email address", text: $email)
+                                            .textContentType(.emailAddress)
+                                            .keyboardType(.emailAddress)
+                                            .textInputAutocapitalization(.never)
+                                            .autocorrectionDisabled()
+                                            .focused($focusedField, equals: .email)
+                                            .accessibilityLabel("Email address")
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 16)
+                                .frame(minHeight: 56)
+                                .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .strokeBorder(focusedField == nil ? Color.primary.opacity(0.12) : ShieldTheme.action, lineWidth: focusedField == nil ? 1 : 2)
+                                }
+                                .disabled(working)
+                                .submitLabel(.continue)
+                                .onSubmit { if canSubmit { Task { await submit() } } }
+
+                                Button { Task { await submit() } } label: {
+                                    HStack(spacing: 10) {
+                                        if working { ProgressView().tint(ShieldTheme.actionInk) }
+                                        Text(buttonTitle).fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    .font(.body.weight(.semibold))
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 16)
+                                    .frame(maxWidth: .infinity, minHeight: 56)
+                                    .foregroundStyle(canSubmit ? ShieldTheme.actionInk : ShieldTheme.action)
+                                    .background(ShieldTheme.action.opacity(canSubmit ? 1 : 0.12), in: .rect(cornerRadius: 14))
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(!canSubmit)
+
+                                if codeSent { changeEmailButton }
+                            }
                         }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                        .disabled(working || (codeSent && !usesEmailLink ? code.count < 6 : !email.contains("@")) || model.configuration.baseURL == nil)
-                        if codeSent {
-                            Button("Use a different email") { codeSent = false; code = "" }
+
+                        if model.configuration.baseURL == nil {
+                            Text("Sign-in is unavailable.")
+                                .font(.subheadline).foregroundStyle(.secondary)
+                        }
+
+                        if !codeSent {
+                            Button("View demo") { model.exploreDemo() }
+                                .font(.subheadline)
                                 .frame(minHeight: 44)
                                 .disabled(working)
                         }
                     }
 
-                    if model.configuration.baseURL == nil {
-                        Label("Service setup is still in progress.", systemImage: "wrench.and.screwdriver")
-                            .font(.subheadline).foregroundStyle(.secondary)
-                    }
-                    Button("Explore the demo", systemImage: "play.circle") { model.exploreDemo() }
-                        .disabled(working)
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
-                        .frame(maxWidth: .infinity)
-
                     #if DEBUG
-                    if model.configuration.demoToken != nil {
+                    if !codeSent && model.configuration.demoToken != nil {
                         HStack {
                             Button("Local participant") { Task { working = true; await model.connectLocalDemo(); working = false } }
                             Spacer()
@@ -97,11 +122,23 @@ struct SignInView: View {
                     #endif
                 }
                 .padding(28)
-                .padding(.top, 28)
+                .frame(maxWidth: 520, alignment: .leading)
+                .frame(maxWidth: .infinity)
             }
+            .scrollDismissesKeyboard(.interactively)
             .background(ShieldTheme.surface)
+            .toolbar(.hidden, for: .navigationBar)
         }
         .task {
+            #if DEBUG
+            // Offline fixture for verifying the sent state without emailing anyone.
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-email-sent") {
+                email = "beta@example.com"
+                codeSent = true
+                usesEmailLink = true
+                return
+            }
+            #endif
             guard model.configuration.baseURL != nil else { return }
             if let service: ServiceConfiguration = try? await model.api.send("/public/config", authenticated: false) {
                 usesEmailLink = service.signInMethod == "email-link"
@@ -110,12 +147,42 @@ struct SignInView: View {
         .onOpenURL { url in Task { await receiveLink(url) } }
     }
 
+    private var waitingForLink: Bool { codeSent && usesEmailLink && code.isEmpty }
+
+    @ViewBuilder
+    private var emailActions: some View {
+        Button { Task { await submit() } } label: {
+            HStack(spacing: 8) {
+                if working { ProgressView() }
+                Text("Resend link")
+            }
+            .frame(minHeight: 44)
+        }
+        .disabled(!canSubmit)
+        changeEmailButton
+    }
+
+    private var changeEmailButton: some View {
+        Button("Change email") {
+            codeSent = false
+            code = ""
+            focusedField = .email
+        }
+        .frame(minHeight: 44)
+        .disabled(working)
+    }
+
+    private var canSubmit: Bool {
+        !working && model.configuration.baseURL != nil &&
+        (codeSent && !usesEmailLink ? code.count >= 6 : email.contains("@"))
+    }
+
     private var buttonTitle: String {
         if usesEmailLink {
-            if !code.isEmpty { return "Finish signing in" }
-            return codeSent ? "Send another link" : "Continue with email"
+            if !code.isEmpty { return "Sign in" }
+            return codeSent ? "Resend link" : "Continue"
         }
-        return codeSent ? "Sign in" : "Continue with email"
+        return codeSent ? "Sign in" : "Continue"
     }
 
     private func receiveLink(_ url: URL) async {

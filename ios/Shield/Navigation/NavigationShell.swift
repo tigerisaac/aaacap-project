@@ -12,7 +12,7 @@ struct NavigationShell<Content: View>: View {
                     case .settings: SettingsView()
                     case .setup: SetupView()
                     case .savedNumbers: SavedNumbersView(kind: .destinations)
-                    case .trustedNumbers: SavedNumbersView(kind: .trusted)
+                    case .trustedNumbers: SharedContactsView()
                     case .sharing: SharingView()
                     case .help: HelpView()
                     }

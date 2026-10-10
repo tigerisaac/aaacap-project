@@ -7,19 +7,11 @@ struct OverviewView: View {
         NavigationShell {
             List {
                 if let overview = model.overview {
-                    Section {
-                        status(overview)
-                    }
-                    .listRowBackground(ShieldTheme.action.opacity(0.08))
-
-                    Section("This week") {
-                        ViewThatFits(in: .horizontal) {
-                            HStack(spacing: 12) { outcomeControls(overview) }
-                            VStack(spacing: 12) { outcomeControls(overview) }
+                    if !model.isDemo {
+                        Section {
+                            status(overview)
                         }
-                        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
+                        .listRowBackground(ShieldTheme.card)
                     }
 
                     Section {
@@ -28,23 +20,37 @@ struct OverviewView: View {
                                 description: Text("Calls that reach Shield will appear here."))
                         } else {
                             ForEach(overview.recent.prefix(5)) { call in
-                                NavigationLink(value: call) { CallRow(call: call) }
+                                NavigationLink(value: call) { CallRow(call: call, showsNumber: false) }
                             }
                         }
                     } header: {
                         HStack {
-                            Text("Recent calls")
+                            Text("Recent calls").font(.title3.weight(.semibold)).foregroundStyle(Color.primary).textCase(nil)
                             Spacer()
                             Button("See all") { model.showCalls(.all) }
                                 .textCase(nil).frame(minHeight: 44)
                         }
-                    } footer: {
-                        Text("Screened doesn’t mean verified.")
+                    }
+
+                    if overview.counts.held + overview.counts.connected + overview.counts.messages > 0 {
+                        Section {
+                            ViewThatFits(in: .horizontal) {
+                                HStack(spacing: 0) { outcomeControls(overview) }
+                                VStack(spacing: 0) { outcomeControls(overview) }
+                            }
+                            .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+                            .listRowBackground(ShieldTheme.card)
+                            .listRowSeparator(.hidden)
+                        } header: {
+                            Text("This week").font(.title3.weight(.semibold)).foregroundStyle(Color.primary)
+                                .textCase(nil).padding(.bottom, 8)
+                        }
+
                     }
 
                     Section {
                         NavigationLink(value: AppRoute.help) {
-                            Label("Something doesn’t feel right?", systemImage: "lifepreserver.fill")
+                            Label("Get help", systemImage: "lifepreserver.fill")
                                 .foregroundStyle(ShieldTheme.action)
                                 .padding(.vertical, 6)
                         }
@@ -72,31 +78,37 @@ struct OverviewView: View {
 
     @ViewBuilder
     private func status(_ overview: Overview) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: overview.status == "paused" ? "pause.circle.fill" : "phone.circle.fill")
-                .font(.title).foregroundStyle(ShieldTheme.action)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(model.isDemo ? "A look inside Shield" : model.isTrial ? "Shield trial" : overview.status == "paused" ? "Call offers paused" : "Your phone setup")
-                    .font(.headline)
-                if model.isDemo {
-                    Text("Sample calls. No phone settings changed.").font(.subheadline).foregroundStyle(.secondary)
-                } else if model.isTrial {
-                    Text(overview.status == "paused" ? "Trial screening paused." : "Screening on your test number.")
-                        .font(.subheadline).foregroundStyle(.secondary)
-                } else if let date = overview.lastTestAt {
-                    Text("Routing last tested \(date.formatted(date: .abbreviated, time: .omitted))")
-                        .font(.subheadline).foregroundStyle(.secondary)
-                } else {
-                    Text("A routing test is needed.").font(.subheadline).foregroundStyle(.secondary)
-                }
-                if model.isOwner {
-                    NavigationLink("View setup", value: AppRoute.setup)
-                        .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
-                }
+        if model.isOwner {
+            if model.isTrial {
+                NavigationLink { ForwardingSetupView() } label: { statusLabel(overview) }
+            } else {
+                NavigationLink(value: AppRoute.setup) { statusLabel(overview) }
             }
+
+        } else {
+            statusLabel(overview)
         }
-        .padding(.vertical, 6)
+    }
+
+    private func statusLabel(_ overview: Overview) -> some View {
+        Label {
+            Text(statusTitle(overview))
+                .font(.headline)
+                .foregroundStyle(Color.primary)
+                .fixedSize(horizontal: false, vertical: true)
+        } icon: {
+            Image(systemName: overview.status == "paused" ? "pause.circle" : "phone")
+                .foregroundStyle(ShieldTheme.action)
+        }
+        .padding(.vertical, 8)
+    }
+
+    private func statusTitle(_ overview: Overview) -> String {
+        if model.isTrial {
+            return overview.status == "restoring" ? "Restore and check your phone" : "Phone setup and call tests"
+        }
+        if overview.status == "paused" { return "Call screening paused" }
+        return overview.lastTestAt == nil ? "Phone setup needs a test" : "Phone setup tested"
     }
 
     @ViewBuilder

@@ -9,15 +9,22 @@ struct OutcomeControl: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: symbol).font(.title3).accessibilityHidden(true)
-                Text(count, format: .number).font(.title2.bold()).monospacedDigit()
-                Text(title).font(.subheadline.weight(.semibold)).fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(count, format: .number)
+                    .font(.system(.largeTitle, design: .rounded).weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.primary)
+                HStack(spacing: 5) {
+                    Image(systemName: symbol).font(.caption).foregroundStyle(color)
+                        .accessibilityHidden(true)
+                    Text(title).font(.subheadline).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
             }
-            .foregroundStyle(color)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
-            .background(color.opacity(0.10), in: .rect(cornerRadius: 16))
+            .padding(.vertical, 18)
+            .padding(.horizontal, 14)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(count) \(title.lowercased()) this week")

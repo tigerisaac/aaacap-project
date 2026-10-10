@@ -45,7 +45,14 @@ struct AddNumberView: View {
         do {
             var body = ["label": label, "phone": phone]
             if kind == .destinations { body["provenance"] = provenance }
-            let _: APIResponses.Empty = try await model.api.send(kind.path, method: "POST", body: APIClient.payload(body), participantID: model.selectedPersonID)
+            if kind == .trusted, let person = model.selectedPersonID {
+                try await PhoneContacts.shared.setEnabled(true, phone: phone, label: label, personID: person)
+                let contacts = try await PhoneContacts.shared.all()
+                let _: APIResponses.ContactSync = try await model.api.send("/api/trusted-numbers/sync", method: "POST",
+                    body: JSONEncoder().encode(["contacts": contacts]), participantID: person)
+            } else {
+                let _: APIResponses.Empty = try await model.api.send(kind.path, method: "POST", body: APIClient.payload(body), participantID: model.selectedPersonID)
+            }
             dismiss()
         } catch { model.handle(error) }
     }

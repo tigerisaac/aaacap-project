@@ -106,6 +106,12 @@ export const purposes: Record<Extraction['purpose'], string> = {
 };
 
 export const reasonCopy: Record<string, { title: string; detail: string; action: string }> = {
+  scam: { title: 'Scam call stopped', detail: 'Shield detected a risky request and ended the call silently.', action: 'No action is needed.' },
+  robocall: { title: 'Unwanted robocall stopped', detail: 'Shield detected an unwanted automated call and ended it silently.', action: 'No action is needed.' },
+  monitor_intervened: { title: 'Shield ended a connected call', detail: 'During the call, Shield heard a request that matches common scams and ended the call with a warning.', action: 'If you know the caller, contact them using a number you already trust.' },
+  solicitation: { title: 'Sales or solicitation call stopped', detail: 'Shield ended an unsolicited sales, survey, political or donation call silently.', action: 'No action is needed.' },
+  silent_caller: { title: 'Silent call ended', detail: 'The caller did not respond. Shield ended the call automatically.', action: 'No action is needed.' },
+  screening_timeout: { title: 'Screening ended', detail: 'Shield could not establish a clear reason for this call in time.', action: 'The call was not connected. Review any voicemail.' },
   screening: { title: 'Screening call', detail: 'The caller is being asked why they are calling.', action: 'No action is needed.' },
   routine: { title: 'Screened call', detail: 'The introduction did not contain a detected sensitive request. The caller’s identity is still unverified.', action: 'You decide whether to answer. Do not share secret codes or move money at a caller’s request.' },
   sensitive_issue: { title: 'Verify independently', detail: 'The caller described an account or money issue. Shield did not connect the incoming call.', action: 'Use a number from your card, statement, or saved institution list.' },

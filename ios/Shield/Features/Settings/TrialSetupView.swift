@@ -9,6 +9,15 @@ struct TrialSetupView: View {
 
     var body: some View {
         Section {
+            NavigationLink {
+                ForwardingSetupView()
+            } label: {
+                Label("Set up call forwarding", systemImage: "phone.arrow.right")
+            }
+            Text("Shield guides you through Tello setup and checks your calls automatically.")
+                .foregroundStyle(.secondary)
+        } header: { Text("Phone setup") }
+        Section {
             Label(setup.trial?.active == true ? "Trial ready" : "Trial session ended",
                   systemImage: setup.trial?.active == true ? "checkmark.circle.fill" : "clock.fill")
                 .font(.headline).foregroundStyle(setup.trial?.active == true ? ShieldTheme.connected : ShieldTheme.held)
@@ -22,8 +31,8 @@ struct TrialSetupView: View {
                     LabeledContent("Session ends", value: expires.formatted(date: .omitted, time: .shortened))
                 }
             }
-        } header: { Text("Private trial") } footer: {
-            Text("Your mobile’s other calls are unchanged. Transfers and voicemail are not enabled.")
+        } header: { Text("Direct-call trial") } footer: {
+            Text("This direct-call check only screens introductions. Use Phone setup above for the separate forwarding test.")
         }
         Section {
             Button(setup.status == "paused" ? "Resume trial" : "Pause trial",

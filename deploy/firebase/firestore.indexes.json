@@ -1,20 +1,58 @@
 {
   "indexes": [
-    { "collectionGroup": "callSessions", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "participantId", "order": "ASCENDING" },
-      { "fieldPath": "createdAt", "order": "DESCENDING" },
-      { "fieldPath": "__name__", "order": "DESCENDING" }
-    ] },
-    { "collectionGroup": "callSessions", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "participantId", "order": "ASCENDING" },
-      { "fieldPath": "outcome", "order": "ASCENDING" },
-      { "fieldPath": "createdAt", "order": "DESCENDING" },
-      { "fieldPath": "__name__", "order": "DESCENDING" }
-    ] }
+    {
+      "collectionGroup": "callSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "callSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "outcome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    }
   ],
   "fieldOverrides": [
-    { "collectionGroup": "screeningJobs", "fieldPath": "transcriptEnc", "indexes": [] },
-    { "collectionGroup": "callSessions", "fieldPath": "callerEnc", "indexes": [] },
-    { "collectionGroup": "callSessions", "fieldPath": "events", "indexes": [] }
+    {
+      "collectionGroup": "screeningJobs",
+      "fieldPath": "transcriptEnc",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "callSessions",
+      "fieldPath": "callerEnc",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "callSessions",
+      "fieldPath": "events",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "forwardingAudio",
+      "fieldPath": "audioEnc",
+      "indexes": []
+    }
   ]
 }

@@ -22,9 +22,16 @@ struct CallDetailView: View {
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 12)
+            } footer: {
+                Text("Screened doesn’t mean verified.")
             }
             .listRowBackground(ShieldTheme.color(for: call.outcome).opacity(0.08))
-            Section("What happened") { Text(call.detail) }
+            Section("What happened") {
+                Text(call.detail)
+                if call.monitored == true {
+                    Label("Transcribed for connected-call protection", systemImage: "waveform").font(.subheadline).foregroundStyle(.secondary)
+                }
+            }
             if let voicemail = call.voicemail {
                 Section("Voicemail") {
                     if voicemail.status == "ready", model.canListen {

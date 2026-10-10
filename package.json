@@ -24,7 +24,7 @@
     "operator": "tsx --env-file-if-exists=.env backend/src/operator-main.ts",
     "ios:generate": "node scripts/generate-xcode-project.mjs",
     "firebase:package": "npm run build && node scripts/package-firebase.mjs",
-    "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts'",
+    "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts'",
     "eval:model": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.openrouter backend/scripts/evaluate-model.ts",
     "check": "npm run typecheck && npm test && npm run build"
   },
@@ -41,11 +41,13 @@
     "openai": "7.20.0",
     "pg": "8.23.0",
     "twilio": "6.1.1",
+    "ws": "8.21.3",
     "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/node": "26.6.2",
     "@types/pg": "8.23.1",
+    "@types/ws": "8.18.1",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.0.1"

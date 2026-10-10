@@ -6,9 +6,6 @@ struct HelpView: View {
     var body: some View {
         List {
             Section {
-                Label("Pause. Check. Get support.", systemImage: "lifepreserver.fill")
-                    .font(.title3.bold()).foregroundStyle(ShieldTheme.action)
-                    .padding(.vertical, 8)
                 Text("If a call or message worries you, stop the conversation before taking action.")
             }
             Section("A good next step") {

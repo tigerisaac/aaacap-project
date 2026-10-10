@@ -7,7 +7,7 @@ struct PeopleView: View {
     var body: some View {
         NavigationShell {
             List {
-                Section("Your circle") {
+                Section {
                     ForEach(model.people) { person in
                         Button {
                             Task { await model.select(person) }

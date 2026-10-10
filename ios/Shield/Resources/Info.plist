@@ -24,7 +24,7 @@
 		<true/>
 	</dict>
 	<key>NSContactsUsageDescription</key>
-	<string>Save the Shield number so screened callbacks can ring. Your contacts are not uploaded.</string>
+	<string>Share your contact names and phone numbers with Shield so saved callers can ring. Changes to your shared list also update iPhone Contacts.</string>
 	<key>ShieldAPIHost</key>
 	<string>$(SHIELD_API_HOST)</string>
 	<key>ShieldAuthHost</key>

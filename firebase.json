@@ -19,7 +19,7 @@
       ] }
     ],
     "rewrites": [
-      { "source": "/{api,auth,trial,public}/**", "function": { "functionId": "shieldApi", "region": "us-central1" } },
+      { "source": "/{api,auth,trial,forwarding,public}/**", "function": { "functionId": "shieldApi", "region": "us-central1" } },
       { "source": "/{privacy,service-info}", "function": { "functionId": "shieldApi", "region": "us-central1" } }
     ]
   }

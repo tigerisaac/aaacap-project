@@ -33,7 +33,7 @@ final class AppState {
         self.configuration = configuration
         self.api = APIClient(configuration: configuration)
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--uitesting-preview") { exploreDemo() }
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-preview") || ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") { exploreDemo() }
         #endif
     }
 

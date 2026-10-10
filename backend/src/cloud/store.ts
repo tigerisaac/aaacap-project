@@ -11,6 +11,9 @@ export type Call = DocumentData & { id: string; participantId: string; createdAt
   events: { kind: string; at: number }[]; decision?: Decision; completedAt: number | null; polls: number };
 export type Access = { participant: Person; uid: string; isOwner: boolean; canListen: boolean };
 const unavailable: Decision = { route: 'message', reason: 'screening_unavailable', purpose: 'unknown' };
+// Poll quickly at first, then back off. Initial 1s + these pauses preserve the old
+// 12s waiting budget. Gather + eight result callbacks use nine of Twilio's ten hops.
+export const RESULT_POLL_PAUSES = [1, 1, 1, 2, 2, 2, 2] as const;
 
 /** Durable storage: transactions own all call transitions and trial budgets across instances. */
 export class CloudStore {
@@ -62,6 +65,11 @@ export class CloudStore {
         polls: 0, events: [{ kind: 'screening_started', at: now }] };
       tx.create(this.callRef(id), call);
       tx.create(this.keyRef(sid), { callId: id, expiresAt: now + RETENTION_MS });
+      // Start this same event worker while the caller hears the greeting and speaks.
+      // One empty preparation per admitted call; no transcript, paid model call,
+      // timer or continuously warm instance. The real introduction creates its own job.
+      tx.create(this.db.collection('screeningJobs').doc(`prepare-${id}`), { kind: 'prepare',
+        callId: id, participantId: person.id, createdAt: now, expiresAt: now + 120_000 });
       tx.update(window!.ref, { used: control.used + 1 });
       return 'accepted';
     });
@@ -95,6 +103,7 @@ export class CloudStore {
     const claimed = await this.db.runTransaction(async tx => {
       const [jobDoc, callDoc, personDoc] = await tx.getAll(jobRef, this.callRef(id), this.personRef(this.config.TRIAL_PARTICIPANT_ID));
       const job = jobDoc!.data(); const call = callDoc!.data() as Call | undefined;
+      if (job?.kind === 'prepare') { tx.delete(jobRef); return null; }
       if (!job || job.status !== 'pending') return null;
       if (!call || call.state !== 'evaluating' || job.expiresAt <= this.now() || personDoc!.data()?.status !== 'setup') {
         tx.delete(jobRef); return null;
@@ -102,27 +111,34 @@ export class CloudStore {
       // Claim before any paid request. Redelivery never launches another extraction.
       // The encrypted introduction is removed on claim, including on process crash.
       tx.update(jobRef, { status: 'claimed', transcriptEnc: FieldValue.delete() });
-      return { text: this.vault.open(job.transcriptEnc, `job:${id}:intro`), createdAt: call.createdAt };
+      return { text: this.vault.open(job.transcriptEnc, `job:${id}:intro`), createdAt: call.createdAt,
+        queuedAt: job.createdAt as number };
     });
     if (!claimed) return;
+    const modelStarted = this.now();
     const decision = this.now() - claimed.createdAt > 100_000 ? unavailable
       : await screen(screener, claimed.text, this.config.MODEL_TIMEOUT_MS);
+    const modelMs = Math.max(0, this.now() - modelStarted);
     await this.db.runTransaction(async tx => {
       const [callDoc, personDoc] = await tx.getAll(this.callRef(id), this.personRef(this.config.TRIAL_PARTICIPANT_ID));
       const call = callDoc!.data() as Call | undefined;
       if (call?.state === 'evaluating' && personDoc!.data()?.status === 'setup') {
         tx.update(callDoc!.ref, { decision, reason: decision.reason, purpose: decision.purpose,
+          timings: { queueMs: Math.max(0, modelStarted - claimed.queuedAt), modelMs },
           events: [...call.events, { kind: 'screening_completed', at: this.now() }] });
       }
       tx.delete(jobRef);
     });
   }
-  async result(sid: string): Promise<{ kind: 'wait' | 'done' | 'duplicate'; decision?: Decision }> {
+  async result(sid: string): Promise<{ kind: 'wait' | 'done' | 'duplicate'; decision?: Decision; pauseSeconds?: number }> {
     return this.db.runTransaction(async tx => {
       const found = await this.callFor(tx, sid);
       if (!found || found.call.state !== 'evaluating') return { kind: 'duplicate' };
       const { ref, call } = found; const now = this.now();
-      if (!call.decision && call.polls < 5) { tx.update(ref, { polls: call.polls + 1 }); return { kind: 'wait' }; }
+      if (!call.decision && call.polls < RESULT_POLL_PAUSES.length) {
+        const pauseSeconds = RESULT_POLL_PAUSES[call.polls]!;
+        tx.update(ref, { polls: call.polls + 1 }); return { kind: 'wait', pauseSeconds };
+      }
       const decision = call.decision ?? unavailable;
       tx.update(ref, { state: 'ended', decision, reason: decision.reason, purpose: decision.purpose,
         outcome: decision.route === 'refuse' ? 'held' : decision.route === 'verify' ? 'verification' : 'missed',
@@ -133,7 +149,7 @@ export class CloudStore {
   }
   /** One bounded daily invocation; all reads hide expired data immediately. */
   async cleanup(): Promise<void> {
-    for (const collection of ['screeningJobs', 'callSessions', 'callKeys', 'usage', 'inviteKeys']) {
+    for (const collection of ['screeningJobs', 'callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingUsage', 'monitoredCalls', 'monitorChecks']) {
       const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
       if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
     }

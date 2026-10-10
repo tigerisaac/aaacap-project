@@ -7,9 +7,10 @@ import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { createScreener } from '../screening.js';
 import { cloudSchema } from './config.js';
 import { CloudStore } from './store.js';
-import { buildCloudApp } from './app.js';
+import type { buildCloudApp } from './app.js';
 
 const runtime = defineSecret('SHIELD_RUNTIME');
+const openaiKey = defineSecret('SHIELD_OPENAI_API_KEY');
 const options = { region: 'us-central1', minInstances: 0, maxInstances: 2, memory: '512MiB' as const,
   cpu: 1, timeoutSeconds: 30, secrets: [runtime], serviceAccount: 'shield-runtime@shield-calls-isaac.iam.gserviceaccount.com' };
 let store: CloudStore | undefined;
@@ -24,10 +25,13 @@ function getStore() {
 let appPromise: ReturnType<typeof buildCloudApp> | undefined;
 export const shieldApi = onRequest({ ...options, invoker: 'public', concurrency: 20 }, async (request, response) => {
   try {
-    appPromise ??= buildCloudApp(getStore()).catch(error => { appPromise = undefined; throw error; });
+    // Background screening/cleanup do not need Fastify, Firebase Auth or the Twilio SDK.
+    appPromise ??= import('./app.js').then(({ buildCloudApp }) => buildCloudApp(getStore(), {
+      reportWebhookTiming: timing => console.info(JSON.stringify({ event: 'trial_webhook_timing', ...timing }))
+    })).catch(error => { appPromise = undefined; throw error; });
     const app = await appPromise;
     const headers: Record<string, string> = {};
-    for (const name of ['authorization', 'content-type', 'x-shield-participant']) {
+    for (const name of ['authorization', 'content-type', 'x-shield-participant', 'x-twilio-signature', 'telnyx-signature-ed25519', 'telnyx-timestamp']) {
       const value = request.headers[name]; if (typeof value === 'string') headers[name] = value;
     }
     const result = await app.inject({ method: request.method as 'GET' | 'POST' | 'DELETE', url: request.originalUrl,
@@ -43,3 +47,16 @@ export const screenCall = onDocumentCreated({ ...options, document: 'screeningJo
 });
 export const cleanupShield = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 04:00', timeZone: 'America/Chicago',
   retryCount: 0 }, async () => { await getStore().cleanup(); });
+
+export const ingestForwardingVoicemail = onDocumentCreated({ ...options, document: 'forwardingRecordings/{recordingId}', retry: true, concurrency: 2 }, async event => {
+  const { ingestForwardingRecording } = await import('./forwarding-recordings.js');
+  await ingestForwardingRecording(getStore(), event.params.recordingId);
+});
+
+// Connected-call protection: one Luna check per queued job, only for calls the owner opted in to monitor.
+export const monitorConnectedCall = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
+  document: 'monitorChecks/{jobId}', retry: false, concurrency: 8 }, async event => {
+  const [{ CallMonitor, assessCall }, { ForwardingStore }] = await Promise.all([import('./monitoring.js'), import('./forwarding-store.js')]);
+  const key = openaiKey.value();
+  await new CallMonitor(new ForwardingStore(getStore())).check(event.params.jobId, transcript => assessCall(transcript, key));
+});
