@@ -4,6 +4,7 @@ struct ForwardingStepContent: View {
     let step: ForwardingStep
     let status: ForwardingStatus
     @Bindable var model: ForwardingSetupModel
+    var onRestorationStageChange: () -> Void = {}
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             switch step {
@@ -32,7 +33,7 @@ struct ForwardingStepContent: View {
             case .checks:
                 ForwardingTestView(status: status)
             case .restore:
-                ForwardingRestoreView(status: status, showingPhoneLauncher: $model.showingPhoneLauncher)
+                ForwardingRestoreView(status: status, showingPhoneLauncher: $model.showingPhoneLauncher, onStageChange: onRestorationStageChange)
             default: EmptyView()
             }
         }

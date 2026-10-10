@@ -9,39 +9,41 @@ struct ForwardingSetupView: View {
     @AccessibilityFocusState private var headingFocused: Bool
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                if let status = model.status {
-                    Text(model.step.title).font(.largeTitle.bold())
-                        .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
-                    if model.step == .ring || model.step == .test {
-                        ForwardingProbeView(model: model)
-                    } else if model.isPhoneSettingsStep {
-                        ForwardingPhoneSettingsView(model: model)
-                    } else if model.step.codeIndex != nil {
-                        ForwardingCodeView(model: model)
-                    } else {
-                        ForwardingStepContent(step: model.step, status: status, model: model)
-                    }
-                    if let error = model.error {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label(error, systemImage: "exclamationmark.circle")
-                                .foregroundStyle(ShieldTheme.held).accessibilityIdentifier("forwarding-error")
-                            if model.step == .save {
-                                Link("Allow Contacts in Settings", destination: URL(string: UIApplication.openSettingsURLString)!)
-                                    .frame(minHeight: 44)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    if let status = model.status {
+                        Text(model.step.title).font(.largeTitle.bold()).id("forwarding-heading")
+                            .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
+                        if model.step == .ring || model.step == .test {
+                            ForwardingProbeView(model: model)
+                        } else if model.isPhoneSettingsStep {
+                            ForwardingPhoneSettingsView(model: model)
+                        } else if model.step.codeIndex != nil {
+                            ForwardingCodeView(model: model)
+                        } else {
+                            ForwardingStepContent(step: model.step, status: status, model: model, onRestorationStageChange: { proxy.scrollTo("forwarding-heading", anchor: .top) })
+                        }
+                        if let error = model.error {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Label(error, systemImage: "exclamationmark.circle")
+                                    .foregroundStyle(ShieldTheme.held).accessibilityIdentifier("forwarding-error")
+                                if model.step == .save {
+                                    Link("Allow Contacts in Settings", destination: URL(string: UIApplication.openSettingsURLString)!)
+                                        .frame(minHeight: 44)
+                                }
                             }
                         }
+                    } else if let error = model.error {
+                        ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
+                        Button("Try again") { Task { await model.load(app) } }.frame(minHeight: 44)
+                    } else {
+                        ProgressView("Loading phone setup…").frame(maxWidth: .infinity, minHeight: 220)
                     }
-                } else if let error = model.error {
-                    ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
-                    Button("Try again") { Task { await model.load(app) } }.frame(minHeight: 44)
-                } else {
-                    ProgressView("Loading phone setup…").frame(maxWidth: .infinity, minHeight: 220)
                 }
+                .padding(24)
+                .frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
             }
-            .padding(24)
-            .frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
         }
         .id(model.step)
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)

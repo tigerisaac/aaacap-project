@@ -45,6 +45,8 @@ Read back from production on October 10:
 
 - iOS compact handoff and return guide (October 10): forwarding and restoration now show three short instructions, then “Check Tello’s result” after returning. Retry recopies the same code and restores the guide; returning never advances or verifies a connection. These transitions and Phone opening were physically inspected with synthetic fixtures, without dialing. Ten of eleven initial UI tests passed; after correcting the largest-text test’s scrolling target, all four final targeted tests passed. Typecheck/build, 94 unit tests, and 47 Firebase emulator tests passed. The signed normal build was reinstalled and launched. Carrier forwarding and the closed test window were unchanged.
 
+- iOS guided restoration (October 10): replaced the final static Settings instructions with two explicit setting confirmations, then ordinary-call and normal-voicemail checks and a Done state. Already-completed settings can be confirmed directly. Progress persists per participant through app relaunch; returning from Settings never advances it. Three targeted restoration tests passed before and after the layout refinement, including largest accessibility text in dark mode. Synthetic Settings/call-check screens were inspected on the enrolled phone. Typecheck/build, 94 unit tests and 47 Firebase emulator tests passed. The signed normal app was installed and launched. No real calls, carrier resets or phone-setting changes were performed in this pass. The owner’s screenshot showed the old final restoration screen; current carrier routing has not been read back or independently verified.
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.
@@ -77,3 +79,5 @@ Read back from production on October 10:
    The code that used them was retired on October 10.
 
 The full pilot plan and its gates are in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
+
+The existing end-to-end guided setup regression also passed after adding the shared scroll-to-heading container (October 10).

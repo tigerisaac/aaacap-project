@@ -47,7 +47,11 @@ final class ForwardingSetupModel {
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-code") { step = .forward0 }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-restore") {
                     step = .restore
-                    UserDefaults.standard.removeObject(forKey: "shield-restoration-step-" + ForwardingStatus.uiTestFixture.participantId.uuidString)
+                    let key = "shield-restoration-step-" + ForwardingStatus.uiTestFixture.participantId.uuidString
+                    let args = ProcessInfo.processInfo.arguments
+                    if !args.contains("--restoration-resume") {
+                        UserDefaults.standard.set(args.contains("--restoration-start-settings") ? 3 : 0, forKey: key)
+                    }
                 }
             }
             preparePhoneHandoff()

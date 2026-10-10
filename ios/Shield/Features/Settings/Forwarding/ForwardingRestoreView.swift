@@ -2,16 +2,20 @@ import SwiftUI
 
 struct ForwardingRestoreView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
+    @AccessibilityFocusState private var stageFocused: Bool
     @State private var leftForPhone = false
     @State private var returnedFromPhone = false
     @State private var showingHelp = false
     let status: ForwardingStatus
+    let onStageChange: () -> Void
     @AppStorage private var index: Int
     @State private var codeReady = false
     @Binding private var showingPhoneLauncher: Bool
     private let codes = ["##61#", "##67#", "##62#"]
 
-    init(status: ForwardingStatus, showingPhoneLauncher: Binding<Bool>) {
+    init(status: ForwardingStatus, showingPhoneLauncher: Binding<Bool>, onStageChange: @escaping () -> Void = {}) {
+        self.onStageChange = onStageChange
         _showingPhoneLauncher = showingPhoneLauncher
         self.status = status
         _index = AppStorage(wrappedValue: 0, "shield-restoration-step-" + status.participantId.uuidString)
@@ -19,7 +23,10 @@ struct ForwardingRestoreView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Callbacks are stopped. Restore each connection below.").font(.title3)
+            if index < 7 {
+                Text(index < 3 ? "First, disconnect Tello forwarding. Then restore Phone settings and check ordinary calls." : "You confirmed the Tello resets. Finish the steps below to check ordinary phone service.")
+                    .font(.title3).accessibilityFocused($stageFocused)
+            }
             if codes.indices.contains(index) {
                 Text("Restore connection \(index + 1) of 3").font(.headline)
                 Text(codes[index]).font(.title.monospaced().bold()).accessibilityIdentifier("forwarding-reset-code")
@@ -29,7 +36,8 @@ struct ForwardingRestoreView: View {
                     if codeReady { showingPhoneLauncher = false; index += 1; codeReady = false; returnedFromPhone = false; showingHelp = false }
                     else { copyCode() }
                 }
-                .buttonStyle(.borderedProminent).controlSize(.large).foregroundStyle(ShieldTheme.actionInk)
+                .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonBorderShape(.roundedRectangle(radius: 16)).foregroundStyle(ShieldTheme.actionInk)
                 .accessibilityIdentifier("forwarding-reset-continue")
                 if codeReady {
                     Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }.frame(minHeight: 44).accessibilityIdentifier("forwarding-reset-copy")
@@ -40,12 +48,29 @@ struct ForwardingRestoreView: View {
                             .foregroundStyle(ForwardingStyle.secondaryText)
                     }
                 }
+            } else if index < 5 {
+                RestorationSettingsGuide(index: $index)
+            } else if index < 7 {
+                RestorationCallCheck(index: $index)
             } else {
-                Text("Restore your original iPhone settings").font(.title2.bold())
-                Text("In Settings → Apps → Phone, set Screen Unknown Callers to Never and Live Voicemail to On.")
-                Text("Answer one ordinary call, then let another go to your normal voicemail. Keep Shield installed until both work.")
-                Text("If normal voicemail does not return, Tello needs to restore the default voicemail routing.").foregroundStyle(ForwardingStyle.secondaryText)
+                Label("Restoration checklist complete", systemImage: "checkmark.circle")
+                    .font(.title2.bold()).accessibilityIdentifier("restoration-complete")
+                Text("You confirmed the three Tello resets, Phone settings, an ordinary call, and normal voicemail.")
+                Text("Shield callbacks remain stopped. Saved from your confirmations; Shield can’t independently read your phone or carrier settings.")
+                    .foregroundStyle(ForwardingStyle.secondaryText)
+                Button("Done") { dismiss() }
+                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonBorderShape(.roundedRectangle(radius: 16))
+                    .foregroundStyle(ShieldTheme.actionInk)
+
             }
+        }
+        .onChange(of: index) { _, _ in
+            codeReady = false
+            returnedFromPhone = false
+            showingHelp = false
+            stageFocused = true
+            onStageChange()
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background && codeReady { leftForPhone = true }

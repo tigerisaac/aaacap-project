@@ -293,6 +293,20 @@
 			"path" = "Shield/Features/Settings/Forwarding/PhoneSettingsLink.swift";
 			"sourceTree" = "<group>";
 		};
+		"F8E08E79424449AF1263C4CF" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "RestorationCallCheck.swift";
+			"path" = "Shield/Features/Settings/Forwarding/RestorationCallCheck.swift";
+			"sourceTree" = "<group>";
+		};
+		"B1271F87F85070D2B4B6A215" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "RestorationSettingsGuide.swift";
+			"path" = "Shield/Features/Settings/Forwarding/RestorationSettingsGuide.swift";
+			"sourceTree" = "<group>";
+		};
 		"596229E24F646F11622CD47E" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -783,6 +797,8 @@
 				"F33D7BEF58FDDE1C8C17CE8B",
 				"0DD1F5D47A94BD20DD16603B",
 				"CFD7556D6F6C4FE1CED8D696",
+				"F8E08E79424449AF1263C4CF",
+				"B1271F87F85070D2B4B6A215",
 				"596229E24F646F11622CD47E",
 				"F1CE8C4612971548E51AC6F5",
 			);
@@ -1204,6 +1220,14 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "CFD7556D6F6C4FE1CED8D696";
 		};
+		"8A431FF849F8AE22A1118EBF" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F8E08E79424449AF1263C4CF";
+		};
+		"85BA3DF7907B929503F027F2" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B1271F87F85070D2B4B6A215";
+		};
 		"2C9E958C8060380E2C2053D0" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "596229E24F646F11622CD47E";
@@ -1405,6 +1429,8 @@
 				"B2D37C40D913E25999928165",
 				"DA5C36B6AA31EED6F5568B05",
 				"0BFBCDA92DC7057329D9BAA3",
+				"8A431FF849F8AE22A1118EBF",
+				"85BA3DF7907B929503F027F2",
 				"2C9E958C8060380E2C2053D0",
 				"AA87806ABA22019F4D0B47FF",
 				"C0A81B927AFB4AD345DE6737",
