@@ -9,6 +9,7 @@ final class ForwardingSetupModel {
     var working = false
     var error: String?
     var codePreparedStep: ForwardingStep?
+    var showingPhoneLauncher = false
     var showingHelp = false
     var settingsDestination = PhoneSettingsLink.preferredDestination
     var settingsReturned = false
@@ -55,6 +56,7 @@ final class ForwardingSetupModel {
                 loaded = true
                 participantID = id
                 codePreparedStep = nil
+                showingPhoneLauncher = false
                 if UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue {
                     settingsReturned = true
                 }
@@ -108,6 +110,7 @@ final class ForwardingSetupModel {
         let reuseSettingsVisit = step == .settings && next == .liveVoicemail && settingsReturned
         step = next
         codePreparedStep = nil
+        showingPhoneLauncher = false
         settingsReturned = reuseSettingsVisit
         if reuseSettingsVisit && !isUITest { UserDefaults.standard.set(next.rawValue, forKey: settingsVisitKey) }
         pendingSettingsStep = nil
@@ -118,10 +121,15 @@ final class ForwardingSetupModel {
         await load(app)
     }
 
-    func copyCode() {
+    func copyCode(showPhoneLauncher: Bool = true) {
         guard let code, !working else { return }
         PhoneAppLink.copy(code: code)
         codePreparedStep = step
+        #if DEBUG
+        showingPhoneLauncher = showPhoneLauncher && (!isUITest || ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone"))
+        #else
+        showingPhoneLauncher = showPhoneLauncher
+        #endif
         error = nil
         // Copying never confirms a carrier change or advances the step.
     }

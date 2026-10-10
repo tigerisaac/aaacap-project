@@ -17,14 +17,19 @@ struct ForwardingCodeView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("forwarding-code")
                 if model.codePreparedStep == model.step {
-                    SetupInstruction(number: 1, title: "Open Phone → Keypad", detail: "Go to your Home Screen and open the green Phone app. Choose Keypad.")
+                    SetupInstruction(number: 1, title: "Tap Open beside Phone", detail: "Use the Phone banner below, then choose Keypad. If the banner doesn’t appear, open the green Phone app from your Home Screen.")
                     SetupInstruction(number: 2, title: "Hold above the numbers and paste", detail: "Touch and hold the blank area above the keypad, then choose Paste. Check that every star and the final # are included.")
                     SetupInstruction(number: 3, title: "Tap Call and wait for Tello", detail: "Continue here only after Tello says Setting Registration Succeeded for Voice Call Forwarding.")
-                    Button("Copy code again", systemImage: "document.on.document") { model.copyCode() }
+                    Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
                         .frame(minHeight: 44).disabled(model.working)
                         .accessibilityIdentifier("forwarding-copy-code")
                 } else {
-                    Text("Copy the code below, then paste it into Phone’s keypad. Shield saves your place while you switch apps.")
+                    Text("Copy the code below, then tap Open on the Phone banner. Paste it into Phone’s keypad. Shield saves your place while you switch apps.")
+                }
+                if model.codePreparedStep == model.step {
+                    Button("Show Phone again", systemImage: "phone") { model.copyCode() }
+                        .frame(minHeight: 44).disabled(model.working)
+                        .accessibilityIdentifier("forwarding-phone-reopen")
                 }
                 Button("The code didn’t work", systemImage: "questionmark.circle") { model.showingHelp.toggle() }
                     .frame(minHeight: 44)

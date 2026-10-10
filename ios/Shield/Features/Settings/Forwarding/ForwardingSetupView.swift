@@ -5,6 +5,7 @@ struct ForwardingSetupView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var model = ForwardingSetupModel()
     @State private var confirmRestore = false
+    @State private var leftForPhone = false
     @AccessibilityFocusState private var headingFocused: Bool
 
     var body: some View {
@@ -20,7 +21,7 @@ struct ForwardingSetupView: View {
                     } else if model.step.codeIndex != nil {
                         ForwardingCodeView(model: model)
                     } else {
-                        ForwardingStepContent(step: model.step, status: status)
+                        ForwardingStepContent(step: model.step, status: status, model: model)
                     }
                     if let error = model.error {
                         VStack(alignment: .leading, spacing: 8) {
@@ -43,6 +44,7 @@ struct ForwardingSetupView: View {
             .frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
         }
         .id(model.step)
+        .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
             if model.status != nil { ForwardingActions(model: model, app: app, confirmRestore: $confirmRestore) }
@@ -76,6 +78,11 @@ struct ForwardingSetupView: View {
         .onChange(of: model.step) { _, _ in headingFocused = true }
         .onChange(of: scenePhase) { _, phase in
             model.settingsSceneChanged(isActive: phase == .active)
+            if phase == .background && model.showingPhoneLauncher { leftForPhone = true }
+            if phase == .active && leftForPhone {
+                model.showingPhoneLauncher = false
+                leftForPhone = false
+            }
             if phase == .active { Task { await model.load(app) } }
         }
         .confirmationDialog("Restore ordinary phone service?", isPresented: $confirmRestore, titleVisibility: .visible) {

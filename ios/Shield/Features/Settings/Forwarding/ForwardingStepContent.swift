@@ -3,6 +3,7 @@ import SwiftUI
 struct ForwardingStepContent: View {
     let step: ForwardingStep
     let status: ForwardingStatus
+    @Bindable var model: ForwardingSetupModel
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             switch step {
@@ -31,7 +32,7 @@ struct ForwardingStepContent: View {
             case .checks:
                 ForwardingTestView(status: status)
             case .restore:
-                ForwardingRestoreView(status: status)
+                ForwardingRestoreView(status: status, showingPhoneLauncher: $model.showingPhoneLauncher)
             default: EmptyView()
             }
         }

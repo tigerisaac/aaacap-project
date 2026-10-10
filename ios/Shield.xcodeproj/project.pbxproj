@@ -265,6 +265,13 @@
 			"path" = "Shield/Features/Settings/Forwarding/PhoneAppLink.swift";
 			"sourceTree" = "<group>";
 		};
+		"F33D7BEF58FDDE1C8C17CE8B" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "PhoneLauncherBanner.swift";
+			"path" = "Shield/Features/Settings/Forwarding/PhoneLauncherBanner.swift";
+			"sourceTree" = "<group>";
+		};
 		"0DD1F5D47A94BD20DD16603B" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -765,6 +772,7 @@
 				"507EF53010DE7A8EF5773B8F",
 				"8D68B3B45E6B1AE5648BA567",
 				"2A5E9852E19CF988975D72A3",
+				"F33D7BEF58FDDE1C8C17CE8B",
 				"0DD1F5D47A94BD20DD16603B",
 				"CFD7556D6F6C4FE1CED8D696",
 				"596229E24F646F11622CD47E",
@@ -1172,6 +1180,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "2A5E9852E19CF988975D72A3";
 		};
+		"B2D37C40D913E25999928165" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F33D7BEF58FDDE1C8C17CE8B";
+		};
 		"DA5C36B6AA31EED6F5568B05" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "0DD1F5D47A94BD20DD16603B";
@@ -1377,6 +1389,7 @@
 				"6DDDA7DC199419D82C87B20A",
 				"822B6DCF7321FD67A752BDD8",
 				"03BC249B5C2627C3433E27E9",
+				"B2D37C40D913E25999928165",
 				"DA5C36B6AA31EED6F5568B05",
 				"0BFBCDA92DC7057329D9BAA3",
 				"2C9E958C8060380E2C2053D0",

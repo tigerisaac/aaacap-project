@@ -39,9 +39,11 @@ Read back from production on October 10:
 
 - iOS onboarding (October 10): the owner-authorized native card action was blocked by iOS 27.2 with **Call Forwarding Link Blocked**. The failed card path was removed in favor of the physically verified clipboard/keypad method. All three real Tello codes returned carrier-registration success; no incoming call or probe was placed. The two Phone-settings instructions share one visit with separate confirmations. Temporary carrier-test launch arguments were removed from the app. The normal signed build was installed and launched on the enrolled phone, and its copy flow was visually inspected. Final validation passed eight simulator UI tests, 94 unit tests with typecheck/build, and 47 Firebase emulator tests.
 
+- iOS Phone launcher (October 10): the integrated native StoreKit banner launched Phone on the enrolled iPhone. The full synthetic code pasted with stars and final hash intact; no call was placed. Returning retained the unconfirmed setup step and dismissed the banner; Show Phone again reopened Phone. Two final targeted simulator tests passed for copy/next-code reset and no automatic dial/carrier confirmation. The signed Debug build was installed. This is a two-tap handoff plus manual paste, with no installed Shortcut. Carrier forwarding and the closed test window were unchanged.
+
 ## Not yet verified
 
-- **Immediate Phone opening/prefill:** tested URL schemes failed and the native contact-card carrier action was blocked. Manual keypad paste succeeds; the original one-tap goal is still unresolved.
+- **One-tap Phone opening/automatic prefill:** URL schemes failed and the native contact-card carrier action was blocked. The integrated Apple Phone banner now launches Phone through an extra Open tap, with manual keypad paste physically verified. Automatic prefill remains unresolved.
 - **Policy v14 on a real phone line**, with a real voice and carrier audio.
 - **The voicemail fallback on a real call.**
 - **Connected-call protection end to end:**
