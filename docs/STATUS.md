@@ -17,11 +17,14 @@ Read back from production on October 10:
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
 | Carrier forwarding | Enabled October 10 with owner approval: Tello confirmed registration for unanswered, busy and unreachable conditions to Shield. Carrier routing has not been independently rechecked after the owner’s restoration/setup activity. Latest October 10 readback: backend stage checks and screening window active until 22:11 UTC; no active call. The owner started that session through setup. |
-| Last real call | October 10: accepted call with a code/password monitoring intervention at 22:40:48 UTC |
+| Last real call | October 10: accepted call with a monitoring intervention at 22:46:14 UTC |
 
 ## Verified on real calls
 
 - **October 10 (policy v14, Parakeet monitoring):** the owner reported connection and a successful in-call intervention. Production events show acceptance at 22:40:24 UTC, code/password intervention at 22:40:48 UTC, then call ended. The transcript was deleted; no pending checks or service errors in the prior hour. This verifies the intervention path on one real call, not comparative transcription accuracy, speaker labels, or time from the suspicious request.
+  - **Second intervention:** production events show a second monitored call: accepted at 22:45:52 and intervention at 22:46:14 UTC. Its transcription started at 22:45:24, before the Soniox revision was active at 22:45:53, so it most likely ran on Parakeet. Soniox still has no real-call evidence.
+  - **Routine call:** an earlier routine call was offered, accepted at 22:35:04 and connected, without monitoring.
+  - **Caller wait:** across all three calls, the caller reached the person 40–43 s after the call started. Interventions came 22–24 s after acceptance.
 
 - **September 24 (older screening policy):**
   - A bank-code request was blocked and the call ended.
@@ -58,6 +61,13 @@ Read back from production on October 10:
 October 10 completion validation: the end-to-end guided setup and Done/later-restoration UI tests both passed. The synthetic completion screenshot was inspected in simulator. Typecheck/build, 94 unit tests and 47 Firebase emulator tests passed. The signed normal build was installed and launched on the enrolled iPhone without changing its saved progress or session. No carrier setting or live backend deployment changed in this pass.
 
 - Connected-call protection onboarding (October 10): main onboarding after email sign-in selects protection by default, with an optional off toggle and explicit Continue to save current consent. Existing opt-outs are preserved, stale enabled consent prompts again, and helpers cannot choose for someone else. Typecheck/build, 94 unit tests, 48 Firebase emulator tests and all five final targeted UI tests passed. Default and largest-text/dark screens were inspected in simulator; the signed normal app was installed and launched on the enrolled iPhone. No owner monitoring preference or carrier setting was changed. With owner approval, only `shieldApi` was deployed successfully: revision `shieldapi-00013-seb`, ACTIVE at 22:11:03 UTC, public health HTTP 200/ready. Connected-call protection end to end remains unverified.
+
+- **Withheld and international caller IDs (October 10, code only, not deployed).** Forwarded callers whose number is withheld (`anonymous`, `restricted`, empty) or outside the US are now screened like any other caller, instead of being hung up.
+  - **Binding:** the webhook caller must still match Telnyx's own record of the call.
+  - **Never trusted:** a withheld caller never matches a saved contact or a single-caller test scope.
+  - **Not stored:** the raw value isn't kept, and history shows "No caller ID".
+  - **Tests:** `npm run check` passed (94 unit tests) and `npm run test:firebase` passed 54 emulator tests, 6 of them new.
+  - **Unknown:** what Telnyx actually sends for a withheld number needs one real call.
 
 ## Not yet verified
 

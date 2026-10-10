@@ -5,7 +5,7 @@ import { purposes } from './copy.js';
 import { CloudStore } from './store.js';
 import { ForwardingProbes } from './forwarding-probes.js';
 import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
-import { forwardingNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
+import { callerNumber, forwardingNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { CallMonitor, warningText } from './monitoring.js';
 import { VoiceResponse } from './texml.js';
 import { announcementResponse } from './announcements.js';
@@ -48,10 +48,13 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     });
     voice.post('/forwarding/:secret/inbound', async request => {
       const b = request.body as Record<string, string>;
-      if (b.To !== number || !/^\+1\d{10}$/.test(b.From ?? '')) return hangup();
+      if (b.To !== number) return hangup();
+      // Clinics, hospitals and international family often withhold or lack a US number; screen them like anyone else.
+      const caller = callerNumber(b.From);
       // TeXML does not promise Direction on its instruction-fetch webhook, so ask Telnyx.
       let remote; try { remote = await inboundLookup(b.CallSid!); } catch { return hangup(); }
-      if (remote.from !== b.From || remote.to !== number || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
+      const sameCaller = caller ? remote.from === caller : !callerNumber(remote.from);
+      if (!sameCaller || remote.to !== number || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
       if (b.From === number) {
         const probe = await probes.incoming(b.CallSid!);
         if (!probe) return hangup();
@@ -59,7 +62,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
         r.gather({ input: ['dtmf'], numDigits: 8, timeout: 10, action: callback('probe-confirm', probe.id), method: 'POST' });
         r.hangup(); return r.toString();
       }
-      const call = await f.begin(b.CallSid!, b.From!);
+      const call = await f.begin(b.CallSid!, caller);
       if (!call) return hangup('Shield is not ready to receive this call. Please try again later.');
       // Only live screening makes a call eligible, so every other call is offered voicemail here.
       if (call.state === 'voicemail') return voicemail(call);

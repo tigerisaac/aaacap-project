@@ -22,7 +22,7 @@ export function cloudCallDTO(store: CloudStore, call: Call) {
   const reason = abandoned ? 'screening_unavailable' : call.reason;
   const copy = reasonCopy[reason] ?? reasonCopy.uncertain!;
   return { id: call.id, occurredAt: at(call.createdAt),
-    callerNumber: store.vault.open(call.callerEnc, `call:${call.id}:caller`),
+    callerNumber: store.vault.open(call.callerEnc, `call:${call.id}:caller`) || 'No caller ID',
     title: reason === 'routine' ? (purposes[call.purpose as keyof typeof purposes] ?? copy.title) : copy.title,
     outcome: abandoned ? 'missed' : call.outcome, reasonCode: reason,
     detail: reason === 'routine' ? (forwarding ? 'The introduction looked routine. Connection requires you to answer and press 1.' : 'The introduction looked routine. No call was connected.') : copy.detail,

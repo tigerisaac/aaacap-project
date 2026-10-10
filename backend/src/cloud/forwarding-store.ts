@@ -23,13 +23,14 @@ export class ForwardingStore {
     const call = (await this.store.callRef(key.callId).get()).data() as ForwardingCall | undefined;
     return call?.source === 'forwarding' && call.participantId === this.store.config.TRIAL_PARTICIPANT_ID ? call : undefined;
   }
-  async begin(sid: string, from: string): Promise<ForwardingCall | undefined> {
+  /** `from` is undefined when the caller's number was withheld; such a caller is never trusted and is screened like any other. */
+  async begin(sid: string, from: string | undefined): Promise<ForwardingCall | undefined> {
     const s = this.store, now = s.now(), id = randomUUID();
     return s.db.runTransaction(async tx => {
       const [key, controlDoc, personDoc, quotaDoc, trusted] = await Promise.all([
         tx.get(s.keyRef(sid)), tx.get(this.control), tx.get(s.personRef(s.config.TRIAL_PARTICIPANT_ID)),
         tx.get(s.db.doc(`forwardingUsage/${Math.floor(now / 86400_000)}`)),
-        tx.get(s.personRef(s.config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').where('phoneHash', '==', s.vault.hash(from)).limit(1))
+        from ? tx.get(s.personRef(s.config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').where('phoneHash', '==', s.vault.hash(from)).limit(1)) : undefined
       ]);
       const c = controlDoc.data(), p = personDoc.data();
       if (key.exists || !c?.provisioned || !p || p.status === 'offboarded' || p.forwardingConsent !== forwardingConsent
@@ -37,9 +38,10 @@ export class ForwardingStore {
       // Only live GPT screening can clear a caller; with it switched off every forwarded call gets voicemail.
       const eligible = s.config.LIVE_SCREENING_ENABLED && c.enabled === true && c.expiresAt > now && c.used < 10 && !c.activeCallId
         && !(c.probe?.state === 'waiting' && c.probe.expiresAt > now)
-        && p.status === 'setup' && (c.allowAnyCaller === true || c.callerHash === s.vault.hash(from)) && !trusted.docs.some(d => d.data().enabled !== false) && from !== s.config.TRIAL_VERIFIED_CALLER;
+        && p.status === 'setup' && (c.allowAnyCaller === true || (!!from && c.callerHash === s.vault.hash(from)))
+        && !trusted?.docs.some(d => d.data().enabled !== false) && from !== s.config.TRIAL_VERIFIED_CALLER;
       const call: ForwardingCall = { id, participantId: p.id, source: 'forwarding', provider: 'telnyx', parentSid: sid, eligible,
-        createdAt: now, expiresAt: now + RETENTION_MS, callerEnc: s.vault.seal(from, `call:${id}:caller`),
+        createdAt: now, expiresAt: now + RETENTION_MS, callerEnc: s.vault.seal(from ?? '', `call:${id}:caller`),
         state: eligible ? 'screening' : 'voicemail', outcome: eligible ? 'screening' : 'voicemail',
         reason: eligible ? 'screening' : 'message_only', purpose: null, completedAt: null,
         events: [{ kind: eligible ? 'screening_started' : 'voicemail_offered', at: now }] };

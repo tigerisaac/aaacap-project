@@ -92,7 +92,9 @@ These apply on every carrier, and affect real users more than the codes do.
    - blocked or private caller ID, which clinics, hospitals and pharmacies often use
    - international family
 
-   iOS silences these callers, the carrier forwards them, and Shield hangs up. Before Shield, they'd have reached carrier voicemail. Send them to voicemail at least. One supervised call will show what Telnyx puts in `From` for a withheld number.
+   iOS silences these callers, the carrier forwards them, and Shield hangs up. Before Shield, they'd have reached carrier voicemail.
+
+   **Fixed in code October 10, not yet deployed:** these callers are now screened like anyone else, and history shows "No caller ID". One supervised call will show what Telnyx puts in `From` for a withheld number.
 3. **Shield's offer can be cut short by the carrier's ring time.** Shield rings the person for 20 seconds (`<Dial timeout: 20>`). If the carrier forwards unanswered calls sooner, the offer bounces back to the Shield number. The loop guard then hangs up, so the person has less time to pick up. Seniors answer slowly, so two fixes help:
    - **T-Mobile and AT&T lines:** add the 30-second ring time to the no-answer code (`**61*1N**30#`). This also gives contacts longer to ring.
    - **Verizon-family lines:** keep the offer under about 18 seconds.

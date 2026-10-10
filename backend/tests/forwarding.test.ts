@@ -162,6 +162,30 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await post('inbound', { From: number })).body).toContain('<Hangup');
     expect((await db.collection('callSessions').get()).empty).toBe(true);
   });
+  it.each(['anonymous', 'Restricted', '+anonymous', ''])('screens a withheld caller ID (%j) without storing it or trusting it', async withheld => {
+    inboundFrom = withheld;
+    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').add({ phoneHash: s.vault.hash(withheld), enabled: true });
+    expect((await post('inbound', { From: withheld })).body).toContain('<Stream');
+    const call = (await f.find(sid()))!;
+    expect(call).toMatchObject({ state: 'screening', eligible: true });
+    expect(s.vault.open(call.callerEnc, `call:${call.id}:caller`)).toBe('');
+    const [listed] = (await app.inject({ url: '/api/calls', headers: headers() })).json().calls;
+    expect(listed.callerNumber).toBe('No caller ID');
+  });
+  it('screens an international caller and binds the webhook caller to the provider record', async () => {
+    inboundFrom = '+442071838750';
+    expect((await post('inbound', { From: inboundFrom })).body).toContain('<Stream');
+    expect((await f.find(sid()))?.state).toBe('screening');
+    inboundFrom = from;
+    expect((await post('inbound', { CallSid: sid(2), From: 'anonymous' })).body).toContain('<Hangup');
+    inboundFrom = 'anonymous';
+    expect((await post('inbound', { CallSid: sid(3) })).body).toContain('<Hangup');
+    expect(await f.find(sid(2))).toBeUndefined(); expect(await f.find(sid(3))).toBeUndefined();
+  });
+  it('never matches a withheld caller to a single-caller test scope', async () => {
+    await f.control.update({ allowAnyCaller: false, callerHash: s.vault.hash('') });
+    expect((await f.begin(sid(), undefined))!.eligible).toBe(false);
+  });
   it('allows any caller but only one offer at a time, including recursive forwarding', async () => {
     const calls = await Promise.all([f.begin(sid(), from), f.begin(sid(2), '+12025550103')]);
     expect(calls.filter(c => c?.eligible)).toHaveLength(1);

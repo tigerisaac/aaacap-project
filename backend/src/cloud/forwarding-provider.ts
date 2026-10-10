@@ -5,6 +5,8 @@ const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export const forwardingNumber = (c: CloudConfig) => c.TELNYX_NUMBER;
 export const validCallId = (value: string) => uuid.test(value) || /^v[23]:[a-zA-Z0-9_-]{10,512}$/.test(value);
 export const validRecordingId = (value: string) => uuid.test(value);
+/** An E.164 caller number, or undefined when the network withheld it ("anonymous", "restricted", empty). Never store the raw value. */
+export const callerNumber = (value: string | undefined) => value && /^\+[1-9]\d{7,14}$/.test(value) ? value : undefined;
 
 /** Telnyx signs timestamp|exact request bytes, not a reserialized form or JSON object. */
 export function verifyTelnyx(publicKey: string, signature: unknown, timestamp: unknown, raw: Buffer | undefined, now = Date.now()) {
