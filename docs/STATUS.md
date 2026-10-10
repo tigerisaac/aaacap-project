@@ -90,8 +90,9 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
 2. **Voice listening check.** Deployed October 10: 25 prerecorded Soniox Grace announcements with Hosting playback, a packaged Functions audio backup, and unchanged GPT Live `marin`. All primary and backup URLs verified. Audition the transition to `marin` over a real phone line, including a playback failure, then run a short listening session with seniors ([Architecture → Voice and speech](ARCHITECTURE.md#voice-and-speech)).
 3. **Real voices and more held-out cases.** Every result so far is synthetic. Add held-out text probes (cheap) rather than growing the main benchmark past 25 cases.
 4. **Decide whether the scam-guidance lookup earns its delay.** It's built and limited to official sites, but nobody has measured whether it changes decisions.
-5. **Senior rehearsal, then the ten-person pilot.** See the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md).
-6. **Housekeeping:**
+5. **Protection plan.** Agreed October 10, not built: faster and broader monitoring, blocking repeat scammers, caregiver alerts, daily setup checks, voicemail triage and shorter disclosures. See the [protection plan](PROTECTION-PLAN.md).
+6. **Senior rehearsal, then the ten-person pilot.** See the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md).
+7. **Housekeeping:**
    - release the Twilio number and close the Twilio account
    - delete the OpenRouter key
 
