@@ -26,7 +26,10 @@
     "firebase:package": "npm run build && node scripts/package-firebase.mjs",
     "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts'",
     "eval:model": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.openrouter backend/scripts/evaluate-model.ts",
-    "check": "npm run typecheck && npm test && npm run build"
+    "check": "npm run test:onboarding && npm run typecheck && npm test && npm run build",
+    "collaborator:setup": "node scripts/setup-collaborator.mjs",
+    "collaborator:check": "node scripts/check-collaborator.mjs",
+    "test:onboarding": "node --test scripts/collaborator-config.test.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.8",
@@ -48,6 +51,7 @@
     "@types/node": "26.6.2",
     "@types/pg": "8.23.1",
     "@types/ws": "8.18.1",
+    "firebase-tools": "15.10.1",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.0.1"
