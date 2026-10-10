@@ -19,7 +19,7 @@ export const cloudSchema = z.object({
   LIVE_BRIDGE_URL: z.string().regex(/^https:\/\/[a-z0-9-]+\.a\.run\.app$/).optional(),
   // Connected-call protection is offered only when this is on AND the recipient opts in.
   CALL_MONITORING_ENABLED: z.boolean().default(false),
-  MONITOR_TRANSCRIPTION_ENGINE: z.enum(['Parakeet', 'Soniox', 'Deepgram']).default('Parakeet'),
+  MONITOR_TRANSCRIPTION_ENGINE: z.enum(['Parakeet', 'Soniox', 'Deepgram']).default('Soniox'),
 });
 export type CloudConfig = z.infer<typeof cloudSchema>;
 export const CONSENT_VERSION = 'shield-pilot-2026-09-v1';

@@ -101,7 +101,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   it('discloses to the caller, then transcribes both sides with the configured engine', async () => {
     await optIn(); const { id, offer } = await connect(false);
     expect(offer).toMatch(/03-hold-monitoring\.wav<\/Play><Start><Transcription/);
-    expect(offer).toContain('transcriptionEngine="Parakeet"'); expect(offer).toContain('transcriptionTracks="both"');
+    expect(offer).toContain('transcriptionEngine="Soniox"'); expect(offer).toContain('model="soniox/stt-rt-v4"'); expect(offer).toContain('transcriptionTracks="both"');
     expect(offer).toContain(`transcriptionCallback="${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/monitor/${id}"`);
     expect((await s.callRef(id).get()).data()!.monitoringStartedAt).toBe(now);
     // Before she presses 1 nothing is kept: hold music, whispers and ringing are not her conversation.

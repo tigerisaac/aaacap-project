@@ -13,12 +13,15 @@ Read back from production on October 10:
 | Runtime config | `SHIELD_RUNTIME` v5: Telnyx only, live screening on, connected-call protection on at the server. Twilio and OpenRouter keys removed. |
 | Announcement audio | Prerecorded Soniox Grace: 25 generic 24 kHz WAV files on Hosting, with Functions backup. `shieldApi` revision `shieldapi-00012-heq`, updated October 10 at 15:52 UTC. All 50 primary/backup URLs verified HTTP 200, `audio/wav`, matching original SHA-256; public health ready. |
 | Protection onboarding | Default-selected choice after email sign-in; Continue saves consent or opt-out. `shieldApi` revision `shieldapi-00013-seb`, deployed October 10 at 22:11 UTC; ACTIVE and public health ready. Signed app installed on enrolled iPhone. |
+| Connected-call transcription | Soniox `soniox/stt-rt-v4` through Telnyx, deployed with owner approval October 10. `shieldApi` revision `shieldapi-00014-nos` ACTIVE at 22:45:53 UTC; runtime v5 has no engine override and the new schema default resolves to Soniox. Public health HTTP 200/ready. Soniox real-call quality remains unverified. |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
 | Carrier forwarding | Enabled October 10 with owner approval: Tello confirmed registration for unanswered, busy and unreachable conditions to Shield. Carrier routing has not been independently rechecked after the owner’s restoration/setup activity. Latest October 10 readback: backend stage checks and screening window active until 22:11 UTC; no active call. The owner started that session through setup. |
-| Last real call | September 29, 2026 (a voicemail) |
+| Last real call | October 10: accepted call with a code/password monitoring intervention at 22:40:48 UTC |
 
 ## Verified on real calls
+
+- **October 10 (policy v14, Parakeet monitoring):** the owner reported connection and a successful in-call intervention. Production events show acceptance at 22:40:24 UTC, code/password intervention at 22:40:48 UTC, then call ended. The transcript was deleted; no pending checks or service errors in the prior hour. This verifies the intervention path on one real call, not comparative transcription accuracy, speaker labels, or time from the suspicious request.
 
 - **September 24 (older screening policy):**
   - A bank-code request was blocked and the call ended.
@@ -35,6 +38,7 @@ Read back from production on October 10:
   - held-out text: 36/36 legitimate, 35/36 harmful
   - red-team text: 107/108 legitimate, 181/183 harmful
   - see [Screening](SCREENING.md)
+- Soniox connected-call transcription switch (October 10): schema default changed from Parakeet to Soniox with explicit TeXML model `soniox/stt-rt-v4`, both audio tracks and the existing signed callback. Typecheck/build, 94 unit tests and 48 Firebase emulator tests passed. No new Soniox key is needed. Soniox real-call quality remains unverified.
 - Connected-call protection checks in text: 36/36 real conversations kept, 36/36 scams stopped.
 - Soniox announcement integration (local, October 10): `npm run check` passed (94 unit tests, typecheck and build); `npm run test:firebase` passed all 47 emulator tests. All 25 Hosting audio assets and 25 packaged backup assets match the approved recordings. Deployed October 10; not verified on a real phone call.
 
@@ -58,12 +62,9 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.
-- **Policy v14 on a real phone line**, with a real voice and carrier audio.
+- **Broader policy v14 real-call coverage**, including ordinary calls and scams.
 - **The voicemail fallback on a real call.**
-- **Connected-call protection end to end:**
-  - whether Telnyx transcription continues after `<Dial>` bridges the call
-  - whether speaker tracks are labelled
-  - whether redirecting the recipient's leg plays the warning and ends the caller's leg
+- **Connected-call protection coverage:** ordinary monitored calls, speaker-track labels, and Soniox transcription after deployment. One Parakeet code/password intervention succeeded October 10.
 - **A normal call and voicemail after forwarding was restored** in September.
 - **Two-way audio quality** on connected calls.
 

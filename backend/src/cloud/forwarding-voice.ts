@@ -101,7 +101,8 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       // The caller hears the disclosure before transcription starts; only the accepted conversation is checked.
       r.say(monitored ? 'Please hold while Shield offers your call. If it connects, an AI assistant will transcribe the call to help protect against fraud.'
         : 'Please hold while Shield offers your call.');
-      if (monitored) r.start().transcription({ transcriptionEngine: config.MONITOR_TRANSCRIPTION_ENGINE, transcriptionTracks: 'both',
+      if (monitored) r.start().transcription({ transcriptionEngine: config.MONITOR_TRANSCRIPTION_ENGINE,
+        ...(config.MONITOR_TRANSCRIPTION_ENGINE === 'Soniox' ? { model: 'soniox/stt-rt-v4' } : {}), transcriptionTracks: 'both',
         transcriptionCallback: callback('monitor', call.id), transcriptionCallbackMethod: 'POST' });
       const dial = r.dial({ callerId: number, answerOnBridge: true, timeout: 20, timeLimit: 300,
         action: callback('dial-ended', call.id), method: 'POST' });

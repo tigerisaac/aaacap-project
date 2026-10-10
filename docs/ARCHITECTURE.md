@@ -35,7 +35,7 @@ Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime confi
 
 ### Connected-call protection
 
-This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has saved current consent in the app. After email sign-in, main onboarding selects protection by default and lets the owner turn it off before tapping Continue. Continue saves the choice; existing explicit opt-outs are preserved, and Settings can change it later. Helpers do not choose consent for someone else. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx `<Transcription>` then sends both sides' final text to `/forwarding/:secret/monitor/:id`. Text is kept encrypted only while the call lasts. Each new piece of speech queues one check by `monitorConnectedCall`.
+This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has saved current consent in the app. After email sign-in, main onboarding selects protection by default and lets the owner turn it off before tapping Continue. Continue saves the choice; existing explicit opt-outs are preserved, and Settings can change it later. Helpers do not choose consent for someone else. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx `<Transcription>` uses Soniox (`soniox/stt-rt-v4`) by default and then sends both sides' final text to `/forwarding/:secret/monitor/:id`. Text is kept encrypted only while the call lasts. Each new piece of speech queues one check by `monitorConnectedCall`.
 
 If the caller clearly asks for a code, password, identity number, payment, remote access, secrecy or an investment, Shield redirects the person's leg to a short spoken warning. That ends the call. Model failures never end a call.
 
@@ -49,7 +49,7 @@ There are three voice paths today:
 | Screening conversation (questions and acknowledgements) | GPT Live, voice `marin` |
 | Keypad and probe tones | TeXML `<Play digits>` |
 
-The approved recordings and exact scripts are in `backend/src/cloud/announcement-audio/`. All 25 files are generic: purpose categories and warning categories contain no caller or recipient details. Soniox is used only to generate assets; the call runtime needs no Soniox key. Originals are 24 kHz mono PCM WAV, not the 8 kHz listening previews.
+The approved recordings and exact scripts are in `backend/src/cloud/announcement-audio/`. All 25 files are generic: purpose categories and warning categories contain no caller or recipient details. These announcements use Soniox to generate assets; connected-call transcription uses Soniox through Telnyx. The call runtime needs no separate Soniox key. Originals are 24 kHz mono PCM WAV, not the 8 kHz listening previews.
 
 Build verifies each recording's SHA-256 and copies it to versioned Firebase Hosting URLs plus the Functions package. `<Play failoverUrl>` retries a missing static asset using `/public/speech/<version>/<file>` served from that package. Playback does not continue on error: if both sources fail, the call cannot advance silently past a disclosure or acceptance instruction. The application's provider-error fallback remains ordinary Telnyx `<Say>` followed by hangup; provider fallback behavior on a playback error still needs a real-call check. Unrecognized or newly changed text uses `<Say>` until an approved recording is added. Never generate personalized audio into the public catalog.
 

@@ -90,7 +90,7 @@ Redeploy the functions after either change.
 
 Current production values (`SHIELD_RUNTIME` v5):
 - live screening on
-- call monitoring on at the server, but not yet turned on in the app
+- call monitoring on at the server; the owner enabled it in the app and a real code/password intervention succeeded October 10. New-owner onboarding selects protection by default; Continue saves the choice.
 
 ## Supervised test windows
 
