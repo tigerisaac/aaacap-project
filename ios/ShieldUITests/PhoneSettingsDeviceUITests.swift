@@ -25,6 +25,7 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
             add(failureShot)
         }
         XCTAssertTrue(opened)
+        XCTAssertNotEqual(XCUIApplication(bundleIdentifier: "com.apple.shortcuts").state, .runningForeground)
         XCTAssertTrue(observer.calls.isEmpty, "Opening Phone must not create a call")
         app.activate()
         XCTAssertTrue(app.staticTexts["Your code is copied"].waitForExistence(timeout: 10))
@@ -32,7 +33,7 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         let shot = XCTAttachment(screenshot: app.screenshot())
-        shot.name = "Phone shortcut return"
+        shot.name = "Direct Phone opening return"
         shot.lifetime = .keepAlways
         add(shot)
         app.buttons["forwarding-phone-reopen"].tap()

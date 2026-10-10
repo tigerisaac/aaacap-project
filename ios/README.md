@@ -41,6 +41,10 @@ Tokens stay in device-only Keychain storage. The app rejects HTTP redirects and 
 - **People:** participant switching, one-use invitations, optional voicemail sharing and revocation. Family members can inspect shared activity; phone settings and independent contacts remain with the participant.
 - **Settings:** guided phone forwarding setup and call tests, saved Shield contact, contact sync (synced contacts get voicemail only), connected-call protection opt-in, independent numbers, notifications, message-filter instructions, consent, pause and restoration/deletion requests.
 
+The forwarding button copies the exact carrier code to the device-local pasteboard for 30 minutes and requests Phone directly with `mobilephone://`; it no longer requires a user-installed Shortcut. The person still chooses Keypad, pastes the code, and taps Call. Apple does not document this system-app scheme as a supported public handoff, so a failed opening keeps manual Phone instructions available. Opening or returning from Phone never confirms that forwarding changed.
+
+On October 10, the signed Debug build containing this change was installed and launched on the enrolled iPhone. All seven `ForwardingUITests` passed on the iPhone 18 Pro simulator; these use a mocked Phone opening and do not prove the real handoff. The physical test runner twice failed before test execution while enabling automation, and iPhone Mirroring required the owner to lock the phone. Direct opening and pasting on the physical phone remain unverified.
+
 Manual saved-number calls require the user to tap a native call button. No incoming caller-provided number becomes an approved callback destination. Native Contacts access is requested only to save the Shield DID; the existing address book is not uploaded.
 
 APNs alerts contain no caller/message details. Registration is refreshed for authorized people after sign-in/foreground refresh; signing out removes that subject’s server registrations when the logout request succeeds. If the device is offline, provider token cleanup can be delayed; the generic alert does not reveal call content.

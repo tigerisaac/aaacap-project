@@ -12,9 +12,11 @@ enum PhoneAppLink {
             return !arguments.contains("--phone-link-fails")
         }
         #endif
-        // The installed Shield Open Phone shortcut contains only Apple's Open App action.
-        // No phone number, carrier code or clipboard contents are passed to Shortcuts.
-        guard let url = URL(string: "shortcuts://run-shortcut?name=Shield%20Open%20Phone") else { return false }
+        // Open Phone directly, without a user-installed shortcut or a dial request.
+        // The carrier code stays only on the local pasteboard; it is never a URL payload.
+        // This system-app scheme is best effort: keep the manual paste instructions
+        // available if an OS version does not accept it.
+        guard let url = URL(string: "mobilephone://") else { return false }
         return await UIApplication.shared.open(url)
     }
 }
