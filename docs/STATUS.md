@@ -14,7 +14,7 @@ Read back from production on October 10:
 | Announcement audio | Prerecorded Soniox Grace: 25 generic 24 kHz WAV files on Hosting, with Functions backup. `shieldApi` revision `shieldapi-00012-heq`, updated October 10 at 15:52 UTC. All 50 primary/backup URLs verified HTTP 200, `audio/wav`, matching original SHA-256; public health ready. |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
-| Carrier forwarding | Off. It was removed after the September 24 demo. |
+| Carrier forwarding | Enabled October 10 with owner approval: Tello confirmed registration for unanswered, busy and unreachable conditions to Shield. Incoming-call delivery remains unverified. Screening test window closed; backend stage remains restore. |
 | Last real call | September 29, 2026 (a voicemail) |
 
 ## Verified on real calls
@@ -37,11 +37,11 @@ Read back from production on October 10:
 - Connected-call protection checks in text: 36/36 real conversations kept, 36/36 scams stopped.
 - Soniox announcement integration (local, October 10): `npm run check` passed (94 unit tests, typecheck and build); `npm run test:firebase` passed all 47 emulator tests. All 25 Hosting audio assets and 25 packaged backup assets match the approved recordings. Deployed October 10; not verified on a real phone call.
 
-- iOS onboarding candidate (October 10): temporary native code cards replace failed Phone-opening links; clipboard recovery remains available, and the two Phone-settings instructions share one visit with separate user confirmations. Installed and visually inspected on the enrolled phone; seven onboarding simulator tests and two targeted native-card/fallback tests passed. No native-card carrier action, forwarding change or call was performed.
+- iOS onboarding (October 10): the owner-authorized native card action was blocked by iOS 27.2 with **Call Forwarding Link Blocked**. The failed card path was removed in favor of the physically verified clipboard/keypad method. All three real Tello codes returned carrier-registration success; no incoming call or probe was placed. The two Phone-settings instructions share one visit with separate confirmations. Temporary carrier-test launch arguments were removed from the app. The normal signed build was installed and launched on the enrolled phone, and its copy flow was visually inspected. Final validation passed eight simulator UI tests, 94 unit tests with typecheck/build, and 47 Firebase emulator tests.
 
 ## Not yet verified
 
-- **Native code-card carrier handoff:** whether the native phone action accepts complete forwarding and restoration codes on iOS 27.2. Opening and returning from a card are UI evidence only.
+- **Immediate Phone opening/prefill:** tested URL schemes failed and the native contact-card carrier action was blocked. Manual keypad paste succeeds; the original one-tap goal is still unresolved.
 - **Policy v14 on a real phone line**, with a real voice and carrier audio.
 - **The voicemail fallback on a real call.**
 - **Connected-call protection end to end:**

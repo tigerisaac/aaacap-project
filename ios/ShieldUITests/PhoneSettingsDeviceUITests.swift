@@ -3,32 +3,21 @@ import CallKit
 
 @MainActor
 final class PhoneSettingsDeviceUITests: XCTestCase {
-    func testNativeCodeCardDoesNotDialInDemoOrConfirmCarrierChange() throws {
+    func testCopyDoesNotDialOrConfirmCarrierChange() throws {
         continueAfterFailure = false
         let observer = CXCallObserver()
         XCTAssertTrue(observer.calls.isEmpty, "Do not interrupt an existing call")
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-code", "--uitesting-system-phone"]
+        app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-code"]
         app.launch()
         XCTAssertTrue(app.buttons["forwarding-continue"].waitForExistence(timeout: 15))
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Tello code")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy Tello code")
         app.buttons["forwarding-continue"].tap()
-        XCTAssertTrue(app.buttons["Back to Shield"].waitForExistence(timeout: 15))
-        XCTAssertTrue(observer.calls.isEmpty, "Opening a code card must not create a call")
-        app.buttons["Back to Shield"].tap()
-        XCTAssertTrue(app.staticTexts["Your code is ready"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["forwarding-code-copied"].waitForExistence(timeout: 10))
+        XCTAssertTrue(observer.calls.isEmpty, "Copying a code must not create a call")
         XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
-        let shot = XCTAttachment(screenshot: app.screenshot())
-        shot.name = "Native code card return"
-        shot.lifetime = .keepAlways
-        add(shot)
-        app.buttons["forwarding-phone-reopen"].tap()
-        XCTAssertTrue(app.buttons["Back to Shield"].waitForExistence(timeout: 15))
-        XCTAssertTrue(observer.calls.isEmpty)
-        app.buttons["Back to Shield"].tap()
-        XCTAssertTrue(app.staticTexts["When you don’t answer"].waitForExistence(timeout: 10))
     }
 
     func testPhoneSettingsOpensAndReturnsWithoutClaimingVerification() throws {

@@ -10,8 +10,6 @@ final class ForwardingSetupModel {
     var error: String?
     var codePreparedStep: ForwardingStep?
     var showingHelp = false
-    var showingCodeCard = false
-    var codeCopied = false
     var settingsDestination = PhoneSettingsLink.preferredDestination
     var settingsReturned = false
     private var pendingSettingsStep: ForwardingStep?
@@ -57,8 +55,6 @@ final class ForwardingSetupModel {
                 loaded = true
                 participantID = id
                 codePreparedStep = nil
-                codeCopied = false
-                showingCodeCard = false
                 if UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue {
                     settingsReturned = true
                 }
@@ -79,7 +75,7 @@ final class ForwardingSetupModel {
         if step.codeIndex != nil {
             guard code != nil else { await startWindow(app); return }
             if codePreparedStep != step {
-                openCodeCard()
+                copyCode()
                 return
             }
         }
@@ -112,8 +108,6 @@ final class ForwardingSetupModel {
         let reuseSettingsVisit = step == .settings && next == .liveVoicemail && settingsReturned
         step = next
         codePreparedStep = nil
-        codeCopied = false
-        showingCodeCard = false
         settingsReturned = reuseSettingsVisit
         if reuseSettingsVisit && !isUITest { UserDefaults.standard.set(next.rawValue, forKey: settingsVisitKey) }
         pendingSettingsStep = nil
@@ -124,33 +118,12 @@ final class ForwardingSetupModel {
         await load(app)
     }
 
-    func openCodeCard() {
-        guard let code, !working else { return }
-        error = nil
-        codePreparedStep = step
-        codeCopied = false
-        PhoneAppLink.copy(code: code)
-        #if DEBUG
-        if isUITest && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone") {
-            if ProcessInfo.processInfo.arguments.contains("--phone-link-fails") {
-                error = "The code card couldn’t open. Copy the code below, then open Phone → Keypad to paste it."
-            }
-            return
-        }
-        #endif
-        showingCodeCard = true
-        // Showing a card or returning from it never confirms a carrier change.
-    }
-
     func copyCode() {
-        guard let code else { return }
+        guard let code, !working else { return }
         PhoneAppLink.copy(code: code)
         codePreparedStep = step
-        codeCopied = true
-    }
-
-    func blockedCodeCardAction() {
-        error = "Demo: the code was selected. No carrier request was made."
+        error = nil
+        // Copying never confirms a carrier change or advances the step.
     }
 
     func openPhoneSettings() async {

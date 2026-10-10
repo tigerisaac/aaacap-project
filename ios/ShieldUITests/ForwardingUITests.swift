@@ -22,7 +22,7 @@ final class ForwardingUITests: XCTestCase {
             expect(app, title)
             XCTAssertTrue(app.staticTexts["forwarding-code"].exists)
             tapPrimary(app)
-            XCTAssertTrue(app.staticTexts["Your code is ready"].exists)
+            XCTAssertTrue(app.staticTexts["Your code is copied"].exists)
             if title == "When you don’t answer" { capture(app, "Guided Tello code") }
             tapPrimary(app)
         }
@@ -79,22 +79,20 @@ final class ForwardingUITests: XCTestCase {
         expect(app, "Let Shield take messages")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
     }
-    func testCodeCardFailureKeepsCodeAndRequiresCarrierConfirmation() {
-        let app = launch(["--forwarding-start-code", "--phone-link-fails"], title: "When you don’t answer")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Tello code")
+    func testCopyRequiresCarrierConfirmationAndResetsForNextCode() {
+        let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy Tello code")
         tapPrimary(app)
-        expect(app, "Your code is ready")
-        XCTAssertTrue(app.staticTexts["The code card couldn’t open. Copy the code below, then open Phone → Keypad to paste it."].exists)
-        XCTAssertTrue(app.buttons["forwarding-phone-reopen"].exists)
+        expect(app, "Your code is copied")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
-        app.buttons["Paste in Phone instead"].tap()
         app.swipeUp()
         app.buttons["forwarding-copy-code"].tap()
-        XCTAssertTrue(app.staticTexts["forwarding-code-copied"].exists)
+        expect(app, "When you don’t answer")
         tapPrimary(app)
         expect(app, "When your line is busy")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Tello code")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy Tello code")
+        XCTAssertFalse(app.staticTexts["forwarding-code-copied"].exists)
     }
     private func launch(_ extra: [String] = [], title: String = "Let’s set up Shield") -> XCUIApplication {
         let app = XCUIApplication()

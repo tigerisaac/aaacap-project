@@ -181,13 +181,6 @@
 			"path" = "Shield/Features/Settings/Forwarding/ForwardingCodeView.swift";
 			"sourceTree" = "<group>";
 		};
-		"3C967D245D55D41BEC533877" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"name" = "ForwardingDialCard.swift";
-			"path" = "Shield/Features/Settings/Forwarding/ForwardingDialCard.swift";
-			"sourceTree" = "<group>";
-		};
 		"173B8B0748380208E06DF407" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -760,7 +753,6 @@
 			"children" = (
 				"CF1F5FE7A2A95F17A7C94714",
 				"43C9327656452B45CF818F6F",
-				"3C967D245D55D41BEC533877",
 				"173B8B0748380208E06DF407",
 				"D7525E28A74859E6142AA70B",
 				"16D7475552D51DE36EA40924",
@@ -1132,10 +1124,6 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "43C9327656452B45CF818F6F";
 		};
-		"C392B0919BACE2DBE5A94961" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "3C967D245D55D41BEC533877";
-		};
 		"2062F4805E0B21F62A167F51" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "173B8B0748380208E06DF407";
@@ -1377,7 +1365,6 @@
 				"24366F353254DA726CA38BA3",
 				"C602615C5FF73EB29FDC4686",
 				"00A866BFC1B9C6D03FDAE6A5",
-				"C392B0919BACE2DBE5A94961",
 				"2062F4805E0B21F62A167F51",
 				"7D97798A31B032A63B1EB606",
 				"D26606470570E1C35508792B",
