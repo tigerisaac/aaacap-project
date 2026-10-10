@@ -53,7 +53,7 @@ The approved recordings and exact scripts are in `backend/src/cloud/announcement
 
 Build verifies each recording's SHA-256 and copies it to versioned Firebase Hosting URLs plus the Functions package. `<Play failoverUrl>` retries a missing static asset using `/public/speech/<version>/<file>` served from that package. Playback does not continue on error: if both sources fail, the call cannot advance silently past a disclosure or acceptance instruction. The application's provider-error fallback remains ordinary Telnyx `<Say>` followed by hangup; provider fallback behavior on a playback error still needs a real-call check. Unrecognized or newly changed text uses `<Say>` until an approved recording is added. Never generate personalized audio into the public catalog.
 
-Deploy Hosting assets and Functions together after approval, and check all primary and backup audio URLs before opening a test window. These changes are prepared locally on October 10; they have not been deployed or verified on a real call. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
+Deploy Hosting assets and Functions together after approval, and check all primary and backup audio URLs before opening a test window. Deployed October 10 to Hosting and `shieldApi` revision `shieldapi-00012-heq`. All 25 primary and 25 backup audio URLs returned HTTP 200 with the original SHA-256 and WAV content type; public health was ready. Not yet verified on a real call. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
 
 ## Data
 
