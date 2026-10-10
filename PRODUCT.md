@@ -8,7 +8,7 @@ ios
 
 ## Stack
 
-Native SwiftUI companion; TypeScript and PostgreSQL backend; Twilio for telephony. The approved implementation plan establishes this stack. Hosting and live provider accounts are open configuration decisions. The local backend uses embedded PostgreSQL only in demo mode.
+Native SwiftUI companion; TypeScript backend on Firebase (Functions, Firestore, Auth, Hosting); Telnyx for telephony; OpenAI GPT Live for voice screening through a Cloud Run bridge. See docs/ARCHITECTURE.md. The local backend uses embedded PostgreSQL only in demo mode.
 
 ## Users
 
@@ -24,7 +24,7 @@ The participant keeps their mobile number, native Phone app, and Messages. Carri
 
 ## Capabilities and Constraints
 
-Call history, held-call explanations, protected voicemail, manual message checks, independently sourced saved numbers, setup status, pause, recovery, and caregiver sharing. No caller authentication or guarantee that all scams are intercepted. No post-acceptance monitoring. Pausing offers does not restore forwarding. Real device/carrier tests are still required.
+Call history, held-call explanations, protected voicemail, manual message checks, independently sourced saved numbers, setup status, pause, recovery, and caregiver sharing. No caller authentication or guarantee that all scams are intercepted. Monitoring after a call connects is opt-in only (connected-call protection) and is disclosed to the caller. Pausing offers does not restore forwarding. Real device/carrier tests are still required.
 
 ## Brand Commitments
 
@@ -32,7 +32,7 @@ Shield is a working name. Minimal text and more color are explicit user preferen
 
 ## Evidence on Hand
 
-Architecture and verification documents in docs/. No real participant data, measured fraud prevention, or live carrier validation. All demo activity must be clearly identified as sample data.
+Current architecture, status and screening results in docs/. Synthetic screening benchmarks and a few supervised real calls by the owner; no real participant data or measured fraud prevention. All demo activity must be clearly identified as sample data.
 
 ## Product Principles
 

@@ -4,7 +4,7 @@ This is a pilot implementation, not a verified carrier service. Local tests, phy
 
 ## Infrastructure
 
-The selected platform is Firebase in the dedicated project `shield-calls-isaac`. The user declined the [always-on Cloud Run/PostgreSQL proposal](../deploy/google-cloud/README.md), which produced the approximately $55/month baseline. **Do not deploy that manifest.** The project is linked to the existing billing account; Firestore and Firebase Auth are initialized. The [serverless implementation and deployment status](FIREBASE-SERVERLESS-PLAN.md) uses Firestore plus request/event-driven functions that scale to zero. The runtime is deployed with approved Secret Manager credentials, scoped IAM and owner enrollment. Live synthetic auth/history and model-job checks passed; the signed Firebase-connected app is installed on the iPhone. Twilio now points at Firebase, and the old Mac listener/tunnel are stopped. The user confirmed hearing a real hosted screening result and seeing the call in Shield; Firebase confirms the owner’s verified-email sign-in.
+The selected platform is Firebase in the dedicated project `shield-calls-isaac`. The user declined the [always-on Cloud Run/PostgreSQL proposal](../../deploy/google-cloud/README.md), which produced the approximately $55/month baseline. **Do not deploy that manifest.** The project is linked to the existing billing account; Firestore and Firebase Auth are initialized. The [serverless implementation and deployment status](FIREBASE-SERVERLESS-PLAN.md) uses Firestore plus request/event-driven functions that scale to zero. The runtime is deployed with approved Secret Manager credentials, scoped IAM and owner enrollment. Live synthetic auth/history and model-job checks passed; the signed Firebase-connected app is installed on the iPhone. Twilio now points at Firebase, and the old Mac listener/tunnel are stopped. The user confirmed hearing a real hosted screening result and seeing the call in Shield; Firebase confirms the owner’s verified-email sign-in.
 
 ## Legacy PostgreSQL runtime (not the selected deployment)
 
@@ -69,7 +69,7 @@ This optional command makes **16 billable requests** using synthetic fixtures an
 
 ## Apple integration
 
-Configure `APPLE_TEAM_ID`, `IOS_BUNDLE_ID`, app/extension bundle IDs, Associated Domains, and signing as described in [ios/README.md](../ios/README.md). The server serves `/.well-known/apple-app-site-association` with the containing app’s `messagefilter` identifier. The extension’s network URL must use the same public domain.
+Configure `APPLE_TEAM_ID`, `IOS_BUNDLE_ID`, app/extension bundle IDs, Associated Domains, and signing as described in [ios/README.md](../../ios/README.md). The server serves `/.well-known/apple-app-site-association` with the containing app’s `messagefilter` identifier. The extension’s network URL must use the same public domain.
 
 Message filtering remains off until the target OS/region/carrier, network deferral, consent copy, and false-positive behavior have been tested. Apple’s current Messages guide describes SMS/MMS/RCS filtering; Shield does not claim tested RCS coverage. It cannot access iMessage or import the user’s inbox. Apple’s OS performs deferral; there is no authenticated participant identity in those requests, and the endpoint stores no message archive. Since it is public, it has a shared classification budget and rate limit.
 

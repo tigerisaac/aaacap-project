@@ -1,0 +1,77 @@
+# Architecture
+
+Current as of October 10, 2026. Shield answers unfamiliar calls that a person's phone forwards to it, screens them with a GPT Live voice agent, and only rings the person if the call looks ordinary. The person then decides privately whether to take it. Screening never verifies who is calling.
+
+## Components
+
+| Component | Where it runs | Code |
+|---|---|---|
+| Phone number and call control | Telnyx TeXML application with one number (+1 507 473 1802) | `backend/src/cloud/forwarding-voice.ts`, `forwarding-provider.ts` |
+| HTTP API and call webhooks | Firebase Functions `shieldApi` (us-central1, scales to zero), served through Firebase Hosting at `shield-calls-isaac.web.app` | `backend/src/cloud/app.ts`, `api.ts`, `forwarding-api.ts` |
+| Live screening bridge | Cloud Run service `shield-live` (WebSocket, one instance max) in the same Google Cloud project | `backend/src/live/server.ts`, `session.ts`, `policy.ts` |
+| Screening voice | OpenAI `gpt-live-1`, voice `marin`, 8 kHz μ-law (PCMU) | `backend/src/live/policy.ts` |
+| Screening decisions | OpenAI `gpt-6-luna`, medium reasoning effort, called by GPT Live through delegation | `backend/src/live/policy.ts`, `research.ts` |
+| Connected-call protection (opt-in) | Telnyx transcription plus Firebase Function `monitorConnectedCall` (`gpt-6-luna`) | `backend/src/cloud/monitoring.ts` |
+| Voicemail ingestion | Firebase Function `ingestForwardingVoicemail` | `backend/src/cloud/forwarding-recordings.ts` |
+| Cleanup | Firebase Function `cleanupShield`, daily at 04:00 Central | `backend/src/cloud/store.ts` |
+| Data and sign-in | Firestore (default database, us-central1), Firebase Authentication email links | `backend/src/cloud/store.ts`, `forwarding-store.ts` |
+| iPhone app | SwiftUI, iOS 26+ | `ios/` (see [ios/README.md](../ios/README.md)) |
+
+Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime configuration is one JSON secret, `SHIELD_RUNTIME`; the OpenAI key is a separate secret, `SHIELD_OPENAI_API_KEY`. See [Operations](OPERATIONS.md).
+
+## How a call flows
+
+1. **Forwarding.** The person's carrier (Tello in the pilot) conditionally forwards unanswered, busy and unreachable calls to the Telnyx number. On the iPhone, *Screen Unknown Callers = Silence* sends unknown callers straight to that path while contacts ring normally.
+2. **Admission.** Telnyx fetches `/forwarding/:secret/inbound`. Shield checks the webhook signature and looks the call up in Telnyx before trusting it. The call is screened only if a supervised test window is open, which allows at most 10 screenings in 30 minutes and one call at a time. Numbers in the person's synced contacts, and every call outside a window, go to voicemail instead. Above 50 forwarded calls in a day, Shield turns calls away.
+3. **Greeting and stream.** TeXML plays a fixed greeting with `<Say>` ("I'm Shield, an AI call assistant. Who's calling, and what is the call about?") and starts a one-way `<Stream>` to the `shield-live` bridge. The stream URL carries a short-lived signed ticket for that call only. Nothing is recorded.
+4. **Screening.** The bridge relays caller audio to GPT Live. GPT Live listens, asks at most two short questions, and delegates to the decision model through the `screen_call` tool. The decision model may make one bounded lookup of official scam guidance (`research_scam_pattern`). Every decision must quote the caller's own words, and the bridge checks that quote against the transcript. See [Screening](SCREENING.md).
+5. **Outcome.** The bridge records the decision in Firestore and redirects the Telnyx call:
+   - **Approve:** the caller hears "Please hold while Shield offers your call," and Shield dials the person.
+   - **Scam, robocall, solicitation or silence:** Shield hangs up.
+   - **Hold, timeout or failure:** the caller is offered voicemail.
+6. **Private offer.** When the person answers, only they hear a short summary: "Shield screened a call about … This does not verify who is calling. Press 1 to connect, or 2 for voicemail." Only digit 1 on that exact call leg bridges the two people. Connected calls are limited to 5 minutes in the pilot.
+7. **After the call.** The call appears in the app's history with its outcome. Voicemails are downloaded from Telnyx, encrypted, stored, and deleted from Telnyx. Call records expire after 30 days.
+
+### Connected-call protection (opt-in)
+
+This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has turned it on in the app. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx `<Transcription>` then sends both sides' final text to `/forwarding/:secret/monitor/:id`. Text is kept encrypted only while the call lasts. Each new piece of speech queues one check by `monitorConnectedCall`.
+
+If the caller clearly asks for a code, password, identity number, payment, remote access, secrecy or an investment, Shield redirects the person's leg to a short spoken warning. That ends the call. Model failures never end a call.
+
+## Voice and speech
+
+There are three voice paths today:
+
+| What the caller or recipient hears | How it's produced |
+|---|---|
+| Greeting, hold, recipient summary and "press 1", voicemail prompt, warnings | Telnyx TeXML `<Say>` with no voice selected, so Telnyx's default voice |
+| Screening conversation (questions and acknowledgements) | GPT Live, voice `marin` |
+| Keypad and probe tones | TeXML `<Play digits>` |
+
+The fixed prompts are the obvious place to improve quality. We're considering a third-party TTS provider for them. The options are:
+
+- **A provider voice through Telnyx `<Say>`.** This is the smallest change.
+- **Pre-generated audio for fixed, generic prompts, played with `<Play>`.** The September Soniox experiment did this, and its code is still in `backend/src/speech.ts` and `backend/scripts/prepare-speech.ts`.
+
+Whichever we choose has to sound close enough to `marin` that the hand-off from greeting to conversation isn't jarring. It also has to survive 8 kHz phone audio. Personalized prompts must never go into a public cache. If audio fails to play, the call must still deliver the consent and "press 1" instructions. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
+
+## Data
+
+Firestore holds the following. Clients can't read or write it directly (deny-all rules); everything goes through `shieldApi`.
+
+- **`participants`:** the enrolled person, consent, forwarding stage, and the `trusted-numbers` subcollection of contacts synced from the phone.
+- **`callSessions`:** one record per call, with state, outcome, reason, purpose and an event timeline. The caller's number is encrypted with `DATA_ENCRYPTION_KEY`.
+- **`forwarding/control`:** the test window, usage counters and the active call.
+- **`forwardingRecordings`:** voicemail ingestion jobs. Audio is stored encrypted.
+- **`monitoredCalls`, `monitorChecks`:** connected-call protection transcripts and check jobs, deleted when the call ends.
+
+## Legacy paths still in the code
+
+These are kept but aren't the current product:
+
+- **Twilio forwarding and the Twilio "trial" route** (`/trial/...`, `backend/src/cloud/voice.ts`). `FORWARDING_PROVIDER` is `telnyx` in production. Twilio credentials are still in the runtime config.
+- **Gather-based screening with Gemini through OpenRouter** (`screenCall` function, `backend/src/screening.ts`). It's only used when `LIVE_SCREENING_ENABLED` is off.
+- **The always-on PostgreSQL server** (`backend/src/main.ts`, `operator-main.ts`, `deploy/google-cloud/`). The owner declined it on cost. Don't deploy it.
+- **Local demo mode** (`npm run demo:setup`, `npm run dev`). This uses embedded PGlite and synthetic data for app development.
+
+The September design documents behind these paths are in [archive/](archive/README.md).

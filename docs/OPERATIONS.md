@@ -1,55 +1,168 @@
-# Pilot operations
+# Operations
 
-Run the CLI only on a trusted machine with server credentials. It has no public administrative HTTP endpoint. In source checkouts use `npm run operator -- COMMAND`; inside the production image use `node dist/operator-main.js COMMAND`.
+How to deploy, switch features, run supervised test calls, and inspect what happened. Everything targets the Google Cloud and Firebase project `shield-calls-isaac`. It's the shared live project, not a sandbox.
 
-The CLI never buys/releases a number, dials carrier codes, sends an invitation, or verifies physical routing on your behalf. Its evidence fields record an operator’s completed work. Do not set template booleans to true until the corresponding test actually passes.
+## Access and secrets
 
-## Assisted enrollment
+- **Google identity.** Operator scripts reuse your Firebase CLI login through `scripts/firebase-client.mjs`, which loads `firebase-tools` from this repo's dev dependencies. Sign in once with `npx firebase login`. The scripts call Google REST APIs directly; `gcloud` isn't needed.
+- **`SHIELD_RUNTIME` (Secret Manager).** One JSON document with all runtime configuration: Telnyx credentials and number, feature flags, the encryption key, the recipient's number, and the legacy Twilio and OpenRouter settings. Scripts that change it add a new version and never print values.
+- **`SHIELD_OPENAI_API_KEY` (Secret Manager).** Used by the live bridge and `monitorConnectedCall`. The bridge pins an explicit version in `scripts/deploy-live-bridge.mjs` (currently version 2). A new key isn't live until you update that pin and redeploy the bridge.
+- **Private local files** go in `artifacts/private/` (gitignored), for example `firebase-runtime.json` and `live-deploy.json`.
+- **Never print, commit or paste** keys, tokens, phone numbers, transcripts or signed webhook URLs.
 
-1. Copy `backend/examples/*.example.json` to gitignored `operator-input/`. Obtain the exact carrier’s instructions and record phone model, iOS build, carrier/plan, region, SIM, Wi-Fi Calling, Focus, unknown-caller handling and Live Voicemail settings. Do not guess universal forwarding codes.
-2. Use `carrier-draft operator-input/carrier-profile.json` for an unvalidated combination. Use `carrier-import` only when all required checks have evidence. Validated profiles are immutable: changing routing instructions/settings requires a new profile ID.
-3. Verify phone ownership with the person using that phone and record a restricted evidence reference. Have them sign in so their Firebase user UID exists (or Supabase user UUID on a legacy deployment). Configure an owned Twilio DID’s voice/status callbacks, then run `enroll operator-input/enrollment.json`. This creates a **setup** participant, without live-offer eligibility.
-4. In the app, have the participant review privacy/service information, record consent, save Shield to Contacts and choose optional sharing. A caregiver cannot accept service consent or change forwarding on their behalf through the app.
-5. With the participant and operator present, enable the evaluated live service on the controlled test deployment and run `begin-test operator-input/begin-test.json`. This explicitly opens a **30-minute** test window for that participant, including when the carrier profile is still a draft. Global pause, quotas, signature checks, anti-loop protections and digit-1 acceptance remain enforced. It expires automatically; it does not activate the participant.
-6. Apply the carrier instructions manually. Complete [PHONE-VALIDATION.md](PHONE-VALIDATION.md), including native voicemail, denied/missing acceptance, callback failure, abandonment, simultaneous calls, iPhone settings and restoration. A callback that reaches native voicemail must never bridge the original caller. Restore ordinary carrier voicemail during the restoration test, then reapply and recheck the intended screening setup.
-7. When all calls are terminal, record `record-test operator-input/routing-test.json`. This closes the test window. For a new carrier combination, validate its unchanged draft with `carrier-import operator-input/carrier-profile.json`, now including actual dated results and evidence. Finally run `activate PARTICIPANT_UUID`.
+## Local checks
 
-Activation requires phone verification, participant consent, a validated profile and a routing test within the last 14 days. On normal live service, offers revert to voicemail when the test becomes older than 14 days. Revalidate after carrier, iOS, SIM, forwarding or relevant phone-setting changes, even sooner. Record a new physical test, then resume/activate as appropriate. A fresh timestamp without a real test is not a validation.
-
-For production services, global environment switches must also be on. A 30-minute test window deliberately permits test calls before activation; keep the device and test operator together and use controlled calls. Stop it early with `end-test PARTICIPANT_UUID`, by recording completed results, or by requesting restoration; `pause-all` blocks offers immediately across all participants. There is no software proof that someone is physically present.
-
-## Daily operations and incidents
-
-```sh
-npm run operator -- doctor
-npm run operator -- participants
-npm run operator -- jobs
+```bash
+npm run check
 ```
 
-Check database readiness, worker progress, failed recording-ingestion/deletion jobs, call-reconciliation failures, spend alerts and upcoming routing-test expiry. `doctor` reports configuration and DB connectivity, not provider authentication or phone behavior. CLI output omits participant names and numbers.
+```bash
+npm run test:firebase
+```
 
-Use `pause-all` to prevent new live offers. Existing accepted conversations continue; forwarded calls can still leave bounded voicemail. This is not a carrier-restoration command. To resume, run `resume-all` after the incident is resolved and the relevant tests are current.
+`npm run check` runs the onboarding test, the typecheck, the unit tests and the build. `npm run test:firebase` runs the Firestore emulator integration tests for the API, forwarding and monitoring. Neither proves carrier audio or screening accuracy. For those, see [Screening](SCREENING.md).
 
-Jobs use leases, deduplication and up to eight attempts. Inspect provider status through a restricted operational account; fix the underlying outage before `retry-job JOB_UUID`. Do not clear a stuck call lock merely because time passed: the worker keeps it until the provider confirms child calls are terminal. Provider 404s and ambiguous/outage states need manual investigation. Escalate a failed provider-recording deletion promptly; local expiry alone does not remove a vendor copy.
+## Deploy Firebase Functions
 
-The app does not provide emergency staffing, an identity guarantee, or analysis of a connected conversation. Support should never tell a participant that a screened caller is safe.
+The functions package is assembled from compiled code into `artifacts/firebase-functions/` (codebase `shield`).
 
-## Sharing
+```bash
+npm run firebase:package
+```
 
-The participant creates an invitation in People and shares it themselves through the native share sheet. Codes expire after two days, are stored only as hashes, and can be accepted once by a signed-in account. History-only is the default. Voicemail requires a separate explicit grant. Revocation immediately affects server authorization and removes that caregiver’s registered push devices for the participant. Previously seen/heard content cannot be recalled from a human recipient.
+```bash
+npm install --prefix artifacts/firebase-functions
+```
 
-## Restore before deleting
+```bash
+npx firebase deploy --only functions:shield --project shield-calls-isaac
+```
 
-1. The participant requests restoration or deletion in Phone setup. Offers stop; the dedicated DID stays assigned so residual forwarded calls are not sent to someone else.
-2. A support operator and the participant restore conditional forwarding and ordinary carrier voicemail using the exact profile instructions. Verify ordinary calls, unknown callers, busy/no-answer behavior and voicemail with real test calls.
-3. Wait for all service calls to end, then run `confirm-restoration operator-input/restoration.json`. The record becomes offboarded; sharing and push registrations are revoked. Do not release or reassign the DID while forwarding is uncertain.
-4. For a recorded deletion request, run `purge-account PARTICIPANT_UUID`. This removes local call/voicemail/contact/sharing data and replaces identity fields with empty encrypted values. A minimal offboarded DID tombstone remains to prevent accidental reassignment; pending provider recording deletions continue as durable jobs.
-5. Verify provider deletion jobs finish. Remove the user’s Firebase identity (or Supabase on a legacy deployment) with the provider’s authenticated administrative workflow when appropriate, checking whether that identity also owns another participant record or holds family access. Handle Twilio call-log/transcription retention and applicable screening-provider retention separately; Shield does not control those providers’ complete records. Follow the documented backup expiry/deletion process. Record completion in the restricted support system.
+```bash
+node scripts/finalize-firebase.mjs
+```
 
-The CLI does not claim complete provider-account deletion or release DIDs automatically. Those steps require provider administration and confirmed restoration. Keep backup retention within the pilot’s stated policy; ensure restored backups reapply deletion requests before serving data.
+`finalize-firebase.mjs` lets only Shield's runtime identity invoke the background functions. Firebase doesn't set that up automatically.
 
-## Data and secrets
+Functions read secret versions when they're deployed. After changing `SHIELD_RUNTIME` or the OpenAI key, redeploy the functions.
 
-Call history and encrypted voicemail expire within the configured retention, at most 30 days. The worker purges provider recordings after encrypted ingestion succeeds, and retries deletions. No caller introduction or manual-check transcript is stored in the application database. Twilio speech processing and the configured screening providers have their own retention controls.
+Hosting (`deploy/firebase/public`, rewrites in `firebase.json`) and Firestore rules and indexes deploy separately, with `--only hosting` or `--only firestore`. Only deploy them when they've changed.
 
-Back up the encryption key securely. Rotation needs a controlled decrypt/re-encrypt migration; simply replacing the environment value makes existing data unreadable and changes phone/invitation hashes. Avoid raw phone numbers, personal details or transcripts in evidence references, tickets, metrics and logs.
+## Deploy the live screening bridge
+
+```bash
+npm run build
+```
+
+```bash
+node scripts/deploy-live-bridge.mjs build
+```
+
+```bash
+node scripts/deploy-live-bridge.mjs deploy
+```
+
+```bash
+node scripts/deploy-live-bridge.mjs publish
+```
+
+Run `node scripts/deploy-live-bridge.mjs status` between steps.
+- **`build`** packages only compiled modules and a dependency manifest. No keys are in the image.
+- **`deploy`** updates Cloud Run service `shield-live`: one instance max, scales to zero, OpenAI key from Secret Manager.
+- **`publish`** allows public WebSocket upgrades. Each call still needs its own short-lived signed ticket.
+
+Check the running version with:
+
+```bash
+curl -s https://shield-live-kzcw2rbfhq-uc.a.run.app/ready
+```
+
+It returns the voice model, decision model and `policyVersion`. It doesn't prove the OpenAI key works; `node scripts/check-live-access.mjs` does that with a 4-second GPT Live session and no phone call.
+
+## Feature switches
+
+| Switch | Turn on | Turn off |
+|---|---|---|
+| Live GPT screening (`LIVE_SCREENING_ENABLED`, `LIVE_BRIDGE_URL`) | `node scripts/enable-live-demo.mjs`. It refuses unless voice benchmark results for the current policy version and the deployed bridge image match. | Edit `SHIELD_RUNTIME`. With it off, Telnyx calls fall back to Gather + Gemini screening. |
+| Connected-call protection (`CALL_MONITORING_ENABLED`) | `node scripts/enable-call-monitoring.mjs`, then the owner opts in on the app's Connected-call protection screen | `node scripts/enable-call-monitoring.mjs --off` |
+
+Redeploy the functions after either change.
+
+Current production values (`SHIELD_RUNTIME` v4):
+- `FORWARDING_PROVIDER=telnyx`
+- live screening on
+- call monitoring on at the server, but not yet turned on in the app
+
+## Supervised test windows
+
+Shield screens calls only during a test window: 30 minutes, 10 screenings, one call at a time, connected calls capped at 5 minutes. Outside a window, forwarded callers get voicemail. You can open a window two ways:
+- **In the app:** Today → Phone setup and call tests. This is the owner's normal route.
+- **From a terminal:** `node scripts/manage-forwarding-test.mjs status`, or `open --allow-any-caller`.
+  - `close` also moves the person into the restoration stage, so normally you'd let a window expire instead.
+  - Neither closing nor expiry undoes carrier forwarding.
+
+Before a test session:
+1. Warm the bridge with the `/ready` call above.
+2. Confirm which OpenAI key version the bridge uses.
+3. Open the window only when the caller is ready.
+
+Don't automatically call or message the owner's test phones.
+
+## Inspect what happened
+
+```bash
+node scripts/check-live-calls.mjs --outcomes-only
+```
+
+```bash
+node scripts/check-monitoring.mjs
+```
+
+Both are read-only and print outcomes, reasons, timestamps and event kinds. They never print transcripts, numbers or audio.
+- **`check-live-calls.mjs`** without `--outcomes-only` also shows the bridge's decision log from the last 15 minutes.
+- **`check-monitoring.mjs`** shows connected-call protection state and the last hour's function errors.
+
+## Phone forwarding (Tello pilot)
+
+To send the owner's unanswered calls to Shield:
+1. Save Shield's number in Contacts as "Shield Screened call".
+2. Set Screen Unknown Callers to **Silence** and Live Voicemail to **Off**.
+3. Dial each conditional-forwarding code separately, checking the carrier's response after each:
+
+```text
+**61*15074731802#   no answer
+**67*15074731802#   busy
+**62*15074731802#   unreachable
+```
+
+Unconditional forwarding must stay off so saved contacts still ring. The app's guided setup walks through the same steps and can hand each code to the Phone app through the [Shield Open Phone shortcut](shortcuts/README.md).
+
+To restore normal service:
+1. Dial `##61#`, `##67#` and `##62#`, one at a time.
+2. Put the phone settings back as they were. The originals are saved privately.
+3. Place one normal call to confirm ordinary voicemail works.
+
+Don't release the Telnyx number while the carrier still forwards to it. A contact recently called or removed can still count as "known" to iOS, so judge routing by real incoming calls.
+
+## New contributors
+
+You'll need:
+- access to the GitHub repository
+- a Google account with access to `shield-calls-isaac`, including read access to `SHIELD_OPENAI_API_KEY` if you'll run paid checks
+- for free text checks, an OpenCode Go login (`~/.local/share/opencode/auth.json`)
+
+Clone the repository, then run:
+
+```bash
+npm ci
+```
+
+```bash
+npx firebase login
+```
+
+```bash
+npm run check
+```
+
+`npm run collaborator:setup` and `npm run collaborator:check` still target the September OpenRouter and Twilio setup and need updating.
