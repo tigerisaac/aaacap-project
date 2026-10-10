@@ -1,31 +1,43 @@
 import SwiftUI
 
 struct ForwardingRestoreView: View {
+    @Environment(AppState.self) private var app
     let status: ForwardingStatus
-    @AppStorage("shield-pilot-restoration-step") private var index = 0
+    @AppStorage private var index: Int
+    @State private var codeReady = false
     @State private var copied = false
-    @State private var openingPhone = false
-    @State private var phoneError: String?
+    @State private var showingCodeCard = false
+    @State private var demoActionBlocked = false
     private let codes = ["##61#", "##67#", "##62#"]
+
+    init(status: ForwardingStatus) {
+        self.status = status
+        _index = AppStorage(wrappedValue: 0, "shield-restoration-step-" + status.participantId.uuidString)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Callbacks are stopped. Now restore Tello forwarding.").font(.title3)
-            if index < codes.count {
+            if codes.indices.contains(index) {
                 Text("Restore connection \(index + 1) of 3").font(.headline)
                 Text(codes[index]).font(.title.monospaced().bold())
-                Text("Paste this code into Phone → Keypad, tap the green call button, and wait for Tello’s confirmation.")
-                Button(copied ? "Tello confirmed this reset" : "Copy code and open Phone") {
-                    if copied { index += 1; copied = false; phoneError = nil }
-                    else { Task { await copyAndOpenPhone() } }
+                Text("Open the reset code, then tap it on the card. Wait for Tello’s confirmation before returning here.")
+                Button(codeReady ? "Tello confirmed this reset" : "Open Tello reset code") {
+                    if codeReady { index += 1; codeReady = false; copied = false; demoActionBlocked = false }
+                    else { openCodeCard() }
                 }
                 .buttonStyle(.borderedProminent).controlSize(.large).foregroundStyle(ShieldTheme.actionInk)
-                .disabled(openingPhone)
-                if copied {
-                    Button("Copy code and reopen Phone", systemImage: "phone") {
-                        Task { await copyAndOpenPhone() }
-                    }.frame(minHeight: 44).disabled(openingPhone)
+                if codeReady {
+                    Button("Open reset code again", systemImage: "phone") { openCodeCard() }.frame(minHeight: 44)
                 }
-                if let phoneError { Text(phoneError).foregroundStyle(ForwardingStyle.secondaryText) }
+                DisclosureGroup("Paste in Phone instead") {
+                    Text("Copy the code, open Phone → Keypad, touch and hold above the numbers, choose Paste, then tap the green call button. Wait for Tello’s confirmation.")
+                        .padding(.top, 8)
+                    Button(copied ? "Copied · copy again" : "Copy reset code", systemImage: "document.on.document") {
+                        PhoneAppLink.copy(code: codes[index]); copied = true; codeReady = true
+                    }.frame(minHeight: 44)
+                }
+                if demoActionBlocked { Text("Demo: no carrier request was made.").foregroundStyle(ForwardingStyle.secondaryText) }
             } else {
                 Text("Restore your original iPhone settings").font(.title2.bold())
                 Text("In Settings → Apps → Phone, set Screen Unknown Callers to Never and Live Voicemail to On.")
@@ -33,15 +45,19 @@ struct ForwardingRestoreView: View {
                 Text("If normal voicemail does not return, Tello needs to restore the default voicemail routing.").foregroundStyle(ForwardingStyle.secondaryText)
             }
         }
-    }
-    private func copyAndOpenPhone() async {
-        guard codes.indices.contains(index), !openingPhone else { return }
-        openingPhone = true
-        defer { openingPhone = false }
-        copied = true
-        phoneError = nil
-        if !(await PhoneAppLink.copyAndOpen(code: codes[index])) {
-            phoneError = "Your code is copied. Open the green Phone app, then choose Keypad to paste it."
+        .sheet(isPresented: $showingCodeCard) {
+            if codes.indices.contains(index) {
+                ForwardingDialCard(code: codes[index], title: "Restore connection \(index + 1)", blocksDialing: app.isDemo,
+                    onClose: { showingCodeCard = false }, onBlockedAction: { demoActionBlocked = true })
+            }
         }
+    }
+
+    private func openCodeCard() {
+        guard codes.indices.contains(index) else { return }
+        PhoneAppLink.copy(code: codes[index])
+        codeReady = true
+        copied = false
+        showingCodeCard = true
     }
 }

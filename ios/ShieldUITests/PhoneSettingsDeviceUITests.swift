@@ -3,10 +3,7 @@ import CallKit
 
 @MainActor
 final class PhoneSettingsDeviceUITests: XCTestCase {
-    func testPhoneAppOpensWithoutDialingOrConfirmingCarrierChange() throws {
-        #if targetEnvironment(simulator)
-        throw XCTSkip("Phone is unavailable in the simulator")
-        #else
+    func testNativeCodeCardDoesNotDialInDemoOrConfirmCarrierChange() throws {
         continueAfterFailure = false
         let observer = CXCallObserver()
         XCTAssertTrue(observer.calls.isEmpty, "Do not interrupt an existing call")
@@ -14,44 +11,27 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-code", "--uitesting-system-phone"]
         app.launch()
         XCTAssertTrue(app.buttons["forwarding-continue"].waitForExistence(timeout: 15))
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy code and open Phone")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Tello code")
         app.buttons["forwarding-continue"].tap()
-        let phone = XCUIApplication(bundleIdentifier: "com.apple.mobilephone")
-        let opened = phone.wait(for: .runningForeground, timeout: 15)
-        if !opened {
-            let failureShot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-            failureShot.name = "Phone opening result"
-            failureShot.lifetime = .keepAlways
-            add(failureShot)
-        }
-        XCTAssertTrue(opened)
-        XCTAssertNotEqual(XCUIApplication(bundleIdentifier: "com.apple.shortcuts").state, .runningForeground)
-        XCTAssertTrue(observer.calls.isEmpty, "Opening Phone must not create a call")
-        app.activate()
-        XCTAssertTrue(app.staticTexts["Your code is copied"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Back to Shield"].waitForExistence(timeout: 15))
+        XCTAssertTrue(observer.calls.isEmpty, "Opening a code card must not create a call")
+        app.buttons["Back to Shield"].tap()
+        XCTAssertTrue(app.staticTexts["Your code is ready"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         let shot = XCTAttachment(screenshot: app.screenshot())
-        shot.name = "Direct Phone opening return"
+        shot.name = "Native code card return"
         shot.lifetime = .keepAlways
         add(shot)
         app.buttons["forwarding-phone-reopen"].tap()
-        let reopened = phone.wait(for: .runningForeground, timeout: 15)
-        if !reopened {
-            let failureShot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-            failureShot.name = "Phone reopening result"
-            failureShot.lifetime = .keepAlways
-            add(failureShot)
-        }
-        XCTAssertTrue(reopened)
+        XCTAssertTrue(app.buttons["Back to Shield"].waitForExistence(timeout: 15))
         XCTAssertTrue(observer.calls.isEmpty)
-        app.activate()
+        app.buttons["Back to Shield"].tap()
         XCTAssertTrue(app.staticTexts["When you don’t answer"].waitForExistence(timeout: 10))
-        #endif
     }
 
-    func testPhoneShortcutOpensAndReturnsWithoutClaimingVerification() throws {
+    func testPhoneSettingsOpensAndReturnsWithoutClaimingVerification() throws {
         #if targetEnvironment(simulator)
         throw XCTSkip("Phone settings are unavailable in the simulator")
         #else

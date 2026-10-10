@@ -37,8 +37,11 @@ Read back from production on October 10:
 - Connected-call protection checks in text: 36/36 real conversations kept, 36/36 scams stopped.
 - Soniox announcement integration (local, October 10): `npm run check` passed (94 unit tests, typecheck and build); `npm run test:firebase` passed all 47 emulator tests. All 25 Hosting audio assets and 25 packaged backup assets match the approved recordings. Deployed October 10; not verified on a real phone call.
 
+- iOS onboarding candidate (October 10): temporary native code cards replace failed Phone-opening links; clipboard recovery remains available, and the two Phone-settings instructions share one visit with separate user confirmations. Installed and visually inspected on the enrolled phone; seven onboarding simulator tests and two targeted native-card/fallback tests passed. No native-card carrier action, forwarding change or call was performed.
+
 ## Not yet verified
 
+- **Native code-card carrier handoff:** whether the native phone action accepts complete forwarding and restoration codes on iOS 27.2. Opening and returning from a card are UI evidence only.
 - **Policy v14 on a real phone line**, with a real voice and carrier audio.
 - **The voicemail fallback on a real call.**
 - **Connected-call protection end to end:**

@@ -2,7 +2,7 @@ import XCTest
 
 @MainActor
 final class ForwardingUITests: XCTestCase {
-    func testGuidedFlowRequiresRealCheckResultsAndCopiesEachCarrierCode() {
+    func testGuidedFlowRequiresRealCheckResultsAndPreparesEachCarrierCode() {
         let app = launch()
         capture(app, "Guided welcome")
         tapPrimary(app); expect(app, "You’re in control")
@@ -15,14 +15,14 @@ final class ForwardingUITests: XCTestCase {
         tapPrimary(app)
         XCTAssertTrue(app.staticTexts["phone-settings-unverified"].exists)
         tapPrimary(app); expect(app, "Let Shield take messages")
-        tapPrimary(app)
         XCTAssertTrue(app.staticTexts["phone-settings-unverified"].exists)
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
         tapPrimary(app)
         for title in ["When you don’t answer", "When your line is busy", "When you have no signal"] {
             expect(app, title)
             XCTAssertTrue(app.staticTexts["forwarding-code"].exists)
             tapPrimary(app)
-            XCTAssertTrue(app.staticTexts["Your code is copied"].exists)
+            XCTAssertTrue(app.staticTexts["Your code is ready"].exists)
             if title == "When you don’t answer" { capture(app, "Guided Tello code") }
             tapPrimary(app)
         }
@@ -77,20 +77,24 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
         tapPrimary(app)
         expect(app, "Let Shield take messages")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
     }
-    func testPhoneOpenFailureKeepsCodeAndRequiresCarrierConfirmation() {
+    func testCodeCardFailureKeepsCodeAndRequiresCarrierConfirmation() {
         let app = launch(["--forwarding-start-code", "--phone-link-fails"], title: "When you don’t answer")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy code and open Phone")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Tello code")
         tapPrimary(app)
-        expect(app, "Your code is copied")
-        XCTAssertTrue(app.staticTexts["Your code is copied. iPhone couldn’t open Phone. Open the green Phone app, then choose Keypad to paste it."].exists)
+        expect(app, "Your code is ready")
+        XCTAssertTrue(app.staticTexts["The code card couldn’t open. Copy the code below, then open Phone → Keypad to paste it."].exists)
         XCTAssertTrue(app.buttons["forwarding-phone-reopen"].exists)
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
+        app.buttons["Paste in Phone instead"].tap()
+        app.swipeUp()
+        app.buttons["forwarding-copy-code"].tap()
+        XCTAssertTrue(app.staticTexts["forwarding-code-copied"].exists)
         tapPrimary(app)
         expect(app, "When your line is busy")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy code and open Phone")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Tello code")
     }
     private func launch(_ extra: [String] = [], title: String = "Let’s set up Shield") -> XCUIApplication {
         let app = XCUIApplication()

@@ -15,9 +15,20 @@ struct ForwardingPhoneSettingsView: View {
             .padding(20).frame(maxWidth: .infinity, alignment: .leading)
             .background(ShieldTheme.card, in: .rect(cornerRadius: 16))
 
+            if silence {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("While you’re here: Live Voicemail").font(.headline)
+                    Label("Turn Off", systemImage: "hand.tap")
+                        .font(.title2.bold()).foregroundStyle(ShieldTheme.action)
+                    Text("Make both changes in this one visit. Keep voicemail enabled in your Tello account.")
+                        .foregroundStyle(ForwardingStyle.secondaryText)
+                }
+                .padding(20).frame(maxWidth: .infinity, alignment: .leading)
+                .background(ShieldTheme.card, in: .rect(cornerRadius: 16))
+            }
             if model.settingsReturned {
-                Text("Your place is saved").font(.headline)
-                Text("iPhone doesn’t share this setting with Shield. Confirm your choice below; we’ll check forwarding with a real call after connecting Tello.")
+                Text(silence ? "Your place is saved" : "Confirm the second change").font(.headline)
+                Text(silence ? "iPhone doesn’t share these settings with Shield. Confirm Silence below; we’ll confirm Live Voicemail next." : "If you turned Live Voicemail off during the last visit, confirm below. Otherwise, reopen Phone settings now. We’ll check forwarding with a real call after connecting Tello.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                     .accessibilityIdentifier("phone-settings-unverified")
                 Button("Open Phone settings again", systemImage: "gearshape") {

@@ -8,8 +8,10 @@ final class ForwardingSetupModel {
     var step = ForwardingStep.overview
     var working = false
     var error: String?
-    var copiedStep: ForwardingStep?
+    var codePreparedStep: ForwardingStep?
     var showingHelp = false
+    var showingCodeCard = false
+    var codeCopied = false
     var settingsDestination = PhoneSettingsLink.preferredDestination
     var settingsReturned = false
     private var pendingSettingsStep: ForwardingStep?
@@ -54,6 +56,9 @@ final class ForwardingSetupModel {
                 step = ForwardingStep(rawValue: result.stage) ?? .overview
                 loaded = true
                 participantID = id
+                codePreparedStep = nil
+                codeCopied = false
+                showingCodeCard = false
                 if UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue {
                     settingsReturned = true
                 }
@@ -73,8 +78,8 @@ final class ForwardingSetupModel {
         }
         if step.codeIndex != nil {
             guard code != nil else { await startWindow(app); return }
-            if copiedStep != step {
-                await copyCodeAndOpenPhone()
+            if codePreparedStep != step {
+                openCodeCard()
                 return
             }
         }
@@ -104,9 +109,13 @@ final class ForwardingSetupModel {
                 body: APIClient.payload(["stage": next.rawValue]), participantID: status.participantId)
             guard app.selectedPersonID == status.participantId else { return }
         }
+        let reuseSettingsVisit = step == .settings && next == .liveVoicemail && settingsReturned
         step = next
-        copiedStep = nil
-        settingsReturned = false
+        codePreparedStep = nil
+        codeCopied = false
+        showingCodeCard = false
+        settingsReturned = reuseSettingsVisit
+        if reuseSettingsVisit && !isUITest { UserDefaults.standard.set(next.rawValue, forKey: settingsVisitKey) }
         pendingSettingsStep = nil
         leftForSettings = false
         settingsDestination = PhoneSettingsLink.preferredDestination
@@ -115,16 +124,33 @@ final class ForwardingSetupModel {
         await load(app)
     }
 
-    func copyCodeAndOpenPhone() async {
+    func openCodeCard() {
         guard let code, !working else { return }
         error = nil
-        working = true
-        defer { working = false }
-        copiedStep = step
-        if !(await PhoneAppLink.copyAndOpen(code: code)) {
-            error = "Your code is copied. iPhone couldn’t open Phone. Open the green Phone app, then choose Keypad to paste it."
+        codePreparedStep = step
+        codeCopied = false
+        PhoneAppLink.copy(code: code)
+        #if DEBUG
+        if isUITest && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone") {
+            if ProcessInfo.processInfo.arguments.contains("--phone-link-fails") {
+                error = "The code card couldn’t open. Copy the code below, then open Phone → Keypad to paste it."
+            }
+            return
         }
-        // Copying or returning from Phone never confirms a carrier change.
+        #endif
+        showingCodeCard = true
+        // Showing a card or returning from it never confirms a carrier change.
+    }
+
+    func copyCode() {
+        guard let code else { return }
+        PhoneAppLink.copy(code: code)
+        codePreparedStep = step
+        codeCopied = true
+    }
+
+    func blockedCodeCardAction() {
+        error = "Demo: the code was selected. No carrier request was made."
     }
 
     func openPhoneSettings() async {
@@ -209,7 +235,7 @@ final class ForwardingSetupModel {
             if !isUITest {
                 let _: APIResponses.Empty = try await app.api.send("/api/forwarding/restore", method: "POST", participantID: status.participantId)
             }
-            UserDefaults.standard.set(0, forKey: "shield-pilot-restoration-step")
+            UserDefaults.standard.set(0, forKey: "shield-restoration-step-" + status.participantId.uuidString)
             step = .restore
             await load(app)
         } catch { self.error = error.localizedDescription }
