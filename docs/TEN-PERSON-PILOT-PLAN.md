@@ -83,8 +83,13 @@ What screening around the clock adds:
 
 ### Carriers
 
-- **GSM codes work on some carriers.** `**61`, `**67` and `**62` work on T-Mobile and AT&T networks and their prepaid brands; Tello runs on T-Mobile.
-- **Verizon differs.** It uses different codes and may not offer the same three conditions.
+See [Carriers](CARRIERS.md) for the researched matrix, risks and recommendations.
+
+- **Three network families cover almost everyone.**
+  - **T-Mobile and AT&T networks:** `**61`, `**67` and `**62`.
+  - **Verizon network:** `*71` covers busy and no answer in one code, and `*73` turns it off. That includes Visible, Spectrum, Xfinity, Total and Lively.
+  - **Not supported:** Google Fi and Boost, which have no conditional forwarding.
+- **Restoration differs by family.** On T-Mobile it's `##004#`. AT&T needs the original voicemail targets recorded first. Verizon uses `*73`.
 - **Implementation:** store the carrier per person, and generate codes and restoration steps from a carrier table.
 - **Deferred:** which carriers to support is decided once participants are known. Build the table with the GSM codes first. Add a carrier only after one supervised test on a real line from that carrier.
 
