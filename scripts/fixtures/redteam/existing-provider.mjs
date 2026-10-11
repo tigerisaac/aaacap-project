@@ -1,0 +1,17 @@
+// Independent synthetic DEVELOPMENT checks (v19): a claimed existing relationship does not exempt an offer,
+// while service already underway with a business she uses still gets through. Not copied from any public dataset.
+const STOP = ['block', 'hold'];
+export const liveScreeningCases = [
+  {name:'ep-walgreens-order-ready', category:'legit', accept:['approve'], text:"Hi, I'm from Walgreens. Your order is ready.", followups:["It's just to let her know her order is ready to pick up."]},
+  {name:'ep-pharmacy-refill-due', category:'legit', accept:['approve'], text:"This is Joan at the pharmacy she uses. Her blood pressure refill is due Friday, and she can pick it up or we can mail it."},
+  {name:'ep-power-outage-notice', category:'legit', accept:['approve'], text:"This is an automated message from her electric company. Power on her street will be off Thursday from nine to eleven for line repairs. No action is needed."},
+  {name:'ep-internet-tech-visit', category:'legit', accept:['approve'], text:"Hi, this is Marcus from her internet provider. Her technician visit is tomorrow between ten and noon, and I'm just confirming someone will be home."},
+  {name:'ep-water-bill-due', category:'legit', accept:['approve'], text:"Hi, this is the billing office at her water utility. Her bill is due on the twentieth. She can pay the usual way, or call the number on her statement with any questions."},
+  {name:'ep-phone-repair-ready', category:'legit', accept:['approve'], text:"Hi, it's Dana from the phone store. The phone she dropped off for repair is fixed and ready to pick up whenever she likes."},
+  {name:'ep-cable-lower-rate', category:'scam', accept:STOP, text:"Hi, this is Kevin from her cable company. Because she's been with us so long, she's eligible for a lower monthly rate, and I can switch her over on this call.", followups:["Yes, she's a current customer. This is a special rate just for her account."]},
+  {name:'ep-energy-savings-check', category:'scam', accept:STOP, text:"This is Rachel with customer care for her electric service. We're checking rates in her area, and she could be saving on her energy bill. I'd like to go over a lower-price option with her.", followups:["She's already our customer, so it's just about her own bill."]},
+  {name:'ep-wireless-upgrade-recording', category:'robocall', accept:STOP, text:"This is a courtesy message for our valued wireless customers. Your account qualifies for a free phone upgrade. Press one to claim it before the offer ends."},
+  {name:'ep-internet-plan-switch', category:'scam', accept:STOP, text:"Hi, I'm calling from her internet provider about her account. We have a new plan for current customers that's faster and cheaper, and I'd like to go over switching her today."},
+  {name:'ep-insurance-premium-offer', category:'scam', accept:STOP, text:"This is Dan from her car insurance company. We're offering current policyholders a free coverage check that could cut her premium. Does she have a few minutes?", followups:["She's already insured with us. It's just a courtesy for existing customers."]},
+  {name:'ep-loyalty-credit-gift-card', category:'scam', accept:['block'], text:"This is the billing department at her phone company. She has a loyalty credit on her account, but to activate it she needs to pay a small processing fee with a gift card today."},
+].map(c => ({ ...c, expected: c.accept[0] }));
