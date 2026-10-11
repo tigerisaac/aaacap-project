@@ -1,6 +1,7 @@
 import { liveScreeningCases } from './fixtures/live-screening-cases.mjs';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 import { WebSocket } from 'ws';
 import { Client, connect, project } from './firebase-client.mjs';
 import { ScreeningSession, audiblePCMU } from '../dist/live/session.js';
@@ -10,11 +11,13 @@ import { DECISION_MODEL, researchScamPattern } from '../dist/live/research.js';
 // Generated actors only. Never feed customer recordings into this diagnostic.
 // Voices rotate across accents and ages so recognition is not tuned to a single synthetic speaker.
 const VOICES = ['Samantha', 'Daniel', 'Karen', 'Moira', 'Aman', 'Grandpa (English (US))', 'Grandma (English (US))', 'Eddy (English (US))'];
-const cases = liveScreeningCases;
+// Custom synthetic voice sets never populate the main deployment gate.
+const args=process.argv.slice(2), casesAt=args.indexOf('--cases'), casesPath=casesAt>=0?args.splice(casesAt,2)[1]:undefined;
+const cases = casesPath ? (await import(pathToFileURL(casesPath).href)).liveScreeningCases : liveScreeningCases;
 // --caution screens as production does in the 24 hours after a stopped scam. Its results go to a separate folder,
 // so they never stand in for the normal results enable-live-demo.mjs requires.
-const caution=process.argv.includes('--caution'), name=process.argv.slice(2).find(a=>!a.startsWith('--'));
-const out=caution?'artifacts/live-eval-caution':'artifacts/live-eval';
+const caution=args.includes('--caution'), name=args.find(a=>!a.startsWith('--'));
+const out=casesPath?(caution?'artifacts/live-eval-extra-caution':'artifacts/live-eval-extra'):(caution?'artifacts/live-eval-caution':'artifacts/live-eval');
 const selected = name ? cases.filter(c=>c.name===name) : cases;
 if(!selected.length) throw new Error('unknown_case');
 await connect(); const secrets=new Client({urlPrefix:'https://secretmanager.googleapis.com',apiVersion:'v1'});

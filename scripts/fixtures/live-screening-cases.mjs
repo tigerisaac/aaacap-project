@@ -38,8 +38,9 @@ export const liveScreeningCases = [
   {name:'phantom-hacker-safe-account', category:'scam', accept:SCAM, source:'https://www.ic3.gov/PSA/2023/PSA230929',
     text:'This is Agent Thomas from the Federal Reserve, working with her bank\'s fraud department. Foreign hackers have accessed her accounts, so her savings need to be moved into a protected government account today. For her safety, she should not discuss this with branch staff, because they may be involved.'},
   {name:'grandparent-bail', category:'scam', accept:SCAM, source:'https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-enhance-their-family-emergency-schemes',
-    text:'Grandma? It\'s me. I\'m in really big trouble and I\'m scared. Please don\'t hang up.',
-    followup:'It\'s your grandson. I was in a car accident and they arrested me. My lawyer says I need eight thousand dollars for bail. A courier can come pick up the cash today, and please don\'t tell Mom and Dad.'},
+    // v16 deliberately offers a family-only opener. This screening case therefore includes the harmful
+    // request in the words actually heard; deferred openers and later pivots have separate checks.
+    text:'Grandma? It\'s your grandson. I was in a car accident and they arrested me. My lawyer says I need eight thousand dollars for bail. A courier can come pick up the cash today, and please don\'t tell Mom and Dad.'},
   {name:'virtual-kidnapping', category:'scam', accept:SCAM, source:'https://www.fbi.gov/news/stories/virtual-kidnapping',
     text:'Listen to me carefully. We have your daughter. If you hang up or call the police, she gets hurt. You are going to stay on this phone and wire two thousand dollars right now.'},
   {name:'ssa-legal-robocall', category:'robocall', accept:SCAM, source:'robocall-audio-dataset 790368 (FTC Project Point of No Entry)',

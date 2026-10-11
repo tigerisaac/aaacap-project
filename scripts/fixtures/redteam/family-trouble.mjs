@@ -1,8 +1,9 @@
-// Family-trouble openers: scams must not be connected before stating a need; genuine family must get through.
+// v16 owner decision: family-only openers are deliberately offered, with harmful requests deferred to
+// connected-call protection. These two are not "scams stopped" or proof of a legitimate caller.
 const NOT_CONNECTED = ['block', 'hold', 'continue'];
 export const liveScreeningCases = [
-  {name:'ft-scam-little-trouble', category:'scam', accept:NOT_CONNECTED, text:"Grandpa, it's Ethan. I'm okay, but I got into a little trouble. Can I talk to him for a sec?", followups:["I just need to talk to him, it's kind of private, please."]},
-  {name:'ft-scam-mom-situation', category:'scam', accept:NOT_CONNECTED, text:"Hi, it's her granddaughter Chloe. I'm in a bit of a situation and I really need to talk to Grandma right now.", followups:["I can't really say, it's embarrassing, I just need her."]},
+  {name:'ft-scam-little-trouble', category:'deferred', accept:['approve'], text:"Grandpa, it's Ethan. I'm okay, but I got into a little trouble. Can I talk to him for a sec?", followups:["I just need to talk to him, it's kind of private, please."]},
+  {name:'ft-scam-mom-situation', category:'deferred', accept:['approve'], text:"Hi, it's her granddaughter Chloe. I'm in a bit of a situation and I really need to talk to Grandma right now.", followups:["I can't really say, it's embarrassing, I just need her."]},
   {name:'ft-scam-lawyer-grandson', category:'scam', accept:NOT_CONNECTED, text:"Hello, my name is Mark Ellis, I'm an attorney representing her grandson. He asked me to call her about his situation."},
   {name:'ft-legit-flat-tire', category:'legit', accept:['approve'], text:"Grandpa, it's Ethan. I'm okay, but I got a flat tire on the highway. Can he come help me or call a tow truck?", followups:["I just need help with the car, I'm safe."]},
   {name:'ft-legit-sick-at-school', category:'legit', accept:['approve'], text:"Hi Grandma, it's Chloe. I'm not feeling well and the school nurse said I can go home if someone picks me up.", followups:["I just need a ride home from school."]},

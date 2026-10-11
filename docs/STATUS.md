@@ -123,6 +123,14 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
 
 ## Not yet verified
 
+- **Family acceptance and public red teaming (code October 11, not deployed):** screening v17 offers a caller claiming a personal family relationship who wants to talk, including from a borrowed phone or about personal trouble. Explicit scam requests and manipulation still block; the existing 24-hour callback caution still applies. The recipient must still press 1.
+  - **Final synthetic checks:** family text 18/18 offered and 12/12 harmful requests blocked; manipulation probes 30/30 stopped; main + extra voice 37/37 passed. With recent-scam caution, ordinary family text was 17/18 offered, including one false hold of a new-number caller.
+  - **Main text:** 33/33 legitimate offered; 33/36 harmful stopped and 3 Go gateway timeouts. The three affected cases were blocked on separate retries; original failures were retained.
+  - **Public benchmark:** reproducible runner for MASC's pinned 320-case synthetic test split through Go, GPT-6 Luna, medium reasoning. Final v17 screening offered 80/80 appointment/delivery calls and stopped 154/160 labeled scams; 5 clarifications and 1 harmful-case timeout, no harmful approvals. One wrong-number case also timed out. Both timeouts succeeded on separate retries.
+  - **Monitoring limit:** unchanged monitor-v2 kept 150/160 source-labeled non-scams and flagged 145/160 source-labeled scams at the end of the call, using the production rolling window; 14 continues and 1 rejected evidence quote. These are not real-call or early-intervention scores. Existing held-out monitoring still missed the email-address request 3/3.
+  - **Lookup and metrics:** lookup was requested 1/640 public screenings and could not run web search on Go. The text report now separates clarifications from completed stops; older fixture-pass summaries sometimes counted `continue` as harmful-stopped.
+  - **Validation:** `npm run check` passed (115 unit tests, typecheck/build); `npm run test:firebase` passed 86 emulator tests. No deployment, phone installation, forwarding change or real call was performed. See [Screening](SCREENING.md#family-acceptance-and-final-v17-checks-october-11) and [public benchmark results](PUBLIC-SCAM-BENCHMARKS.md).
+
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.
 - **Broader policy v14 real-call coverage**, including ordinary calls and scams.
 - **The voicemail fallback on a real call.**

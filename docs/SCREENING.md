@@ -1,6 +1,6 @@
 # Screening
 
-How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v15` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed; v15 only adds the recent-scam caution below. The full history of how it got here, including red-team findings and owner decisions, is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
+How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v17` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed. v15 adds recent-scam caution; v16 offers personal family callers as requested by the owner on October 11; v17 makes manipulation blocks explicitly take precedence over a family claim or a later benign explanation. The full history of earlier changes is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
 
 ## How a decision is made
 
@@ -21,8 +21,10 @@ How Shield decides what to do with a caller, and how to test changes. The deploy
    Unsolicited investment or crypto pitches from strangers are also blocked. One such request is enough, and later reassurance doesn't undo it.
 2. **Block as a robocall** for recorded messages that ask her to press a key or call a number back.
 3. **Block as a solicitation** for live sales, surveys, polls, political and fundraising calls from organizations she has no relationship with.
-4. **Approve** when the caller has given a name or role and a concrete ordinary reason. Approving only offers the call; she still decides.
-5. **Ask (continue)** when something is missing. **Hold** when a sensitive claim stays unresolved. Sensitive claims include bank security, government, police or court, a relative in trouble, and money owed to her.
+4. **Approve** when the caller has given a name or role and a concrete ordinary reason. A caller claiming a personal family relationship and wanting to talk is also offered, including a borrowed phone, distress, a private matter or trouble. Approval only offers the call; she still decides. It does not verify the relationship.
+5. **Ask (continue)** when something is missing. **Hold** when a sensitive claim stays unresolved. Sensitive claims include bank security, government, police or court, a third party reporting trouble involving a relative, and money owed to her. An alleged relative calling personally follows the family rule.
+
+**Family callers (v16).** The owner chose to accept family-only openers and rely on connected-call protection for harmful requests made after acceptance. An explicit payment, code, remote-access or secrecy request is still blocked during screening. Asking to discuss a private personal matter is not an instruction to hide the call from family or police. Connected-call protection requires its server flag and the recipient's current consent; this policy change does not turn it on or verify that it ran. The existing recent-scam callback caution still applies, including to family callbacks, for 24 hours after a stopped scam.
 
 The decision must include a short quote of the caller's own words. The bridge checks that quote against the transcript, tolerating small transcription errors. A decision whose quote doesn't match is rejected.
 
@@ -30,7 +32,7 @@ Before reaching the model, caller text is stripped of braces, brackets, quotes a
 
 **Research.** The decision backend may call `research_scam_pattern` once per call. It picks one of four fixed topics: financial impersonation, government impersonation, remote access or family emergency. That runs a web search limited to `uscourts.gov`, `ftc.gov`, `consumerfinance.gov` and `fdic.gov`. No caller words, names, numbers or URLs are sent. A missing or failed lookup never approves a call.
 
-**Recent-scam caution (v15).** For 24 hours after Shield stops a scam for a person, during screening or by ending a connected call, the bridge adds one paragraph to the decision prompt. It says a scam was stopped today and that scammers call back. While it's on, a caller who refers to an earlier, dropped or missed call, or says they're calling back or following up, is held (voicemail) instead of approved. Block rules don't change. With the flag off, the prompt is byte-identical to v14.
+**Recent-scam caution (introduced in v15).** For 24 hours after Shield stops a scam for a person, during screening or by ending a connected call, the bridge adds one paragraph to the decision prompt. It says a scam was stopped today and that scammers call back. While it's on, a caller who refers to an earlier, dropped or missed call, or says they're calling back or following up, is held (voicemail) instead of approved. Block rules don't change. With the flag off, no caution paragraph is added. v15 with caution off was byte-identical to v14; v16–v17 also contain the family policy changes.
 
 ## What each outcome does to the call
 
@@ -78,6 +80,7 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | `scripts/fixtures/live-screening-cases.mjs` | 24 | Main benchmark: 11 legitimate callers that resemble scam signals, 12 scams and robocalls from real scripts, silence |
 | `scripts/fixtures/holdout/` | 44 | Held-out probes, never used for tuning (`general` 16, `sensitive-claims` 8, `everyday` 20) |
 | `scripts/fixtures/redteam/` | 105 | Attack rounds used to tune v6–v14 (development sets, not held out) |
+| `scripts/fixtures/redteam/family-handoff.mjs` | 10 screening + 10 monitoring | v16 family-only openers, explicit harmful family requests, and harmful requests after a benign opener; synthetic development set |
 | `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks (monitor-v2) |
 | `scripts/fixtures/monitor-extra.mjs` | 7 | Connected-call cases retired from the main set; a development set, not held out |
 | `scripts/fixtures/holdout/monitor.mjs` | 12 | Held-out connected-call probes for the v2 request kinds |
@@ -104,10 +107,19 @@ node scripts/check-monitor-policy.mjs --provider go --repeat 3
 node scripts/redteam-turn.mjs artifacts/redteam-conversation.json "what the caller says" --provider go
 ```
 
+```bash
+node scripts/check-public-scam-benchmark.mjs --provider go --mode both --concurrency 4
+```
+
+The public runner uses MASC's pinned 320-case synthetic test split, the production requests and medium reasoning. It reports screening and monitoring separately and keeps sales/wrong-number policy differences out of legitimate-offered screening results. These are full-conversation diagnostics, not an early-screening or intervention-time score. See [Public scam benchmarks](PUBLIC-SCAM-BENCHMARKS.md) for sources, interpretation and repeatable commands. Neither this public test split nor existing held-out probes may shape prompt wording.
+
 - **`--provider go`** sends the exact production decision request through the owner's OpenCode Go key, so it costs nothing. It reproduced the OpenAI path exactly on the benchmark (46/46). `--provider openai` uses the real key from Secret Manager.
 - **`check-live-demo.mjs`** is the voice benchmark. It speaks synthetic voices through GPT Live, rotating 8 voices, and answers only questions Shield actually asks. It uses paid OpenAI requests and writes results to `artifacts/live-eval/`. With `--caution` it screens as in the 24 hours after a stopped scam and writes to `artifacts/live-eval-caution/` instead, so those results never satisfy the deploy gate.
+  - `--cases scripts/fixtures/redteam/family-handoff.mjs` runs the added family voice set in `artifacts/live-eval-extra/`; custom sets never satisfy the main deploy gate.
 - **`redteam-turn.mjs`** is for interactive sparring, one caller turn at a time.
 - **Text checks skip speech recognition and the voice front end.** Always confirm a change with the voice benchmark.
+
+**Metric correction (October 11).** The text runner now counts only actual `block`/`hold` decisions as harmful-stopped and reports harmful approvals and clarifications separately. Older summaries used a fixture's accepted outcomes, which sometimes included `continue`, under that heading. Those historical counts are regression passes, not always completed stops. The original per-case outputs remain available; no held-out expectations were changed to improve a score.
 
 ## Text re-check and research lookup study (October 11)
 
@@ -144,7 +156,30 @@ Run October 11 with `--provider go`, 3 runs each. These were the first runs; the
   - **Caution on** (`--caution`, results kept apart in `artifacts/live-eval-caution/`): 24/24, median 2.8 s.
   - **Not covered:** the voice benchmark has no callback cases, so the caution rule itself is checked in text only.
 
-## Latest results (v14)
+## Family acceptance and final v17 checks (October 11)
+
+Owner decision: offer alleged family members who want to talk, including a borrowed phone or personal trouble, and rely on consented connected-call protection for later harmful requests. Third-party sensitive claims, explicit scam requests, manipulation blocks, private recipient acceptance and recent-scam callback caution remain in place. A main-benchmark family-bail case was changed to include its prohibited request in the initial speech; the former family-only opening is deliberately offered, not scored as a stopped scam. Held-out files were not changed.
+
+The final wording is v17. Two override approvals in existing v16 development probes prompted a category-level clarification: manipulation blocks take precedence over family claims, and later benign speech cannot erase an earlier override. No public or held-out finding shaped that wording.
+
+| Final check | Ordinary callers | Harmful requests / other outcomes |
+|---|---|---|
+| Family text, Go medium, 3 runs | 18/18 offered | 12/12 blocked |
+| Family text with recent-scam caution, 3 runs | 17/18 offered | 12/12 blocked; a new-number family call was held once despite not referring to an earlier call |
+| Main text, Go medium, 3 runs | 33/33 offered | 33/36 stopped, 3 gateway timeouts, 0 approvals; all 3 timed-out cases blocked on separate retries |
+| Manipulation development probes, 10 repeats each | | 30/30 stopped; 0 approvals or clarifications |
+| Main synthetic voice | 11/11 offered | 12/12 harmful stopped; silence passed; 24/24 total |
+| Extra synthetic voice: family + manipulation | 6/6 offered | 7/7 harmful stopped; 13/13 total |
+| monitor-v2 main text, Go medium, 3 runs | 36/36 kept | 36/36 stopped |
+| monitor-v2 family handoff text, 3 runs | 18/18 kept | 12/12 later harmful requests stopped |
+
+The original gateway failures remain in the saved runs, with retries stored separately. Main voice results in `artifacts/live-eval/` are current v17; extra voice cases are in `artifacts/live-eval-extra/` and never populate the main gate. Text traces are in `artifacts/redteam-v17/`, and the unchanged monitor-v2 traces are in `artifacts/redteam-v16/`.
+
+Public MASC checks and held-out limitations are in [Public scam benchmarks](PUBLIC-SCAM-BENCHMARKS.md). In particular, monitoring still misses some callback/email requests, and source labels don't precisely match Shield's rules. The lookup remains optional; 1 request across 640 public screenings does not establish its value when it succeeds. No removal or forced-lookup change was made.
+
+`npm run check` passed (115 unit tests, typecheck and build), and `npm run test:firebase` passed all 86 emulator tests. Neither this policy nor monitor-v2 was deployed in this work, and no real phone calls were made. These checks do not establish live transcription quality or whether intervention happens before a person acts.
+
+## Historical results (v14)
 
 | Check | Legitimate offered | Harmful stopped |
 |---|---|---|
