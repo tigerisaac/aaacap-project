@@ -23,6 +23,15 @@ describe('GPT Live screening controls', () => {
   it('uses the exact Live model, telephone codec, and no session recording', () => {
     expect(liveSessionConfig()).toMatchObject({ model: 'gpt-live-1', store: false, audio: { format: { type: 'audio/pcmu', rate: 8000 } } });
   });
+  it('adds the recent-scam caution only when the application sets it, and leaves the prompt unchanged otherwise', () => {
+    const instructions = (context?: Parameters<typeof liveSessionConfig>[0]) => (liveSessionConfig(context) as any).delegation.responses.instructions as string;
+    expect(instructions()).not.toContain('RECENT SCAM'); expect(instructions({ recentScamStopped: false })).toBe(instructions());
+    expect(instructions({ recentScamStopped: true })).toContain('RECENT SCAM');
+    expect(instructions({ recentScamStopped: true }).replace(/RECENT SCAM:[^\n]*\n\n/, '')).toBe(instructions());
+    const io = { openai: vi.fn(), telnyx: vi.fn(), finish: vi.fn(), close: vi.fn() };
+    new ScreeningSession(io, () => 0, { recentScamStopped: true }).start();
+    expect(JSON.stringify(io.openai.mock.calls[0])).toContain('RECENT SCAM');
+  });
   it('clears queued speech immediately and ends once without an announcement', async () => {
     const h = harness(); h.ready(); h.s.event({ type: 'session.output_audio.delta', delta: Buffer.alloc(320).toString('base64') });
     h.speech('Please send me your login code.'); h.tool(scam); h.tool(scam); h.s.tick(); await Promise.resolve();

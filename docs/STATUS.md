@@ -75,6 +75,17 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
   - **Wake-up:** `shieldApi` sends `/ready` to the live bridge as soon as a signed forwarded call arrives, so a cold start overlaps the greeting.
   - **Tests:** `npm run check` (94 unit tests) and `npm run test:firebase` (54 tests) passed. GPT Live's session settings are unchanged from production.
 
+- **Blocklist and recent-scam caution (code October 11, not deployed):** protection plan section 3, server side.
+  - **Blocklist:** after a scam block or an intervention, the caller's number is ended on sight for 180 days, with no screening or voicemail. Withheld numbers can't be blocked. The person can list and unblock numbers through the API.
+  - **Caution:** for 24 hours, screening runs policy v15's caution paragraph. Callers who refer to an earlier or dropped call are held. With caution off, the prompt is identical to v14.
+  - **Tests:** `npm run check` (95 unit tests) and `npm run test:firebase` (66 tests, 12 of them new) passed.
+  - **Text checks** with `--provider go`, 3 runs each, caution on:
+    - callbacks: 21/21 held (5/21 with caution off)
+    - main benchmark: 33/33 legitimate, 36/36 harmful
+    - held-out: 36/36 legitimate, 35/36 harmful
+  - **Not run:** a voice benchmark for v15.
+  - **To deploy:** Functions, the bridge, and Firestore indexes (a collection-group index for cleanup).
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.

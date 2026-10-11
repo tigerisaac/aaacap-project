@@ -24,6 +24,7 @@ Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime confi
 
 1. **Forwarding.** The person's carrier (Tello in the pilot) conditionally forwards unanswered, busy and unreachable calls to the Telnyx number. On the iPhone, *Screen Unknown Callers = Silence* sends unknown callers straight to that path while contacts ring normally.
 2. **Admission.** Telnyx fetches `/forwarding/:secret/inbound`. Shield checks the webhook signature and looks the call up in Telnyx before trusting it. The call is screened only if a supervised test window is open, which allows at most 10 screenings in 30 minutes and one call at a time. Numbers in the person's synced contacts, every call outside a window, and every call while live screening is switched off go to voicemail instead. Callers with a withheld or non-US number are screened like any other; history shows "No caller ID" (deployed October 11). Above 50 forwarded calls in a day, Shield turns calls away.
+   - **Blocked numbers (in code, not deployed):** a number Shield stopped a scam from, during screening or by ending a connected call, is ended at once for 180 days. There's no screening, model cost or voicemail, and the caller hears "This person cannot take this call…". These attempts don't count toward the 50 a day, and at most 20 a day are kept in history. Withheld numbers can't be blocked. The person can unblock a number in the app.
 3. **Greeting and stream.** TeXML plays a prerecorded Soniox Grace greeting with `<Play>` ("I'm Shield, an AI call assistant. Who's calling, and what is the call about?") and starts a one-way `<Stream>` to the `shield-live` bridge. The stream URL carries a short-lived signed ticket for that call only. Nothing is recorded.
 4. **Screening.** The bridge relays caller audio to GPT Live. GPT Live listens, asks at most two short questions, and delegates to the decision model through the `screen_call` tool. The decision model may make one bounded lookup of official scam guidance (`research_scam_pattern`). Every decision must quote the caller's own words, and the bridge checks that quote against the transcript. See [Screening](SCREENING.md).
 5. **Outcome.** The bridge records the decision in Firestore and redirects the Telnyx call:
@@ -59,7 +60,9 @@ Deploy Hosting assets and Functions together after approval, and check all prima
 
 Firestore holds the following. Clients can't read or write it directly (deny-all rules); everything goes through `shieldApi`.
 
-- **`participants`:** the enrolled person, consent, forwarding stage, and the `trusted-numbers` subcollection of contacts synced from the phone.
+- **`participants`:** the enrolled person, consent, forwarding stage, and `scamStoppedAt` (starts 24 hours of cautious screening). Subcollections:
+  - `trusted-numbers`: contacts synced from the phone
+  - `blocked-numbers`: one document per blocked number, keyed by its keyed hash, holding the number encrypted, the reason, the source call and a 180-day expiry
 - **`callSessions`:** one record per call, with state, outcome, reason, purpose and an event timeline. The caller's number is encrypted with `DATA_ENCRYPTION_KEY`.
 - **`forwarding/control`:** the test window, usage counters and the active call.
 - **`forwardingRecordings`:** voicemail ingestion jobs. Audio is stored encrypted.

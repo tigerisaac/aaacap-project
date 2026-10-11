@@ -6,7 +6,7 @@ import { forwardingNumber } from '../src/cloud/forwarding-provider.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { afterScreening, ForwardingLive } from '../src/cloud/forwarding-live.js';
 import { ForwardingProbes } from '../src/cloud/forwarding-probes.js';
-import { ForwardingStore, forwardingConsent } from '../src/cloud/forwarding-store.js';
+import { BLOCK_MS, BLOCKED_RECORDS_PER_DAY, CAUTION_MS, ForwardingStore, forwardingConsent } from '../src/cloud/forwarding-store.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import type { AuthProvider } from '../src/auth.js';
@@ -314,13 +314,96 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await f.find(sid()))!.voicemail).toMatchObject({ duration: 12, status: 'pending' });
   });
   it('never offers voicemail to a blocked scam or a silent line', async () => {
-    for (const [n, decision] of [[1, { action: 'block', reason: 'scam', purpose: 'other', evidence: 'read me the code', hasName: true, hasReason: true }], [2, 'silent_caller']] as const) {
+    // Silence first: after a scam block the same number is ended before screening.
+    for (const [n, decision] of [[1, 'silent_caller'], [2, { action: 'block', reason: 'scam', purpose: 'other', evidence: 'read me the code', hasName: true, hasReason: true }]] as const) {
       await post('inbound', { CallSid: sid(n) }); const c = (await f.find(sid(n)))!; const live = new ForwardingLive(f); await live.claim(c.id);
       const saved = await live.finish(c.id, decision as Parameters<ForwardingLive['finish']>[1]);
       expect(saved).toMatchObject({ state: 'ended', outcome: 'held' }); expect(afterScreening(config, saved)).toBeUndefined();
       expect((await post(`voicemail/${c.id}`, { CallSid: sid(n) })).body).not.toContain('<Record');
       await f.ended(sid(n));
     }
+  });
+  const scamBlock = { action: 'block', reason: 'scam', purpose: 'other', evidence: 'read me the code', hasName: true, hasReason: true } as const;
+  /** A fresh test window after the clock jumps past the last one. */
+  const reopen = () => f.control.update({ enabled: true, used: 0, expiresAt: now + 1800_000 });
+  const blocked = (phone = from) => s.personRef(config.TRIAL_PARTICIPANT_ID).collection('blocked-numbers').doc(s.vault.hash(phone));
+  /** Screen the call `n` from `inboundFrom` and apply a decision. */
+  const screen = async (n: number, decision: Parameters<ForwardingLive['finish']>[1]) => {
+    await post('inbound', { CallSid: sid(n), From: inboundFrom }); const c = (await f.find(sid(n)))!; const live = new ForwardingLive(f);
+    const claimed = await live.claim(c.id); await live.finish(c.id, decision); await f.ended(sid(n)); return claimed!;
+  };
+  it('remembers a scam number and ends its next call at once, without screening, voicemail or the daily allowance', async () => {
+    await screen(1, scamBlock);
+    const entry = (await blocked().get()).data()!;
+    expect(entry).toMatchObject({ reason: 'scam', expiresAt: now + BLOCK_MS, attempts: 0 }); expect(JSON.stringify(entry)).not.toContain(from.slice(2));
+    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBe(now);
+    const used = (await f.control.get()).data()!.used;
+    warmLiveBridge.mockReset(); now += 60_000;
+    const xml = (await post('inbound', { CallSid: sid(2) })).body;
+    expect(xml).toContain('/08-cannot-connect.wav'); expect(xml).not.toContain('<Stream'); expect(xml).not.toContain('<Record');
+    expect(await f.find(sid(2))).toMatchObject({ state: 'ended', outcome: 'held', reason: 'blocked_caller', eligible: false });
+    expect((await f.control.get()).data()).toMatchObject({ used }); expect((await f.control.get()).data()!.activeCallId).toBeUndefined();
+    expect((await blocked().get()).data()).toMatchObject({ attempts: 1, lastAttemptAt: now });
+    // A late carrier callback must not revive it, and voicemail is never offered.
+    await f.ended(sid(2)); expect((await post(`voicemail/${(await f.find(sid(2)))!.id}`, { CallSid: sid(2) })).body).not.toContain('<Record');
+    const [listed] = (await app.inject({ url: '/api/calls?filter=held', headers: headers() })).json().calls;
+    expect(listed).toMatchObject({ title: 'Blocked caller tried again', reasonCode: 'blocked_caller', callerNumber: from });
+    // Other callers are screened as usual.
+    inboundFrom = '+12025550103'; expect((await post('inbound', { CallSid: sid(3), From: inboundFrom })).body).toContain('<Stream');
+  });
+  it('blocks a saved contact that turned out to be a scam, and screens again once the block expires', async () => {
+    await screen(1, scamBlock);
+    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').add({ phoneHash: s.vault.hash(from), enabled: true });
+    expect((await post('inbound', { CallSid: sid(2) })).body).toContain('/08-cannot-connect.wav');
+    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').get().then(q => Promise.all(q.docs.map(d => d.ref.delete())));
+    now += BLOCK_MS; await reopen(); expect((await post('inbound', { CallSid: sid(3) })).body).toContain('<Stream');
+  });
+  it.each([
+    ['a robocall', { ...scamBlock, reason: 'robocall' }], ['a solicitation', { ...scamBlock, reason: 'solicitation' }], ['a silent line', 'silent_caller'],
+    ['an unresolved hold', { action: 'hold', reason: 'unclear', purpose: 'personal', evidence: 'kind of private', hasName: true, hasReason: false }]
+  ] as const)('does not remember the number or set caution after %s', async (_label, decision) => {
+    await screen(1, decision as Parameters<ForwardingLive['finish']>[1]);
+    expect((await blocked().get()).exists).toBe(false);
+    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBeUndefined();
+  });
+  it('sets caution after a withheld scam caller, who cannot be blocked by number', async () => {
+    inboundFrom = 'anonymous'; await screen(1, scamBlock);
+    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('blocked-numbers').get()).empty).toBe(true);
+    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBe(now);
+    expect((await post('inbound', { CallSid: sid(2), From: 'anonymous' })).body).toContain('<Stream');
+  });
+  it('screens with caution for 24 hours after a stopped scam, and only then', async () => {
+    expect((await screen(1, approve)).screeningCaution).toBeUndefined();
+    await screen(2, scamBlock);
+    inboundFrom = '+12025550103'; now += CAUTION_MS - 1; await reopen();
+    const cautious = await screen(3, approve);
+    expect(cautious.screeningCaution).toBe(true); expect((await f.find(sid(3)))!.screeningCaution).toBe(true);
+    now += 1; await reopen(); expect((await screen(4, approve)).screeningCaution).toBeUndefined();
+  });
+  it('keeps at most a fixed number of blocked attempts a day in history but ends every one', async () => {
+    await screen(1, scamBlock);
+    for (let n = 2; n < BLOCKED_RECORDS_PER_DAY + 4; n++) expect((await post('inbound', { CallSid: sid(n) })).body).toContain('/08-cannot-connect.wav');
+    const history = (await db.collection('callSessions').where('reason', '==', 'blocked_caller').get()).size;
+    expect(history).toBe(BLOCKED_RECORDS_PER_DAY);
+    expect((await blocked().get()).data()!.attempts).toBe(BLOCKED_RECORDS_PER_DAY + 2);
+    // A duplicate webhook for the same call is not a second attempt.
+    await post('inbound', { CallSid: sid(2) }); expect((await blocked().get()).data()!.attempts).toBe(BLOCKED_RECORDS_PER_DAY + 2);
+  });
+  it('lists blocked numbers to the person and lets only the person unblock', async () => {
+    await screen(1, scamBlock); const id = s.vault.hash(from);
+    const list = (await app.inject({ url: '/api/blocked-numbers', headers: headers() })).json();
+    expect(list.items).toEqual([expect.objectContaining({ id, phone: from, reason: 'scam', attempts: 0 })]);
+    expect((await app.inject({ url: '/api/blocked-numbers', headers: headers('stranger') })).statusCode).toBe(403);
+    expect((await app.inject({ method: 'DELETE', url: `/api/blocked-numbers/${id}`, headers: headers('stranger') })).statusCode).toBe(403);
+    expect((await app.inject({ method: 'DELETE', url: '/api/blocked-numbers/not-a-hash', headers: headers() })).statusCode).toBe(400);
+    expect((await app.inject({ method: 'DELETE', url: `/api/blocked-numbers/${id}`, headers: headers() })).json()).toEqual({ unblocked: true });
+    expect((await app.inject({ method: 'DELETE', url: `/api/blocked-numbers/${id}`, headers: headers() })).statusCode).toBe(404);
+    expect((await post('inbound', { CallSid: sid(2) })).body).toContain('<Stream');
+  });
+  it('hides expired blocks at once and removes them in daily cleanup', async () => {
+    await screen(1, scamBlock); now += BLOCK_MS;
+    expect((await app.inject({ url: '/api/blocked-numbers', headers: headers() })).json().items).toEqual([]);
+    await s.cleanup(); expect((await blocked().get()).exists).toBe(false);
   });
   it('resumes an approved Live call through the existing private callback route', async () => {
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);

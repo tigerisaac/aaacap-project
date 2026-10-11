@@ -51,5 +51,7 @@ export class CloudStore {
       const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
       if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
     }
+    const blocked = await this.db.collectionGroup('blocked-numbers').where('expiresAt', '<=', this.now()).limit(400).get();
+    if (!blocked.empty) { const batch = this.db.batch(); blocked.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
   }
 }

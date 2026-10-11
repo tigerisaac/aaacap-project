@@ -69,6 +69,8 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       }
       const call = await f.begin(b.CallSid!, caller);
       if (!call) return hangup('Shield is not ready to receive this call. Please try again later.');
+      // A number Shield stopped a scam from. It may be spoofed, so point a real person to a number they already know.
+      if (call.state === 'ended') return hangup('This person cannot take this call. Please contact them through a number or service they already know.');
       // Only live screening makes a call eligible, so every other call is offered voicemail here.
       if (call.state === 'voicemail') return voicemail(call);
       return liveStreamXML(config, call, store.now());

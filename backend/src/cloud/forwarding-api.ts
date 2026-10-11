@@ -94,6 +94,21 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     batch.update(store.personRef(ctx.participant.id), { status: 'restoring', forwardingStage: 'restore' }); await batch.commit();
     return { requested: true };
   });
+  // Numbers Shield ended a scam from. Helpers can see the list; only the person can unblock.
+  app.get('/api/blocked-numbers', async request => {
+    const selected = request.headers['x-shield-participant'];
+    const ctx = await store.access((await auth.identify(bearer(request))).subject, selected === undefined ? undefined : z.string().uuid().parse(selected).toLowerCase());
+    const docs = await store.personRef(ctx.participant.id).collection('blocked-numbers').orderBy('createdAt', 'desc').limit(200).get();
+    return { items: docs.docs.filter(d => d.data().expiresAt > store.now()).map(d => ({ id: d.id, reason: d.data().reason,
+      phone: store.vault.open(d.data().phoneEnc, `blocked:${ctx.participant.id}:${d.id}`), blockedAt: at(d.data().createdAt),
+      expiresAt: at(d.data().expiresAt), attempts: d.data().attempts ?? 0, lastAttemptAt: at(d.data().lastAttemptAt) })) };
+  });
+  app.delete('/api/blocked-numbers/:id', async request => {
+    const ctx = await owner(request), { id } = z.object({ id: z.string().regex(/^[a-f0-9]{64}$/) }).parse(request.params);
+    const ref = f.blockedRef(ctx.participant.id, id);
+    if (!(await ref.get()).exists) throw new HttpError(404, 'blocked_number_not_found');
+    await ref.delete(); return { unblocked: true };
+  });
   app.get('/api/voicemails/:id/audio', async (request, reply) => {
     const id = z.string().uuid().parse((request.params as { id: string }).id).toLowerCase();
     const uid = (await auth.identify(bearer(request))).subject;

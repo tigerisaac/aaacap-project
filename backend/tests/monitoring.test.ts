@@ -162,6 +162,16 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     const calls = (await app.inject({ url: '/api/calls?filter=connected', headers: headers() })).json().calls;
     expect(calls[0]).toMatchObject({ title: 'Shield ended a connected call', reasonCode: 'monitor_intervened', monitored: true });
   });
+  it('blocks the caller\'s number and sets caution once Shield ends a connected call', async () => {
+    await optIn(); const { id } = await connect();
+    await heard(id, 'Read me the six digit code we just texted you.');
+    await monitor.check((await jobs())[0]!.id, async () => ({ action: 'intervene', concern: 'code_or_password', evidence: 'Read me the six digit code' }));
+    const entry = (await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('blocked-numbers').doc(s.vault.hash(from)).get()).data();
+    expect(entry).toMatchObject({ reason: 'monitor_intervened', sourceCallId: id });
+    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBe(now);
+    await post('dial-ended/' + id, { DialCallSid: sid(2), DialCallStatus: 'completed' });
+    expect((await post('inbound', { CallSid: sid(5) })).body).toContain('/08-cannot-connect.wav');
+  });
   it('ends the whole call if her leg cannot be redirected to the warning', async () => {
     await optIn(); const { id } = await connect();
     update.mockRejectedValueOnce(new Error('telnyx_http_422'));

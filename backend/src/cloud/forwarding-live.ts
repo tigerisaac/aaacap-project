@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { announcementResponse } from './announcements.js';
-import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
+import { CAUTION_MS, ForwardingStore, type ForwardingCall } from './forwarding-store.js';
 import type { LiveDecision, StopReason } from '../live/policy.js';
 import type { CloudConfig } from './config.js';
 
@@ -26,11 +26,13 @@ export function liveStreamXML(config: CloudConfig, call: ForwardingCall, now: nu
 
 export class ForwardingLive {
   constructor(readonly forwarding: ForwardingStore) {}
+  /** Claims the call for one screening session. `screeningCaution` is set when a scam was stopped for this person in the last 24 hours. */
   async claim(id: string): Promise<ForwardingCall | undefined> {
     const f = this.forwarding, now = f.store.now();
     return f.transition(id, (c, ctrl, person) => c.state === 'screening' && c.eligible && c.provider === 'telnyx' && !c.liveConnectedAt
       && ctrl.activeCallId === id && ctrl.enabled && ctrl.expiresAt > now && person.status === 'setup' && now - c.createdAt < 85_000
-      ? { liveConnectedAt: now, screeningModel: 'gpt-live-1', events: [...c.events, { kind: 'live_screening_started', at: now }] } : undefined);
+      ? { liveConnectedAt: now, screeningModel: 'gpt-live-1', ...(person.scamStoppedAt > now - CAUTION_MS ? { screeningCaution: true } : {}),
+        events: [...c.events, { kind: 'live_screening_started', at: now }] } : undefined);
   }
   async finish(id: string, decision: LiveDecision | StopReason) {
     const f = this.forwarding, now = f.store.now();
@@ -55,7 +57,8 @@ export class ForwardingLive {
       return { state: offer ? 'offering' : 'ended', outcome: offer ? 'offered' : 'held', purpose,
         reason, completedAt: offer ? null : now, liveFinishedAt: now,
         events: [...c.events, { kind: offer ? 'callback_offered' : 'call_stopped', at: now }] };
-    });
+    // Robocall and solicitation numbers are usually spoofed and change constantly, so only scams are remembered.
+    }, (tx, next, personExists) => { if (next.outcome === 'held' && next.reason === 'scam') f.rememberScam(tx, next, 'scam', personExists); });
   }
 }
 

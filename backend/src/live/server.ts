@@ -63,7 +63,8 @@ server.on('upgrade', async (request, socket, head) => {
         console.info(JSON.stringify({ event: 'live_screening_finished', decision: typeof decision === 'string' ? decision : decision.action,
           elapsedMs: Date.now() - call.createdAt }));
       };
-      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close });
+      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close },
+        Date.now, { recentScamStopped: call.screeningCaution === true });
       const ticker = setInterval(() => session.tick(), 20);
       const startTimer = setTimeout(() => { void session.stop('screening_unavailable'); }, 5000);
       provider.on('message', raw => {

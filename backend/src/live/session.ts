@@ -1,5 +1,5 @@
 import { researchSchema, type ResearchTopic, type ResearchResult } from './research.js';
-import { LIVE_LIMITS, callerText, liveSessionConfig, permittedDecision, type LiveDecision, type StopReason } from './policy.js';
+import { LIVE_LIMITS, callerText, liveSessionConfig, permittedDecision, type LiveDecision, type ScreeningContext, type StopReason } from './policy.js';
 
 type Event = Record<string, any>;
 export interface ScreeningIO {
@@ -41,9 +41,9 @@ export class ScreeningSession {
   private pending = new Map<number, string>();
   private expectedChunk = 1;
   private gapAt?: number;
-  constructor(readonly io: ScreeningIO, readonly now: () => number = Date.now) { this.startedAt = now(); }
+  constructor(readonly io: ScreeningIO, readonly now: () => number = Date.now, readonly context: ScreeningContext = {}) { this.startedAt = now(); }
   get ended() { return this.terminal; }
-  start() { this.io.openai({ type: 'session.start', session: liveSessionConfig() }); }
+  start() { this.io.openai({ type: 'session.start', session: liveSessionConfig(this.context) }); }
   async stop(reason: StopReason) { await this.finish(reason); }
   private async finish(decision: LiveDecision | StopReason) {
     if (this.terminal) return;

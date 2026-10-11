@@ -1,6 +1,6 @@
 # Protection plan
 
-Agreed with the owner on October 10, 2026. **Mostly not built.** Only monitoring Fast mode and the bridge wake-up are built, both deployed October 11. It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
+Agreed with the owner on October 10, 2026. **Mostly not deployed.** Monitoring Fast mode and the bridge wake-up were deployed October 11. Since then, more has been built in code but not deployed; each section says which. It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
 
 The target user is an older adult, often with cognitive impairment, who is likely to press 1 on any offered call and answer a caller's questions at once. That's why speed, memory and caregiver alerts matter more here than the private summary.
 
@@ -58,6 +58,8 @@ Also add test cases for requests aimed at later ("go to the bank tomorrow and ta
 - Add a `MONITOR_POLICY_VERSION` constant so monitoring results can be traced to a prompt version, as screening already is.
 
 ## 3. Make sure scammers can't call back
+
+**Status (October 11):** the server side is built and tested, not deployed: the blocklist, admission, the 24-hour flag (policy v15), and a list and unblock API. Results are in [Screening](SCREENING.md#recent-scam-caution-results-v15-text-only). The app screen and the Call Directory extension come next.
 
 **Problem.**
 - **Shield has no memory.** After a scam block or an intervention, the same number can call again and is screened from scratch.

@@ -1,6 +1,6 @@
 # Screening
 
-How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`). The full history of how it got here, including red-team findings and owner decisions, is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
+How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v15` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed; v15 only adds the recent-scam caution below. The full history of how it got here, including red-team findings and owner decisions, is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
 
 ## How a decision is made
 
@@ -29,6 +29,8 @@ The decision must include a short quote of the caller's own words. The bridge ch
 Before reaching the model, caller text is stripped of braces, brackets, quotes and backslashes, so that speech can't imitate the application's message format.
 
 **Research.** The decision backend may call `research_scam_pattern` once per call. It picks one of four fixed topics: financial impersonation, government impersonation, remote access or family emergency. That runs a web search limited to `uscourts.gov`, `ftc.gov`, `consumerfinance.gov` and `fdic.gov`. No caller words, names, numbers or URLs are sent. A missing or failed lookup never approves a call.
+
+**Recent-scam caution (v15).** For 24 hours after Shield stops a scam for a person, during screening or by ending a connected call, the bridge adds one paragraph to the decision prompt. It says a scam was stopped today and that scammers call back. While it's on, a caller who refers to an earlier, dropped or missed call, or says they're calling back or following up, is held (voicemail) instead of approved. Block rules don't change. With the flag off, the prompt is byte-identical to v14.
 
 ## What each outcome does to the call
 
@@ -77,6 +79,7 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | `scripts/fixtures/holdout/` | 24 | Held-out probes, never used for tuning |
 | `scripts/fixtures/redteam/` | 105 | Attack rounds used to tune v6–v14 (development sets, not held out) |
 | `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks |
+| `scripts/fixtures/caution-cases.mjs` | 9 | Recent-scam caution, run with `--caution`: 7 callers who refer to an earlier call, 2 who mention earlier contact that isn't a call |
 
 ```bash
 node scripts/check-screening-policy.mjs --provider go --repeat 3
@@ -102,6 +105,22 @@ node scripts/redteam-turn.mjs artifacts/redteam-conversation.json "what the call
 - **`check-live-demo.mjs`** is the voice benchmark. It speaks synthetic voices through GPT Live, rotating 8 voices, and answers only questions Shield actually asks. It uses paid OpenAI requests and writes results to `artifacts/live-eval/`.
 - **`redteam-turn.mjs`** is for interactive sparring, one caller turn at a time.
 - **Text checks skip speech recognition and the voice front end.** Always confirm a change with the voice benchmark.
+
+## Recent-scam caution results (v15, text only)
+
+Run October 11 with `--provider go`, 3 runs each. These were the first runs; the caution wording wasn't changed afterwards.
+
+| Check | Legitimate offered | Harmful stopped | Callbacks held |
+|---|---|---|---|
+| Caution cases, caution on | 6/6 | | 21/21 |
+| Caution cases, caution off (v14 behaviour) | 6/6 | | 5/21 |
+| Main benchmark, caution on | 33/33 | 36/36 | |
+| Held-out general, caution on | 24/24 | 23/24 | |
+| Held-out sensitive claims, caution on | 12/12 | 12/12 | |
+
+- The held-out miss is `h-tech-support`, the same fake-support case v14 sometimes asks about instead of blocking.
+- Callbacks held include real people whose call dropped (a friend, a pharmacy, a garage). The owner accepted that cost for the 24 hours after a scam.
+- No voice benchmark has been run with caution on. The caution prompt only reaches the decision backend, not GPT Live's voice instructions.
 
 ## Latest results (v14)
 

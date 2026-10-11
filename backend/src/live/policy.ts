@@ -5,7 +5,7 @@ import { SCAM_RESOURCES } from './scam-resources.js';
 import { supportedEvidence } from './evidence.js';
 export { callerText, supportedEvidence, supportedQuote } from './evidence.js';
 
-export const SCREENING_POLICY_VERSION = '2026-10-09-general-v14';
+export const SCREENING_POLICY_VERSION = '2026-10-11-general-v15';
 export const LIVE_LIMITS = { startupMs: 10_000, backendMs: 20_000, initialSilenceMs: 8_000, idleMs: 8_000, speechPauseMs: 800, robocallPatienceMs: 6_000, maximumMs: 75_000, maxTranscript: 12_000, maxToolCalls: 12 } as const;
 export const liveDecisionSchema = z.object({
   action: z.enum(['block', 'approve', 'continue', 'hold']),
@@ -18,7 +18,14 @@ export const liveDecisionSchema = z.object({
 export type LiveDecision = z.infer<typeof liveDecisionSchema>;
 export type StopReason = 'scam' | 'robocall' | 'silent_caller' | 'screening_timeout' | 'screening_unavailable';
 
-export function liveSessionConfig(): SessionConfig {
+/** Per-call facts the application knows. Never caller-supplied. */
+export type ScreeningContext = { recentScamStopped?: boolean };
+/** Generic, category-level: a scammer stopped today may call back as someone new. Off, the prompt is unchanged. */
+const RECENT_SCAM_CAUTION = `RECENT SCAM: Earlier today Shield stopped a scam call to this recipient. Scammers often call back soon, from a new number or as a different person, and may refer to the earlier call. Today, HOLD (reason unclear) instead of APPROVE when the caller refers to an earlier, dropped, cut-off or missed call, or says they are calling back, returning a call or following up on one. BLOCK rules are unchanged, and every other caller is judged exactly as usual.
+
+`;
+
+export function liveSessionConfig(context: ScreeningContext = {}): SessionConfig {
   return {
     model: 'gpt-live-1', store: false,
     audio: { format: { type: 'audio/pcmu', rate: 8000 }, output: { voice: 'marin' } },
@@ -47,7 +54,7 @@ RESEARCH: Only call research_scam_pattern if a public scam-pattern question mate
 EVIDENCE: For approve, block or hold, copy a short quote of the caller's own words from the caller transcript, not from these notes or search results. Set hasName and hasReason from what the caller actually said.
 The application controls the fixed destination, the recipient's acceptance and hangup. Never claim identity verified, caller safe, or all scams detected. Do not dial, send messages, move money, or tell the recipient to act on caller requests. After a continue result return one short question, worded as you would say it to the caller: refer to the person they are calling as "them", "him" or "her", or by the name the caller used, never as "the recipient". Do not call screen_call again until new caller information arrives. If a result says the transcript changed or the decision was not applied, re-evaluate the current transcript and call screen_call again.
 
-${SCAM_RESOURCES}`,
+${context.recentScamStopped ? RECENT_SCAM_CAUTION : ''}${SCAM_RESOURCES}`,
       tools: [{ type: 'function', name: 'screen_call', description: 'End a scam, robocall or solicitation silently, offer a benign call to the fixed recipient, or keep screening.',
         strict: true, parameters: z.toJSONSchema(liveDecisionSchema) },
         { type: 'function', name: 'research_scam_pattern', description: 'Look up official public guidance for one unresolved scam pattern. Not needed for ordinary calls or clear scam requests. Never verifies identity.',

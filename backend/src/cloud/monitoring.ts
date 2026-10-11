@@ -150,7 +150,8 @@ export class CallMonitor {
   async intervene(id: string, concern: Concern) {
     const c = this.store.config, now = this.store.now();
     const call = await this.forwarding.transition(id, current => current.state === 'accepted' && !current.monitorIntervenedAt
-      ? { monitorIntervenedAt: now, monitorConcern: concern, reason: 'monitor_intervened', events: [...current.events, { kind: 'monitor_intervened', at: now }] } : undefined);
+      ? { monitorIntervenedAt: now, monitorConcern: concern, reason: 'monitor_intervened', events: [...current.events, { kind: 'monitor_intervened', at: now }] } : undefined,
+      (tx, next, personExists) => this.forwarding.rememberScam(tx, next, 'monitor_intervened', personExists));
     if (!call) return;
     try {
       if (!call.childSid) throw new Error('child_missing');
