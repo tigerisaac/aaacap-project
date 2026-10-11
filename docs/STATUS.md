@@ -106,6 +106,16 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
   - **Tests:** six new simulator UI tests passed, and the screenshots were inspected, including the largest text size.
   - **Full suite:** 27 UI tests: 25 passed, 1 skipped, and `ContactSyncUITests` failed. It fails the same way on the code before these changes, since it needs the simulator's Contacts permission.
 
+- **Monitoring policy monitor-v2 (code October 11, not deployed):** protection plan section 2.
+  - **Requests it now catches:**
+    - calling or texting a number the caller gives
+    - saving a claimed bank's or agency's number
+    - opening a link or scanning a code
+    - security answers
+  - **Text checks** (`--provider go`, 3 runs):
+    - main set: 36/36 kept, 36/36 stopped
+    - held-out: 12/12 kept, 21/24 stopped (v1 stopped 5/24)
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.

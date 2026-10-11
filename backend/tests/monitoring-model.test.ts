@@ -56,5 +56,8 @@ describe('connected-call monitoring model', () => {
     expect(warningText('code_or_password')).toContain('asked for a code or password');
     expect(warningText('<Say>injected</Say>')).toContain('matched a common scam');
     expect(warningText('investment')).not.toMatch(/Dan|bank account/);
+    expect(warningText('call_another_number')).toContain('asked you to contact them on a number or address they gave');
+    expect(warningText('save_number')).toContain('asked you to save their number');
+    expect(warningText('open_link')).toContain('asked you to open a link or a website');
   });
 });

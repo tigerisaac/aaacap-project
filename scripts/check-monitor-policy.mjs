@@ -1,11 +1,13 @@
 // Text-only check of the connected-call monitoring prompt. Does not exercise Telnyx transcription.
-// Usage: node scripts/check-monitor-policy.mjs [case-name] [--repeat N] [--provider openai|go]
+// Usage: node scripts/check-monitor-policy.mjs [case-name] [--repeat N] [--provider openai|go] [--cases path/to/cases.mjs]
 import { randomUUID } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 import { MONITOR_POLICY_VERSION, monitorRequest, warrantsIntervention, assessmentSchema } from '../dist/cloud/monitoring.js';
-import { monitorCases } from './fixtures/monitor-cases.mjs';
 import { PROVIDERS, providerKey } from './lib/screening-target.mjs';
 const args = process.argv.slice(2), option = name => { const at = args.indexOf(name); return at >= 0 ? args.splice(at, 2)[1] : undefined; };
-const repeat = Math.max(1, Number(option('--repeat')) || 1), provider = option('--provider') ?? 'openai';
+const repeat = Math.max(1, Number(option('--repeat')) || 1), provider = option('--provider') ?? 'openai', casesPath = option('--cases');
+// A separate case file supports held-out checks that never feed back into prompt wording.
+const { monitorCases } = await import(casesPath ? pathToFileURL(casesPath).href : './fixtures/monitor-cases.mjs');
 const cases = monitorCases.filter(c => !args[0] || c.name === args[0]);
 if (!cases.length) throw new Error('unknown_case');
 const key = await providerKey(provider);

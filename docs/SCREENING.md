@@ -78,7 +78,10 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | `scripts/fixtures/live-screening-cases.mjs` | 24 | Main benchmark: 11 legitimate callers that resemble scam signals, 12 scams and robocalls from real scripts, silence |
 | `scripts/fixtures/holdout/` | 24 | Held-out probes, never used for tuning |
 | `scripts/fixtures/redteam/` | 105 | Attack rounds used to tune v6–v14 (development sets, not held out) |
-| `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks |
+| `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks (monitor-v2) |
+| `scripts/fixtures/monitor-extra.mjs` | 7 | Connected-call cases retired from the main set; a development set, not held out |
+| `scripts/fixtures/holdout/monitor.mjs` | 12 | Held-out connected-call probes for the v2 request kinds |
+| `scripts/fixtures/voicemail-cases.mjs`, `holdout/voicemail.mjs` | 22, 10 | Voicemail keep-or-remove, with `check-voicemail-policy.mjs` (needs `api.decisions.write` on the OpenAI key) |
 | `scripts/fixtures/caution-cases.mjs` | 9 | Recent-scam caution, run with `--caution`: 7 callers who refer to an earlier call, 2 who mention earlier contact that isn't a call |
 
 ```bash

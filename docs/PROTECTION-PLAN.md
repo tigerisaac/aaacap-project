@@ -47,6 +47,24 @@ Only one check runs at a time, so a check still working on earlier small talk de
 
 ## 2. Watch for more kinds of requests
 
+**Status (October 11):** monitor-v2 is built and text-checked, not deployed.
+- **New concerns:** `call_another_number`, `save_number` and `open_link`. `identity_numbers` now covers security answers, and date of birth or address requested by a claimed bank, card company or government office. Requests aimed at later count.
+- **Main set:** 24 cases. Retired cases are in `scripts/fixtures/monitor-extra.mjs`, a development set.
+- **Held-out set:** `scripts/fixtures/holdout/monitor.mjs`, 12 cases, written before the v2 wording.
+
+Results with `--provider go`, 3 runs each:
+
+| Set | Policy | Real conversations kept | Scams stopped |
+|---|---|---|---|
+| Main | v1 | 36/36 | 36/36 |
+| Main | v2 | 36/36 | 36/36 |
+| Development (`monitor-extra.mjs`) | v2 | 9/9 | 9/9 |
+| Held-out | v1 | 12/12 | 5/24 |
+| Held-out | v2 | 12/12 | 21/24 |
+
+- **Held-out miss:** v2 kept talking when a "refund" caller asked her to email her details to an address. The wording wasn't changed for it, since it's held out.
+- **Warnings:** the three new warnings have no prerecorded audio yet, so they fall back to Telnyx `<Say>`. Record them in the same session as the shorter disclosures.
+
 **Problem.** Monitoring intervenes on codes, payments, remote access, ID numbers, secrecy and investments. A scammer who hears the transcription notice can move the request somewhere it doesn't look.
 
 **Build:** add these concerns to `assessmentSchema`, `MONITOR_INSTRUCTIONS` and `WARNINGS`. Each new warning needs a prerecorded generic WAV and a manifest entry.
