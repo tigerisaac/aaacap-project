@@ -13,6 +13,7 @@ Read back from production on October 10:
 | Runtime config | `SHIELD_RUNTIME` v5: Telnyx only, live screening on, connected-call protection on at the server. Twilio and OpenRouter keys removed. |
 | Announcement audio | Prerecorded Soniox Grace: 25 generic 24 kHz WAV files on Hosting, with Functions backup. `shieldApi` revision `shieldapi-00012-heq`, updated October 10 at 15:52 UTC. All 50 primary/backup URLs verified HTTP 200, `audio/wav`, matching original SHA-256; public health ready. |
 | Protection onboarding | Default-selected choice after email sign-in; Continue saves consent or opt-out. `shieldApi` revision `shieldapi-00013-seb`, deployed October 10 at 22:11 UTC; ACTIVE and public health ready. Signed app installed on enrolled iPhone. |
+| Withheld callers, faster monitoring, bridge wake-up | Deployed with owner approval October 11 at 00:19 UTC (Functions only; bridge unchanged): `shieldApi` revision `shieldapi-00015-jij` serving 100%, `monitorConnectedCall` `monitorconnectedcall-00003-yed`, `ingestForwardingVoicemail` `-00005-nen`. Background-function invokers unchanged: Shield runtime identity only, not public. After deploy: public health, ready and `/privacy` HTTP 200; unsigned webhook 403; unauthenticated API 401; bridge `/ready` on v14; no function warnings or errors and no pending monitor checks. Not yet exercised by a real call. |
 | Connected-call transcription | Soniox `soniox/stt-rt-v4` through Telnyx, deployed with owner approval October 10. `shieldApi` revision `shieldapi-00014-nos` ACTIVE at 22:45:53 UTC; runtime v5 has no engine override and the new schema default resolves to Soniox. Public health HTTP 200/ready. Soniox real-call quality remains unverified. |
 | Voicemail fallback | Live: held, failed or timed-out screenings go to voicemail instead of hanging up |
 | Check tab | `gpt-6-luna` through `shieldApi` (October 10). Synthetic checks: a routine reminder passed, and bank-code and grandparent-bail texts were flagged. |
@@ -62,14 +63,14 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
 
 - Connected-call protection onboarding (October 10): main onboarding after email sign-in selects protection by default, with an optional off toggle and explicit Continue to save current consent. Existing opt-outs are preserved, stale enabled consent prompts again, and helpers cannot choose for someone else. Typecheck/build, 94 unit tests, 48 Firebase emulator tests and all five final targeted UI tests passed. Default and largest-text/dark screens were inspected in simulator; the signed normal app was installed and launched on the enrolled iPhone. No owner monitoring preference or carrier setting was changed. With owner approval, only `shieldApi` was deployed successfully: revision `shieldapi-00013-seb`, ACTIVE at 22:11:03 UTC, public health HTTP 200/ready. Connected-call protection end to end remains unverified.
 
-- **Withheld and international caller IDs (October 10, code only, not deployed).** Forwarded callers whose number is withheld (`anonymous`, `restricted`, empty) or outside the US are now screened like any other caller, instead of being hung up.
+- **Withheld and international caller IDs (code October 10, deployed October 11).** Forwarded callers whose number is withheld (`anonymous`, `restricted`, empty) or outside the US are now screened like any other caller, instead of being hung up.
   - **Binding:** the webhook caller must still match Telnyx's own record of the call.
   - **Never trusted:** a withheld caller never matches a saved contact or a single-caller test scope.
   - **Not stored:** the raw value isn't kept, and history shows "No caller ID".
   - **Tests:** `npm run check` passed (94 unit tests) and `npm run test:firebase` passed 54 emulator tests, 6 of them new.
   - **Unknown:** what Telnyx actually sends for a withheld number needs one real call.
 
-- **Faster monitoring and bridge wake-up (October 10, code only, not deployed):**
+- **Faster monitoring and bridge wake-up (code October 10, deployed October 11):**
   - **Fast mode:** connected-call checks send `service_tier: 'priority'`. GPT Live screening stays on the standard tier, by owner decision. In a 12-request comparison, the median model time was 1.1 s against 2.3 s, with every decision correct.
   - **Wake-up:** `shieldApi` sends `/ready` to the live bridge as soon as a signed forwarded call arrives, so a cold start overlaps the greeting.
   - **Tests:** `npm run check` (94 unit tests) and `npm run test:firebase` (54 tests) passed. GPT Live's session settings are unchanged from production.

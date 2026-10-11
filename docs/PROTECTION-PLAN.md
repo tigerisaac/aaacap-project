@@ -1,6 +1,6 @@
 # Protection plan
 
-Agreed with the owner on October 10, 2026. **Mostly not built.** Only monitoring Fast mode and the bridge wake-up are in code, and neither is deployed. It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
+Agreed with the owner on October 10, 2026. **Mostly not built.** Only monitoring Fast mode and the bridge wake-up are built, both deployed October 11. It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
 
 The target user is an older adult, often with cognitive impairment, who is likely to press 1 on any offered call and answer a caller's questions at once. That's why speed, memory and caregiver alerts matter more here than the private summary.
 
@@ -16,7 +16,7 @@ The target user is an older adult, often with cognitive impairment, who is likel
 Only one check runs at a time, so a check still working on earlier small talk delays the one that contains the request.
 
 **Build:**
-- **Fast mode: done in code October 10, not deployed.** `monitorRequest()` (`backend/src/cloud/monitoring.ts`) now sends:
+- **Fast mode: deployed October 11.** `monitorRequest()` (`backend/src/cloud/monitoring.ts`) now sends:
   - **Request:** `gpt-6-luna`, `reasoning: { effort: 'medium' }` and `service_tier: 'priority'`. `'fast'` has been an alias since July 30, 2026, but some routes reject it.
   - **Scope:** this applies only to in-call monitoring. GPT Live screening stays on the standard tier, by owner decision.
   - **Price:** Fast costs twice the standard rate ($0.20 in and $1.00 out per 1M tokens), about $0.002 per check.
@@ -160,9 +160,13 @@ Revisit only if Shield gains more control of the line.
    - **Threshold:** destroy only when the probability of `destroy` is at least 0.9; otherwise keep. Tune that number on synthetic voicemails only.
    - **Contacts:** never destroy a voicemail from a saved contact.
    - **Failures keep:** any failure, refusal or timeout keeps the message. The API is in public beta.
-   - **Grace period (recommended):** "destroy" removes the message from her inbox at once, but purges the audio and transcript after 7 days. Until then the person or a caregiver can restore it from "Removed by Shield".
+   - **Hide, then purge (owner decision, October 10):** "destroy" removes the message from her inbox at once and purges the audio and transcript after 7 days. Until then the person or a caregiver can restore it from "Removed by Shield".
 4. **Caregivers:** a destroyed scam voicemail sends a caregiver alert (section 4), because the scammer may try again.
 5. **Privacy:** seal the transcript like the audio, and delete both with the voicemail. Decisions supports Zero Data Retention for eligible customers; confirm the account's retention before launch. Make sure `/privacy` mentions voicemail transcription.
+6. **Optional phone alert (nice to have, low priority).** Someone the person chooses gets an alert at a phone number of their own when a voicemail is destroyed. Notes for building it:
+   - **Texts need registration:** US texting from a Telnyx number requires A2P 10DLC brand and campaign registration, which has fees and vetting.
+   - **A call is simpler:** an automated call with a prerecorded generic message needs no registration.
+   - **Content:** the alert never includes the caller's words or number.
 
 **Check:**
 - Write about 20 synthetic voicemail transcripts, real messages and junk, never real voicemails.
@@ -183,7 +187,7 @@ Revisit only if Shield gains more control of the line.
 | 22–30 | Ringing | Her phone rings until she answers |
 | 30–42 | Ringing | She hears the 8–9 s private summary; "Press 1" comes last |
 
-**Done in code October 10, not deployed: wake the bridge on arrival.**
+**Deployed October 11: wake the bridge on arrival.**
 - **When:** as soon as a signed forwarded call arrives with live screening on, `shieldApi` sends `/ready` to the bridge without waiting for an answer.
 - **Why:** the bridge scales to zero and connects only after the greeting. On a cold start, that startup used to land after the greeting, while the caller was already talking. Now it overlaps the greeting.
 - **Effect on tests:** none. Today's tests used a warm bridge.
