@@ -145,7 +145,7 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
    - **Still needed:** voice runs of the new cases, and real voices.
 4. **Decide whether the scam-guidance lookup earns its delay.** Measured October 11: the model asked for it once in about 500 text runs, and it changed no outcome that could be measured. The recommendation is to remove it at the next planned prompt change. That's the owner's decision ([Screening](SCREENING.md#text-re-check-and-research-lookup-study-october-11)).
 5. **Protection plan.** Agreed October 10, not built: faster and broader monitoring, blocking repeat scammers, caregiver alerts, daily setup checks, voicemail keep-or-destroy and shorter disclosures. See the [protection plan](PROTECTION-PLAN.md).
-6. **Senior rehearsal, then the ten-person pilot.** See the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md).
+6. **Senior rehearsal, then the ten-person pilot.** See the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md). Phase 1 (multi-person backend) and most of phase 2 (scripts) are built on branch `pilot-multi-person`, not merged or deployed (October 11).
 7. **Housekeeping:**
    - release the Twilio number and close the Twilio account
    - delete the OpenRouter key

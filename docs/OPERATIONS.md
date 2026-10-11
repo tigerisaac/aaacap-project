@@ -79,6 +79,24 @@ curl -s https://shield-live-kzcw2rbfhq-uc.a.run.app/ready
 
 It returns the voice model, decision model and `policyVersion`. It doesn't prove the OpenAI key works; `node scripts/check-live-access.mjs` does that with a 4-second GPT Live session and no phone call.
 
+## Deploying the October 11 work
+
+Everything below is on `main`, tested and **not deployed**. Each step changes production, so each needs the owner's approval. The order matters.
+
+1. **Voice results for v15.** `enable-live-demo.mjs` refuses without them. Run `node scripts/check-live-demo.mjs` (synthetic voices, paid OpenAI).
+2. **Firestore indexes:** `npx firebase deploy --only firestore:indexes --project shield-calls-isaac`. This adds the collection-group index cleanup uses for `blocked-numbers` and exempts encrypted fields.
+3. **Functions:** package, install and deploy as above. This adds `sendShieldAlert` and `checkForwardingVoicemail`.
+4. **Invokers:** `node scripts/finalize-firebase.mjs`. It now also grants the runtime identity invoke on the two new functions; without it, alerts and voicemail checks never run.
+5. **Bridge:** build, deploy, publish. It carries policy v15 (the recent-scam caution) and passes `screeningCaution` to sessions.
+6. **Check:** public health and ready, bridge `/ready` showing `2026-10-11-general-v15`, `check-monitoring.mjs`, and `check-live-calls.mjs` for errors.
+
+These features stay off until switched on:
+- **Push alerts:** add `APNS` (`keyId`, `teamId`, `privateKey` from a .p8 auth key) to `SHIELD_RUNTIME`, then redeploy Functions.
+- **Voicemail keep-or-remove:** add `api.decisions.write` to the OpenAI key, run `check-voicemail-policy.mjs` and its held-out set, then set `VOICEMAIL_SCREENING_ENABLED: true` and redeploy Functions.
+- **App:** build once in Xcode with the team account signed in (App Groups and the new Call Directory App ID), then install the new build on the phone.
+
+The ten-person pilot backend is separate, on branch `pilot-multi-person`. It has its own deploy order in the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md#built-on-the-branch-october-11).
+
 ## Feature switches
 
 | Switch | Turn on | Turn off |
