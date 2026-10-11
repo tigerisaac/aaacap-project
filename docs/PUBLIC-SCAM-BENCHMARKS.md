@@ -13,6 +13,35 @@ Reviewed October 11, 2026. The first public diagnostic used frozen screening v16
 
 MASC's dataset card and the [authors' project](https://supreme-lab.github.io/ai-in-the-loop/) document its synthetic provenance. Public availability does not make these real-call evidence. A high score on repetitive generated dialogues can be easier than a call with indirect phrasing or imperfect transcription.
 
+## Coverage and published model results
+
+Shield evaluated **the entire published MASC test split: 320 unique conversations, 40 in each of eight categories**. The full [MASC dataset](https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation) contains 1,600 conversations: 1,280 training rows and 320 test rows. The [pinned repository](https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation/tree/709db2b6c37f424c3070f29138abb33971e21ab9) publishes separate all/train/test files. We did not evaluate the training split or the authors' other corpora and generation tasks.
+
+All 320 test rows were executed. The screening report groups them as 160 labeled scams, 80 ordinary appointment/delivery calls, 40 insurance sales scored separately as ads, and 40 wrong-number diagnostics. The frozen v18 results were 160/160 scams identified with clarification credit, comprising 155 completed blocks/holds and five clarifications; 80/80 ordinary calls offered; 40/40 ads blocked; and zero labeled scams approved. These are Shield policy measures, not the original benchmark's binary-classification F1.
+
+The [authors' published MASC tables](https://supreme-lab.github.io/ai-in-the-loop/#results), checked October 11, report the following F1 scores. F1 combines precision and recall; it is not the percentage of scam calls identified. Values are author-reported reference results, not measurements reproduced through Shield.
+
+| Model | Published MASC F1 |
+|---|---|
+| LlamaGuard | 58.29% |
+| LlamaGuard2 | 72.75% |
+| LlamaGuard3 | 82.00% |
+| MD-Judge | 83.06% |
+| DistilBERT | 96.97% |
+| BERT-Base | 98.12% |
+| BERT-Large | 98.83% |
+| RoBERTa | 99.32% |
+| BiLSTM | 99.88% |
+| BiGRU | 99.92% |
+
+The [AI-in-the-Loop paper](https://arxiv.org/html/2509.05362v3#S4) describes trained classifiers and instruction-tuned guard models, with conversation-level labels and both speaker roles. Shield screening uses caller speech only, makes a call-offer decision, and credits unanswered clarifications under the owner's later scoring rule. MASC labels insurance sales as non-scams; Shield intentionally blocks them and reports ads separately. Wrong numbers also stay outside Shield's ordinary-call score. The [released guard evaluation script](https://github.com/supreme-lab/ai-in-the-loop/blob/main/source_code/eval_for_f1_auprc_fpr_fnr.py) loads `all_data.chat.json` and fine-tuned model checkpoints; it does not establish an evaluation on our exact pinned 320-row test file. These differences prevent a direct ranking of Shield's 100% against the published F1 values.
+
+A separate [AAAI 2025 study, Combating Phone Scams with LLM-based Detection](https://ojs.aaai.org/index.php/AAAI/article/download/35298/37453), includes MASC. Its Table 1 reports a trained Random Forest at 0.99 F1 on MASC. It also evaluates GPT-4, GPT-4o, GLM-4, Doubao and ERNIE, but Figure 1 groups results as synthetic versus real data rather than providing individual MASC scores. We therefore do not assign those LLMs a MASC number. The paper shows how near-perfect performance on generated data can collapse on a newly constructed adversarial set, supporting broader validation beyond MASC.
+
+No independently verified, comparable GPT-6 Luna, current Claude or Gemini MASC result was found in this review. To compare models fairly, run them on the same pinned test rows with the same inputs, prompts, category groups, clarification credit and failure handling. Keep an original-label binary-classification track separate if comparing with research F1. For a shareable report, describe this as full published-test-split coverage with perfect observed screening identification under the stated rule, alongside the 96.9% completed-stop rate and the separate monitoring results below. It is synthetic text evidence; live timing, GPT Live screening behavior and real-call effectiveness remain unmeasured by this benchmark.
+
+Coverage and baseline report validation (October 11): saved results contain 320 unique IDs, exactly 40 per type. `npm run check` passed 117 unit tests, typecheck and build; `npm run test:firebase` passed all 86 emulator tests. This documentation update made no model requests or policy changes.
+
 ## Reproduce the MASC diagnostic
 
 Build the application, then run:
