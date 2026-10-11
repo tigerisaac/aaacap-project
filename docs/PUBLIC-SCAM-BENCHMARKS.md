@@ -10,7 +10,8 @@ Reviewed October 11, 2026. The first public diagnostic used frozen screening v16
 | [BothBosu scam-dialogue](https://huggingface.co/datasets/BothBosu/scam-dialogue) and [single-agent-scam-conversations](https://huggingface.co/datasets/BothBosu/single-agent-scam-conversations) | Synthetic English scam/non-scam phone conversations. The scam-dialogue card lists 1,600 rows and Apache-2.0. | Useful breadth checks after MASC, but related generation/templates can overlap. Deduplicate across corpora and do not treat them as independent replications. Label 0 includes genuine sales/telemarketing. Not executed in this pass. |
 | [TeleAntiFraud 2.0 paper](https://arxiv.org/abs/2609.18748) and [research artifact](https://anonymous.4open.science/r/TeleAntiFraud-2_0-EEB2/) | Monthly frozen sets of 900 Chinese calls: 600 fraud and 300 lawful calls sharing closely related situations. Generated dialogues are rendered as speech, with manifests and provenance. | Strong evaluation design for confusing legitimate/scam pairs and audio. Chinese language and regional scripts limit direct relevance to the English US pilot. Verify the artifact's dataset license and synthetic provenance before importing. Not executed here. |
 | [COVA-X authors' site](https://scamlingua.org/) and [paper](https://arxiv.org/abs/2606.06879) | 10,985 synthetic multi-turn conversations across eight elder-targeted scam categories. The authors' site requires requesting access and describes non-commercial research terms. | Very relevant family/grandparent and elder-fraud coverage, but it is not an unrestricted downloadable public benchmark. No access request was sent. Outcome labels also need mapping to Shield's request-level decisions. |
-| [Voice-agent honeypot corpus](https://arxiv.org/abs/2609.29528) and [analysis paper](https://arxiv.org/abs/2608.24127) | 10,015 real English US inbound calls to researcher-owned numbers seeded into lead-generation forms, answered by an LLM persona. Automatic holistic labels: 949 scam, 3,949 spam, 380 legitimate, 1,096 too brief; 75% agreement with human reviewers on a 60-call check. The descriptor announces a 1,000-call de-identified public subset (500 scam, 500 spam, transcripts only) under a non-commercial licence, plus the full corpus under a data-use agreement. Published caller-disjoint baselines: TF-IDF classifiers F1 0.70–0.75, zero-shot Gemini 2.5 Flash F1 0.79; detectors trained on synthetic dialogue fall to F1 0.02–0.40. | The strongest candidate after MASC: real callers, English, and a published synthetic-to-real collapse that directly tests generalization. Not used yet: no download link was found on October 11, the licence is non-commercial, the public subset has no legitimate calls, and real-call transcripts need an explicit owner exception to this repo's synthetic-only evaluation rule. Shield blocks both scam and spam, so its policy score differs from the source scam-vs-rest task. A production-request harness is prepared; see [Honeypot corpus harness](#honeypot-corpus-harness-prepared-not-run). |
+| [Voice-agent honeypot corpus](https://arxiv.org/abs/2609.29528) and [analysis paper](https://arxiv.org/abs/2608.24127) | 10,015 real English US inbound calls to researcher-owned numbers seeded into lead-generation forms, answered by an LLM persona. Automatic holistic labels: 949 scam, 3,949 spam, 380 legitimate, 1,096 too brief; 75% agreement with human reviewers on a 60-call check. The descriptor announces a 1,000-call de-identified public subset (500 scam, 500 spam, transcripts only) under a non-commercial licence, plus the full corpus under a data-use agreement. Published caller-disjoint baselines: TF-IDF classifiers F1 0.70–0.75, zero-shot Gemini 2.5 Flash F1 0.79; detectors trained on synthetic dialogue fall to F1 0.02–0.40. | The strongest candidate after MASC: real callers, English, and a published synthetic-to-real collapse that directly tests generalization. Not used yet: no download link was found on October 11, the licence is non-commercial, the public subset has no legitimate calls, and real-call transcripts need an explicit owner exception to this repo's synthetic-only evaluation rule. Shield blocks both scam and spam, so its policy score differs from the source scam-vs-rest task. Dropped by the owner on October 11: the data is obtainable only by contacting the authors' company, scam.ai, which the owner declined. |
+| [NC State robocall audio dataset](https://github.com/wspr-ncsu/robocall-audio-dataset) | 1,432 real robocall recordings released by the FTC's Project Point of No Entry with its cease-and-desist letters: 1,378 English, 54 Mandarin. Whisper transcripts of the robocaller side, 16 kHz audio, and the FTC letter for each call. Data in the public domain. | Real illegal robocalls, available now, matching Shield's robocall and scam rules. Harmful calls only, so it cannot measure legitimate calls offered. Campaigns replay recordings: 724 distinct English transcripts. Screening v18 stopped 2,078/2,172 checks over three passes; see [FTC robocall benchmark](#ftc-robocall-benchmark). |
 | [Fraud-R1](https://aclanthology.org/2025.findings-acl.226/) | 8,564 fraud-only messages, emails, posts and job ads in English and Chinese, with pre-written credibility, urgency and emotional escalations. Gated research-use agreement that bars financial gain. | Not adopted. It has no legitimate cases, so blocking everything scores 100%. It is not phone calls, and its escalations do not answer Shield's questions. |
 | [ICFD-31k](https://www.ijcai.org/proceedings/2026/786) ([repository](https://github.com/SPELLAILab/ICFD-31k)) | About 31,000 synthetic Indian-context fraud conversations with chunk-level streaming labels. Licence and class balance not stated on the proceedings page. | Streaming labels suit an early-detection timing study. Regional scripts limit relevance to the US pilot. Not executed. |
 
@@ -100,32 +101,48 @@ node scripts/rescore-masc-classifier.mjs artifacts/masc-classifier/<run>
 
 `--prepare-only` validates the pinned split without model requests. `--limit-per-type` supports a smoke check; a partial selection is marked as such and cannot be described as full test-split coverage. The main Shield benchmark and every production prompt remain unchanged. No deployment or real call is performed by this runner.
 
-## Honeypot corpus harness (prepared, not run)
+## FTC robocall benchmark
 
-[`check-honeypot-benchmark.mjs`](../scripts/check-honeypot-benchmark.mjs) runs Shield's production screening and monitoring requests on the [voice-agent honeypot corpus](https://arxiv.org/abs/2609.29528). The owner chose production requests first; a benchmark-specific classifier follows only if the source labels prove misaligned. It was built on October 11 before any data existed locally. No model request has used real calls.
+[`check-robocall-benchmark.mjs`](../scripts/check-robocall-benchmark.mjs) runs Shield's production screening request on real robocalls from the [NC State robocall audio dataset](https://github.com/wspr-ncsu/robocall-audio-dataset). It uses production requests rather than a benchmark-specific classifier, as the owner chose. The owner granted an exception to the synthetic-only evaluation rule on October 11, for this public-domain dataset only. The runner refuses model requests without `--real-calls-approved`. The local permission system stopped the first attempt because it sends real transcripts to a model gateway. The owner then confirmed in chat that the run should use OpenCode Go only, not paid OpenAI, and that audio stays out of scope.
 
-The [adapter](../scripts/lib/honeypot-benchmark.mjs) follows the paper's released record schema: `call_id`, `label_holistic`, `label_scam`, and `turns` with `caller`/`agent` speakers. An unknown label, speaker or record shape stops the run. Caller pseudonyms, persona, asks, signals and labels never reach a model. Result rows hold IDs, source hashes, groups and outcomes only.
+The [adapter](../scripts/lib/robocall-benchmark.mjs) downloads only `metadata.csv` (no audio), pinned to revision `5aa6f3bfa8563ce8c1c75ebf8a2271e6ff6b4272` with SHA-256 `8e253a4a…effe5` verified on reuse. IDs follow row order, because 26 recordings appear under two FTC letters. Result rows hold IDs, letter slugs and outcomes only; transcript text is never saved or printed.
 
 These choices were fixed before any results:
 
-- **Screening context:** by default, screening sees the caller's opening: whole caller turns up to 1,200 characters, about 75 seconds of speech. That matches the production session limit. `--screening-context full` sends all caller speech up to the production 12,000-character transcript limit, as a diagnostic.
-- **Groups:** scams, strict scams (`label_scam`, an explicit sensitive-information request), lead-generation spam and, in the full corpus only, legitimate calls are reported separately. Shield's solicitation rule should stop spam, so a spam block is a policy success, not a false alarm. Clarification credit follows the MASC identification rule; completed stops stay separate.
-- **Monitoring:** one end-of-conversation check on the production rolling tail. Spam monitoring outcomes are diagnostic, since monitoring has no solicitation rule.
-- **Bridge to the paper:** `scamReasonAsDetector` treats a BLOCK with reason `scam` as a positive. It re-estimates precision and F1 at the paper's 14.9% scam prevalence from recall and the spam false-positive rate, for context against the published zero-shot F1 of 0.79. Spam is a harder negative than the paper's mix, so the estimate is conservative.
+- **Selection:** English rows only. One case per distinct recording, after normalizing case, punctuation and spacing in the transcript. This gives 724 cases from 1,378 English calls: 654 replays are merged and 54 Mandarin rows excluded. Each case records how many original calls replayed it, for a call-weighted view.
+- **Screening context:** screening sees one recorded message. By default it gets whole words up to 1,200 characters, about 75 seconds of speech, the production session limit; 5 recordings are longer. `--screening-context full` uses the production 12,000-character transcript limit.
+- **Scoring:** completed stops (BLOCK or HOLD) are the headline, broken down by reason. Clarifying questions are reported separately; identification credit follows the MASC rule. Approvals are harmful approvals, and they are reported per FTC letter for inspection, not relabelled. Some recordings may only inform, which Shield's policy can approve as routine.
+- **Monitoring:** not run. These are one-sided recordings, not connected conversations.
 
-Before running it:
-
-1. Obtain the release. No download link was found on October 11; the public subset may require contacting the authors. The runner never downloads.
-2. Confirm the licence. The paper states non-commercial terms. The full corpus is under a data-use agreement; check that it permits sending transcripts to OpenCode or OpenAI.
-3. Get the owner's explicit exception to the synthetic-only evaluation rule. Model requests are refused without `--real-calls-approved`.
+Limits: there are no legitimate calls, so this measures harmful calls stopped only. Transcripts are Whisper output of the robocaller channel. The production no-pause robocall timer and GPT Live voice handling are not modeled in text. The audio could support a voice check later, but the owner declined sending it through paid OpenAI.
 
 ```bash
 npm run build
-node scripts/check-honeypot-benchmark.mjs --source path/to/release.jsonl --prepare-only
-node scripts/check-honeypot-benchmark.mjs --source path/to/release.jsonl --real-calls-approved --concurrency 4
+node scripts/check-robocall-benchmark.mjs --prepare-only
+node scripts/check-robocall-benchmark.mjs --provider go --real-calls-approved --repeat 3 --concurrency 16 --out artifacts/public-benchmarks/robocall-v18
 ```
 
-Six synthetic records in the paper's schema exercised the full path through production requests via Go on October 11. Their placeholder text drew clarifying questions, as expected, and they carry no evaluation meaning. Caveats for interpretation: labels are automatic, with 75% agreement on a 60-call human check. Callers spoke to an LLM persona, not a person or Shield. Turns are ASR text, and the public subset is selected for long engagement.
+### Results, October 11 (screening v18, Go, three passes)
+
+All 724 distinct recordings ran three times: 2,172 checks completed in under five minutes at 16 parallel requests. There were no provider failures, and `policy.ts` was unchanged. Raw outcomes are in `artifacts/public-benchmarks/robocall-v18/`.
+
+| Measure | Result |
+|---|---|
+| Completed stops (all BLOCK) | 2,078/2,172 (95.7%): 2,065 robocall, 13 solicitation |
+| Clarifying questions | 82 (3.8%) |
+| Harmful approvals | 12 (0.55%), from 8 distinct recordings |
+| Identified, clarification credited | 2,160/2,172 (99.4%) |
+| Per pass, stopped / approved | 691/3, 694/3, 693/6 of 724 |
+| Recordings stopped in all three passes | 687/724; 25 were never stopped |
+| Call-weighted, each outcome applied to its replays | 3,906/4,134 stopped (94.5%), 29 approved (0.7%) |
+
+The approvals were read and grouped, without changing any label or prompt:
+
+- **Existing-provider impersonation, 8 approvals from 4 recordings.** The recordings claim to be the recipient's satellite-TV provider offering a discount on her account. Two were approved in all three passes. This is a known impersonation scam, but the policy treats a business she already uses, calling about her own account, as ordinary. It is a policy gap, not noise.
+- **Family-only opener, 1 approval.** A grandparent greeting with no request. This matches the owner's v16 family rule, which offers family openers and relies on connected-call protection.
+- **Intermittent, 1 approval each.** A tech-support "press 1" recording, a foreign-consulate "important notice" and an energy-supply callback request. Each was blocked or questioned in its other passes.
+
+A clarifying question to a recording would not connect it in production, but text cannot show what the no-pause robocall timer or silence handling would then do, so clarifications are not counted as stops. These findings did not change any prompt. Fixing the existing-provider gap would need fresh, independently written development probes, a policy version bump and the usual text and voice checks; this dataset would then no longer be untouched evidence for that category.
 
 ## Reproduce the Shield MASC diagnostic
 
