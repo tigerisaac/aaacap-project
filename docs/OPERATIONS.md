@@ -83,7 +83,7 @@ It returns the voice model, decision model and `policyVersion`. It doesn't prove
 
 Everything below is on `main`, tested and **not deployed**. Each step changes production, so each needs the owner's approval. The order matters.
 
-1. **Voice results for v15.** `enable-live-demo.mjs` refuses without them. Run `node scripts/check-live-demo.mjs` (synthetic voices, paid OpenAI).
+1. **Voice results for v15.** `enable-live-demo.mjs` refuses without them. They were run October 11 on this machine (24/24) and are in `artifacts/live-eval/`. Re-run `node scripts/check-live-demo.mjs` (synthetic voices, paid OpenAI) on any other machine.
 2. **Firestore indexes:** `npx firebase deploy --only firestore:indexes --project shield-calls-isaac`. This adds the collection-group index cleanup uses for `blocked-numbers` and exempts encrypted fields.
 3. **Functions:** package, install and deploy as above. This adds `sendShieldAlert` and `checkForwardingVoicemail`.
 4. **Invokers:** `node scripts/finalize-firebase.mjs`. It now also grants the runtime identity invoke on the two new functions; without it, alerts and voicemail checks never run.

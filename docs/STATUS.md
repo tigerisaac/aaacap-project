@@ -83,7 +83,7 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
     - callbacks: 21/21 held (5/21 with caution off)
     - main benchmark: 33/33 legitimate, 36/36 harmful
     - held-out: 36/36 legitimate, 35/36 harmful
-  - **Not run:** a voice benchmark for v15.
+  - **Voice benchmark (synthetic voices):** 24/24 with caution off and 24/24 with it on.
   - **To deploy:** Functions, the bridge, and Firestore indexes (a collection-group index for cleanup).
 
 - **Monitoring timing and parallel checks (code October 11, not deployed):** protection plan section 1.
