@@ -52,7 +52,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   const jobs = async () => (await db.collection('monitorChecks').get()).docs;
   const build = async () => {
     s = new CloudStore(db, config, () => now); f = new ForwardingStore(s); monitor = new CallMonitor(f, { update });
-    app = await buildCloudApp(s, { auth, callMonitor: monitor, lookupForwardingChild: async () => ({ parentCallSid: sid(), from: number,
+    app = await buildCloudApp(s, { auth, warmLiveBridge: () => {}, callMonitor: monitor, lookupForwardingChild: async () => ({ parentCallSid: sid(), from: number,
       to: config.TRIAL_VERIFIED_CALLER, status: 'in-progress' }), lookupForwardingInbound: async () => ({ from, to: number, status: 'in-progress', direction: 'inbound' }) });
   };
   beforeEach(async () => {

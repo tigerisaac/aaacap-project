@@ -11,7 +11,7 @@ Current as of October 10, 2026. Shield answers unfamiliar calls that a person's 
 | Live screening bridge | Cloud Run service `shield-live` (WebSocket, one instance max) in the same Google Cloud project | `backend/src/live/server.ts`, `session.ts`, `policy.ts` |
 | Screening voice | OpenAI `gpt-live-1`, voice `marin`, 8 kHz μ-law (PCMU) | `backend/src/live/policy.ts` |
 | Screening decisions | OpenAI `gpt-6-luna`, medium reasoning effort, called by GPT Live through delegation | `backend/src/live/policy.ts`, `research.ts` |
-| Connected-call protection (opt-in) | Telnyx transcription plus Firebase Function `monitorConnectedCall` (`gpt-6-luna`) | `backend/src/cloud/monitoring.ts` |
+| Connected-call protection (opt-in) | Telnyx transcription plus Firebase Function `monitorConnectedCall` (`gpt-6-luna`; OpenAI Fast mode in code October 10, not deployed) | `backend/src/cloud/monitoring.ts` |
 | Voicemail ingestion | Firebase Function `ingestForwardingVoicemail` | `backend/src/cloud/forwarding-recordings.ts` |
 | Cleanup | Firebase Function `cleanupShield`, daily at 04:00 Central | `backend/src/cloud/store.ts` |
 | Check tab (paste a text to check it) | `shieldApi` calling `gpt-6-luna`; the text isn't stored | `backend/src/cloud/message-check.ts` |

@@ -9,7 +9,7 @@ const completed = (args: unknown) => ({ status: 'completed', output: [{ type: 'f
 describe('connected-call monitoring model', () => {
   it('forces one structured assessment at medium effort without storing the conversation', () => {
     const request = monitorRequest(transcript);
-    expect(request).toMatchObject({ model: 'gpt-6-luna', store: false, reasoning: { effort: 'medium' }, tool_choice: { type: 'function', name: 'assess_call' } });
+    expect(request).toMatchObject({ model: 'gpt-6-luna', service_tier: 'priority', store: false, reasoning: { effort: 'medium' }, tool_choice: { type: 'function', name: 'assess_call' } });
     expect(request.tools[0]!.parameters).toMatchObject({ additionalProperties: false });
   });
   it('strips message-format characters from the transcript it sends', () => {

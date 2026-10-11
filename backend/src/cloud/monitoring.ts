@@ -8,6 +8,8 @@ import type { ForwardingCall, ForwardingStore } from './forwarding-store.js';
 // Opt-in protection for calls the recipient accepted: Telnyx transcribes both sides, Luna checks the
 // conversation, and a clear scam request ends the call with a spoken warning to her.
 export const MONITORING_CONSENT = 'shield-monitoring-2026-10-v1';
+/** OpenAI Fast mode: the recipient may answer a scam request within seconds. `fast` is an alias, but some routes reject it. */
+const FAST_TIER = 'priority';
 export const MONITOR_LIMITS = { keepChars: 6_000, segmentChars: 2_000, leaseMs: 45_000, maxChecks: 240, transcriptTtlMs: 2 * 3600_000, modelMs: 25_000 } as const;
 
 export const assessmentSchema = z.object({
@@ -38,7 +40,7 @@ CONTINUE otherwise. People who know each other talk about money, banks, bills, d
 For intervene, set concern to the matching request and copy a short quote of the words that justify it from the transcript.`;
 
 export function monitorRequest(transcript: string) {
-  return { model: DECISION_MODEL, store: false, reasoning: { effort: 'medium' }, max_output_tokens: 3000, instructions: MONITOR_INSTRUCTIONS,
+  return { model: DECISION_MODEL, service_tier: FAST_TIER, store: false, reasoning: { effort: 'medium' }, max_output_tokens: 3000, instructions: MONITOR_INSTRUCTIONS,
     input: [{ role: 'user', content: JSON.stringify({ untrustedCallTranscript: callerText(transcript) }) }],
     tools: [{ type: 'function', name: 'assess_call', description: 'Continue monitoring, or end the call with a spoken warning to the recipient.',
       strict: true, parameters: z.toJSONSchema(assessmentSchema) }],
@@ -47,11 +49,14 @@ export function monitorRequest(transcript: string) {
 
 /** Any failure reads as "no assessment": monitoring never ends a call because the model was unavailable. */
 export async function assessCall(transcript: string, apiKey: string, fetcher: typeof fetch = fetch): Promise<Assessment | undefined> {
+  const started = Date.now();
   try {
     const response = await fetcher('https://api.openai.com/v1/responses', { method: 'POST', redirect: 'error', signal: AbortSignal.timeout(MONITOR_LIMITS.modelMs),
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify(monitorRequest(transcript)) });
     if (!response.ok) return;
-    const body = await response.json() as { status?: string; output?: { type?: string; name?: string; arguments?: string }[] };
+    const body = await response.json() as { status?: string; service_tier?: string; output?: { type?: string; name?: string; arguments?: string }[] };
+    // Timing and tier only: a `default` tier means Fast mode was downgraded.
+    console.info(JSON.stringify({ event: 'monitor_assessment', elapsedMs: Date.now() - started, serviceTier: body.service_tier ?? null }));
     const call = body.status === 'completed' ? body.output?.find(i => i.type === 'function_call' && i.name === 'assess_call') : undefined;
     const parsed = assessmentSchema.safeParse(JSON.parse(call?.arguments ?? 'null'));
     return parsed.success ? parsed.data : undefined;

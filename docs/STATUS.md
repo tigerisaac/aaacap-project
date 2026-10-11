@@ -69,6 +69,11 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
   - **Tests:** `npm run check` passed (94 unit tests) and `npm run test:firebase` passed 54 emulator tests, 6 of them new.
   - **Unknown:** what Telnyx actually sends for a withheld number needs one real call.
 
+- **Faster monitoring and bridge wake-up (October 10, code only, not deployed):**
+  - **Fast mode:** connected-call checks send `service_tier: 'priority'`. GPT Live screening stays on the standard tier, by owner decision. In a 12-request comparison, the median model time was 1.1 s against 2.3 s, with every decision correct.
+  - **Wake-up:** `shieldApi` sends `/ready` to the live bridge as soon as a signed forwarded call arrives, so a cold start overlaps the greeting.
+  - **Tests:** `npm run check` (94 unit tests) and `npm run test:firebase` (54 tests) passed. GPT Live's session settings are unchanged from production.
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.
@@ -90,7 +95,7 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
 2. **Voice listening check.** Deployed October 10: 25 prerecorded Soniox Grace announcements with Hosting playback, a packaged Functions audio backup, and unchanged GPT Live `marin`. All primary and backup URLs verified. Audition the transition to `marin` over a real phone line, including a playback failure, then run a short listening session with seniors ([Architecture → Voice and speech](ARCHITECTURE.md#voice-and-speech)).
 3. **Real voices and more held-out cases.** Every result so far is synthetic. Add held-out text probes (cheap) rather than growing the main benchmark past 25 cases.
 4. **Decide whether the scam-guidance lookup earns its delay.** It's built and limited to official sites, but nobody has measured whether it changes decisions.
-5. **Protection plan.** Agreed October 10, not built: faster and broader monitoring, blocking repeat scammers, caregiver alerts, daily setup checks, voicemail triage and shorter disclosures. See the [protection plan](PROTECTION-PLAN.md).
+5. **Protection plan.** Agreed October 10, not built: faster and broader monitoring, blocking repeat scammers, caregiver alerts, daily setup checks, voicemail keep-or-destroy and shorter disclosures. See the [protection plan](PROTECTION-PLAN.md).
 6. **Senior rehearsal, then the ten-person pilot.** See the [ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md).
 7. **Housekeeping:**
    - release the Twilio number and close the Twilio account

@@ -24,6 +24,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   const admin = initializeApp({ projectId: project }, 'forwarding-tests'), db = getFirestore(admin);
   const sid = (n = 1) => `10123456-1234-4321-1234-${n.toString(16).padStart(12, '0')}`;
   const startProbe = vi.fn<(id: string) => Promise<void>>();
+  const warmLiveBridge = vi.fn<() => void>();
   let inboundFrom: string;
   const from = '+12025550102';
   let now: number, s: CloudStore, f: ForwardingStore, app: Awaited<ReturnType<typeof buildCloudApp>>;
@@ -56,14 +57,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   beforeEach(async () => {
     if (!/^127\.0\.0\.1:\d+$/.test(process.env.FIRESTORE_EMULATOR_HOST!)) throw new Error('Local emulator required');
     await fetch(`http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${project}/databases/(default)/documents`, { method: 'DELETE' });
-    startProbe.mockReset().mockResolvedValue(undefined); inboundFrom = from;
+    startProbe.mockReset().mockResolvedValue(undefined); warmLiveBridge.mockReset(); inboundFrom = from;
     now = Date.now(); s = new CloudStore(db, config, () => now); f = new ForwardingStore(s);
     await s.personRef(config.TRIAL_PARTICIPANT_ID).set({ id: config.TRIAL_PARTICIPANT_ID, ownerUid: 'owner', status: 'setup', phoneVerifiedAt: now,
       forwardingConsent, nameEnc: s.vault.seal('Test', `person:${config.TRIAL_PARTICIPANT_ID}:name`),
       phoneEnc: s.vault.seal(config.TRIAL_VERIFIED_CALLER, `person:${config.TRIAL_PARTICIPANT_ID}:phone`) });
     await f.control.set({ provisioned: true, enabled: true, dataPlanConfirmed: true, restorationGuide: ['Restore saved carrier settings'],
       allowAnyCaller: true, used: 0, expiresAt: now + 1800_000 });
-    app = await buildCloudApp(s, { auth, startForwardingProbe: startProbe, lookupForwardingChild: async () => ({ parentCallSid: sid(), from: number,
+    app = await buildCloudApp(s, { auth, warmLiveBridge, startForwardingProbe: startProbe, lookupForwardingChild: async () => ({ parentCallSid: sid(), from: number,
       to: config.TRIAL_VERIFIED_CALLER, status: 'in-progress' }),
       lookupForwardingInbound: async () => ({ from: inboundFrom, to: number, status: 'in-progress', direction: 'inbound' }) });
   });
@@ -160,12 +161,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   it('requires authentic provider signatures and rejects loopback numbers', async () => {
     expect((await post('inbound', {}, false)).statusCode).toBe(403);
     expect((await post('inbound', { From: number })).body).toContain('<Hangup');
+    expect(warmLiveBridge).not.toHaveBeenCalled();
     expect((await db.collection('callSessions').get()).empty).toBe(true);
   });
   it.each(['anonymous', 'Restricted', '+anonymous', ''])('screens a withheld caller ID (%j) without storing it or trusting it', async withheld => {
     inboundFrom = withheld;
     await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').add({ phoneHash: s.vault.hash(withheld), enabled: true });
     expect((await post('inbound', { From: withheld })).body).toContain('<Stream');
+    expect(warmLiveBridge).toHaveBeenCalledTimes(1);
     const call = (await f.find(sid()))!;
     expect(call).toMatchObject({ state: 'screening', eligible: true });
     expect(s.vault.open(call.callerEnc, `call:${call.id}:caller`)).toBe('');
@@ -260,10 +263,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   });
   it('sends every forwarded caller to voicemail when live screening is switched off', async () => {
     await app.close();
-    app = await buildCloudApp(new CloudStore(db, { ...config, LIVE_SCREENING_ENABLED: false }, () => now), { auth,
+    app = await buildCloudApp(new CloudStore(db, { ...config, LIVE_SCREENING_ENABLED: false }, () => now), { auth, warmLiveBridge,
       lookupForwardingInbound: async () => ({ from: inboundFrom, to: number, status: 'in-progress', direction: 'inbound' }) });
     const xml = (await post('inbound')).body;
-    expect(xml).toContain('<Record'); expect(xml).not.toContain('<Stream');
+    expect(xml).toContain('<Record'); expect(xml).not.toContain('<Stream'); expect(warmLiveBridge).not.toHaveBeenCalled();
     expect(await f.find(sid())).toMatchObject({ state: 'voicemail', eligible: false, reason: 'message_only' });
     expect((await f.control.get()).data()).toMatchObject({ used: 0 });
   });

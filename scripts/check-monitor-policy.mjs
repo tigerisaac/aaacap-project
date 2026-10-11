@@ -9,13 +9,15 @@ const repeat = Math.max(1, Number(option('--repeat')) || 1), provider = option('
 const cases = monitorCases.filter(c => !args[0] || c.name === args[0]);
 if (!cases.length) throw new Error('unknown_case');
 const key = await providerKey(provider);
+// OpenCode Go chooses its own processing tier; only OpenAI gets the production Fast-mode request.
+const request = transcript => { const r = monitorRequest(transcript); if (provider === 'go') delete r.service_tier; return r; };
 
 async function assess(transcript) {
   for (let attempt = 0; attempt < 4; attempt++) {
     if (attempt) await new Promise(resolve => setTimeout(resolve, 2000 * 2 ** attempt));
     const r = await fetch(PROVIDERS[provider].url, { method: 'POST', redirect: 'error', signal: AbortSignal.timeout(30000),
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'User-Agent': 'shield-screening-check/1.0',
-        ...(provider === 'go' ? { 'x-opencode-session': randomUUID() } : {}) }, body: JSON.stringify(monitorRequest(transcript)) });
+        ...(provider === 'go' ? { 'x-opencode-session': randomUUID() } : {}) }, body: JSON.stringify(request(transcript)) });
     if (r.status === 429 || r.status >= 500) continue;
     if (!r.ok) return { failure: `http_${r.status}` };
     const body = await r.json(), call = body.output?.find(i => i.type === 'function_call' && i.name === 'assess_call');

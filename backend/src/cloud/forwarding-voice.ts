@@ -11,7 +11,7 @@ import { VoiceResponse } from './texml.js';
 import { announcementResponse } from './announcements.js';
 
 export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string) => Promise<{ to: string; from: string; status: string }>; lookupForwardingInbound?: (sid: string) => Promise<{ from: string; to: string; direction: string; status: string }>;
-  callMonitor?: CallMonitor };
+  callMonitor?: CallMonitor; warmLiveBridge?: () => void };
 
 export async function registerForwardingVoice(app: FastifyInstance, store: CloudStore, deps: ForwardingVoiceDependencies = {}) {
   const f = new ForwardingStore(store), config = store.config;
@@ -20,6 +20,10 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
   const childLookup = deps.lookupForwardingChild ?? (sid => telnyx.call(sid));
   const inboundLookup = deps.lookupForwardingInbound ?? (sid => telnyx.call(sid));
   const monitor = deps.callMonitor ?? new CallMonitor(f, telnyx);
+  // The bridge scales to zero and only connects after the greeting; wake it now so a cold start overlaps the greeting.
+  const warmLiveBridge = deps.warmLiveBridge ?? (() => {
+    if (config.LIVE_BRIDGE_URL) void fetch(`${config.LIVE_BRIDGE_URL}/ready`, { redirect: 'error', signal: AbortSignal.timeout(10_000) }).catch(() => undefined);
+  });
   const callback = (step: string, id?: string) => `${config.PUBLIC_BASE_URL}/forwarding/${config.TRIAL_PROXY_SECRET}/${step}${id ? `/${id}` : ''}`;
   const xml = announcementResponse;
   const hangup = (message?: string) => { const r = xml(); if (message) r.say(message); r.hangup(); return r.toString(); };
@@ -49,6 +53,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     voice.post('/forwarding/:secret/inbound', async request => {
       const b = request.body as Record<string, string>;
       if (b.To !== number) return hangup();
+      if (config.LIVE_SCREENING_ENABLED && b.From !== number) warmLiveBridge();
       // Clinics, hospitals and international family often withhold or lack a US number; screen them like anyone else.
       const caller = callerNumber(b.From);
       // TeXML does not promise Direction on its instruction-fetch webhook, so ask Telnyx.

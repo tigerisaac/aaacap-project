@@ -1,6 +1,6 @@
 # Protection plan
 
-Agreed with the owner on October 10, 2026. **None of this is built yet.** It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
+Agreed with the owner on October 10, 2026. **Mostly not built.** Only monitoring Fast mode and the bridge wake-up are in code, and neither is deployed. It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
 
 The target user is an older adult, often with cognitive impairment, who is likely to press 1 on any offered call and answer a caller's questions at once. That's why speed, memory and caregiver alerts matter more here than the private summary.
 
@@ -16,11 +16,13 @@ The target user is an older adult, often with cognitive impairment, who is likel
 Only one check runs at a time, so a check still working on earlier small talk delays the one that contains the request.
 
 **Build:**
-- **Fast mode.** Use Fast mode in `monitorRequest()` (`backend/src/cloud/monitoring.ts`):
-  - **Request:** keep `gpt-6-luna` with `reasoning: { effort: 'medium' }`, and add `service_tier: 'priority'`.
-  - **Name:** `'fast'` has been an alias since July 30, 2026, but some routes reject it.
+- **Fast mode: done in code October 10, not deployed.** `monitorRequest()` (`backend/src/cloud/monitoring.ts`) now sends:
+  - **Request:** `gpt-6-luna`, `reasoning: { effort: 'medium' }` and `service_tier: 'priority'`. `'fast'` has been an alias since July 30, 2026, but some routes reject it.
+  - **Scope:** this applies only to in-call monitoring. GPT Live screening stays on the standard tier, by owner decision.
   - **Price:** Fast costs twice the standard rate ($0.20 in and $1.00 out per 1M tokens), about $0.002 per check.
-  - **Logging:** log when a response comes back with `service_tier: 'default'`, which means it was downgraded.
+  - **Measured:** in a 12-request comparison on two monitor cases, the median model time was 1.1 s with Fast against 2.3 s without. All 12 decisions were correct, and OpenAI reported the `fast` tier.
+  - **Logging:** each check logs its time and the tier OpenAI used. `default` means Fast mode was downgraded.
+  - **Free checks:** `check-monitor-policy.mjs --provider go` leaves out the tier.
 - **Measure first.**
   - Keep each transcript segment's arrival time, but not its text, next to the encrypted transcript.
   - On intervention, find the segment that holds the evidence quote, and record the milliseconds from its arrival to the redirect as an event, with no content.
@@ -92,7 +94,7 @@ Also add test cases for requests aimed at later ("go to the bank tomorrow and ta
 |---|---|---|
 | Shield ended a connected call | | Immediately |
 | A blocked caller tried again | | Immediately |
-| Suspected-scam voicemail (section 7) | | Immediately |
+| A scam voicemail was destroyed (section 7) | | Immediately |
 | New voicemail | Yes | If they have listening access |
 | Protection paused, restoration started, or the daily check failed (section 5) | Yes | Immediately |
 
@@ -139,29 +141,70 @@ Partial help:
 
 Revisit only if Shield gains more control of the line.
 
-## 7. Process and organize voicemails
+## 7. Keep or destroy voicemails
 
 **Problem.** A held "sheriff" or "bank security" caller goes to voicemail, and the message ("call me back at…") plays inside Shield's own app, labeled "Not enough information".
 
+**Decision (owner, October 10).** Use OpenAI's Decisions API to decide whether to keep or destroy each voicemail. Organizing kept messages into folders can come later; start with keep or destroy.
+
 **Build:** after `ingestForwardingVoicemail` stores the encrypted audio, queue a processing job.
-1. **Transcribe** with `gpt-transcribe` ($0.0045 a minute; messages are at most 60 s).
-2. **Classify** with `gpt-6-luna`, `reasoning: { effort: 'medium' }`, `service_tier: 'flex'` ($0.05 in and $0.25 out per 1M tokens, half the standard rate).
-   - **Unavailable:** Flex can return 429 Resource Unavailable, which isn't charged. Retry with backoff for up to about 10 minutes, then retry once without `service_tier` so no message waits long.
-   - **Timeout:** use a long timeout, since Flex is slower.
+1. **Transcribe** with `gpt-transcribe` ($0.0045 a minute; messages are at most 60 s). The Decisions API takes text or images, not audio.
+2. **Decide** with `POST /v1/decisions`, model `gpt-6-luna` (the only supported model). Send the transcript as untrusted text, stripped with `callerText()`, and one `choice` question:
+   - **keep:** a message from a real person or an organization she deals with, or anything uncertain.
+   - **destroy:** a scam, an automated sales or robocall message, or a recording with no message (silence, noise, a hang-up).
 
-   The result uses a strict schema:
-   - **Category:** personal, health or appointment, delivery, a business she uses, suspected scam, robocall or sales, or empty.
-   - **Summary:** one neutral line.
-   - **Flags:** asks her to call a number; claims to be a bank, government, police or a relative in trouble; urgency or pressure.
-3. **Organize in the app:**
-   - **Sections:** sort into "Messages" and "Probably scams", which starts collapsed. Hide empty recordings and hang-ups.
-   - **Warning before playing:** a suspected scam shows a warning first, such as "This message asks you to call a number. Use the number on your card or statement instead."
-   - **Numbers:** mask phone numbers in suspected-scam transcripts.
-   - **While processing:** show "Checking this message…".
-4. **Caregivers:** a suspected-scam voicemail sends a caregiver alert (section 4).
-5. **Privacy:** seal transcripts like the audio, delete them with the voicemail (30 days), and send with `store: false`. Make sure `/privacy` mentions voicemail transcription.
+   The answer includes a probability for each option.
+   - **Price:** Decisions bills only input tokens ($0.10 per 1M), so a decision costs a tiny fraction of a cent.
+   - **Speed and settings:** it's about 10× faster than the Responses API. There's no reasoning-effort or Flex setting.
+3. **Safeguards.** Destroying a real message can't be undone, and losing a real caller counts as much as stopping a scam.
+   - **Threshold:** destroy only when the probability of `destroy` is at least 0.9; otherwise keep. Tune that number on synthetic voicemails only.
+   - **Contacts:** never destroy a voicemail from a saved contact.
+   - **Failures keep:** any failure, refusal or timeout keeps the message. The API is in public beta.
+   - **Grace period (recommended):** "destroy" removes the message from her inbox at once, but purges the audio and transcript after 7 days. Until then the person or a caregiver can restore it from "Removed by Shield".
+4. **Caregivers:** a destroyed scam voicemail sends a caregiver alert (section 4), because the scammer may try again.
+5. **Privacy:** seal the transcript like the audio, and delete both with the voicemail. Decisions supports Zero Data Retention for eligible customers; confirm the account's retention before launch. Make sure `/privacy` mentions voicemail transcription.
 
-**Cost:** under half a cent per voicemail.
+**Check:**
+- Write about 20 synthetic voicemail transcripts, real messages and junk, never real voicemails.
+- Report real messages kept and junk destroyed separately.
+- Keep a held-out set.
+
+**Later:** organize kept messages into sections. Possible sections are "Messages", "Appointments and health" and "Businesses". The same `choice` question would do this, with more choices.
+
+## 8. Cut the caller's wait
+
+**Problem.** On October 10's real calls, callers waited 40–43 s before talking to the person, and the owner found it long in testing. A busy clinic scheduler may hang up, while a paid scammer will wait.
+
+| Seconds | What the caller hears | Why |
+|---|---|---|
+| 0–5 | Greeting (4.6 s) | Prerecorded `<Play>` |
+| 5–15 | They answer; Shield decides | Bridge connects only after the greeting; then caller speech, an 800 ms pause and the decision |
+| 15–22 | Hold message (7.3 s with the transcription notice, 2.3 s without) | `<Dial>` to her phone starts only after the message ends |
+| 22–30 | Ringing | Her phone rings until she answers |
+| 30–42 | Ringing | She hears the 8–9 s private summary; "Press 1" comes last |
+
+**Done in code October 10, not deployed: wake the bridge on arrival.**
+- **When:** as soon as a signed forwarded call arrives with live screening on, `shieldApi` sends `/ready` to the bridge without waiting for an answer.
+- **Why:** the bridge scales to zero and connects only after the greeting. On a cold start, that startup used to land after the greeting, while the caller was already talking. Now it overlaps the greeting.
+- **Effect on tests:** none. Today's tests used a warm bridge.
+- **Expected effect:** on real always-on calls, which mostly arrive cold, it should save a cold start of roughly 1–4 s. That hasn't been measured.
+
+**With the owner's TTS rework (wording is the owner's):**
+- **Shorter hold message.** Or move the transcription notice into the greeting. Saves up to 5 s ("Shorter disclosures" below).
+- **"Press 1" earlier in the private summary.** Saves up to about 5 s, but only if Telnyx lets a key press cut playback short. Test this on the next real call by pressing 1 during the summary.
+- **Split the greeting into two recordings:** the AI sentence, then the question. The stream can then start between them, so the bridge and OpenAI connect while the question plays, and the disclosure is still heard before any speech is processed. Saves about 1–2 s.
+
+**Only if the wait is still too long after that: ring her during the hold message.**
+- **Today:** `<Dial>` waits for the hold message to finish.
+- **Change:** start the call to her by REST at the decision, while the caller waits in a per-call `<Enqueue>` or conference. Her leg joins only after she presses 1.
+- **Cost:** this rewrites the offer, accept and intervention paths. It must keep these rules:
+  - only digit 1 on her exact leg connects
+  - the recipient's number is fixed
+  - timers stay bounded
+  - a failure never connects
+- **Saving:** only the remaining hold-message length.
+
+**Measure:** report how often callers hang up before connecting (`abandoned`), along with the wait timings `check-live-calls.mjs` already shows.
 
 ## Shorter disclosures
 
@@ -178,9 +221,9 @@ This needs new Soniox Grace recordings, manifest hashes, a Hosting and `shieldAp
 ## Suggested build order
 
 1. **Section 3, server side:** the blocklist and the 24-hour flag.
-2. **Section 1:** Fast mode and the delay measurement. It's a small change.
+2. **Section 1:** the delay measurement. Fast mode is already in code.
 3. **Section 4:** push alerts. Sections 3, 5 and 7 send through it.
-4. **Section 7:** voicemail processing.
+4. **Section 7:** voicemail keep-or-destroy with the Decisions API.
 5. **Section 5 and the Call Directory extension:** the extension also serves section 3.
 6. **Section 2's new warnings and the shorter disclosures:** one recording session.
 
