@@ -93,6 +93,11 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
   - **Prompt:** the monitoring prompt is unchanged.
   - **Tests:** `npm run check` (96 unit tests) and `npm run test:firebase` (70 tests) passed.
 
+- **Push alerts backend (code October 11, not deployed):** protection plan section 4.
+  - **What's built:** device registration, APNs sending, helper-alert choice, and alerts for the events in the plan.
+  - **Needs:** an APNs auth key from the Apple Developer account before it can send.
+  - **Tests:** `npm run check` (104 unit tests, including APNs against a local HTTP/2 server) and `npm run test:firebase` (77 tests) passed.
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.

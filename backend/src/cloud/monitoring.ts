@@ -4,6 +4,7 @@ import { callerText, supportedEvidence } from '../live/evidence.js';
 import { DECISION_MODEL } from '../live/research.js';
 import { TelnyxVoice } from './forwarding-provider.js';
 import type { ForwardingCall, ForwardingStore } from './forwarding-store.js';
+import { queueAlert } from './alerts.js';
 
 // Opt-in protection for calls the recipient accepted: Telnyx transcribes both sides, Luna checks the
 // conversation, and a clear scam request ends the call with a spoken warning to her.
@@ -187,7 +188,10 @@ export class CallMonitor {
     const call = await this.forwarding.transition(id, current => current.state === 'accepted' && !current.monitorIntervenedAt
       ? { monitorIntervenedAt: now, monitorConcern: concern, ...(evidenceAt ? { monitorEvidenceAt: evidenceAt } : {}), reason: 'monitor_intervened',
         events: [...current.events, { kind: 'monitor_intervened', at: now }] } : undefined,
-      (tx, next, personExists) => this.forwarding.rememberScam(tx, next, 'monitor_intervened', personExists));
+      (tx, next, personExists) => {
+        this.forwarding.rememberScam(tx, next, 'monitor_intervened', personExists);
+        if (personExists) queueAlert(s, tx, next.participantId, 'monitor_intervened');
+      });
     if (!call) return;
     let redirected = false;
     try {

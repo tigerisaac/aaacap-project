@@ -8,6 +8,7 @@ import { ForwardingStore, forwardingConsent } from './forwarding-store.js';
 import { ForwardingProbes, type ProbeDependencies } from './forwarding-probes.js';
 import { forwardingNumber, TelnyxVoice } from './forwarding-provider.js';
 import { CallMonitor, MONITORING_CONSENT, monitoringEnabledFor } from './monitoring.js';
+import { queueAlert } from './alerts.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
@@ -91,7 +92,9 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   app.post('/api/forwarding/restore', async request => {
     const ctx = await owner(request);
     const batch = store.db.batch(); batch.set(f.control, { enabled: false }, { merge: true });
-    batch.update(store.personRef(ctx.participant.id), { status: 'restoring', forwardingStage: 'restore' }); await batch.commit();
+    batch.update(store.personRef(ctx.participant.id), { status: 'restoring', forwardingStage: 'restore' });
+    if (ctx.participant.status !== 'restoring') queueAlert(store, batch, ctx.participant.id, 'restoration_started');
+    await batch.commit();
     return { requested: true };
   });
   // Numbers Shield ended a scam from. Helpers can see the list; only the person can unblock.

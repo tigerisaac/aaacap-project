@@ -49,6 +49,13 @@ export const ingestForwardingVoicemail = onDocumentCreated({ ...options, documen
   await ingestForwardingRecording(getStore(), event.params.recordingId);
 });
 
+// Push alerts: one queued, contentless job per event. Nothing is queued unless APNs is configured.
+export const sendShieldAlert = onDocumentCreated({ ...options, document: 'alerts/{alertId}', retry: false, concurrency: 4 }, async event => {
+  const { AlertDelivery, APNsSender } = await import('./alerts.js');
+  const s = getStore(); if (!s.config.APNS) return;
+  await new AlertDelivery(s, new APNsSender(s.config.APNS, s.config.IOS_BUNDLE_ID)).deliver(event.params.alertId);
+});
+
 // Connected-call protection: one Luna check per queued job, only for calls the owner opted in to monitor.
 export const monitorConnectedCall = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
   document: 'monitorChecks/{jobId}', retry: false, concurrency: 8 }, async event => {

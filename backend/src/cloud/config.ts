@@ -20,6 +20,9 @@ export const cloudSchema = z.object({
   // Connected-call protection is offered only when this is on AND the recipient opts in.
   CALL_MONITORING_ENABLED: z.boolean().default(false),
   MONITOR_TRANSCRIPTION_ENGINE: z.enum(['Parakeet', 'Soniox', 'Deepgram']).default('Soniox'),
+  // Push alerts are offered only when an APNs auth key (.p8) from the Apple Developer account is configured.
+  APNS: z.object({ keyId: z.string().regex(/^[A-Z0-9]{10}$/), teamId: z.string().regex(/^[A-Z0-9]{10}$/),
+    privateKey: z.string().includes('PRIVATE KEY') }).strict().optional(),
 });
 export type CloudConfig = z.infer<typeof cloudSchema>;
 export const CONSENT_VERSION = 'shield-pilot-2026-09-v1';

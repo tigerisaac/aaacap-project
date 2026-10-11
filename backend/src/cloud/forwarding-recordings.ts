@@ -1,5 +1,6 @@
 import { recordingProvider, validRecordingId } from './forwarding-provider.js';
 import { CloudStore } from './store.js';
+import { queueAlert } from './alerts.js';
 
 /** Verify provider ownership, download from an approved origin, encrypt, and remove its copy. */
 export async function ingestForwardingRecording(store: CloudStore, sid: string) {
@@ -23,6 +24,7 @@ export async function ingestForwardingRecording(store: CloudStore, sid: string) 
       if (current && !current.voicemailDeletedAt && current.expiresAt > store.now()) {
         tx.set(store.db.collection('forwardingAudio').doc(job.callId), { participantId: job.participantId, audioEnc: encrypted, expiresAt: job.expiresAt });
         tx.update(callRef, { voicemail: { id: job.callId, duration: job.duration, status: 'ready', heardAt: null } });
+        queueAlert(store, tx, job.participantId, 'voicemail');
       }
       tx.update(ref, { status: 'stored' });
     });

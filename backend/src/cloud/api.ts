@@ -10,6 +10,7 @@ import { CONSENT_VERSION, RETENTION_MS } from './config.js';
 import { CloudStore, type Call, type Person } from './store.js';
 import { normalizeSharedPhone, sharedContactsSchema, syncSharedContacts } from './shared-contacts.js';
 import { forwardingNumber } from './forwarding-provider.js';
+import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from './alerts.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -42,7 +43,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     .where('createdAt', '>', store.now() - RETENTION_MS);
 
   app.get('/public/config', async () => ({ mode: 'trial', signInMethod: 'email-link', consentVersion: CONSENT_VERSION,
-    supportEmail: null, messageFilteringAvailable: false, notificationsAvailable: false,
+    supportEmail: null, messageFilteringAvailable: false, notificationsAvailable: !!store.config.APNS,
     privacyPath: '/privacy', termsPath: '/service-info' }));
   app.post('/auth/request-code', async request => {
     const { email } = z.object({ email: z.string().email().max(254) }).parse(request.body);
@@ -59,7 +60,12 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     await store.quota([[`refresh-ip:${request.ip}`, 300]]);
     return auth.refresh(refreshToken);
   });
-  app.post('/auth/logout', async request => { await auth.logout(bearer(request)); return { signedOut: true }; });
+  app.post('/auth/logout', async request => {
+    // Stop alerts to this phone before the session ends; an expired session can't be identified, and its registrations lapse.
+    const uid = await auth.identify(bearer(request)).then(identity => identity.subject, () => undefined);
+    if (uid) await forgetDevices(store, uid);
+    await auth.logout(bearer(request)); return { signedOut: true };
+  });
 
   app.get('/api/people', async request => {
     const uid = await identify(request);
@@ -127,7 +133,9 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   app.post('/api/setup/pause', async request => {
     const ctx = await access(request, true); const { paused } = z.object({ paused: z.boolean() }).parse(request.body);
     if (ctx.participant.status === 'restoring') throw new HttpError(409, 'restoration_in_progress');
-    await store.personRef(ctx.participant.id).update({ status: paused ? 'paused' : 'setup' }); return { updated: true };
+    const batch = store.db.batch(); batch.update(store.personRef(ctx.participant.id), { status: paused ? 'paused' : 'setup' });
+    if (paused && ctx.participant.status !== 'paused') queueAlert(store, batch, ctx.participant.id, 'protection_paused');
+    await batch.commit(); return { updated: true };
   });
   app.post('/api/setup/restore', async request => {
     await access(request, true); throw new HttpError(409, 'trial_has_no_forwarding');
@@ -143,6 +151,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
       }
     }
     await store.db.recursiveDelete(store.personRef(ctx.participant.id));
+    await forgetDevices(store, ctx.uid);
     await auth.logout(bearer(request));
     return { deleted: true };
   });
@@ -254,5 +263,26 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     return { decision: decision.route, reasonCode: decision.reason, title, detail,
       nextStep: 'Contact the sender through a number or app you already trust.', isDemo: false };
   });
-  app.post('/api/devices', async request => { await access(request); return { registered: false }; });
+  // One registration per phone, keyed by its token, for whoever is signed in on it. The app refreshes it on every open.
+  app.post('/api/devices', async request => {
+    const ctx = await access(request);
+    const { token, environment } = z.object({ token: z.string().regex(/^[a-f0-9]{64,200}$/),
+      environment: z.enum(['development', 'production']).default('production') }).strict().parse(request.body);
+    if (!store.config.APNS) return { registered: false };
+    await store.quota([[`devices:${ctx.uid}`, 60]]);
+    const id = store.vault.hash(token), now = store.now();
+    await store.db.collection('devices').doc(id).set({ uid: ctx.uid, tokenEnc: store.vault.seal(token, `device:${id}`), environment,
+      updatedAt: now, expiresAt: now + DEVICE_TTL_MS });
+    return { registered: true };
+  });
+  // Whether helpers get alerts is the person's choice; a helper can't turn it on for them.
+  app.get('/api/helper-alerts', async request => {
+    const ctx = await access(request, true);
+    return { available: !!store.config.APNS, enabled: helperAlertsEnabled(ctx.participant), choiceRecorded: ctx.participant.helperAlerts?.enabled !== undefined };
+  });
+  app.post('/api/helper-alerts', async request => {
+    const ctx = await access(request, true), { enabled } = z.object({ enabled: z.boolean() }).strict().parse(request.body);
+    await store.personRef(ctx.participant.id).update({ helperAlerts: { enabled, updatedAt: store.now() } });
+    return { enabled };
+  });
 }

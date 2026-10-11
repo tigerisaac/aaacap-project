@@ -71,6 +71,11 @@
       "collectionGroup": "blocked-numbers",
       "fieldPath": "phoneEnc",
       "indexes": []
+    },
+    {
+      "collectionGroup": "devices",
+      "fieldPath": "tokenEnc",
+      "indexes": []
     }
   ]
 }

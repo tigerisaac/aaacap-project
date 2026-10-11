@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { FieldValue, type DocumentData, type Transaction } from 'firebase-admin/firestore';
 import { HttpError } from '../auth.js';
 import { CONSENT_VERSION, RETENTION_MS } from './config.js';
+import { queueAlert } from './alerts.js';
 import { forwardingNumber } from './forwarding-provider.js';
 import { CloudStore, type Call } from './store.js';
 
@@ -58,6 +59,8 @@ export class ForwardingStore {
         tx.create(s.keyRef(sid), { callId: id, expiresAt: now + RETENTION_MS });
         tx.set(quotaDoc.ref, { used: usage?.used ?? 0, blocked: blocked + 1, expiresAt: now + 2 * 86400_000 });
         tx.update(blockedDoc.ref, { attempts: FieldValue.increment(1), lastAttemptAt: now });
+        // Scammers redial in bursts; one alert an hour per number is enough for a helper to step in.
+        if (!(blockedDoc.data()!.lastAttemptAt > now - 3600_000)) queueAlert(s, tx, p.id, 'blocked_caller');
         return call;
       }
       if ((usage?.used ?? 0) >= 50) return;

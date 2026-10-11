@@ -67,6 +67,9 @@ Firestore holds the following. Clients can't read or write it directly (deny-all
 - **`forwarding/control`:** the test window, usage counters and the active call.
 - **`forwardingRecordings`:** voicemail ingestion jobs. Audio is stored encrypted.
 - **`monitoredCalls`, `monitorChecks`:** connected-call protection transcripts and check jobs, deleted when the call ends.
+- **`devices`, `alerts` (in code, not deployed):**
+  - `devices`: push tokens, encrypted and keyed by hash, one per phone for whoever is signed in. They expire after 60 days without a refresh.
+  - `alerts`: contentless alert jobs that `sendShieldAlert` sends through APNs and deletes.
 
 ## Retired
 
