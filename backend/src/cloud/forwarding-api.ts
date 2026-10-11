@@ -9,6 +9,7 @@ import { ForwardingProbes, type ProbeDependencies } from './forwarding-probes.js
 import { TelnyxVoice } from './forwarding-provider.js';
 import { activationCodes, carrierFor } from './carriers.js';
 import { DEFAULT_QUIET_HOURS } from './forwarding-store.js';
+import { SETUP_CHECK_LIMITS, SetupChecks, type SetupCheckDialer } from './setup-check.js';
 import { CallMonitor, MONITORING_CONSENT, monitoringEnabledFor } from './monitoring.js';
 import { queueAlert } from './alerts.js';
 import { VoicemailCheck } from './voicemail-check.js';
@@ -33,6 +34,8 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       .orderBy('createdAt', 'desc').limit(10).get();
     return { participantId: p.id, carrier: carrier?.name ?? 'your carrier', carrierVerified: !!carrier?.verified, phone: store.phone(p), shieldNumber: p.shieldNumber,
       alwaysOn: p.alwaysOn === true, quietHours: p.quietHours ?? DEFAULT_QUIET_HOURS,
+      setupCheckNumber: store.config.SETUP_CHECK_NUMBER ?? null,
+      lastSetupCheck: control?.lastSetupCheck ? { at: at(control.lastSetupCheck.at), result: control.lastSetupCheck.result } : null,
       prepared, active, probe: probes.publicState(control), contactsSyncedAt: at(p.contactsSyncedAt), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
       liveScreening: store.config.LIVE_SCREENING_ENABLED,
       monitoring: { available: monitoringAvailable, enabled: monitoringAvailable && monitoringEnabledFor(p), consentVersion: MONITORING_CONSENT,
@@ -58,6 +61,12 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     const ctx = await owner(request);
     z.object({ allowAnyCaller: z.literal(true) }).strict().parse(request.body);
     await probes.openWindow(ctx.participant.id); return { opened: true };
+  });
+  // On app launch, run the setup check if the last one is over a day old (the daily schedule covers the rest).
+  app.post('/api/forwarding/setup-check', async request => {
+    const ctx = await owner(request), checks = new SetupChecks(store), telnyx = new TelnyxVoice(store.config);
+    const dial: SetupCheckDialer = deps.startSetupCheck ?? ((id, from, to) => telnyx.startSetupCheck(id, from, to));
+    return { started: !!(await checks.start(ctx.participant.id, dial, SETUP_CHECK_LIMITS.appRecheckMs)) };
   });
   // Overnight, always-on screening sends callers Shield would offer to voicemail. The person sets the hours.
   app.post('/api/forwarding/quiet-hours', async request => {

@@ -22,6 +22,9 @@ struct ForwardingStatus: Decodable, Sendable {
     struct QuietHours: Codable, Equatable, Sendable { var enabled: Bool; var start: Int; var end: Int }
     var quietHours: QuietHours? = nil
     var alwaysOn: Bool? = nil
+    struct SetupCheck: Decodable, Sendable { let at: Date; let result: String }
+    var lastSetupCheck: SetupCheck? = nil
+    var setupCheckNumber: String? = nil
     let participantId: UUID
     let carrier: String
     let phone: String

@@ -11,12 +11,16 @@ import { DECISION_MODEL, researchScamPattern } from '../dist/live/research.js';
 // Voices rotate across accents and ages so recognition is not tuned to a single synthetic speaker.
 const VOICES = ['Samantha', 'Daniel', 'Karen', 'Moira', 'Aman', 'Grandpa (English (US))', 'Grandma (English (US))', 'Eddy (English (US))'];
 const cases = liveScreeningCases;
-const selected = process.argv[2] ? cases.filter(c=>c.name===process.argv[2]) : cases;
+// --caution screens as production does in the 24 hours after a stopped scam. Its results go to a separate folder,
+// so they never stand in for the normal results enable-live-demo.mjs requires.
+const caution=process.argv.includes('--caution'), name=process.argv.slice(2).find(a=>!a.startsWith('--'));
+const out=caution?'artifacts/live-eval-caution':'artifacts/live-eval';
+const selected = name ? cases.filter(c=>c.name===name) : cases;
 if(!selected.length) throw new Error('unknown_case');
 await connect(); const secrets=new Client({urlPrefix:'https://secretmanager.googleapis.com',apiVersion:'v1'});
 const stored=(await secrets.get(`/projects/${project}/secrets/SHIELD_OPENAI_API_KEY/versions/latest:access`)).body;
 const key=Buffer.from(stored.payload.data,'base64').toString();
-await mkdir('artifacts/live-eval',{recursive:true});
+await mkdir(out,{recursive:true});
 function rawWav(data){let offset=12;while(offset+8<data.length){const name=data.toString('ascii',offset,offset+4),size=data.readUInt32LE(offset+4);if(name==='data')return data.subarray(offset+8,offset+8+size);offset+=8+size+(size%2);}throw new Error('wav_data_missing');}
 async function speak(text,voice,prefix){
  execFileSync('/usr/bin/say',['-v',voice,'-o',`${prefix}.aiff`,text]);
@@ -39,7 +43,7 @@ for(const scenario of selected){
    if(audiblePCMU(frame)){lastAssistantSound=Date.now();if(callerDoneAt!==undefined)assistantSpokeSinceCaller=true;}},
   finish:async d=>{decision=typeof d==='string'?d:d.action;decidedAt=Date.now();},
   close:()=>{clearInterval(feed);clearInterval(tick);clearTimeout(timer);ws.close();doneResolve();}
- });
+ },Date.now,{recentScamStopped:caution});
  let frame=1, position=-8000; // Caller responds after the carrier greeting and stream startup.
  ws.on('open',()=>session.start());
  ws.on('message',raw=>{const e=JSON.parse(raw.toString());received.push(e.type);
@@ -68,7 +72,7 @@ for(const scenario of selected){
  const result={case:scenario.name,category:scenario.category,voice,decisionModel:DECISION_MODEL,policyVersion:SCREENING_POLICY_VERSION,expected:scenario.expected,accept:scenario.accept,actual:decision,passed,
   answeredFollowup:answered,decisionAfterCallerMs:callerDoneAt!==undefined&&decidedAt?decidedAt-callerDoneAt:undefined,
   elapsedMs:Date.now()-begin,audioBytes:Buffer.concat(output).length,transcript:transcript.join(''),assistantTranscript:assistantTranscript.join(''),eventCounts:received.filter(e=>typeof e==='string').reduce((counts,type)=>(counts[type]=(counts[type]??0)+1,counts),{}),events:received.filter(e=>typeof e!=='string')};
- await writeFile(`artifacts/live-eval/${scenario.name}.json`,JSON.stringify(result,null,2));
+ await writeFile(`${out}/${scenario.name}.json`,JSON.stringify({...result,caution},null,2));
  console.log(JSON.stringify({...result,transcript:undefined,assistantTranscript:undefined,events:undefined,eventCounts:undefined}));
  if(!result.passed)process.exitCode=1;
 }

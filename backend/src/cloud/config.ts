@@ -18,6 +18,8 @@ export const cloudSchema = z.object({
   // Connected-call protection is offered only when this is on AND the recipient opts in.
   CALL_MONITORING_ENABLED: z.boolean().default(false),
   MONITOR_TRANSCRIPTION_ENGINE: z.enum(['Parakeet', 'Soniox', 'Deepgram']).default('Soniox'),
+  // A second Telnyx number, never in anyone's contacts, that places the daily setup check. Unset: no checks.
+  SETUP_CHECK_NUMBER: z.string().regex(/^\+1[2-9]\d{9}$/).optional(),
   // Keep-or-remove checks on forwarded voicemail (GPT Transcribe + Decisions API). Off: every message is shown.
   VOICEMAIL_SCREENING_ENABLED: z.boolean().default(false),
   // Push alerts are offered only when an APNs auth key (.p8) from the Apple Developer account is configured.

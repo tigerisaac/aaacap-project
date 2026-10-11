@@ -48,6 +48,16 @@ export class TelnyxVoice {
       Method: 'POST', StatusCallback: `${base}/probe-status/${id}`, StatusCallbackMethod: 'POST',
       StatusCallbackEvent: 'initiated ringing answered completed', Timeout: 40, TimeLimit: 30, Record: false });
   }
+  /** The daily setup check: from Shield's check number to the person's verified phone. Returns the call's id if Telnyx gives one. */
+  async startSetupCheck(id: string, from: string, to: string): Promise<string | undefined> {
+    if (!uuid.test(id) || !/^\+1\d{10}$/.test(from) || !/^\+1\d{10}$/.test(to)) throw new Error('invalid_setup_check');
+    const base = `${this.config.PUBLIC_BASE_URL}/forwarding/${this.config.TRIAL_PROXY_SECRET}`;
+    const created = await this.request('Calls', 'POST', { ApplicationSid: this.config.TELNYX_APPLICATION_ID, From: from, To: to,
+      Url: `${base}/setup-check/${id}`, Method: 'POST', StatusCallback: `${base}/setup-check-status/${id}`, StatusCallbackMethod: 'POST',
+      StatusCallbackEvent: 'completed', Timeout: 45, TimeLimit: 20, Record: false });
+    const sid = created?.sid ?? created?.call_sid;
+    return typeof sid === 'string' && validCallId(sid) ? sid : undefined;
+  }
   async call(sid: string) {
     if (!validCallId(sid)) throw new Error('invalid_call_id');
     const c = await this.request(`Calls/${encodeURIComponent(sid)}`);

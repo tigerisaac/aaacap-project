@@ -7,6 +7,7 @@ import { ForwardingProbes } from './forwarding-probes.js';
 import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
 import { callerNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { assignedTo, isShieldNumber, knownShieldNumber, numberRef } from './numbers.js';
+import { SETUP_CHECK_MESSAGE, SetupChecks } from './setup-check.js';
 import { CallMonitor, warningText } from './monitoring.js';
 import { VoiceResponse } from './texml.js';
 import { announcementResponse } from './announcements.js';
@@ -16,7 +17,7 @@ export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string
 
 export async function registerForwardingVoice(app: FastifyInstance, store: CloudStore, deps: ForwardingVoiceDependencies = {}) {
   const f = new ForwardingStore(store), config = store.config;
-  const probes = new ForwardingProbes(store);
+  const probes = new ForwardingProbes(store), checks = new SetupChecks(store);
   const telnyx = new TelnyxVoice(config);
   const childLookup = deps.lookupForwardingChild ?? (sid => telnyx.call(sid));
   const inboundLookup = deps.lookupForwardingInbound ?? (sid => telnyx.call(sid));
@@ -62,6 +63,8 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       let remote; try { remote = await inboundLookup(b.CallSid!); } catch { return hangup(); }
       const sameCaller = caller ? remote.from === caller : !callerNumber(remote.from);
       if (!sameCaller || remote.to !== to || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
+      // The daily setup check coming back through her forwarding: record how long it took, then hang up silently.
+      if (checks.checkNumber && caller === checks.checkNumber) { await checks.arrived(to); return hangup(); }
       // Loop guard: a call from any Shield number is never screened. The only one answered is a forwarding test
       // coming back from a person's own Shield number to itself.
       if (await knownShieldNumber(store, caller)) {
@@ -98,6 +101,22 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
         r.pause({ length: 2 }); r.play({ digits: probe.nonce }); r.pause({ length: 2 });
       }
       r.hangup(); return r.toString();
+    });
+    // The check call reached her phone itself and was answered: tell her once, in fixed words, then hang up.
+    const checkEnds = async (id: string, from: string | undefined, to: string | undefined) => {
+      const participantId = (await checks.ref(id).get()).data()?.participantId as string | undefined;
+      const ends = participantId ? await f.endpointsFor(participantId) : undefined;
+      return !!ends && !!checks.checkNumber && from === checks.checkNumber && to === ends.phone;
+    };
+    voice.post('/forwarding/:secret/setup-check/:id', async request => {
+      const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
+      if (!await checkEnds(id, b.From, b.To) || !await checks.answered(id)) return hangup();
+      const r = xml(); r.pause({ length: 1 }); r.say(SETUP_CHECK_MESSAGE); r.hangup(); return r.toString();
+    });
+    voice.post('/forwarding/:secret/setup-check-status/:id', async request => {
+      const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
+      if (await checkEnds(id, b.From, b.To) && ['completed', 'busy', 'failed', 'no-answer', 'canceled'].includes(b.CallStatus ?? '')) await checks.ended(id);
+      return xml().toString();
     });
     voice.post('/forwarding/:secret/probe-confirm/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;

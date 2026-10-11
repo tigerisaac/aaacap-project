@@ -200,6 +200,15 @@ final class ShieldUITests: XCTestCase {
         capture(app, name: "Protection needs attention")
     }
 
+    func testProtectionCheckReportsAFailedDailyCheckCall() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-protection-check", "--protection-check-call-failed"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["protection-check-title"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Unknown callers are ringing your phone"].exists)
+        XCTAssertTrue(app.buttons["Open setup"].exists)
+    }
+
     func testProtectionCheckAllGoodAtLargestText() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview", "--uitesting-protection-check", "--protection-check-good",

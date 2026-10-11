@@ -6,9 +6,13 @@ import Foundation
 final class CallDirectoryHandler: CXCallDirectoryProvider, CXCallDirectoryExtensionContextDelegate {
     override func beginRequest(with context: CXCallDirectoryExtensionContext) {
         context.delegate = self
-        if context.isIncremental { context.removeAllBlockingEntries() }
-        for number in CallDirectoryList.load()?.blocked ?? [] {
+        if context.isIncremental { context.removeAllBlockingEntries(); context.removeAllIdentificationEntries() }
+        let list = CallDirectoryList.load()
+        for number in list?.blocked ?? [] {
             context.addBlockingEntry(withNextSequentialPhoneNumber: number)
+        }
+        for label in list?.labels ?? [] {
+            context.addIdentificationEntry(withNextSequentialPhoneNumber: label.number, label: label.name)
         }
         context.completeRequest()
     }

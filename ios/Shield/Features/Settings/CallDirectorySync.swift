@@ -6,9 +6,22 @@ import Foundation
 enum CallDirectorySync {
     static var extensionID: String { (Bundle.main.bundleIdentifier ?? "") + ".CallDirectory" }
 
+    private static let checkNumberKey = "shield-setup-check-number"
+
+    /// Blocked numbers changed; keep the last known check number's label.
     static func update(phones: [String]) async {
+        await write(phones: phones, checkNumber: UserDefaults.standard.string(forKey: checkNumberKey))
+    }
+
+    /// `checkNumber` is Shield's daily setup check, named "Shield check" so the missed call in Recents makes sense.
+    static func update(phones: [String], checkNumber: String?) async {
+        UserDefaults.standard.set(checkNumber, forKey: checkNumberKey)
+        await write(phones: phones, checkNumber: checkNumber)
+    }
+
+    private static func write(phones: [String], checkNumber: String?) async {
         do {
-            if try CallDirectoryList(phones: phones).save() {
+            if try CallDirectoryList(phones: phones, labels: checkNumber.map { [$0: "Shield check"] } ?? [:]).save() {
                 try await CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: extensionID)
             }
         } catch {

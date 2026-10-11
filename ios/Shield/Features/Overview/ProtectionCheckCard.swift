@@ -43,6 +43,12 @@ enum ProtectionCheck {
                 items.append(.init(id: "notifications", title: "Notifications are off", detail: "You won’t hear about new messages or setup problems.", fix: .allowNotifications))
             }
         }
+        // Only a real call can prove Silence, Live Voicemail and carrier forwarding; the daily check is that call.
+        if let check = forwarding?.lastSetupCheck, check.result != "passed", Date.now.timeIntervalSince(check.at) < 3 * 86400 {
+            items.append(check.result == "not_forwarded"
+                ? .init(id: "setup-check", title: "Calls aren’t reaching Shield", detail: "Shield’s daily check call didn’t come through. Check call forwarding with your carrier, and keep Live Voicemail off.", fix: .setup)
+                : .init(id: "setup-check", title: "Unknown callers are ringing your phone", detail: "Shield’s daily check call rang your phone. Turn Silence Unknown Callers back on in Phone settings.", fix: .setup))
+        }
         if let synced = forwarding?.contactsSyncedAt, Date.now.timeIntervalSince(synced) > staleContacts {
             items.append(.init(id: "contacts-sync", title: "Shared contacts are over a month old",
                 detail: "Someone you’ve added since may be screened like a stranger.", fix: .sharedContacts))
@@ -140,6 +146,10 @@ struct ProtectionCheckCard: View {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("--uitesting-protection-check") {
+            if arguments.contains("--protection-check-call-failed") {
+                items = [.init(id: "setup-check", title: "Unknown callers are ringing your phone", detail: "Shield’s daily check call rang your phone. Turn Silence Unknown Callers back on in Phone settings.", fix: .setup)]
+                return
+            }
             items = arguments.contains("--protection-check-good") ? [] : [
                 .init(id: "paused", title: "Protection is paused", detail: "Unknown callers go to voicemail without being screened.", fix: .setup),
                 .init(id: "contact", title: "Shield’s number isn’t in your Contacts", detail: "Calls Shield offers you may go to voicemail instead of ringing.", fix: .saveShieldContact("+15125550100"))]

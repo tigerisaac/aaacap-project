@@ -53,6 +53,15 @@ export const ingestForwardingVoicemail = onDocumentCreated({ ...options, documen
   await ingestForwardingRecording(getStore(), event.params.recordingId);
 });
 
+// The daily setup check for each always-on person, mid-morning Central so it never lands in quiet hours.
+export const dailySetupChecks = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 10:30', timeZone: 'America/Chicago',
+  retryCount: 0, timeoutSeconds: 120 }, async () => {
+  const [{ SetupChecks }, { TelnyxVoice }] = await Promise.all([import('./setup-check.js'), import('./forwarding-provider.js')]);
+  const s = getStore(); if (!s.config.SETUP_CHECK_NUMBER) return;
+  const telnyx = new TelnyxVoice(s.config);
+  await new SetupChecks(s).runDaily((id, from, to) => telnyx.startSetupCheck(id, from, to));
+});
+
 // Keep or remove each forwarded voicemail once its audio is stored; any failure keeps it.
 export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
   document: 'voicemailChecks/{callId}', retry: false, concurrency: 2 }, async event => {

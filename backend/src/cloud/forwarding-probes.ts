@@ -7,7 +7,9 @@ export type ProbeKind = 'ring' | 'forwarding';
 export type SetupProbe = { id: string; kind: ProbeKind; state: 'waiting' | 'passed' | 'failed'; expiresAt: number;
   nonce: string; outboundSid?: string; inboundSid?: string; passedAt?: number; participantId?: string };
 /** Places the probe call from the person's Shield number to their verified phone. */
-export type ProbeDependencies = { startForwardingProbe?: (id: string, from: string, to: string) => Promise<void> };
+export type ProbeDependencies = { startForwardingProbe?: (id: string, from: string, to: string) => Promise<void>;
+  /** Places the daily setup check call; returns the provider's call id if it gives one. */
+  startSetupCheck?: (id: string, from: string, to: string) => Promise<string | undefined> };
 
 export class ForwardingProbes {
   readonly f: ForwardingStore;

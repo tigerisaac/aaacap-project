@@ -4,6 +4,9 @@ import Foundation
 /// container. The extension needs them as E.164 digits without "+", ascending and unique.
 struct CallDirectoryList: Codable, Equatable, Sendable {
     var blocked: [Int64]
+    /// Numbers to name in Recents rather than block, such as Shield's daily check ("Shield check").
+    var labels: [Label] = []
+    struct Label: Codable, Equatable, Sendable { let number: Int64; let name: String }
 
     static let fileName = "call-directory.json"
     static var fileURL: URL? {
@@ -11,8 +14,16 @@ struct CallDirectoryList: Codable, Equatable, Sendable {
         return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group)?.appending(path: fileName)
     }
 
-    init(blocked: [Int64]) { self.blocked = Array(Set(blocked)).sorted() }
-    init(phones: [String]) { self.init(blocked: phones.compactMap(Self.digits)) }
+    init(blocked: [Int64], labels: [Label] = []) {
+        let blocked = Array(Set(blocked)).sorted()
+        self.blocked = blocked
+        // iOS rejects a number that is both blocked and identified, and needs each list ascending.
+        self.labels = Dictionary(labels.filter { !blocked.contains($0.number) }.map { ($0.number, $0) }, uniquingKeysWith: { first, _ in first })
+            .values.sorted { $0.number < $1.number }
+    }
+    init(phones: [String], labels: [String: String] = [:]) {
+        self.init(blocked: phones.compactMap(Self.digits), labels: labels.compactMap { phone, name in Self.digits(phone).map { Label(number: $0, name: name) } })
+    }
 
     /// "+15125550100" → 15125550100. Anything that isn't a plain E.164 number is skipped.
     static func digits(_ phone: String) -> Int64? {

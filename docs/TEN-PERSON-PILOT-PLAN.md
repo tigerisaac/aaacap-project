@@ -224,6 +224,8 @@ Removing two of the checks made the matching tests fail.
 4. Run `telnyx-provider` provisioning for the new limits.
 5. Re-verify the owner's line with a real call before adding anyone.
 
+**Also on the branch:** the daily setup check call (protection plan section 5). It's off until `SETUP_CHECK_NUMBER` is set in `SHIELD_RUNTIME`; that number must be bought on the Telnyx account and kept out of everyone's contacts. It adds the scheduled function `dailySetupChecks`, and 108 emulator tests pass.
+
 **Not built:** alerts for bridge and function errors, the morning check of the night's outcomes, and the phone-guided setup split.
 
 ## Decisions for the owner

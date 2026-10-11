@@ -149,7 +149,17 @@ The person controls sharing. Offer "Alert my helpers" during onboarding, selecte
   - shared contacts were refreshed in the last 30 days (the server now records `contactsSyncedAt`)
 - **Fix buttons:** each problem has one.
 - **When it runs:** on every launch and return to the app.
-- **Not built:** the daily check call. It needs a second Telnyx number and real calls.
+- **Daily check call:** built on branch `pilot-multi-person`, since it only matters with always-on screening. It's off until `SETUP_CHECK_NUMBER` (a second Telnyx number) is set.
+  - **When it runs:** `dailySetupChecks` calls each always-on person at 10:30 a.m. Central, and the app asks for one on launch when the last is over 24 hours old.
+  - **Results:**
+    - back within 15 s: passed
+    - back later: `rang_first`
+    - answered: she hears the fixed message
+    - never back: `not_forwarded`
+  - **On failure:** the person and her helpers get an alert, and the Today card names the problem.
+  - **Recents:** the Call Directory extension labels the number "Shield check".
+  - **Tests:** 9 emulator tests.
+  - **Needs real calls:** the 15 s threshold and the call flow.
 
 **Problem.** Shield depends on settings it can't read. A change makes protection fail with no error:
 - Screen Unknown Callers set to anything but Silence

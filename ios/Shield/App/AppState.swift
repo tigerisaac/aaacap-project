@@ -137,7 +137,11 @@ final class AppState {
         guard isOwner, !isDemo, let id = selectedPersonID,
               let response: APIResponses.BlockedNumbers = try? await api.send("/api/blocked-numbers", participantID: id),
               generation == sessionGeneration, selectedPersonID == id else { return }
-        await CallDirectorySync.update(phones: response.items.map(\.phone))
+        let status: ForwardingStatus? = try? await api.send("/api/forwarding", participantID: id)
+        guard generation == sessionGeneration, selectedPersonID == id else { return }
+        await CallDirectorySync.update(phones: response.items.map(\.phone), checkNumber: status?.setupCheckNumber)
+        // Opening the app runs the setup check when the last one is over a day old; the server decides if it's due.
+        let _: APIResponses.Empty? = try? await api.send("/api/forwarding/setup-check", method: "POST", body: APIClient.payload([:]), participantID: id)
     }
 
     private func loadProtectionOnboarding(generation: Int) async {
