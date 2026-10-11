@@ -57,7 +57,8 @@ export class SetupChecks {
     const s = this.store, now = s.now(), participantId = assignedTo((await numberRef(s, to).get()).data());
     if (!participantId) return;
     const pending = (await this.f.controlRef(participantId).get()).data()?.setupCheck;
-    if (!pending?.id) return;
+    // Only the check placed in the last few minutes can pass; a stray or late call never vouches for an old one.
+    if (!pending?.id || !(pending.startedAt > now - SETUP_CHECK_LIMITS.staleMs)) return;
     return this.finish(pending.id, now - pending.startedAt <= SETUP_CHECK_LIMITS.forwardedWithinMs ? 'passed' : 'rang_first', undefined, participantId);
   }
 

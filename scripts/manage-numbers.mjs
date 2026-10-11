@@ -8,6 +8,8 @@ import { telnyxRequest } from './telnyx-provider.mjs';
 //   list
 //   buy --area 512 [--count 1] --confirm      order local numbers onto the Shield TeXML application; they start `available`
 //   assign <+1...> --participant <id> --carrier tello --confirm
+//   service <+1...> --confirm                  Shield's own use, such as SETUP_CHECK_NUMBER: never assigned, and calls from it
+//                                              are never screened (the loop guard covers every registered number)
 //   quarantine <+1...> --confirm               when a person leaves; never reassigned while quarantined
 //   release <+1...> --confirm                  only after 90 days in quarantine and 30 days without a call
 const QUARANTINE_MS = 90 * 86400_000, QUIET_MS = 30 * 86400_000;
@@ -17,7 +19,7 @@ const e164 = value => { if (!/^\+1[2-9]\d{9}$/.test(value ?? '')) throw new Erro
 
 async function main() {
   const [command, target] = process.argv.slice(2), confirm = process.argv.includes('--confirm');
-  if (!['list', 'buy', 'assign', 'quarantine', 'release'].includes(command)) throw new Error('unknown_command');
+  if (!['list', 'buy', 'assign', 'service', 'quarantine', 'release'].includes(command)) throw new Error('unknown_command');
   const config = JSON.parse(await readFile('artifacts/private/firebase-runtime.json', 'utf8'));
   await connect(); const db = rest(), now = Date.now();
   const write = async (description, action) => { if (!confirm) { console.log(`Dry run: would ${description}. Re-run with --confirm.`); return; } await action(); console.log(`Done: ${description}.`); };
@@ -54,8 +56,14 @@ async function main() {
     await write(`assign ${number} to ${participantId} (${carrier})`, async () => {
       await db.patch(`shieldNumbers/${number}`, { state: 'assigned', participantId, assignedAt: now, telnyxNumberId: owned[0].id }, { updateTime: entry.updateTime });
       await db.patch(`participants/${participantId}`, { shieldNumber: number, carrier }, { updateTime: person.updateTime });
-      await db.patch(`participants/${participantId}/forwarding/control`, { provisioned: false, enabled: false, used: 0 }, { exists: false }).catch(e => { if (e.status !== 409 && e.status !== 400) throw e; });
+      // An existing control document (409) is kept as it is; any other failure stops the script loudly.
+      await db.patch(`participants/${participantId}/forwarding/control`, { provisioned: false, enabled: false, used: 0 }, { exists: false }).catch(e => { if (e.status !== 409) throw e; });
     }); return;
+  }
+  if (command === 'service') {
+    if (entry.data.state !== 'available') throw new Error('number_not_available');
+    await write(`reserve ${number} for Shield's own use`, () =>
+      db.patch(`shieldNumbers/${number}`, { state: 'service', participantId: null, reservedAt: now }, { updateTime: entry.updateTime })); return;
   }
   if (command === 'quarantine') {
     if (entry.data.state !== 'assigned') throw new Error('number_not_assigned');

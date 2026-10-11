@@ -93,7 +93,7 @@ export class ForwardingStore {
       ]);
       const c = controlDoc.data(), p = personDoc.data(), total = totalDoc.data(), mine = mineDoc.data(), ends = this.endpoints(p);
       if (key.exists || !c?.provisioned || !p || p.status === 'offboarded' || p.forwardingConsent !== forwardingConsent
-        || !ends || ends.shieldNumber !== to || fromShield?.exists) return;
+        || !ends || ends.shieldNumber !== to || fromShield?.exists || (!!from && from === s.config.SETUP_CHECK_NUMBER)) return;
       // Checked before the daily caps so a blocked number redialing can't use up real callers' calls.
       if (blockedDoc?.exists && blockedDoc.data()!.expiresAt > now) {
         const blocked = total?.blocked ?? 0, call: ForwardingCall = { id, participantId, source: 'forwarding', provider: 'telnyx', parentSid: sid,

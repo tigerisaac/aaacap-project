@@ -129,6 +129,7 @@ final class AppState {
             await loadProtectionOnboarding(generation: generation)
             await loadContext()
             await syncCallDirectory(generation: generation)
+            await requestSetupCheck(generation: generation)
         } catch { if generation == sessionGeneration { handle(error) } }
     }
 
@@ -140,20 +141,25 @@ final class AppState {
         let status: ForwardingStatus? = try? await api.send("/api/forwarding", participantID: id)
         guard generation == sessionGeneration, selectedPersonID == id else { return }
         await CallDirectorySync.update(phones: response.items.map(\.phone), checkNumber: status?.setupCheckNumber)
-        // Opening the app runs the setup check when the last one is over a day old; the server decides if it's due.
+    }
+
+    /// Opening the app runs the setup check when the last one is over a day old; the server decides whether it's due.
+    private func requestSetupCheck(generation: Int) async {
+        guard isOwner, !isDemo, let id = selectedPersonID, generation == sessionGeneration else { return }
         let _: APIResponses.Empty? = try? await api.send("/api/forwarding/setup-check", method: "POST", body: APIClient.payload([:]), participantID: id)
     }
 
     private func loadProtectionOnboarding(generation: Int) async {
         guard let id = selectedPersonID, isOwner, !isDemo else { return }
         let choiceGeneration = protectionChoiceGeneration
-        guard let status: ForwardingStatus = try? await api.send("/api/forwarding", participantID: id),
+        // The protection choice doesn't need a Shield number, so it's asked before staff assign one.
+        guard let monitoring: ForwardingStatus.Monitoring = try? await api.send("/api/forwarding/monitoring", participantID: id),
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
               signedIn, selectedPersonID == id else { return }
         // A service without push alerts reads as nothing to ask.
         let helpers: APIResponses.HelperAlerts? = try? await api.send("/api/helper-alerts", participantID: id)
         guard generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration, signedIn, selectedPersonID == id else { return }
-        if let monitoring = status.monitoring, monitoring.available, monitoring.choiceRecorded == false {
+        if monitoring.available, monitoring.choiceRecorded == false {
             protectionOnboarding = monitoring
         } else {
             protectionOnboarding = nil

@@ -73,6 +73,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Daily setup check (Firest
     expect((await f.controlRef(A.id).get()).data()!.lastSetupCheck).toMatchObject({ id, result: 'passed', at: now });
     expect((await db.collection('callSessions').get()).empty).toBe(true); expect(await alerts()).toEqual([]);
   });
+  it('never lets a late or stray call from the check number vouch for an old check', async () => {
+    const id = (await checks.start(A.id, dial))!; now += SETUP_CHECK_LIMITS.staleMs + 1;
+    await post('inbound', { CallSid: sid(1), From: CHECK, To: A.shieldNumber });
+    expect(await result(id)).toBe('calling');
+    await checks.expireStale(); expect(await result(id)).toBe('not_forwarded');
+    expect((await db.collection('callSessions').get()).empty).toBe(true);
+  });
   it('flags a call that rang her phone first, and alerts', async () => {
     const id = (await checks.start(A.id, dial))!; now += 25_000;
     await post('inbound', { CallSid: sid(1), From: CHECK, To: A.shieldNumber });

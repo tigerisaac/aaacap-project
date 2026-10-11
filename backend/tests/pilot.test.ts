@@ -100,7 +100,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Several people on their o
   });
   it('never screens a call from any Shield number, assigned or not (loop guard)', async () => {
     await db.collection('shieldNumbers').doc('+15125550444').set({ state: 'quarantine' });
-    for (const [n, from] of [[1, B.shieldNumber], [2, '+15125550444']] as const) {
+    await db.collection('shieldNumbers').doc('+15125550555').set({ state: 'service' });
+    for (const [n, from] of [[1, B.shieldNumber], [2, '+15125550444'], [3, '+15125550555']] as const) {
       expect((await arrive(n, A.shieldNumber, from)).body).not.toContain('<Stream');
     }
     expect((await db.collection('callSessions').get()).empty).toBe(true);
@@ -152,6 +153,16 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Several people on their o
     await f.controlRef(B.id).update({ enabled: false });
     await arrive(3, B.shieldNumber);
     expect((await screenAndOffer(3)).offer).toContain('<Dial');
+  });
+  it('asks the protection question before a Shield number is assigned, but keeps forwarding setup for enrolled people', async () => {
+    const C = { id: 'c0c7af93-72ad-431d-9708-f1d9564a2b36', uid: 'carol' };
+    await s.personRef(C.id).set({ id: C.id, ownerUid: C.uid, status: 'setup', nameEnc: s.vault.seal('C', `person:${C.id}:name`), phoneEnc: s.vault.seal('+12025550301', `person:${C.id}:phone`) });
+    const as = { authorization: `Bearer ${C.uid}`, 'x-shield-participant': C.id };
+    expect((await app.inject({ url: '/api/forwarding/monitoring', headers: as })).json()).toMatchObject({ choiceRecorded: false });
+    expect((await app.inject({ method: 'POST', url: '/api/forwarding/monitoring', headers: as, payload: { enabled: false } })).json()).toEqual({ enabled: false });
+    expect((await app.inject({ url: '/api/forwarding', headers: as })).statusCode).toBe(403);
+    expect((await app.inject({ url: '/api/setup', headers: as })).json()).toMatchObject({ shieldNumber: null });
+    expect((await app.inject({ url: '/api/forwarding/monitoring', headers: { authorization: 'Bearer alice', 'x-shield-participant': C.id } })).statusCode).toBe(403);
   });
   it('lets each person set quiet hours, and validates them', async () => {
     const set = (body: unknown, uid = A.uid) => app.inject({ method: 'POST', url: '/api/forwarding/quiet-hours',

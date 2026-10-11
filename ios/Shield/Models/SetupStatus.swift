@@ -12,7 +12,8 @@ struct SetupStatus: Codable, Sendable {
     let participantId: UUID
     let name: String
     let phone: String
-    let shieldNumber: String
+    /// nil until staff assign this person a Shield number.
+    let shieldNumber: String?
     let status: String
     let isOwner: Bool
     let consentVersion: String

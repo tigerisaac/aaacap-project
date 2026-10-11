@@ -38,8 +38,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       lastSetupCheck: control?.lastSetupCheck ? { at: at(control.lastSetupCheck.at), result: control.lastSetupCheck.result } : null,
       prepared, active, probe: probes.publicState(control), contactsSyncedAt: at(p.contactsSyncedAt), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
       liveScreening: store.config.LIVE_SCREENING_ENABLED,
-      monitoring: { available: monitoringAvailable, enabled: monitoringAvailable && monitoringEnabledFor(p), consentVersion: MONITORING_CONSENT,
-        choiceRecorded: p.callMonitoring?.enabled === false || monitoringEnabledFor(p) },
+      monitoring: monitoringState(p),
       voiceProvider: 'Telnyx',
       consentVersion: consent, consented: p.forwardingConsent === consent,
       phoneVerified: !!p.phoneVerifiedAt, stage: stages.includes(p.forwardingStage) ? p.forwardingStage : 'overview',
@@ -93,9 +92,17 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     await store.personRef(ctx.participant.id).update({ forwardingConsent: consent, forwardingConsentedAt: store.now() });
     return { recorded: true };
   });
+  // The person's own choices that don't depend on having a Shield number yet (onboarding asks before staff assign one).
+  const self = async (request: FastifyRequest) => {
+    const selected = request.headers['x-shield-participant'];
+    return store.access((await auth.identify(bearer(request))).subject, selected === undefined ? undefined : z.string().uuid().parse(selected).toLowerCase(), true);
+  };
+  const monitoringState = (p: FirebaseFirestore.DocumentData) => ({ available: monitoringAvailable, enabled: monitoringAvailable && monitoringEnabledFor(p),
+    consentVersion: MONITORING_CONSENT, choiceRecorded: p.callMonitoring?.enabled === false || monitoringEnabledFor(p) });
+  app.get('/api/forwarding/monitoring', async request => monitoringState((await self(request)).participant));
   // Owner-only, explicit opt-in to transcribing accepted calls; turning it off needs no consent.
   app.post('/api/forwarding/monitoring', async request => {
-    const ctx = await owner(request);
+    const ctx = await self(request);
     const body = z.union([z.object({ enabled: z.literal(true), version: z.literal(MONITORING_CONSENT) }).strict(),
       z.object({ enabled: z.literal(false) }).strict()]).parse(request.body);
     if (body.enabled && !monitoringAvailable) throw new HttpError(409, 'monitoring_unavailable');

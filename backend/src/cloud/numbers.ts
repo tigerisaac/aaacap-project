@@ -4,7 +4,7 @@ import type { CloudStore } from './store.js';
 // One Shield number per person. The number a forwarded call arrives on is how Shield knows whose call it is, so a
 // number stays with its person while they're enrolled and is quarantined, never reassigned, after they leave.
 
-export type NumberState = 'available' | 'assigned' | 'quarantine' | 'released';
+export type NumberState = 'available' | 'assigned' | 'service' | 'quarantine' | 'released';
 export type ShieldNumber = { state: NumberState; participantId?: string | null; telnyxNumberId?: string | null;
   assignedAt?: number | null; quarantinedAt?: number | null; releasedAt?: number | null };
 export const QUARANTINE_MS = 90 * 86400_000;

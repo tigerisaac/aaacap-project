@@ -56,7 +56,9 @@ async function main() {
   await verifyTelnyxSetup(config, person.shieldNumber);
   if (command === 'prepare') {
     if (control.activeCallId) throw new Error('call_still_active');
-    const guide = JSON.parse(await readFile('artifacts/private/tello-restoration.json', 'utf8'));
+    // Each person's own carrier settings, recorded before forwarding: never another person's guide.
+    const guidePath = participantId === config.TRIAL_PARTICIPANT_ID ? 'artifacts/private/tello-restoration.json' : `artifacts/private/restoration-${participantId}.json`;
+    const guide = JSON.parse(await readFile(guidePath, 'utf8'));
     if (!guide.originalSettingsRecorded || !Array.isArray(guide.steps) || guide.steps.length < 3 || guide.steps.some(s => typeof s !== 'string' || !s.trim())) throw new Error('restoration_guide_required');
     await patch(controlPath, { provisioned: true, provider: 'telnyx', enabled: false, blocker: null, restorationGuide: guide.steps,
       dataPlanConfirmed: !!control.dataPlanConfirmed, preparedAt: Date.now() });

@@ -23,11 +23,13 @@ struct SetupView: View {
             } else if let setup {
                 Section {
                     LabeledContent("Mobile", value: setup.phone)
-                    LabeledContent("Shield", value: setup.shieldNumber)
-                    Button(contactSaved ? "Shield contact saved" : "Save Shield to Contacts", systemImage: contactSaved ? "checkmark" : "person.crop.circle.badge.plus") {
-                        Task { await saveContact(setup.shieldNumber) }
+                    LabeledContent("Shield", value: setup.shieldNumber ?? "Not assigned yet")
+                    if let shieldNumber = setup.shieldNumber {
+                        Button(contactSaved ? "Shield contact saved" : "Save Shield to Contacts", systemImage: contactSaved ? "checkmark" : "person.crop.circle.badge.plus") {
+                            Task { await saveContact(shieldNumber) }
+                        }
+                        .disabled(working || contactSaved || model.isDemo)
                     }
-                    .disabled(working || contactSaved || model.isDemo)
                 } header: { Text("Your numbers") } footer: {
                     Text("The saved contact helps callbacks ring. It does not prove who is calling.")
                 }
