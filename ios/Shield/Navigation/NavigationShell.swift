@@ -15,6 +15,7 @@ struct NavigationShell<Content: View>: View {
                     case .trustedNumbers: SharedContactsView()
                     case .sharing: SharingView()
                     case .help: HelpView()
+                    case .blockedNumbers: BlockedNumbersView()
                     }
                 }
         }

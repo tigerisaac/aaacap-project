@@ -19,6 +19,11 @@ struct CallEvent: Codable, Identifiable, Hashable, Sendable {
         case "voicemail_offered": "Voicemail offered"
         case "message_received", "voicemail_received": "Message received"
         case "ended", "call_ended": "Call ended"
+        case "blocked_caller_ended": "Blocked number ended"
+        case "monitoring_disclosed": "Caller told about transcription"
+        case "monitor_intervened": "Ended by Shield with a warning"
+        case "voicemail_removed": "Message removed by Shield"
+        case "voicemail_restored": "Message restored"
         default: "Call updated"
         }
     }

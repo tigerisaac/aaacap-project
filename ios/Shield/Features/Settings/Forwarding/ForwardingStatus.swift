@@ -18,6 +18,7 @@ struct ForwardingStatus: Decodable, Sendable {
     var probe: Probe? = nil
     var ringTestAt: Date? = nil
     var forwardingTestAt: Date? = nil
+    var contactsSyncedAt: Date? = nil
     let participantId: UUID
     let carrier: String
     let phone: String

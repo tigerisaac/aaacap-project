@@ -7,6 +7,9 @@ struct OverviewView: View {
         NavigationShell {
             List {
                 if let overview = model.overview {
+                    if model.isOwner, showsProtectionCheck {
+                        Section { ProtectionCheckCard() }.listRowBackground(ShieldTheme.card)
+                    }
                     if !model.isDemo {
                         Section {
                             status(overview)
@@ -74,6 +77,13 @@ struct OverviewView: View {
             .scrollContentBackground(.hidden)
             .background(ShieldTheme.surface)
         }
+    }
+
+    private var showsProtectionCheck: Bool {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-protection-check") { return true }
+        #endif
+        return !model.isDemo
     }
 
     @ViewBuilder

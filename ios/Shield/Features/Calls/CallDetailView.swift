@@ -8,6 +8,8 @@ struct CallDetailView: View {
     @State private var events: [CallEvent] = []
     @State private var player = VoicePlayer()
     @State private var confirmDelete = false
+    @State private var confirmRestore = false
+    @State private var restoring = false
     @State private var isVisible = false
     private var call: CallRecord { updatedCall ?? initialCall }
 
@@ -48,6 +50,29 @@ struct CallDetailView: View {
                                 .confirmationDialog("Delete this voicemail?", isPresented: $confirmDelete, titleVisibility: .visible) {
                                     Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
                                 }
+                        }
+                    } else if voicemail.status == "removed" {
+                        // Not playable while removed: a scam message often asks her to call a number back.
+                        Label("Removed by Shield", systemImage: "trash.slash").font(.headline)
+                        if voicemail.isRestorable, model.canListen {
+                            Button {
+                                confirmRestore = true
+                            } label: {
+                                Label(restoring ? "Restoring…" : "Restore message", systemImage: "arrow.uturn.backward.circle")
+                            }
+                            .disabled(restoring || model.isDemo)
+                            .accessibilityIdentifier("restore-voicemail")
+                            .confirmationDialog("Restore this message?", isPresented: $confirmRestore, titleVisibility: .visible) {
+                                Button("Restore message") { Task { await restore(voicemail) } }
+                            } message: {
+                                Text("Shield thought it was a scam or junk. If it asks you to call a number back, use a number you already know instead.")
+                            }
+                            if let until = voicemail.restorableUntil {
+                                Text("You can restore it until \(until.formatted(date: .abbreviated, time: .shortened)).")
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                            }
+                        } else if !voicemail.isRestorable {
+                            Text("The recording has been deleted.").font(.subheadline).foregroundStyle(.secondary)
                         }
                     } else if !model.canListen {
                         Label("Voicemail isn’t shared", systemImage: "lock")
@@ -110,6 +135,17 @@ struct CallDetailView: View {
             guard isVisible, scenePhase == .active, model.signedIn else { return }
             try player.play(data: data)
             let _: APIResponses.Empty = try await model.api.send("/api/voicemails/\(voicemail.id)/heard", method: "POST", participantID: personID)
+        } catch { model.handle(error) }
+    }
+
+    private func restore(_ voicemail: Voicemail) async {
+        guard let personID = model.selectedPersonID else { return }
+        restoring = true
+        defer { restoring = false }
+        do {
+            let _: APIResponses.Empty = try await model.api.send("/api/voicemails/\(voicemail.id)/restore", method: "POST", participantID: personID)
+            await load()
+            await model.loadContext()
         } catch { model.handle(error) }
     }
 

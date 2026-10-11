@@ -18,6 +18,9 @@ enum DemoData {
         make(minutes: 380, title: "Verify independently", outcome: .verification, reason: "sensitive_issue",
              detail: "The caller described an account problem. The call was held for independent verification.",
              next: "Use a number from your card or statement.", suffix: "0126"),
+        make(minutes: 640, title: "Scam voicemail removed", outcome: .held, reason: "voicemail_removed_scam",
+             detail: "Shield judged this message to be a scam and removed it from your messages. It will be deleted after 7 days.",
+             next: "If you think this was a real message, restore it from this call.", suffix: "0129", removedMessage: true),
         make(minutes: 1520, title: "Appointment reminder", outcome: .connected, reason: "routine",
              detail: "You accepted this call after a private summary. The caller’s identity was not verified.",
              next: "Ask your provider directly if anything seems unusual.", suffix: "0127"),
@@ -33,16 +36,19 @@ enum DemoData {
                         counts: .init(total: activity.count,
                                       held: activity.filter { CallFilter.held.includes($0) }.count,
                                       connected: activity.filter { $0.outcome == .connected }.count,
-                                      messages: activity.filter { $0.voicemail != nil }.count),
+                                      messages: activity.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }.count),
                         recent: activity)
     }
 
-    private static func make(minutes: Int, title: String, outcome: CallOutcome, reason: String, detail: String, next: String, suffix: String, message: Bool = false) -> CallRecord {
+    private static func make(minutes: Int, title: String, outcome: CallOutcome, reason: String, detail: String, next: String, suffix: String,
+                             message: Bool = false, removedMessage: Bool = false) -> CallRecord {
         let time = Date.now.addingTimeInterval(Double(-minutes * 60))
         return CallRecord(id: UUID(), occurredAt: time, callerNumber: "+1512555\(suffix)",
                           title: title, outcome: outcome, reasonCode: reason, detail: detail, nextStep: next,
                           acceptedAt: outcome == .connected ? time.addingTimeInterval(30) : nil,
                           endedAt: time.addingTimeInterval(80),
-                          voicemail: message ? Voicemail(id: UUID(), duration: 28, status: "sample", heardAt: nil) : nil)
+                          voicemail: removedMessage ? Voicemail(id: UUID(), duration: 31, status: "removed", heardAt: nil,
+                                                                removedAt: time.addingTimeInterval(120), restorableUntil: time.addingTimeInterval(7 * 86400))
+                            : message ? Voicemail(id: UUID(), duration: 28, status: "sample", heardAt: nil) : nil)
     }
 }

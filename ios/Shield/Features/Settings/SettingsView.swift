@@ -18,11 +18,19 @@ struct SettingsView: View {
                 }
             }
             Section {
+                NavigationLink(value: AppRoute.blockedNumbers) { Label("Blocked numbers", systemImage: "hand.raised") }
+            } footer: {
+                Text("Numbers Shield stopped a scam from. Their calls end without screening.")
+            }
+            Section {
                 Button("Enable notifications", systemImage: "bell.badge") { Task { await enableNotifications() } }
                     .disabled(model.isDemo || model.service?.notificationsAvailable != true)
+                if model.isOwner { HelperAlertsToggle() }
                 NavigationLink { MessageFilterSetupView() } label: { Label("Message filtering", systemImage: "line.3.horizontal.decrease.circle") }
             } header: { Text("Stay in the loop") } footer: {
-                Text("Notifications contain no caller or message details.")
+                Text(model.isOwner
+                     ? "Notifications contain no caller or message details. With Alert my helpers on, people you share with are told when Shield ends a call, blocks a caller who tries again, or is paused."
+                     : "Notifications contain no caller or message details.")
             }
             Section("About Shield") {
                 NavigationLink(value: AppRoute.help) { Label("Help & recovery", systemImage: "lifepreserver") }

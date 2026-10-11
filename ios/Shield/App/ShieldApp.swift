@@ -21,11 +21,13 @@ struct ShieldApp: App {
                 .onReceive(NotificationCenter.default.publisher(for: .shieldPushToken)) { notification in
                     guard let token = notification.object as? String, !model.isDemo else { return }
                     let people = model.people
+                    // Debug builds register with Apple's sandbox, release builds with production.
+                    let environment = Bundle.main.object(forInfoDictionaryKey: "ShieldAPNSEnvironment") as? String == "development" ? "development" : "production"
                     Task {
                         do {
                             for person in people {
                                 let _: APIResponses.Empty = try await model.api.send("/api/devices", method: "POST",
-                                    body: APIClient.payload(["token": token]), participantID: person.id)
+                                    body: APIClient.payload(["token": token, "environment": environment]), participantID: person.id)
                             }
                         } catch { model.handle(error) }
                     }

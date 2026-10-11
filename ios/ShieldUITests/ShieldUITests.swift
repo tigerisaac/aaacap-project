@@ -137,6 +137,96 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["The introduction included a request for a security code. This call was not connected."].exists)
     }
 
+    func testBlockedNumbersShowsWhyAndAsksBeforeUnblocking() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
+        openSettings(app)
+        let blocked = app.buttons["Blocked numbers"]
+        for _ in 0..<4 where !blocked.isHittable { app.swipeUp() }
+        blocked.tap()
+        XCTAssertTrue(app.navigationBars["Blocked numbers"].waitForExistence(timeout: 3))
+        let row = app.staticTexts["+13125550199"]
+        XCTAssertTrue(row.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Shield stopped a scam call from this number"].exists)
+        capture(app, name: "Blocked numbers")
+        app.buttons["unblock-+13125550199"].tap()
+        XCTAssertTrue(app.staticTexts["Its next call will be screened again. Only unblock a number you know belongs to someone you trust."].waitForExistence(timeout: 3))
+        capture(app, name: "Unblock confirmation")
+        app.buttons["Unblock"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["No blocked numbers"].waitForExistence(timeout: 3))
+    }
+
+    func testProtectionCheckListsWhatNeedsAttention() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-protection-check"]
+        app.launch()
+        let title = app.staticTexts["protection-check-title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "Protection needs attention")
+        XCTAssertTrue(app.staticTexts["Protection is paused"].exists)
+        XCTAssertTrue(app.staticTexts["Shield’s number isn’t in your Contacts"].exists)
+        XCTAssertTrue(app.buttons["protection-fix-contact"].exists)
+        capture(app, name: "Protection needs attention")
+    }
+
+    func testProtectionCheckAllGoodAtLargestText() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-protection-check", "--protection-check-good",
+                               "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let title = app.staticTexts["protection-check-title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "Protection is on")
+        capture(app, name: "Protection all good large text")
+    }
+
+    func testRemovedVoicemailCannotPlayAndOffersRestore() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview"]
+        app.launch()
+        app.tabBars.buttons["Calls"].tap()
+        let removed = app.staticTexts["Scam voicemail removed"].firstMatch
+        for _ in 0..<4 where !removed.isHittable { app.swipeUp() }
+        removed.tap()
+        XCTAssertTrue(app.navigationBars["Call details"].waitForExistence(timeout: 3))
+        let label = app.staticTexts["Removed by Shield"]
+        for _ in 0..<4 where !label.isHittable { app.swipeUp() }
+        XCTAssertTrue(label.exists)
+        XCTAssertTrue(app.buttons["restore-voicemail"].exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Play message'")).firstMatch.exists)
+        capture(app, name: "Removed voicemail")
+    }
+
+    func testHelperCannotUnblockOrChooseHelperAlerts() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview"]
+        app.launch()
+        app.tabBars.buttons["People"].tap()
+        XCTAssertTrue(app.buttons["person-Alex"].waitForExistence(timeout: 5))
+        app.buttons["person-Alex"].tap()
+        app.tabBars.buttons["Today"].tap()
+        openSettings(app)
+        XCTAssertFalse(app.switches["helper-alerts-toggle"].exists)
+        let blocked = app.buttons["Blocked numbers"]
+        for _ in 0..<4 where !blocked.isHittable { app.swipeUp() }
+        blocked.tap()
+        let row = app.staticTexts["+13125550199"]
+        XCTAssertTrue(row.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Shield ends calls from these numbers without screening them. Only the person Shield protects can unblock a number."].exists)
+        XCTAssertFalse(app.buttons["unblock-+13125550199"].exists)
+        row.swipeLeft()
+        XCTAssertFalse(app.buttons["Unblock"].exists)
+    }
+
+    private func openSettings(_ app: XCUIApplication) {
+        let settings = app.buttons["Settings"].firstMatch
+        for _ in 0..<6 where !settings.isHittable { app.swipeUp() }
+        settings.tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 3))
+    }
+
     func testPreviewCanSwitchPeople() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview"]

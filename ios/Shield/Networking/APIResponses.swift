@@ -6,6 +6,8 @@ enum APIResponses {
     struct CallDetail: Decodable, Sendable { let call: CallRecord; let events: [CallEvent] }
     struct ContactSync: Decodable, Sendable { let shared: Int; let skipped: Int }
     struct Numbers: Decodable, Sendable { let items: [SavedNumber] }
+    struct BlockedNumbers: Decodable, Sendable { let items: [BlockedNumber] }
+    struct HelperAlerts: Decodable, Sendable { let available: Bool; let enabled: Bool; let choiceRecorded: Bool }
     struct Sharing: Decodable, Sendable { let grants: [SharingGrant] }
     struct Invitation: Decodable, Sendable { let id: UUID; let code: String }
     struct Joined: Decodable, Sendable { let participantId: UUID }
