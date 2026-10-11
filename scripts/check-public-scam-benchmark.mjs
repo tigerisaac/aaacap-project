@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 import { SCREENING_POLICY_VERSION } from '../dist/live/policy.js';
 import { screeningTarget } from './lib/screening-target.mjs';
 import { monitorTarget } from './lib/monitor-target.mjs';
-import { MASC, digest, parseCSV, mascCase, summarizeMASC } from './lib/public-scam-benchmark.mjs';
+import { MASC, MASC_SCORING, digest, parseCSV, mascCase, summarizeMASC } from './lib/public-scam-benchmark.mjs';
 
 const args = process.argv.slice(2);
 const option = name => { const i = args.indexOf(name); return i < 0 ? undefined : args.splice(i, 2)[1]; };
@@ -51,6 +51,7 @@ await writeFile(resultsFile, '', { flag: 'wx' });
 const screening = mode !== 'monitor' ? await screeningTarget(provider, { effort: 'medium' }) : undefined;
 const monitor = mode !== 'screening' ? await monitorTarget(provider) : undefined;
 const run = { ...manifest, provider, model: screening?.model ?? monitor.model, effort: 'medium', mode, repeat, concurrency,
+  scoring: MASC_SCORING,
   screeningVersion: SCREENING_POLICY_VERSION, monitorVersion: monitor?.policyVersion,
   monitorContextChars: monitor?.contextChars,
   conversationsBeyondMonitorWindow: monitor ? cases.filter(c => c.transcript.length > monitor.contextChars).length : undefined,

@@ -26,9 +26,18 @@ The default is all 320 published test cases, once, using `gpt-6-luna` and medium
 
 The download is pinned to repository revision `709db2b6c37f424c3070f29138abb33971e21ab9`, file `agent_conversation_test.csv`. The ignored local cache records a SHA-256 and verifies it on reuse. Each run saves its model/policy versions, dataset revision/hash, selected row IDs, completion counts, failures, and per-type outcomes in `artifacts/public-benchmarks/`. Custom output directories must be fresh to avoid overwriting a prior evaluation. Results and console output contain IDs and aggregate metadata, not caller text or evidence quotes.
 
+Future runs also record the scoring version and `scamsIdentified` headline. To apply the owner's clarification-credit rule to a saved run without new model requests:
+
+```bash
+node scripts/rescore-public-scam-benchmark.mjs artifacts/redteam-v18/masc
+```
+
+Substitute another saved run directory as needed. The tool creates a separate versioned summary and hashes the source results; it never replaces `results.jsonl` or the original `summary.json`. An existing summary for that scoring version is not overwritten.
+
 ## Interpret the scores
 
-- **Screening:** only Suspect/Caller speech reaches the decision backend. It sees all caller turns from the original completed conversation at once. This is a diagnostic of the decision prompt on complete evidence, not a simulation of when screening would approve. An unanswered clarification is reported as `continue`, not as a stopped scam.
+- **Screening:** only Suspect/Caller speech reaches the decision backend. It sees all caller turns from the original completed conversation at once. This is a diagnostic of the decision prompt on complete evidence, not a simulation of when screening would approve. An unanswered clarification remains `continue` in the raw outcomes.
+- **Scams correctly identified (owner-requested score):** `scamsIdentified` credits a successful `block`, `hold`, or clarifying question on a label-1 call. The owner requested clarification credit on October 11 because this completed-dialogue benchmark has no additional answer for Shield. A clarification requires a recorded question and no failure. Approvals, absent decisions and failed checks receive no credit. This scoring rule was changed after the original run; production prompts, source groups and raw outcomes were not changed.
 - **Legitimate offered:** label-0 appointment and delivery cases only. Insurance sales are deliberately stopped by Shield, despite their label 0. Wrong numbers aren't calls intended for the recipient. Both types get separate policy-difference reporting, with no relabeling based on model outcomes.
 - **Harmful stopped:** label-1 calls that reach `block` or `hold`. Harmful approvals and provider failures are reported separately. No dataset type, label or personality is sent to the model.
 - **Ads blocked:** all 40 label-0 insurance-sales calls, scored separately at screening. They are excluded from scam and ordinary-call denominators as requested by the owner. A block counts as ad blocking; a hold or clarification does not. Monitoring has no solicitation rule, so its insurance outcomes are diagnostic only, not an ad-blocking score.
@@ -62,14 +71,15 @@ The v17 main text benchmark, three runs, offered 33/33 legitimate calls. It stop
 
 ## Continued red teaming and frozen v18 validation
 
-The owner's October 11 scoring choice is fixed independently of results: exclude solicitation from scam and ordinary-call scores, report ad blocking separately at screening, and leave wrong numbers out of ordinary-call scores. All 320 source rows still run, so exclusions cannot hide failed or inconvenient decisions. The score groups are recorded before requests begin.
+The owner's October 11 source-group choice was fixed before requests began: exclude solicitation from scam and ordinary-call scores, report ad blocking separately at screening, and leave wrong numbers out of ordinary-call scores. All 320 source rows still run, so exclusions cannot hide failed or inconvenient decisions. The later clarification-credit change affects the identification metric, not those groups.
 
 Fresh development probes found two false blocks of an existing clinic's demographic check in three v17 runs. Screening v18 clarifies the healthcare category; it leaves explicit scam requests and manipulation blocks intact. It offered 36/36 ordinary development calls and stopped 42/42 harmful requests; main text passed 69/69, and main plus development synthetic voice passed 50/50. The production requests and development sources were hashed and frozen at 19:49:51 UTC before this public run. Neither public nor held-out findings shaped the change.
 
-The first full v18 + monitor-v2 pass completed all 320 rows through Go at medium reasoning:
+The first full v18 + monitor-v2 pass completed all 320 rows through Go at medium reasoning. The identification row below applies the owner's later scoring change to those saved outcomes:
 
 | Measure | Result |
 |---|---|
+| Screening: labeled scams correctly identified, clarification credited | 160/160 (100%) |
 | Screening: labeled scams blocked/held | 155/160 (96.9%) |
 | Screening: labeled scams approved | 0/160 |
 | Screening: insurance ads blocked, scored separately | 40/40 (100%) |
@@ -77,7 +87,7 @@ The first full v18 + monitor-v2 pass completed all 320 rows through Go at medium
 | Monitoring: labeled scams flagged at end of conversation | 142/160 (88.8%) |
 | Monitoring: ordinary appointment/delivery calls kept | 78/80 (97.5%) |
 
-The five remaining screening scam cases asked for clarification, not approval. Monitoring had 16 `continue` outcomes and two rejected evidence quotes among the 160 labeled scams. The invalid quotes are failed checks, not successful interventions. No provider failures occurred. Lookup requests were 0/320, or 1/960 across the three public screening versions; Go still cannot measure a successful lookup's value. Raw first-pass results remain in `artifacts/redteam-v18/masc/`.
+The five screening clarifications count as correct identification under the requested score; they remain separate from the 155 completed blocks/holds. No labeled scam was approved. Monitoring had 16 `continue` outcomes and two rejected evidence quotes among the 160 labeled scams. Monitoring `continue` is not a clarifying question and receives no scam-identification credit. The invalid quotes are failed checks, not successful interventions. No provider failures occurred. Lookup requests were 0/320, or 1/960 across the three public screening versions; Go still cannot measure a successful lookup's value. Raw first-pass results remain in `artifacts/redteam-v18/masc/`. The new score is in `summary-scoring-2026-10-11-public-identification-v1.json`; the original summary is preserved.
 
 Two additional monitor-only passes measured variation after those validation failures. No prompt, source group or exclusion changed between passes:
 
@@ -91,3 +101,5 @@ Two additional monitor-only passes measured variation after those validation fai
 These are repeated checks of the same 160 unique scam and 80 unique ordinary conversations, not 480 distinct scams. Combined monitoring had 41 `continue` outcomes and three failed evidence checks among labeled scams; all failures remain in the denominator. The three invalid quotes were in reward cases, with one source case failing twice. Provider failures were 0 across all three monitoring passes. Repeats are in `artifacts/redteam-v18/masc-monitor-repeats/`; `public-final-summary.json` combines runs and verifies the production-request hashes still match the pre-validation freeze.
 
 Ad blocking remains 40/40 at screening; insurance monitoring results are not ad scores. Wrong numbers stay separate. No public case was relabeled or removed after outcomes were observed. End-of-conversation monitoring still misses source-labeled scams, and its ordinary-call result varies. These checks neither measure live intervention timing nor establish that every source label corresponds to a current prohibited request. No production deployment or real phone call took place.
+
+Rescoring validation (October 11): `npm run check` passed 117 unit tests, typecheck and build. The first emulator run passed 85/86 with a closed-transaction error in a forwarding test; a separate rerun passed all 86. Raw benchmark results matched their recorded SHA-256, and the original summary remained intact. This scoring-only change made no model requests and changed no production prompt.

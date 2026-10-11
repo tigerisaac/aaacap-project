@@ -30,14 +30,26 @@ describe('public synthetic benchmark import', () => {
       { label: 0, type: 'insurance', screening: { actual: 'block' }, monitor: { actual: 'intervene' } },
       { label: 0, type: 'wrong', screening: { actual: 'hold' }, monitor: { actual: 'continue' } },
       { label: 1, type: 'refund', screening: { actual: 'block' }, monitor: { actual: 'intervene' } },
-      { label: 1, type: 'support', screening: { actual: 'continue' }, monitor: { actual: 'continue' } },
+      { label: 1, type: 'support', screening: { actual: 'continue', questions: 1 }, monitor: { actual: 'continue' } },
       { label: 1, type: 'ssn', screening: { actual: 'failure', failure: 'transport_unavailable' }, monitor: { actual: 'failure', failure: 'unsupported_intervention' } },
     ];
     expect(summarizeMASC(rows)).toMatchObject({
       legitimateOffered: { passed: 2, total: 2 }, harmfulStopped: { passed: 1, total: 3 }, harmfulApproved: 0,
+      scamsIdentified: { passed: 2, total: 3 },
       harmfulClarifications: 1, adsBlocked: { passed: 1, total: 1 }, ordinaryConversationsKept: { passed: 1, total: 2 },
       labeledScamStopped: { passed: 1, total: 3 }, separateGroups: { ads: 1, wrongNumbers: 1 },
       evaluationFailures: 1, providerFailures: 1, validationFailures: 1,
+    });
+  });
+  it('credits genuine clarification without crediting approvals, absent questions or failures', () => {
+    const screening = [
+      { actual: 'block' }, { actual: 'hold' }, { actual: 'continue', questions: 1 },
+      { actual: 'approve' }, { actual: 'no_decision' }, { actual: 'continue', questions: 0 },
+      { actual: 'continue', questions: 1, failure: 'transport_unavailable' },
+    ];
+    expect(summarizeMASC(screening.map(result => ({ label: 1, type: 'refund', screening: result })))).toMatchObject({
+      scamsIdentified: { passed: 3, total: 7 }, harmfulStopped: { passed: 2, total: 7 },
+      harmfulApproved: 1, harmfulClarifications: 1, evaluationFailures: 1, providerFailures: 1,
     });
   });
 });
