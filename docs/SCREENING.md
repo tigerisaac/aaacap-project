@@ -105,7 +105,7 @@ node scripts/redteam-turn.mjs artifacts/redteam-conversation.json "what the call
 ```
 
 - **`--provider go`** sends the exact production decision request through the owner's OpenCode Go key, so it costs nothing. It reproduced the OpenAI path exactly on the benchmark (46/46). `--provider openai` uses the real key from Secret Manager.
-- **`check-live-demo.mjs`** is the voice benchmark. It speaks synthetic voices through GPT Live, rotating 8 voices, and answers only questions Shield actually asks. It uses paid OpenAI requests and writes results to `artifacts/live-eval/`.
+- **`check-live-demo.mjs`** is the voice benchmark. It speaks synthetic voices through GPT Live, rotating 8 voices, and answers only questions Shield actually asks. It uses paid OpenAI requests and writes results to `artifacts/live-eval/`. With `--caution` it screens as in the 24 hours after a stopped scam and writes to `artifacts/live-eval-caution/` instead, so those results never satisfy the deploy gate.
 - **`redteam-turn.mjs`** is for interactive sparring, one caller turn at a time.
 - **Text checks skip speech recognition and the voice front end.** Always confirm a change with the voice benchmark.
 
@@ -139,7 +139,10 @@ Run October 11 with `--provider go`, 3 runs each. These were the first runs; the
 
 - The held-out miss is `h-tech-support`, the same fake-support case v14 sometimes asks about instead of blocking.
 - Callbacks held include real people whose call dropped (a friend, a pharmacy, a garage). The owner accepted that cost for the 24 hours after a scam.
-- No voice benchmark has been run with caution on. The caution prompt only reaches the decision backend, not GPT Live's voice instructions.
+- **Voice benchmark (October 11, synthetic voices, `check-live-demo.mjs`):**
+  - **Caution off:** 24/24 (11/11 legitimate offered, 12/12 harmful stopped). The decision came a median 3.1 s after the caller stopped. These results meet `enable-live-demo.mjs`'s gate for v15.
+  - **Caution on** (`--caution`, results kept apart in `artifacts/live-eval-caution/`): 24/24, median 2.8 s.
+  - **Not covered:** the voice benchmark has no callback cases, so the caution rule itself is checked in text only.
 
 ## Latest results (v14)
 
