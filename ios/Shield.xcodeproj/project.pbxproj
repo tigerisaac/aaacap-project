@@ -174,6 +174,13 @@
 			"path" = "Shield/Features/Settings/BlockedNumbersView.swift";
 			"sourceTree" = "<group>";
 		};
+		"4B8991E842C636AE0612D2D5" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "CallDirectorySync.swift";
+			"path" = "Shield/Features/Settings/CallDirectorySync.swift";
+			"sourceTree" = "<group>";
+		};
 		"F6FD79817C774E79FB5A3176" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -671,6 +678,34 @@
 			"path" = "MessageFilter/PrivacyInfo.xcprivacy";
 			"sourceTree" = "<group>";
 		};
+		"9AF645D69E02A65EC2CB9B0C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.entitlements";
+			"name" = "CallDirectory.entitlements";
+			"path" = "CallDirectory/CallDirectory.entitlements";
+			"sourceTree" = "<group>";
+		};
+		"B11BE479EBE1B7EF2E902B32" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "CallDirectoryHandler.swift";
+			"path" = "CallDirectory/CallDirectoryHandler.swift";
+			"sourceTree" = "<group>";
+		};
+		"382B40D1FB6E6F5F05BBCBDC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.xml";
+			"name" = "Info.plist";
+			"path" = "CallDirectory/Info.plist";
+			"sourceTree" = "<group>";
+		};
+		"EF780B79797346F2810FD202" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "CallDirectoryList.swift";
+			"path" = "Shared/CallDirectoryList.swift";
+			"sourceTree" = "<group>";
+		};
 		"8B0B6BF3B4417093ABE37537" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -732,6 +767,13 @@
 			"explicitFileType" = "wrapper.app-extension";
 			"includeInIndex" = 0;
 			"path" = "ShieldMessages.appex";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"5A5078EBB4720D8BC65FB679" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.app-extension";
+			"includeInIndex" = 0;
+			"path" = "ShieldCallDirectory.appex";
 			"sourceTree" = "BUILT_PRODUCTS_DIR";
 		};
 		"D03BDD4330AB77CB3A1152EB" = {
@@ -847,6 +889,7 @@
 			"children" = (
 				"DFD00DF83A16FDBB87DB426D",
 				"730DAC71138606B94FBD9736",
+				"4B8991E842C636AE0612D2D5",
 				"F6FD79817C774E79FB5A3176",
 				"D1577BE04A3E1CB18293FA4B",
 				"2C7C61E05FA921EA81A7AC14",
@@ -978,6 +1021,24 @@
 			);
 			"sourceTree" = "<group>";
 		};
+		"2B69FD31BF5D4EC0CC3B5260" = {
+			"isa" = "PBXGroup";
+			"name" = "Call Directory";
+			"children" = (
+				"9AF645D69E02A65EC2CB9B0C",
+				"B11BE479EBE1B7EF2E902B32",
+				"382B40D1FB6E6F5F05BBCBDC",
+			);
+			"sourceTree" = "<group>";
+		};
+		"3A0C80C96D4D586F9DEC872E" = {
+			"isa" = "PBXGroup";
+			"name" = "Shared";
+			"children" = (
+				"EF780B79797346F2810FD202",
+			);
+			"sourceTree" = "<group>";
+		};
 		"F03AB7B600B281D786421E39" = {
 			"isa" = "PBXGroup";
 			"name" = "Tests";
@@ -1005,6 +1066,7 @@
 			"children" = (
 				"ADCEDC49BDD63D32B09E10A0",
 				"70357665407E70E905DFFB32",
+				"5A5078EBB4720D8BC65FB679",
 				"D03BDD4330AB77CB3A1152EB",
 			);
 			"sourceTree" = "<group>";
@@ -1015,6 +1077,8 @@
 			"children" = (
 				"9DC30A54C5D902DEFE536C56",
 				"8E33971B0AD19CDBB7DA5146",
+				"2B69FD31BF5D4EC0CC3B5260",
+				"3A0C80C96D4D586F9DEC872E",
 				"F03AB7B600B281D786421E39",
 				"341E6928838892729241ECD7",
 				"AE7805B56D1DCAFAA071416F",
@@ -1033,9 +1097,30 @@
 			"target" = "CBF32C1C1325BEBE8A94B918";
 			"targetProxy" = "EBB30C28FB56077190499346";
 		};
+		"B5139E3364E795A4F2D7A209" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "244210E48437B6556980A702";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "4E11AD99E2B23C54018A125C";
+			"remoteInfo" = "ShieldCallDirectory";
+		};
+		"CFD54D20AA6421E4D54315E9" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "4E11AD99E2B23C54018A125C";
+			"targetProxy" = "B5139E3364E795A4F2D7A209";
+		};
 		"C45F26720B3284BD9B807151" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "70357665407E70E905DFFB32";
+			"settings" = {
+				"ATTRIBUTES" = (
+					"RemoveHeadersOnCopy",
+				);
+			};
+		};
+		"44CBB954DB74F0569A214A84" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5A5078EBB4720D8BC65FB679";
 			"settings" = {
 				"ATTRIBUTES" = (
 					"RemoveHeadersOnCopy",
@@ -1049,6 +1134,7 @@
 			"dstSubfolderSpec" = 13;
 			"files" = (
 				"C45F26720B3284BD9B807151",
+				"44CBB954DB74F0569A214A84",
 			);
 			"name" = "Embed App Extensions";
 			"runOnlyForDeploymentPostprocessing" = 0;
@@ -1191,6 +1277,10 @@
 		"AF06522608BB16F0711F221E" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "730DAC71138606B94FBD9736";
+		};
+		"C2AADBAF126AD15A8BB00B5C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "4B8991E842C636AE0612D2D5";
 		};
 		"06F0A9F04E4019BE87299274" = {
 			"isa" = "PBXBuildFile";
@@ -1444,6 +1534,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "293C0D67569201BE6ECD94A1";
 		};
+		"360C88DD0B46A9D9622781A5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "EF780B79797346F2810FD202";
+		};
 		"C9187A561D550BF30D1C5BEF" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = 2147483647;
@@ -1472,6 +1566,7 @@
 				"6A7DEF4B0062F095E96033B3",
 				"CAE00817242637E25B73DA63",
 				"AF06522608BB16F0711F221E",
+				"C2AADBAF126AD15A8BB00B5C",
 				"06F0A9F04E4019BE87299274",
 				"24366F353254DA726CA38BA3",
 				"C602615C5FF73EB29FDC4686",
@@ -1535,6 +1630,7 @@
 				"9D33D22BCCEC0BBFEFE6C475",
 				"CF3C4FE0175C9E4A47DCC772",
 				"10A961AFFDB824898642489D",
+				"360C88DD0B46A9D9622781A5",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
@@ -1577,6 +1673,7 @@
 			);
 			"dependencies" = (
 				"965FF32F58B180754D654307",
+				"CFD54D20AA6421E4D54315E9",
 			);
 			"name" = "Shield";
 			"productName" = "Shield";
@@ -1675,6 +1772,101 @@
 			"name" = "ShieldMessages";
 			"productName" = "ShieldMessages";
 			"productReference" = "70357665407E70E905DFFB32";
+			"productType" = "com.apple.product-type.app-extension";
+		};
+		"B3316BE7F0949DE36987B896" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "iphoneos";
+				"TARGETED_DEVICE_FAMILY" = "1";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "$(SHIELD_APP_BUNDLE_ID).CallDirectory";
+				"INFOPLIST_FILE" = "CallDirectory/Info.plist";
+				"CODE_SIGN_ENTITLEMENTS" = "CallDirectory/CallDirectory.entitlements";
+				"APPLICATION_EXTENSION_API_ONLY" = "YES";
+				"SKIP_INSTALL" = "YES";
+			};
+			"name" = "Debug";
+		};
+		"254F6245CAC6B5825CA16EA5" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"SDKROOT" = "iphoneos";
+				"TARGETED_DEVICE_FAMILY" = "1";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "$(SHIELD_APP_BUNDLE_ID).CallDirectory";
+				"INFOPLIST_FILE" = "CallDirectory/Info.plist";
+				"CODE_SIGN_ENTITLEMENTS" = "CallDirectory/CallDirectory.entitlements";
+				"APPLICATION_EXTENSION_API_ONLY" = "YES";
+				"SKIP_INSTALL" = "YES";
+			};
+			"name" = "Release";
+		};
+		"D6554155DA7570A2D51A30CD" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"B3316BE7F0949DE36987B896",
+				"254F6245CAC6B5825CA16EA5",
+			);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"AEFA2A1C305A3077906901F9" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B11BE479EBE1B7EF2E902B32";
+		};
+		"247375C67C53467FD699B625" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "EF780B79797346F2810FD202";
+		};
+		"B61851B78A6581D9E9548DD1" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+				"AEFA2A1C305A3077906901F9",
+				"247375C67C53467FD699B625",
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"A8888CF23C2437015638CDB0" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"101A2B209576180EAB20DA72" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"4E11AD99E2B23C54018A125C" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "D6554155DA7570A2D51A30CD";
+			"buildPhases" = (
+				"B61851B78A6581D9E9548DD1",
+				"A8888CF23C2437015638CDB0",
+				"101A2B209576180EAB20DA72",
+			);
+			"buildRules" = (
+
+			);
+			"dependencies" = (
+
+			);
+			"name" = "ShieldCallDirectory";
+			"productName" = "ShieldCallDirectory";
+			"productReference" = "5A5078EBB4720D8BC65FB679";
 			"productType" = "com.apple.product-type.app-extension";
 		};
 		"8CAB48CD77E56CF1DE709259" = {
@@ -1830,10 +2022,21 @@
 							"com.apple.AssociatedDomains" = {
 								"enabled" = 1;
 							};
+							"com.apple.ApplicationGroups.iOS" = {
+								"enabled" = 1;
+							};
 						};
 					};
 					"CBF32C1C1325BEBE8A94B918" = {
 						"CreatedOnToolsVersion" = "27.0";
+					};
+					"4E11AD99E2B23C54018A125C" = {
+						"CreatedOnToolsVersion" = "27.0";
+						"SystemCapabilities" = {
+							"com.apple.ApplicationGroups.iOS" = {
+								"enabled" = 1;
+							};
+						};
 					};
 					"33EFCD80A1D49E5ADB1D322F" = {
 						"CreatedOnToolsVersion" = "27.0";
@@ -1856,6 +2059,7 @@
 			"targets" = (
 				"EC3A7D758695159868AC1E76",
 				"CBF32C1C1325BEBE8A94B918",
+				"4E11AD99E2B23C54018A125C",
 				"33EFCD80A1D49E5ADB1D322F",
 			);
 		};

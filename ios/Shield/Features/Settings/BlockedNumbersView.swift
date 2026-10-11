@@ -6,9 +6,22 @@ struct BlockedNumbersView: View {
     @State private var items: [BlockedNumber] = []
     @State private var loaded = false
     @State private var pendingUnblock: BlockedNumber?
+    @State private var phoneBlocking: Bool?
 
     var body: some View {
         List {
+            if model.isOwner, !model.isPreview, phoneBlocking != nil {
+                Section {
+                    LabeledContent("Block on this iPhone", value: phoneBlocking == true ? "On" : "Off")
+                    if phoneBlocking == false {
+                        Button("Turn on in Settings", systemImage: "gear") { Task { await CallDirectorySync.openSettings() } }
+                    }
+                } footer: {
+                    Text(phoneBlocking == true
+                         ? "Your iPhone also blocks these numbers, even if you saved one or called it back."
+                         : "Turn on Shield under Call Blocking & Identification so your iPhone blocks these numbers too, even ones you saved or called back.")
+                }
+            }
             Section {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: 10) {
@@ -80,6 +93,10 @@ struct BlockedNumbersView: View {
             guard model.selectedPersonID == personID else { return }
             items = response.items
             loaded = true
+            if model.isOwner {
+                await CallDirectorySync.update(phones: response.items.map(\.phone))
+                phoneBlocking = await CallDirectorySync.isEnabled()
+            }
         } catch is CancellationError { return } catch { model.handle(error) }
     }
 
@@ -90,6 +107,7 @@ struct BlockedNumbersView: View {
         do {
             let _: APIResponses.Empty = try await model.api.send("/api/blocked-numbers/\(item.id)", method: "DELETE", participantID: model.selectedPersonID)
             items.removeAll { $0.id == item.id }
+            await CallDirectorySync.update(phones: items.map(\.phone))
         } catch { model.handle(error) }
     }
 }

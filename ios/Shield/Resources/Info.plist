@@ -31,6 +31,8 @@
 	<string>$(SHIELD_AUTH_HOST)</string>
 	<key>ShieldAPIScheme</key>
 	<string>$(SHIELD_API_SCHEME)</string>
+	<key>ShieldAppGroup</key>
+	<string>group.$(SHIELD_APP_BUNDLE_ID)</string>
 	<key>ShieldAPNSEnvironment</key>
 	<string>$(SHIELD_APNS_ENVIRONMENT)</string>
 	<key>UIApplicationSceneManifest</key>

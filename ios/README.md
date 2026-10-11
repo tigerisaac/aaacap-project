@@ -1,6 +1,6 @@
 # Shield for iPhone
 
-Native SwiftUI, iOS 26+, Swift 6. No third-party app frameworks. The project contains the Shield app, a Message Filter extension, and two UI tests.
+Native SwiftUI, iOS 26+, Swift 6. No third-party app frameworks. The project contains the Shield app, a Message Filter extension, a Call Directory extension, and UI tests.
 
 ## Open and run
 
@@ -54,6 +54,22 @@ Physical link experiments on October 10 rejected `mobilephone://`, `mobilephone-
 Manual saved-number calls require the user to tap a native call button. No incoming caller-provided number becomes an approved callback destination. Native Contacts access is requested only to save the Shield DID; the existing address book is not uploaded.
 
 APNs alerts contain no caller/message details. Registration is refreshed for authorized people after sign-in/foreground refresh; signing out removes that subject’s server registrations when the logout request succeeds. If the device is offline, provider token cleanup can be delayed; the generic alert does not reveal call content.
+
+## Call Directory extension
+
+`CallDirectory/` blocks every number on the person's Shield blocklist at the phone level. That includes numbers she has since saved or called back, which would otherwise ring her directly and never reach Shield.
+- **How it works:** the app writes the list (`Shared/CallDirectoryList.swift`) to the App Group container `group.$(SHIELD_APP_BUNDLE_ID)` and asks iOS to reload the extension. It does this on refresh, and when Blocked numbers opens or a number is unblocked. Only the protected person's own phone does this, never a helper's.
+- **Turning it on:** the person enables Shield under Settings → Apps → Phone → Call Blocking & Identification. The Blocked numbers screen shows whether it's on and links there.
+
+**Signing (added October 11, not yet installed on the phone):**
+- **App ID:** the extension needs `org.isaaczhang.Shield.CallDirectory`.
+- **App Groups:** the app and the extension both need the App Groups capability with `group.org.isaaczhang.Shield`.
+- **Simulator:** builds sign without changes.
+- **Phone:** before the next install, build once in Xcode with the team account signed in so automatic signing can register the App ID, the group and the updated profiles.
+
+**Still needs a device check (protection plan section 3):**
+- Does a block still apply to a number in Contacts or recently called?
+- Is a blocked call rejected so the carrier forwards it to Shield?
 
 ## Message extension limits
 

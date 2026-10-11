@@ -116,6 +116,11 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
     - main set: 36/36 kept, 36/36 stopped
     - held-out: 12/12 kept, 21/24 stopped (v1 stopped 5/24)
 
+- **Call Directory extension (code October 11, not installed):** blocks the blocklist at the phone level, including numbers she saved or called back.
+  - **Simulator:** it builds and embeds with the App Group entitlement, and 27 app and forwarding UI tests pass.
+  - **Phone:** it needs the App Groups capability registered through Xcode's automatic signing before the next install.
+  - **Not checked:** whether blocking works on a real device.
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.

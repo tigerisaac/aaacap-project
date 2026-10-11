@@ -118,7 +118,16 @@ final class AppState {
             }
             await loadProtectionOnboarding(generation: generation)
             await loadContext()
+            await syncCallDirectory(generation: generation)
         } catch { if generation == sessionGeneration { handle(error) } }
+    }
+
+    /// Only the protected person's own phone blocks their scammers; a helper's phone never does.
+    private func syncCallDirectory(generation: Int) async {
+        guard isOwner, !isDemo, let id = selectedPersonID,
+              let response: APIResponses.BlockedNumbers = try? await api.send("/api/blocked-numbers", participantID: id),
+              generation == sessionGeneration, selectedPersonID == id else { return }
+        await CallDirectorySync.update(phones: response.items.map(\.phone))
     }
 
     private func loadProtectionOnboarding(generation: Int) async {

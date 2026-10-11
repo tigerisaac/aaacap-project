@@ -89,7 +89,7 @@ Also add test cases for requests aimed at later ("go to the bank tomorrow and ta
 **Status (October 11):** built and tested, not deployed or installed.
 - **Server:** the blocklist, admission, the 24-hour flag (policy v15), and a list and unblock API. Results are in [Screening](SCREENING.md#recent-scam-caution-results-v15-text-only).
 - **App:** Settings → Blocked numbers. The person sees an Unblock button with a confirmation; helpers see the list only.
-- **Next:** the Call Directory extension.
+- **Call Directory extension:** built, and it builds and embeds in the simulator app. Signing and the device checks below are in the [iOS README](../ios/README.md#call-directory-extension).
 
 **Problem.**
 - **Shield has no memory.** After a scam block or an intervention, the same number can call again and is screened from scratch.

@@ -21,12 +21,16 @@ const type = file => file.endsWith('.swift') ? 'sourcecode.swift' : file.endsWit
 const ref = file => add(`file:${file}`, { isa: 'PBXFileReference', lastKnownFileType: type(file), name: path.basename(file), path: file, sourceTree: '<group>' });
 const appFiles = await files('Shield');
 const extensionFiles = await files('MessageFilter');
+const callDirectoryFiles = await files('CallDirectory');
+// Compiled into both the app and the Call Directory extension.
+const sharedFiles = await files('Shared');
 const testFiles = await files('ShieldUITests');
 const configFiles = ['Config/Base.xcconfig', 'Config/Debug.xcconfig', 'Config/Release.xcconfig'];
-for (const file of [...appFiles, ...extensionFiles, ...testFiles, ...configFiles]) ref(file);
+for (const file of [...appFiles, ...extensionFiles, ...callDirectoryFiles, ...sharedFiles, ...testFiles, ...configFiles]) ref(file);
 const product = (name, fileType) => add(`product:${name}`, { isa: 'PBXFileReference', explicitFileType: fileType, includeInIndex: 0, path: name, sourceTree: 'BUILT_PRODUCTS_DIR' });
 const appProduct = product('Shield.app', 'wrapper.application');
 const extensionProduct = product('ShieldMessages.appex', 'wrapper.app-extension');
+const callDirectoryProduct = product('ShieldCallDirectory.appex', 'wrapper.app-extension');
 const testsProduct = product('ShieldUITests.xctest', 'wrapper.cfbundle');
 const group = (name, children) => add(`group:${name}`, { isa: 'PBXGroup', name, children, sourceTree: '<group>' });
 const sourceGroup = (name, prefix, paths) => {
@@ -45,8 +49,9 @@ const sourceGroup = (name, prefix, paths) => {
   return add(`source-group:${prefix}`, { isa: 'PBXGroup', name, children, sourceTree: '<group>' });
 };
 const mainGroup = group('root', [sourceGroup('Shield', 'Shield/', appFiles),
-  sourceGroup('Message Filter', 'MessageFilter/', extensionFiles), sourceGroup('Tests', 'ShieldUITests/', testFiles),
-  group('Configuration', configFiles.map(file => id(`file:${file}`))), group('Products', [appProduct, extensionProduct, testsProduct])]);
+  sourceGroup('Message Filter', 'MessageFilter/', extensionFiles), sourceGroup('Call Directory', 'CallDirectory/', callDirectoryFiles),
+  sourceGroup('Shared', 'Shared/', sharedFiles), sourceGroup('Tests', 'ShieldUITests/', testFiles),
+  group('Configuration', configFiles.map(file => id(`file:${file}`))), group('Products', [appProduct, extensionProduct, callDirectoryProduct, testsProduct])]);
 const phase = (target, name, kind, paths) => add(`phase:${target}:${name}`, { isa: kind, buildActionMask: 2147483647,
   files: paths.map(file => add(`build:${target}:${file}`, { isa: 'PBXBuildFile', fileRef: id(`file:${file}`) })), runOnlyForDeploymentPostprocessing: 0 });
 const configs = (key, baseSettings = {}) => {
@@ -58,8 +63,13 @@ const configs = (key, baseSettings = {}) => {
 const extensionProxy = add('extension-proxy', { isa: 'PBXContainerItemProxy', containerPortal: id('project'), proxyType: 1,
   remoteGlobalIDString: id('target:ShieldMessages'), remoteInfo: 'ShieldMessages' });
 const extensionDependency = add('extension-dependency', { isa: 'PBXTargetDependency', target: id('target:ShieldMessages'), targetProxy: extensionProxy });
+const callDirectoryProxy = add('call-directory-proxy', { isa: 'PBXContainerItemProxy', containerPortal: id('project'), proxyType: 1,
+  remoteGlobalIDString: id('target:ShieldCallDirectory'), remoteInfo: 'ShieldCallDirectory' });
+const callDirectoryDependency = add('call-directory-dependency', { isa: 'PBXTargetDependency', target: id('target:ShieldCallDirectory'), targetProxy: callDirectoryProxy });
 const embed = add('phase:embed', { isa: 'PBXCopyFilesBuildPhase', buildActionMask: 2147483647, dstPath: '', dstSubfolderSpec: 13,
-  files: [add('build:embed', { isa: 'PBXBuildFile', fileRef: extensionProduct, settings: { ATTRIBUTES: ['RemoveHeadersOnCopy'] } })], name: 'Embed App Extensions', runOnlyForDeploymentPostprocessing: 0 });
+  files: [add('build:embed', { isa: 'PBXBuildFile', fileRef: extensionProduct, settings: { ATTRIBUTES: ['RemoveHeadersOnCopy'] } }),
+    add('build:embed-call-directory', { isa: 'PBXBuildFile', fileRef: callDirectoryProduct, settings: { ATTRIBUTES: ['RemoveHeadersOnCopy'] } })],
+  name: 'Embed App Extensions', runOnlyForDeploymentPostprocessing: 0 });
 const target = (name, targetFiles, productReference, productType, settings, extraPhases = [], dependencies = []) => add(`target:${name}`, {
   isa: 'PBXNativeTarget', buildConfigurationList: configs(name, { SDKROOT: 'iphoneos', TARGETED_DEVICE_FAMILY: '1',
     SUPPORTED_PLATFORMS: 'iphoneos iphonesimulator', SUPPORTS_MACCATALYST: 'NO', SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: 'NO', PRODUCT_NAME: '$(TARGET_NAME)', ...settings }),
@@ -68,14 +78,18 @@ const target = (name, targetFiles, productReference, productType, settings, extr
     phase(name, 'resources', 'PBXResourcesBuildPhase', targetFiles.filter(file => file.endsWith('.xcassets') || file.endsWith('.xcprivacy'))), ...extraPhases],
   buildRules: [], dependencies, name, productName: name, productReference, productType
 });
-const appTarget = target('Shield', appFiles, appProduct, 'com.apple.product-type.application', {
+const appTarget = target('Shield', [...appFiles, ...sharedFiles], appProduct, 'com.apple.product-type.application', {
   PRODUCT_BUNDLE_IDENTIFIER: '$(SHIELD_APP_BUNDLE_ID)', INFOPLIST_FILE: 'Shield/Resources/Info.plist',
   CODE_SIGN_ENTITLEMENTS: 'Shield/Resources/Shield.entitlements', ASSETCATALOG_COMPILER_APPICON_NAME: 'AppIcon',
   ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: 'Action'
-}, [embed], [extensionDependency]);
+}, [embed], [extensionDependency, callDirectoryDependency]);
 const extensionTarget = target('ShieldMessages', extensionFiles, extensionProduct, 'com.apple.product-type.app-extension', {
   PRODUCT_BUNDLE_IDENTIFIER: '$(SHIELD_APP_BUNDLE_ID).Messages', INFOPLIST_FILE: 'MessageFilter/Info.plist',
   CODE_SIGN_ENTITLEMENTS: 'MessageFilter/MessageFilter.entitlements', APPLICATION_EXTENSION_API_ONLY: 'YES', SKIP_INSTALL: 'YES'
+});
+const callDirectoryTarget = target('ShieldCallDirectory', [...callDirectoryFiles, ...sharedFiles], callDirectoryProduct, 'com.apple.product-type.app-extension', {
+  PRODUCT_BUNDLE_IDENTIFIER: '$(SHIELD_APP_BUNDLE_ID).CallDirectory', INFOPLIST_FILE: 'CallDirectory/Info.plist',
+  CODE_SIGN_ENTITLEMENTS: 'CallDirectory/CallDirectory.entitlements', APPLICATION_EXTENSION_API_ONLY: 'YES', SKIP_INSTALL: 'YES'
 });
 const testProxy = add('tests-proxy', { isa: 'PBXContainerItemProxy', containerPortal: id('project'), proxyType: 1,
   remoteGlobalIDString: appTarget, remoteInfo: 'Shield' });
@@ -84,10 +98,12 @@ const testTarget = target('ShieldUITests', testFiles, testsProduct, 'com.apple.p
   PRODUCT_BUNDLE_IDENTIFIER: '$(SHIELD_APP_BUNDLE_ID).UITests', GENERATE_INFOPLIST_FILE: 'YES', TEST_TARGET_NAME: 'Shield'
 }, [], [testsDependency]);
 const project = add('project', { isa: 'PBXProject', attributes: { BuildIndependentTargetsInParallel: 'YES', LastUpgradeCheck: '2700',
-  TargetAttributes: { [appTarget]: { CreatedOnToolsVersion: '27.0', SystemCapabilities: { 'com.apple.Push': { enabled: 1 }, 'com.apple.AssociatedDomains': { enabled: 1 } } },
-    [extensionTarget]: { CreatedOnToolsVersion: '27.0' }, [testTarget]: { CreatedOnToolsVersion: '27.0', TestTargetID: appTarget } } },
+  TargetAttributes: { [appTarget]: { CreatedOnToolsVersion: '27.0', SystemCapabilities: { 'com.apple.Push': { enabled: 1 }, 'com.apple.AssociatedDomains': { enabled: 1 },
+    'com.apple.ApplicationGroups.iOS': { enabled: 1 } } },
+    [extensionTarget]: { CreatedOnToolsVersion: '27.0' }, [callDirectoryTarget]: { CreatedOnToolsVersion: '27.0', SystemCapabilities: { 'com.apple.ApplicationGroups.iOS': { enabled: 1 } } },
+    [testTarget]: { CreatedOnToolsVersion: '27.0', TestTargetID: appTarget } } },
   buildConfigurationList: configs('project', {}), compatibilityVersion: 'Xcode 14.0', developmentRegion: 'en', hasScannedForEncodings: 0,
-  knownRegions: ['en', 'Base'], mainGroup, productRefGroup: id('group:Products'), projectDirPath: '', projectRoot: '', targets: [appTarget, extensionTarget, testTarget] });
+  knownRegions: ['en', 'Base'], mainGroup, productRefGroup: id('group:Products'), projectDirPath: '', projectRoot: '', targets: [appTarget, extensionTarget, callDirectoryTarget, testTarget] });
 const format = (value, level = 0) => {
   const pad = '\t'.repeat(level);
   if (Array.isArray(value)) return `(\n${value.map(item => `${pad}\t${format(item, level + 1)},`).join('\n')}\n${pad})`;
@@ -107,4 +123,4 @@ await writeFile(path.join(root, 'Shield.xcodeproj/xcshareddata/xcschemes/Shield.
  <ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES"><BuildableProductRunnable runnableDebuggingMode="0">${buildable(appTarget, 'Shield', 'Shield.app')}</BuildableProductRunnable></ProfileAction>
  <AnalyzeAction buildConfiguration="Debug"/><ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>
 </Scheme>\n`);
-console.log(`Generated Shield.xcodeproj: ${appFiles.filter(f => f.endsWith('.swift')).length} app files, message extension, UI tests.`);
+console.log(`Generated Shield.xcodeproj: ${appFiles.filter(f => f.endsWith('.swift')).length} app files, message and call directory extensions, UI tests.`);
