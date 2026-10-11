@@ -1,6 +1,6 @@
 # Screening
 
-How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v17` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed. v15 adds recent-scam caution; v16 offers personal family callers as requested by the owner on October 11; v17 makes manipulation blocks explicitly take precedence over a family claim or a later benign explanation. The full history of earlier changes is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
+How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v18` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed. v15 adds recent-scam caution; v16 offers personal family callers as requested by the owner on October 11; v17 makes manipulation blocks explicitly take precedence over a family claim or a later benign explanation; v18 clarifies ordinary demographic confirmation by an existing healthcare office. The full history of earlier changes is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
 
 ## How a decision is made
 
@@ -81,6 +81,8 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | `scripts/fixtures/holdout/` | 44 | Held-out probes, never used for tuning (`general` 16, `sensitive-claims` 8, `everyday` 20) |
 | `scripts/fixtures/redteam/` | 105 | Attack rounds used to tune v6–v14 (development sets, not held out) |
 | `scripts/fixtures/redteam/family-handoff.mjs` | 10 screening + 10 monitoring | v16 family-only openers, explicit harmful family requests, and harmful requests after a benign opener; synthetic development set |
+| `scripts/fixtures/redteam/conversation-boundaries.mjs` | 20 screening + 20 monitoring | Development probes for reports versus requests, future harmful instructions, ordinary family speech and role spoofing |
+| `scripts/fixtures/redteam/care-identity.mjs` | 6 screening + 6 monitoring | Development checks for ordinary healthcare demographics versus codes, full identity numbers, payment and remote access |
 | `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks (monitor-v2) |
 | `scripts/fixtures/monitor-extra.mjs` | 7 | Connected-call cases retired from the main set; a development set, not held out |
 | `scripts/fixtures/holdout/monitor.mjs` | 12 | Held-out connected-call probes for the v2 request kinds |
@@ -111,7 +113,7 @@ node scripts/redteam-turn.mjs artifacts/redteam-conversation.json "what the call
 node scripts/check-public-scam-benchmark.mjs --provider go --mode both --concurrency 4
 ```
 
-The public runner uses MASC's pinned 320-case synthetic test split, the production requests and medium reasoning. It reports screening and monitoring separately and keeps sales/wrong-number policy differences out of legitimate-offered screening results. These are full-conversation diagnostics, not an early-screening or intervention-time score. See [Public scam benchmarks](PUBLIC-SCAM-BENCHMARKS.md) for sources, interpretation and repeatable commands. Neither this public test split nor existing held-out probes may shape prompt wording.
+The public runner uses MASC's pinned 320-case synthetic test split, the production requests and medium reasoning. As requested by the owner, it excludes insurance sales from scam scores, reports ad blocking separately at screening, and measures ordinary-call acceptance on appointment/delivery calls at both screening and monitoring. Wrong numbers remain separate. These are full-conversation diagnostics, not an early-screening or intervention-time score. See [Public scam benchmarks](PUBLIC-SCAM-BENCHMARKS.md) for sources, interpretation and repeatable commands. Neither this public test split nor existing held-out probes may shape prompt wording.
 
 - **`--provider go`** sends the exact production decision request through the owner's OpenCode Go key, so it costs nothing. It reproduced the OpenAI path exactly on the benchmark (46/46). `--provider openai` uses the real key from Secret Manager.
 - **`check-live-demo.mjs`** is the voice benchmark. It speaks synthetic voices through GPT Live, rotating 8 voices, and answers only questions Shield actually asks. It uses paid OpenAI requests and writes results to `artifacts/live-eval/`. With `--caution` it screens as in the 24 hours after a stopped scam and writes to `artifacts/live-eval-caution/` instead, so those results never satisfy the deploy gate.
@@ -178,6 +180,29 @@ The original gateway failures remain in the saved runs, with retries stored sepa
 Public MASC checks and held-out limitations are in [Public scam benchmarks](PUBLIC-SCAM-BENCHMARKS.md). In particular, monitoring still misses some callback/email requests, and source labels don't precisely match Shield's rules. The lookup remains optional; 1 request across 640 public screenings does not establish its value when it succeeds. No removal or forced-lookup change was made.
 
 `npm run check` passed (115 unit tests, typecheck and build), and `npm run test:firebase` passed all 86 emulator tests. Neither this policy nor monitor-v2 was deployed in this work, and no real phone calls were made. These checks do not establish live transcription quality or whether intervention happens before a person acts.
+
+## Continued development red teaming (v18, October 11)
+
+The owner requested continued red teaming followed by public validation, with solicitation excluded from the scam score and ad blocking reported separately. Fresh synthetic development sets probe family calls, describing scams versus making requests, instructions for later, fake system roles and ordinary healthcare identity checks. No public or held-out dialogue supplied their wording.
+
+Screening v17 offered 28/30 ordinary development calls and stopped 30/30 harmful requests across three runs. Both false blocks were the same existing-clinic demographic check. Monitor-v2 kept 30/30 ordinary calls and stopped 30/30 harmful pivots. v18 adds a category-level clarification for basic demographic confirmation by an existing healthcare office, without permitting secrets, full identity numbers, payment or remote access. A separate care set tests those boundaries.
+
+With v18, the combined 26 development cases over three runs offered 36/36 ordinary calls and stopped 42/42 harmful requests. The main benchmark over three runs offered 33/33 ordinary calls and stopped 36/36 scams/robocalls, with no gateway failures or harmful approvals. Monitor-v2's added care set kept 6/6 ordinary calls and stopped 12/12 harmful requests. Monitoring's wording is unchanged. Development traces are in `artifacts/redteam-v18/`; the pre-change baseline is in `artifacts/redteam-boundaries-v17/`.
+
+Synthetic voice validation passed all 24 main cases and all 26 new development cases: 23/23 ordinary callers offered, 26/26 scams/robocalls stopped, and silence handled. Main voice artifacts are current v18 in `artifacts/live-eval/`; custom cases stay in `artifacts/live-eval-extra/` and do not satisfy the main deployment gate. The 24-case main benchmark remains unchanged.
+
+The policy was frozen at 19:49:51 UTC on October 11 before public validation. `artifacts/redteam-v18/freeze.json` records versions and SHA-256 hashes of the production requests and development sources. `npm run check` passed 116 unit tests, typecheck and build; `npm run test:firebase` passed all 86 emulator tests. No deployment or real phone call was performed.
+
+The frozen public screening pass stopped 155/160 labeled scams, offered 80/80 ordinary calls and blocked 40/40 insurance ads separately. Five scam cases asked for clarification; none was approved. Three unchanged monitoring passes flagged 436/480 scam trials (142–148/160 per pass) and kept 232/240 ordinary trials (76–78/80 per pass). Three unsupported evidence quotes received no credit, and there were no provider failures. These repeat the same public conversations, not new unique cases. The request hashes stayed unchanged throughout validation. See [the public report](PUBLIC-SCAM-BENCHMARKS.md#continued-red-teaming-and-frozen-v18-validation) for denominators and limits.
+
+Reproduce the new development checks separately after building:
+
+```bash
+node scripts/check-screening-policy.mjs --provider go --cases scripts/fixtures/redteam/conversation-boundaries.mjs --repeat 3
+node scripts/check-screening-policy.mjs --provider go --cases scripts/fixtures/redteam/care-identity.mjs --repeat 3
+node scripts/check-monitor-policy.mjs --provider go --cases scripts/fixtures/redteam/conversation-boundaries.mjs --repeat 3
+node scripts/check-monitor-policy.mjs --provider go --cases scripts/fixtures/redteam/care-identity.mjs --repeat 3
+```
 
 ## Historical results (v14)
 

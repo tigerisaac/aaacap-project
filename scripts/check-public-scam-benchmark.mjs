@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 import { SCREENING_POLICY_VERSION } from '../dist/live/policy.js';
 import { screeningTarget } from './lib/screening-target.mjs';
 import { monitorTarget } from './lib/monitor-target.mjs';
-import { MASC, digest, parseCSV, mascCase } from './lib/public-scam-benchmark.mjs';
+import { MASC, digest, parseCSV, mascCase, summarizeMASC } from './lib/public-scam-benchmark.mjs';
 
 const args = process.argv.slice(2);
 const option = name => { const i = args.indexOf(name); return i < 0 ? undefined : args.splice(i, 2)[1]; };
@@ -55,7 +55,9 @@ const run = { ...manifest, provider, model: screening?.model ?? monitor.model, e
   monitorContextChars: monitor?.contextChars,
   conversationsBeyondMonitorWindow: monitor ? cases.filter(c => c.transcript.length > monitor.contextChars).length : undefined,
   selectedIds: cases.map(c => c.id), startedAt: new Date().toISOString(),
-  interpretation: 'Offline completed-call diagnostic; screening sees all caller turns, monitoring sees the production rolling tail of both sides. No early-intervention or voice claim. Insurance sales and wrong numbers are separate screening policy differences. Public test results must never tune the prompt.' };
+  scoreGroups: { scams: cases.filter(c => c.label === 1).length, ordinary: cases.filter(c => c.screeningGroup === 'legitimate').length,
+    ads: cases.filter(c => c.type === 'insurance').length, wrongNumbers: cases.filter(c => c.type === 'wrong').length },
+  interpretation: 'Offline completed-call diagnostic; screening sees all caller turns, monitoring sees the production rolling tail of both sides. No early-intervention or voice claim. Insurance sales excluded from scam/ordinary scores and scored separately for ad blocking at screening. Wrong numbers excluded from ordinary scores. Public test results must never tune the prompt.' };
 await writeFile(`${out}/manifest.json`, JSON.stringify(run, null, 2));
 const jobs = Array.from({ length: repeat }, (_, i) => cases.map(c => ({ c, run: i + 1 }))).flat();
 const results = []; let cursor = 0, stopped = false;
@@ -81,22 +83,8 @@ async function worker() {
   }
 }
 await Promise.all(Array.from({ length: concurrency }, worker)); await writes;
-const ratio = (rows, match) => ({ passed: rows.filter(match).length, total: rows.length });
-const withScreen = results.filter(r => r.screening), withMonitor = results.filter(r => r.monitor);
 const summary = { ...run, completedAt: new Date().toISOString(), completed: results.length, planned: jobs.length, stopped,
-  legitimateOffered: ratio(withScreen.filter(r => r.screeningGroup === 'legitimate'), r => r.screening.actual === 'approve'),
-  harmfulStopped: ratio(withScreen.filter(r => r.label === 1), r => ['block', 'hold'].includes(r.screening.actual)),
-  harmfulApproved: withScreen.filter(r => r.label === 1 && r.screening.actual === 'approve').length,
-  labeledNonScamKept: ratio(withMonitor.filter(r => r.label === 0), r => r.monitor.actual === 'continue'),
-  labeledScamStopped: ratio(withMonitor.filter(r => r.label === 1), r => r.monitor.actual === 'intervene'),
-  screeningPolicyDifferences: withScreen.filter(r => r.screeningGroup === 'policy_difference').length,
-  researchRequests: withScreen.reduce((n, r) => n + r.screening.researches, 0),
-  evaluationFailures: results.filter(r => r.screening?.failure || r.monitor?.failure).length,
-  providerFailures: results.filter(r => [r.screening?.failure, r.monitor?.failure].some(f => /^(http_|transport_|unavailable$|response_incomplete$)/.test(f ?? ''))).length,
-  validationFailures: results.filter(r => [r.screening?.failure, r.monitor?.failure].some(f => /^(invalid_assessment|unsupported_intervention)$/.test(f ?? ''))).length,
-  byType: Object.fromEntries(Object.keys(counts).map(type => { const rows = results.filter(r => r.type === type); return [type, {
-    total: rows.length, screening: rows.reduce((t, r) => { if (r.screening) t[r.screening.actual] = (t[r.screening.actual] ?? 0) + 1; return t; }, {}),
-    monitor: rows.reduce((t, r) => { if (r.monitor) t[r.monitor.actual] = (t[r.monitor.actual] ?? 0) + 1; return t; }, {}) }]; })),
+  ...summarizeMASC(results),
 };
 await writeFile(`${out}/summary.json`, JSON.stringify(summary, null, 2));
 console.log(JSON.stringify({ summary }));
