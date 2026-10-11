@@ -20,6 +20,7 @@ export async function syncSharedContacts(store: CloudStore, participantId: strin
     if (p?.contactsSyncUntil > now) throw new HttpError(409, 'contacts_sync_busy');
     tx.update(person, { contactsSyncToken: token, contactsSyncUntil: now + 60_000 });
   });
+  let synced = false;
   try {
     const old = await rows.limit(5001).get();
     const desired = new Map<string, { phone: string; label: string }>();
@@ -51,10 +52,12 @@ export async function syncSharedContacts(store: CloudStore, participantId: strin
         for (const change of writes.slice(i, i + 350)) tx.set(change.ref, change.data, { merge: true });
       });
     }
+    synced = true;
     return { shared: desired.size, skipped };
   } finally {
+    // The app's setup check reads contactsSyncedAt to say when the shared list was last refreshed.
     await store.db.runTransaction(async tx => {
-      if ((await tx.get(person)).data()?.contactsSyncToken === token) tx.update(person, { contactsSyncUntil: 0 });
+      if ((await tx.get(person)).data()?.contactsSyncToken === token) tx.update(person, { contactsSyncUntil: 0, ...(synced ? { contactsSyncedAt: store.now() } : {}) });
     });
   }
 }

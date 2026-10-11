@@ -3,12 +3,12 @@ import { CloudStore } from './store.js';
 import { queueAlert } from './alerts.js';
 
 /** Verify provider ownership, download from an approved origin, encrypt, and remove its copy. */
-export async function ingestForwardingRecording(store: CloudStore, sid: string) {
+export async function ingestForwardingRecording(store: CloudStore, sid: string, provider?: ReturnType<typeof recordingProvider>) {
   if (!validRecordingId(sid)) throw new Error('invalid_recording_id');
   const ref = store.db.collection('forwardingRecordings').doc(sid), job = (await ref.get()).data();
   if (!job || job.status === 'done') return;
   if (job.provider !== 'telnyx') throw new Error('invalid_recording_provider');
-  const client = recordingProvider(store.config);
+  const client = provider ?? recordingProvider(store.config);
   const callRef = store.callRef(job.callId), call = (await callRef.get()).data();
   if (job.status !== 'stored' && job.expiresAt > store.now() && call && !call.voicemailDeletedAt) {
     const response = await client.fetch(sid, job.parentSid);
@@ -23,8 +23,11 @@ export async function ingestForwardingRecording(store: CloudStore, sid: string) 
       const current = (await tx.get(callRef)).data();
       if (current && !current.voicemailDeletedAt && current.expiresAt > store.now()) {
         tx.set(store.db.collection('forwardingAudio').doc(job.callId), { participantId: job.participantId, audioEnc: encrypted, expiresAt: job.expiresAt });
-        tx.update(callRef, { voicemail: { id: job.callId, duration: job.duration, status: 'ready', heardAt: null } });
-        queueAlert(store, tx, job.participantId, 'voicemail');
+        // With voicemail screening on, the message stays pending until it is kept (and alerted) or removed.
+        const screened = store.config.VOICEMAIL_SCREENING_ENABLED;
+        tx.update(callRef, { voicemail: { id: job.callId, duration: job.duration, status: screened ? 'pending' : 'ready', heardAt: null } });
+        if (screened) tx.create(store.db.collection('voicemailChecks').doc(job.callId), { callId: job.callId, createdAt: store.now(), expiresAt: job.expiresAt });
+        else queueAlert(store, tx, job.participantId, 'voicemail');
       }
       tx.update(ref, { status: 'stored' });
     });

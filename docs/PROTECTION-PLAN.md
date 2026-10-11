@@ -68,7 +68,10 @@ Also add test cases for requests aimed at later ("go to the bank tomorrow and ta
 
 ## 3. Make sure scammers can't call back
 
-**Status (October 11):** the server side is built and tested, not deployed: the blocklist, admission, the 24-hour flag (policy v15), and a list and unblock API. Results are in [Screening](SCREENING.md#recent-scam-caution-results-v15-text-only). The app screen and the Call Directory extension come next.
+**Status (October 11):** built and tested, not deployed or installed.
+- **Server:** the blocklist, admission, the 24-hour flag (policy v15), and a list and unblock API. Results are in [Screening](SCREENING.md#recent-scam-caution-results-v15-text-only).
+- **App:** Settings → Blocked numbers. The person sees an Unblock button with a confirmation; helpers see the list only.
+- **Next:** the Call Directory extension.
 
 **Problem.**
 - **Shield has no memory.** After a scam block or an intervention, the same number can call again and is screened from scratch.
@@ -120,6 +123,16 @@ The person controls sharing. Offer "Alert my helpers" during onboarding, selecte
 
 ## 5. Check the setup on every launch
 
+**Status (October 11):** the app-side check is built and tested, not installed on the phone.
+- **The card:** a Today card for the person shows "Protection is on" or "Protection needs attention". It checks:
+  - protection isn't paused or being turned off
+  - Shield's number is in Contacts (asks for Contacts access if needed)
+  - notifications are allowed, when push is available
+  - shared contacts were refreshed in the last 30 days (the server now records `contactsSyncedAt`)
+- **Fix buttons:** each problem has one.
+- **When it runs:** on every launch and return to the app.
+- **Not built:** the daily check call. It needs a second Telnyx number and real calls.
+
 **Problem.** Shield depends on settings it can't read. A change makes protection fail with no error:
 - Screen Unknown Callers set to anything but Silence
 - Live Voicemail turned back on
@@ -160,6 +173,21 @@ Partial help:
 Revisit only if Shield gains more control of the line.
 
 ## 7. Keep or destroy voicemails
+
+**Status (October 11):** built and tested, not deployed, and off behind `VOICEMAIL_SCREENING_ENABLED`.
+- **Flow:** with the flag on, ingestion leaves a stored message `pending` and queues `voicemailChecks/{callId}`. The new `checkForwardingVoicemail` function does the rest:
+  - **Transcribes** the message with `gpt-transcribe`.
+  - **Asks** the Decisions API one choice: `keep`, `scam` or `junk`.
+  - **Removes** the message only when scam plus junk is at least 0.9.
+- **Safeguards:**
+  - Saved contacts are always kept, and any failure keeps.
+  - An empty transcript counts as junk only for recordings of 15 s or less.
+  - A message still pending an hour after it was stored is kept by the daily cleanup.
+- **Removal:** the call moves to Held as "Scam/Junk voicemail removed" and can't be played. The audio expires in 7 days. Anyone who can listen can restore it until then (`POST /api/voicemails/:id/restore`, and a Restore button in the app).
+- **Alerts:** a removed scam alerts helpers. A kept message sends the usual new-voicemail alert.
+- **Transcript:** used only for the decision. It's not stored or logged, which is stricter than "seal it" below.
+- **Blocker:** the production OpenAI key is restricted and lacks the `api.decisions.write` permission (403 on October 11). Transcription is permitted. Until the owner adds that permission, every message would be kept.
+- **Not run yet:** `scripts/check-voicemail-policy.mjs` (22 cases) and `scripts/fixtures/holdout/voicemail.mjs` (10 cases) are written, but haven't run because of the same permission.
 
 **Problem.** A held "sheriff" or "bank security" caller goes to voicemail, and the message ("call me back at…") plays inside Shield's own app, labeled "Not enough information".
 

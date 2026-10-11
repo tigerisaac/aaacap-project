@@ -54,6 +54,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect((await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers('stranger'), payload })).statusCode).toBe(403);
     const synced = await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers(), payload });
     expect(synced.json()).toEqual({ shared: 1, skipped: 1 });
+    expect((await store.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()).toMatchObject({ contactsSyncedAt: now, contactsSyncUntil: 0 });
     const saved = (await store.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').get()).docs;
     expect(saved).toHaveLength(1); expect(saved[0]!.data().phoneEnc).not.toContain('3125550148');
     const list = (await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json();

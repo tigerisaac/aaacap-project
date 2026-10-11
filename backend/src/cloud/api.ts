@@ -11,6 +11,7 @@ import { CloudStore, type Call, type Person } from './store.js';
 import { normalizeSharedPhone, sharedContactsSchema, syncSharedContacts } from './shared-contacts.js';
 import { forwardingNumber } from './forwarding-provider.js';
 import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from './alerts.js';
+import { VOICEMAIL_LIMITS } from './voicemail-check.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -20,7 +21,8 @@ const contactSchema = z.object({ label: z.string().trim().min(1).max(60), phone:
 export function cloudCallDTO(store: CloudStore, call: Call) {
   const forwarding = call.source === 'forwarding';
   const abandoned = call.state !== 'ended' && store.now() - call.createdAt > (forwarding ? 450_000 : 120_000);
-  const reason = abandoned ? 'screening_unavailable' : call.reason;
+  const removed = call.voicemail?.status === 'removed';
+  const reason = abandoned ? 'screening_unavailable' : removed ? `voicemail_removed_${call.voicemail.removedAs === 'scam' ? 'scam' : 'junk'}` : call.reason;
   const copy = reasonCopy[reason] ?? reasonCopy.uncertain!;
   return { id: call.id, occurredAt: at(call.createdAt),
     callerNumber: store.vault.open(call.callerEnc, `call:${call.id}:caller`) || 'No caller ID',
@@ -28,7 +30,8 @@ export function cloudCallDTO(store: CloudStore, call: Call) {
     outcome: abandoned ? 'missed' : call.outcome, reasonCode: reason,
     detail: reason === 'routine' ? (forwarding ? 'The introduction looked routine. Connection requires you to answer and press 1.' : 'The introduction looked routine. No call was connected.') : copy.detail,
     nextStep: reason === 'routine' ? 'This result does not verify the caller’s identity.' : copy.action,
-    monitored: !!call.monitoringStartedAt, acceptedAt: at(call.acceptedAt), endedAt: at(call.completedAt ?? (abandoned ? call.createdAt + (forwarding ? 450_000 : 120_000) : null)), voicemail: call.voicemail ? { ...call.voicemail, heardAt: at(call.voicemail.heardAt) } : null };
+    monitored: !!call.monitoringStartedAt, acceptedAt: at(call.acceptedAt), endedAt: at(call.completedAt ?? (abandoned ? call.createdAt + (forwarding ? 450_000 : 120_000) : null)), voicemail: call.voicemail ? { id: call.voicemail.id, duration: call.voicemail.duration, status: call.voicemail.status, heardAt: at(call.voicemail.heardAt),
+      ...(removed ? { removedAt: at(call.voicemail.removedAt), restorableUntil: at(call.voicemail.removedAt + VOICEMAIL_LIMITS.purgeMs) } : {}) } : null };
 }
 
 export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, checker: MessageChecker) {

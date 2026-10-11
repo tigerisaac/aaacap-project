@@ -47,7 +47,7 @@ export class CloudStore {
   }
   /** One bounded daily invocation; all reads hide expired data immediately. */
   async cleanup(): Promise<void> {
-    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices']) {
+    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks']) {
       const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
       if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
     }

@@ -9,6 +9,7 @@ import { ForwardingProbes, type ProbeDependencies } from './forwarding-probes.js
 import { forwardingNumber, TelnyxVoice } from './forwarding-provider.js';
 import { CallMonitor, MONITORING_CONSENT, monitoringEnabledFor } from './monitoring.js';
 import { queueAlert } from './alerts.js';
+import { VoicemailCheck } from './voicemail-check.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
@@ -28,7 +29,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     const recent = await store.db.collection('callSessions').where('participantId', '==', p.id)
       .orderBy('createdAt', 'desc').limit(10).get();
     return { participantId: p.id, carrier: 'Tello', phone: store.phone(p), shieldNumber: forwardingNumber(store.config),
-      prepared, active, probe: probes.publicState(control), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
+      prepared, active, probe: probes.publicState(control), contactsSyncedAt: at(p.contactsSyncedAt), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
       liveScreening: store.config.LIVE_SCREENING_ENABLED,
       monitoring: { available: monitoringAvailable, enabled: monitoringAvailable && monitoringEnabledFor(p), consentVersion: MONITORING_CONSENT,
         choiceRecorded: p.callMonitoring?.enabled === false || monitoringEnabledFor(p) },
@@ -119,6 +120,8 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     if (!audio || audio.expiresAt <= store.now()) throw new HttpError(404, 'voicemail_not_found');
     const ctx = await store.access(uid, audio.participantId);
     if (!ctx.canListen) throw new HttpError(403, 'access_denied');
+    // A message Shield removed as a scam isn't played until someone restores it.
+    if ((await store.callRef(id).get()).data()?.voicemail?.status === 'removed') throw new HttpError(409, 'voicemail_removed');
     const bytes = Buffer.from(store.vault.open(audio.audioEnc, `voicemail:${id}`), 'base64');
     return reply.type('audio/mpeg').send(bytes);
   });
@@ -128,6 +131,15 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     const ctx = await store.access((await auth.identify(bearer(request))).subject, call.participantId);
     if (!ctx.canListen) throw new HttpError(403, 'access_denied');
     await store.callRef(id).update({ 'voicemail.heardAt': store.now() }); return { saved: true };
+  });
+  // Anyone who can listen can undo Shield's removal while the audio still exists (7 days).
+  app.post('/api/voicemails/:id/restore', async request => {
+    const id = z.string().uuid().parse((request.params as { id: string }).id).toLowerCase();
+    const call = (await store.callRef(id).get()).data(); if (!call?.voicemail || call.expiresAt <= store.now()) throw new HttpError(404, 'voicemail_not_found');
+    const ctx = await store.access((await auth.identify(bearer(request))).subject, call.participantId);
+    if (!ctx.canListen) throw new HttpError(403, 'access_denied');
+    if (!(await new VoicemailCheck(store).restore(id))) throw new HttpError(409, 'voicemail_not_restorable');
+    return { restored: true };
   });
   app.delete('/api/voicemails/:id', async request => {
     const id = z.string().uuid().parse((request.params as { id: string }).id).toLowerCase();

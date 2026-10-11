@@ -9,6 +9,8 @@ export const purposes: Record<Extraction['purpose'], string> = {
 export const reasonCopy: Record<string, { title: string; detail: string; action: string }> = {
   scam: { title: 'Scam call stopped', detail: 'Shield detected a risky request and ended the call silently.', action: 'No action is needed.' },
   robocall: { title: 'Unwanted robocall stopped', detail: 'Shield detected an unwanted automated call and ended it silently.', action: 'No action is needed.' },
+  voicemail_removed_scam: { title: 'Scam voicemail removed', detail: 'Shield judged this message to be a scam and removed it from your messages. It will be deleted after 7 days.', action: 'If you think this was a real message, restore it from this call.' },
+  voicemail_removed_junk: { title: 'Junk voicemail removed', detail: 'Shield judged this message to be a robocall, a sales message or an empty recording and removed it. It will be deleted after 7 days.', action: 'If you think this was a real message, restore it from this call.' },
   blocked_caller: { title: 'Blocked caller tried again', detail: 'Shield stopped a scam from this number before, so it ended this call without screening it.', action: 'If this number belongs to someone you know, you can unblock it in Settings.' },
   monitor_intervened: { title: 'Shield ended a connected call', detail: 'During the call, Shield heard a request that matches common scams and ended the call with a warning.', action: 'If you know the caller, contact them using a number you already trust.' },
   solicitation: { title: 'Sales or solicitation call stopped', detail: 'Shield ended an unsolicited sales, survey, political or donation call silently.', action: 'No action is needed.' },

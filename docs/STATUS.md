@@ -98,6 +98,14 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
   - **Needs:** an APNs auth key from the Apple Developer account before it can send.
   - **Tests:** `npm run check` (104 unit tests, including APNs against a local HTTP/2 server) and `npm run test:firebase` (77 tests) passed.
 
+- **Voicemail keep-or-remove (code October 11, not deployed, off by default):** protection plan section 7.
+  - **Tests:** `npm run check` (112 unit tests) and `npm run test:firebase` (86 tests) passed.
+  - **Blocked on the owner:** the production OpenAI key lacks the `api.decisions.write` permission. Until it's added, the Decisions API returns 403, every message would be kept, and the 32 written evaluation cases can't run.
+
+- **App changes (code October 11, not installed on the phone):** Blocked numbers screen, "Alert my helpers" switch, removed-voicemail state with Restore, the Today setup check card, and the APNs environment sent with the push token.
+  - **Tests:** six new simulator UI tests passed, and the screenshots were inspected, including the largest text size.
+  - **Full suite:** 27 UI tests: 25 passed, 1 skipped, and `ContactSyncUITests` failed. It fails the same way on the code before these changes, since it needs the simulator's Contacts permission.
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.

@@ -42,11 +42,23 @@ export const shieldApi = onRequest({ ...options, secrets: [runtime, openaiKey], 
   }
 });
 export const cleanupShield = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 04:00', timeZone: 'America/Chicago',
-  retryCount: 0 }, async () => { await getStore().cleanup(); });
+  retryCount: 0 }, async () => {
+  await getStore().cleanup();
+  const { VoicemailCheck } = await import('./voicemail-check.js');
+  await new VoicemailCheck(getStore()).releaseStale();
+});
 
 export const ingestForwardingVoicemail = onDocumentCreated({ ...options, document: 'forwardingRecordings/{recordingId}', retry: true, concurrency: 2 }, async event => {
   const { ingestForwardingRecording } = await import('./forwarding-recordings.js');
   await ingestForwardingRecording(getStore(), event.params.recordingId);
+});
+
+// Keep or remove each forwarded voicemail once its audio is stored; any failure keeps it.
+export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
+  document: 'voicemailChecks/{callId}', retry: false, concurrency: 2 }, async event => {
+  const { VoicemailCheck, transcribeVoicemail, decideVoicemail } = await import('./voicemail-check.js');
+  const key = openaiKey.value();
+  await new VoicemailCheck(getStore()).check(event.params.callId, { transcribe: audio => transcribeVoicemail(audio, key), decide: text => decideVoicemail(text, key) });
 });
 
 // Push alerts: one queued, contentless job per event. Nothing is queued unless APNs is configured.
