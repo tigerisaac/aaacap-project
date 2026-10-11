@@ -119,7 +119,7 @@ Also add test cases for requests aimed at later ("go to the bank tomorrow and ta
 **Status (October 11):** the backend is built and tested, not deployed. It needs an APNs auth key before anything is sent.
 - **Device registration:** `POST /api/devices` stores the token encrypted, keyed by its hash, for the signed-in account. Sign-out and account deletion remove it, and a registration lapses after 60 days without a refresh.
 - **Sending:** each event queues a contentless `alerts` job in the same write. The new `sendShieldAlert` function sends fixed wording through APNs over HTTP/2 with a provider token, then deletes the job. Apple's "unregistered" answers delete the registration.
-- **Helper alerts:** off until the person turns them on (`/api/helper-alerts`, the person only).
+- **Helper alerts:** off until the person turns them on (`/api/helper-alerts`, the person only). Once push is available, onboarding asks on its own screen, after the connected-call protection question, with "Alert my helpers" selected by default. Settings has the same switch.
 - **Triggers built:** ended connected call, blocked caller trying again (at most once an hour per number), new voicemail, protection paused, and restoration started. Destroyed voicemail and a failed daily check have wording ready for sections 7 and 5.
 - **To turn on:** create an APNs auth key (.p8) in the Apple Developer account and add it to `SHIELD_RUNTIME` as `APNS` (`keyId`, `teamId`, `privateKey`). Then deploy Functions, including the new `sendShieldAlert`. Until then `/public/config` reports `notificationsAvailable: false` and nothing is queued.
 

@@ -82,6 +82,35 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
     }
 
+    func testHelperAlertsAskedWithProtectionAndDefaultOn() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding"]
+        app.launch()
+        XCTAssertTrue(app.switches["onboarding-protection-toggle"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.switches["onboarding-helper-alerts-toggle"].exists)
+        app.buttons["onboarding-protection-continue"].tap()
+        let helpers = app.switches["onboarding-helper-alerts-toggle"]
+        XCTAssertTrue(helpers.waitForExistence(timeout: 3))
+        XCTAssertFalse(app.switches["onboarding-protection-toggle"].exists)
+        XCTAssertEqual(helpers.value as? String, "1")
+        capture(app, name: "Onboarding helper alerts step")
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
+    }
+
+    func testHelperAlertsAskedAlone() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-helper-alerts-onboarding"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["Alerts for your helpers"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.switches["onboarding-protection-toggle"].exists)
+        let helpers = app.switches["onboarding-helper-alerts-toggle"]
+        helpers.tap()
+        XCTAssertEqual(helpers.value as? String, "0")
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
+    }
+
     func testProtectionSaveFailureKeepsTheChoiceVisible() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-protection-onboarding", "--protection-save-fails"]

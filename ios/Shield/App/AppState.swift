@@ -23,6 +23,8 @@ final class AppState {
     var service: ServiceConfiguration?
     var selectedTab = 0
     var protectionOnboarding: ForwardingStatus.Monitoring?
+    /// The person hasn't chosen yet whether their helpers get alerts, and push alerts are available.
+    var helperAlertsOnboarding = false
     var protectionParticipantID: UUID?
     private var protectionChoiceGeneration = 0
     private var sessionGeneration = 0
@@ -42,6 +44,11 @@ final class AppState {
             protectionParticipantID = selectedPersonID
             protectionOnboarding = .init(available: true, enabled: false, consentVersion: "ui-test", choiceRecorded: false)
         }
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-helper-alerts-onboarding") {
+            if !isDemo { exploreDemo() }
+            protectionParticipantID = selectedPersonID
+            helperAlertsOnboarding = true
+        }
         #endif
     }
 
@@ -57,6 +64,7 @@ final class AppState {
 
     func exploreDemo() {
         protectionOnboarding = nil
+        helperAlertsOnboarding = false
         protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = true
@@ -69,6 +77,7 @@ final class AppState {
 
     func didSignIn() async {
         protectionOnboarding = nil
+        helperAlertsOnboarding = false
         protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = false
@@ -78,6 +87,7 @@ final class AppState {
 
     func select(_ person: Person) async {
         protectionOnboarding = nil
+        helperAlertsOnboarding = false
         protectionParticipantID = nil
         selectedPersonID = person.id
         overview = nil
@@ -136,34 +146,47 @@ final class AppState {
         guard let status: ForwardingStatus = try? await api.send("/api/forwarding", participantID: id),
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
               signedIn, selectedPersonID == id else { return }
+        // A service without push alerts reads as nothing to ask.
+        let helpers: APIResponses.HelperAlerts? = try? await api.send("/api/helper-alerts", participantID: id)
+        guard generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration, signedIn, selectedPersonID == id else { return }
         if let monitoring = status.monitoring, monitoring.available, monitoring.choiceRecorded == false {
-            protectionParticipantID = id
             protectionOnboarding = monitoring
         } else {
             protectionOnboarding = nil
-            protectionParticipantID = nil
         }
+        helperAlertsOnboarding = helpers?.available == true && helpers?.choiceRecorded == false
+        protectionParticipantID = protectionOnboarding != nil || helperAlertsOnboarding ? id : nil
     }
 
-    func completeProtectionOnboarding(enabled: Bool, participantID: UUID, version: String) async throws {
+    /// `enabled` is the connected-call protection choice and `helperAlerts` the helper-alert choice; nil means it wasn't asked.
+    func completeProtectionOnboarding(enabled: Bool?, helperAlerts: Bool?, participantID: UUID, version: String?) async throws {
         guard signedIn, selectedPersonID == participantID, protectionParticipantID == participantID else {
             throw APIError.invalidResponse
         }
         let generation = sessionGeneration
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--uitesting-protection-onboarding") {
-            if ProcessInfo.processInfo.arguments.contains("--protection-save-fails") { throw APIError.invalidResponse }
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("--uitesting-protection-onboarding") || arguments.contains("--uitesting-helper-alerts-onboarding") {
+            if arguments.contains("--protection-save-fails") { throw APIError.invalidResponse }
             protectionOnboarding = nil
+            helperAlertsOnboarding = false
             protectionParticipantID = nil
             return
         }
         #endif
-        let body: [String: Any] = enabled ? ["enabled": true, "version": version] : ["enabled": false]
-        let _: APIResponses.Empty = try await api.send("/api/forwarding/monitoring", method: "POST",
-            body: APIClient.payload(body), participantID: participantID)
+        if let enabled, let version {
+            let body: [String: Any] = enabled ? ["enabled": true, "version": version] : ["enabled": false]
+            let _: APIResponses.Empty = try await api.send("/api/forwarding/monitoring", method: "POST",
+                body: APIClient.payload(body), participantID: participantID)
+        }
+        if let helperAlerts {
+            let _: APIResponses.Empty = try await api.send("/api/helper-alerts", method: "POST",
+                body: APIClient.payload(["enabled": helperAlerts]), participantID: participantID)
+        }
         guard generation == sessionGeneration, selectedPersonID == participantID else { return }
         protectionChoiceGeneration += 1
         protectionOnboarding = nil
+        helperAlertsOnboarding = false
         protectionParticipantID = nil
     }
 
@@ -219,6 +242,7 @@ final class AppState {
         calls = []
         service = nil
         protectionOnboarding = nil
+        helperAlertsOnboarding = false
         protectionParticipantID = nil
         selectedTab = 0
         errorMessage = nil
