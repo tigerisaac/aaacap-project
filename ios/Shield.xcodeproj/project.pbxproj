@@ -195,6 +195,13 @@
 			"path" = "Shield/Features/Settings/ContactStorageCheckView.swift";
 			"sourceTree" = "<group>";
 		};
+		"19489CCAF6C1D255571CAD34" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "CarrierName.swift";
+			"path" = "Shield/Features/Settings/Forwarding/CarrierName.swift";
+			"sourceTree" = "<group>";
+		};
 		"CF1F5FE7A2A95F17A7C94714" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -375,6 +382,13 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "PhoneContacts.swift";
 			"path" = "Shield/Features/Settings/PhoneContacts.swift";
+			"sourceTree" = "<group>";
+		};
+		"46676D3FA9F6E9E964B2EE83" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "QuietHoursView.swift";
+			"path" = "Shield/Features/Settings/QuietHoursView.swift";
 			"sourceTree" = "<group>";
 		};
 		"A74D83A135332FB456107AFF" = {
@@ -858,6 +872,7 @@
 			"isa" = "PBXGroup";
 			"name" = "Forwarding";
 			"children" = (
+				"19489CCAF6C1D255571CAD34",
 				"CF1F5FE7A2A95F17A7C94714",
 				"43C9327656452B45CF818F6F",
 				"173B8B0748380208E06DF407",
@@ -896,6 +911,7 @@
 				"ECFD8673363EAF4D32CE14EC",
 				"61D972671442EB135A78E664",
 				"22773E7A335C60D136AAC546",
+				"46676D3FA9F6E9E964B2EE83",
 				"A74D83A135332FB456107AFF",
 				"0D26A78514CDF4B5827B707B",
 				"51DC14E924CE1D8B46B9A7BD",
@@ -1290,6 +1306,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "D1577BE04A3E1CB18293FA4B";
 		};
+		"679F6989CB4066E166305F01" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "19489CCAF6C1D255571CAD34";
+		};
 		"C602615C5FF73EB29FDC4686" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "CF1F5FE7A2A95F17A7C94714";
@@ -1393,6 +1413,10 @@
 		"C7AF71DAB61C90D3B3057A4F" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "22773E7A335C60D136AAC546";
+		};
+		"B612141E955FA67FBE7E2F5E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "46676D3FA9F6E9E964B2EE83";
 		};
 		"CA5B05C21D938511CD37F64F" = {
 			"isa" = "PBXBuildFile";
@@ -1569,6 +1593,7 @@
 				"C2AADBAF126AD15A8BB00B5C",
 				"06F0A9F04E4019BE87299274",
 				"24366F353254DA726CA38BA3",
+				"679F6989CB4066E166305F01",
 				"C602615C5FF73EB29FDC4686",
 				"00A866BFC1B9C6D03FDAE6A5",
 				"2062F4805E0B21F62A167F51",
@@ -1595,6 +1620,7 @@
 				"C0A81B927AFB4AD345DE6737",
 				"D3845A247E288DB9104E57ED",
 				"C7AF71DAB61C90D3B3057A4F",
+				"B612141E955FA67FBE7E2F5E",
 				"CA5B05C21D938511CD37F64F",
 				"4BDA37D533B2790B424B520D",
 				"12AB26B6D8A99E255C69B6F7",

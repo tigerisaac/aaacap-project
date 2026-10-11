@@ -12,13 +12,13 @@ import { HttpError, type AuthProvider } from '../src/auth.js';
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove (Firestore emulator)', () => {
   const project = 'demo-shield-voicemail';
   const base = { FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-    TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+12025550101',
-    TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
+    TRIAL_PROXY_SECRET: 'c'.repeat(64), DATA_ENCRYPTION_KEY: 'd'.repeat(64),
     TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: `${'A'.repeat(43)}=`,
-    TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109', VOICEMAIL_SCREENING_ENABLED: true,
+    TELNYX_APPLICATION_ID: '123456789012345678', VOICEMAIL_SCREENING_ENABLED: true,
     APNS: { keyId: 'ABCDEF1234', teamId: '6R6HMW3DWN', privateKey: generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }).toString() } };
   const admin = initializeApp({ projectId: project }, 'voicemail-tests'), db = getFirestore(admin);
-  const id = base.TRIAL_PARTICIPANT_ID, caller = '+12025550102';
+  const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', PHONE = '+12025550101';
+  const id = PERSON, caller = '+12025550102';
   const auth: AuthProvider = {
     async identify(token) { if (!['owner', 'helper', 'stranger'].includes(token)) throw new HttpError(401, 'sign_in_required'); return { subject: token }; },
     async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}
@@ -51,7 +51,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     now = Date.now(); s = new CloudStore(db, cloudSchema.parse(base), () => now); check = new VoicemailCheck(s);
     app = await buildCloudApp(s, { auth });
     await s.personRef(id).set({ id, ownerUid: 'owner', status: 'setup', nameEnc: s.vault.seal('Margaret', `person:${id}:name`),
-      phoneEnc: s.vault.seal(base.TRIAL_VERIFIED_CALLER, `person:${id}:phone`) });
+      phoneEnc: s.vault.seal(PHONE, `person:${id}:phone`), shieldNumber: '+12025550109' });
     const grant = randomUUID();
     await db.collection('grants').doc(grant).set({ participantId: id, granteeUid: 'helper', canListen: false, acceptedAt: now, revokedAt: null, expiresAt: now });
     await s.memberRef(id, 'helper').set({ participantId: id, granteeUid: 'helper', grantId: grant });

@@ -249,6 +249,19 @@ final class ShieldUITests: XCTestCase {
         XCTAssertFalse(app.buttons["Unblock"].exists)
     }
 
+    func testQuietHoursIsInSettingsAndExplainsContactsStillRing() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
+        openSettings(app)
+        app.buttons["Quiet hours"].tap()
+        XCTAssertTrue(app.navigationBars["Quiet hours"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.switches["quiet-hours-toggle"].exists)
+        XCTAssertFalse(app.switches["quiet-hours-toggle"].isEnabled)
+        capture(app, name: "Quiet hours")
+    }
+
     private func openSettings(_ app: XCUIApplication) {
         let settings = app.buttons["Settings"].firstMatch
         for _ in 0..<6 where !settings.isHittable { app.swipeUp() }

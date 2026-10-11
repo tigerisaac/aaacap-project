@@ -1,6 +1,8 @@
 # Ten-person pilot plan
 
-Drafted October 10, 2026. **None of this is built.** Today Shield serves exactly one person, the owner. This plan covers what has to change so 10 seniors can use it at the same time, each with their own Shield number, without weakening the call-control invariants.
+Drafted October 10, 2026. Today Shield serves exactly one person, the owner. This plan covers what has to change so 10 seniors can use it at the same time, each with their own Shield number, without weakening the call-control invariants.
+
+**Status (October 11):** phase 1 and most of phase 2 are built on the branch `pilot-multi-person`. They are not merged into `main` and not deployed. They live on a branch because deploying them requires a data migration first, and `main` should stay deployable for the single-person protection work. See [Built on the branch](#built-on-the-branch-october-11).
 
 **Owner decisions (October 10):**
 - **Screening:** around the clock.
@@ -174,6 +176,55 @@ Connected-call protection, which is in the pilot, adds about $4.50 at $0.01 per 
 **Rollback at every phase:**
 - **One person:** pause them, then restore their forwarding.
 - **Everyone:** turning `LIVE_SCREENING_ENABLED` off sends everyone's calls to voicemail.
+
+## Built on the branch (October 11)
+
+**Backend:**
+- **Number registry:** `shieldNumbers/{e164}` (`backend/src/cloud/numbers.ts`).
+  - **Admission:** reads the registry inside the transaction. Unknown and available numbers get nothing, and so do quarantined ones, which also log `quarantined_number_called` and record `lastCalledAt`.
+  - **Loop guard:** any registered number is a Shield number.
+- **Per person:** control documents at `participants/{id}/forwarding/control`, with `shieldNumber`, `carrier`, `alwaysOn` and `quietHours` on the participant. Probes are per person, with a `forwardingProbes/{id}` index.
+- **Fixed ends:** every dial, binding and probe uses `ForwardingStore.endpoints()`, the person's own Shield number and verified phone.
+- **Daily caps:** per Central-time day, 30 screened calls per person and 200 across Shield, then voicemail (`limit_reached`). At 500 forwarded calls in a day Shield stops answering.
+- **History reasons:** `busy_guard` and `known_missed` now show in history.
+- **Always-on screening and quiet hours:** default 9 p.m. to 8 a.m. Central, and only for always-on calls. A supervised window still rings. Approved calls in quiet hours go to voicemail as `quiet_hours`.
+- **Carrier table:** `carriers.ts`. Tello is verified; T-Mobile and AT&T aren't, so the app shows no codes for them.
+- **Bridge:** up to 4 sessions per instance and 3 instances. A session the bridge has no room for goes straight to voicemail.
+- **Config:** `TRIAL_PARTICIPANT_ID`, `TRIAL_VERIFIED_CALLER` and `TELNYX_NUMBER` are gone from the runtime schema.
+
+**Tests:** all existing emulator tests pass on the new layout, plus 13 new ones (`backend/tests/pilot.test.ts`, 99 in total):
+- two people's overlapping calls each dial only their own phone
+- B's phone can't bind or accept A's call
+- contacts, pause and busy state stay per person
+- unknown, available and quarantined numbers get nothing
+- the loop guard
+- a number registered to someone else
+- caps and the Central-time day
+- always-on
+- quiet hours
+- capacity refusal
+- per-person probes
+- carrier codes
+
+Removing two of the checks made the matching tests fail.
+
+**Scripts** (all production-changing writes need `--confirm` and the owner's approval):
+- `migrate-to-registry.mjs`: a copy-only, idempotent move of the owner's record. It checks the participant's phone matches the runtime file.
+- `manage-numbers.mjs`: `list`, `buy`, `assign`, `quarantine` and `release`. Release refuses before 90 days of quarantine and 30 days without a call.
+- `manage-forwarding-test.mjs --participant <id>`: adds `always-on`, which needs both phone tests and `--supervised-calls-passed`, and `always-off`.
+- `pilot-status.mjs`: a read-only staff view with no names, phones or call content.
+- `telnyx-provider.mjs`: pilot channel limits of 12 inbound and 10 outbound, and a $3 daily outbound spend cap.
+
+**App:** setup and restoration copy uses the carrier the API returns, and Settings → Quiet hours is new. All 13 forwarding UI tests and the new quiet-hours test pass.
+
+**Deploy order, all with owner approval:**
+1. Run `migrate-to-registry.mjs --confirm`.
+2. Merge the branch.
+3. Deploy Functions, Firestore indexes and the bridge.
+4. Run `telnyx-provider` provisioning for the new limits.
+5. Re-verify the owner's line with a real call before adding anyone.
+
+**Not built:** alerts for bridge and function errors, the morning check of the night's outcomes, and the phone-guided setup split.
 
 ## Decisions for the owner
 

@@ -9,7 +9,6 @@ import { checkMessage, type MessageChecker } from './message-check.js';
 import { CONSENT_VERSION, RETENTION_MS } from './config.js';
 import { CloudStore, type Call, type Person } from './store.js';
 import { normalizeSharedPhone, sharedContactsSchema, syncSharedContacts } from './shared-contacts.js';
-import { forwardingNumber } from './forwarding-provider.js';
 import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from './alerts.js';
 import { VOICEMAIL_LIMITS } from './voicemail-check.js';
 
@@ -123,7 +122,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   });
   app.get('/api/setup', async request => {
     const ctx = await access(request, true); const p = ctx.participant;
-    return { participantId: p.id, name: store.name(p), phone: store.phone(p), shieldNumber: forwardingNumber(store.config),
+    return { participantId: p.id, name: store.name(p), phone: store.phone(p), shieldNumber: p.shieldNumber ?? null,
       status: p.status, isOwner: true, isTrial: true, consentVersion: CONSENT_VERSION, consented: p.consentVersion === CONSENT_VERSION,
       phoneVerified: !!p.phoneVerifiedAt, lastTestAt: null, restoredAt: null, routingTestUntil: null,
       liveServiceEnabled: false, carrierProfile: null, supportEmail: null, trial: null };

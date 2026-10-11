@@ -1,12 +1,13 @@
 import SwiftUI
 
 struct ForwardingPhoneSettingsView: View {
+    @Environment(\.carrierName) private var carrier
     @Bindable var model: ForwardingSetupModel
     private var silence: Bool { model.step == .settings }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text(silence ? "Let Shield handle unknown calls." : "Let Tello send unanswered calls to Shield.").font(.title3)
+            Text(silence ? "Let Shield handle unknown calls." : "Let \(carrier) send unanswered calls to Shield.").font(.title3)
             VStack(alignment: .leading, spacing: 12) {
                 Text(silence ? "Screen Unknown Callers" : "Live Voicemail").font(.headline)
                 Label(silence ? "Choose Silence" : "Turn Off", systemImage: "hand.tap")
@@ -20,7 +21,7 @@ struct ForwardingPhoneSettingsView: View {
                     Text("While you’re here: Live Voicemail").font(.headline)
                     Label("Turn Off", systemImage: "hand.tap")
                         .font(.title2.bold()).foregroundStyle(ShieldTheme.action)
-                    Text("Make both changes in this one visit. Keep voicemail enabled in your Tello account.")
+                    Text("Make both changes in this one visit. Keep voicemail enabled in your \(carrier) account.")
                         .foregroundStyle(ForwardingStyle.secondaryText)
                 }
                 .padding(20).frame(maxWidth: .infinity, alignment: .leading)
@@ -28,7 +29,7 @@ struct ForwardingPhoneSettingsView: View {
             }
             if model.settingsReturned {
                 Text(silence ? "Your place is saved" : "Confirm the second change").font(.headline)
-                Text(silence ? "iPhone doesn’t share these settings with Shield. Confirm Silence below; we’ll confirm Live Voicemail next." : "If you turned Live Voicemail off during the last visit, confirm below. Otherwise, reopen Phone settings now. We’ll check forwarding with a real call after connecting Tello.")
+                Text(silence ? "iPhone doesn’t share these settings with Shield. Confirm Silence below; we’ll confirm Live Voicemail next." : "If you turned Live Voicemail off during the last visit, confirm below. Otherwise, reopen Phone settings now. We’ll check forwarding with a real call after connecting \(carrier).")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                     .accessibilityIdentifier("phone-settings-unverified")
                 Button("Open Phone settings again", systemImage: "gearshape") {
@@ -40,7 +41,7 @@ struct ForwardingPhoneSettingsView: View {
                     .foregroundStyle(ForwardingStyle.secondaryText)
             }
             if !silence {
-                Text("Keep voicemail enabled in your Tello account. Only turn off Live Voicemail on this iPhone.")
+                Text("Keep voicemail enabled in your \(carrier) account. Only turn off Live Voicemail on this iPhone.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
             }
             DisclosureGroup("Settings opened somewhere else?") {

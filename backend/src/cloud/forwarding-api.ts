@@ -6,7 +6,9 @@ import { CloudStore } from './store.js';
 import { ForwardingStore, forwardingConsent } from './forwarding-store.js';
 
 import { ForwardingProbes, type ProbeDependencies } from './forwarding-probes.js';
-import { forwardingNumber, TelnyxVoice } from './forwarding-provider.js';
+import { TelnyxVoice } from './forwarding-provider.js';
+import { activationCodes, carrierFor } from './carriers.js';
+import { DEFAULT_QUIET_HOURS } from './forwarding-store.js';
 import { CallMonitor, MONITORING_CONSENT, monitoringEnabledFor } from './monitoring.js';
 import { queueAlert } from './alerts.js';
 import { VoicemailCheck } from './voicemail-check.js';
@@ -23,12 +25,14 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       selected === undefined ? undefined : z.string().uuid().parse(selected).toLowerCase());
   };
   app.get('/api/forwarding', async request => {
-    const ctx = await owner(request), p = ctx.participant, control = (await f.control.get()).data();
+    const ctx = await owner(request), p = ctx.participant, control = (await f.controlRef(p.id).get()).data();
     const prepared = !!control?.provisioned && !!control.dataPlanConfirmed && !!control.restorationGuide?.length;
     const active = prepared && control?.enabled === true && control.expiresAt > store.now() && control.used < 10 && p.status === 'setup';
+    const carrier = carrierFor(p.carrier);
     const recent = await store.db.collection('callSessions').where('participantId', '==', p.id)
       .orderBy('createdAt', 'desc').limit(10).get();
-    return { participantId: p.id, carrier: 'Tello', phone: store.phone(p), shieldNumber: forwardingNumber(store.config),
+    return { participantId: p.id, carrier: carrier?.name ?? 'your carrier', carrierVerified: !!carrier?.verified, phone: store.phone(p), shieldNumber: p.shieldNumber,
+      alwaysOn: p.alwaysOn === true, quietHours: p.quietHours ?? DEFAULT_QUIET_HOURS,
       prepared, active, probe: probes.publicState(control), contactsSyncedAt: at(p.contactsSyncedAt), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
       liveScreening: store.config.LIVE_SCREENING_ENABLED,
       monitoring: { available: monitoringAvailable, enabled: monitoringAvailable && monitoringEnabledFor(p), consentVersion: MONITORING_CONSENT,
@@ -37,11 +41,12 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       consentVersion: consent, consented: p.forwardingConsent === consent,
       phoneVerified: !!p.phoneVerifiedAt, stage: stages.includes(p.forwardingStage) ? p.forwardingStage : 'overview',
       restorationRequested: p.status === 'restoring', lastTestAt: at(control?.lastTestAt),
-      activationCodes: active ? ['61', '67', '62'].map(condition => `**${condition}*${forwardingNumber(store.config).slice(1)}#`) : [],
+      activationCodes: active ? activationCodes(p.carrier, p.shieldNumber) : [],
       restorationSteps: control?.restorationGuide ?? [],
       readiness: control?.blocker === 'provider_upgrade_required' ? 'Phone service needs an upgrade before setup can start.'
         : !control?.provisioned ? 'The forwarding service is being prepared. Keep your phone settings unchanged.'
-        : !control.dataPlanConfirmed ? 'Confirm your Tello plan includes mobile data before forwarding.'
+        : !carrier?.verified ? 'Shield hasn’t been tested with your carrier yet. Staff will help you set it up.'
+        : !control.dataPlanConfirmed ? `Confirm your ${carrier.name} plan includes mobile data before forwarding.`
         : !control.restorationGuide?.length ? 'Your original phone settings must be saved before setup can start.'
         : !active ? 'Ready for a 30-minute call test. Start it here when you’re ready.'
         : 'The supervised call-test window is open.',
@@ -50,18 +55,25 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     };
   });
   app.post('/api/forwarding/test-window', async request => {
-    await owner(request);
+    const ctx = await owner(request);
     z.object({ allowAnyCaller: z.literal(true) }).strict().parse(request.body);
-    await probes.openWindow(); return { opened: true };
+    await probes.openWindow(ctx.participant.id); return { opened: true };
+  });
+  // Overnight, always-on screening sends callers Shield would offer to voicemail. The person sets the hours.
+  app.post('/api/forwarding/quiet-hours', async request => {
+    const ctx = await owner(request);
+    const hour = z.number().int().min(0).max(23);
+    const quietHours = z.object({ enabled: z.boolean(), start: hour, end: hour }).strict().parse(request.body);
+    await store.personRef(ctx.participant.id).update({ quietHours }); return { quietHours };
   });
   app.post('/api/forwarding/probe', async request => {
-    await owner(request);
+    const ctx = await owner(request);
     const { kind } = z.object({ kind: z.enum(['ring', 'forwarding']) }).strict().parse(request.body);
-    const probe = await probes.reserve(kind);
-    if (probe) {
+    const probe = await probes.reserve(ctx.participant.id, kind), ends = f.endpoints(ctx.participant);
+    if (probe && ends) {
       // No automatic retries: a timeout may still mean the provider placed the call.
       // Keep the reservation until its deadline to prevent a second billable call.
-      try { await (deps.startForwardingProbe ?? (id => new TelnyxVoice(store.config).startProbe(id)))(probe.id); }
+      try { await (deps.startForwardingProbe ?? ((id, from, to) => new TelnyxVoice(store.config).startProbe(id, from, to)))(probe.id, ends.shieldNumber, ends.phone); }
       catch { /* The app waits for signed evidence or the bounded timeout. */ }
     }
     return { requested: true };
@@ -85,14 +97,14 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   app.post('/api/forwarding/progress', async request => {
     const ctx = await owner(request), { stage } = z.object({ stage: z.enum(stages) }).parse(request.body);
     if (stage.startsWith('forward')) {
-      const c = (await f.control.get()).data();
+      const c = (await f.controlRef(ctx.participant.id).get()).data();
       if (!c?.provisioned || !c.dataPlanConfirmed || !c.restorationGuide?.length || !c.enabled || c.expiresAt <= store.now() || !ctx.participant.phoneVerifiedAt || ctx.participant.forwardingConsent !== consent) throw new HttpError(409, 'setup_not_ready');
     }
     await store.personRef(ctx.participant.id).update({ forwardingStage: stage }); return { saved: true };
   });
   app.post('/api/forwarding/restore', async request => {
     const ctx = await owner(request);
-    const batch = store.db.batch(); batch.set(f.control, { enabled: false }, { merge: true });
+    const batch = store.db.batch(); batch.set(f.controlRef(ctx.participant.id), { enabled: false }, { merge: true });
     batch.update(store.personRef(ctx.participant.id), { status: 'restoring', forwardingStage: 'restore' });
     if (ctx.participant.status !== 'restoring') queueAlert(store, batch, ctx.participant.id, 'restoration_started');
     await batch.commit();

@@ -14,7 +14,7 @@ struct TrialSetupView: View {
             } label: {
                 Label("Set up call forwarding", systemImage: "phone.arrow.right")
             }
-            Text("Shield guides you through Tello setup and checks your calls automatically.")
+            Text("Shield guides you through call forwarding with your carrier and checks your calls automatically.")
                 .foregroundStyle(.secondary)
         } header: { Text("Phone setup") }
         Section {

@@ -2,7 +2,6 @@ import { createPublicKey, verify } from 'node:crypto';
 import type { CloudConfig } from './config.js';
 
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-export const forwardingNumber = (c: CloudConfig) => c.TELNYX_NUMBER;
 export const validCallId = (value: string) => uuid.test(value) || /^v[23]:[a-zA-Z0-9_-]{10,512}$/.test(value);
 export const validRecordingId = (value: string) => uuid.test(value);
 /** An E.164 caller number, or undefined when the network withheld it ("anonymous", "restricted", empty). Never store the raw value. */
@@ -40,11 +39,12 @@ export class TelnyxVoice {
     });
     if (!response.ok && !(response.status === 404 && 'Status' in body)) throw new Error(`telnyx_http_${response.status}`);
   }
-  async startProbe(id: string) {
-    if (!uuid.test(id)) throw new Error('invalid_probe_id');
+  /** `from` and `to` come from the enrolled person's record: their Shield number and their verified phone. */
+  async startProbe(id: string, from: string, to: string) {
+    if (!uuid.test(id) || !/^\+1\d{10}$/.test(from) || !/^\+1\d{10}$/.test(to)) throw new Error('invalid_probe');
     const base = `${this.config.PUBLIC_BASE_URL}/forwarding/${this.config.TRIAL_PROXY_SECRET}`;
     await this.request('Calls', 'POST', { ApplicationSid: this.config.TELNYX_APPLICATION_ID,
-      From: forwardingNumber(this.config), To: this.config.TRIAL_VERIFIED_CALLER, Url: `${base}/probe/${id}`,
+      From: from, To: to, Url: `${base}/probe/${id}`,
       Method: 'POST', StatusCallback: `${base}/probe-status/${id}`, StatusCallbackMethod: 'POST',
       StatusCallbackEvent: 'initiated ringing answered completed', Timeout: 40, TimeLimit: 30, Record: false });
   }

@@ -24,6 +24,7 @@ export const reasonCopy: Record<string, { title: string; detail: string; action:
   uncertain: { title: 'Not enough information', detail: 'Shield could not reliably understand the introduction. The caller was offered a message instead.', action: 'Review any voicemail before deciding what to do.' },
   screening_unavailable: { title: 'Screening unavailable', detail: 'Screening did not finish. The call was not automatically cleared.', action: 'Review any voicemail.' },
   known_missed: { title: 'Missed contact call', detail: 'The displayed number matched your saved list and was sent to voicemail. Caller ID is not proof of identity.', action: 'Review the message when convenient.' },
+  quiet_hours: { title: 'Sent to voicemail overnight', detail: 'Shield screened this caller during your quiet hours and offered voicemail instead of ringing you.', action: 'Review any voicemail. You can change quiet hours in Settings.' },
   message_only: { title: 'Sent to voicemail', detail: 'Live call offers are paused or this phone has not completed a routing test.', action: 'Review the message or check your setup.' },
   busy_guard: { title: 'Sent to voicemail', detail: 'Another call offer was active or had just finished.', action: 'Review any voicemail.' },
   limit_reached: { title: 'Sent to voicemail', detail: 'The service reached its configured call-offer limit.', action: 'Review any voicemail. Your support contact can check service limits.' },

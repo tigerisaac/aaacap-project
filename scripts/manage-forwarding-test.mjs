@@ -4,12 +4,17 @@ import { forwardingConsent } from '../dist/cloud/forwarding-store.js';
 import { verifyTelnyxSetup } from './telnyx-provider.mjs';
 
 // Explicit operator actions only; never run from an app request or on deployment.
+// Usage: node scripts/manage-forwarding-test.mjs <command> [--participant <id>]
+//   status | provider-blocked | prepare | open --allow-any-caller | close | always-on | always-off
+// Without --participant it acts on the original pilot participant (TRIAL_PARTICIPANT_ID in the private runtime file).
 async function main() {
   const command = process.argv[2] ?? 'status';
-  if (!['status', 'provider-blocked', 'prepare', 'open', 'close'].includes(command)) throw new Error('unknown_command');
+  if (!['status', 'provider-blocked', 'prepare', 'open', 'close', 'always-on', 'always-off'].includes(command)) throw new Error('unknown_command');
   const config = JSON.parse(await readFile('artifacts/private/firebase-runtime.json', 'utf8'));
+  const at = process.argv.indexOf('--participant'), participantId = at >= 0 ? process.argv[at + 1] : config.TRIAL_PARTICIPANT_ID;
+  if (!/^[0-9a-f-]{36}$/.test(participantId ?? '')) throw new Error('participant_required');
   await connect(); const db = firestore();
-  const controlPath = `${documentRoot}/forwarding/control`, personPath = `${documentRoot}/participants/${config.TRIAL_PARTICIPANT_ID}`;
+  const personPath = `${documentRoot}/participants/${participantId}`, controlPath = `${personPath}/forwarding/control`;
   const decode = v => 'mapValue' in v ? decodeFields(v.mapValue.fields ?? {}) : 'arrayValue' in v ? (v.arrayValue.values ?? []).map(decode)
     : 'integerValue' in v ? Number(v.integerValue) : v.stringValue ?? v.booleanValue ?? null;
   const decodeFields = f => Object.fromEntries(Object.entries(f).map(([k, v]) => [k, decode(v)]));
@@ -18,8 +23,12 @@ async function main() {
   const consent = forwardingConsent;
   const [person, control] = await Promise.all([read(personPath), read(controlPath)]);
   if (!person.ownerUid || !person.phoneVerifiedAt) throw new Error('verified_owner_required');
+  if (!/^\+1[2-9]\d{9}$/.test(person.shieldNumber ?? '')) throw new Error('shield_number_not_assigned');
   if (command === 'status') {
-    console.log(JSON.stringify({ provisioned: !!control.provisioned, blocker: control.blocker ?? null,
+    console.log(JSON.stringify({ shieldNumber: person.shieldNumber, carrier: person.carrier ?? null, alwaysOn: person.alwaysOn === true,
+      ringTestAt: control.ringTestAt ? new Date(control.ringTestAt).toISOString() : null,
+      forwardingTestAt: control.forwardingTestAt ? new Date(control.forwardingTestAt).toISOString() : null,
+      provisioned: !!control.provisioned, blocker: control.blocker ?? null,
       dataPlanConfirmed: !!control.dataPlanConfirmed, restorationGuideSaved: !!control.restorationGuide?.length,
       consented: person.forwardingConsent === consent, stage: person.forwardingStage ?? 'overview',
       active: !!control.enabled && control.expiresAt > Date.now(), used: control.used ?? 0,
@@ -33,10 +42,18 @@ async function main() {
   }
   if (command === 'close') {
     await patch(controlPath, { enabled: false });
-    await patch(personPath, { status: 'restoring', forwardingStage: 'restore' });
+    await patch(personPath, { status: 'restoring', forwardingStage: 'restore', alwaysOn: false });
     console.log('Callbacks disabled. Carrier restoration and physical verification are still required.'); return;
   }
-  await verifyTelnyxSetup(config);
+  // Always-on screening is switched on only after this person's supervised test calls have passed.
+  if (command === 'always-off') { await patch(personPath, { alwaysOn: false }); console.log('Always-on screening is off; calls go to voicemail outside test windows.'); return; }
+  if (command === 'always-on') {
+    if (!control.provisioned || !control.ringTestAt || !control.forwardingTestAt || person.status !== 'setup' || person.forwardingConsent !== consent
+      || !process.argv.includes('--supervised-calls-passed')) throw new Error('supervised_tests_required');
+    await patch(personPath, { alwaysOn: true });
+    console.log('Always-on screening is on for this person. Quiet hours apply; the person can pause it in the app.'); return;
+  }
+  await verifyTelnyxSetup(config, person.shieldNumber);
   if (command === 'prepare') {
     if (control.activeCallId) throw new Error('call_still_active');
     const guide = JSON.parse(await readFile('artifacts/private/tello-restoration.json', 'utf8'));

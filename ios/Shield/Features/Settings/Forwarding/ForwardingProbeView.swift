@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ForwardingProbeView: View {
+    @Environment(\.carrierName) private var carrier
     let model: ForwardingSetupModel
     private var ring: Bool { model.step == .ring }
     var body: some View {
@@ -19,7 +20,7 @@ struct ForwardingProbeView: View {
             } else if model.probe != nil {
                 Label("This check didn’t finish", systemImage: "exclamationmark.circle")
                     .font(.title2.bold()).foregroundStyle(ShieldTheme.held)
-                Text(ring ? "Keep your phone nearby with Focus off and a mobile signal. Answer the next call and press 1." : "Check that Live Voicemail is off and Tello accepted the forwarding codes. Then let the next call ring without answering.")
+                Text(ring ? "Keep your phone nearby with Focus off and a mobile signal. Answer the next call and press 1." : "Check that Live Voicemail is off and \(carrier) accepted the forwarding codes. Then let the next call ring without answering.")
                 Text("Your place is saved. A failed check does not mean forwarding is off.").foregroundStyle(ForwardingStyle.secondaryText)
             } else {
                 Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")

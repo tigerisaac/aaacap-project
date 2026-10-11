@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RestorationCallCheck: View {
+    @Environment(\.carrierName) private var carrier
     @Binding var index: Int
     private var answering: Bool { index == 5 }
 
@@ -29,7 +30,7 @@ struct RestorationCallCheck: View {
                 .buttonBorderShape(.roundedRectangle(radius: 16))
                 .foregroundStyle(ShieldTheme.actionInk).accessibilityIdentifier("restoration-call-confirm")
             DisclosureGroup("The check didn’t work") {
-                Text("Stop here and contact Tello to restore normal call and voicemail routing. Keep Shield installed while you get help.")
+                Text("Stop here and contact \(carrier) to restore normal call and voicemail routing. Keep Shield installed while you get help.")
                     .padding(.top, 8).foregroundStyle(ForwardingStyle.secondaryText)
             }
         }

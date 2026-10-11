@@ -19,6 +19,9 @@ struct ForwardingStatus: Decodable, Sendable {
     var ringTestAt: Date? = nil
     var forwardingTestAt: Date? = nil
     var contactsSyncedAt: Date? = nil
+    struct QuietHours: Codable, Equatable, Sendable { var enabled: Bool; var start: Int; var end: Int }
+    var quietHours: QuietHours? = nil
+    var alwaysOn: Bool? = nil
     let participantId: UUID
     let carrier: String
     let phone: String

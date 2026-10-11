@@ -15,6 +15,7 @@ struct SettingsView: View {
                     NavigationLink(value: AppRoute.savedNumbers) { Label("Independent numbers", systemImage: "building.2.crop.circle") }
                     NavigationLink(value: AppRoute.sharing) { Label("Sharing", systemImage: "person.2") }
                     NavigationLink { CallProtectionView() } label: { Label("Connected-call protection", systemImage: "waveform.badge.magnifyingglass") }
+                    NavigationLink { QuietHoursView() } label: { Label("Quiet hours", systemImage: "moon") }
                 }
             }
             Section {

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ForwardingSetupView: View {
+    @Environment(\.carrierName) private var carrier
     @Environment(AppState.self) private var app
     @Environment(\.scenePhase) private var scenePhase
     @State private var model = ForwardingSetupModel()
@@ -68,6 +69,7 @@ struct ForwardingSetupView: View {
                 }
             }
         }
+        .environment(\.carrierName, model.status?.carrier ?? "your carrier")
         .task { await model.load(app) }
         .task(id: model.step) {
             guard [.ring, .test, .checks].contains(model.step) else { return }
@@ -91,7 +93,7 @@ struct ForwardingSetupView: View {
         .confirmationDialog("Restore ordinary phone service?", isPresented: $confirmRestore, titleVisibility: .visible) {
             Button("Stop callbacks and begin restoration") { Task { await model.restore(app) } }
         } message: {
-            Text("Shield will stop offering calls and guide you through restoring Tello. Ending a test alone does not undo forwarding.")
+            Text("Shield will stop offering calls and guide you through restoring \(carrier). Ending a test alone does not undo forwarding.")
         }
     }
 }
