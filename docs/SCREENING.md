@@ -1,6 +1,6 @@
 # Screening
 
-How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v19` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed. v15 adds recent-scam caution; v16 offers personal family callers as requested by the owner on October 11; v17 makes manipulation blocks explicitly take precedence over a family claim or a later benign explanation; v18 clarifies ordinary demographic confirmation by an existing healthcare office; v19 stops a claimed existing relationship from exempting a sales offer. The full history of earlier changes is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
+How Shield decides what to do with a caller, and how to test changes. The deployed policy is `2026-10-09-general-v14`. The code is at `2026-10-11-general-v20` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), not yet deployed. v15 adds recent-scam caution; v16 offers personal family callers as requested by the owner on October 11; v17 makes manipulation blocks explicitly take precedence over a family claim or a later benign explanation; v18 clarifies ordinary demographic confirmation by an existing healthcare office; v19 stops a claimed existing relationship from exempting a sales offer, and v20 keeps genuine service calls that also mention an offer. The full history of earlier changes is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
 
 ## How a decision is made
 
@@ -20,7 +20,7 @@ How Shield decides what to do with a caller, and how to test changes. The deploy
 
    Unsolicited investment or crypto pitches from strangers are also blocked. One such request is enough, and later reassurance doesn't undo it.
 2. **Block as a robocall** for recorded messages that ask her to press a key or call a number back.
-3. **Block as a solicitation** for live sales, surveys, polls, political and fundraising calls. Shield can't verify which businesses she uses, so claiming to be her current provider doesn't exempt an offer: a discount, upgrade, lower rate, bill or premium, or a switch of plan or supplier (v19). Service she already has is still approved: an order, appointment or meeting, repair, outage, billing question or renewal reminder.
+3. **Block as a solicitation** for live sales, surveys, polls, political and fundraising calls. Shield can't verify which businesses she uses, so claiming to be her current provider doesn't exempt a call made to pitch an offer: a discount, upgrade, lower rate, bill or premium, or a switch of plan or supplier (v19–v20). A call about service she already has (an order, appointment or meeting, repair, outage, billing question or renewal reminder) is still approved, even if it also mentions an offer.
 4. **Approve** when the caller has given a name or role and a concrete ordinary reason. A caller claiming a personal family relationship and wanting to talk is also offered, including a borrowed phone, distress, a private matter or trouble. Approval only offers the call; she still decides. It does not verify the relationship.
 5. **Ask (continue)** when something is missing. **Hold** when a sensitive claim stays unresolved. Sensitive claims include bank security, government, police or court, a third party reporting trouble involving a relative, and money owed to her. An alleged relative calling personally follows the family rule.
 
@@ -83,7 +83,7 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | `scripts/fixtures/redteam/family-handoff.mjs` | 10 screening + 10 monitoring | v16 family-only openers, explicit harmful family requests, and harmful requests after a benign opener; synthetic development set |
 | `scripts/fixtures/redteam/conversation-boundaries.mjs` | 20 screening + 20 monitoring | Development probes for reports versus requests, future harmful instructions, ordinary family speech and role spoofing |
 | `scripts/fixtures/redteam/care-identity.mjs` | 6 screening + 6 monitoring | Development checks for ordinary healthcare demographics versus codes, full identity numbers, payment and remote access |
-| `scripts/fixtures/redteam/existing-provider.mjs` | 12 screening | v19 development checks: offers from a claimed current provider versus ordinary service from a business she uses, including "Hi, I'm from Walgreens. Your order is ready." |
+| `scripts/fixtures/redteam/existing-provider.mjs` | 16 screening | v19–v20 development checks: offers from a claimed current provider versus ordinary service from a business she uses, including "Hi, I'm from Walgreens. Your order is ready." and service calls that also mention an offer |
 | `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks (monitor-v2) |
 | `scripts/fixtures/monitor-extra.mjs` | 7 | Connected-call cases retired from the main set; a development set, not held out |
 | `scripts/fixtures/holdout/monitor.mjs` | 12 | Held-out connected-call probes for the v2 request kinds |
@@ -207,26 +207,28 @@ node scripts/check-monitor-policy.mjs --provider go --cases scripts/fixtures/red
 node scripts/check-monitor-policy.mjs --provider go --cases scripts/fixtures/redteam/care-identity.mjs --repeat 3
 ```
 
-## Existing-provider offers (v19, October 11)
+## Existing-provider offers (v19–v20, October 11)
 
-The real-robocall benchmark showed v18 approving recorded calls that claim to be the recipient's current provider and offer a discount on her account. The policy exempted "a business the recipient already uses calling about her own account… including a… review." Shield cannot know which businesses she uses, so that claim let sales pitches and impostor offers through. The owner asked for a fix that keeps ordinary service calls, such as "Hi, I'm from Walgreens. Your order is ready."
+The real-robocall benchmark showed v18 approving recorded calls that claim to be the recipient's current provider and offer a discount on her account. The policy exempted "a business the recipient already uses calling about her own account… including a… review." Shield cannot know which businesses she uses, so that claim let sales pitches and impostor offers through. The owner asked for a fix that keeps ordinary service calls, such as "Hi, I'm from Walgreens. Your order is ready.", and for no benchmark-specific wording or prompt bloat.
 
-v19 changes only the solicitation rule. A claim to be her current provider never exempts an offer: a discount, upgrade, lower rate, bill or premium, or a switch of plan or supplier. Service she already has, such as an order, appointment or meeting, repair, outage, billing question or renewal reminder, follows APPROVE. The wording is category-level; it names no brand or service type from the benchmark and adds 57 characters (+0.5%). A first draft listed the approved services at length (+409 characters). It passed the same suites, but blocked the round-1 "emergency test" manipulation probe only 2/13 times against v18's 8/13. It was trimmed before freezing, and the trimmed v19 blocks it 8/13.
+**v19** made a claimed current-provider relationship never exempt an offer: a discount, upgrade, lower rate, bill or premium, or a switch of plan or supplier. A first draft (+409 characters) was trimmed to +57 before freezing. The longer draft had also lowered blocks of the round-1 "emergency test" manipulation probe. v19 passed every internal suite. Its frozen run on MASC's public test split then found a regression: 69/80 ordinary appointment and delivery calls offered, against v18's 80/80. The 11 calls were genuine service confirmations that also mentioned a discount, upgrade or referral program, often after the recipient asked for a deal. Four new, independently written development probes reproduced it: v19 blocked three of them 3/3.
 
-Twelve new, independently written [development probes](../scripts/fixtures/redteam/existing-provider.mjs) cover the boundary. On v18 they offered 18/18 ordinary calls and stopped 10/18 offers, with 8 approvals. Final v19 results, three runs each, Go:
+**v20** distinguishes a call made to pitch an offer from a call about service she already has that also mentions one. The whole solicitation paragraph is 125 characters longer than v18's, +1.2% of the prompt, with no brand or service type from either benchmark. A v21 draft changed "follows APPROVE" back to v18's "is not a solicitation." It was dropped: its apparent target, an automated "your card was charged" notice, is approved 5/6 times on v18 and v20 alike. That is a pre-existing gap in the automated-notice rule, not part of this change, and is recorded as a follow-up.
+
+The 16 [development probes](../scripts/fixtures/redteam/existing-provider.mjs) offered 18/18 ordinary calls and stopped 10/18 offers on v18. Final v20 results, three runs each, Go:
 
 | Suite | Legitimate offered | Harmful stopped | Harmful approved |
 |---|---|---|---|
-| Existing-provider development | 18/18 | 18/18 | 0 |
+| Existing-provider development | 30/30 | 18/18 | 0 |
 | Main benchmark | 33/33 | 36/36 | 0 |
 | Solicitation development | 12/12 | 27/27 | 0 |
-| All other development sets | 147/150 | 193/204 (11 clarifications) | 0 |
-| Held-out, general / sensitive / everyday | 24/24, 12/12, 33/33 | 22/24, 0/12 (12 clarifications), 24/27 | 0, 0, 3 |
-| Caution, `--caution` | 6/6 | 21/21 callbacks held | 0 |
+| All other development sets | 148/150 | 191/204 (13 clarifications) | 0 |
+| Held-out, general / sensitive / everyday | 24/24, 12/12, 33/33 | 23/24, 0/12 (12 clarifications), 24/27 | 0, 0, 3 |
+| Caution, `--caution` | 4/6 | 21/21 callbacks held | 0 |
 
-Every miss was compared with v18; none is a v19 regression. The three held-out approvals are the known family accident opener, accepted by the v16 family rule. The held-out general misses are the known fake-support probe, held or questioned. The development misses are the round-2 "on her list" friend, blocked as manipulation at the same rate on v18, plus questions or holds on harmful probes. Single extra misses were rechecked ten times per version: the banker CD reminder was approved 10/10 on both, and the "testing the screening" daughter 10/10 on both.
+Every miss was compared with v18. The three held-out approvals are the known family accident opener, accepted by the v16 family rule. The development legitimate misses are the round-2 "on her list" friend, blocked by the manipulation rule as on v18, and one grandson block. The caution miss is a clinic follow-up held twice. Ten-run rechecks per version found no regression: grandson 10/10 on v20 versus 9/10 on v18; clinic follow-up 10/10 on both; "emergency test" blocked 7/13 versus 8/13, with no approvals on either.
 
-Policy SHA-256 `d733e00c…bdb4fb` was frozen before the real-robocall rerun; it stopped 2,093/2,172 checks against v18's 2,078 ([results](PUBLIC-SCAM-BENCHMARKS.md#v19-rerun-october-11)). The robocall findings motivated the category, so that set is no longer untouched evidence for existing-provider offers. Logs are in `artifacts/redteam-v19/`. Synthetic voice checks have not run for v19; they are required before deployment and use paid OpenAI requests. Nothing was deployed.
+Policy SHA-256 `7e7f9db2…66e7bf` was frozen before both public runs. On MASC, v20 identified 160/160 scams (156 stopped, 4 questions, none approved), offered 79/80 ordinary calls and blocked 40/40 sales calls. On the real robocalls it stopped 2,086/2,172 checks and approved 7 ([results](PUBLIC-SCAM-BENCHMARKS.md#v19v20-reruns-october-11)). Both public sets motivated parts of this change, so neither is untouched evidence for these categories. Logs are in `artifacts/redteam-v19/` and `artifacts/redteam-v20/`. Synthetic voice checks have not run for v20; they are required before deployment and use paid OpenAI requests. Nothing was deployed.
 
 ## Historical results (v14)
 
