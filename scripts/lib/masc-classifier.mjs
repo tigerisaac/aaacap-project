@@ -42,10 +42,10 @@ export function parseMASCClassification(response) {
   return { prediction: value.label };
 }
 
-export function createMASCClassifier(key, { fetchImpl = fetch, wait = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
+export function createMASCClassifier(key, { request = mascClassifierRequest, fetchImpl = fetch, wait = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
   if (typeof key !== 'string' || !key) throw new Error('missing_go_credential');
   return async transcript => {
-    const body = JSON.stringify(mascClassifierRequest(transcript)), session = randomUUID(), attempts = [];
+    const body = JSON.stringify(request(transcript)), session = randomUUID(), attempts = [];
     for (let attempt = 0; attempt < 4; attempt++) {
       if (attempt) await wait(2000 * 2 ** (attempt - 1));
       let response;

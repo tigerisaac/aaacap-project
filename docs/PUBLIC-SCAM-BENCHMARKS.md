@@ -10,6 +10,9 @@ Reviewed October 11, 2026. The first public diagnostic used frozen screening v16
 | [BothBosu scam-dialogue](https://huggingface.co/datasets/BothBosu/scam-dialogue) and [single-agent-scam-conversations](https://huggingface.co/datasets/BothBosu/single-agent-scam-conversations) | Synthetic English scam/non-scam phone conversations. The scam-dialogue card lists 1,600 rows and Apache-2.0. | Useful breadth checks after MASC, but related generation/templates can overlap. Deduplicate across corpora and do not treat them as independent replications. Label 0 includes genuine sales/telemarketing. Not executed in this pass. |
 | [TeleAntiFraud 2.0 paper](https://arxiv.org/abs/2609.18748) and [research artifact](https://anonymous.4open.science/r/TeleAntiFraud-2_0-EEB2/) | Monthly frozen sets of 900 Chinese calls: 600 fraud and 300 lawful calls sharing closely related situations. Generated dialogues are rendered as speech, with manifests and provenance. | Strong evaluation design for confusing legitimate/scam pairs and audio. Chinese language and regional scripts limit direct relevance to the English US pilot. Verify the artifact's dataset license and synthetic provenance before importing. Not executed here. |
 | [COVA-X authors' site](https://scamlingua.org/) and [paper](https://arxiv.org/abs/2606.06879) | 10,985 synthetic multi-turn conversations across eight elder-targeted scam categories. The authors' site requires requesting access and describes non-commercial research terms. | Very relevant family/grandparent and elder-fraud coverage, but it is not an unrestricted downloadable public benchmark. No access request was sent. Outcome labels also need mapping to Shield's request-level decisions. |
+| [Voice-agent honeypot corpus](https://arxiv.org/abs/2609.29528) and [analysis paper](https://arxiv.org/abs/2608.24127) | 10,015 real English US inbound calls to researcher-owned numbers seeded into lead-generation forms, answered by an LLM persona. Automatic holistic labels: 949 scam, 3,949 spam, 380 legitimate, 1,096 too brief; 75% agreement with human reviewers on a 60-call check. The descriptor announces a 1,000-call de-identified public subset (500 scam, 500 spam, transcripts only) under a non-commercial licence, plus the full corpus under a data-use agreement. Published caller-disjoint baselines: TF-IDF classifiers F1 0.70–0.75, zero-shot Gemini 2.5 Flash F1 0.79; detectors trained on synthetic dialogue fall to F1 0.02–0.40. | The strongest candidate after MASC: real callers, English, and a published synthetic-to-real collapse that directly tests generalization. Not used yet: no download link was found on October 11, the licence is non-commercial, the public subset has no legitimate calls, and real-call transcripts need an explicit owner exception to this repo's synthetic-only evaluation rule. Shield blocks both scam and spam, so its policy score differs from the source scam-vs-rest task. A production-request harness is prepared; see [Honeypot corpus harness](#honeypot-corpus-harness-prepared-not-run). |
+| [Fraud-R1](https://aclanthology.org/2025.findings-acl.226/) | 8,564 fraud-only messages, emails, posts and job ads in English and Chinese, with pre-written credibility, urgency and emotional escalations. Gated research-use agreement that bars financial gain. | Not adopted. It has no legitimate cases, so blocking everything scores 100%. It is not phone calls, and its escalations do not answer Shield's questions. |
+| [ICFD-31k](https://www.ijcai.org/proceedings/2026/786) ([repository](https://github.com/SPELLAILab/ICFD-31k)) | About 31,000 synthetic Indian-context fraud conversations with chunk-level streaming labels. Licence and class balance not stated on the proceedings page. | Streaming labels suit an early-detection timing study. Regional scripts limit relevance to the US pilot. Not executed. |
 
 MASC's dataset card and the [authors' project](https://supreme-lab.github.io/ai-in-the-loop/) document its synthetic provenance. Public availability does not make these real-call evidence. A high score on repetitive generated dialogues can be easier than a call with indirect phrasing or imperfect transcription.
 
@@ -44,7 +47,7 @@ Coverage and baseline report validation (October 11): saved results contain 320 
 
 ## Separate MASC binary classifier
 
-The owner requested this benchmark-specific version after the Shield diagnostic and its limitations were known. It uses a separate [runner](../scripts/check-masc-classifier.mjs) and [classifier](../scripts/lib/masc-classifier.mjs), version `2026-10-11-masc-classifier-v1`. Neither imports the production screening or monitoring requests. Only the pinned CSV parser and role mapping are shared. The provider is the existing OpenCode Go Responses endpoint, `https://opencode.ai/zen/go/v1/responses`, with GPT-6 Luna at medium reasoning; the direct OpenAI API is not used.
+The owner requested this benchmark-specific version after the Shield diagnostic and its limitations were known. It uses a separate [runner](../scripts/check-masc-classifier.mjs), [base classifier](../scripts/lib/masc-classifier.mjs) [v2 adaptation](../scripts/lib/masc-classifier-v2.mjs) and [v3 vote](../scripts/lib/masc-classifier-v3.mjs). The default is `2026-10-11-masc-classifier-v3-unanimous`; `--version v1` and `--version v2` preserve the earlier requests. No version imports the production screening or monitoring requests. Only the pinned CSV parser and role mapping are shared. The provider is the existing OpenCode Go Responses endpoint, `https://opencode.ai/zen/go/v1/responses`, with GPT-6 Luna at medium reasoning; the direct OpenAI API is not used.
 
 The adaptations match the classification task rather than live call protection:
 
@@ -58,16 +61,71 @@ Before MASC requests, the classifier passed 48/48 checks on 16 independently aut
 
 The first frozen classifier, v1, completed three full MASC passes. It identified all 480/480 scam trials and correctly classified 470/480 non-scam trials, with zero provider or schema failures. Accuracy was 950/960 (98.96%); pooled binary F1 was 98.97%. Per-pass accuracy was 317/320, 316/320 and 317/320. The ten errors were false positives in delivery and insurance conversations. All initial results remain in `artifacts/masc-classifier/masc-v1-three-passes/`; classifier and production hashes were unchanged throughout those passes.
 
+V2 adds a general fraud-versus-privacy distinction: an intrusive question, sensitive identity field, unverifiable business identity or poor security practice alone does not establish deception. It still treats fabricated threats/entitlements, account takeover, implausible payment mechanisms and extortion as fraud attempts even when they fail. The instructions contain no public-row wording or expected answers. Ten fresh [risk-boundary development conversations](../scripts/fixtures/masc-classifier-risk-development.mjs) pair ordinary information requests with fraudulent insurance, courier and clinic pretexts. The expanded 26-case development set passed 78/78 over three runs for both v1 and v2: 42/42 non-scams and 36/36 scams. These checks cover the intended distinction but did not reproduce v1's public false positives. V2 was frozen before its new public requests. Its three passes scored 952/960 (F1 99.17%): seven insurance false positives and one missed refund scam, in `artifacts/masc-classifier/masc-v2-three-passes/`.
+
+V3 sends the conversation to v1 and v2 independently and labels it a scam only when both say so. Neither request sees the other's answer, and a failed vote fails the check. The vote was chosen after v1 and v2 public test outcomes were known, to cut false positives. It passed the 26-case development set 78/78 over three runs, then was frozen before any v3 public request.
+
+Frozen v3 also ran once on MASC's 1,280-row training split. No classifier version was developed against it: the split was first downloaded six minutes after v3 was written, and no earlier result references it. It shares no conversation with the test split. Because it comes from the same generator it is in-distribution, but it is the cleanest unseen check of v3. Each v3 row records both votes, so v1 and v2 are scored on the same rows as diagnostics.
+
+| Run (frozen v3, original labels) | Accuracy | Scams | Non-scams | F1 |
+|---|---|---|---|---|
+| Test split, three passes | 958/960 (99.79%) | 480/480 | 478/480 | 99.79% |
+| Training split, one pass, unseen | 1,275/1,280 (99.61%) | 639/640 | 636/640 | 99.61% |
+| Training split, v1 vote alone | 1,264/1,280 | 640/640 | 624/640 | |
+| Training split, v2 vote alone | 1,272/1,280 | 639/640 | 633/640 | |
+
+There were no provider failures, and classifier and production hashes were unchanged in both runs. Both test errors were the same insurance conversation; v3 classified it non-scam in the third pass. The training errors were two delivery and two insurance false positives and one missed refund scam. The unanimous vote beat each component on the unseen split, which supports the vote rule beyond the test outcomes that motivated it. Results are in `artifacts/masc-classifier/masc-v3-three-passes/` and `artifacts/masc-classifier/masc-train-v3/`.
+
+Published MASC F1 values for trained models range from 96.97% (DistilBERT) to 99.92% (BiGRU); those models trained on the 1,280-row training split. V3 is zero-shot: it never trained on MASC rows. Its test-split score is benchmark-adapted, since v1–v3 changes followed test outcomes, so the unseen training-split result is the fairer generalization figure. Pretraining exposure of GPT-6 Luna to this public dataset is unknown.
+
+**Owner adjudication.** The owner judged one test row a broken label: masc-test-102, labeled non-scam insurance sales, in which an unsolicited caller collects the recipient's Social Security, driver's licence and birth details. [`masc-adjudication.mjs`](../scripts/lib/masc-adjudication.mjs) states the rule: a source non-scam in which the caller solicits or collects the recipient's Social Security number on an unsolicited call is scored as a scam attempt. Every label-0 row in both splits was searched for Social Security number mentions and each match was read. The rule matches masc-test-102 and masc-train-415, where an insurance caller asks for both numbers. It was chosen after test outcomes were known. It applies offline to saved results through [`rescore-masc-classifier.mjs`](../scripts/rescore-masc-classifier.mjs), which writes `summary-2026-10-11-masc-adjudication-v1.json` beside the untouched original summary.
+
+| Frozen v3 | Original labels | Adjudicated |
+|---|---|---|
+| Test split, three passes | 958/960, F1 99.79% | 959/960, F1 99.90% |
+| Training split, one pass | 1,275/1,280, F1 99.61% | 1,274/1,280, F1 99.53% |
+
+The adjudication cuts both ways. On the test split, v3's two scam votes on row 102 become correct and its third-pass non-scam becomes the only error. On the training split, v3 classified row 415 as non-scam, so the adjudicated score falls. The original-label results remain the comparable MASC figures; report the adjudicated score only beside them, with the rule.
+
 Each run freezes the request hash, runner/classifier/development-source hashes, dataset revision/hash, planned IDs and production-policy hashes before model requests. Source and production hashes are checked again afterward. Results are kept in fresh ignored directories under `artifacts/masc-classifier/`. This is a benchmark-adapted evaluation, not a fresh unseen-test result: prior MASC outcomes informed the task/context changes, and model pretraining exposure to this public dataset is unknown. The original Shield diagnostic scores remain separate.
 
 Reproduce without a backend build:
 
 ```bash
 node scripts/check-masc-classifier.mjs --dataset development --repeat 3
-node scripts/check-masc-classifier.mjs --repeat 3 --concurrency 4
+node scripts/check-masc-classifier.mjs --repeat 3 --concurrency 6
+node scripts/check-masc-classifier.mjs --dataset masc-train --concurrency 6
+node scripts/rescore-masc-classifier.mjs artifacts/masc-classifier/<run>
 ```
 
-`--prepare-only` validates the pinned test split without model requests. `--limit-per-type` supports a smoke check; a partial selection is marked as such and cannot be described as full test-split coverage. The main Shield benchmark and every production prompt remain unchanged. No deployment or real call is performed by this runner.
+`--prepare-only` validates the pinned split without model requests. `--limit-per-type` supports a smoke check; a partial selection is marked as such and cannot be described as full test-split coverage. The main Shield benchmark and every production prompt remain unchanged. No deployment or real call is performed by this runner.
+
+## Honeypot corpus harness (prepared, not run)
+
+[`check-honeypot-benchmark.mjs`](../scripts/check-honeypot-benchmark.mjs) runs Shield's production screening and monitoring requests on the [voice-agent honeypot corpus](https://arxiv.org/abs/2609.29528). The owner chose production requests first; a benchmark-specific classifier follows only if the source labels prove misaligned. It was built on October 11 before any data existed locally. No model request has used real calls.
+
+The [adapter](../scripts/lib/honeypot-benchmark.mjs) follows the paper's released record schema: `call_id`, `label_holistic`, `label_scam`, and `turns` with `caller`/`agent` speakers. An unknown label, speaker or record shape stops the run. Caller pseudonyms, persona, asks, signals and labels never reach a model. Result rows hold IDs, source hashes, groups and outcomes only.
+
+These choices were fixed before any results:
+
+- **Screening context:** by default, screening sees the caller's opening: whole caller turns up to 1,200 characters, about 75 seconds of speech. That matches the production session limit. `--screening-context full` sends all caller speech up to the production 12,000-character transcript limit, as a diagnostic.
+- **Groups:** scams, strict scams (`label_scam`, an explicit sensitive-information request), lead-generation spam and, in the full corpus only, legitimate calls are reported separately. Shield's solicitation rule should stop spam, so a spam block is a policy success, not a false alarm. Clarification credit follows the MASC identification rule; completed stops stay separate.
+- **Monitoring:** one end-of-conversation check on the production rolling tail. Spam monitoring outcomes are diagnostic, since monitoring has no solicitation rule.
+- **Bridge to the paper:** `scamReasonAsDetector` treats a BLOCK with reason `scam` as a positive. It re-estimates precision and F1 at the paper's 14.9% scam prevalence from recall and the spam false-positive rate, for context against the published zero-shot F1 of 0.79. Spam is a harder negative than the paper's mix, so the estimate is conservative.
+
+Before running it:
+
+1. Obtain the release. No download link was found on October 11; the public subset may require contacting the authors. The runner never downloads.
+2. Confirm the licence. The paper states non-commercial terms. The full corpus is under a data-use agreement; check that it permits sending transcripts to OpenCode or OpenAI.
+3. Get the owner's explicit exception to the synthetic-only evaluation rule. Model requests are refused without `--real-calls-approved`.
+
+```bash
+npm run build
+node scripts/check-honeypot-benchmark.mjs --source path/to/release.jsonl --prepare-only
+node scripts/check-honeypot-benchmark.mjs --source path/to/release.jsonl --real-calls-approved --concurrency 4
+```
+
+Six synthetic records in the paper's schema exercised the full path through production requests via Go on October 11. Their placeholder text drew clarifying questions, as expected, and they carry no evaluation meaning. Caveats for interpretation: labels are automatic, with 75% agreement on a 60-call human check. Callers spoke to an LLM persona, not a person or Shield. Turns are ASR text, and the public subset is selected for long engagement.
 
 ## Reproduce the Shield MASC diagnostic
 

@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { mascClassifierRequest, parseMASCClassification, createMASCClassifier, summarizeMASCClassifier } from '../../scripts/lib/masc-classifier.mjs';
 // @ts-expect-error Standalone benchmark helper does not enter the backend build.
 import { mascClassifierV2Request } from '../../scripts/lib/masc-classifier-v2.mjs';
+// @ts-expect-error Standalone benchmark helper does not enter the backend build.
+import { combineMASCJudgments, createMASCEnsemble } from '../../scripts/lib/masc-classifier-v3.mjs';
+// @ts-expect-error Standalone benchmark helper does not enter the backend build.
+import { MASC_ADJUDICATION, adjudicateMASCCases } from '../../scripts/lib/masc-adjudication.mjs';
 
 const answer = (label: unknown) => ({ status: 'completed', output: [{ type: 'function_call', name: 'classify_conversation', arguments: JSON.stringify({ label, reason: 'Based on the exchange.' }) }] });
 const cases = [
@@ -66,9 +70,44 @@ describe('separate MASC classification protocol', () => {
       bodies.push(init.body as string);
       return bodies.length === 1 ? { status: 503, ok: false } : { status: 200, ok: true, json: async () => answer(0) };
     });
-    const classify = createMASCClassifier('synthetic-test-key', { fetchImpl, wait: async () => {} });
+    const classify = createMASCClassifier('synthetic-test-key', { request: mascClassifierV2Request, fetchImpl, wait: async () => {} });
     expect(await classify('Caller: Wrong number?\nRecipient: Yes.')).toEqual({ prediction: 0, attempts: ['http_503', 'http_200'] });
     expect(fetchImpl).toHaveBeenCalledTimes(2);
     expect(bodies[0]).toBe(bodies[1]);
+    expect(JSON.parse(bodies[0]!)).toEqual(mascClassifierV2Request('Caller: Wrong number?\nRecipient: Yes.'));
+  });
+
+  it('requires unanimous fraud judgments and never treats a failed vote as a benign decision', () => {
+    for (const [a, b, prediction] of [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]]) {
+      expect(combineMASCJudgments({ prediction: a }, { prediction: b }).prediction).toBe(prediction);
+    }
+    expect(combineMASCJudgments({ prediction: 0 }, { failure: 'http_503' })).toMatchObject({ failure: 'http_503' });
+    expect(combineMASCJudgments({ prediction: 1 }, {})).toMatchObject({ failure: 'invalid_classification' });
+  });
+
+  it('sends the full conversation independently to both judgments without forwarding the first answer', async () => {
+    const bodies: Array<ReturnType<typeof mascClassifierRequest>> = [];
+    const fetchImpl = async (_url: string, init: RequestInit) => {
+      bodies.push(JSON.parse(init.body as string));
+      return { status: 200, ok: true, json: async () => answer(bodies.length === 1 ? 1 : 0) };
+    };
+    const transcript = 'Caller: Your delivery is ready.\nRecipient: Thank you.';
+    const classify = createMASCEnsemble('synthetic-test-key', { fetchImpl });
+    expect(await classify(transcript)).toMatchObject({ prediction: 0, votes: [{ prediction: 1 }, { prediction: 0 }] });
+    expect(bodies).toHaveLength(2);
+    expect(bodies[0]!.input).toEqual(bodies[1]!.input);
+    expect(JSON.parse(bodies[1]!.input[0].content)).toEqual({ untrustedConversation: transcript });
+    expect(bodies[0]!.instructions).not.toBe(bodies[1]!.instructions);
+  });
+
+  it('applies the owner adjudication only to the pinned source row and leaves other labels unchanged', () => {
+    const [row] = MASC_ADJUDICATION.rows;
+    const source = [{ id: row.id, sourceHash: row.sourceHash, type: row.type, label: 0 }, ...cases];
+    const { cases: adjudicated, applied } = adjudicateMASCCases(source);
+    expect(applied).toEqual([row.id]);
+    expect(adjudicated[0].label).toBe(1);
+    expect(adjudicated.slice(1)).toEqual(cases);
+    expect(() => adjudicateMASCCases([{ ...source[0], sourceHash: 'changed-text' }])).toThrow('adjudication_source_mismatch');
+    expect(() => adjudicateMASCCases([{ ...source[0], label: 1 }])).toThrow('adjudication_source_mismatch');
   });
 });
