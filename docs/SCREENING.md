@@ -76,7 +76,7 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | Suite | Cases | Purpose |
 |---|---|---|
 | `scripts/fixtures/live-screening-cases.mjs` | 24 | Main benchmark: 11 legitimate callers that resemble scam signals, 12 scams and robocalls from real scripts, silence |
-| `scripts/fixtures/holdout/` | 24 | Held-out probes, never used for tuning |
+| `scripts/fixtures/holdout/` | 44 | Held-out probes, never used for tuning (`general` 16, `sensitive-claims` 8, `everyday` 20) |
 | `scripts/fixtures/redteam/` | 105 | Attack rounds used to tune v6–v14 (development sets, not held out) |
 | `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks (monitor-v2) |
 | `scripts/fixtures/monitor-extra.mjs` | 7 | Connected-call cases retired from the main set; a development set, not held out |
@@ -108,6 +108,22 @@ node scripts/redteam-turn.mjs artifacts/redteam-conversation.json "what the call
 - **`check-live-demo.mjs`** is the voice benchmark. It speaks synthetic voices through GPT Live, rotating 8 voices, and answers only questions Shield actually asks. It uses paid OpenAI requests and writes results to `artifacts/live-eval/`.
 - **`redteam-turn.mjs`** is for interactive sparring, one caller turn at a time.
 - **Text checks skip speech recognition and the voice front end.** Always confirm a change with the voice benchmark.
+
+## Text re-check and research lookup study (October 11)
+
+All runs used `--provider go` with caution off, so the prompt was byte-identical to v14.
+
+| Suite | Runs | Legitimate offered | Harmful stopped |
+|---|---|---|---|
+| Main benchmark | 2 | 22/22 | 24/24 |
+| Held-out (`general`, `sensitive-claims`) | 2 | 24/24 | 22/24 |
+| New held-out `holdout/everyday.mjs` (20 cases, written October 11) | 3 | 33/33 | 27/27 |
+| Red-team development sets | 2 | 72/72 | 120/122 |
+
+- **Misses:** in every case the model asked a question where a block was expected: `h-tech-support` (held-out) and `so-survey-reward` (red team). No harmful caller was approved.
+- **Research lookup:** the decision model asked for `research_scam_pattern` once in about 500 text runs today, for `h-tech-support`, which then ended in hold. It changed no outcome that could be measured.
+- **Why the measurement is limited:** the free provider can't run web search, so a lookup there returns "unavailable", as a failed production lookup would. Its effect when it succeeds wasn't measured, because it almost never fires.
+- **Recommendation:** remove the tool and its prompt paragraph at the next planned prompt change. That would simplify the prompt and remove a possible 6 s wait. It's a policy change, so it needs a version bump, text and voice checks, and the owner's decision.
 
 ## Recent-scam caution results (v15, text only)
 
