@@ -1,6 +1,6 @@
 # Public scam benchmarks
 
-Reviewed October 11, 2026. The first public diagnostic used frozen screening v16 and monitor-v2. Subsequent screening changes came only from development cases: v17 clarified manipulation precedence, and v18 clarified ordinary demographics with an existing healthcare office. No public or held-out result was used to tune either prompt. All executed cases here are synthetic; no real caller audio or transcripts are used.
+Reviewed October 11, 2026. The first public diagnostic used frozen screening v16 and monitor-v2. Subsequent screening changes came only from development cases: v17 clarified manipulation precedence, and v18 clarified ordinary demographics with an existing healthcare office. No public or held-out result was used to tune either production prompt. The owner later requested a separate benchmark-specific binary classifier, described below; it does not enter Shield's production harness or policy. All executed cases here are synthetic; no real caller audio or transcripts are used.
 
 ## Sources and suitability
 
@@ -42,7 +42,34 @@ No independently verified, comparable GPT-6 Luna, current Claude or Gemini MASC 
 
 Coverage and baseline report validation (October 11): saved results contain 320 unique IDs, exactly 40 per type. `npm run check` passed 117 unit tests, typecheck and build; `npm run test:firebase` passed all 86 emulator tests. This documentation update made no model requests or policy changes.
 
-## Reproduce the MASC diagnostic
+## Separate MASC binary classifier
+
+The owner requested this benchmark-specific version after the Shield diagnostic and its limitations were known. It uses a separate [runner](../scripts/check-masc-classifier.mjs) and [classifier](../scripts/lib/masc-classifier.mjs), version `2026-10-11-masc-classifier-v1`. Neither imports the production screening or monitoring requests. Only the pinned CSV parser and role mapping are shared. The provider is the existing OpenCode Go Responses endpoint, `https://opencode.ai/zen/go/v1/responses`, with GPT-6 Luna at medium reasoning; the direct OpenAI API is not used.
+
+The adaptations match the classification task rather than live call protection:
+
+- Both speakers' entire completed conversation reaches the model, without the production 6,000-character rolling tail. All 320 test conversations fit; the longest is 12,603 characters, and 38 exceed the production window.
+- Source labels remain the original binary scam/non-scam labels. Genuine insurance sales and wrong numbers are included as non-scams. All 320 rows affect the headline accuracy and F1; there is no ad-blocking score in this classifier.
+- The classifier assesses a deceptive attempt even if the recipient refuses and prevents its completion. It decides scam or non-scam once; there are no clarifying questions, abstention credit, call offers or monitoring interventions.
+- Source labels, type, personality, row ID and previous results never enter the model input. The instructions contain general fraud and ordinary-service distinctions, with no public-row examples, answer mappings or category-to-label lookup. Generated reasons stay in memory; only predictions and non-content metadata are saved.
+- Gateway retries send the identical input and follow a fixed transport policy. Incorrect classifications are never retried based on the expected label. Failed and unrun rows stay in accuracy and class-recall denominators; conventional binary precision/recall/F1 are withheld unless all planned rows have valid decisions.
+
+Before MASC requests, the classifier passed 48/48 checks on 16 independently authored [development conversations](../scripts/fixtures/masc-classifier-development.mjs), repeated three times: 24/24 scam attempts and 24/24 non-scams. They exercise solicitation, wrong numbers, ordinary services, recipient scam stories, failed fraud attempts, injected instructions and an early scam request beyond the last 6,000 characters. These are not copied from public MASC rows.
+
+The first frozen classifier, v1, completed three full MASC passes. It identified all 480/480 scam trials and correctly classified 470/480 non-scam trials, with zero provider or schema failures. Accuracy was 950/960 (98.96%); pooled binary F1 was 98.97%. Per-pass accuracy was 317/320, 316/320 and 317/320. The ten errors were false positives in delivery and insurance conversations. All initial results remain in `artifacts/masc-classifier/masc-v1-three-passes/`; classifier and production hashes were unchanged throughout those passes.
+
+Each run freezes the request hash, runner/classifier/development-source hashes, dataset revision/hash, planned IDs and production-policy hashes before model requests. Source and production hashes are checked again afterward. Results are kept in fresh ignored directories under `artifacts/masc-classifier/`. This is a benchmark-adapted evaluation, not a fresh unseen-test result: prior MASC outcomes informed the task/context changes, and model pretraining exposure to this public dataset is unknown. The original Shield diagnostic scores remain separate.
+
+Reproduce without a backend build:
+
+```bash
+node scripts/check-masc-classifier.mjs --dataset development --repeat 3
+node scripts/check-masc-classifier.mjs --repeat 3 --concurrency 4
+```
+
+`--prepare-only` validates the pinned test split without model requests. `--limit-per-type` supports a smoke check; a partial selection is marked as such and cannot be described as full test-split coverage. The main Shield benchmark and every production prompt remain unchanged. No deployment or real call is performed by this runner.
+
+## Reproduce the Shield MASC diagnostic
 
 Build the application, then run:
 
@@ -78,7 +105,7 @@ For actual timing/early-intervention conclusions, annotate the first prohibited 
 
 ## Ground rules
 
-The main voice/screening benchmark remains under 25 cases. Public stress data stays outside it. Never adjust prompts against this public test split or existing held-out probes. If a finding becomes a development example, mark it as such and create fresh independent evaluation data. Report legitimate-offered and harmful-stopped separately; report monitoring's kept/stopped outcomes separately too. No deployment or real phone-call verification is implied by these text results.
+The main voice/screening benchmark remains under 25 cases. Public stress data stays outside it. Never adjust production prompts against this public test split or existing held-out probes. If a finding becomes a development example, mark it as such and create fresh independent evaluation data. The separately requested benchmark classifier above is explicitly benchmark-adapted and cannot replace the production validation result. Report legitimate-offered and harmful-stopped separately; report monitoring's kept/stopped outcomes separately too. No deployment or real phone-call verification is implied by these text results.
 
 ## First results, October 11
 
