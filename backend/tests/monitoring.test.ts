@@ -6,7 +6,7 @@ import { forwardingNumber } from '../src/cloud/forwarding-provider.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { ForwardingStore, forwardingConsent } from '../src/cloud/forwarding-store.js';
 import { ForwardingLive } from '../src/cloud/forwarding-live.js';
-import { CallMonitor, MONITORING_CONSENT, type Assessment } from '../src/cloud/monitoring.js';
+import { CallMonitor, MONITOR_POLICY_VERSION, MONITORING_CONSENT, type Assessment } from '../src/cloud/monitoring.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import type { AuthProvider } from '../src/auth.js';
@@ -108,7 +108,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     await heard(id, 'Hello? Is anyone there?');
     expect((await db.collection('monitoredCalls').doc(id).get()).exists).toBe(false);
   });
-  it('keeps only final, signed, same-call speech, encrypted, and runs one check at a time', async () => {
+  it('keeps only final, signed, same-call speech, encrypted, and runs at most two checks at once', async () => {
     await optIn(); const { id } = await connect();
     expect((await post(`monitor/${id}`, { Transcript: 'unsigned words', IsFinal: 'true' }, false)).statusCode).toBe(403);
     await heard(id, 'partial words', { IsFinal: 'false' });
@@ -119,7 +119,45 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     const stored = (await db.collection('monitoredCalls').doc(id).get()).data()!;
     expect(JSON.stringify(stored)).not.toContain('Dan');
     expect(s.vault.open(stored.transcriptEnc, `monitor:${id}`)).toBe('Caller: Hi, it is Dan from the bank.\nRecipient: Oh, hello Dan.');
-    expect(await jobs()).toHaveLength(1);
+    expect(stored.heardAt).toEqual([now, now]);
+    await heard(id, 'How can I help?', { Track: 'outbound' });
+    expect(await jobs()).toHaveLength(2);
+  });
+  it('starts a check for new speech while another runs, and queues the rest once one finishes', async () => {
+    await optIn(); const { id } = await connect();
+    await heard(id, 'Hi Grandma, it is Emma.');
+    await monitor.check(`${id}-1`, async () => {
+      await heard(id, 'How are you doing?');
+      await heard(id, 'Can you pick me up from practice at five?');
+      expect((await jobs()).map(d => d.id).sort()).toEqual([`${id}-1`, `${id}-2`]);
+      return { action: 'continue', concern: 'none', evidence: '' };
+    });
+    expect((await jobs()).map(d => d.id).sort()).toEqual([`${id}-2`, `${id}-3`]);
+  });
+  it('lets a lapsed check be replaced instead of blocking new speech', async () => {
+    await optIn(); const { id } = await connect();
+    await heard(id, 'Hi, it is Dan.'); await heard(id, 'From the bank.');
+    expect(await jobs()).toHaveLength(2);
+    now += 45_001; await heard(id, 'Read me the code.');
+    expect((await jobs()).map(d => d.id)).toContain(`${id}-3`);
+  });
+  it('records when the quoted request arrived and when the warning started, without its words', async () => {
+    await optIn(); const { id } = await connect();
+    await heard(id, 'Hi Margaret, it is Dan from the bank.', { Track: 'inbound' });
+    now += 2000; const requestAt = now;
+    await heard(id, 'Read me the six digit code we just texted you.', { Track: 'inbound' });
+    now += 1500;
+    await monitor.check(`${id}-1`, async () => ({ action: 'intervene', concern: 'code_or_password', evidence: 'read me the six digit code' }));
+    const call = (await s.callRef(id).get()).data()!;
+    expect(call).toMatchObject({ monitorPolicyVersion: MONITOR_POLICY_VERSION, monitorEvidenceAt: requestAt, monitorIntervenedAt: now, monitorRedirectedAt: now });
+    expect(JSON.stringify(call)).not.toContain('six digit');
+  });
+  it('leaves the arrival time out when the quote cannot be placed', async () => {
+    await optIn(); const { id } = await connect();
+    await heard(id, 'This is the fraud team. Read me the code.');
+    await monitor.intervene(id, 'code_or_password');
+    const call = (await s.callRef(id).get()).data()!;
+    expect(call.monitorEvidenceAt).toBeUndefined(); expect(call.monitorRedirectedAt).toBe(now);
   });
   it('re-checks speech that arrived during a check and keeps a real conversation going', async () => {
     await optIn(); const { id } = await connect();

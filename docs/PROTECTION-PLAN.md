@@ -23,14 +23,23 @@ Only one check runs at a time, so a check still working on earlier small talk de
   - **Measured:** in a 12-request comparison on two monitor cases, the median model time was 1.1 s with Fast against 2.3 s without. All 12 decisions were correct, and OpenAI reported the `fast` tier.
   - **Logging:** each check logs its time and the tier OpenAI used. `default` means Fast mode was downgraded.
   - **Free checks:** `check-monitor-policy.mjs --provider go` leaves out the tier.
-- **Measure first.**
-  - Keep each transcript segment's arrival time, but not its text, next to the encrypted transcript.
-  - On intervention, find the segment that holds the evidence quote, and record the milliseconds from its arrival to the redirect as an event, with no content.
-  - Also log each model call's latency.
+- **Measure first. Built October 11, not deployed.**
+  - **Arrival times:** each transcript line's arrival time is kept next to the encrypted transcript (`heardAt`), without its text.
+  - **On intervention:** `evidenceHeardAt()` finds the earliest line, or pair of adjacent lines, that holds the evidence quote. The call stores:
+    - `monitorEvidenceAt`: when that line arrived. It's left out when the quote can't be placed.
+    - `monitorIntervenedAt`: when the check decided.
+    - `monitorRedirectedAt`: when Telnyx accepted the redirect.
+  - **Logs, all without content:**
+    - `monitor_intervention`: the three gaps between those times
+    - `monitor_check`: queue delay, which includes cold starts, and check time
+    - `monitor_assessment`: model time and tier
+  - **Reading it:** `check-live-calls.mjs` shows the times and these logs.
+  - **Limit:** arrival is when the final transcript reached Shield. The time Telnyx and Soniox take to transcribe speech isn't included.
   - **Target:** the warning starts under 3 s after the request is spoken.
-- **No head-of-line blocking.** Start a check for each new segment even while one is running, with at most 2 at once. `intervene()` is already idempotent through `monitorIntervenedAt`.
-- **Cold starts.** If measurements show cold starts matter, keep one `monitorConnectedCall` instance warm, or run the check in `shieldApi`, which stays warm during a call.
-- **Interim transcripts.** Find out whether Telnyx and Soniox send them. If they do, check before the final segment.
+- **No head-of-line blocking. Built October 11, not deployed.** New speech that no queued check covers starts a check at once, with at most 2 at a time. A check whose 45 s lease lapses stops counting. `intervene()` is still idempotent through `monitorIntervenedAt`.
+- **Cold starts.** If `monitor_check` queue delays show cold starts matter, keep one `monitorConnectedCall` instance warm, or run the check in `shieldApi`, which stays warm during a call.
+- **Interim transcripts.** Telnyx's `<Transcription>` docs say `interimResults` applies only to the Google engine (engine A). With Soniox, Shield gets final segments only. A no-content `monitor_interim_transcript` log records the first non-final callback per call, to confirm this on a real call.
+- **Version:** `MONITOR_POLICY_VERSION` (`2026-10-11-monitor-v1`, the current prompt) is stored on each monitored call and printed by `check-monitor-policy.mjs`.
 
 **Check:**
 - `node scripts/check-monitor-policy.mjs --provider go --repeat 3` still keeps real conversations and stops scams.
@@ -55,7 +64,7 @@ Also add test cases for requests aimed at later ("go to the bank tomorrow and ta
 - Keep `scripts/fixtures/monitor-cases.mjs` under 25 cases by swapping cases in.
 - Write a fresh held-out set for the new concerns.
 - Report real conversations kept and scams stopped separately.
-- Add a `MONITOR_POLICY_VERSION` constant so monitoring results can be traced to a prompt version, as screening already is.
+- Bump `MONITOR_POLICY_VERSION` (added October 11) for the new prompt.
 
 ## 3. Make sure scammers can't call back
 

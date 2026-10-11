@@ -8,9 +8,11 @@ import type { ForwardingCall, ForwardingStore } from './forwarding-store.js';
 // Opt-in protection for calls the recipient accepted: Telnyx transcribes both sides, Luna checks the
 // conversation, and a clear scam request ends the call with a spoken warning to her.
 export const MONITORING_CONSENT = 'shield-monitoring-2026-10-v1';
+/** Bump for every change to MONITOR_INSTRUCTIONS, the assessment schema or the warnings, as SCREENING_POLICY_VERSION is for screening. */
+export const MONITOR_POLICY_VERSION = '2026-10-11-monitor-v1';
 /** OpenAI Fast mode: the recipient may answer a scam request within seconds. `fast` is an alias, but some routes reject it. */
 const FAST_TIER = 'priority';
-export const MONITOR_LIMITS = { keepChars: 6_000, segmentChars: 2_000, leaseMs: 45_000, maxChecks: 240, transcriptTtlMs: 2 * 3600_000, modelMs: 25_000 } as const;
+export const MONITOR_LIMITS = { keepChars: 6_000, segmentChars: 2_000, leaseMs: 45_000, maxChecks: 240, parallelChecks: 2, transcriptTtlMs: 2 * 3600_000, modelMs: 25_000 } as const;
 
 export const assessmentSchema = z.object({
   action: z.enum(['continue', 'intervene']),
@@ -71,10 +73,27 @@ export function warrantsIntervention(a: Assessment | undefined, transcript: stri
 export const monitoringEnabledFor = (person: DocumentData | undefined) =>
   person?.callMonitoring?.enabled === true && person.callMonitoring.consent === MONITORING_CONSENT;
 
+/**
+ * `running` holds each queued check's lease and how much speech it was queued for. `heardAt` holds when each
+ * transcript line still kept arrived (oldest first): timing only, never text.
+ */
 type MonitorDoc = { callId: string; participantId: string; transcriptEnc: string; chars: number; checkedChars: number;
-  checkingUntil: number; checks: number; expiresAt: number };
+  running: Record<string, { until: number; chars: number }>; checks: number; heardAt: number[]; expiresAt: number };
 
-/** Transcripts exist only while a monitored call is connected; one check runs at a time and re-runs when speech arrives. */
+/**
+ * When the words an intervention quotes first arrived: the earliest line, or pair of adjacent lines, that holds them.
+ * Undefined when they can't be placed, so a guess is never reported as a measurement.
+ */
+export function evidenceHeardAt(transcript: string, heardAt: readonly number[], evidence: string): number | undefined {
+  // Speaker labels would sit inside a quote that runs across two lines ("four seven two" / "nine one six").
+  const lines = transcript.split('\n').map(line => line.replace(/^(Caller|Recipient|Speaker): /, '')), offset = heardAt.length - lines.length;
+  const at = (i: number) => heardAt[offset + i];
+  for (let i = 0; i < lines.length; i++) if (supportedEvidence(evidence, lines[i]!)) return at(i);
+  for (let i = 1; i < lines.length; i++) if (supportedEvidence(evidence, `${lines[i - 1]} ${lines[i]}`)) return at(i);
+  return undefined;
+}
+
+/** Transcripts exist only while a monitored call is connected. New speech starts a check at once, up to two at a time. */
 export class CallMonitor {
   constructor(readonly forwarding: ForwardingStore, readonly telnyx: Pick<TelnyxVoice, 'update'> = new TelnyxVoice(forwarding.store.config)) {}
   get store() { return this.forwarding.store; }
@@ -87,7 +106,8 @@ export class CallMonitor {
     if (!this.available) return false;
     const now = this.store.now();
     const call = await this.forwarding.transition(id, (c, _control, person) => c.monitoringStartedAt ? {}
-      : c.state === 'offering' && monitoringEnabledFor(person) ? { monitoringStartedAt: now, events: [...c.events, { kind: 'monitoring_disclosed', at: now }] } : undefined);
+      : c.state === 'offering' && monitoringEnabledFor(person) ? { monitoringStartedAt: now, monitorPolicyVersion: MONITOR_POLICY_VERSION,
+        events: [...c.events, { kind: 'monitoring_disclosed', at: now }] } : undefined);
     return !!call?.monitoringStartedAt;
   }
 
@@ -106,22 +126,31 @@ export class CallMonitor {
       const previous = m ? s.vault.open(m.transcriptEnc, `monitor:${id}`) : '';
       const transcript = `${previous}${previous ? '\n' : ''}${speaker}: ${clean}`.slice(-MONITOR_LIMITS.keepChars);
       const next: MonitorDoc = { callId: id, participantId: call.participantId, transcriptEnc: s.vault.seal(transcript, `monitor:${id}`),
-        chars: (m?.chars ?? 0) + clean.length, checkedChars: m?.checkedChars ?? 0, checkingUntil: m?.checkingUntil ?? 0, checks: m?.checks ?? 0,
-        expiresAt: now + MONITOR_LIMITS.transcriptTtlMs };
+        chars: (m?.chars ?? 0) + clean.length, checkedChars: m?.checkedChars ?? 0, running: m?.running ?? {}, checks: m?.checks ?? 0,
+        heardAt: [...(m?.heardAt ?? []), now].slice(-transcript.split('\n').length), expiresAt: now + MONITOR_LIMITS.transcriptTtlMs };
       this.enqueueIfDue(tx, next, now);
       tx.set(this.monitorRef(id), next);
     });
   }
 
+  /**
+   * Queue a check when speech arrived that no running or finished check covers. A check still working on earlier
+   * small talk doesn't hold up the one with the request, but at most `parallelChecks` run at once.
+   */
   private enqueueIfDue(tx: Transaction, m: MonitorDoc, now: number) {
-    if (m.chars <= m.checkedChars || m.checkingUntil > now || m.checks >= MONITOR_LIMITS.maxChecks) return;
-    m.checks += 1; m.checkingUntil = now + MONITOR_LIMITS.leaseMs;
-    tx.create(this.jobRef(`${m.callId}-${m.checks}`), { callId: m.callId, createdAt: now, expiresAt: now + MONITOR_LIMITS.transcriptTtlMs });
+    const running = Object.fromEntries(Object.entries(m.running ?? {}).filter(([, r]) => r.until > now));
+    m.running = running;
+    const covered = Math.max(m.checkedChars, ...Object.values(running).map(r => r.chars));
+    if (m.chars <= covered || Object.keys(running).length >= MONITOR_LIMITS.parallelChecks || m.checks >= MONITOR_LIMITS.maxChecks) return;
+    m.checks += 1;
+    const jobId = `${m.callId}-${m.checks}`;
+    m.running = { ...running, [jobId]: { until: now + MONITOR_LIMITS.leaseMs, chars: m.chars } };
+    tx.create(this.jobRef(jobId), { callId: m.callId, createdAt: now, expiresAt: now + MONITOR_LIMITS.transcriptTtlMs });
   }
 
   async check(jobId: string, assess: (transcript: string) => Promise<Assessment | undefined>) {
-    const s = this.store, job = this.jobRef(jobId);
-    const callId = (await job.get()).data()?.callId as string | undefined;
+    const s = this.store, job = this.jobRef(jobId), started = s.now();
+    const queued = (await job.get()).data(), callId = queued?.callId as string | undefined;
     try {
       if (!callId) return;
       const [callDoc, monitorDoc] = await s.db.getAll(s.callRef(callId), this.monitorRef(callId));
@@ -129,38 +158,62 @@ export class CallMonitor {
       if (!call || !m || call.state !== 'accepted' || call.monitorIntervenedAt) return;
       const transcript = s.vault.open(m.transcriptEnc, `monitor:${callId}`);
       const assessment = await assess(transcript);
-      if (warrantsIntervention(assessment, transcript)) { await this.intervene(callId, assessment.concern); return; }
-      await this.settle(callId, m.chars);
+      // Timing only. queuedMs includes any cold start of the function that runs the check.
+      console.info(JSON.stringify({ event: 'monitor_check', queuedMs: started - queued!.createdAt, checkMs: s.now() - started }));
+      if (warrantsIntervention(assessment, transcript)) {
+        await this.intervene(callId, assessment.concern, evidenceHeardAt(transcript, m.heardAt ?? [], assessment.evidence)); return;
+      }
+      await this.settle(callId, jobId, m.chars);
     } finally { await job.delete(); }
   }
 
-  /** Release the lease and immediately check any speech that arrived while the model was working. */
-  private async settle(id: string, checkedChars: number) {
+  /** Release this check's lease and immediately check any speech no other check covers. */
+  private async settle(id: string, jobId: string, checkedChars: number) {
     const s = this.store, now = s.now();
     await s.db.runTransaction(async tx => {
       const [callDoc, monitorDoc] = await tx.getAll(s.callRef(id), this.monitorRef(id));
       const call = callDoc!.data() as ForwardingCall | undefined, m = monitorDoc!.data() as MonitorDoc | undefined;
       if (!m) return;
-      const next = { ...m, checkedChars: Math.max(m.checkedChars, checkedChars), checkingUntil: 0 };
+      const { [jobId]: _done, ...running } = m.running ?? {};
+      const next = { ...m, checkedChars: Math.max(m.checkedChars, checkedChars), running };
       if (call?.state === 'accepted' && !call.monitorIntervenedAt) this.enqueueIfDue(tx, next, now);
       tx.set(this.monitorRef(id), next);
     });
   }
 
-  async intervene(id: string, concern: Concern) {
-    const c = this.store.config, now = this.store.now();
+  /** `evidenceAt` is when the quoted words arrived; with the redirect time it measures how fast the warning started. */
+  async intervene(id: string, concern: Concern, evidenceAt?: number) {
+    const s = this.store, c = s.config, now = s.now();
     const call = await this.forwarding.transition(id, current => current.state === 'accepted' && !current.monitorIntervenedAt
-      ? { monitorIntervenedAt: now, monitorConcern: concern, reason: 'monitor_intervened', events: [...current.events, { kind: 'monitor_intervened', at: now }] } : undefined,
+      ? { monitorIntervenedAt: now, monitorConcern: concern, ...(evidenceAt ? { monitorEvidenceAt: evidenceAt } : {}), reason: 'monitor_intervened',
+        events: [...current.events, { kind: 'monitor_intervened', at: now }] } : undefined,
       (tx, next, personExists) => this.forwarding.rememberScam(tx, next, 'monitor_intervened', personExists));
     if (!call) return;
+    let redirected = false;
     try {
       if (!call.childSid) throw new Error('child_missing');
       // Her leg leaves the bridge to hear the warning; that ends the caller's Dial, which hangs up on them.
       await this.telnyx.update(call.childSid, { Url: `${c.PUBLIC_BASE_URL}/forwarding/${c.TRIAL_PROXY_SECRET}/monitor-warning/${id}`, Method: 'POST' });
+      redirected = true;
     } catch {
       await this.telnyx.update(call.parentSid, { Status: 'completed' }).catch(() => undefined);
     }
+    const redirectedAt = s.now();
+    await s.callRef(id).update({ monitorRedirectedAt: redirectedAt }).catch(() => undefined);
+    // Target: the warning starts under 3 s after the request. Arrival is when the final transcript reached Shield,
+    // so the time Telnyx took to transcribe the speech is not included.
+    console.info(JSON.stringify({ event: 'monitor_intervention', redirected, evidenceToDecisionMs: evidenceAt ? now - evidenceAt : null,
+      decisionToRedirectMs: redirectedAt - now, evidenceToRedirectMs: evidenceAt ? redirectedAt - evidenceAt : null }));
     await this.end(id);
+  }
+
+  /** Does Telnyx send interim transcripts? Logged once per call per instance, without text, to find out on a real call. */
+  private interimLogged = new Set<string>();
+  interim(id: string) {
+    if (this.interimLogged.has(id)) return;
+    if (this.interimLogged.size > 500) this.interimLogged.clear();
+    this.interimLogged.add(id);
+    console.info(JSON.stringify({ event: 'monitor_interim_transcript' }));
   }
 
   async end(id: string) { await this.monitorRef(id).delete(); }

@@ -11,7 +11,8 @@ export const forwardingConsent = `${FORWARDING_CONSENT}-telnyx-v1`;
 export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx'; parentSid: string; eligible: boolean;
   liveConnectedAt?: number; liveFinishedAt?: number; screeningModel?: string; screeningCaution?: boolean;
   childSid?: string; acceptedAt?: number; voicemail?: { id: string; duration: number; status: string; heardAt: number | null };
-  monitoringStartedAt?: number; monitorIntervenedAt?: number; monitorConcern?: string };
+  monitoringStartedAt?: number; monitorPolicyVersion?: string; monitorIntervenedAt?: number; monitorConcern?: string;
+  monitorEvidenceAt?: number; monitorRedirectedAt?: number };
 
 /** A number that a scam block or an intervention stopped is ended on sight for this long. Scammers borrow real numbers, so it expires. */
 export const BLOCK_MS = 180 * 86400_000;

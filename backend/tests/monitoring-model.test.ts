@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { assessCall, monitorRequest, warningText, warrantsIntervention, type Assessment } from '../src/cloud/monitoring.js';
+import { assessCall, evidenceHeardAt, monitorRequest, warningText, warrantsIntervention, type Assessment } from '../src/cloud/monitoring.js';
 
 const transcript = 'Caller: Hi Margaret, it is Dan from the bank.\nRecipient: Oh hello.\nCaller: I texted you a code, can you read me that six digit code?';
 const intervene: Assessment = { action: 'intervene', concern: 'code_or_password', evidence: 'can you read me that six digit code' };
@@ -41,6 +41,16 @@ describe('connected-call monitoring model', () => {
     expect(warrantsIntervention({ ...intervene, evidence: 'from the bank ... read me that six digit code' }, transcript)).toBe(true);
     expect(warrantsIntervention({ ...intervene, evidence: 'it is Dan; can you read me that six digit code' }, transcript)).toBe(true);
     expect(warrantsIntervention({ ...intervene, evidence: 'buy gift cards ... wire the money' }, transcript)).toBe(false);
+  });
+  it('times an intervention from the earliest line, or adjacent pair, that holds its quote', () => {
+    const lines = 'Caller: Hi, it is Dan.\nCaller: Read me the code we texted.\nRecipient: It says four seven two\nRecipient: nine one six\nCaller: Read me the code we texted.';
+    const times = [100, 200, 300, 400, 500];
+    expect(evidenceHeardAt(lines, times, 'Read me the code we texted')).toBe(200);
+    expect(evidenceHeardAt(lines, times, 'four seven two nine one six')).toBe(400);
+    expect(evidenceHeardAt(lines, times, 'send gift cards')).toBeUndefined();
+    // Older lines dropped from the kept transcript: times align from the end.
+    expect(evidenceHeardAt(lines.split('\n').slice(-2).join('\n'), [50, ...times].slice(-2), 'nine one six')).toBe(400);
+    expect(evidenceHeardAt(lines, [], 'Read me the code we texted')).toBeUndefined();
   });
   it('speaks fixed wording that never repeats the caller', () => {
     expect(warningText('code_or_password')).toContain('asked for a code or password');

@@ -86,6 +86,13 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
   - **Not run:** a voice benchmark for v15.
   - **To deploy:** Functions, the bridge, and Firestore indexes (a collection-group index for cleanup).
 
+- **Monitoring timing and parallel checks (code October 11, not deployed):** protection plan section 1.
+  - **Timing:** a monitored call records when the quoted request arrived and when the warning redirect started. Logs carry queue delay, check time and model time, without content.
+  - **Parallel checks:** up to 2 checks run at once, so a check on small talk doesn't delay the one with the request.
+  - **Version:** `MONITOR_POLICY_VERSION` is stored on each monitored call.
+  - **Prompt:** the monitoring prompt is unchanged.
+  - **Tests:** `npm run check` (96 unit tests) and `npm run test:firebase` (70 tests) passed.
+
 ## Not yet verified
 
 - **Automatic keypad prefill:** direct URL forms failed and the native contact-card carrier action was blocked. Each step now copies its code and shows the Phone banner automatically; one Open tap launches Phone. Manual paste remains necessary. This was verified with synthetic codes on the enrolled phone.

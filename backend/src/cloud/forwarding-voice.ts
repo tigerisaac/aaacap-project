@@ -163,6 +163,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     voice.post('/forwarding/:secret/monitor/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
       if (b.IsFinal === 'true' && b.Transcript?.trim()) await monitor.transcript(id, b.CallSid!, b.Transcript, b.Track ?? b.TranscriptionTrack);
+      else if (b.Transcript?.trim()) monitor.interim(id);
       return xml().toString();
     });
     voice.post('/forwarding/:secret/monitor-warning/:id', async request => {
