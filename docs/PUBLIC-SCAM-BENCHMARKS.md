@@ -279,6 +279,58 @@ One v23 result produced no decision and received no identification credit. It is
 
 Raw results: `artifacts/lean-v23/masc/` and `baseline-masc/`. Request hashes, source hashes and raw-result hashes are recorded in `artifacts/lean-v23/validation-summary.json`. The final request and all frozen source files were checked unchanged after evaluation. The broader development/held-out/caution results and unchanged runtime settings are in [Screening](SCREENING.md#lean-decision-prompt-candidate-v23-october-11).
 
-**FTC/NC State comparison pending:** automatic approval review rejected the attempted rerun because AGENTS.md prohibits real call transcripts in evaluations. The script did not execute and made no model requests. An explicit exception for this previously used public-domain dataset has been requested. Historical v20 numbers above must not be treated as a v23 result. The second benchmark is not yet validated.
+**FTC/NC State comparison completed with the owner’s explicit public-dataset exception.** Both requests ran all 724 distinct English recordings three times, 2,172 trials per version. There were no provider failures or missing outcomes, and the request/source hashes remained unchanged.
+
+| Robocall measure | Contemporaneous v20 | Lean v23 |
+|---|---:|---:|
+| Identified, including clarification | 2,166/2,172 | 2,161/2,172 |
+| Completed stops | 2,083/2,172 | 2,069/2,172 |
+| Clarifications | 83 | 92 |
+| Harmful approvals | 6 | 11 |
+| Call-weighted identified | 4,122/4,134 | 4,088/4,134 |
+| Call-weighted completed stops | 3,916/4,134 | 3,902/4,134 |
+
+The candidate failed the requested no-regression comparison and was rejected. A subsequent, more conservative v24 edit restores v20’s core approval, blocking, manipulation and sensitive-claim paragraphs verbatim, preserving smaller reductions in supporting explanations. No public dialogue was inspected or incorporated into that restoration. The public sets are regression/selection checks, not fresh unseen evidence. Raw v23 and baseline runs are in `artifacts/lean-v23/robocall/` and `baseline-robocall/`; `public-comparison.json` records matched case identities, per-pass metrics and results hashes.
 
 No deployment, voice benchmark or real phone call was performed. This remains an offline text candidate, not live-call evidence.
+
+## Conservative v24 comparison, October 11
+
+v24 retains v20's core decision paragraphs and reduces only supporting wording: 9,311 instruction characters versus 10,508 (11.4% shorter). The request was frozen before evaluation; SHA-256 `7d0aaabe87091b19facc098cf3b8627125e4a5a1cdb11022df566a6a76e773af`. Public dialogues and held-out probes were not incorporated into the rewrite. These public sets are regression checks used to accept or reject compression, not fresh unseen evidence.
+
+Go reached persistent HTTP 429 limits. The interrupted v24 runs remain in `artifacts/lean-v24/masc/` (698 completed rows, 48 failures) and `robocall/` (669 rows, 48 failures). They are not completed benchmarks and are not pooled into the comparison below. The owner explicitly authorized both the public FTC/NC State dataset exception and GPT-6 Luna at medium reasoning through their subscription when Go reached limits.
+
+Both frozen prompts therefore ran again through the same isolated Codex subscription evaluator. The local preflight verified the exact instruction text and caller input with no global project notes or unrelated tools. Codex changes function-schema encoding and output limits; production decision validation still runs. Those differences affect both prompts equally, but these scores must not be compared directly with Go scores. See [Screening](SCREENING.md#conservative-lean-candidate-v24-october-11-text-only) for the transport details and synthetic red-team results.
+
+All 320 MASC cases ran three times per version, 960 completed trials each:
+
+| MASC screening measure | v20, subscription | Lean v24, subscription |
+|---|---:|---:|
+| Scams identified, including clarification | 479/480 | 479/480 |
+| Completed blocks/holds | 460/480 | 453/480 |
+| Clarifications | 19 | 26 |
+| Harmful approvals | 0 | 0 |
+| No decision on a labeled scam | 1 | 1 |
+| Ordinary calls offered | 217/240 | 219/240 |
+| Ads blocked, separate score | 119/120 | 120/120 |
+| Provider / validation failures | 0 / 0 | 0 / 0 |
+
+The identification score is preserved, with two more ordinary offers and one more ad blocked. Completed stops are seven lower, replaced by clarifications; they are not counted as stops. No failed or missing outcome was replaced. Results are in `artifacts/lean-v24/codex-masc/` and `codex-baseline-masc/`.
+
+Interrupted subscription runs were resumed solely to increase parallelism after verifying that every completed result remained byte-for-byte intact. Only missing case/run pairs were scheduled; canceled in-flight requests may have been requested again. Original manifests are unchanged, and `resume-events.jsonl` records preserved-prefix hashes and concurrency changes. All runs use the same frozen prompts and scoring.
+
+The full subscription robocall comparison completed 2,172 trials per version:
+
+| Robocall measure | v20, subscription | Lean v24, subscription |
+|---|---:|---:|
+| Identified, including clarification | 2,169/2,172 | 2,168/2,172 |
+| Completed blocks/holds | 2,107/2,172 | 2,134/2,172 |
+| Clarifications | 62 | 34 |
+| Harmful approvals | 3 | 4 |
+| Call-weighted identified | 4,126/4,134 | 4,130/4,134 |
+| Call-weighted completed stops | 3,992/4,134 | 4,062/4,134 |
+| Provider failures / other outcomes | 0 / 0 | 0 / 0 |
+
+**The owner selected the 11.4% cut after explicitly accepting the one-trial identification difference:** “Allow this difference and keep the 11.4% cut”. The original strict observed-score gate remains false in the audit; this is an accepted tradeoff, not a claim of identical performance or a statistically established improvement. Completed robocall stops and the call-weighted score improved, while MASC completed stops decreased by seven as shown above. The complete matched results and preserved-prefix checks are recorded in `artifacts/lean-v24/public-comparison.json`. Production prompt and grading sources remained unchanged throughout those evaluations.
+
+The selected v24 wording is adopted unchanged as **v26** (`2026-10-11-general-v26`), with a version bump after the intervening v25 experiment. The final model request exactly matches the frozen v24 request, including all non-instruction settings. v25 was superseded and its partial artifacts are retained separately, not counted as completed validation. The owner's acceptance and final request identity are recorded in `artifacts/lean-v24/final-adoption.json`. No voice validation, deployment or phone call was performed.

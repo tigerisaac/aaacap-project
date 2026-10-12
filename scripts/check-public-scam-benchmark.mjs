@@ -1,11 +1,12 @@
 // Offline, full-conversation diagnostics, NOT an early-screen or real-call safety score.
 // Usage: node scripts/check-public-scam-benchmark.mjs [--prepare-only] [--mode both|screening|monitor]
-//   [--repeat N] [--concurrency N] [--limit-per-type N] [--provider go|openai] [--out directory] [--request frozen-screening.json]
+//   [--repeat N] [--concurrency N] [--limit-per-type N] [--provider go|openai|codex] [--out directory] [--request frozen-screening.json] [--resume]
 // Default: pinned MASC test split, all 320 cases, both production prompts, medium reasoning, free Go.
 import { mkdir, readFile, writeFile, appendFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { liveSessionConfig, SCREENING_POLICY_VERSION } from '../dist/live/policy.js';
 import { screeningTarget } from './lib/screening-target.mjs';
+import { benchmarkCheckpoint } from './lib/benchmark-checkpoint.mjs';
 import { monitorTarget } from './lib/monitor-target.mjs';
 import { MASC, MASC_SCORING, digest, parseCSV, mascCase, summarizeMASC } from './lib/public-scam-benchmark.mjs';
 
@@ -13,13 +14,15 @@ const args = process.argv.slice(2);
 const option = name => { const i = args.indexOf(name); return i < 0 ? undefined : args.splice(i, 2)[1]; };
 const flag = name => { const i = args.indexOf(name); if (i < 0) return false; args.splice(i, 1); return true; };
 const integer = (value, fallback, max) => { const n = value === undefined ? fallback : Number(value); if (!Number.isInteger(n) || n < 1 || n > max) throw new Error('invalid_count'); return n; };
+const resume = flag('--resume');
 const prepare = flag('--prepare-only'), provider = option('--provider') ?? 'go', mode = option('--mode') ?? 'both';
 const repeat = integer(option('--repeat'), 1, 100), concurrency = integer(option('--concurrency'), 4, 8);
 const perType = integer(option('--limit-per-type'), 320, 320);
 const out = resolve(option('--out') ?? `artifacts/public-benchmarks/masc-${Date.now()}`);
 const frozen = option('--request');
 if (frozen && mode === 'monitor') throw new Error('screening_request_requires_screening_mode');
-if (args.length || !['both', 'screening', 'monitor'].includes(mode) || !['go', 'openai'].includes(provider)) throw new Error('invalid_options');
+if (args.length || !['both', 'screening', 'monitor'].includes(mode) || !['go', 'openai', 'codex'].includes(provider)) throw new Error('invalid_options');
+if (provider === 'codex' && mode !== 'screening') throw new Error('subscription_fallback_is_screening_only');
 const cache = 'artifacts/public-benchmarks'; await mkdir(cache, { recursive: true });
 const sourceFile = `${cache}/masc-${MASC.revision}.csv`, manifestFile = `${sourceFile}.json`;
 const sourceURL = `https://huggingface.co/datasets/${MASC.dataset}/resolve/${MASC.revision}/${MASC.file}`;
@@ -48,12 +51,11 @@ console.log(JSON.stringify({ dataset: MASC.dataset, revision: MASC.revision, row
 if (prepare) process.exit(0);
 await mkdir(out, { recursive: true });
 const resultsFile = `${out}/results.jsonl`;
-// Exclusive create avoids silently overwriting an earlier run.
-await writeFile(resultsFile, '', { flag: 'wx' });
+// Checkpoint creation remains exclusive unless --resume explicitly continues an interrupted run.
 const request = frozen ? JSON.parse(await readFile(frozen, 'utf8')) : liveSessionConfig().delegation.responses;
-const screening = mode !== 'monitor' ? await screeningTarget(provider, { effort: 'medium', request }) : undefined;
+const screening = mode !== 'monitor' ? await screeningTarget(provider, { effort: 'medium', request, subscriptionOneShot: true }) : undefined;
 const monitor = mode !== 'screening' ? await monitorTarget(provider) : undefined;
-const run = { ...manifest, provider, model: screening?.model ?? monitor.model, effort: 'medium', mode, repeat, concurrency,
+let run = { ...manifest, provider, model: screening?.model ?? monitor.model, effort: 'medium', transport: screening?.transport, mode, repeat, concurrency,
   scoring: MASC_SCORING,
   screeningVersion: frozen ? 'frozen-request' : SCREENING_POLICY_VERSION, monitorVersion: monitor?.policyVersion,
   frozenRequest: frozen, screeningRequestHash: screening ? digest(JSON.stringify(request)) : undefined,
@@ -63,9 +65,12 @@ const run = { ...manifest, provider, model: screening?.model ?? monitor.model, e
   scoreGroups: { scams: cases.filter(c => c.label === 1).length, ordinary: cases.filter(c => c.screeningGroup === 'legitimate').length,
     ads: cases.filter(c => c.type === 'insurance').length, wrongNumbers: cases.filter(c => c.type === 'wrong').length },
   interpretation: 'Offline completed-call diagnostic; screening sees all caller turns, monitoring sees the production rolling tail of both sides. No early-intervention or voice claim. Insurance sales excluded from scam/ordinary scores and scored separately for ad blocking at screening. Wrong numbers excluded from ordinary scores. Public test results must never tune the prompt.' };
-await writeFile(`${out}/manifest.json`, JSON.stringify(run, null, 2));
-const jobs = Array.from({ length: repeat }, (_, i) => cases.map(c => ({ c, run: i + 1 }))).flat();
-const results = []; let cursor = 0, stopped = false;
+const allJobs = Array.from({ length: repeat }, (_, i) => cases.map(c => ({ c, run: i + 1 }))).flat();
+let checkpoint;
+try { checkpoint = await benchmarkCheckpoint(out, run, allJobs, resume); }
+catch (error) { await screening?.close?.(); throw error; }
+const { results, jobs, planned } = checkpoint; run = checkpoint.run;
+let cursor = 0, stopped = false;
 let writes = Promise.resolve();
 async function worker() {
   while (!stopped && cursor < jobs.length) {
@@ -76,19 +81,20 @@ async function worker() {
       result.screening = { actual: step.kind === 'decision' ? step.decision.action : step.kind === 'question' ? 'continue' : step.kind,
         reason: step.decision?.reason, failure: step.failure, questions: state.questions, researches: state.researches };
     }
-    if (monitor && !/^http_(401|402|403)$/.test(result.screening?.failure ?? '')) {
+    if (monitor && !/^(http_(401|402|403|429)|codex_.*)$/.test(result.screening?.failure ?? '')) {
       const step = await monitor.assess(c.transcript);
       result.monitor = { actual: step.actual, concern: step.assessment?.concern, failure: step.failure };
     }
     result.elapsedMs = Date.now() - start; results.push(result);
     // Console and result rows contain no conversation text, quotes, secrets, numbers or URLs from callers.
     writes = writes.then(() => appendFile(resultsFile, `${JSON.stringify(result)}\n`));
-    if (Object.values(result).some(v => v && /^http_(401|402|403)$/.test(v.failure ?? ''))) stopped = true;
-    if (results.length % 20 === 0 || stopped) console.log(JSON.stringify({ completed: results.length, planned: jobs.length, stopped }));
+    if (Object.values(result).some(v => v && /^(http_(401|402|403|429)|codex_.*)$/.test(v.failure ?? ''))) stopped = true;
+    if (results.length % 20 === 0 || stopped) console.log(JSON.stringify({ completed: results.length, planned, stopped }));
   }
 }
-await Promise.all(Array.from({ length: concurrency }, worker)); await writes;
-const summary = { ...run, completedAt: new Date().toISOString(), completed: results.length, planned: jobs.length, stopped,
+try { await Promise.all(Array.from({ length: concurrency }, worker)); await writes; }
+finally { await screening?.close?.(); }
+const summary = { ...run, completedAt: new Date().toISOString(), completed: results.length, planned, stopped,
   ...summarizeMASC(results),
 };
 await writeFile(`${out}/summary.json`, JSON.stringify(summary, null, 2));
