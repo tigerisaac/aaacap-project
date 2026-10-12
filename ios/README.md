@@ -35,7 +35,7 @@ Tokens stay in device-only Keychain storage. The app rejects HTTP redirects and 
 
 ## App behavior
 
-- **Today:** weekly counts and recent forwarded-call outcomes. Held, connected, and voicemail use coral, teal, and violet alongside text and symbols.
+- **Today:** current screening-window/setup status, a setup check, a weekly message count, and recent forwarded-call outcomes. Missing or stale status is shown as unavailable. Held, connected, and voicemail use coral, teal, and violet alongside text and symbols.
 - **Calls:** filters, history, short explanations, a call timeline, and authorized voicemail playback/deletion. History includes only calls reaching Shield.
 - **Check:** pasted text or local OCR of a selected screenshot. The user explicitly agrees before text is sent for analysis; a screenshot image is not uploaded. Checks cannot identify a sender as genuine.
 - **People:** participant switching, one-use invitations, optional voicemail sharing and revocation. Family members can inspect shared activity; phone settings and independent contacts remain with the participant.
@@ -54,6 +54,8 @@ Physical link experiments on October 10 rejected `mobilephone://`, `mobilephone-
 Manual saved-number calls require the user to tap a native call button. No incoming caller-provided number becomes an approved callback destination. Native Contacts access is requested only to save the Shield DID; the existing address book is not uploaded.
 
 APNs alerts contain no caller/message details. Registration is refreshed for authorized people after sign-in/foreground refresh; signing out removes that subject’s server registrations when the logout request succeeds. If the device is offline, provider token cleanup can be delayed; the generic alert does not reveal call content.
+
+October 12 simulator validation: Andrew's native iOS redesign was integrated with account-loading recovery and call-refresh recovery fixes. A failed initial account load shows an error and Try Again instead of invitation onboarding; a successful activity refresh clears the previous Calls error. The screenshot-picker label's Swift concurrency warning was also fixed. Both new recovery UI tests passed, as did the three selected redesign tests for call navigation/filtering, message-check consent, and screening-status states. `npm run check` passed (143 unit tests, typecheck and build), and `npm run test:firebase` passed all 86 emulator tests. The updated Debug app was built and launched with sample data in the iPhone 18 Pro simulator. No physical-phone installation, backend deployment, carrier change, or real call was performed.
 
 ## Call Directory extension
 

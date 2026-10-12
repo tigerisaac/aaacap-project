@@ -34,6 +34,9 @@ final class AppState {
     var protectionParticipantID: UUID?
     private var protectionChoiceGeneration = 0
     private var sessionGeneration = 0
+    #if DEBUG && targetEnvironment(simulator)
+    private var accountFixtureInitialRefresh = true
+    #endif
 
     var person: Person? { people.first { $0.id == selectedPersonID } }
     var canListen: Bool { person?.canListen ?? false }
@@ -55,6 +58,13 @@ final class AppState {
             protectionParticipantID = selectedPersonID
             helperAlertsOnboarding = true
         }
+        #if targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-account-error") {
+            signedIn = true
+            isPreview = true
+            contextError = "Your connection was interrupted. Please try again."
+        }
+        #endif
         #endif
     }
 
@@ -111,6 +121,14 @@ final class AppState {
     }
 
     func refresh() async {
+        #if DEBUG && targetEnvironment(simulator)
+        if isPreview, ProcessInfo.processInfo.arguments.contains("--uitesting-account-error") {
+            // The app refreshes once on activation; leave the failed state for the explicit retry.
+            if accountFixtureInitialRefresh { accountFixtureInitialRefresh = false; return }
+            exploreDemo()
+            return
+        }
+        #endif
         if isPreview { loadPreview(); return }
         guard signedIn else { return }
         let generation = sessionGeneration
@@ -129,6 +147,7 @@ final class AppState {
             let configuration: ServiceConfiguration = try await api.send("/public/config", authenticated: false)
             guard generation == sessionGeneration, signedIn, !isPreview else { return }
             service = configuration
+            contextError = nil
             if configuration.notificationsAvailable, !isDemo {
                 let settings = await UNUserNotificationCenter.current().notificationSettings()
                 guard generation == sessionGeneration, signedIn else { return }
@@ -212,6 +231,7 @@ final class AppState {
             guard selectedPersonID == id, generation == sessionGeneration, requestedFilter == filter else { return }
             overview = newOverview
             contextError = nil
+            callsError = nil
             calls = page.calls
             callsFilter = requestedFilter
             nextCursor = page.nextCursor
@@ -319,6 +339,8 @@ final class AppState {
         guard let person else { return }
         let preview = DemoData.overview(for: person)
         overview = preview
+        contextError = nil
+        callsError = nil
         #if DEBUG
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "--redesign-state"), args.indices.contains(i + 1) {

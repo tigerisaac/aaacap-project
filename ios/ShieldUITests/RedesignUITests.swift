@@ -2,6 +2,31 @@ import XCTest
 
 @MainActor
 final class RedesignUITests: XCTestCase {
+    func testInitialAccountErrorShowsRetryInsteadOfJoining() {
+        let app = launch(["--uitesting-account-error"])
+        XCTAssertTrue(app.staticTexts["Your account couldn’t load"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Join with an invitation"].exists)
+        XCTAssertFalse(app.staticTexts["Welcome to Shield"].exists)
+        app.buttons["Try Again"].tap()
+        XCTAssertTrue(app.staticTexts["today-status-title"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Your account couldn’t load"].exists)
+    }
+
+    func testSuccessfulCallsPullToRefreshClearsPreviousError() {
+        let app = launch(["--uitesting-preview", "--uitesting-calls-state", "error"])
+        XCTAssertTrue(app.staticTexts["today-status-title"].waitForExistence(timeout: 5))
+        app.tabBars.buttons["Calls"].tap()
+        let error = app.staticTexts["Calls couldn’t refresh"]
+        XCTAssertTrue(error.waitForExistence(timeout: 5))
+        let list = app.collectionViews.firstMatch
+        list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2))
+            .press(forDuration: 0.1, thenDragTo: list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)))
+        let disappeared = NSPredicate(format: "exists == false")
+        expectation(for: disappeared, evaluatedWith: error)
+        waitForExpectations(timeout: 5)
+        XCTAssertTrue(app.staticTexts["Prescription notification"].exists)
+    }
+
     func testWelcomeAndRecoverableSignInError() {
         let app = launch(["--uitesting-auth-error"])
         XCTAssertTrue(app.textFields["Email address"].waitForExistence(timeout: 5))

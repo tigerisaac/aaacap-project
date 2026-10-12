@@ -104,7 +104,7 @@ struct CheckView: View {
         PasteButton(payloadType: String.self) { values in text = values.joined(separator: "\n") }
             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule)
             .disabled(checking || readingPhoto)
-        PhotosPicker(selection: $selectedPhoto, matching: .images) {
+        PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto] in
             Label(readingPhoto ? "Reading…" : "Screenshot", systemImage: "photo")
         }
         .buttonStyle(.bordered).buttonBorderShape(.capsule)
