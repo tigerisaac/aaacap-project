@@ -1,186 +1,260 @@
-# Ten-person pilot plan
+# Scaling Shield to ten seniors
 
-Drafted October 10, 2026. **None of this is built.** Today Shield serves exactly one person, the owner. This plan covers what has to change so 10 seniors can use it at the same time, each with their own Shield number, without weakening the call-control invariants.
+Design revised October 12, 2026. **Proposed, not implemented or deployed.** This revision changes documentation only. The current service remains a supervised single-recipient pilot; deployment and real-call evidence belong in [Status](STATUS.md).
 
-**Owner decisions (October 10):**
-- **Screening:** around the clock.
-- **Where participants live:** the Texas area AAACAP serves.
-- **Setup:** guided by phone.
-- **Carriers:** decided once real participants are known.
+## Recommended decision
 
-PRODUCT.md says AAACAP sponsorship and branding aren't authorized, so keep the name out of anything a participant sees.
+Use **one stable, voice-capable Telnyx number per senior for the first ten**, with shared application infrastructure and shared call capacity. Automate number inventory and assignment. Investigate sharing inbound numbers separately, first by observing forwarding metadata on dedicated numbers.
 
-## One number per person
+A rented number is an address, not a physical phone, SIM, dedicated server or single concurrent call slot. Ten numbers do not require ten backend deployments. Telnyx publishes local number rental starting at $1/month: about **$10/month for ten**, or $12 with two spares, before usage, optional capabilities and taxes. Sharing two numbers instead saves about $8/month at that starting rate. That saving does not justify uncertain recipient routing in the pilot. Volume pricing exists, so one number per user is not inherently unsustainable; measure total cost per active senior before changing the routing model. [Number pricing, checked October 12](https://telnyx.com/pricing/numbers)
 
-- **The number is how Shield knows whose call it is.** A forwarded call arrives on a Shield number. Each person's carrier forwarding codes point at their number, so it stays theirs for as long as they're enrolled. A rotating pool would send one person's calls to someone else's screening.
-- **Numbers aren't scarce.** Telnyx sells local numbers on demand through its API, about $1/month each. Keep two spare so enrolling never waits on an order.
-- **Use one area code for everyone.** Buy 512 numbers, Austin's area code; 737 is its overlay if 512 runs short. That assumes the area AAACAP serves is the region around Austin. Each person saves their number as a contact, so a shared area code doesn't affect how Shield works.
-- **One number isn't one line.** A number can carry several calls at once. Capacity is set on the Telnyx account, not per number.
-- **It's also the person's "Shield" contact.** Shield rings the person from their own Shield number when it offers a call. They save it in Contacts, so *Silence Unknown Callers* lets the offer ring instead of forwarding it straight back into Shield. Each person has one number to save, and it never changes.
+The owner requested Verizon and T-Mobile at minimum on October 12. Qualify those brands directly; do not substitute a Visible test for Verizon or a Tello test for T-Mobile. [Carrier codes and qualification](CARRIERS.md)
 
-## What assumes one person today
+Prior decisions recorded October 10 remain planning inputs: around-the-clock screening, phone-guided setup, and participants in the Texas area served by AAACAP. The earlier plan proposed quiet hours of 9 p.m.–8 a.m. Central and also listed that default as needing confirmation; keep it configurable and resolve that default before enrollment. Sponsorship/branding is not authorized by this plan; follow PRODUCT.md.
 
-| Where | Today | Change |
-|---|---|---|
-| `backend/src/cloud/config.ts` | `TELNYX_NUMBER`, `TRIAL_VERIFIED_CALLER` (the person's phone) and `TRIAL_PARTICIPANT_ID` are single values in `SHIELD_RUNTIME` | Move each person's number and phone into Firestore. Keep only account-level Telnyx settings in the secret. |
-| `forwarding-store.ts` | `forwarding/control` is one shared document. It holds setup readiness, the restoration guide, the test window, the 10-call count, `activeCallId` and the probe. The 50-a-day cap is shared too. | One control document per person, and per-person plus Shield-wide daily caps. |
-| `forwarding-voice.ts` | Accepts a call only if `To` is the one number. Dials `TRIAL_VERIFIED_CALLER` with that number as caller ID. The loop guard compares `From` with the one number. | Route by `To` through a number registry. Dial the person's verified phone from their own Shield number. The loop guard rejects calls from any Shield number. |
-| `forwarding-live.ts` | Offering a call requires the shared `activeCallId` and the shared test window. | Check the person's own state. |
-| `forwarding-probes.ts` | Ring and forwarding tests use the shared control document and the one recipient. | Per person. |
-| `forwarding-api.ts` | `requireOwner` admits only `TRIAL_PARTICIPANT_ID`. The carrier is fixed to Tello. Codes are built from the one number. | Any enrolled participant. Carrier and codes per person. |
-| `backend/src/live/server.ts`, `scripts/deploy-live-bridge.mjs` | An `active` flag allows one screening at a time, and Cloud Run allows one instance. | A session counter (4 per instance) and up to 3 instances. |
-| `scripts/manage-forwarding-test.mjs` | Works on `TRIAL_PARTICIPANT_ID` only. | Takes `--participant`. |
-| iOS forwarding setup | Already reads the Shield number and the codes from the API. "Tello" is written into the step titles and copy. | Show the carrier the API returns. |
+## Why a shared number is harder
 
-## Design
+For caller C calling senior A, who forwards to Shield number D:
 
-### Number registry
+```text
+From = C                  identifies the caller, not senior A
+To = D                    identifies the Shield destination
+Forwarding metadata = A?  may identify A, if preserved and exposed
+```
 
-A new Firestore collection, `shieldNumbers/{e164}`. Each document holds:
-- `participantId` (or none)
-- `state`: `available`, `assigned` or `quarantine`
-- `assignedAt` and `releasedAt`
-- the Telnyx number ID
+With a dedicated D, the registry resolves `D → A`. With shared D, `From` and `To` alone cannot distinguish A from senior B. The same clinic can call both, and caller ID can be withheld or spoofed. No algorithm, hash, contact search, LLM question, time slot, or “last active user” can recover missing recipient information reliably. Carrier forwarding also cannot be assumed to append an extension or application token.
 
-The rules:
-- **Incoming calls:** the inbound webhook looks up `To` inside the admission transaction. An unknown or `available` number hangs up without screening, voicemail or dialing anyone.
-- **Assignment:** a number is assigned once, at enrollment, in a transaction. It's never reassigned while it's `assigned` or in `quarantine`.
-- **Loop guard:** a call whose `From` is any Shield number is never screened. This generalizes today's single-number check.
+Telnyx's official Call Control SDK describes `sip_headers` containing `Diversion` information. That is a useful investigation path, **not evidence that every carrier supplies it or that Shield's TeXML endpoint exposes it**. Current `TelnyxVoice.call()` retains only from/to/status/direction; the inbound handler checks one configured destination. Do not assume Twilio's `ForwardedFrom` field exists here. [Telnyx SDK schema](https://github.com/team-telnyx/telnyx-go/blob/main/webhook.go)
 
-### Per-person state
+A valid Telnyx webhook signature authenticates Telnyx's delivery, not the truth of every upstream SIP header. Shared routing needs a provider-supported trust model for original-called/redirecting numbers, including multiple forwarding hops and caller-injected headers. Successful ordinary test calls alone cannot establish spoof resistance.
 
-- **Moved fields:** the readiness flags, restoration guide, window or schedule, counters, `activeCallId` and probe move from `forwarding/control` to `participants/{id}/forwarding/control`.
-- **On the participant:** `shieldNumber` and `carrier` are stored on the participant document.
-- **Who gets dialed:** always the participant's verified phone (`phoneVerifiedAt`), never anything from a request or a webhook.
-- **Daily caps:** 30 screened calls per person and 200 across Shield. The Shield-wide cap bounds worst-case model spend at about $8 a day.
-- **Over the cap:** calls go to voicemail instead of being turned away. Today, past 50 calls a day Shield hangs up, which would lose real callers during a robocall flood.
-- **Days run on Central time.** Today the counter resets at midnight UTC, which is 6 or 7 p.m. in Texas.
-
-### Screening around the clock
-
-The single 30-minute owner window becomes **always-on screening** for each person, once their setup has passed. Each person also gets a pause, and the global `LIVE_SCREENING_ENABLED` switch stays. Supervised test windows are still how a new person starts: always-on is switched on for them only after those calls pass.
-
-What screening around the clock adds:
-- **Nobody is watching overnight.** Any failure must fall back to voicemail, which the current fallback already does. Add alerts for bridge and function errors, plus a morning check of the night's outcomes.
-- **Quiet hours (owner decision, October 10).** At night, a caller Shield would offer goes straight to voicemail instead of ringing the person.
-  - **Who's affected:** contacts still ring as normal, because they never reach Shield. Anyone urgent who is family isn't affected.
-  - **Default:** quiet hours are on, 9 p.m. to 8 a.m. Central.
-  - **Setting:** each person can change the hours or turn them off in the app's Settings. They're stored on the participant as `quietHours`.
-  - **How it works:** the check runs when screening approves a call. The caller hears the existing "Shield couldn't put your call through right now" voicemail prompt. Call history shows the call was screened and sent to voicemail overnight.
-- **A cold bridge adds a delay.** The bridge scales to zero, so the first call after a quiet stretch starts a fresh instance. The prerecorded greeting probably covers that. If real calls show a gap, keep one instance warm for a small monthly cost.
-- **Cost doesn't change.** Cost follows the number of screened calls, not the hours. The estimate below already counts every unknown call.
-
-### Concurrency
-
-| Layer | Today | Target |
-|---|---|---|
-| Telnyx number | Several calls at once | No change. Check the account's concurrent-call limit covers at least 12. |
-| Shield admission | One screening or offered call across all of Shield | One per person. A second caller for the same person at the same moment goes to voicemail. |
-| Live bridge | One session, one instance | 4 sessions per instance, up to 3 instances. Each session only relays 8 kHz audio. |
-| OpenAI | Not tested above one session | Confirm the organization's GPT Live concurrent-session and rate limits cover at least 12. |
-
-**Why it matters:** today's shared `activeCallId` is held for the whole call, including up to 5 connected minutes. At 10 people, one person's conversation would send everyone else's unknown callers to voicemail. That's roughly a few percent of all calls, and more at busy times.
-
-### Carriers
-
-See [Carriers](CARRIERS.md) for the researched matrix, risks and recommendations.
-
-- **Three network families cover almost everyone.**
-  - **T-Mobile and AT&T networks:** `**61`, `**67` and `**62`.
-  - **Verizon network:** `*71` covers busy and no answer in one code, and `*73` turns it off. That includes Visible, Spectrum, Xfinity, Total and Lively.
-  - **Not supported:** Google Fi and Boost, which have no conditional forwarding.
-- **Restoration differs by family.** On T-Mobile it's `##004#`. AT&T needs the original voicemail targets recorded first. Verizon uses `*73`.
-- **Implementation:** store the carrier per person, and generate codes and restoration steps from a carrier table.
-- **Deferred:** which carriers to support is decided once participants are known. Build the table with the GSM codes first. Add a carrier only after one supervised test on a real line from that carrier.
-
-### Phone-guided setup
-
-Staff guide each person through the app over the phone. Two things make that harder than it sounds:
-- **Some steps need the line free.** While the person is on the call with staff:
-  - Dialing carrier codes may not work.
-  - Shield's ring and forwarding tests would hit "busy" and be forwarded straight back to Shield.
-
-  So split setup into a call and a callback:
-  1. **On the call:** consent, the Shield contact, and the iPhone settings.
-  2. **After hanging up:** the person dials the codes and runs the tests.
-  3. **Callback:** staff call back to confirm.
-
-  Check this split during the senior rehearsal.
-- **Staff need a status view.** Add a read-only view so staff don't have to ask a senior to read their screen. It shows each person's setup stage, which carrier codes were accepted, and which tests passed. It shows no call history, transcripts or voicemail.
-- **Consent stays with the senior.** The person records consent in the app themselves. Staff can't accept it for them.
-
-### Connected-call protection in the pilot
-
-The owner decided on October 10 that it will be offered in the pilot. It stays opt-in for each person:
-- **The senior** turns it on in the app.
-- **The caller** hears "If it connects, an AI assistant will transcribe the call to help protect against fraud" before the call connects.
-- **Privacy text:** check that `/privacy` and `/service-info` still describe exactly what happens.
-
-It adds about $4.50 a month for 10 people.
-
-### Leaving the pilot
-
-1. The person restores forwarding with the existing restore flow. Confirm it with a real call.
-2. Their number moves to `quarantine` for 90 days. A call that still arrives means forwarding is still on: Shield plays a short message, hangs up and alerts the operator so someone can contact the person.
-3. After 90 days, and 30 days with no calls, release the number to Telnyx or give it to a new person.
-
-**Never release a number while forwarding may still point at it.** Telnyx can resell it, and a stranger would receive that person's missed calls (see [Operations](OPERATIONS.md#phone-forwarding-tello-pilot)).
-
-## Invariants and new tests
-
-These must hold for every person:
-- **Recipient fixed:** a call on A's number only ever dials A's verified phone, from A's Shield number. Nothing can make it ring B.
-- **Pressing 1 connects:** only digit 1 on that exact call leg connects.
-- **Bounded timers:** unchanged. That's 75 s of screening, 20 s of ringing and 5 connected minutes.
-- **A failure never connects a call.**
-
-New emulator and unit tests:
-- **Two people with overlapping calls:** each call dials only its own person. A's trusted numbers don't skip screening for B's callers. Pausing A doesn't affect B. Caps count separately.
-- **Unknown or quarantined numbers:** a call arriving on one never screens or dials anyone.
-- **Loop guard:** a call from any Shield number never screens.
-- **Bridge limits:** 4 sessions run at once, and a 5th is refused and sent to the voicemail fallback.
-
-## Cost
-
-Assumes 10 people averaging 2 unknown calls a day, with a quarter of them offered and lasting about 3.5 minutes.
-
-| Item | Per month |
+| Approach | Assessment |
 |---|---|
-| Screening: 600 calls × about $0.04 | about $24 |
-| Offered calls: 150 × about $0.043 | about $6.50 |
-| Telnyx numbers (10 plus 2 spare) | $12 |
-| Apple Developer Program | about $8 |
-| Firebase and Cloud Run | $0–2 |
-| **Total** | **about $50–55** |
+| Dedicated inbound number, shared backend/capacity | Recommended now. Deterministic recipient mapping; straightforward rollback and saved-contact behavior. |
+| Shared inbound pool, verified redirecting identity | Conditional future option. Lower rental, but metadata coverage, provenance, drift detection and safe failure handling are prerequisites. |
+| Shared number plus caller enters recipient's phone/extension | Changes the product; burden on relatives, clinics and automated callers, and caller-entered data is not trusted routing evidence. Not the pilot. |
+| Port senior's existing number into Shield | Does not eliminate unique numbers and changes their mobile/SMS/service relationship. Separate product migration, not a pooling shortcut. |
+| Deliver accepted calls in-app with VoIP | May reduce the outbound mobile leg and avoid that forwarding loop, but does not solve inbound recipient identification. Separate reliability and accessibility project. |
 
-Connected-call protection, which is in the pilot, adds about $4.50 at $0.01 per connected minute, bringing the total to about $55–60.
+## What must change in the current code
 
-- **What drives it:** GPT-Live-1, at $0.05 a minute, is about three-quarters of each screened call. gpt-6-luna decisions cost about $0.002 a call.
-- **Spend guards:** set an OpenAI monthly budget and a Telnyx low-balance alert before the first wave.
+Reviewed against the canonical checkout on October 12; these are code findings, not a fresh production readback.
 
-## Phases
+| Component | Current limitation | Required change |
+|---|---|---|
+| `backend/src/cloud/config.ts` | One `TELNYX_NUMBER`, `TRIAL_PARTICIPANT_ID`, `TRIAL_VERIFIED_CALLER` | Registry and per-participant verified recipient; retain account credentials centrally. |
+| `forwarding-store.ts` | One `forwarding/control`, shared daily usage, fixed participant checks | Per-participant admission/state/usage plus separate global resource limits. |
+| `forwarding-voice.ts` | One accepted destination and fixed callback phone | Resolve tenant from authenticated provider destination; freeze tenant and assignment on the call. |
+| `forwarding-live.ts`, `forwarding-probes.ts`, monitoring/recordings/alerts | Depend directly or indirectly on single-person call/control context | Audit every lookup, callback and job for participant ownership and immutable call binding. |
+| `forwarding-api.ts` / iOS setup | Tello response and carrier-specific assumptions | Versioned carrier profiles and verified per-line setup. See carrier guide. |
+| `backend/src/live/server.ts` | Process-wide `active` boolean permits one screening | Bounded session map with isolated timers/audio, plus distributed admission. |
+| `scripts/deploy-live-bridge.mjs` | One max instance; HTTP request concurrency 4 | Load-tested instance/session capacity. HTTP concurrency 4 does not override the one-session boolean. |
+| Test-window and provisioning tools | Owner-only participant/config | Explicit participant selection, audited lifecycle transitions and dry-run preview. |
 
-0. **Finish the single-person checks first** (from [Status](STATUS.md)):
-   - supervised real calls on the owner's line: an ordinary caller, a scam, the voicemail fallback and a monitored call
-   - the voice listening check
-1. **Build the multi-person backend,** without deploying it: the number registry, per-person state and routing, concurrency, and the tests above. Migrate the owner's record so they keep +1 507 473 1802.
-2. **Tooling:**
-   - `scripts/manage-numbers.mjs` to buy, assign, quarantine and release numbers. It changes production, so the owner runs it.
-   - `--participant` for `manage-forwarding-test.mjs`.
-3. **Deploy,** with the owner's approval. Re-verify the owner's line end to end before adding anyone.
-4. **Add person 2,** a friendly tester. Run the full phone-guided setup and supervised test calls, then turn on always-on screening.
-5. **Add the other 8 in waves** of 2 or 3 a week. Each gets phone-guided setup and a supervised test window, then always-on screening.
+Do not merely raise Cloud Run's instance count or the current 50-forwarded-calls/day limit. Neither removes tenant assumptions. Preserve the owner's current assigned number during migration.
 
-**Rollback at every phase:**
-- **One person:** pause them, then restore their forwarding.
-- **Everyone:** turning `LIVE_SCREENING_ENABLED` off sends everyone's calls to voicemail.
+## Number inventory and allocation algorithm
 
-## Decisions for the owner
+Separate **inventory**, **assignment**, and **calls**. Suggested records:
 
-1. **Carriers:** once participants are known.
-2. **Quiet hours:** confirm the default of 9 p.m. to 8 a.m.
+| Record | Required information |
+|---|---|
+| `shieldNumbers/{providerNumberId}` | Destination index, provider application, capabilities, purchase cost, lifecycle state, current assignment ID/version, role (dedicated/shared/test), timestamps |
+| `numberAssignments/{id}` | Participant ID, immutable assignment version, number ID, assigned/activated/restored/retired evidence, routing mode |
+| `participants/{id}/forwarding/control` | Verified recipient reference/version, carrier-profile version, setup evidence, consent, active/paused/restoring state, quiet hours/timezone |
+| `callSessions/{id}` | Participant, assignment ID/version, frozen verified recipient reference/version, inbound provider call ID, child-leg ID, route evidence type, state and deadlines |
+| `resourceLeases/{id}` and usage records | Call-owned tenant slot, model slot and outbound slot; expiry/fencing generation; participant and global budget reservations |
+| `provisioningOperations/{id}` | Stable request ID, desired state, provider order ID, retry/reconciliation status |
 
-## Not now
+Store private recipient numbers encrypted and index with keyed hashes, consistent with existing vault handling. Public logs and evidence use opaque IDs. Number registry writes are server-only; client-requested participant IDs must pass membership/role checks.
 
-- **One shared number for everyone.** This would identify the person from the forwarding information their carrier attaches. It isn't known whether Tello and the other carriers pass it, or whether Telnyx exposes it on TeXML webhooks. One supervised call would show. It only matters at hundreds of users.
-- **Caller-name registration** so the offer shows "Shield" before it's saved as a contact.
+Lifecycle:
+
+```text
+order_pending → available → reserved → assigned → active
+                                      ↘ restoring → quarantine → retired
+```
+
+`retired` means no new user can inherit the old route. Releasing a number to the provider is a separate reviewed action. For this pilot, prefer not to recycle an activated number to another senior.
+
+Allocation procedure:
+
+1. Verify enrollment eligibility, recipient ownership, carrier profile and consent prerequisites before buying. Reuse an existing assignment for a retried enrollment request.
+2. In a Firestore transaction, reserve one compatible `available` number and bind it to a unique assignment version. Prefer local area codes relevant to the participant; accept a suitable U.S. alternative rather than blocking on a vanity area code. Never select active, restoring or quarantined inventory.
+3. If none is available, create one durable order operation. Place the provider order outside the transaction. If the request times out, reconcile the recorded order/provider inventory before ordering again; do not assume it failed. Use provider idempotency only where supported by the exact API.
+4. Configure the number on the intended TeXML application and read the configuration back. Only then finalize assignment and expose carrier codes. A failed order/configuration remains pending or quarantined and cannot receive a user's forwarding setup.
+5. Run the carrier setup and line tests against that exact assignment. Promote to `active` only when evidence, consent and recipient versions still match.
+6. Reconcile inventory daily: provider numbers with no registry entry, registry numbers absent at provider, wrong application, duplicate assignments, stuck orders and unused spares. Alert; never automatically release a number that may receive forwarded calls.
+
+Proposed pilot stock: at most two **never-activated** spares. A separate unsaved test caller number, if needed, is additional inventory and must not be presented as a participant's saved Shield contact. At larger scale, set spare target from expected enrollments during measured provisioning lead time plus a small buffer, bounded by an explicit rental budget. Do not buy one number for every website signup.
+
+## Incoming-call routing and admission algorithm
+
+```mermaid
+flowchart TD
+  A[Authenticated incoming call] --> B{Resolve exactly one senior}
+  B -->|No| C[Generic termination]
+  B -->|Yes| D{Eligible and capacity available}
+  D -->|No| E[Bounded voicemail for that senior]
+  D -->|Yes| F[Screen caller]
+  F -->|Block| G[End call]
+  F -->|Hold or failure| E
+  F -->|Approve| H[Offer to fixed verified recipient]
+  H -->|Matching recipient leg presses 1| I[Connect with time limit]
+  H -->|Decline or timeout| E
+```
+
+The diagram summarizes resolved-user behavior; full backend/provider outages may prevent voicemail, as specified below. Blocklist and quiet-hour checks remain part of the algorithm.
+
+The following is a specification, not runnable implementation:
+
+```text
+on inbound(providerEvent):
+  validate signature, timestamp, account/application and event shape
+  authenticate provider call lookup; validate direction, destination and state
+  obtain stable provider-call deduplication key
+  if call already exists: return its state-appropriate, idempotent response
+
+  route = resolveDestination(authenticated destination, forwarding evidence)
+  if route is missing, conflicting, unassigned or quarantined:
+    terminate generically; no user greeting, recording, screening or outbound call
+
+  transaction:
+    recheck assignment version, participant eligibility and recipient version
+    detect duplicate delivery; reuse existing call if found
+    freeze participant + assignment + verified recipient onto new call
+    check loop/reentry protection and participant-specific block/trust rules
+    if blocked: terminate without model usage
+    if trusted, paused, outside permitted schedule, or capacity unavailable:
+      choose that participant's bounded voicemail fallback
+    else:
+      reserve tenant slot + screening slot + estimated spend atomically
+      persist SCREENING state and bounded deadlines
+
+  screen call; release model slot when screening ends
+  if approved and participant still eligible:
+    check quiet hours, current consent and matching recipient/assignment versions
+    reserve outbound capacity; transition once to OFFERING
+    dial frozen verified recipient using assigned Shield caller ID
+    bridge only on digit 1 from the authenticated, matching recipient child leg
+  else: use the appropriate hangup/voicemail outcome
+  finalize resources exactly once; reconcile uncertain provider outcomes
+```
+
+`resolveDestination` for dedicated mode uses the assigned number alone for tenant selection. Caller ID is screening context only. For a call that already exists, later callbacks use its frozen binding, never today's occupant of a number. If the recipient is changed or unverified mid-call, abandon the offer safely rather than dialing the new number.
+
+Duplicate webhooks must not create another model session, recording, child call or budget charge. Provider side effects need durable operation IDs, retry-safe commands where available, and reconciliation on uncertain results. A duplicated callback must not overwrite a later terminal state.
+
+Resource leases need short expirations, renewal, and fencing generations so an old worker cannot resume after losing ownership. Expiry alone does not prove the Telnyx call ended: reconcile/hang up the old leg or let its provider-enforced deadline expire before releasing its outbound capacity. Keep separate screening, ringing and connected-call resources; the AI screening slot should not stay occupied for the entire connected conversation.
+
+**Loop handling:** allow offers only from saved Shield contacts to the fixed recipient. Reject reentered calls from Shield-controlled numbers before screening (an abuse guard, not identity authentication), correlate provider legs where available, allow at most one offer per call, and enforce deadlines. A missed or declined offer must never initiate another offer. Measure each line's no-answer diversion time and keep offer timeout below it with a margin; a 20-second default alone is not proof. Test voicemail pickup and forwarding reentry on Verizon and T-Mobile.
+
+Failure behavior depends on what is known. For a resolved participant with healthy call control/storage, a model failure or capacity refusal uses their bounded voicemail. If recipient identity cannot be resolved, hang up generically without storing someone else's message. If provider/backend failure prevents voicemail, use provider-enforced termination and an operator alert. Never describe an API outage as guaranteed voicemail delivery.
+
+## Capacity and cost controls
+
+Initial target after testing: **ten simultaneous screenings across ten participants**, ten simultaneous recipient offers/connections, and an independent bounded voicemail path. Ten bridged calls can occupy ten inbound and ten outbound legs. Purchasing ten numbers does not establish any of those limits.
+
+Telnyx documents default outbound concurrency of 2, increasing to 10 after Level 2 verification. Inspect this account's actual account/application/profile limits, inbound capacity and calls-per-second allowance before choosing a rollout limit; the documentation is not this account's configuration. [Telnyx concurrency guidance](https://support.telnyx.com/en/articles/1130717-limits-on-concurrent-outbound-calls)
+
+Proposed implementation: test four live sessions per bridge instance, with up to three instances (12 potential model slots) and an application admission ceiling of ten initially. This is a candidate configuration, not a benchmark result. Verify CPU, memory, event-loop delay, audio gaps, model concurrent-session and token/request limits, Firestore contention, function quotas, and monitoring-job backlog. Account for two model services plus connected-call checks; a bridge socket count alone is insufficient.
+
+Use one tenant slot through screening/offer/connection so a second caller for that senior uses voicemail. Other seniors remain eligible. Cap voicemail independently by duration, attempts and storage; routing all excess traffic to unlimited recording would merely move the overload cost.
+
+The old plan's 30 screenings/person/day and 200 global/day are **candidate guardrails**, not a measured $8/day guarantee. At 30 each, all ten cannot receive their full allotment under a 200 global cap. Start with explicit per-person allowances plus a bounded shared reserve, use per-person burst limits, and report which limit caused each refusal. Add a dollar budget with conservative per-call reservations and actual-usage reconciliation. Keep the model-off fallback and warn the operator before exhaustion. Central-time daily buckets must handle daylight-saving changes.
+
+For planning, calculate offered load separately for each resource:
+
+```text
+mean screening concurrency = arrivals per second × mean screening seconds
+mean outbound concurrency  = approved arrivals per second × mean offer/connection seconds
+```
+
+Example assumptions only: 10 seniors × 2 forwarded calls/day × 45 screening seconds = 900 screening-seconds/day, about 0.0104 average concurrent screenings. That small daily average says nothing about a burst of ten calls. Size from measured peak windows and replay 1, 2, 5, 10 simultaneous calls, plus overflow. Do not reduce number inventory when concurrency drops: numbers must remain assigned between calls.
+
+### Monthly cost model
+
+```text
+number rental
++ inbound leg minutes × (inbound transport rate + applicable Voice API rate)
++ outbound leg minutes × (outbound transport rate + applicable Voice API rate)
++ streaming minutes × streaming rate
++ recording and transcription usage
++ live-model audio/text tokens + decision/monitoring model tokens
++ compute, database, storage, network, notifications and support
++ carrier passthrough, taxes and any fixed program costs
+```
+
+Count inbound time during greeting, screening, holding, connected conversation and voicemail. Count outbound billable time separately, including any answered recipient voicemail. Apply actual billing increments and feature charges from provider records.
+
+Telnyx's published Voice API rate is $0.002/minute **in addition to** inbound/outbound transport, with separate feature charges; TeXML uses the same API fee. Its page currently lists streaming at $0.0035/minute and Soniox transcription at $0.002/minute. These are rate-card inputs, not a total call price or a validated invoice. [Voice pricing](https://telnyx.com/pricing/voice-api)
+
+For an illustrative month of 600 forwarded calls with 45 seconds before outcome, 150 accepted calls averaging 3.5 connected minutes, and 15 seconds of answered offer time each: inbound time is about 1,012.5 minutes before additional voicemail; outbound time about 562.5 minutes. Measure actual streaming/model lifetimes and billable increments rather than pricing 600 calls as 600 single-leg minutes.
+
+Withdraw the earlier $50–60 all-in estimate until a representative invoice and actual live/decision/monitoring usage support it. Do not assume current model use costs a fixed $0.04/call or cloud service stays within free allowances. Record per-senior and p50/p95 per-call cost, support minutes and degraded calls. Around-the-clock availability may add warm-instance and operational costs even if call volume stays flat.
+
+For shared numbers, compare monthly economics:
+
+```text
+net saving = dedicated rental avoided - shared-pool rental
+             - extra support/operations - amortized engineering/migration cost
+```
+
+Use the contracted tier rate for the actual number volume. Sharing also adds migration/revalidation effort and a larger failure impact; approve it only when both reliability gates and economics justify it.
+
+## Conditional shared-number algorithm
+
+This is a research track, disabled for the ten-person rollout until all gates pass.
+
+1. **Observe while dedicated.** On controlled, authorized calls, compare the known dedicated-number owner with provider-exposed redirecting/original-called metadata. Capture presence, equality, reason and chain length; do not put raw headers or numbers in logs. Determine whether TeXML can supply the required fields or a separate Call Control/SIP integration is necessary.
+2. **Establish provenance.** Obtain Telnyx's documented/support-confirmed meaning, availability and trust guarantees for the selected field on PSTN ingress. Test forged/malformed/multiple headers, direct calls to the pool and forwarding chains. A signed webhook, STIR/SHAKEN caller attestation, or a caller's spoken claim alone is not recipient proof.
+3. **Qualify cohorts.** Separate brand/plan/network and device modes. Test no-answer, busy, decline, Silence, powered-off, Wi-Fi Calling, private/international callers, cross-network origins and two seniors called by the same caller. No missing or mismatched identity in the acceptance matrix; more tests increase confidence but do not guarantee every future route.
+4. **Assign a stable pool number.** For a qualified participant, choose a compatible pool with the lowest reserved peak load below a validated ceiling; break ties deterministically by participant ID. Shard by validated routing behavior and operational failure boundaries, not merely equal user counts. Store `(poolNumberId, verifiedRedirectingNumberHash) → assignment`. Reject duplicate identity assignments. Shared capacity and number count remain separate.
+5. **Resolve every call.** Validate provider ingress, pool membership, approved metadata provenance/chain semantics and exactly one active mapping. Missing, contradictory or ambiguous evidence means generic termination with an operator alert. Never fall back to `From`, “the only available senior,” or an unverified voicemail mailbox.
+6. **Migrate explicitly.** Allocate and configure the pool, save its outgoing caller ID contact, have the participant change carrier forwarding, repeat the line tests, then activate the new assignment version. Keep the old dedicated number during drain and rollback. An unidentifiable call already arriving on a pool cannot be rescued by looking up a fallback dedicated number because its recipient is unknown.
+7. **Detect drift.** Track unresolved/mismatched rates per cohort; one confirmed cross-user route stops new admissions for the affected cohort immediately. Missing evidence marks affected service degraded and triggers support. Changing to a dedicated destination requires carrier reconfiguration and renewed tests, not just a server flag.
+
+If Telnyx cannot establish reliable, appropriately trusted metadata, continue with dedicated numbers. That is a valid scalable outcome.
+
+## Leaving, pausing and number retirement
+
+A pause stops live screening but does not change carrier forwarding. Keep the number and resolved-user fallback active while restoration is pending.
+
+1. Senior restores the carrier settings using the exact profile and recorded originals.
+2. Verify direct ringing, carrier voicemail, and every previously enabled forwarding condition. Record positive restoration evidence.
+3. Quarantine the number: no screening, user-specific greetings, voicemail collection or reassignment. Residual traffic gets a generic unavailable response. An arrival means investigate; direct callers and stale forwarding cannot always be distinguished.
+4. Proposed minimum observation is 90 days and at least 30 consecutive days without traffic, **in addition to** confirmed restoration, no active calls/jobs and operator review. These timers are not proof that forwarding has stopped. Missing evidence extends quarantine indefinitely.
+5. Prefer retirement over reuse within the pilot. Provider release requires an explicit reviewed decision because another party can eventually receive calls to that number. Retain a minimal tombstone/assignment history under the retention policy so stale callbacks cannot target a new user.
+
+At scale, quarantine rental is a real cost. Minimize it through verified offboarding, not blind time-based recycling.
+
+## Rollout and acceptance gates
+
+Implement and validate without changing live forwarding or buying numbers as part of this design task. Production deployment and live settings changes still require owner approval under AGENTS.md.
+
+| Stage | Required evidence before progressing |
+|---|---|
+| Offline/backend | Tenant isolation, assignment concurrency, duplicate/reordered events, partial provisioning failure, stale assignments, recipient change, consent revocation, loop handling, limits and crash recovery pass. Existing check and Firebase emulator suites pass. |
+| Synthetic load | 1/2/5/10 simultaneous tenants and overload; same caller to different seniors; one tenant flood; model/provider failure; instance restart; webhook retry; monitoring backlog. No cross-user data, duplicate offers or false acceptance; all sessions end within deadlines. |
+| Carrier qualification | Direct Verizon and direct T-Mobile lines pass the carrier guide, including real unknown-call routing, offer rejection, no-answer and restoration. Identify unsupported conditions explicitly. |
+| Two-person canary | After owner-approved deployment, verify the existing owner's route and a consenting test participant, including overlapping calls. No autonomous calls to the owner's phones. |
+| Five-person wave | At least 48 hours of stable observed service and required controlled test coverage; no unresolved routing/safety fault. |
+| Ten-person wave | At least another 48 hours stable at five, ten-session load gate passed, adequate provider/model limits and documented support/rollback coverage. |
+| Pilot evaluation | Review at least a week at ten with actual counts, failure denominators, per-carrier results and cost. Low call volume requires more time; elapsed time alone is not scale evidence. |
+
+Proposed operational targets: zero cross-user routes or unauthorized connections; 100% bounded termination in failure tests; at least 99% of eligible, resolved calls admitted to screening within configured capacity; report overflow separately. Measure carrier diversion delay, Shield-answer-to-greeting, model readiness, screening duration, decision-to-recipient-ring and total caller wait. Investigate p95 total wait above 45 seconds or a material regression from the canary. These are proposed acceptance targets, not achieved performance.
+
+Keep **legitimate-offered** and **harmful-stopped** separate from routing availability. Preserve screening-policy tests and held-out boundaries; no prompt change is part of this scale design. Real calls, synthetic calls and software tests must be reported separately. Observe content-free event timing and failure reasons; never run real recordings/transcripts through evaluation scripts.
+
+Rollback must preserve reachability: if the application is healthy, pause the affected participant/cohort into bounded voicemail. A complete outage needs provider-level fallback/termination plus assisted carrier restoration; the model kill switch alone is not full disaster recovery. Never release numbers as rollback. A cross-user route, acceptance bypass, uncontrolled loop, or unbounded call is an immediate stop condition; isolated model failures use the existing safe fallback and are tracked.
+
+## Implementation order
+
+1. Number registry, immutable call/recipient bindings, per-person authorization and state; isolate all asynchronous jobs and acceptance checks.
+2. Carrier profiles and restoration flows, starting with Verizon and T-Mobile; preserve existing Tello configuration and evidence.
+3. Idempotent allocation/reconciliation tools and a staff setup-status view without access to transcripts or voicemail content.
+4. Distributed admission, resource leases, separate model/recipient capacity and measured spending controls; remove the bridge's single-session gate safely.
+5. Synthetic reliability/load checks, provider-limit review, carrier qualification and approved staged deployment.
+6. Optional metadata study, then an explicit economics and reliability decision on shared inbound numbers.
+
+Quiet hours remain per senior and apply to Shield offers only. They do not guarantee that every family or urgent caller rings: unfamiliar relatives can still enter screening/quiet hours. Connected-call protection retains current explicit consent and caller disclosure; helpers cannot consent on the senior's behalf. Notifications and supported offboarding must work before always-on enrollment.

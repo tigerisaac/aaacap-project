@@ -10,8 +10,8 @@ Start with [Architecture](ARCHITECTURE.md), then [Status](STATUS.md).
 | [Operations](OPERATIONS.md) | Secrets, deploying functions and the bridge, feature switches, test windows, inspection, phone forwarding and restoration |
 | [Screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md) | The October plan toward a senior pilot, plus dated checkpoints for every policy version, red-team round and deployment |
 | [Protection plan](PROTECTION-PLAN.md) | Not built yet: faster and broader in-call monitoring, blocking repeat scammers, caregiver alerts, setup health checks, voicemail keep-or-destroy, cutting the caller's wait and shorter disclosures |
-| [Carriers](CARRIERS.md) | Researched, not yet tested: which carriers' conditional forwarding Shield can use, codes and restoration by network family, and what to fix before real users |
-| [Ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md) | Not built yet: one Shield number per person, what assumes one person today, concurrency, carriers, costs and rollout phases |
+| [Carriers](CARRIERS.md) | October 12 research: Verizon and T-Mobile setup, brand-specific conditional codes, evidence gaps, restoration, and per-line acceptance tests |
+| [Ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md) | Proposed: number allocation and retirement, tenant routing, capacity and cost controls, a gated shared-number algorithm, and rollout to ten seniors |
 | [iOS app](../ios/README.md) | Building, signing and the app's screens |
 | [Design system](../DESIGN.md) and [product brief](../PRODUCT.md) | Visual language and product principles for the app |
 | [Shield Open Phone shortcut](shortcuts/README.md) | The Apple Shortcut the forwarding setup uses to open the Phone app |

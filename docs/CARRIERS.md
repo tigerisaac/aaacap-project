@@ -1,173 +1,122 @@
-# Carriers
+# Carrier forwarding for Shield
 
-Researched October 10, 2026, from carrier support pages. **Nothing here has been tested on a real line except Tello's code registration.** Today Shield supports only Tello. The codes are hardcoded in `backend/src/cloud/forwarding-api.ts`, the reset codes in `ForwardingRestoreView.swift`, and "Tello" appears on 25 lines across 12 iOS files.
+Researched October 12, 2026. Scope: U.S. mobile lines, prioritizing **Verizon and T-Mobile** for the ten-person pilot. This is a support and validation specification, not a claim that the app supports these carriers today. No carrier setting was changed during this research.
 
-Each claim below is marked:
-- **Documented:** the carrier's own support page says so.
-- **Secondhand:** third-party guides or community posts only.
-- **Verified:** tested on a real line, with the date.
+The current API still returns Tello and its three codes. Existing Tello registration and historical call evidence are recorded in [Status](STATUS.md); they do not establish current routing or another carrier's behavior. No new real-call verification was performed. The [pilot plan](TEN-PERSON-PILOT-PLAN.md) describes the required backend changes.
 
-## What Shield needs from a carrier
+## The exact use case
 
-Shield works only when the carrier forwards these calls to the person's Shield number and keeps ringing their phone for everything else:
-- **Rejected or busy calls.** This is the important one. Apple says *Screen Unknown Callers → Silence* "sends them to voicemail". On the network that's expected to look like a rejected call, which carriers forward under the busy condition; Tello's page calls its busy code "Busy (Rejected Calls)". This hasn't been confirmed on a real forwarded call yet.
-- **Unanswered calls.** Contacts the person misses, and Shield's own offer calls when they aren't picked up.
-- **Unreachable calls** (phone off or no signal). Useful, but not essential.
+Keep the senior's existing mobile number and carrier. Forward **conditional** calls to an assigned Shield number: no answer, busy/rejected, and, where supported, unreachable. Keep unconditional forwarding off. Shield calls the senior back from their saved Shield contact and connects only after they press 1.
 
-**Unconditional forwarding is never usable.** It sends contacts to Shield too. Worse, when Shield calls the person to offer a call, that call is forwarded straight back to Shield.
+The forwarding codes do not distinguish friends from strangers. iPhone's **Screen Unknown Callers → Silence** supplies that first distinction. Apple describes Silence as sending unsaved callers to voicemail; it does not promise a particular carrier signaling condition. Test the actual Silence path independently from ordinary busy/no-answer. [Apple's instructions](https://support.apple.com/en-us/111106)
 
-## Network families
+Shield's setup requires Live Voicemail off so the handset does not intercept the call. Save the Shield offer number in Contacts first. A missed call from a contact can also reach Shield; current behavior sends forwarded trusted callers to Shield voicemail. Explain that voicemail moves into Shield for forwarded calls.
 
-US carriers fall into three groups, plus brands that can't be supported. Codes are set per network, so a prepaid brand usually behaves like the network it runs on.
+Unconditional forwarding is incompatible with calling back the same mobile number: the offer can immediately loop back to Shield. A carrier's generic “Call Forwarding” switch or an all-calls guide is not enough to establish support for this product. Landlines and business VoIP need a separate routing design; they lack this iPhone contact/silence behavior.
 
-### T-Mobile network: standard 3GPP codes
+## Codes and evidence
 
-Covers T-Mobile, Metro by T-Mobile, Mint, Tello, and lines from multi-network brands that run on a T-Mobile SIM. UScellular customers are also moving onto T-Mobile.
+`N` below means the **assigned 10-digit U.S. Shield destination**, without punctuation. `1N` means country code 1 followed by those ten digits; neither `N` nor a literal plus sign is dialed. Press Call after each complete code, on the correct SIM. Do not copy the owner's existing destination into another user's setup.
 
-| Purpose | Code | Source |
-|---|---|---|
-| No answer | `**61*1NNNNNNNNNN#` | Documented: T-Mobile, Mint, Tello |
-| No answer with a ring time (5–30 s) | `**61*1NNNNNNNNNN**30#` | Documented: T-Mobile |
-| Busy or rejected | `**67*1NNNNNNNNNN#` | Documented: T-Mobile, Mint, Tello |
-| Unreachable | `**62*1NNNNNNNNNN#` | Documented: T-Mobile, Mint, Tello |
-| Reset all forwarding to default (voicemail) | `##004#` | Documented: T-Mobile |
-| Check status | `*#61#`, `*#67#`, `*#62#` | Secondhand |
+Evidence levels:
 
-- **Success looks like** an on-screen message. On Tello it was "Setting Registration Succeeded".
-- **Wi‑Fi Calling can block codes.** T-Mobile's voicemail troubleshooting page says to turn Wi‑Fi Calling off when resetting forwarding.
-- **Tello needs data.** Tello requires a plan that includes data before forwarding works.
-- **Forwarded minutes count.** On Tello, forwarded minutes come out of the plan or the pay-as-you-go balance.
-- **Verified (October 10):** Tello returned registration success for all three codes. No forwarded call has been confirmed end to end.
+- **Carrier documented:** current carrier instructions specify the operation. Still needs Shield testing.
+- **Integration documented:** a service integrating with the carrier documents it; carrier confirmation and testing remain necessary.
+- **Incomplete:** missing, conflicting, or inaccessible instructions. Do not enable self-service setup.
+- **Line verified:** reserved for a dated, completed end-to-end check on that particular line. None added here.
 
-### AT&T network: the same codes, undocumented
+| Carrier / product | Conditional activation | Disable / restoration starting point | Evidence and remaining gap |
+|---|---|---|---|
+| **Verizon mobile** | `*71N` for busy/no answer | `*73` | Carrier documented. No separate unreachable code established. Test Silence, decline, powered-off, and voicemail restoration. [Activate](https://www.verizon.com/support/knowledge-base-181139/), [disable / FAQ](https://www.verizon.com/support/call-forwarding-faqs/) |
+| **T-Mobile mobile** | `**61*1N#` no answer; `**67*1N#` busy; `**62*1N#` unreachable | Individual: `##61#`, `##67#`, `##62#`. T-Mobile also documents `##004#` to reset forwarding to defaults. | Carrier documented. Keep reset-to-default distinct from restoring a person's previous custom configuration. [Codes](https://www.t-mobile.com/support/plans-features/self-service-short-codes) |
+| **Tello** | `**61*1N#`; `**67*1N#`; `**62*1N#` | `##61#`; `##67#`; `##62#` | Carrier documented, including busy/rejected. Plan must contain data; forwarded minutes consume allowance/balance. [Tello instructions](https://tello.com/help_center/device-settings/how-can-i-set-up-call-forwarding) |
+| **Mint Mobile** | `**61*1N#`; `**67*1N#`; `**62*1N#` | `##61#`; `##67#`; `##62#` | Carrier documented. Mint's wording around busy/unreachable overlaps; verify each condition separately. [Mint instructions](https://www.mintmobile.com/help/how-to-turn-on-off-call-forwarding/) |
+| **AT&T Wireless** | `*61*N#` no answer; `*67*N#` busy; `*62*N#` unreachable | `##61#`; `##67#`; `##62#`, followed by voicemail verification | Integration documented by Google Voice, specifically for AT&T Wireless. Single leading star, unlike T-Mobile. AT&T's general wireless page is not a complete conditional-code reference. [Google integration instructions](https://support.google.com/voice/answer/165656?hl=en), [AT&T](https://www.att.com/support/article/wireless/KM1011513/) |
+| **Xfinity Mobile** | `*71N` for unanswered calls | `*73` | Carrier documented. Busy/rejected and unreachable require separate validation. [Xfinity instructions](https://www.xfinity.com/support/articles/how-to-use-call-forwarding) |
+| **Visible** | `*71N` | `*73` | Carrier documents busy/on-another-line, but does not explicitly establish unanswered coverage. Do not equate this with Verizon validation. [Visible features](https://www.visible.com/content/value/visible/en/help/about-visible/plan-features.html) |
+| **Spectrum Mobile** | `*71N` for unanswered calls appears in the carrier's indexed instructions | Confirm restoration through Spectrum before setup | Incomplete current read: full page returned HTTP 403; indexed carrier text supports activation only. Previous October 10 research listed `*73`; re-confirm it rather than promoting that older note to current verification. [Spectrum instructions](https://www.spectrum.net/support/mobile/spectrum-mobile-call-forwarding) |
+| **US Mobile — Warp** | `*71N` | `*73` | Carrier documented. Page labels this busy and describes conditional forwarding as busy/no-answer. [US Mobile instructions](https://www.usmobile.com/help/docs/troubleshooting-and-setup/setting-up-device/advanced-device-setup) |
+| **US Mobile — Light Speed** | `**61*N#` unanswered; page also lists `**62*N#` under a busy heading | `##61#`; `##62#` for those entries | Incomplete: the busy label conflicts with the usual unreachable meaning of 62. Obtain carrier clarification; do not invent a third code from T-Mobile's profile. [US Mobile](https://www.usmobile.com/help/docs/troubleshooting-and-setup/setting-up-device/advanced-device-setup) |
+| **US Mobile — Dark Star** | `*61*N#`; `*62*N#`; `*67*N#` | Carrier confirmation required for conditional restoration | Activation documented. Page's cancellation example is `#21#`; that does not establish restoration of all three conditional paths. [US Mobile](https://www.usmobile.com/help/docs/troubleshooting-and-setup/setting-up-device/advanced-device-setup) |
 
-Covers AT&T, AT&T Prepaid, Cricket, and lines on an AT&T SIM from multi-network brands. Consumer Cellular uses AT&T or T-Mobile depending on the SIM.
+### Verizon setup card
 
-- **Codes.** AT&T doesn't publish the conditional codes. Its wireless page says forwarding is set on the phone and "can't be managed online". Third-party guides list the same `**61`, `**67` and `**62` codes. These are 3GPP-standard, so they're expected to work, but that's secondhand.
-- **Voicemail.** AT&T documents that call forwarding "overrides your wireless voicemail."
-- **Restoration is the riskiest unknown.** I found no AT&T documentation that `##61#` or `##004#` brings carrier voicemail back. Secondhand reports suggest it can leave a line with no voicemail until someone calls 611.
-- **Forwarding caps in the terms:** 750 forwarded minutes a month on AT&T Prepaid and 1,000 on Cricket. Both are far above Shield's expected use.
-- **Long distance.** AT&T says calls forwarded outside the home calling area may incur long-distance charges.
+1. Confirm the brand really is Verizon, the correct mobile line is selected, and cellular coverage is available. Record existing forwarding and voicemail behavior.
+2. Once the assigned Shield destination is ready, dial `*71N`. Wait for the confirmation beeps and automatic call end.
+3. Complete the line tests below before showing “Protection ready.”
+4. To stop Shield forwarding, dial `*73`, wait for confirmation, restore original phone settings, and verify normal calls and carrier voicemail.
 
-### Verizon network: one code covers busy and no answer
+Verizon describes no-answer forwarding after **3–6 rings**. Do not promise an exact timeout or powered-off behavior. Its FAQ says forwarding is available across plans, with plan-dependent minute charges and possible fees on older plans. Those statements do not validate every plan for Shield. [Verizon activation](https://www.verizon.com/support/knowledge-base-181139/), [FAQ](https://www.verizon.com/support/call-forwarding-faqs/)
 
-Covers Verizon (postpaid and prepaid), Visible, Total Wireless, Spectrum Mobile, Xfinity Mobile and Lively. Straight Talk and Tracfone lines on a Verizon SIM belong here too.
+### T-Mobile setup card
 
-| Purpose | Code | Source |
-|---|---|---|
-| Busy or no answer after "three or four rings" | `*71NNNNNNNNNN` (10 digits) | Documented: Verizon, Spectrum, Xfinity |
-| Turn off; voicemail resumes | `*73` | Documented: Verizon, Spectrum, Xfinity |
-| Unreachable | No separate code | Not documented |
-| Check status | None | Not documented |
+1. Confirm the line and original settings; save the assigned Shield contact.
+2. Dial `**61*1N#`, `**67*1N#`, and `**62*1N#` separately. Record each carrier response. Returning from Phone is not confirmation.
+3. Complete the line tests below.
+4. Restore the prior configuration. For ordinary carrier defaults, T-Mobile documents `##004#`; verify voicemail afterward. Preserve custom forwarding targets instead of blindly resetting them.
 
-- **Plans.** Verizon says call forwarding is "available on all plans."
-- **Charges.** Without unlimited minutes, forwarded calls are billed by the plan.
-- **No success message.** Verizon says the confirmation tone "may sound like a busy signal". There's no on-screen message, so setup copy must say exactly that.
-- **Coverage needed.** Forwarding can't be set up outside Verizon coverage.
-- **Alternative to codes.** Spectrum Mobile can also set this in the My Spectrum app (Call Forwarding → "Busy Line & Missed Calls"), but only the account holder can. Verizon's articles disagree about whether My Verizon can.
-- **Restoration is simple.** `*73` turns forwarding off. Spectrum's page says forwarding is what stops unanswered calls reaching voicemail, so turning it off should bring voicemail back.
-- **Unknown: rejected calls.** It isn't confirmed that a call silenced by iOS triggers `*71`. Verizon's main article says busy. Xfinity's page and some guides describe `*71` as no-answer only, and a few mention `*90` for busy. **Test this before the first Verizon-family user.**
-- **Ring time can't be changed.** It's fixed at three or four rings, roughly 18–24 seconds.
-- **Brand pages differ.** Straight Talk's own pages document only `*72`/`*73` and say forwarding is "only available in select areas and on select handsets". Lively runs on Verizon and accepts unlocked iPhones on iOS 17 or later, but publishes no forwarding codes.
+Do not initially change ring duration. T-Mobile publishes a timer example containing its own voicemail destination: copying that example would replace Shield as the destination. A custom Shield timer needs a separate tested profile. If reset fails over Wi-Fi Calling, T-Mobile's troubleshooting guide recommends switching Wi-Fi Calling off for the reset; restore its previous setting afterward. [Short codes](https://www.t-mobile.com/support/plans-features/self-service-short-codes), [voicemail troubleshooting](https://www.t-mobile.com/support/devices/device-troubleshooting/voicemail-troubleshooting)
 
-### Not supported
+### Other brands investigated
 
-| Carrier | Why |
+“Not enabled” below means insufficient evidence for Shield, not proof that the carrier can never support it. Do not inherit support merely from the underlying network.
+
+| Brand / service | Finding and next action |
 |---|---|
-| Google Fi | It sets forwarding only in the Fi app or website. The options are "Ring all numbers" (simultaneous ring) and "Always forward" (unconditional), with no busy or no-answer option. Documented. |
-| Boost Mobile | It documents only `*72` (all calls) and `*720`. A Boost representative said conditional forwarding isn't available. Community knowledge base. |
+| **Cricket** | [Carrier lists call forwarding](https://www.cricketwireless.com/support/plans-and-features/features), but this research did not establish a complete current conditional-code and restoration guide. Confirm plan, destination eligibility, and all conditions with Cricket. |
+| **Consumer Cellular** | Carrier-hosted device manuals describe forwarding, but a current plan-wide conditional-code contract was not established. Support-assisted qualification only. [Example carrier manual](https://www.consumercellular.com/api/Assets/documents/Manuals/zmax_11_user_manual.pdf) |
+| **Metro by T-Mobile** | No complete current official conditional guide established. Confirm entitlement, any add-on charge, codes, and restoration with Metro; do not automatically apply T-Mobile's profile. |
+| **Boost Mobile** | No complete current official conditional guide established. Retire the older blanket “unsupported” conclusion based on a legacy community page; keep enrollment disabled pending direct evidence. |
+| **Total Wireless / Straight Talk / Tracfone / Lively / UScellular** | Not qualified for this pilot. Device-specific all-calls forwarding instructions or an underlying network relationship are insufficient. Example: [Total's device FAQ](https://support.totalwireless.com/en/brands/Samsung/TOSAX238UV/faq/1647737/) documents all-calls activation, not Shield's three conditions. Obtain current brand/plan instructions. |
+| **Google Fi** | Official setup is through Fi's app/site, with don't-forward, simultaneous-ring, and always-forward choices. No conditional option documented there; not compatible with this Shield flow as documented. Do not use T-Mobile dial codes by inference. [Fi instructions](https://support.google.com/fi/answer/6201380?hl=en) |
+| **Landline / home phone / business VoIP** | Separate qualification required. Do not use mobile codes on these services. Unknown-caller selection and a non-looping recipient endpoint need a different design. |
 
-The person's iPhone *Call Forwarding* switch is unconditional only on every carrier, so setup must keep it off.
+## Verification for every participant
 
-## Which carriers matter for the pilot
+Required before enrollment: qualified carrier profile; senior's consent; verified recipient; assigned and provider-configured Shield number; recorded original settings and carrier restoration procedure; a way to reach a helper if setup fails. Do not expose codes until the destination is actually ready.
 
-The area AAACAP serves (around Austin) is Spectrum's cable territory, so Spectrum Mobile is likely to come up. Xfinity mostly isn't present there. Older adults often use Consumer Cellular, Lively, the Big Three's 55+ plans, and Straight Talk or Total from Walmart. Those all fall into the three families above, so **three code paths cover almost everyone, and only Google Fi and Boost are excluded.**
+Staff should use another agreed communication channel or split setup into instruction, hang-up, and callback stages. Staying on the senior's line changes the busy condition and prevents a meaningful ring test. The owner must authorize any live testing; this document does not authorize calls to the owner's phones.
 
-## What else changes when forwarding is on
+| Test | Required observation |
+|---|---|
+| Saved contact, answered normally | Phone rings directly. Shield does not claim the call. |
+| Unsaved caller with Silence on | Call reaches the correct Shield participant. Test separately from ringing to timeout. |
+| Manual decline / busy | Correct forwarding; test with call waiting in the user's normal configuration. Do not disable call waiting just to make a test pass. |
+| No answer | Correct forwarding; measure time to diversion. |
+| Powered off / no coverage | Record actual outcome: Shield or carrier voicemail/failure. Don't promise unreachable protection if it fails. |
+| Wi-Fi Calling | Repeat critical conditions in the user's normal Wi-Fi Calling configuration. |
+| Shield offer | Saved Shield contact rings; only that recipient hears the private summary; only their digit 1 connects. Digit 2, silence, and voicemail pickup do not connect. |
+| Missed/declined Shield offer | No recursive screening/dialing; original caller gets the intended voicemail fallback. |
+| Private caller ID / international caller | Route to the right person without depending on caller ID; retain current screening/fallback behavior. |
+| Two participants at once | Calls, histories, voicemail and acceptance events remain isolated. Use the same synthetic originating caller for both as an identity test. |
+| Restoration | Disable the configured forwarding, restore saved phone settings, then confirm both direct ringing and a retrievable message in ordinary carrier voicemail. |
 
-These apply on every carrier, and affect real users more than the codes do.
+Use consenting test participants and synthetic scripts; record metadata and pass/fail outcomes, not transcripts or audio in repository evidence. Each carrier qualification should include two independent lines when practical and callers originating on different networks; this is proposed coverage, not statistical proof. Every senior still needs their own setup check. Revalidate after carrier/plan/SIM changes, number changes, relevant iOS updates, or routing incidents.
 
-1. **Voicemail moves into Shield, including messages from contacts.** Every carrier says forwarding replaces carrier voicemail. A missed call from family now leaves its message in the Shield app, not in Phone's Voicemail tab. The backend reports `notificationsAvailable: false` (`backend/src/cloud/api.ts`), so nothing tells the person a message arrived. Before real users, add push notifications for new voicemails, or at least say this plainly during setup.
-2. **Callers without a +1 number are hung up with no voicemail.** `forwarding-voice.ts` rejects any `From` that isn't `+1` and ten digits. That includes:
-   - blocked or private caller ID, which clinics, hospitals and pharmacies often use
-   - international family
+Keep a private record keyed by participant ID: carrier brand, product/network, plan type, device/OS, code-profile version, condition, originating test network, Wi-Fi Calling state, timestamp, opaque provider call reference, observed destination match, time to diversion, restoration result, verifier. Never publish phone numbers, webhook URLs, or raw SIP headers.
 
-   iOS silences these callers, the carrier forwards them, and Shield hangs up. Before Shield, they'd have reached carrier voicemail.
+## Carrier-profile algorithm to implement
 
-   **Fixed and deployed October 11:** these callers are now screened like anyone else, and history shows "No caller ID". One supervised call will show what Telnyx puts in `From` for a withheld number.
-3. **Shield's offer can be cut short by the carrier's ring time.** Shield rings the person for 20 seconds (`<Dial timeout: 20>`). If the carrier forwards unanswered calls sooner, the offer bounces back to the Shield number. The loop guard then hangs up, so the person has less time to pick up. Seniors answer slowly, so two fixes help:
-   - **T-Mobile and AT&T lines:** add the 30-second ring time to the no-answer code (`**61*1N**30#`). This also gives contacts longer to ring.
-   - **Verizon-family lines:** keep the offer under about 18 seconds.
+Store versioned profiles by **brand + product/network + verified capabilities**, not just network family:
 
-   Consider TeXML `<Reject>` instead of `<Hangup>` for loop and invalid calls. Telnyx documents that `<Reject>` as the first verb "will prevent the call from being answered", so a bounced offer would read as busy rather than answered.
-4. **Plans that charge by the minute count minutes twice.** The carrier bills the forwarded leg as airtime, and Shield's offer is a second incoming call. A connected 10-minute call can use about 20 plan minutes. That matters for Tello pay-as-you-go, minute-based Tracfone plans and some Lively or Consumer Cellular plans. Ask about the plan during setup.
-5. **iPhone details staff should check:**
-   - **Unknown callers:** *Screen Unknown Callers* must be **Silence**, not *Ask Reason for Calling*.
-   - **Live Voicemail:** must be off, or the iPhone answers before forwarding.
-   - **Two lines:** with two lines, dial codes from the right line.
-   - **Signal:** dial codes with cellular bars showing.
-   - **When Apple stops screening:** while roaming, and for 24 hours after an emergency call. Unknown callers then ring normally, which is harmless.
-6. **Carrier spam blocking helps.** T-Mobile Scam Shield, Verizon Call Filter and AT&T ActiveArmor block calls before they reach the phone, so Shield never pays to screen them. Leave them on.
+```text
+profile = {
+  id, version, brand, product, sourceUrls, researchedAt,
+  activationSteps: [{ condition, template, destinationFormat, confirmationCopy }],
+  restorationSteps, restorationPrerequisites,
+  documentedConditions, testedConditions, evidenceRefs,
+  eligibilityRules, ringTimerPolicy, qualificationStatus
+}
+```
 
-## Recommendations, in order
+Use explicit 10-digit versus 11-digit templates. A missing/ambiguous profile returns support-needed, never a best-guess dial code. A network lookup can suggest a profile, but ported numbers and resellers require user/staff confirmation.
 
-### Before the first real user
+Setup state: `eligible → destination_ready → consented → settings_saved → codes_confirmed → line_tests_passed → active`. Each test result must match the current participant, destination assignment and profile version; changed assignments invalidate old results. All required steps must pass before activation. If setup fails partway through, guide restoration while retaining the assigned number.
 
-1. **Carrier table in the backend.** Each entry has a brand, a network family, activation codes, reset codes, success-message copy, ring-time support and `verifiedAt`.
-   - `/api/forwarding` returns the person's carrier, codes and reset codes.
-   - iOS stops hardcoding Tello and `##61#`/`##67#`/`##62#`. The existing `SetupStatus.CarrierProfile` shape already fits; the API sends it as null today.
-   - Verizon-family setup is one code instead of three.
-2. **Carrier choice in setup.** List brands and map each to a family. Multi-network brands (Straight Talk, Total, Tracfone, Consumer Cellular) need the SIM's network, so staff confirm it. iOS can't read the carrier: `CTCarrier` is deprecated and returns placeholders. Google Fi and Boost get a clear "not available yet" screen before any code.
-3. **Restoration by family:**
-   - **T-Mobile network:** `##004#`. Check whether today's Tello reset (`##61#`/`##67#`/`##62#`) actually brings voicemail back. A normal call and voicemail after restoration have never been verified.
-   - **AT&T network:** before setup, staff record what `*#61#`, `*#67#` and `*#62#` show; a screenshot is fine. Restore by registering those numbers again. The fallback is 611.
-   - **Verizon family:** `*73`.
-4. **Check that a silenced call really reaches Shield.** Today's forwarding check calls from the Shield number, which is a saved contact. That only tests the no-answer path. Unknown callers take the rejected (busy) path. Add a check that calls from a second, unsaved Telnyx number (about $1 a month, shared by everyone). It proves four things for each person's own line, whatever the brand:
-   - Silence is on
-   - Live Voicemail is off
-   - the busy code took effect
-   - caller ID survives forwarding
+Restoration state: `restoring → codes_confirmed → settings_restored → ringing_verified → carrier_voicemail_verified → restored`. A backend pause, uninstall, logout, or successful reset message is not proof that carrier forwarding stopped.
 
-   It's the main thing that makes rollout across carriers safe.
-5. **Voicemail for callers without a +1 number, and voicemail notifications** (items 1–2 above).
+The API should return carrier-specific activation and restoration steps. Replace Tello strings and fixed three-step assumptions in iOS. Keep status queries such as `*#61#` out of generic self-service flows until the exact carrier profile establishes them. Do not display a single “all carriers supported” badge.
 
-### Soon after
+## Changes from the October 10 draft
 
-6. Add the 30-second ring time to the T-Mobile and AT&T no-answer codes, and size the offer timeout per family. Look at `<Reject>` for loop calls.
-7. **Copy for each family:** what success looks like, a Wi‑Fi Calling hint when codes fail, choosing the line on a two-line phone, and a warning for plans that charge by the minute.
-8. **Staff fallback for Verizon-family lines:** the account holder can set "Busy Line & Missed Calls" in the My Spectrum app, or call the carrier.
-
-### Verifying a family
-
-The plan says to add a carrier only after one supervised test on a real line. A prepaid eSIM in a spare iPhone does this cheaply:
-- **Verizon family:** Visible or Total
-- **AT&T family:** Cricket or AT&T Prepaid
-- **T-Mobile:** Tello, already in use
-
-For each one, run setup, the two forwarding checks, an ordinary call and voicemail, then restoration. Confirm ordinary voicemail works again before marking the family verified.
-
-Each person's own forwarding checks then verify their line, whatever the brand. So most brands don't need separate sign-off, only their network family.
-
-The owner runs or approves every one of these steps. None of it is automated, and Shield never calls the owner's phones.
-
-## Sources
-
-- **T-Mobile:**
-  - [self-service short codes](https://www.t-mobile.com/support/plans-features/self-service-short-codes) (`**61`, `**62`, `**67`, ring time, `##004#`)
-  - [voicemail troubleshooting](https://www.t-mobile.com/support/devices/device-troubleshooting/voicemail-troubleshooting) (`##004#`, Wi‑Fi Calling)
-- **Tello:**
-  - [call forwarding](https://tello.com/help_center/service-issues-troubleshooting/how-can-i-set-up-call-forwarding) (codes, "Busy (Rejected Calls)", data plan, minutes)
-  - [voicemail](https://tello.com/help_center/device-settings/how-do-i-set-up-access-my-voicemail)
-- **Mint Mobile:** [call forwarding](https://www.mintmobile.com/help/how-to-turn-on-off-call-forwarding/)
-- **AT&T:** [call forwarding for wireless](https://www.att.com/support/article/wireless/KM1011513/) (overrides voicemail, set on the phone only, billing)
-- **Verizon:**
-  - [call forwarding FAQs](https://www.verizon.com/support/call-forwarding-faqs/)
-  - [call forwarding article](https://www.verizon.com/articles/call-forwarding-everything-you-need-to-know/) (`*71` busy or no answer, `*73`)
-- **Spectrum Mobile:** [call forwarding](https://www.spectrum.net/support/mobile/spectrum-mobile-call-forwarding)
-- **Xfinity Mobile:** [call forwarding](https://www.xfinity.com/support/articles/how-to-use-call-forwarding)
-- **Google Fi:** [call forwarding](https://support.google.com/fi/answer/6201380)
-- **Boost Mobile:** [activating call forwarding](https://community.boostmobile.com/t5/Plans-and-Services-Knowledge/How-do-I-activate-Call-Forwarding/ta-p/10417)
-- **Straight Talk:** [call forwarding knowledge base](https://support.straighttalk.com/en/brands/Apple/STAPI7C/faq/1647737/)
-- **Lively:** [bring your own phone](https://shop.lively.com/collections/bring-your-own-phone)
-- **Apple:** [manage unknown callers](https://support.apple.com/111106)
-- **Telnyx:** [TeXML `<Reject>`](https://developers.telnyx.com/docs/voice/programmable-voice/texml-verbs/reject)
+This revision removes network-family support inheritance, unverified blanket exclusions, fixed Verizon ring-time claims, and a generic T-Mobile/AT&T timer recommendation. AT&T's single-star conditional examples now cite Google's integration documentation explicitly. No claim about AT&T/Cricket forwarding-minute caps is carried forward without a current plan-specific source. Voicemail restoration remains a tested outcome, not an assumption from a reset command.
