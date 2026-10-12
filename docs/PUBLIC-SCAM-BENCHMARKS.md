@@ -367,3 +367,35 @@ A clarification does not offer a call, but it is not a completed stop. These are
 **Preserved earlier diagnostics:** the first large Go batches reached HTTP 429 and stopped. The authorized subscription fallback ran the intermediate v29 candidate on all 724 FTC cases (723 identified, 708 stopped, one approval, no failures) and all 320 MASC cases. Its contemporaneous v26 FTC baseline stopped at 705/724 after one provider failure, so it is not a complete paired FTC baseline. The exact FTC recording cited by the owner was approved 0/20 times on both v26 and v29 through that fallback; this did not establish an improvement on that recording. v29 was rejected because development repeats exposed an ordinary hospital-news regression under caution. These outcomes were retained, not pooled with the final v30 Go comparison. Go subsequently completed the final runs at lower concurrency.
 
 Final requests and scoring sources stayed unchanged throughout. `artifacts/notice-v30/validation-summary.json` contains the freeze, matching-case checks and raw-result hashes; original incomplete and intermediate runs remain under `artifacts/notice-v29/`. See [Screening](SCREENING.md#financial-notice-follow-up-v30-october-11-text-only) for the independent synthetic contrasts, held-out checks and remaining costs. No voice, timing, deployment or real-call claim follows from these offline results.
+
+## Distilled screening experiment v31, October 11
+
+The owner requested one benchmark pass of a generalized prompt through subscription GPT-6 Luna. The [offline candidate](../scripts/experiments/distilled-screening-v31.mjs), version `2026-10-11-distilled-v31-experiment`, replaces the decision instructions only: **4,369 characters versus v30's 9,710, a 55.0% reduction**. Production remains v30. Model reasoning remains medium; the experiment gives the model broader judgment rather than changing the reasoning setting. Tool schemas and other request settings are unchanged.
+
+This is more than compression: it lets recognizable unsolicited fraud approaches justify a stop before an explicit harmful demand, retains a maximum of two useful clarification questions, and condenses ordinary-call, family, solicitation and manipulation rules. It contains no dataset rows or brand-specific scam examples. The candidate was frozen before inference and was not revised after seeing outcomes.
+
+**One complete pass, 320 MASC test conversations**, using the existing isolated subscription transport. Scoring, source revision and caller-only inputs are unchanged. The comparisons below are saved historical runs, not new paired evaluations:
+
+| Measure | Distilled v31, subscription | Historical v26, subscription | Historical v30, Go |
+|---|---:|---:|---:|
+| Legitimate calls offered | 67/80 | 71/80 | 79/80 |
+| Completed harmful stops | 159/160 | 150/160 | 149/160 |
+| Harmful clarifications | 1 | 10 | 11 |
+| Harmful approvals | 0 | 0 | 0 |
+| Identified, including clarification | 160/160 | 160/160 | 160/160 |
+| Ads blocked, separate score | 40/40 | 40/40 | 40/40 |
+| Provider / validation failures | 0 / 0 | 0 / 0 | 0 / 0 |
+
+The candidate offered 35/40 appointment calls and 32/40 delivery calls. Of the thirteen ordinary calls not offered, twelve were blocked and one held. All support, reward and SSN scams were blocked; refund scams produced 39 blocks and one clarification. The 40 wrong-number cases remain outside the ordinary-call score: 24 approved, 9 held, 4 clarifications and 3 blocks. No outcomes were relabeled or excluded based on predictions.
+
+**Do not adopt this candidate on this evidence.** It produces more completed scam stops but is too restrictive toward ordinary callers. This single pass does not establish that brevity caused the difference: both policy wording and level of discretion changed. The v26 comparison uses the same subscription transport; v30 used Go, whose request transport differs, so that column cannot establish a prompt-only effect. No fresh baseline was run, as the owner requested just one candidate pass.
+
+The run does not test live follow-up exchanges, early interception, the FTC charge probe, the FTC dataset, fresh red-team cases, voice or recent-scam caution. It is a known public regression set, not unseen generalization evidence. No production prompt, voice configuration or deployment changed.
+
+Evidence is in `artifacts/distilled-v31/`: frozen requests, `freeze.json`, `masc/results.jsonl`, `masc/summary.json`, and `validation-summary.json`. The audit verifies 320 distinct case IDs, one run each, matching source hashes with both historical baselines, recomputed scores, and unchanged candidate/production/scoring sources. Request SHA-256: `5d46efb7459805028955d9b3830a8cd2322072d6e85fe69eb42513c7e5a17308`. Reproduce the experiment after building with:
+
+```bash
+node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening --repeat 1 --concurrency 6 --request artifacts/distilled-v31/candidate-request.json --out artifacts/distilled-v31/masc-new-run
+```
+
+Repository validation passed: typecheck/build, 143 unit tests and 86 Firestore emulator tests. The first sandboxed unit run could not bind the APNs test server on localhost; rerunning with local server access passed. These checks do not establish screening accuracy beyond the single benchmark above.
