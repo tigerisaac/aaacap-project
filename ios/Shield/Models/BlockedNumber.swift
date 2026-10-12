@@ -11,6 +11,6 @@ struct BlockedNumber: Codable, Identifiable, Hashable, Sendable {
     let lastAttemptAt: Date?
 
     var reasonText: String {
-        reason == "monitor_intervened" ? "Shield ended a call with this number" : "Shield stopped a scam call from this number"
+        reason == "monitor_intervened" ? "Call ended for a scam request" : "Scam call stopped"
     }
 }

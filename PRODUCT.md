@@ -12,7 +12,7 @@ Native SwiftUI companion; TypeScript backend on Firebase (Functions, Firestore, 
 
 ## Users
 
-Older adults reviewing their calls, and caregivers with explicit, revocable access. The user requested that both audiences be accommodated, with good features, minimal text, and more color.
+Older adults reviewing their calls, and helpers with explicit, revocable access. The owner’s October 12 brief makes an 80-year-old’s understanding the design bar: less text, everyday language, fewer visible choices, and calls and voicemail first. Preserve the native app’s familiar appearance while simplifying every interaction.
 
 ## Product Purpose
 
@@ -37,6 +37,9 @@ Current architecture, status and screening results in docs/. Synthetic screening
 ## Product Principles
 
 - Make the result of each call easy to understand.
+- Put calls and voicemail in everyday reach; keep setup, sharing, and explanations out of the daily path.
+- Give each screen one clear next action. Reveal uncommon details on request.
+- Mark new-feature mockups as sample-only. A preview never changes real messages or live phone service.
 - Participants control sharing; caregiver access does not imply ownership.
 - Treat uncertain screening as uncertain, never authenticated or safe.
 - Keep the route back to ordinary carrier service visible.

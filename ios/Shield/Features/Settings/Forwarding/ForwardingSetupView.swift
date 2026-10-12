@@ -16,7 +16,7 @@ struct ForwardingSetupView: View {
                         if model.step.progressIndex > 0 {
                             FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 5)
                         }
-                        Text(model.step.title).font(.largeTitle.bold()).id("forwarding-heading")
+                        Text(model.step.title).font(.title.bold()).id("forwarding-heading")
                             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
                         if model.step == .ring || model.step == .test {
                             ForwardingProbeView(model: model)
@@ -33,13 +33,13 @@ struct ForwardingSetupView: View {
                                     .foregroundStyle(ShieldTheme.held).accessibilityIdentifier("forwarding-error")
                                 if model.step == .save {
                                     Link("Allow Contacts in Settings", destination: URL(string: UIApplication.openSettingsURLString)!)
-                                        .frame(minHeight: 44)
+                                        .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                                 }
                             }
                         }
                     } else if let error = model.error {
                         ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
-                        Button("Try again") { Task { await model.load(app) } }.frame(minHeight: 44)
+                        Button("Try again") { Task { await model.load(app) } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     } else {
                         ProgressView("Loading phone setup…").frame(maxWidth: .infinity, minHeight: 220)
                     }
@@ -70,7 +70,7 @@ struct ForwardingSetupView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu("Setup options", systemImage: "ellipsis.circle") {
-                    Button("Restore my phone", systemImage: "arrow.uturn.backward") { confirmRestore = true }
+                    Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
                 }
             }
         }
@@ -94,10 +94,10 @@ struct ForwardingSetupView: View {
             }
             if phase == .active { Task { await model.load(app) } }
         }
-        .confirmationDialog("Restore ordinary phone service?", isPresented: $confirmRestore, titleVisibility: .visible) {
-            Button("Stop callbacks and begin restoration") { Task { await model.restore(app) } }
+        .confirmationDialog("Disconnect Shield?", isPresented: $confirmRestore, titleVisibility: .visible) {
+            Button("Start disconnecting") { Task { await model.restore(app) } }
         } message: {
-            Text("Shield will stop offering calls and guide you through restoring Tello. Ending a test alone does not undo forwarding.")
+            Text("Shield stops ringing you. Follow the steps to bring back ordinary calls and voicemail. Ending a test alone won’t disconnect your phone.")
         }
     }
 }

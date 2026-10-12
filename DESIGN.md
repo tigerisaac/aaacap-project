@@ -1,20 +1,31 @@
 ---
 name: Shield
-description: A calm native call companion for participants and people they choose to share with.
+description: A familiar native call companion with clear words and roomy controls.
 colors:
   action-light: "#224CC5"
   action-dark: "#9BB3FF"
+  action-light-high: "#173AA3"
+  action-dark-high: "#BDD0FF"
   held-light: "#B53742"
   held-dark: "#FF9B9C"
+  held-light-high: "#8F2230"
+  held-dark-high: "#FFBCC1"
   connected-light: "#076C5C"
   connected-dark: "#74DDC6"
+  connected-light-high: "#005043"
+  connected-dark-high: "#A2F3DF"
   message-light: "#7244B9"
   message-dark: "#CAAEFF"
-  surface-light: "#F7F7F2"
-  surface-dark: "#171918"
+  message-light-high: "#58308F"
+  message-dark-high: "#DECAFF"
+  secondary-light: "rgb(34% 34% 34%)"
+  secondary-dark: "rgb(76% 76% 76%)"
+  secondary-light-high: "rgb(20% 20% 20%)"
+  secondary-dark-high: "rgb(86% 86% 86%)"
 typography:
   display:
     fontFamily: "system-ui"
+    fontWeight: 700
   title:
     fontFamily: "system-ui"
     fontWeight: 700
@@ -29,200 +40,202 @@ typography:
     fontFamily: "system-ui"
     fontWeight: 600
 rounded:
-  outcome-control: "16pt"
-  call-symbol: "23pt"
+  card: "26pt"
+  field-and-intro: "14pt"
 spacing:
-  tight: "4pt"
-  compact: "6pt"
-  small: "8pt"
-  medium: "12pt"
-  row: "14pt"
-  inset: "16pt"
+  compact: "8pt"
+  regular: "12pt"
+  content: "16pt"
+  card: "20pt"
+  page: "24pt"
+  section: "28pt"
 components:
   button-primary:
     backgroundColor: "{colors.action-light}"
+    typography: "{typography.headline}"
+    height: "52pt"
   button-primary-dark:
     backgroundColor: "{colors.action-dark}"
+    typography: "{typography.headline}"
+    height: "52pt"
   button-secondary:
     textColor: "{colors.action-light}"
   input-email:
     typography: "{typography.body}"
+    rounded: "{rounded.field-and-intro}"
+    padding: "{spacing.content}"
   navigation:
     textColor: "{colors.action-light}"
-  outcome-held:
-    textColor: "{colors.held-light}"
-    rounded: "{rounded.outcome-control}"
-    padding: "{spacing.inset}"
-  outcome-connected:
-    textColor: "{colors.connected-light}"
-    rounded: "{rounded.outcome-control}"
-    padding: "{spacing.inset}"
-  outcome-message:
-    textColor: "{colors.message-light}"
-    rounded: "{rounded.outcome-control}"
-    padding: "{spacing.inset}"
-  outcome-badge:
+  outcome-label:
     typography: "{typography.label}"
-    padding: "0"
-  call-symbol:
-    rounded: "{rounded.call-symbol}"
-    width: "46pt"
-    height: "46pt"
   call-row:
-    padding: "10pt 0"
-  person-picker:
-    textColor: "{colors.action-light}"
-  demo-banner:
-    textColor: "{colors.action-light}"
+    padding: "8pt 0"
+  action-row:
+    typography: "{typography.body}"
+    height: "52pt"
+    padding: "8pt 0"
+  voicemail-row:
+    typography: "{typography.headline}"
+    padding: "8pt 0"
+  sample-banner:
     typography: "{typography.label}"
-    padding: "0 20pt"
+    padding: "8pt 16pt"
+  card-container:
+    rounded: "{rounded.card}"
+    padding: "{spacing.card}"
 ---
 
 # Design System: Shield
 
 ## Overview
 
-**Current direction: quiet, human, and direct.**
+**Creative North Star: "Public-library wayfinding"**
 
-The September 21 redesign reduces introductory copy and decorative labels. Shield is a private beta, not a commercial onboarding experience. Sign-in uses a compact wordmark and a short native heading, followed directly by the email field and Continue. There is no tagline, hero typography, or promotional copy. After sending a link, show the address once, one short instruction, and secondary Resend link / Change email actions. Hide the email field and demo entry while waiting for a link. Today uses readable sentence-case section headings and a shared neutral summary surface. Outcome text retains its meaning and color without a surrounding badge. This native implementation supersedes earlier schematic browser previews.
+Shield keeps a familiar native iPhone appearance: grouped lists, straightforward labels, system text, and recognizable controls. Quiet surfaces and four adaptive accents help people find a call, understand its result, and choose the next action. The library metaphor describes legible wayfinding; it does not introduce themed decoration.
 
-Shield uses short, familiar labels and distinct colors to help someone find a call, understand its outcome, and choose a next step. Native navigation and system typography carry the interface. The direction appears through tint, SF Symbols, and restrained outcome accents rather than a literal library theme.
-
-Participants and caregivers use the same four destinations. A visible person selector and explicit sharing labels establish whose activity is in view. Copy stays brief in ordinary use; consent, call uncertainty, and service restoration retain the explanation needed to make a decision.
+The October 12 refinement makes an 80-year-old's understanding the bar. Ordinary screens use everyday words, fewer visible choices, and room for text to grow. Less common details open on request. Setup, disconnection, privacy, and sharing retain the information and explicit confirmations needed for a meaningful choice.
 
 **Key Characteristics:**
 
-- Native tabs, navigation stacks, lists, forms, sheets, and confirmation dialogs.
-- Adaptive action blue, held-call red, connection teal, and message violet on quiet surfaces.
-- System text styles, symbol-and-text outcomes, and layouts that can stack when space is tight.
-- Explicit participant control, sharing scope, and sample-data labels.
+- Native tabs, navigation stacks, grouped lists, forms, sheets, menus, and confirmation dialogs.
+- Action blue, stopped-call red, answered-call teal, and voicemail violet with Light, Dark, and increased-contrast variants.
+- Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.
+- Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.
 
-**Evidence boundary:** Updated from the SwiftUI implementation on 2026-09-21. Xcode simulator build passed. Four UI tests passed in both light and dark appearance: call details, participant switching, email-field validation/demo entry, and largest-text welcome navigation. Screenshots were inspected for welcome, keyboard, Today, Calls, and large text. Subsequent copy, heading-contrast, and fixed-size decorative-icon changes were rebuilt successfully. VoiceOver, physical-device layouts, live email delivery, and service behavior were not validated by this design pass. Earlier browser sidecar previews are historical and do not specify this redesign.
+**Evidence boundary:** Extracted from current local SwiftUI source on October 12, 2026. This document records implemented styles and behavior, not final visual approval, accessibility certification, deployment, or real-call performance. Repository checks reported by the implementation pass passed typecheck/build and 157 unit tests, 86 Firebase emulator tests, and 13 forwarding UI tests. Final simulator review and accessibility diagnostics are still pending at extraction; the dated results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). No live service, owner phone, carrier setting, or real call changed as part of this documentation pass.
 
 ## Colors
 
-Color identifies actions and outcomes while system primary and secondary foreground styles maintain reading hierarchy. Asset variants, not independently chosen screen colors, supply Light and Dark Mode values.
+Color gives actions and call outcomes a consistent identity while opaque supporting text and native grouped surfaces carry the reading hierarchy.
 
 ### Primary
 
-- **Action blue** (`Action`; `action-light` / `action-dark`): the application tint, standard actions, selected navigation, person controls, and setup context. Screening and offered calls use this color too.
+- **Action blue** (`Action`; `action-*`): application tint, selected navigation, primary actions, setup context, and calls being checked or offered.
 
 ### Secondary
 
-- **Held-call red** (`Held`; `held-light` / `held-dark`): held calls, requests that need checking first, and refused message-check results. The same attention color marks pending restoration or supervised-test notices; it is not a claim that a caller is malicious.
-- **Connection teal** (`Connected`; `connected-light` / `connected-dark`): connected-call outcomes and their count control. It describes a connection, not a verified identity.
+- **Stopped-call red** (`Held`; `held-*`): Stopped and Check first outcomes, warning context, and text checks that need caution. It never authenticates a caller or independently proves wrongdoing.
+- **Answered-call teal** (`Connected`; `connected-*`): Answered outcomes. It describes a connected call, not a verified identity.
 
 ### Tertiary
 
-- **Message violet** (`Message`; `message-light` / `message-dark`): voicemail outcomes, message counts, shared people, and sharing context.
+- **Voicemail violet** (`Message`; `message-*`): voicemail outcomes, the unheard-message dot, and sharing context.
 
 ### Neutral
 
-- **Warm neutral surface** (`Surface`; `surface-light` / `surface-dark`): the sign-in canvas and the Today, Calls, Check, People, and call-detail list backgrounds.
-- **System foregrounds and containers:** `.primary`, `.secondary`, and native List/Form surfaces remain semantic SwiftUI styles. Missed calls use `.secondary`. Settings and forms keep their system backgrounds; do not substitute a sampled hex for an adaptive system color.
+- **Opaque supporting text** (`ShieldTheme.secondaryText`; `secondary-*`): key headings, footnotes, timestamps, placeholders, and supporting explanations. The increased-contrast variants strengthen foreground separation without lowering opacity.
+- **Native grouped surfaces:** `ShieldTheme.surface` is `systemGroupedBackground`; `ShieldTheme.card` is `secondarySystemGroupedBackground`. Lists and Forms retain native separator and selection behavior. These are adaptive system colors, not the earlier fixed Surface asset values.
+- **Native foregrounds:** `.primary` remains the ordinary reading color; a missed-call outcome can use `.secondary`. `ShieldTheme.actionInk` adapts primary-button text to appearance. Native Paste has its own deep `PasteFill` asset so its system white label stays readable in both appearances.
 
-Call-symbol backgrounds use the outcome accent at 12%; the Today setup symbol and call-detail summary use 8%. Weekly counts sit together on a semantic system card. Outcome labels have no background, and the demo banner uses the neutral canvas.
+Small symbol backgrounds may use a role tint at low opacity, such as ScreenIntro's 10% fill. Outcome labels themselves are unboxed. The sample marker sits on an opaque system surface.
 
-The sidecar's tonal strips are synthesized OKLCH illustrations for the documentation panel. The app implements only the paired asset colors above; the intermediate strip colors are not app tokens.
+**The Outcome Truth Rule.** Pair color with a familiar outcome label or symbol; a call being checked, offered, or answered never implies an authenticated caller.
 
-**The Outcome Truth Rule.** Color always accompanies an outcome label or symbol, and a connection or screening result never implies an authenticated caller.
+The sidecar's synthesized tonal strips only illustrate hue in the documentation panel. The app uses the asset and foreground variants above; intermediate ramp colors are not native tokens.
 
-Source: `Design/ShieldTheme.swift`, `Models/CallOutcome.swift`, and the five color sets in `Resources/Assets.xcassets`.
+Source: `ios/Shield/Design/ShieldTheme.swift`, `ios/Shield/Models/CallOutcome.swift`, and `ios/Shield/Resources/Assets.xcassets`.
 
 ## Typography
 
-Native system fonts supply all interface text. The welcome heading and wordmark use the native semibold title2 style with Dynamic Type. Other screens use semantic system styles; weekly counts use the rounded large-title design.
+Native system fonts supply interface text and SF Symbols supply iconography. The frontmatter's `system-ui` is a portable family description; SwiftUI's semantic text styles and Dynamic Type are authoritative. There is no custom fixed-size type ramp or line-height scale.
 
-| Role | Source style | Use |
+| Role | Implemented style | Use |
 | --- | --- | --- |
-| Display | Native navigation titles; native title2 on sign-in | Screen identity and Shield wordmark |
-| Title | Rounded `.largeTitle` for counts; `.title2.bold()` for detail | Outcome counts and call-detail title |
-| Headline | `.headline` | Call names, person names, section content emphasis, primary action labels |
-| Body | Default text / `.body` | Call explanations, form content, next steps |
-| Supporting | `.subheadline`, with semibold only for emphasized actions | Numbers, person-sharing scope, short supporting copy |
-| Label | `.caption.weight(.semibold)`; ordinary `.caption` for timestamps | Outcome badges and demo state; secondary time information |
+| Display | Native navigation title; `.largeTitle.bold()` for Shield | Screen identity and sign-in brand |
+| Title | `.title2.bold()` or `.title3.bold()` | Call-detail title, results, focused introductions |
+| Headline | `.headline`; `.body.weight(.semibold)` in call rows | Voicemail titles, section headings, action labels, call purposes |
+| Body | `.body` or default Text | Instructions, form content, explanations, More choices |
+| Supporting | `.subheadline` | Call time, outcome, number, sharing scope, sample marker |
+| Label | `.subheadline.weight(.semibold)` | OutcomeBadge and sample-data identity |
 
-SF Symbols use the surrounding system style, commonly `.title3`; they are not a second icon font. Outcome counts use monospaced digits. Invitation codes use `.body.monospaced()` and allow text selection.
+Invitation and carrier codes use native monospaced text where appropriate. They are task-specific content, not a display face. Call timestamps expose full dates to accessibility even when visible text uses a local time, Yesterday, or a short date.
 
-**The Native Type Rule.** Preserve semantic text styles and allow wrapping or stacking before introducing a fixed type size.
+**The Native Type Rule.** Preserve semantic text styles and allow wrapping or stacking before introducing a fixed text size.
 
 ## Layout
 
-Each top-level destination has a native NavigationStack. Today, Calls, Check, and People are a TabView; lists organize most content into system sections. Detail and settings screens explicitly use inline navigation titles. Focused entry tasks use a sheet containing its own navigation stack and Form. No custom breakpoint grid or iPad-specific split view is present in this source.
+The four native tabs are Home, Calls, Voicemail, and More. Each destination owns a NavigationStack. Lists use `.insetGrouped`, hide the scroll-content background in favor of the shared system surface, and set the default minimum row height to 60 points. Native hard scroll-edge effects keep boundaries distinct from scrolling content. Sheets and dialogs retain platform behavior.
 
-Reusable spacing is modest: tight supporting stacks, compact row padding, and a larger gap between the icon and text. Outcome controls have the inset padding token and use the medium gap internally and between controls. Call rows use the row gap with the compact vertical padding token. Leave normal list insets and safe-area handling to native containers.
+`ShieldTheme.Spacing` defines the six spacing tokens in frontmatter. Sign-in has a centered readable column capped at 560 points and page padding; it scrolls as content and the keyboard require. There is no custom viewport breakpoint system or app-specific iPad split layout.
 
-Today uses `ViewThatFits` to change its three outcome controls from a horizontal row to a vertical stack. Call rows use the same mechanism for the badge and time, changing to a stacked badge/date when a horizontal arrangement does not fit. These are content-based adaptations, not device-width breakpoints.
+`ShieldTheme.Layout.minimumTarget` is 52 points for shared primary-action labels and many app-owned actions; this is a minimum, never a fixed clipping height. The frontmatter's component `height` values express this minimum. Grouped rows use the 60-point default and grow with their content. Platform-owned controls keep native sizing. PersonPicker currently has a separate explicit 44-point minimum; this local exception does not establish the general app target.
 
-Custom text actions such as Exit, See all, person selection, invitation actions, and pagination explicitly use a minimum height of 44 points; Exit also sets a minimum width of 44 points. Native controls provide their own layout. Treat 44-by-44-point hit areas as the target and verify them on device; source inspection does not establish every final hit area. The message editor has a 160-point minimum height and can grow. Sign-in uses a scroll view instead of fixing its form to the viewport.
+At accessibility text sizes, call titles and times stack, and busy primary-action labels can put the spinner above the words. `ViewThatFits` stacks short action groups when their content does not fit horizontally. ActionRow's icon-column width scales relative to `.title3` through `ScaledMetric`; text can wrap. The text-check editor scales its 120-point base height relative to `.body`.
 
 ## Elevation & Depth
 
-The app defines no custom shadow or blur tokens. Low-opacity color distinguishes the main outcome controls and summary rows; native grouped surfaces separate supporting content. Navigation bars, sheets, menus, and dialogs retain the operating system's materials and depth. There is no custom motion curve or duration: pushes, sheets, and control feedback use platform behavior. Reduced Motion and VoiceOver behavior were not separately audited.
+Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. Navigation bars, menus, sheets, dialogs, and pressed feedback use operating-system materials and motion. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Voicemail's listening control uses a bottom safe-area inset with an opaque system surface.
+
+**The Native Surface Rule.** Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.
 
 ## Shapes
 
-Call-symbol backgrounds are circles. Welcome fields and the primary button use a 14-point radius and at least 56 points of height. Outcome labels are unboxed. Other native menus, lists, sheets, and forms retain system geometry.
+Primary buttons are native large `.borderedProminent` controls with capsule borders. Sign-in fields and introduction symbol tiles share the rounded field-and-intro geometry. The reusable `shieldCard` helper uses the card radius and card padding; ordinary list sections remain native grouped containers. No custom badge capsule surrounds outcome labels.
 
-The sign-in emblem's larger enclosure is specific to that screen and is not a reusable container token. The asset catalog contains a single universal app-icon raster; it does not establish an illustration system. In-app iconography uses SF Symbols.
+The existing ShieldMark image retains its continuous app-icon enclosure. Its geometry is specific to the identity asset and does not establish a general-purpose container. In-app icons use SF Symbols, not character glyphs or a separate icon font.
 
 ## Components
 
 ### Buttons
 
-Primary submission uses `.borderedProminent` with the application tint. Sign-in has a full-width custom 56-point button with adaptive foreground contrast and a quieter disabled fill; Check supplies a full-width label with a minimum height. Secondary actions use `.bordered` or standard native text buttons. Loading labels and ProgressView explain busy states, while `.disabled` blocks duplicate or incomplete submissions. Destructive actions use `role: .destructive` and native confirmations. Hover, keyboard focus, pressed treatment, and disabled appearance are system owned.
+`shieldPrimaryButton` sets native prominent styling, large control size, capsule shape, and Action tint. `ShieldActionLabel` supplies a full-width, wrapping headline and the shared minimum target, with adaptive `actionInk` foreground. Loading states name the work and show ProgressView; disabled controls prevent duplicate or incomplete submissions. Secondary actions use native text or bordered controls. Destructive actions use native roles and explicit confirmation. Native focus, pressed, and disabled appearances remain authoritative.
 
 ### Inputs / Fields
 
-Sign-in uses concise placeholder labels with explicit accessibility labels, 56-point minimum rounded containers, and an accent border on focus, with email and one-time-code content types and keyboard choices. Entry sheets and Sharing use Form fields, native Picker and Toggle controls. Check uses a labeled TextEditor and PhotosPicker; the placeholder is hidden from accessibility because the editor already has an explicit label. Focus is managed with FocusState where needed. Validation disables submission; errors appear in the root native alert. There is no custom error-border system.
+Sign-in uses email and one-time-code fields with keyboard/content types, explicit accessibility labels, rounded card-colored containers, and a focus border. Sharing and entry sheets use native Form fields, Picker, and Toggle. Check a text uses a labeled TextEditor with an accessibility-hidden placeholder, native Paste and Picture actions, and explicit agreement before sending text. Routine errors use ShieldNotice near the affected content; the root alert handles shared errors. There is no global custom error-border system.
 
 ### Navigation
 
-The four tab labels are **Today**, **Calls**, **Check**, and **People**, each with an SF Symbol. Calls uses a menu-style filter with All, Held, Connected, and Messages. Native NavigationLink rows push into detail or settings. Add number and Join someone are sheets with Cancel; Add number also has a confirmation-position Save. Standard native back navigation remains in place.
+The tabs are **Home**, **Calls**, **Voicemail**, and **More**, with house, phone, recording-tape, and ellipsis SF Symbols. More lists **Check a text**, **Family & friends**, **Get help**, and **Settings**. Its Check a text row has no explanatory subtitle. Focused tasks push through native NavigationLink rows; entry sheets retain Cancel and task-specific confirmation controls. Standard back navigation remains visible.
 
-### Outcome controls and badges
+### Call and voicemail rows
 
-The three Today controls share one neutral surface and show a rounded count above a small symbol and label: Held, Connected, Messages. They are buttons that open the corresponding Calls filter. Their accessibility label combines count, category, and “this week”; the hint explains that activating them shows calls.
+CallRow follows Phone's Recents pattern: purpose or name and time, followed by outcome and optional number. The call symbol is paired with an outcome word unless the title already supplies it. An adaptive violet dot marks unheard voicemail. Home hides the number while Calls and detail retain it. There is no decorative outcome tile or weekly-count dashboard in the daily view.
 
-`OutcomeBadge` combines a system symbol and colored caption label without a container. The actual call labels are Screening, Offered, Connected, Held, Check first, Message, and Missed. Held and Check first share the raised-hand symbol and color. The Held filter includes both states; Messages includes calls with voicemail. Preserve these distinctions instead of inventing a safety score or replacing uncertainty with “safe.”
+OutcomeBadge is an unboxed subheadline label with an SF Symbol. The labels are **Checking call**, **Phone rang**, **Answered**, **Stopped**, **Check first**, **Voicemail**, and **Missed**. Call rows expand Missed to Missed call. Preserve these distinctions and the uncertainty behind Check first.
 
-### Call rows and detail
+VoicemailRow leads with the message purpose, then an optional sample summary and a short New, Kept, or Removed state with a date. The dedicated inbox offers native loading, retry, empty, pagination, and removed-message disclosure states. Listening is the main bottom action on a playable message. More about this call opens additional detail rather than placing it all in the first view.
 
-Call rows show a colored symbol tile, call title, caller number, outcome badge, and time. The tile is decorative for accessibility, and row children combine into one element. NavigationLink supplies the row affordance. Detail starts with a tinted outcome summary, then native sections for what happened, voicemail when present, next step, and a timeline when available. Voicemail uses an explicit play/stop action and visible loading state. Playback controls require sharing permission; unavailable or unshared audio is labeled as such.
+### Status and notices
+
+Home's real-phone status depends on current forwarding evidence. Loading, unavailable, stale, expired, paused, and disconnection states are handled explicitly. Missing or old status never becomes an active-protection claim. Retry and setup appear when actionable; a healthy ProtectionCheckCard stays out of the daily path. Pure sample Home starts with voicemail and calls, relying on the persistent sample marker rather than another introductory status block.
+
+ShieldNotice combines a headline, supporting explanation, and recognizable symbol. ShieldLoadingView combines a system spinner and a short description. Use ordinary words for the result and reveal technical context only when needed for the person's task.
 
 ### Person context and sharing
 
-The toolbar PersonPicker uses a native Menu with the current name and a selection checkmark. Its accessibility label names the viewed person and says the person can be changed. People rows state “Your phone,” “Call history shared,” or “History & voicemail shared,” with an explicit selected mark. Selecting a person clears the previous context, resets the Calls filter, and recreates the tab roots for that person.
+PersonPicker appears as a native Menu when more than one person is available; a single helper context can show the person's name without a menu. It names the viewed person for accessibility. Selecting someone resets the old context and call filter. Family & friends rows state who owns the phone and whether call history or voicemail is shared.
 
-Participant-only setup and sharing actions are conditional on ownership. Caregiver views explain that phone settings stay with the participant. The native Include voicemail toggle makes sharing scope explicit, and invitation/revocation actions use confirmation dialogs. Color supports that distinction; it does not carry access meaning alone.
+Owner-only actions remain conditional on ownership. Include voicemail, invitation, and revocation controls preserve explicit permission and confirmation. Setup and disconnection retain their setting confirmations and call checks; returning from Phone or Settings never confirms a change by itself.
 
-**The Visible Context Rule.** Show the selected person and sharing scope in words, and keep participant ownership distinct from caregiver access.
+**The Visible Context Rule.** Show the viewed person and sharing scope in words, and keep participant ownership distinct from helper access.
 
-### Demo, loading, and empty states
+### Sample-only features
 
-The persistent DemoBanner says **Demo** (accessibility label: “Demo, sample activity”) and provides an Exit action. Setup and sample results also identify demo content. System ProgressView, ContentUnavailableView, pull-to-refresh, and the root alert provide loading, empty, retry, and error feedback. Sample voicemail explicitly says it has no recording. Keep evidence labels as visible content rather than relying on a color or developer-only indicator.
+The persistent marker says **Sample app** or **Test account · Sample data**. Ordinary sample exit lives in More as Leave sample app. The marker has an explicit sample-only accessibility label.
+
+Sample voicemail summaries are authored text. Hear sample message reads an authored sample using on-device speech, not a caller recording. Keep this message and the All/Kept sample filter only change in-memory sample state; they do not change real-message expiry or service data. Permissions still gate listening and owner actions. Real summaries need a service, API fields, consent, processing/error states, and accuracy checks; real keeping needs persistent owner state and explicit retention/deletion rules. See [the senior-design record](docs/IOS-SENIOR-DESIGN.md) for those future requirements.
+
+The sidecar's HTML/CSS is a schematic documentation preview. Browser type metrics, symbols, pixels, corners, and interaction styles do not specify the native implementation.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- Do use adaptive asset colors through ShieldTheme and semantic system colors for ordinary text and native containers.
-- Do pair outcome color with a concise label and SF Symbol, preserving the exact call-state distinctions.
-- Do preserve native navigation, system text styles, and the content-based stacking used by outcome controls and call rows.
-- Do make the selected person, sharing scope, and demo state explicit in visible copy and accessibility labels.
-- Do keep ordinary copy short while retaining meaningful consent, uncertainty, and restoration explanations.
-- Do verify Light and Dark Mode, large Dynamic Type, VoiceOver, hit areas, and Reduced Motion in the running native app.
+- Do use ShieldTheme's adaptive role colors, opaque supporting text, and native grouped system surfaces.
+- Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.
+- Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.
+- Do give ordinary tasks one clear next action and reveal less common detail on request.
+- Do make person context, voicemail permission, and sample-only state visible in words.
+- Do retain explicit privacy, sharing, setup, and disconnection confirmations.
+- Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval.
 
 ### Don't:
 
-- Don't describe a screened or connected caller as verified, authenticated, or safe.
-- Don't turn a schematic sidecar preview into a pixel specification for a native control.
-- Don't treat caregiver access as ownership or hide the limits of shared voicemail access.
-- Don't replace system foreground colors with sampled fixed colors or add a custom type scale based on screenshot measurements.
-- Don't promote sign-in-only decoration or preview-only styles into global design tokens.
-- Don't claim compilation, visual approval, or accessibility validation from this source extraction.
-
-
-## Home simplification
-
-Home prioritizes recent calls over weekly totals. Phone setup is one actionable status row, with trial screening explicitly limited to the test number. Zero-only weekly summaries are hidden. Home call rows show the summary, outcome, and actual call time; phone numbers remain in Calls and call details, and replace unhelpful “Not enough information” summaries. Each outcome has one icon, and the timestamp uses readable subheadline text. Today’s calls show a local clock time, yesterday’s include “Yesterday,” and older calls include the date and time. Full dates are supplied to accessibility. The screening/verification explanation lives in call details.
+- Don't describe a checked, offered, or answered caller as verified, authenticated, or safe.
+- Don't infer active call checks from stale, missing, paused, or expired status.
+- Don't promote weekly counters, old tab labels, or fixed Surface asset colors from earlier designs into new screens.
+- Don't treat schematic sidecar HTML/CSS as a native pixel specification.
+- Don't treat helper access as ownership or extend voicemail access implicitly.
+- Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.
+- Don't claim final visual approval, deployment, or real-call evidence from this source extraction.

@@ -37,6 +37,7 @@ struct ScreenIntro: View {
 }
 
 struct ActionRow: View {
+    @ScaledMetric(relativeTo: .title3) private var symbolWidth = 36.0
     let title: String
     var detail: String = ""
     let symbol: String
@@ -44,7 +45,7 @@ struct ActionRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
             Image(systemName: symbol).font(.title3).foregroundStyle(color)
-                .frame(width: 36).accessibilityHidden(true)
+                .frame(width: symbolWidth).accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.body).foregroundStyle(Color.primary)
                 if !detail.isEmpty {
@@ -54,7 +55,7 @@ struct ActionRow: View {
             .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, 8)
-        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
         .accessibilityElement(children: .combine)
     }
 }
@@ -85,6 +86,6 @@ struct ShieldSection<Content: View>: View {
         self.title = title; self.content = content()
     }
     var body: some View {
-        Section { content } header: { Text(title).foregroundStyle(ShieldTheme.secondaryText) }
+        Section { content } header: { Text(title).font(.headline).foregroundStyle(ShieldTheme.secondaryText).textCase(nil) }
     }
 }

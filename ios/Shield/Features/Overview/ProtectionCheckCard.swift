@@ -1,4 +1,5 @@
 import Contacts
+import Observation
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -21,20 +22,20 @@ enum ProtectionCheck {
     static func run(status: String, forwarding: ForwardingStatus?, notificationsAvailable: Bool) async -> [ProtectionCheckItem] {
         var items: [ProtectionCheckItem] = []
         if status == "paused" {
-            items.append(.init(id: "paused", title: "Protection is paused", detail: "Unknown callers go to voicemail without being screened.", fix: .setup))
+            items.append(.init(id: "paused", title: "Call checks are paused", detail: "Unfamiliar callers may leave voicemail without a scam check.", fix: .setup))
         } else if status == "restoring" {
-            items.append(.init(id: "restoring", title: "Shield is being turned off", detail: "Finish restoring your phone settings, or set Shield up again.", fix: .setup))
+            items.append(.init(id: "restoring", title: "Finish disconnecting Shield", detail: "Check that ordinary calls and voicemail work.", fix: .setup))
         }
         if let number = forwarding?.shieldNumber {
             switch CNContactStore.authorizationStatus(for: .contacts) {
             case .authorized, .limited:
                 if !hasContact(number) {
-                    items.append(.init(id: "contact", title: "Shield’s number isn’t in your Contacts",
-                        detail: "Calls Shield offers you may go to voicemail instead of ringing.", fix: .saveShieldContact(number)))
+                    items.append(.init(id: "contact", title: "Save Shield in Contacts",
+                        detail: "This helps calls from Shield ring your phone.", fix: .saveShieldContact(number)))
                 }
             default:
-                items.append(.init(id: "contacts-access", title: "Shield can’t check your Contacts",
-                    detail: "Shield’s number needs to be saved so the calls it offers ring.", fix: .contactsAccess(number)))
+                items.append(.init(id: "contacts-access", title: "Allow Shield to check Contacts",
+                    detail: "We need to check that Shield’s number is saved.", fix: .contactsAccess(number)))
             }
         }
         if notificationsAvailable {
@@ -44,8 +45,8 @@ enum ProtectionCheck {
             }
         }
         if let synced = forwarding?.contactsSyncedAt, Date.now.timeIntervalSince(synced) > staleContacts {
-            items.append(.init(id: "contacts-sync", title: "Shared contacts are over a month old",
-                detail: "Someone you’ve added since may be screened like a stranger.", fix: .sharedContacts))
+            items.append(.init(id: "contacts-sync", title: "Your contacts need updating",
+                detail: "Shield may not know people you recently added.", fix: .sharedContacts))
         }
         return items
     }
@@ -56,44 +57,30 @@ enum ProtectionCheck {
     }
 }
 
-/// "Protection is on" or what needs attention, on Today, for the person only.
+/// Actionable setup problems for the owner; a healthy check adds no block to Home.
 struct ProtectionCheckCard: View {
     @Environment(AppState.self) private var model
     @Environment(\.openURL) private var openURL
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var items: [ProtectionCheckItem]?
+    let check: ProtectionCheckState
     @State private var working = false
 
     var body: some View {
         Group {
-            if let items {
-                VStack(alignment: .leading, spacing: 12) {
-                    Label(items.isEmpty ? "Protection is on" : "Protection needs attention",
-                          systemImage: items.isEmpty ? "checkmark.shield.fill" : "exclamationmark.shield.fill")
-                        .font(.headline)
-                        .foregroundStyle(items.isEmpty ? ShieldTheme.connected : ShieldTheme.held)
-                        .accessibilityIdentifier("protection-check-title")
+            if let items = check.items, !items.isEmpty {
+                DisclosureGroup {
                     ForEach(items) { item in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(item.title).font(.subheadline.weight(.semibold))
-                            Text(item.detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
-                            fixButton(item.fix).disabled(working)
-                        }
-                        .padding(.top, 4)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(item.title).font(.headline)
+                            Text(item.detail).foregroundStyle(ShieldTheme.secondaryText)
+                            fixButton(item.fix).disabled(working).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        }.padding(.vertical, 8)
                     }
-                    if items.isEmpty {
-                        Text("Shield checked what it can on this phone. Test calls check the rest.")
-                            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                    }
+                } label: {
+                    Label("Phone setup needs attention", systemImage: "exclamationmark.circle")
+                        .font(.headline).foregroundStyle(ShieldTheme.held)
                 }
-                .padding(.vertical, 8)
-            } else {
-                ProgressView("Checking your setup…").padding(.vertical, 8)
             }
         }
-        .task(id: model.overview?.status) { await refresh() }
-        .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await refresh() } } }
     }
 
     @ViewBuilder
@@ -109,7 +96,7 @@ struct ProtectionCheckCard: View {
             Button("Save Shield contact") { Task { await perform { try await SaveShieldContact.save(number: number) } } }
                 .buttonStyle(.bordered).buttonBorderShape(.capsule).accessibilityIdentifier("protection-fix-contact")
         case .contactsAccess:
-            Button("Allow Contacts access") {
+            Button("Allow Contacts") {
                 Task { await perform { _ = try await CNContactStore().requestAccess(for: .contacts) } }
             }.buttonStyle(.bordered).buttonBorderShape(.capsule)
         case .allowNotifications:
@@ -125,7 +112,7 @@ struct ProtectionCheckCard: View {
                 }
             }.buttonStyle(.bordered).buttonBorderShape(.capsule)
         case .sharedContacts:
-            NavigationLink(value: AppRoute.trustedNumbers) { Text("Update shared contacts") }
+            NavigationLink(value: AppRoute.trustedNumbers) { Text("Update my contacts") }
         }
     }
 
@@ -136,13 +123,21 @@ struct ProtectionCheckCard: View {
         await refresh()
     }
 
-    private func refresh() async {
+    private func refresh() async { await check.refresh(model) }
+}
+
+@MainActor
+@Observable
+final class ProtectionCheckState {
+    var items: [ProtectionCheckItem]?
+
+    func refresh(_ model: AppState) async {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("--uitesting-protection-check") || model.isTestAccount {
             items = arguments.contains("--protection-check-good") ? [] : [
-                .init(id: "paused", title: "Protection is paused", detail: "Unknown callers go to voicemail without being screened.", fix: .setup),
-                .init(id: "contact", title: "Shield’s number isn’t in your Contacts", detail: "Calls Shield offers you may go to voicemail instead of ringing.", fix: .saveShieldContact("+15125550100"))]
+                .init(id: "paused", title: "Call checks are paused", detail: "Unfamiliar callers may leave voicemail without a scam check.", fix: .setup),
+                .init(id: "contact", title: "Save Shield in Contacts", detail: "This helps calls from Shield ring your phone.", fix: .saveShieldContact("+15125550100"))]
             return
         }
         #endif

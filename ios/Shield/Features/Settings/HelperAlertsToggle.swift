@@ -8,7 +8,7 @@ struct HelperAlertsToggle: View {
 
     var body: some View {
         Toggle(isOn: Binding(get: { status?.enabled == true }, set: { on in Task { await save(on) } })) {
-            Label("Alert my helpers", systemImage: "person.2.badge.gearshape")
+            Label("Let my helpers know", systemImage: "person.2.badge.gearshape")
         }
         .disabled(working || model.isDemo || status?.available != true)
         .accessibilityIdentifier("helper-alerts-toggle")

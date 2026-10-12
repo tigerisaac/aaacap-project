@@ -9,30 +9,27 @@ struct ForwardingStepContent: View {
         VStack(alignment: .leading, spacing: 24) {
             switch step {
             case .overview:
-                Text("Shield asks unknown callers why they’re calling. You decide which screened calls to answer.")
-                Label("Your progress is saved", systemImage: "bookmark").foregroundStyle(ForwardingStyle.secondaryText)
-                VStack(alignment: .leading, spacing: 20) {
-                    SetupInstruction(number: 1, title: "Save Shield", detail: "Save a contact and check that your phone rings.")
-                    SetupInstruction(number: 2, title: "Connect your phone", detail: "Follow the Phone settings and Tello instructions.")
-                    SetupInstruction(number: 3, title: "Check calls", detail: "Confirm the forwarding and ordinary call behavior.")
-                }.shieldCard()
-                Text("Tello · one phone line · data plan confirmed").font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
+                Text("Shield asks unfamiliar callers why they’re calling. You choose whether to answer.").font(.title3)
+                Text("We’ll save Shield, change two Phone settings, and check a call.")
+                    .foregroundStyle(ForwardingStyle.secondaryText)
+                Label("Your place is saved", systemImage: "bookmark").foregroundStyle(ForwardingStyle.secondaryText)
             case .consent:
-                Text("A screened call is always your choice.").font(.title3)
-                SetupInstruction(number: 1, title: "Callers introduce themselves", detail: status.liveScreening == true ? "OpenAI’s live AI assistant asks why the caller is calling. It can end suspicious or silent calls. This does not prove who is calling." : "Live screening is switched off, so callers can leave a voicemail instead.")
-                SetupInstruction(number: 2, title: "Messages go to Shield", detail: "Forwarded callers can leave a one-minute message. Messages and history expire after 30 days. Connected conversations are not recorded, and are transcribed only if you turn on connected-call protection.")
-                SetupInstruction(number: 3, title: "Start a short call test", detail: "You can start a 30-minute test here. Any caller may reach screening during it, up to 10 calls. Tello minutes and phone-service usage apply.")
-                Text("Finishing setup leaves forwarding connected. To disconnect Shield later, choose Restore my phone in Setup options. Deleting the app does not undo forwarding.").foregroundStyle(ForwardingStyle.secondaryText)
-                Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!).frame(minHeight: 44)
-            case .save:
-                Image(systemName: "person.crop.circle.badge.checkmark").font(.largeTitle).imageScale(.large)
-                    .foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
-                Text("Save one contact so screened calls can ring through.").font(.title3)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Shield · Screened call").font(.headline)
-                    Text(status.shieldNumber).foregroundStyle(ForwardingStyle.secondaryText)
+                SetupInstruction(number: 1, title: "You choose whether to answer", detail: status.liveScreening == true
+                    ? "Shield checks unfamiliar calls. Press 1 to take a call. Shield can’t prove who is calling."
+                    : "Call checks are off. Callers can leave voicemail instead.")
+                SetupInstruction(number: 2, title: "Voicemail comes to Shield", detail: "Messages and call history are deleted after 30 days.")
+                SetupInstruction(number: 3, title: "Try it for 30 minutes", detail: "Up to 10 calls can be checked. Your usual Tello charges apply.")
+                Text("To leave Shield, use Disconnect Shield in Setup options. Deleting the app won’t disconnect it.")
+                    .foregroundStyle(ForwardingStyle.secondaryText)
+                DisclosureGroup("More before you agree") {
+                    Text("The caller’s speech goes to OpenAI’s call assistant. Any caller may reach the test while it is on. Shield may stop suspicious or silent calls and can make mistakes.")
+                    Text("Voicemail is limited to one minute. Calls you take aren’t recorded. Their words are checked only if you choose checks while you talk.")
+                    Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!)
                 }
-                Text("Tap Save below, then allow Contacts access if iPhone asks. Shield will take you to the sound check.").foregroundStyle(ForwardingStyle.secondaryText)
+            case .save:
+                Text("Save Shield so the calls it sends you can ring.").font(.title3)
+                Label("Shield · Screened call", systemImage: "person.crop.circle.badge.plus").font(.headline)
+                Text("Allow Contacts if your iPhone asks.").foregroundStyle(ForwardingStyle.secondaryText)
             case .checks:
                 ForwardingTestView(status: status)
             case .restore:

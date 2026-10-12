@@ -11,6 +11,6 @@ struct Voicemail: Codable, Identifiable, Hashable, Sendable {
     var isRestorable: Bool { status == "removed" && (restorableUntil.map { $0 > .now } ?? false) }
 
     var durationLabel: String {
-        Duration.seconds(duration).formatted(.time(pattern: .minuteSecond))
+        Duration.seconds(duration).formatted(.units(allowed: [.minutes, .seconds], width: .wide))
     }
 }

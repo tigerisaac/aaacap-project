@@ -7,6 +7,7 @@ struct CallDetailView: View {
     @State private var updatedCall: CallRecord?
     @State private var events: [CallEvent] = []
     @State private var player = VoicePlayer()
+    @State private var samplePlayer: SampleMessagePlayer?
     @State private var confirmDelete = false
     @State private var confirmRestore = false
     @State private var restoring = false
@@ -17,100 +18,118 @@ struct CallDetailView: View {
         List {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
-                    OutcomeBadge(outcome: call.outcome)
-                    Text(call.title).font(.title2.bold()).fixedSize(horizontal: false, vertical: true)
-                        .accessibilityAddTraits(.isHeader)
-                    Text("\(PhoneDisplay.format(call.callerNumber)) · \(call.occurredAt.formatted(date: .abbreviated, time: .shortened))")
-                        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 8)
-            } footer: {
-                Text("Screened doesn’t mean verified.").foregroundStyle(ShieldTheme.secondaryText)
+                    Text(CallPresentation.title(call)).font(call.voicemail == nil ? .title2.bold() : .headline)
+                        .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
+                    if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
+                        OutcomeBadge(outcome: call.outcome)
+                    }
+                    Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        .foregroundStyle(ShieldTheme.secondaryText)
+                }.padding(.vertical, 8)
             }
-            ShieldSection("What happened") {
-                Text(call.detail).font(.body).padding(.vertical, 8)
-                if call.monitored == true {
-                    Label("Transcribed for connected-call protection", systemImage: "waveform").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                }
-            }
-            if let voicemail = call.voicemail {
-                ShieldSection("Voicemail") {
+            if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.status != "removed" {
+                VoicemailPreviewCard(call: call)
+            } else if let voicemail = call.voicemail {
+                Section {
                     if voicemail.status == "ready", model.canListen {
-                        Button {
-                            Task { await togglePlayback(voicemail) }
-                        } label: {
-                            Label(player.loading ? "Loading…" : player.playing ? "Stop playback" : "Play message · \(voicemail.durationLabel)",
-                                  systemImage: player.playing ? "stop.circle.fill" : "play.circle.fill")
-                                .font(.headline).padding(.vertical, 8)
-                        }
-                        .disabled(player.loading)
+                        Text(voicemail.durationLabel).foregroundStyle(ShieldTheme.secondaryText)
                         if model.isOwner {
                             Button("Delete message", role: .destructive) { confirmDelete = true }
-                                .confirmationDialog("Delete this voicemail?", isPresented: $confirmDelete, titleVisibility: .visible) {
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                .confirmationDialog("Delete this message?", isPresented: $confirmDelete, titleVisibility: .visible) {
                                     Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
-                                }
+                                    Button("Keep message", role: .cancel) {}
+                                } message: { Text("You won’t be able to listen to it again.") }
                         }
                     } else if voicemail.status == "removed" {
-                        // Not playable while removed: a scam message often asks her to call a number back.
-                        Label("Removed by Shield", systemImage: "trash.slash").font(.headline)
+                        Label("Shield removed this message", systemImage: "trash.slash").font(.headline)
+                        Text("It looked like a scam or junk.")
                         if voicemail.isRestorable, model.canListen {
-                            Button {
-                                confirmRestore = true
-                            } label: {
-                                Label(restoring ? "Restoring…" : "Restore message", systemImage: "arrow.uturn.backward.circle")
-                            }
-                            .disabled(restoring || model.isDemo)
-                            .accessibilityIdentifier("restore-voicemail")
-                            .confirmationDialog("Restore this message?", isPresented: $confirmRestore, titleVisibility: .visible) {
-                                Button("Restore message") { Task { await restore(voicemail) } }
-                            } message: {
-                                Text("Shield thought it was a scam or junk. If it asks you to call a number back, use a number you already know instead.")
-                            }
+                            Button(restoring ? "Bringing it back…" : "Bring back message", systemImage: "arrow.uturn.backward") { confirmRestore = true }
+                                .disabled(restoring || model.isDemo)
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                .accessibilityIdentifier("restore-voicemail")
+                                .confirmationDialog("Bring back this message?", isPresented: $confirmRestore, titleVisibility: .visible) {
+                                    Button("Bring back message") { Task { await restore(voicemail) } }
+                                } message: { Text("Don’t call a number from the message. Use one you already know.") }
                             if let until = voicemail.restorableUntil {
-                                Text("You can restore it until \(until.formatted(date: .abbreviated, time: .shortened)).")
-                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                Text("Available until \(until.formatted(date: .abbreviated, time: .omitted)).")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
                             }
                         } else if !voicemail.isRestorable {
-                            Text("The recording has been deleted.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            Text("The message is gone.").foregroundStyle(ShieldTheme.secondaryText)
                         }
                     } else if !model.canListen {
-                        Label("Voicemail isn’t shared", systemImage: "lock")
+                        Label("Voicemail is private", systemImage: "lock")
+                        Text("This person hasn’t shared their messages with you.")
+                            .foregroundStyle(ShieldTheme.secondaryText)
                     } else {
-                        Label(model.isDemo ? "Sample message · no recording" : voicemail.status == "pending" ? "Message is processing" : "Recording unavailable",
-                              systemImage: "waveform")
+                        Text(voicemail.status == "pending" ? "Your message is getting ready." : "This message can’t be played.")
                             .foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
             }
-            ShieldSection("What you can do") {
-                Text(call.nextStep)
-                if model.isOwner {
-                    NavigationLink(value: AppRoute.savedNumbers) {
-                        ActionRow(title: "Use a saved number", symbol: "phone.arrow.up.right")
-                    }
-                }
-                NavigationLink(value: AppRoute.help) { ActionRow(title: "Get help", symbol: "lifepreserver") }
+            if call.voicemail == nil {
+                Section { Text(CallPresentation.explanation(call)) }
             }
-            if !events.isEmpty {
-                ShieldSection("Call timeline") {
-                    ForEach(events) { event in
-                        HStack(alignment: .top) {
-                            Text(event.label)
-                            Spacer()
-                            Text(event.at, style: .time).font(.caption).foregroundStyle(ShieldTheme.secondaryText)
+            if call.outcome == .held || call.outcome == .verification {
+                Section {
+                    Text("Need to call back? Use a number you already know.")
+                    if model.isOwner {
+                        NavigationLink(value: AppRoute.savedNumbers) {
+                            ActionRow(title: "Find a trusted number", symbol: "phone")
                         }
                     }
                 }
             }
+            Section {
+                DisclosureGroup("More about this call") {
+                    Text(PhoneDisplay.format(call.callerNumber)).textSelection(.enabled)
+                    Text(call.detail).fixedSize(horizontal: false, vertical: true)
+                    Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
+                    if call.monitored == true { Text("Shield checked the words while you talked.") }
+                    Text("Shield can’t prove who called.").foregroundStyle(ShieldTheme.secondaryText)
+                    if !events.isEmpty {
+                        ForEach(events) { event in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(event.label)
+                                Text(event.at, style: .time).foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                        }
+                    }
+                }
+                NavigationLink(value: AppRoute.help) { ActionRow(title: "Get help", symbol: "questionmark.circle") }
+            }
         }
-        .navigationTitle("Call details")
+        .safeAreaInset(edge: .bottom) {
+            if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
+                if model.isDemo {
+                    Button { toggleSample() } label: {
+                        ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
+                    }
+                    .shieldPrimaryButton().padding(16).background(ShieldTheme.surface)
+                } else if voicemail.status == "ready" {
+                    Button { Task { await togglePlayback(voicemail) } } label: {
+                        ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Stop message" : "Listen to message", isWorking: player.loading)
+                    }
+                    .shieldPrimaryButton().disabled(player.loading).padding(16).background(ShieldTheme.surface)
+                }
+            }
+        }
+        .navigationTitle(call.voicemail == nil ? "Call" : "Voicemail")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
         .onAppear { isVisible = true }
-        .onDisappear { isVisible = false; player.stop() }
-        .onChange(of: scenePhase) { _, phase in if phase != .active { player.stop() } }
+        .onDisappear { isVisible = false; player.stop(); samplePlayer?.stop() }
+        .onChange(of: scenePhase) { _, phase in if phase != .active { player.stop(); samplePlayer?.stop() } }
         .shieldListStyle()
+    }
+
+    private func toggleSample() {
+        if samplePlayer?.playing == true { samplePlayer?.stop(); return }
+        let speaker = samplePlayer ?? SampleMessagePlayer()
+        samplePlayer = speaker
+        speaker.play(VoicemailPreview.message(for: call))
     }
 
     private func load() async {

@@ -5,34 +5,30 @@ struct HelpView: View {
 
     var body: some View {
         List {
+            Section { Text("If a call worries you, hang up. You can check it later.").font(.title3) }
             Section {
-                Text("If a call or message worries you, stop the conversation before taking action.")
-            }
-            Section("A good next step") {
-                Label("Call a number you already trust", systemImage: "phone")
-                Text("Use your card, statement, or official app. Don’t use contact details supplied by the caller.")
-                    .font(.subheadline).foregroundStyle(.secondary)
-                if model.isOwner { NavigationLink("Your saved numbers", value: AppRoute.savedNumbers) }
-                Label("Talk to someone you know", systemImage: "person.2")
-                Text("A familiar voice or number alone doesn’t prove identity.")
-                    .font(.subheadline).foregroundStyle(.secondary)
-            }
-            Section("If you already acted") {
-                Text("Contact the relevant bank, account provider, or device support through an independent channel as soon as possible.")
-                Link("FTC recovery guidance", destination: URL(string: "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed")!)
-                Link("Report to the FTC", destination: URL(string: "https://reportfraud.ftc.gov/")!)
-            }
-            Section("Shield support") {
-                if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
-                    Link("Contact pilot support", destination: url)
-                } else {
-                    Text("Contact the person who helped set up your phone.")
+                DisclosureGroup("How can I check a caller?") {
+                    Text("Call a number from your card, bill, or an app you already use. Don’t use a number the caller gave you.")
+                    if model.isOwner { NavigationLink("Numbers you trust", value: AppRoute.savedNumbers) }
+                    Text("A familiar voice or number can be faked.").foregroundStyle(ShieldTheme.secondaryText)
                 }
-                Text("Shield is not an emergency service. Support and caregiver alerts are not continuously monitored.")
-                    .font(.subheadline).foregroundStyle(.secondary)
+                DisclosureGroup("I sent money or private information") {
+                    Text("Call your bank or the company involved using a number you already know.")
+                    Link("What to do next", destination: URL(string: "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed")!)
+                    Link("Report a scam", destination: URL(string: "https://reportfraud.ftc.gov/")!)
+                }
+            }
+            Section {
+                if model.isOwner { NavigationLink("Help with my phone", value: AppRoute.setup) }
+                if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
+                    Link("Ask for help with Shield", destination: url)
+                } else { Text("Need a hand? Ask the person who helped set up your phone.") }
+                DisclosureGroup("In an emergency") {
+                    Text("Use your usual emergency number. Shield and helper alerts aren’t watched all the time.")
+                }
             }
         }
-        .navigationTitle("Get help")
-        .navigationBarTitleDisplayMode(.inline)
+        .shieldListStyle()
+        .navigationTitle("Get help").navigationBarTitleDisplayMode(.inline)
     }
 }

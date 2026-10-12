@@ -4,7 +4,7 @@ struct SavedNumbersView: View {
     enum Kind {
         case destinations, trusted
         var path: String { self == .destinations ? "/api/destinations" : "/api/trusted-numbers" }
-        var title: String { self == .destinations ? "Independent numbers" : "Saved contacts" }
+        var title: String { self == .destinations ? "Numbers you trust" : "Saved contacts" }
     }
 
     let kind: Kind
@@ -20,13 +20,14 @@ struct SavedNumbersView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(item.label).font(.headline)
-                            Text(item.phone).foregroundStyle(.secondary)
+                            Text(PhoneDisplay.format(item.phone)).foregroundStyle(.secondary)
                         }
                         Spacer()
                         if kind == .destinations {
-                            Button("Call \(item.label)", systemImage: "phone.fill") { call(item.phone) }
-                                .labelStyle(.iconOnly)
-                                .buttonStyle(.bordered)
+                            Button("Call", systemImage: "phone.fill") { call(item.phone) }
+                                .accessibilityLabel("Call \(item.label)")
+                                 .labelStyle(.titleAndIcon)
+                                .buttonStyle(.bordered).frame(minHeight: ShieldTheme.Layout.minimumTarget)
                                 .disabled(model.isDemo)
                         }
                     }
@@ -37,8 +38,8 @@ struct SavedNumbersView: View {
                 }
             } footer: {
                 Text(kind == .destinations
-                     ? "Use a number from a card, statement, or official website."
-                     : "Missed calls from these numbers go to voicemail without a second ring. Caller ID can be copied.")
+                     ? "Save numbers from a card, bill, or official website."
+                     : "Unanswered calls from these numbers go to voicemail. A displayed number can be faked.").foregroundStyle(ShieldTheme.secondaryText)
             }
         }
         .overlay {
@@ -46,6 +47,7 @@ struct SavedNumbersView: View {
                 ContentUnavailableView("No numbers yet", systemImage: "person.crop.square", description: Text("Add a number you already know."))
             }
         }
+        .shieldListStyle()
         .navigationTitle(kind.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

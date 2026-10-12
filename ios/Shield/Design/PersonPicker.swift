@@ -4,6 +4,7 @@ struct PersonPicker: View {
     @Environment(AppState.self) private var model
 
     var body: some View {
+        if model.people.count > 1 {
         Menu {
             ForEach(model.people) { person in
                 Button {
@@ -22,5 +23,8 @@ struct PersonPicker: View {
             .frame(minHeight: 44)
         }
         .accessibilityLabel("Viewing \(model.person?.name ?? "people"). Change person.")
+        } else if !model.isOwner {
+            Text(model.person?.name ?? "Shared calls").font(.headline)
+        }
     }
 }

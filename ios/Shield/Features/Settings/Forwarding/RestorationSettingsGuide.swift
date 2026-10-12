@@ -20,21 +20,21 @@ struct RestorationSettingsGuide: View {
                 Label(unknownCallers ? "Choose Never" : "Turn On", systemImage: "hand.tap")
                     .font(.title2.bold()).foregroundStyle(ShieldTheme.action)
                 if unknownCallers {
-                    Text("During the same visit, turn Live Voicemail on. We’ll confirm it next.")
+                    Text("Turn Live Voicemail on too. We’ll check that next.")
                 }
             }
             .shieldCard()
-            Text(returned ? "Back from Settings? Confirm the value below. Shield can’t read this setting." : "Already done? Confirm the value below to continue without opening Settings again.")
+            Text(returned ? "Did you make the change? Confirm below. Shield can’t see this setting." : "Already done? Confirm below.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
                 .accessibilityIdentifier("restoration-settings-unverified")
             Button(opened ? "Open Phone settings again" : "Open Phone settings", systemImage: "gearshape") {
                 Task { await openSettings() }
             }
-            .frame(minHeight: 44).disabled(working).accessibilityIdentifier("restoration-settings-open")
-            Text(destination.directions)
-                .foregroundStyle(ForwardingStyle.secondaryText)
-            Text("If a different page opens, go to Settings → Apps → Phone. Use the Shield link at the top left to return here.")
-                .foregroundStyle(ForwardingStyle.secondaryText)
+            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working).accessibilityIdentifier("restoration-settings-open")
+            DisclosureGroup("Can’t find it?") {
+                Text(destination.directions)
+                Text("Open Settings, then Apps, then Phone. When done, return to Shield.")
+            }
         }
         .fixedSize(horizontal: false, vertical: true)
         .onChange(of: scenePhase) { _, phase in

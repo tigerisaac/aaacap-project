@@ -43,9 +43,9 @@ struct ForwardingActions: View {
         case .liveVoicemail: return "Live Voicemail is off"
         case .ring, .test:
             if model.probePassed { return "Continue" }
-            if model.probeWaiting { return "Checking automatically…" }
+            if model.probeWaiting { return "Waiting for your call…" }
             if model.probe != nil { return "Try the call again" }
-            return model.step == .ring ? "Call me now" : "Check forwarding now"
+            return model.step == .ring ? "Call me now" : "Check my calls"
         case .checks: return "Done"
         default: return "Continue"
         }

@@ -12,27 +12,27 @@ struct CallsView: View {
                     .listRowInsets(EdgeInsets())
                 if let error = model.callsError {
                     Section {
-                        ShieldNotice(title: "Calls couldn’t refresh", detail: error, symbol: "wifi.exclamationmark")
-                        Button("Try Again", systemImage: "arrow.clockwise") { Task { await model.loadCalls() } }.frame(minHeight: 44)
+                        ShieldNotice(title: "Your calls couldn’t load", detail: error, symbol: "wifi.exclamationmark")
+                        Button("Try Again", systemImage: "arrow.clockwise") { Task { await model.loadCalls() } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }
                 }
                 if model.calls.isEmpty && model.callsError == nil {
                     Section {
                         if model.isLoadingCalls || model.isLoading {
-                            ShieldLoadingView(title: "Loading calls…")
+                            ShieldLoadingView(title: "Getting your calls…")
                         } else {
-                            ContentUnavailableView(model.filter == .all ? "No calls yet" : "No \(model.filter.label.lowercased()) calls", systemImage: model.filter == .voicemail ? "waveform" : "phone", description: Text("When a call reaches Shield, you’ll find its explanation here."))
-                            if model.filter != .all { Button("Show All Calls") { model.filter = .all }.frame(minHeight: 44) }
+                            ContentUnavailableView(model.filter == .all ? "No calls yet" : "No \(model.filter.label.lowercased()) calls", systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
+                            if model.filter != .all { Button("Show All Calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
                         }
                     }
                 } else if !model.calls.isEmpty {
                     Section {
                         ForEach(model.calls) { call in NavigationLink(value: call) { CallRow(call: call) } }
                         if model.nextCursor != nil {
-                            Button(model.isLoadingCalls ? "Loading…" : "Load More") { Task { await model.loadCalls(more: true) } }
-                                .frame(maxWidth: .infinity, minHeight: 44).disabled(model.isLoadingCalls)
+                            Button(model.isLoadingCalls ? "Getting more…" : "Older calls") { Task { await model.loadCalls(more: true) } }
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isLoadingCalls)
                         }
-                    } footer: { Text("Only calls that reach Shield appear here.").foregroundStyle(ShieldTheme.secondaryText) }
+                    }
                 }
             }
             .navigationTitle("Calls")
@@ -52,7 +52,7 @@ private struct CallFilterPicker: View {
 
     var body: some View {
         @Bindable var model = model
-        if typeSize.isAccessibilitySize {
+        if typeSize >= .xxxLarge {
             picker($model.filter).pickerStyle(.menu).accessibilityIdentifier("callFilter")
         } else {
             picker($model.filter).pickerStyle(.segmented).accessibilityIdentifier("callFilter")

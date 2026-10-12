@@ -18,10 +18,10 @@ struct RestorationCallCheck: View {
             if !answering {
                 SetupInstruction(number: 3, title: "Listen to the message", detail: "Open Phone and listen to the new voicemail message.")
             }
-            Text("Already checked this? You can confirm below. Keep Shield installed until both checks work.")
+            Text("Confirm below when it works. Keep Shield until both checks pass.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
             DisclosureGroup("The check didn’t work") {
-                Text("Stop here and contact Tello to restore normal call and voicemail routing. Keep Shield installed while you get help.")
+                Text("Stop and ask your helper or Tello to bring back ordinary calls and voicemail. Keep Shield installed.")
                     .padding(.top, 8).foregroundStyle(ForwardingStyle.secondaryText)
             }
         }

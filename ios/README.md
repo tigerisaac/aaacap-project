@@ -11,7 +11,7 @@ open ios/Shield.xcodeproj
 
 Select the shared **Shield** scheme and an iPhone simulator, then press **⌘R**. On 2026-09-21 the license blocker was cleared, the simulator build passed with Xcode 27, and Xcode launched Shield on an iPhone 17 running iOS 27. Installation and the running app process were independently verified. The source navigator is grouped by app feature. Automated UI tests and a rendered/accessibility review remain to be run; simulator-window inspection timed out, so no visual approval is claimed.
 
-Use **Explore the demo** for offline synthetic activity. Demo mode never changes phone routing or places calls. To use real data, point `Config/Local.xcconfig` at `shield-calls-isaac.web.app` and sign in with the email link.
+Use **Try sample app** for offline synthetic activity. Sample mode never changes phone routing or places calls. To use real data, point `Config/Local.xcconfig` at `shield-calls-isaac.web.app` and sign in with the email link.
 
 `scripts/generate-xcode-project.mjs` deterministically recreates the project from the Swift/resource directories. Re-run it when adding files. Do not keep manual project-only edits; put build changes in the generator or xcconfig. Regenerate original icon and color assets with `node scripts/generate-ios-assets.mjs`.
 
@@ -35,11 +35,16 @@ Tokens stay in device-only Keychain storage. The app rejects HTTP redirects and 
 
 ## App behavior
 
-- **Today:** current screening-window/setup status, a setup check, a weekly message count, and recent forwarded-call outcomes. Missing or stale status is shown as unavailable. Held, connected, and voicemail use coral, teal, and violet alongside text and symbols.
-- **Calls:** filters, history, short explanations, a call timeline, and authorized voicemail playback/deletion. History includes only calls reaching Shield.
-- **Check:** pasted text or local OCR of a selected screenshot. The user explicitly agrees before text is sent for analysis; a screenshot image is not uploaded. Checks cannot identify a sender as genuine.
-- **People:** participant switching, one-use invitations, optional voicemail sharing and revocation. Family members can inspect shared activity; phone settings and independent contacts remain with the participant.
-- **Settings:** guided phone forwarding setup and call tests, saved Shield contact, contact sync (synced contacts get voicemail only), connected-call protection opt-in, independent numbers, notifications, message-filter instructions, consent, pause and restoration/deletion requests.
+On October 12, the app was simplified for older adults, with calls and voicemail first. The iPhone 18 Pro / iOS 27 simulator passed the four new screen journeys (including sample audio, Keep/Kept, and largest-text Dark Mode), three final setup-warning checks, and the earlier 13 forwarding tests. Typecheck/build and 157 unit tests passed; the Firestore emulator passed 86 tests on isolated local ports. The independent visual reviewer scored its five requested corrections resolved. Automated accessibility audits still report Calls contrast/clipping diagnostics without associated elements and Privacy partly beneath the native bottom bar; they are not reported as passed. Details and future-feature work are in [the design record](../docs/IOS-SENIOR-DESIGN.md). This is simulator evidence, with no deployment, physical-phone changes, or new real-call evidence.
+
+- **Home:** a short phone status, recent voicemail, and recent calls. Missing or stale status is never described as on. Setup problems can be opened when needed; a healthy setup check adds no extra block.
+- **Calls:** filters, history, short outcomes, and details on request. History includes only calls reaching Shield. Outcomes use everyday words such as Answered and Stopped.
+- **Voicemail:** a separate inbox, authorized playback/deletion, and access to removed messages. Sample data also previews summaries and Keep this message; these features do not change real-message storage or expiry.
+- **More → Check a text:** pasted text or local OCR of a picture. The person agrees before sending text for a scam check; the picture itself is not uploaded. Checks cannot prove who sent a message.
+- **More → Family & friends:** person switching, one-use invitations, optional voicemail sharing and revocation. Helpers can see shared calls; phone settings stay with the person using the phone.
+- **More → Settings:** guided phone setup and call checks, saved Shield contact, contact updates, checks while talking, trusted numbers, alerts, automatic text-check instructions, and disconnection/deletion requests. The setup menu now calls restoration **Disconnect Shield**.
+
+The [senior design notes](../docs/IOS-SENIOR-DESIGN.md) record the screen simplification and the work needed to turn sample voicemail summaries and keeping into real features.
 
 Each forwarding and restoration step automatically copies its current Tello code and presents Apple’s native Phone banner. Tap Open once, choose Keypad, tap above the numbers, choose Paste, and tap Call. Touch and hold is a fallback if Paste does not appear. The window-scene presentation stays independent of scrolling. Three short instructions cover Open, Paste, and Call. Returning dismisses the banner and replaces them with a reminder to check Tello’s result. Show Phone again restores the instructions and recopies the same code; Copy again preserves the result reminder. If the banner cannot load, the screen directs the person to the green Phone app on the Home Screen. The complete code stays on the device-local pasteboard for 30 minutes. Copying, switching apps, and returning never confirm a carrier change. Each connection needs the person’s explicit carrier confirmation, and a separate successful call probe is required for verification. No installed Shortcut is used.
 

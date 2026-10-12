@@ -19,62 +19,45 @@ struct ProtectionOnboardingView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    ShieldBrand(compact: true)
-                    Text(showsProtection ? "Protection while you talk" : "Alerts for your helpers").font(.largeTitle.bold())
-                        .accessibilityAddTraits(.isHeader)
+                VStack(alignment: .leading, spacing: 24) {
+                    Text(showsProtection ? "Help while you talk" : "Let a helper know")
+                        .font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
                     if showsProtection {
-                        Text("Shield can keep checking for scam requests after you accept a screened call.").font(.title3)
-                        VStack(alignment: .leading, spacing: 12) {
-                            Toggle("Protect connected calls", isOn: $enabled)
-                                .font(.headline).frame(minHeight: 44)
-                                .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
-                            Text("Selected by default. You can turn it off here or change it later in Settings.")
-                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        }.shieldCard()
-                        VStack(alignment: .leading, spacing: 20) {
-                            Label("Calls you accept are transcribed by Telnyx and checked by OpenAI while you talk. The caller is told before your phone rings.", systemImage: "waveform")
-                            Label("Shield may end a call it detects as a scam and tell you why. It can miss a scam or end an ordinary call.", systemImage: "phone.down")
-                            Label("No audio is saved. The transcript is deleted when the call ends.", systemImage: "lock")
-                        }
+                        Toggle("Check calls while I talk", isOn: $enabled)
+                            .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
+                        CallProtectionExplanation()
                     }
                     if showsHelpers {
-                        Text("Scammers often call back, and a helper can step in sooner if they know.").font(.title3)
-                        VStack(alignment: .leading, spacing: 12) {
-                            Toggle("Alert my helpers", isOn: $alertHelpers)
-                                .font(.headline).frame(minHeight: 44)
-                                .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
-                            Text("Selected by default. You can change it later in Settings.")
-                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        }.shieldCard()
-                        VStack(alignment: .leading, spacing: 20) {
-                            Label("People you share Shield with are told when Shield ends a scam call, a blocked caller tries again, or protection is paused.", systemImage: "bell.badge")
-                            Label("Alerts include your name. They never include a caller’s words or number.", systemImage: "lock")
+                        Toggle("Let my helpers know", isOn: $alertHelpers)
+                            .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
+                        Text("People you share with can get an alert when Shield stops a scam call, a blocked caller tries again, or call checks are paused.")
+                        DisclosureGroup("What does the alert say?") {
+                            Text("It includes your name. It doesn’t include a caller’s words or number.")
+                                .foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
-                    Text(showsProtection && asksHelperAlerts ? "Next, you can choose alerts for your helpers." : "Continue to save your choice.")
-                        .foregroundStyle(ShieldTheme.secondaryText)
-                    Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!)
-                        .frame(minHeight: 44)
-
                 }
-                .padding(ShieldTheme.Spacing.page).frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
+                .padding(ShieldTheme.Spacing.page)
+                .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }
             .background(ShieldTheme.surface)
             .safeAreaInset(edge: .bottom) {
                 Button { if showsProtection && asksHelperAlerts { onHelperStep = true } else { Task { await save() } } } label: {
-                    ShieldActionLabel(title: showsProtection && asksHelperAlerts ? "Next" : "Continue", isWorking: working)
+                    ShieldActionLabel(title: showsProtection && asksHelperAlerts ? "Next" : "Save my choice", isWorking: working)
                 }
-                .shieldPrimaryButton()
-                .disabled(working).accessibilityIdentifier("onboarding-protection-continue")
+                .shieldPrimaryButton().disabled(working).accessibilityIdentifier("onboarding-protection-continue")
                 .padding(20).background(ShieldTheme.surface)
             }
-            .navigationTitle("Your protection").navigationBarTitleDisplayMode(.inline)
-            .alert("Couldn’t save your choice", isPresented: $showingSaveError) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(error ?? "Please try again.")
+            .navigationTitle("Your choices").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if onHelperStep { ToolbarItem(placement: .topBarLeading) { Button("Back") { onHelperStep = false }.disabled(working) } }
             }
+            .alert("Couldn’t save your choice", isPresented: $showingSaveError) {
+                Button("Try again") { Task { await save() } }
+                Button("Cancel", role: .cancel) {}
+            } message: { Text(error ?? "Please try again.") }
         }
     }
 

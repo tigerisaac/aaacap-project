@@ -12,21 +12,22 @@ struct AddNumberView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Number") {
+                ShieldSection("Number") {
                     TextField("Name", text: $label).textContentType(.name)
-                    TextField("Phone", text: $phone).keyboardType(.phonePad).textContentType(.telephoneNumber)
+                    TextField("Phone number", text: $phone).keyboardType(.phonePad).textContentType(.telephoneNumber)
                 }
                 if kind == .destinations {
                     Section {
-                        Picker("Source", selection: $provenance) {
+                        Picker("Found on", selection: $provenance) {
                             Text("A card").tag("card")
-                            Text("A statement").tag("statement")
+                            Text("A bill or statement").tag("statement")
                             Text("Official website").tag("official_website")
                             Text("Someone I know").tag("known_person")
                         }
-                    } header: { Text("Where you found it") } footer: { Text("Avoid numbers provided by an unexpected caller or message.") }
+                    } header: { Text("Where you found it") } footer: { Text("Don’t use a number from an unexpected call or text.").foregroundStyle(ShieldTheme.secondaryText) }
                 }
             }
+            .shieldListStyle()
             .navigationTitle("Add number")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

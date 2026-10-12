@@ -14,6 +14,7 @@ Start with [Architecture](ARCHITECTURE.md), then [Status](STATUS.md).
 | [Ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md) | Proposed: shared forwarding numbers, carrier-metadata qualification, optional keypad fallback, exception allocation, tenant isolation, capacity controls and rollout to ten seniors |
 | [Shared-number test](SHARED-NUMBER-TEST.md) | Runnable isolated Telnyx diagnostic, Verizon/T-Mobile instructions, independent recipient checks and confirmed overlapping-call evidence |
 | [iOS app](../ios/README.md) | Building, signing and the app's screens |
+| [iOS design for older adults](IOS-SENIOR-DESIGN.md) | Calls and voicemail first, interface references, simulator evidence, and proposed summaries/kept messages |
 | [Design system](../DESIGN.md) and [product brief](../PRODUCT.md) | Visual language and product principles for the app |
 | [Shield Open Phone shortcut](shortcuts/README.md) | The Apple Shortcut the forwarding setup uses to open the Phone app |
 

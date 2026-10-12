@@ -12,6 +12,11 @@ final class SharedContactsModel {
     func hasShared(_ person: UUID?) -> Bool { person.map { UserDefaults.standard.bool(forKey: key($0)) } ?? false }
 
     func load(_ app: AppState) async {
+        if app.isPreview {
+            items = [SavedNumber(id: UUID(), label: "Jamie", phone: "+13125550102", provenance: "contacts", createdAt: .now),
+                     SavedNumber(id: UUID(), label: "My clinic", phone: "+13125550103", provenance: "contacts", createdAt: .now)]
+            return
+        }
         guard let person = app.selectedPersonID, !app.isPreview else { return }
         do { try await fetch(app, person) } catch { app.handle(error) }
     }
@@ -22,7 +27,7 @@ final class SharedContactsModel {
     }
     func share(_ app: AppState) async {
         guard let person = app.selectedPersonID, app.isOwner, !app.isPreview, !working else { return }
-        working = true; message = "Sharing contacts…"
+        working = true; message = "Updating contacts…"
         defer { working = false }
         do {
             let contacts = try await PhoneContacts.shared.all()
@@ -31,7 +36,7 @@ final class SharedContactsModel {
             guard app.selectedPersonID == person else { throw CancellationError() }
             UserDefaults.standard.set(true, forKey: key(person))
             try await fetch(app, person)
-            message = "\(result.shared) numbers shared." + (result.skipped > 0 ? " \(result.skipped) could not be read as phone numbers." : "")
+            message = "\(result.shared) contacts updated." + (result.skipped > 0 ? " \(result.skipped) couldn’t be added." : "")
         } catch { message = nil; app.handle(error) }
     }
     func change(_ enabled: Bool, item: SavedNumber, app: AppState) async -> Bool {
@@ -50,7 +55,7 @@ final class SharedContactsModel {
                 throw error
             }
             try await fetch(app, person)
-            message = enabled ? "\(item.label) can ring your phone." : "\(item.label) will use unknown-caller routing."
+            message = enabled ? "\(item.label) can ring your phone." : "Calls from \(item.label) will be treated as unfamiliar."
             return enabled
         } catch { app.handle(error); await load(app); return items.first(where: { $0.id == item.id })?.isEnabled ?? item.isEnabled }
     }

@@ -12,25 +12,25 @@ struct TrialSetupView: View {
             NavigationLink {
                 ForwardingSetupView()
             } label: {
-                Label("Set up call forwarding", systemImage: "phone.arrow.right")
+                Label("Set up my phone", systemImage: "phone.arrow.right")
             }
-            Text("Shield guides you through Tello setup and checks your calls automatically.")
+            Text("We’ll help you one step at a time.")
                 .foregroundStyle(.secondary)
         } header: { Text("Phone setup") }
         Section {
-            Button(setup.status == "paused" ? "Resume trial" : "Pause trial",
+            Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks",
                    systemImage: setup.status == "paused" ? "play.circle" : "pause.circle", action: togglePause)
                 .disabled(working)
         } footer: {
-            Text("Resuming does not extend the session or reset its call limit.")
+            Text("This keeps the same end time and call limit.").foregroundStyle(ShieldTheme.secondaryText)
         }
         Section {
-            Button("Delete trial data", role: .destructive) { confirmDeletion = true }
+            Button("Delete my information", role: .destructive) { confirmDeletion = true }
                 .disabled(working)
-                .confirmationDialog("Delete your trial data?", isPresented: $confirmDeletion, titleVisibility: .visible) {
-                    Button("Delete trial data", role: .destructive, action: deleteData)
+                .confirmationDialog("Delete your information?", isPresented: $confirmDeletion, titleVisibility: .visible) {
+                    Button("Delete my information", role: .destructive, action: deleteData)
                 } message: {
-                    Text("This removes call history, saved numbers and sharing, then signs you out.")
+                    Text("Your calls, saved numbers, and sharing will be deleted. You’ll be signed out.")
                 }
         }
     }

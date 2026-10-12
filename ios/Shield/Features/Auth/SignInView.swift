@@ -21,7 +21,7 @@ struct SignInView: View {
                             .frame(width: 80, height: 80).clipShape(.rect(cornerRadius: 80 * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
                             .accessibilityHidden(true)
                         Text("Shield").font(.largeTitle.weight(.bold))
-                        Text("Screen unfamiliar calls and check messages.")
+                        Text("Sign in to see your calls.")
                             .font(.title3).multilineTextAlignment(.center)
                             .foregroundStyle(ShieldTheme.secondaryText)
                     }
@@ -32,7 +32,7 @@ struct SignInView: View {
                             ScreenIntro(title: "Check your email", detail: "Open the link to sign in on this iPhone.", symbol: "envelope.badge")
                             Text(email).font(.headline).textSelection(.enabled)
                                 .fixedSize(horizontal: false, vertical: true)
-                            Text("No email? Check Junk or Spam, or send another link.")
+                            Text("No email? Check Junk or Spam.")
                                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             ViewThatFits(in: .horizontal) {
                                 HStack(spacing: 24) { emailActions }
@@ -40,15 +40,15 @@ struct SignInView: View {
                             }
                         } else {
                             if codeSent {
-                                Text(usesEmailLink ? "Confirm the email used for this link." : "Enter the code we emailed you.")
+                                Text(usesEmailLink ? "Enter your email to finish signing in." : "Enter the code from your email.")
                                     .font(.headline).accessibilityAddTraits(.isHeader)
                             }
                             Group {
                                 if codeSent && !usesEmailLink {
-                                    TextField("Verification code", text: $code, prompt: Text("Verification code").foregroundStyle(ShieldTheme.secondaryText))
+                                    TextField("Email code", text: $code, prompt: Text("Email code").foregroundStyle(ShieldTheme.secondaryText))
                                         .textContentType(.oneTimeCode).keyboardType(.numberPad)
                                         .focused($focusedField, equals: .code)
-                                        .accessibilityLabel("Email verification code")
+                                        .accessibilityLabel("Email code")
                                 } else {
                                     TextField("Email address", text: $email, prompt: Text("Email address").foregroundStyle(ShieldTheme.secondaryText))
                                         .textContentType(.emailAddress).keyboardType(.emailAddress)
@@ -61,7 +61,7 @@ struct SignInView: View {
                                         #endif
                                 }
                             }
-                            .frame(minHeight: 44)
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .padding(16).frame(minHeight: 56)
                             .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
                             .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? Color.primary.opacity(contrast == .increased ? 0.55 : 0.12) : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
@@ -73,8 +73,8 @@ struct SignInView: View {
                             .shieldPrimaryButton().disabled(!canSubmit)
                             if codeSent { changeEmailButton }
                             else {
-                                Text(usesEmailLink ? "Shield emails you a link to sign in." : "Shield emails you a code to sign in.")
-                                    .font(.footnote).foregroundStyle(ShieldTheme.secondaryText)
+                                Text(usesEmailLink ? "We’ll email you a sign-in link." : "We’ll email you a code.")
+                                    .font(.body).foregroundStyle(ShieldTheme.secondaryText)
                                     .frame(maxWidth: .infinity)
                             }
                         }
@@ -83,17 +83,14 @@ struct SignInView: View {
                                 .accessibilityIdentifier("sign-in-error")
                         }
                         if model.configuration.baseURL == nil {
-                            Text("Sign-in is unavailable. You can still explore the demo.")
+                            Text("Sign-in isn’t ready. You can try the sample app.")
                                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
 
                     if !codeSent {
-                        Button("View demo") { model.exploreDemo() }
-                            .frame(maxWidth: .infinity, minHeight: 44).disabled(working)
-                        Text("After phone setup, calls are screened during test windows.")
-                            .font(.footnote).foregroundStyle(ShieldTheme.secondaryText).multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
+                        Button("Try sample app") { model.exploreDemo() }
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
                     }
                 }
                 .padding(24)
@@ -147,7 +144,7 @@ struct SignInView: View {
                 if working { ProgressView() }
                 Text("Resend link")
             }
-            .frame(minHeight: 44)
+            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
         }
         .disabled(!canSubmit)
         changeEmailButton
@@ -160,7 +157,7 @@ struct SignInView: View {
             error = nil
             focusedField = .email
         }
-        .frame(minHeight: 44)
+        .frame(minHeight: ShieldTheme.Layout.minimumTarget)
         .disabled(working)
     }
 

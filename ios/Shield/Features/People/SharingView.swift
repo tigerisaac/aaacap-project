@@ -17,28 +17,36 @@ struct SharingView: View {
                     .textContentType(.givenName)
                 Toggle("Include voicemail", isOn: $canListen)
                 Button { confirmShare = true } label: {
-                    Text(creating ? "Creating…" : "Create invitation")
+                    Text(creating ? "Creating…" : "Make invitation")
                         .foregroundStyle(creating || model.isDemo || label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? ShieldTheme.secondaryText : ShieldTheme.action)
                 }
                     .disabled(label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || creating || model.isDemo)
                     .confirmationDialog("Share your call history?", isPresented: $confirmShare, titleVisibility: .visible) {
-                        Button("Create invitation") { Task { await createInvite() } }
+                        Button("Make invitation") { Task { await createInvite() } }
                     } message: {
-                        Text(canListen ? "Whoever accepts this code can see your call history and listen to voicemail. Share it only with the person you intend." : "Whoever accepts this code can see your call history. Voicemail stays private.")
+                        Text(canListen ? "They can see your calls and hear your voicemail. Send this only to the person you want to help." : "They can see your calls. Your voicemail stays private. Send this only to the person you want to help.")
                     }
-            } header: { Text("Create an invitation").foregroundStyle(ShieldTheme.secondaryText) } footer: {
-                Text("Invitations expire in 2 days. Phone settings stay yours.").foregroundStyle(ShieldTheme.secondaryText)
+            } header: { Text("Invite someone to help").foregroundStyle(ShieldTheme.secondaryText) } footer: {
+                Text("This invitation works for two days.").foregroundStyle(ShieldTheme.secondaryText)
             }
             if let inviteCode {
                 ShieldSection("Share this invitation") {
                     Text(inviteCode).font(.body.monospaced()).textSelection(.enabled)
-                    ShareLink(item: "I’d like to share my Shield call history with you. In Shield, open People → Join with an invitation and enter:\n\n\(inviteCode)") {
+                    ShareLink(item: "I’d like to share my Shield call history with you. In Shield, open More → Family & friends → Use an invitation and enter:\n\n\(inviteCode)") {
                         Label("Share invitation", systemImage: "square.and.arrow.up")
                     }
-                    .frame(minHeight: 44)
+                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                 }
             }
-            ShieldSection(model.isDemo ? "Demo" : "People with access") {
+            if model.isOwner, model.service?.notificationsAvailable == true, !model.isDemo {
+                Section {
+                    HelperAlertsToggle()
+                    DisclosureGroup("When will they hear from Shield?") {
+                        Text("When Shield ends a scam call, a blocked caller tries again, or call checks are paused. Alerts include your name, but no caller’s words or number.")
+                    }
+                }
+            }
+            ShieldSection(model.isDemo ? "Sample app" : "People helping you") {
                 if model.isDemo {
                     Text("Sign in to manage sharing.").foregroundStyle(ShieldTheme.secondaryText)
                 } else if grants.isEmpty {
@@ -47,12 +55,12 @@ struct SharingView: View {
                 ForEach(grants) { grant in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(grant.label).font(.headline)
-                        Text(grant.accepted ? grant.canListen ? "History & voicemail" : "History only" : "Invitation pending")
+                        Text(grant.accepted ? grant.canListen ? "Calls and voicemail" : "Calls only" : "Waiting for them to join")
                             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         Button("Stop sharing", role: .destructive) { revokeID = grant.id }
-                            .frame(minHeight: 44)
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }
-                    .confirmationDialog("Stop sharing this account?", isPresented: Binding(
+                    .confirmationDialog("Stop sharing with this person?", isPresented: Binding(
                         get: { revokeID == grant.id },
                         set: { if !$0 { revokeID = nil } }
                     ), titleVisibility: .visible) {
@@ -62,7 +70,7 @@ struct SharingView: View {
             }
         }
         .shieldListStyle()
-        .navigationTitle("Sharing")
+        .navigationTitle("Share with a helper")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
     }

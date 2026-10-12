@@ -28,12 +28,14 @@ final class AppState {
     var showingError = false
     var service: ServiceConfiguration?
     var selectedTab = 0
+    /// These choices affect synthetic messages only; keeping real messages is a proposed feature.
+    var demoKeptMessages: Set<UUID> = []
     var protectionOnboarding: ForwardingStatus.Monitoring?
     /// The person hasn't chosen yet whether their helpers get alerts, and push alerts are available.
     var helperAlertsOnboarding = false
     var protectionParticipantID: UUID?
     private var protectionChoiceGeneration = 0
-    private var sessionGeneration = 0
+    private(set) var sessionGeneration = 0
     #if DEBUG && targetEnvironment(simulator)
     private var accountFixtureInitialRefresh = true
     #endif
@@ -79,17 +81,21 @@ final class AppState {
     }
 
     func exploreDemo() {
-        isTestAccount = false
+        startPreview(testAccount: false)
+    }
+
+    private func startPreview(testAccount: Bool) {
+        isTestAccount = testAccount
         protectionOnboarding = nil
         helperAlertsOnboarding = false
         protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = true
         isDemo = true
-        signedIn = true
         people = DemoData.people
         selectedPersonID = DemoData.participant.id
         loadPreview()
+        signedIn = true
     }
 
     func didSignIn() async {
@@ -279,6 +285,7 @@ final class AppState {
     }
 
     func showCalls(_ selectedFilter: CallFilter) {
+        if selectedFilter == .voicemail { selectedTab = 2; return }
         filter = selectedFilter
         selectedTab = 1
     }
@@ -288,14 +295,14 @@ final class AppState {
     static let testAccountSequence = "shield-test-account1"
 
     func exploreTestAccount() {
-        exploreDemo()
-        isTestAccount = true
+        startPreview(testAccount: true)
     }
     #endif
 
     func signOut() async {
         isTestAccount = false
         sessionGeneration += 1
+        demoKeptMessages = []
         signedIn = false
         isPreview = false
         isDemo = false

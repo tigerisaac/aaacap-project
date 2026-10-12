@@ -18,8 +18,8 @@ struct BlockedNumbersView: View {
                     }
                 } footer: {
                     Text(phoneBlocking == true
-                         ? "Your iPhone also blocks these numbers, even if you saved one or called it back."
-                         : "Turn on Shield under Call Blocking & Identification so your iPhone blocks these numbers too, even ones you saved or called back.")
+                         ? "Your iPhone blocks these numbers too."
+                         : "In Phone settings, open Call Blocking & Identification and turn on Shield.").foregroundStyle(ShieldTheme.secondaryText)
                 }
             }
             Section {
@@ -33,40 +33,42 @@ struct BlockedNumbersView: View {
                         .accessibilityElement(children: .combine)
                         // A visible button, not only a swipe: swipes are hard to discover.
                         if model.isOwner {
-                            Button("Unblock", systemImage: "hand.raised.slash") { pendingUnblock = item }
+                            Button("Allow calls again", systemImage: "hand.raised.slash") { pendingUnblock = item }
                                 .buttonStyle(.bordered).buttonBorderShape(.capsule).accessibilityIdentifier("unblock-\(item.phone)")
                         }
                     }
                     .padding(.vertical, 2)
                     .swipeActions {
                         if model.isOwner {
-                            Button("Unblock") { pendingUnblock = item }.tint(ShieldTheme.action)
+                            Button("Allow calls again") { pendingUnblock = item }.tint(ShieldTheme.action)
                         }
                     }
                     .contextMenu {
-                        if model.isOwner { Button("Unblock", systemImage: "hand.raised.slash") { pendingUnblock = item } }
+                        if model.isOwner { Button("Allow calls again", systemImage: "hand.raised.slash") { pendingUnblock = item } }
                     }
                 }
-            } footer: {
-                Text(model.isOwner
-                     ? "Shield ends calls from these numbers without screening them. Scammers sometimes use real people’s numbers, so each block ends after 180 days. Unblock a number only if you know who it belongs to."
-                     : "Shield ends calls from these numbers without screening them. Only the person Shield protects can unblock a number.")
+            }
+            Section {
+                DisclosureGroup("About blocked numbers") {
+                    Text("Shield stops calls from these numbers. Blocks end after 180 days.")
+                    Text(model.isOwner ? "Scammers can use someone else’s number. Allow calls again only if you know who it belongs to." : "Only the person using Shield can allow calls again.")
+                }
             }
         }
         .overlay {
             if loaded && items.isEmpty {
                 ContentUnavailableView("No blocked numbers", systemImage: "hand.raised",
-                    description: Text("When Shield stops a scam call, it blocks that number so the caller can’t try again."))
+                    description: Text("Numbers blocked by Shield will appear here."))
             }
         }
         .shieldListStyle()
         .navigationTitle("Blocked numbers")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog("Unblock \(pendingUnblock.map { PhoneDisplay.format($0.phone) } ?? "this number")?", isPresented: Binding(
+        .confirmationDialog("Allow calls from \(pendingUnblock.map { PhoneDisplay.format($0.phone) } ?? "this number")?", isPresented: Binding(
             get: { pendingUnblock != nil }, set: { if !$0 { pendingUnblock = nil } }), titleVisibility: .visible) {
-            Button("Unblock", role: .destructive) { if let item = pendingUnblock { Task { await unblock(item) } } }
+            Button("Allow calls again", role: .destructive) { if let item = pendingUnblock { Task { await unblock(item) } } }
         } message: {
-            Text("Its next call will be screened again. Only unblock a number you know belongs to someone you trust.")
+            Text("Shield can check future calls from this number. Only allow calls if you know who it belongs to.")
         }
         .task { await load() }
         .refreshable { await load() }

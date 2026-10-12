@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-21T19:20:56Z",
+  "generatedAt": "2026-10-12T20:44:26+00:00",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
       "action-light": {
         "role": "primary",
-        "displayName": "Action blue · light",
+        "displayName": "Action blue · Light",
         "tonalRamp": [
           "oklch(15.00% 0.1943 264.89)",
           "oklch(26.43% 0.1943 264.89)",
@@ -20,7 +20,7 @@
       },
       "action-dark": {
         "role": "primary",
-        "displayName": "Action blue · dark",
+        "displayName": "Action blue · Dark",
         "tonalRamp": [
           "oklch(15.00% 0.1123 270.23)",
           "oklch(26.43% 0.1123 270.23)",
@@ -32,9 +32,37 @@
           "oklch(95.00% 0.1123 270.23)"
         ]
       },
+      "action-light-high": {
+        "role": "primary",
+        "displayName": "Action blue · Light increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.1739 264.91)",
+          "oklch(26.43% 0.1739 264.91)",
+          "oklch(37.86% 0.1739 264.91)",
+          "oklch(49.29% 0.1739 264.91)",
+          "oklch(60.71% 0.1739 264.91)",
+          "oklch(72.14% 0.1739 264.91)",
+          "oklch(83.57% 0.1739 264.91)",
+          "oklch(95.00% 0.1739 264.91)"
+        ]
+      },
+      "action-dark-high": {
+        "role": "primary",
+        "displayName": "Action blue · Dark increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.0688 267.70)",
+          "oklch(26.43% 0.0688 267.70)",
+          "oklch(37.86% 0.0688 267.70)",
+          "oklch(49.29% 0.0688 267.70)",
+          "oklch(60.71% 0.0688 267.70)",
+          "oklch(72.14% 0.0688 267.70)",
+          "oklch(83.57% 0.0688 267.70)",
+          "oklch(95.00% 0.0688 267.70)"
+        ]
+      },
       "held-light": {
         "role": "secondary",
-        "displayName": "Held-call red · light",
+        "displayName": "Stopped-call red · Light",
         "tonalRamp": [
           "oklch(15.00% 0.1616 19.90)",
           "oklch(26.43% 0.1616 19.90)",
@@ -48,7 +76,7 @@
       },
       "held-dark": {
         "role": "secondary",
-        "displayName": "Held-call red · dark",
+        "displayName": "Stopped-call red · Dark",
         "tonalRamp": [
           "oklch(15.00% 0.1199 19.46)",
           "oklch(26.43% 0.1199 19.46)",
@@ -60,9 +88,37 @@
           "oklch(95.00% 0.1199 19.46)"
         ]
       },
+      "held-light-high": {
+        "role": "secondary",
+        "displayName": "Stopped-call red · Light increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.1437 18.80)",
+          "oklch(26.43% 0.1437 18.80)",
+          "oklch(37.86% 0.1437 18.80)",
+          "oklch(49.29% 0.1437 18.80)",
+          "oklch(60.71% 0.1437 18.80)",
+          "oklch(72.14% 0.1437 18.80)",
+          "oklch(83.57% 0.1437 18.80)",
+          "oklch(95.00% 0.1437 18.80)"
+        ]
+      },
+      "held-dark-high": {
+        "role": "secondary",
+        "displayName": "Stopped-call red · Dark increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.0777 13.85)",
+          "oklch(26.43% 0.0777 13.85)",
+          "oklch(37.86% 0.0777 13.85)",
+          "oklch(49.29% 0.0777 13.85)",
+          "oklch(60.71% 0.0777 13.85)",
+          "oklch(72.14% 0.0777 13.85)",
+          "oklch(83.57% 0.0777 13.85)",
+          "oklch(95.00% 0.0777 13.85)"
+        ]
+      },
       "connected-light": {
         "role": "secondary",
-        "displayName": "Connection teal · light",
+        "displayName": "Answered-call teal · Light",
         "tonalRamp": [
           "oklch(15.00% 0.0861 177.51)",
           "oklch(26.43% 0.0861 177.51)",
@@ -76,7 +132,7 @@
       },
       "connected-dark": {
         "role": "secondary",
-        "displayName": "Connection teal · dark",
+        "displayName": "Answered-call teal · Dark",
         "tonalRamp": [
           "oklch(15.00% 0.1040 177.54)",
           "oklch(26.43% 0.1040 177.54)",
@@ -88,9 +144,37 @@
           "oklch(95.00% 0.1040 177.54)"
         ]
       },
+      "connected-light-high": {
+        "role": "secondary",
+        "displayName": "Answered-call teal · Light increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.0715 176.92)",
+          "oklch(26.43% 0.0715 176.92)",
+          "oklch(37.86% 0.0715 176.92)",
+          "oklch(49.29% 0.0715 176.92)",
+          "oklch(60.71% 0.0715 176.92)",
+          "oklch(72.14% 0.0715 176.92)",
+          "oklch(83.57% 0.0715 176.92)",
+          "oklch(95.00% 0.0715 176.92)"
+        ]
+      },
+      "connected-dark-high": {
+        "role": "secondary",
+        "displayName": "Answered-call teal · Dark increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.0841 177.05)",
+          "oklch(26.43% 0.0841 177.05)",
+          "oklch(37.86% 0.0841 177.05)",
+          "oklch(49.29% 0.0841 177.05)",
+          "oklch(60.71% 0.0841 177.05)",
+          "oklch(72.14% 0.0841 177.05)",
+          "oklch(83.57% 0.0841 177.05)",
+          "oklch(95.00% 0.0841 177.05)"
+        ]
+      },
       "message-light": {
         "role": "tertiary",
-        "displayName": "Message violet · light",
+        "displayName": "Voicemail violet · Light",
         "tonalRamp": [
           "oklch(15.00% 0.1764 297.79)",
           "oklch(26.43% 0.1764 297.79)",
@@ -104,7 +188,7 @@
       },
       "message-dark": {
         "role": "tertiary",
-        "displayName": "Message violet · dark",
+        "displayName": "Voicemail violet · Dark",
         "tonalRamp": [
           "oklch(15.00% 0.1157 299.68)",
           "oklch(26.43% 0.1157 299.68)",
@@ -116,59 +200,115 @@
           "oklch(95.00% 0.1157 299.68)"
         ]
       },
-      "surface-light": {
-        "role": "neutral",
-        "displayName": "Cool surface · light",
+      "message-light-high": {
+        "role": "tertiary",
+        "displayName": "Voicemail violet · Light increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0083 271.33)",
-          "oklch(26.43% 0.0083 271.33)",
-          "oklch(37.86% 0.0083 271.33)",
-          "oklch(49.29% 0.0083 271.33)",
-          "oklch(60.71% 0.0083 271.33)",
-          "oklch(72.14% 0.0083 271.33)",
-          "oklch(83.57% 0.0083 271.33)",
-          "oklch(95.00% 0.0083 271.33)"
+          "oklch(15.00% 0.1500 299.01)",
+          "oklch(26.43% 0.1500 299.01)",
+          "oklch(37.86% 0.1500 299.01)",
+          "oklch(49.29% 0.1500 299.01)",
+          "oklch(60.71% 0.1500 299.01)",
+          "oklch(72.14% 0.1500 299.01)",
+          "oklch(83.57% 0.1500 299.01)",
+          "oklch(95.00% 0.1500 299.01)"
         ]
       },
-      "surface-dark": {
-        "role": "neutral",
-        "displayName": "Cool surface · dark",
+      "message-dark-high": {
+        "role": "tertiary",
+        "displayName": "Voicemail violet · Dark increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0166 268.85)",
-          "oklch(26.43% 0.0166 268.85)",
-          "oklch(37.86% 0.0166 268.85)",
-          "oklch(49.29% 0.0166 268.85)",
-          "oklch(60.71% 0.0166 268.85)",
-          "oklch(72.14% 0.0166 268.85)",
-          "oklch(83.57% 0.0166 268.85)",
-          "oklch(95.00% 0.0166 268.85)"
+          "oklch(15.00% 0.0751 302.09)",
+          "oklch(26.43% 0.0751 302.09)",
+          "oklch(37.86% 0.0751 302.09)",
+          "oklch(49.29% 0.0751 302.09)",
+          "oklch(60.71% 0.0751 302.09)",
+          "oklch(72.14% 0.0751 302.09)",
+          "oklch(83.57% 0.0751 302.09)",
+          "oklch(95.00% 0.0751 302.09)"
+        ]
+      },
+      "secondary-light": {
+        "role": "neutral",
+        "displayName": "Opaque supporting text · Light",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 0.00)",
+          "oklch(26.43% 0.0000 0.00)",
+          "oklch(37.86% 0.0000 0.00)",
+          "oklch(49.29% 0.0000 0.00)",
+          "oklch(60.71% 0.0000 0.00)",
+          "oklch(72.14% 0.0000 0.00)",
+          "oklch(83.57% 0.0000 0.00)",
+          "oklch(95.00% 0.0000 0.00)"
+        ]
+      },
+      "secondary-dark": {
+        "role": "neutral",
+        "displayName": "Opaque supporting text · Dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 0.00)",
+          "oklch(26.43% 0.0000 0.00)",
+          "oklch(37.86% 0.0000 0.00)",
+          "oklch(49.29% 0.0000 0.00)",
+          "oklch(60.71% 0.0000 0.00)",
+          "oklch(72.14% 0.0000 0.00)",
+          "oklch(83.57% 0.0000 0.00)",
+          "oklch(95.00% 0.0000 0.00)"
+        ]
+      },
+      "secondary-light-high": {
+        "role": "neutral",
+        "displayName": "Opaque supporting text · Light increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 0.00)",
+          "oklch(26.43% 0.0000 0.00)",
+          "oklch(37.86% 0.0000 0.00)",
+          "oklch(49.29% 0.0000 0.00)",
+          "oklch(60.71% 0.0000 0.00)",
+          "oklch(72.14% 0.0000 0.00)",
+          "oklch(83.57% 0.0000 0.00)",
+          "oklch(95.00% 0.0000 0.00)"
+        ]
+      },
+      "secondary-dark-high": {
+        "role": "neutral",
+        "displayName": "Opaque supporting text · Dark increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 0.00)",
+          "oklch(26.43% 0.0000 0.00)",
+          "oklch(37.86% 0.0000 0.00)",
+          "oklch(49.29% 0.0000 0.00)",
+          "oklch(60.71% 0.0000 0.00)",
+          "oklch(72.14% 0.0000 0.00)",
+          "oklch(83.57% 0.0000 0.00)",
+          "oklch(95.00% 0.0000 0.00)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Native screen title",
-        "purpose": "System navigation title and sign-in largeTitle. Dynamic Type and OS metrics; no fixed project size."
+        "displayName": "Native screen and brand title",
+        "purpose": "Native navigation titles and Shield largeTitle.bold(); Dynamic Type and OS metrics are authoritative."
       },
       "title": {
-        "displayName": "Count and detail title",
-        "purpose": "SwiftUI title2.bold(); counts additionally use monospacedDigit."
+        "displayName": "Focused title",
+        "purpose": "SwiftUI title2.bold() and title3.bold() for details, text results, and introductions."
       },
       "headline": {
-        "displayName": "Primary row text",
-        "purpose": "SwiftUI headline for call names, people, and emphasized controls."
+        "displayName": "Primary row and action text",
+        "purpose": "SwiftUI headline for voicemail, section headings, and primary actions; call purpose uses body semibold."
       },
       "body": {
-        "displayName": "Body and field text",
-        "purpose": "Default native body text; invitation code uses body.monospaced()."
+        "displayName": "Body and form text",
+        "purpose": "Default body for instructions, explanations, More choices, and input fields."
       },
       "supporting": {
-        "displayName": "Supporting text",
-        "purpose": "SwiftUI subheadline for numbers, sharing scope, and supporting information; selected actions use semibold."
+        "displayName": "Readable supporting text",
+        "purpose": "SwiftUI subheadline for times, outcomes, numbers, sharing scope, and the sample marker."
       },
       "label": {
-        "displayName": "Outcome and demo label",
-        "purpose": "SwiftUI caption.weight(.semibold); timestamps use regular caption."
+        "displayName": "Outcome and sample label",
+        "purpose": "SwiftUI subheadline semibold for unboxed OutcomeBadge and persistent sample-data identity."
       }
     },
     "shadows": [],
@@ -177,119 +317,134 @@
   },
   "components": [
     {
-      "name": "Native primary button",
+      "name": "Native primary action",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Schematic preview of .borderedProminent with Action tint. SwiftUI owns foreground contrast, corners, padding, focus, and pressed appearance; CSS geometry and browser states are illustrative. Source: SignInView.swift and CheckView.swift.",
-      "html": "<button class=\"ds-primary\" type=\"button\">Continue with email</button>",
-      "css": ".ds-primary{font:600 1rem system-ui;min-height:44px;padding:12px 20px;border:0;border-radius:10px;background:#224CC5;color:white;cursor:pointer}.ds-primary:hover{filter:brightness(.96)}.ds-primary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-primary:active{filter:brightness(.9)}.ds-primary:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-primary{background:#9BB3FF;color:#151820}.ds-primary:focus-visible{outline-color:#9BB3FF}}"
+      "description": "Schematic documentation preview, not the actual native implementation. Native large capsule borderedProminent action; its wrapping label has a 52-point minimum, not fixed height. Source: Design/ShieldComponents.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-primary\" type=\"button\">Listen to message</button>",
+      "css": ".ds-primary{width:100%;max-width:360px;min-height:52px;padding:12px 20px;border:0;border-radius:999px;background:#224CC5;color:white;font:600 1rem system-ui;white-space:normal;cursor:pointer}.ds-primary:hover{filter:brightness(.96)}.ds-primary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-primary:active{filter:brightness(.9)}.ds-primary:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-primary{background:#9BB3FF;color:rgb(8% 12% 22%)}.ds-primary:focus-visible{outline-color:#9BB3FF}}"
     },
     {
-      "name": "Native secondary button",
+      "name": "Native secondary action",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Schematic .bordered action with sample SF Symbol substitute. Native system shape, fill, and state treatments remain authoritative. Source: SignInView.swift.",
-      "html": "<button class=\"ds-secondary\" type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m10 8 6 4-6 4z\"/></svg><span>Explore the demo</span></button>",
-      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border:0;border-radius:10px;background:rgb(34 76 197 / .1);color:#224CC5;font:600 1rem system-ui;cursor:pointer}.ds-secondary svg{width:20px;height:20px}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid currentColor;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:rgb(155 179 255 / .1);color:#9BB3FF}}"
+      "description": "Schematic documentation preview, not the actual native implementation. Native bordered Picture action; platform geometry and target size are system-owned, so the preview uses roomy illustrative geometry. Source: Features/Check/CheckView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-secondary\" type=\"button\">Picture</button>",
+      "css": ".ds-secondary{min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:rgb(34 76 197 / .1);color:#224CC5;font:600 1rem system-ui;cursor:pointer}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:rgb(155 179 255 / .1);color:#9BB3FF}}"
     },
     {
       "name": "Email field",
       "kind": "input",
       "refersTo": "input-email",
-      "description": "Schematic rounded-border native TextField. Email keyboard, capitalization, autocorrection, and focus are configured in SwiftUI; CSS borders and focus outlines are documentation substitutes. Source: SignInView.swift.",
+      "description": "Schematic documentation preview, not the actual native implementation. Rounded card-color field with explicit email label, keyboard/content type, Dynamic Type, and native focus border. Source: Features/Auth/SignInView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<input class=\"ds-email\" type=\"email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" spellcheck=\"false\" placeholder=\"Email address\" aria-label=\"Email address\">",
-      "css": ".ds-email{font:1rem system-ui;max-width:100%;width:260px;min-height:44px;padding:0 12px;color:CanvasText;background:Canvas;border:1px solid GrayText;border-radius:8px}.ds-email::placeholder{color:GrayText}.ds-email:hover{border-color:#224CC5}.ds-email:focus-visible{outline:2px solid #224CC5;outline-offset:2px}.ds-email:disabled{opacity:.5}@media(prefers-color-scheme:dark){.ds-email:hover{border-color:#9BB3FF}.ds-email:focus-visible{outline-color:#9BB3FF}}"
+      "css": ".ds-email{font:1rem system-ui;max-width:100%;width:260px;min-height:52px;padding:16px;color:CanvasText;background:Canvas;border:1px solid rgb(0 0 0 / .12);border-radius:14px}.ds-email::placeholder{color:rgb(34% 34% 34%)}.ds-email:hover{border-color:#224CC5}.ds-email:focus-visible{outline:2px solid #224CC5;outline-offset:0}.ds-email:disabled{opacity:.5}@media(prefers-color-scheme:dark){.ds-email{border-color:rgb(255 255 255 / .12)}.ds-email::placeholder{color:rgb(76% 76% 76%)}.ds-email:focus-visible{outline-color:#9BB3FF}}"
     },
     {
       "name": "Four native tabs",
       "kind": "nav",
       "refersTo": "navigation",
-      "description": "Schematic label and selection preview of TabView. These buttons do not navigate; symbol drawings, bar geometry, materials, and web focus styles are illustrative. Native tabs are Today, Calls, Check, People. Source: RootView.swift.",
-      "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg><span>Today</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"13\" cy=\"10\" r=\"6\"/><path d=\"m17 14 5 6M3 4h3M3 8h2M3 12h3M3 16h6\"/></svg><span>Check</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9\" cy=\"8\" r=\"3\"/><path d=\"M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m1 3a5 5 0 0 1 4 5v2\"/></svg><span>People</span></button></nav>",
-      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:Canvas}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-width:44px;min-height:44px;padding:6px 8px;border:0;border-radius:8px;background:transparent;color:GrayText;font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#224CC5}.ds-tabs button:hover{background:rgb(34 76 197 / .08)}.ds-tabs button:focus-visible{outline:2px solid #224CC5;outline-offset:1px}.ds-tabs button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button[aria-current]{color:#9BB3FF}.ds-tabs button:hover{background:rgb(155 179 255 / .08)}.ds-tabs button:focus-visible{outline-color:#9BB3FF}.ds-tabs button:active{background:rgb(155 179 255 / .12)}}"
+      "description": "Schematic documentation preview, not the actual native implementation. Native TabView destinations Home, Calls, Voicemail, More. Preview buttons show labels and selection only; they do not navigate. Source: App/RootView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10\"/></svg><span>Home</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"7\" cy=\"12\" r=\"4\"/><circle cx=\"17\" cy=\"12\" r=\"4\"/><path d=\"M7 16h10\"/></svg><span>Voicemail</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg><span>More</span></button></nav>",
+      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:Canvas}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-height:52px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:rgb(34% 34% 34%);font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#224CC5}.ds-tabs button:hover{background:rgb(34 76 197 / .08)}.ds-tabs button:focus-visible{outline:2px solid #224CC5}.ds-tabs button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button{color:rgb(76% 76% 76%)}.ds-tabs button[aria-current]{color:#9BB3FF}}"
     },
     {
-      "name": "Held outcome badge",
+      "name": "Unboxed voicemail outcome",
       "kind": "chip",
-      "refersTo": "outcome-badge",
-      "description": "Noninteractive sample of OutcomeBadge: caption semibold, Capsule, 9-point horizontal and 6-point vertical padding, outcome tint at 12% behind a symbol and label. Browser text size and hand drawing are schematic. Source: Design/OutcomeBadge.swift.",
-      "html": "<span class=\"ds-badge\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 12V6a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v5c0 5-3 8-7 8-3 0-5-2-7-5l-3-4a1.7 1.7 0 0 1 2-2l3 3\"/></svg><span>Held</span></span>",
-      "css": ".ds-badge{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border-radius:999px;background:rgb(181 55 66 / .12);color:#B53742;font:600 .75rem system-ui}.ds-badge svg{width:14px;height:14px}@media(prefers-color-scheme:dark){.ds-badge{background:rgb(255 155 156 / .12);color:#FF9B9C}}"
+      "refersTo": "outcome-label",
+      "description": "Schematic documentation preview, not the actual native implementation. Noninteractive symbol-and-word label with no capsule, tile, or count. Source: Design/OutcomeBadge.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<span class=\"ds-outcome\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4\"/></svg><span>Voicemail</span></span>",
+      "css": ".ds-outcome{display:inline-flex;align-items:center;gap:6px;color:#7244B9;font:600 .9375rem system-ui}.ds-outcome svg{width:18px;height:18px}@media(prefers-color-scheme:dark){.ds-outcome{color:#CAAEFF}}"
     },
     {
-      "name": "Outcome count control",
-      "kind": "card",
-      "refersTo": "outcome-held",
-      "description": "Interactive summary control, not a generic content card. Source uses a 16-point corner and inset, 12-point stack gap, title2 bold monospaced count, subheadline semibold label, and 10% outcome fill. Sample count; browser font metrics, hand, and focus/hover treatments are schematic. Source: Features/Overview/OutcomeControl.swift.",
-      "html": "<button class=\"ds-outcome\" type=\"button\" aria-label=\"3 held this week\" aria-describedby=\"ds-outcome-hint\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 12V6a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v5c0 5-3 8-7 8-3 0-5-2-7-5l-3-4a1.7 1.7 0 0 1 2-2l3 3\"/></svg><span class=\"ds-outcome-count\">3</span><span class=\"ds-outcome-title\">Held</span></button><span class=\"ds-outcome-hint\" id=\"ds-outcome-hint\">Show these calls</span>",
-      "css": ".ds-outcome{display:grid;justify-items:start;gap:12px;width:160px;padding:16px;border:0;border-radius:16px;background:rgb(181 55 66 / .1);color:#B53742;font-family:system-ui;text-align:left;cursor:pointer}.ds-outcome svg{width:20px;height:20px}.ds-outcome-count{font-size:1.375rem;font-weight:700;font-variant-numeric:tabular-nums}.ds-outcome-title{font-size:.9375rem;font-weight:600}.ds-outcome:hover{background:rgb(181 55 66 / .14)}.ds-outcome:focus-visible{outline:2px solid currentColor;outline-offset:3px}.ds-outcome:active{background:rgb(181 55 66 / .18)}.ds-outcome-hint{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media(prefers-color-scheme:dark){.ds-outcome{background:rgb(255 155 156 / .1);color:#FF9B9C}.ds-outcome:hover{background:rgb(255 155 156 / .14)}.ds-outcome:active{background:rgb(255 155 156 / .18)}}"
-    },
-    {
-      "name": "Call row",
+      "name": "Call history row",
       "kind": "custom",
       "refersTo": "call-row",
-      "description": "Sample call only. Native NavigationLink contains CallRow with a 46-point symbol tile, 14-point corners and gap, 6-point vertical padding, outcome label, and time. ViewThatFits switches the badge/time to a vertical layout. Browser wrapping and symbol outlines are schematic; native accessibility combines row children. Source: Design/CallRow.swift.",
-      "html": "<button class=\"ds-call-row\" type=\"button\"><span class=\"ds-call-icon\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 12V6a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v5c0 5-3 8-7 8-3 0-5-2-7-5l-3-4a1.7 1.7 0 0 1 2-2l3 3\"/></svg></span><span class=\"ds-call-copy\"><span class=\"ds-call-title\">Sample request</span><span class=\"ds-call-number\">+1 312 555 0148</span><span class=\"ds-call-meta\"><span class=\"ds-call-badge\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 12V6a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v5c0 5-3 8-7 8-3 0-5-2-7-5l-3-4a1.7 1.7 0 0 1 2-2l3 3\"/></svg>Held</span><span>Today</span></span></span><span class=\"ds-call-chevron\" aria-hidden=\"true\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m8 10 4 4 4-4\"/></svg></span></button>",
-      "css": ".ds-call-row{display:grid;grid-template-columns:46px minmax(0,1fr) 14px;align-items:start;gap:14px;width:100%;max-width:370px;padding:6px 0;border:0;background:Canvas;color:CanvasText;text-align:left;font-family:system-ui;cursor:pointer}.ds-call-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgb(181 55 66 / .12);color:#B53742}.ds-call-icon svg{width:22px;height:22px}.ds-call-copy{display:grid;gap:6px}.ds-call-title{font-size:1rem;font-weight:600}.ds-call-number{font-size:.9375rem;color:GrayText}.ds-call-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.75rem;color:GrayText}.ds-call-badge{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border-radius:999px;background:rgb(181 55 66 / .12);color:#B53742;font-weight:600}.ds-call-badge svg{width:14px;height:14px}.ds-call-chevron{align-self:center;color:GrayText;transform:rotate(-90deg)}.ds-call-chevron svg{width:14px;height:14px}.ds-call-row:hover{background:rgb(34 76 197 / .04)}.ds-call-row:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-call-row:active{background:rgb(34 76 197 / .08)}@media(prefers-color-scheme:dark){.ds-call-icon,.ds-call-badge{background:rgb(255 155 156 / .12);color:#FF9B9C}.ds-call-row:hover{background:rgb(155 179 255 / .04)}.ds-call-row:focus-visible{outline-color:#9BB3FF}.ds-call-row:active{background:rgb(155 179 255 / .08)}}"
+      "description": "Schematic documentation preview, not the actual native implementation. Sample call purpose and time lead; outcome follows. Home omits the number. Native accessibility combines the row and supplies the full date. Source: Design/CallRow.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-call\" type=\"button\"><span class=\"ds-call-main\"><strong>Appointment reminder</strong><span>Yesterday</span></span><span class=\"ds-call-detail\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Answered</span></span></button>",
+      "css": ".ds-call{display:grid;gap:4px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-call-main{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.ds-call-main>span{color:rgb(34% 34% 34%);font-size:.9375rem}.ds-call-detail{display:flex;align-items:center;gap:6px;color:#076C5C;font-size:.9375rem}.ds-call-detail svg{width:18px;height:18px}.ds-call:hover{filter:brightness(.96)}.ds-call:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-call:active{filter:brightness(.9)}.ds-call:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-call-main>span{color:rgb(76% 76% 76%)}.ds-call-detail{color:#74DDC6}}"
     },
     {
-      "name": "Person menu",
+      "name": "More action row",
       "kind": "custom",
-      "refersTo": "person-picker",
-      "description": "Schematic disclosure preview of native Menu with sample people. The source label has a 44-point minimum height and names the viewed person for accessibility. Native menu presentation and context switching remain SwiftUI behavior; this HTML only opens the preview list. Source: Design/PersonPicker.swift.",
-      "html": "<details class=\"ds-person\"><summary aria-label=\"Viewing Pat. Change person.\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"9\" r=\"3\"/><path d=\"M6 19v-1a6 6 0 0 1 12 0v1\"/></svg><span>Pat</span><span class=\"ds-person-chevron\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m8 10 4 4 4-4\"/></svg></span></summary><div class=\"ds-person-options\"><button type=\"button\">Pat · You <span aria-label=\"Selected\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m5 12 4 4L19 6\"/></svg></span></button><button type=\"button\">Alex</button></div></details>",
-      "css": ".ds-person{max-width:250px;font:600 1rem system-ui;color:#224CC5}.ds-person summary{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 8px;cursor:pointer;list-style:none;border-radius:8px}.ds-person summary::-webkit-details-marker{display:none}.ds-person summary>svg{width:22px;height:22px}.ds-person-chevron svg{width:12px;height:12px}.ds-person-options{padding:4px;background:Canvas;border:1px solid GrayText;border-radius:10px}.ds-person-options button{display:flex;align-items:center;justify-content:space-between;min-height:44px;width:100%;padding:8px;border:0;border-radius:6px;background:transparent;color:CanvasText;font:1rem system-ui;cursor:pointer}.ds-person-options svg{width:18px;height:18px;color:#224CC5}.ds-person summary:hover,.ds-person-options button:hover{background:rgb(34 76 197 / .08)}.ds-person summary:focus-visible,.ds-person-options button:focus-visible{outline:2px solid #224CC5;outline-offset:2px}.ds-person summary:active,.ds-person-options button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-person,.ds-person-options svg{color:#9BB3FF}.ds-person summary:hover,.ds-person-options button:hover{background:rgb(155 179 255 / .08)}.ds-person summary:focus-visible,.ds-person-options button:focus-visible{outline-color:#9BB3FF}.ds-person summary:active,.ds-person-options button:active{background:rgb(155 179 255 / .12)}}"
+      "refersTo": "action-row",
+      "description": "Schematic documentation preview, not the actual native implementation. Generous native NavigationLink row with a single familiar label. The icon column uses ScaledMetric; no Check a text subtitle. Source: Design/ShieldIdentity.swift and Features/Overview/MoreView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-action\" type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4\"/></svg><span>Check a text</span><span class=\"ds-chevron\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 6 6 6-6 6\"/></svg></span></button>",
+      "css": ".ds-action{display:flex;align-items:center;gap:14px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-action>svg{width:36px;height:22px;color:#224CC5;flex-shrink:0}.ds-action>span:first-of-type{flex:1;white-space:normal}.ds-chevron svg{width:14px;height:14px;color:GrayText}.ds-action:hover{filter:brightness(.96)}.ds-action:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-action:active{filter:brightness(.9)}.ds-action:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-action>svg{color:#9BB3FF}}"
     },
     {
-      "name": "Demo banner",
+      "name": "Sample voicemail row",
       "kind": "custom",
-      "refersTo": "demo-banner",
-      "description": "Persistent visible sample-data indicator. Native HStack uses Action foreground, 10% fill, 20-point horizontal padding, caption semibold, and an Exit action with a 44-by-44-point minimum. Browser type metrics and symbol are schematic. Source: Design/DemoBanner.swift.",
-      "html": "<div class=\"ds-demo\"><span class=\"ds-demo-label\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 3 2.3 6.7L21 12l-6.7 2.3L12 21l-2.3-6.7L3 12l6.7-2.3z\"/></svg>Demo · sample activity</span><button type=\"button\">Exit</button></div>",
-      "css": ".ds-demo{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 20px;max-width:390px;background:rgb(34 76 197 / .1);color:#224CC5;font:600 .75rem system-ui}.ds-demo-label{display:inline-flex;align-items:center;gap:6px}.ds-demo-label svg{width:14px;height:14px;flex-shrink:0}.ds-demo button{min-width:44px;min-height:44px;padding:0 6px;border:0;border-radius:6px;color:inherit;background:transparent;font:700 .75rem system-ui;cursor:pointer}.ds-demo button:hover{background:rgb(34 76 197 / .08)}.ds-demo button:focus-visible{outline:2px solid currentColor;outline-offset:1px}.ds-demo button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-demo{background:rgb(155 179 255 / .1);color:#9BB3FF}.ds-demo button:hover{background:rgb(155 179 255 / .08)}.ds-demo button:active{background:rgb(155 179 255 / .12)}}"
+      "refersTo": "voicemail-row",
+      "description": "Schematic documentation preview, not the actual native implementation. Authored sample summary only. Real rows have no generated summary; sample keeping is in-memory and does not extend retention. Source: Features/Calls/VoicemailRow.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\">New · Today</span></button>",
+      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(34% 34% 34%)}.ds-vm-meta{font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(76% 76% 76%)}}"
+    },
+    {
+      "name": "Persistent sample marker",
+      "kind": "custom",
+      "refersTo": "sample-banner",
+      "description": "Schematic documentation preview, not the actual native implementation. Noninteractive marker in its own opaque top area. No bottom overlay or Exit button; Leave sample app lives in More. Source: Design/DemoBanner.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<div class=\"ds-sample\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m10 8 6 4-6 4z\"/></svg><span>Sample app</span></div>",
+      "css": ".ds-sample{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;max-width:390px;background:Canvas;color:CanvasText;font:600 .9375rem system-ui}.ds-sample svg{width:18px;height:18px}"
+    },
+    {
+      "name": "Grouped card surface",
+      "kind": "card",
+      "refersTo": "card-container",
+      "description": "Schematic documentation preview, not the actual native implementation. Shared shieldCard helper; native secondarySystemGroupedBackground is authoritative. Browser Canvas is only a documentation substitute, not an extracted hex. Source: Design/ShieldComponents.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<div class=\"ds-card\"><strong>Your next step</strong><span>Use a number you already know.</span></div>",
+      "css": ".ds-card{display:grid;gap:8px;max-width:360px;padding:20px;border-radius:26px;background:Canvas;color:CanvasText;font:1rem system-ui}.ds-card span{color:rgb(34% 34% 34%)}@media(prefers-color-scheme:dark){.ds-card span{color:rgb(76% 76% 76%)}}"
     }
   ],
   "narrative": {
     "northStar": "Public-library wayfinding",
-    "overview": "Shield uses short, familiar labels and distinct colors to help someone find a call, understand its outcome, and choose a next step. Native navigation and system typography carry the interface. The direction appears through tint, SF Symbols, and lightly colored outcome controls rather than a literal library theme.\n\nParticipants and caregivers use the same four destinations. A visible person selector and explicit sharing labels establish whose activity is in view. Copy stays brief in ordinary use; consent, call uncertainty, and service restoration retain the explanation needed to make a decision.",
+    "overview": "Shield keeps a familiar native iPhone appearance: grouped lists, straightforward labels, system text, and recognizable controls. Quiet surfaces and four adaptive accents help people find a call, understand its result, and choose the next action. The library metaphor describes legible wayfinding; it does not introduce themed decoration.\n\nThe October 12 refinement makes an 80-year-old's understanding the bar. Ordinary screens use everyday words, fewer visible choices, and room for text to grow. Less common details open on request. Setup, disconnection, privacy, and sharing retain the information and explicit confirmations needed for a meaningful choice.",
     "keyCharacteristics": [
-      "Native tabs, navigation stacks, lists, forms, sheets, and confirmation dialogs.",
-      "Adaptive action blue, held-call red, connection teal, and message violet on quiet surfaces.",
-      "System text styles, symbol-and-text outcomes, and layouts that can stack when space is tight.",
-      "Explicit participant control, sharing scope, and sample-data labels."
+      "Native tabs, navigation stacks, grouped lists, forms, sheets, menus, and confirmation dialogs.",
+      "Action blue, stopped-call red, answered-call teal, and voicemail violet with Light, Dark, and increased-contrast variants.",
+      "Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.",
+      "Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker."
     ],
     "rules": [
       {
         "name": "The Outcome Truth Rule",
-        "body": "Color always accompanies an outcome label or symbol, and a connection or screening result never implies an authenticated caller.",
+        "body": "Pair color with a familiar outcome label or symbol; a call being checked, offered, or answered never implies an authenticated caller.",
         "section": "colors"
       },
       {
         "name": "The Native Type Rule",
-        "body": "Preserve semantic text styles and allow wrapping or stacking before introducing a fixed type size.",
+        "body": "Preserve semantic text styles and allow wrapping or stacking before introducing a fixed text size.",
         "section": "typography"
       },
       {
+        "name": "The Native Surface Rule",
+        "body": "Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.",
+        "section": "elevation"
+      },
+      {
         "name": "The Visible Context Rule",
-        "body": "Show the selected person and sharing scope in words, and keep participant ownership distinct from caregiver access.",
+        "body": "Show the viewed person and sharing scope in words, and keep participant ownership distinct from helper access.",
         "section": "components"
       }
     ],
     "dos": [
-      "Do use adaptive asset colors through ShieldTheme and semantic system colors for ordinary text and native containers.",
-      "Do pair outcome color with a concise label and SF Symbol, preserving the exact call-state distinctions.",
-      "Do preserve native navigation, system text styles, and the content-based stacking used by outcome controls and call rows.",
-      "Do make the selected person, sharing scope, and demo state explicit in visible copy and accessibility labels.",
-      "Do keep ordinary copy short while retaining meaningful consent, uncertainty, and restoration explanations.",
-      "Do verify Light and Dark Mode, large Dynamic Type, VoiceOver, hit areas, and Reduced Motion in the running native app."
+      "Do use ShieldTheme's adaptive role colors, opaque supporting text, and native grouped system surfaces.",
+      "Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.",
+      "Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.",
+      "Do give ordinary tasks one clear next action and reveal less common detail on request.",
+      "Do make person context, voicemail permission, and sample-only state visible in words.",
+      "Do retain explicit privacy, sharing, setup, and disconnection confirmations.",
+      "Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval."
     ],
     "donts": [
-      "Don't describe a screened or connected caller as verified, authenticated, or safe.",
-      "Don't turn a schematic sidecar preview into a pixel specification for a native control.",
-      "Don't treat caregiver access as ownership or hide the limits of shared voicemail access.",
-      "Don't replace system foreground colors with sampled fixed colors or add a custom type scale based on screenshot measurements.",
-      "Don't promote sign-in-only decoration or preview-only styles into global design tokens.",
-      "Don't claim compilation, visual approval, or accessibility validation from this source extraction."
+      "Don't describe a checked, offered, or answered caller as verified, authenticated, or safe.",
+      "Don't infer active call checks from stale, missing, paused, or expired status.",
+      "Don't promote weekly counters, old tab labels, or fixed Surface asset colors from earlier designs into new screens.",
+      "Don't treat schematic sidecar HTML/CSS as a native pixel specification.",
+      "Don't treat helper access as ownership or extend voicemail access implicitly.",
+      "Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.",
+      "Don't claim final visual approval, deployment, or real-call evidence from this source extraction."
     ]
   }
 }

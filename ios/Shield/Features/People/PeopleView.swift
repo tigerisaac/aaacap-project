@@ -5,15 +5,14 @@ struct PeopleView: View {
     @State private var joining = false
 
     var body: some View {
-        NavigationShell {
             List {
                 if let error = model.contextError {
                     Section {
-                        ShieldNotice(title: "Activity couldn’t refresh", detail: error, symbol: "wifi.exclamationmark")
-                        Button("Try Again", systemImage: "arrow.clockwise") { Task { await model.refresh() } }.frame(minHeight: 44)
+                        ShieldNotice(title: "Couldn’t get these calls", detail: error, symbol: "wifi.exclamationmark")
+                        Button("Try Again", systemImage: "arrow.clockwise") { Task { await model.refresh() } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }
                 }
-                ShieldSection("View activity for") {
+                ShieldSection("Whose calls would you like to see?") {
                     ForEach(model.people) { person in
                         Button {
                             Task { await model.select(person) }
@@ -25,7 +24,7 @@ struct PeopleView: View {
                                     .accessibilityHidden(true)
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(person.name).font(.headline).foregroundStyle(Color.primary)
-                                    Text(person.isOwner ? "Your phone" : person.canListen ? "History & voicemail" : "History only")
+                                    Text(person.isOwner ? "Your phone" : person.canListen ? "Calls and voicemail" : "Calls only")
                                         .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 }
                                 Spacer()
@@ -43,32 +42,31 @@ struct PeopleView: View {
                 }
                 if !model.isOwner {
                     Section {
-                        Label("Shared access", systemImage: "heart.text.clipboard")
+                        Label("Shared with you", systemImage: "heart.text.clipboard")
                             .foregroundStyle(ShieldTheme.message)
-                        Text("Phone settings stay with the participant.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        Text("Only they can change their phone settings.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
                 Section {
                     if model.isOwner {
                         NavigationLink(value: AppRoute.sharing) {
-                            ActionRow(title: "Share with someone", symbol: "person.badge.plus")
+                            ActionRow(title: "Invite someone to help", symbol: "person.badge.plus")
                         }
                     }
                     Button { joining = true } label: {
-                        ActionRow(title: "Join with an invitation", symbol: "envelope.open")
+                        ActionRow(title: "Use an invitation", symbol: "envelope.open")
                     }
-                    .frame(minHeight: 44)
+                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     .disabled(model.isDemo)
                 } footer: {
                     if model.isOwner {
-                        Text("You choose what to share. You can stop sharing anytime.").foregroundStyle(ShieldTheme.secondaryText)
+                        Text("You choose what they can see.").foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
             }
-            .navigationTitle("People")
+            .navigationTitle("Family & friends")
             .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }
             .shieldListStyle()
-        }
     }
 }

@@ -5,18 +5,18 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .overview: "Set Up Call Screening"
-        case .consent: "You’re in control"
-        case .save: "Know when Shield calls"
-        case .ring: "First, a sound check"
-        case .settings: "Send unknown calls to Shield"
-        case .liveVoicemail: "Let Shield take messages"
+        case .overview: "Set up your phone"
+        case .consent: "Choose Shield for calls"
+        case .save: "Save Shield in Contacts"
+        case .ring: "Can you hear Shield?"
+        case .settings: "Change two Phone settings"
+        case .liveVoicemail: "Check the voicemail setting"
         case .forward0: "When you don’t answer"
-        case .forward1: "When your line is busy"
-        case .forward2: "When you have no signal"
-        case .test: "Check your forwarding"
-        case .checks: "Setup complete"
-        case .restore: "Restore your phone"
+        case .forward1: "When you’re on a call"
+        case .forward2: "When there’s no signal"
+        case .test: "Check that calls reach Shield"
+        case .checks: "Your setup is done"
+        case .restore: "Bring back ordinary calls"
         }
     }
     var next: Self {
@@ -71,7 +71,7 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         case .settings, .liveVoicemail: "3 of 5 · Phone settings"
         case .forward0, .forward1, .forward2: "4 of 5 · Connect Tello"
         case .test, .checks: "5 of 5 · Call checks"
-        case .restore: "Restore your phone"
+        case .restore: "Bring back ordinary calls"
         }
     }
 }

@@ -51,7 +51,7 @@ struct RootView: View {
             #endif
             #endif
         }
-        .alert("Something needs attention", isPresented: $model.showingError) {
+        .alert("Couldn’t finish that", isPresented: $model.showingError) {
             Button("OK") { model.errorMessage = nil }
         } message: {
             Text(model.errorMessage ?? "")
@@ -87,17 +87,17 @@ struct RootView: View {
                         }
                     } else {
                         TabView(selection: $model.selectedTab) {
-                            Tab("Today", systemImage: "square.grid.2x2.fill", value: 0) {
+                            Tab("Home", systemImage: "house.fill", value: 0) {
                                 OverviewView().id(model.selectedPersonID)
                             }
                             Tab("Calls", systemImage: "phone.fill", value: 1) {
                                 CallsView().id(model.selectedPersonID)
                             }
-                            Tab("Check", systemImage: "text.magnifyingglass", value: 2) {
-                                CheckView().id(model.selectedPersonID)
+                            Tab("Voicemail", systemImage: "recordingtape", value: 2) {
+                                VoicemailView().id(model.selectedPersonID)
                             }
-                            Tab("People", systemImage: "person.2.fill", value: 3) {
-                                PeopleView().id(model.selectedPersonID)
+                            Tab("More", systemImage: "ellipsis", value: 3) {
+                                MoreView()
                             }
                         }
                         .demoAccessory(model.isDemo)

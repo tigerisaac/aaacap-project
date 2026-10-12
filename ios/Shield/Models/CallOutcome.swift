@@ -5,12 +5,12 @@ enum CallOutcome: String, Codable, Sendable {
 
     var label: String {
         switch self {
-        case .screening: "Screening"
-        case .offered: "Offered"
-        case .connected: "Connected"
-        case .held: "Held"
+        case .screening: "Checking call"
+        case .offered: "Phone rang"
+        case .connected: "Answered"
+        case .held: "Stopped"
         case .verification: "Check first"
-        case .voicemail: "Message"
+        case .voicemail: "Voicemail"
         case .missed: "Missed"
         }
     }

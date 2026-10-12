@@ -10,16 +10,14 @@ struct CallRow: View {
     private var number: String { PhoneDisplay.format(call.callerNumber) }
 
     private var title: String {
-        let value = call.title.trimmingCharacters(in: .whitespacesAndNewlines)
-        return value.isEmpty || value.caseInsensitiveCompare("Not enough information") == .orderedSame
-            ? number : value
+        CallPresentation.title(call)
     }
 
     private var outcomeLabel: String {
         switch call.outcome {
         case .missed: "Missed call"
-        case .held: "Held for review"
-        case .verification: "Needs review"
+        case .held: "Stopped"
+        case .verification: "Check first"
         case .voicemail: "Voicemail"
         default: call.outcome.label
         }
@@ -60,7 +58,7 @@ struct CallRow: View {
                 detailLine
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
         .accessibilityElement(children: .combine)
     }
 

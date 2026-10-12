@@ -14,116 +14,71 @@ struct SetupView: View {
         Form {
             if model.isPreview {
                 Section {
-                    Label("Demo phone setup", systemImage: "phone.circle.fill")
-                        .foregroundStyle(ShieldTheme.action).font(.headline)
-                    Text("No phone settings have changed. Live setup is assisted and tested.")
+                    Text("Phone setup is done with a helper, one step at a time.")
+                    Text("The sample app doesn’t change your phone.").foregroundStyle(ShieldTheme.secondaryText)
                 }
             } else if let setup, setup.isTrial == true {
                 TrialSetupView(setup: setup, reload: load)
             } else if let setup {
                 Section {
-                    LabeledContent("Mobile", value: setup.phone)
-                    LabeledContent("Shield", value: setup.shieldNumber)
-                    Button(contactSaved ? "Shield contact saved" : "Save Shield to Contacts", systemImage: contactSaved ? "checkmark" : "person.crop.circle.badge.plus") {
+                    LabeledContent("My number", value: PhoneDisplay.format(setup.phone))
+                    Button(contactSaved ? "Shield contact saved" : "Save Shield in Contacts", systemImage: contactSaved ? "checkmark" : "person.crop.circle.badge.plus") {
                         Task { await saveContact(setup.shieldNumber) }
-                    }
-                    .disabled(working || contactSaved || model.isDemo)
-                } header: { Text("Your numbers") } footer: {
-                    Text("The saved contact helps callbacks ring. It does not prove who is calling.")
+                    }.disabled(working || contactSaved || model.isDemo)
                 }
-                Section("Setup") {
-                    if let until = setup.routingTestUntil, until > .now {
-                        Label("Supervised test until \(until.formatted(date: .omitted, time: .shortened))", systemImage: "testtube.2")
-                            .foregroundStyle(ShieldTheme.held)
-                    }
-                    Label(setup.phoneVerified ? "Phone ownership checked" : "Phone ownership check needed",
-                          systemImage: setup.phoneVerified ? "checkmark.circle" : "circle")
-                    Label(setup.consented ? "Service consent recorded" : "Review service consent",
-                          systemImage: setup.consented ? "checkmark.circle" : "circle")
+                ShieldSection("Phone check") {
+                    Label(setup.phoneVerified ? "Your phone has been checked" : "Your phone needs a check", systemImage: setup.phoneVerified ? "checkmark.circle" : "phone")
                     if !setup.consented {
-                        Button("Review & agree") { confirmConsent = true }
-                            .confirmationDialog("Use Shield call screening?", isPresented: $confirmConsent, titleVisibility: .visible) {
+                        Button("Agree to use Shield") { confirmConsent = true }
+                            .confirmationDialog("Use Shield to check calls?", isPresented: $confirmConsent, titleVisibility: .visible) {
                                 Button("I agree") { Task { await consent(setup) } }
                             } message: {
-                                Text("Forwarded introductions are transcribed by the phone provider and sent to our AI screening provider. Shield replaces voicemail for forwarded calls. Call history and voicemail expire within 30 days. Review Privacy for the current providers, retention and how to leave.")
+                                Text("Your phone sends some calls to Shield. The caller’s words go to our phone and AI providers for a scam check. Shield takes voicemail for these calls. Calls and messages are deleted within 30 days. See Privacy for details.")
                             }
                     }
-                    if let date = setup.lastTestAt {
-                        LabeledContent("Last routing test", value: date.formatted(date: .abbreviated, time: .shortened))
-                    } else {
-                        Label("Routing test needed", systemImage: "phone.badge.checkmark")
-                    }
-                }
-                if let profile = setup.carrierProfile {
-                    Section {
-                        Text(profile.configuration).font(.subheadline).foregroundStyle(.secondary)
-                        ForEach(Array(profile.activationSteps.enumerated()), id: \.offset) { index, step in
-                            HStack(alignment: .top, spacing: 12) {
-                                Text(index + 1, format: .number).font(.headline).foregroundStyle(ShieldTheme.action)
-                                Text(step).textSelection(.enabled)
+                    if let date = setup.lastTestAt { Text("Last checked \(date.formatted(date: .abbreviated, time: .omitted))") }
+                    if let profile = setup.carrierProfile {
+                        DisclosureGroup("Phone setup instructions") {
+                            Text(profile.configuration)
+                            ForEach(Array(profile.activationSteps.enumerated()), id: \.offset) { index, step in
+                                Text("\(index + 1). \(step)").textSelection(.enabled)
                             }
+                            Text("Go through these steps with your helper.").foregroundStyle(ShieldTheme.secondaryText)
                         }
-                    } header: { Text(profile.name) } footer: {
-                        Text("Use these instructions with your setup helper. Carrier codes must be entered in Phone.")
-                    }
-                } else {
-                    Section {
-                        Label("Assisted setup needed", systemImage: "person.crop.circle.badge.questionmark")
-                        Text("Your support person will match your carrier and phone to a tested setup.")
-                            .font(.subheadline).foregroundStyle(.secondary)
-                    }
-                }
-                if ["active", "paused"].contains(setup.status) {
-                    Section {
-                        Button(setup.status == "paused" ? "Resume call offers" : "Pause call offers",
-                               systemImage: setup.status == "paused" ? "play.circle" : "pause.circle") { confirmPause = true }
+                    } else { Text("Ask your helper to finish phone setup.") }
+                    if ["active", "paused"].contains(setup.status) {
+                        Button(setup.status == "paused" ? "Resume calls from Shield" : "Pause calls from Shield") { confirmPause = true }
                             .disabled(working || model.isDemo)
-                            .confirmationDialog(setup.status == "paused" ? "Resume call offers?" : "Pause call offers?",
-                                                isPresented: $confirmPause, titleVisibility: .visible) {
-                                Button(setup.status == "paused" ? "Resume offers" : "Pause offers") {
-                                    Task { await pause(setup.status != "paused") }
-                                }
-                            } message: {
-                                Text("Pausing sends forwarded calls to voicemail. It does not restore your carrier’s routing.")
-                            }
+                            .confirmationDialog(setup.status == "paused" ? "Resume calls?" : "Pause calls?", isPresented: $confirmPause, titleVisibility: .visible) {
+                                Button(setup.status == "paused" ? "Resume calls" : "Pause calls") { Task { await pause(setup.status != "paused") } }
+                            } message: { Text("While paused, calls that reach Shield go to voicemail. Your phone still sends those calls to Shield.") }
                     }
                 }
                 Section {
                     if setup.status == "restoring" {
-                        Label("Restoration requested", systemImage: "arrow.uturn.backward.circle.fill")
-                            .foregroundStyle(ShieldTheme.held)
-                    }
-                    if let steps = setup.carrierProfile?.restorationSteps {
-                        ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
-                            Text("\(index + 1). \(step)").textSelection(.enabled)
+                        Text("Finish bringing back ordinary calls.").font(.headline)
+                        if let steps = setup.carrierProfile?.restorationSteps {
+                            ForEach(Array(steps.enumerated()), id: \.offset) { index, step in Text("\(index + 1). \(step)").textSelection(.enabled) }
                         }
                     }
-                    Button("Request restoration", systemImage: "arrow.uturn.backward") { confirmRestore = true }
+                    Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
                         .disabled(model.isDemo || working || setup.status == "restoring")
-                        .confirmationDialog("Restore ordinary phone service?", isPresented: $confirmRestore, titleVisibility: .visible) {
-                            Button("Request restoration") { Task { await requestRestoration(deleting: false) } }
-                        } message: {
-                            Text("Offers pause immediately. Your support person must help restore carrier forwarding and verify calls and voicemail.")
-                        }
-                    if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Contact support", destination: url) }
-                } header: { Text("Restore your phone") } footer: {
-                    Text("Keep Shield installed until restoration is confirmed. Deleting the app does not undo forwarding.")
-                }
-                Section {
-                    Button("Delete my account", role: .destructive) { confirmDeletion = true }
-                        .disabled(model.isDemo || working)
-                        .confirmationDialog("Request account deletion?", isPresented: $confirmDeletion, titleVisibility: .visible) {
-                            Button("Request deletion", role: .destructive) { Task { await requestRestoration(deleting: true) } }
-                        } message: {
-                            Text("We first restore call routing so your calls aren’t lost, then remove account data under the privacy policy.")
-                        }
-                }
-            } else {
-                ProgressView("Loading setup…")
-            }
+                        .confirmationDialog("Disconnect Shield?", isPresented: $confirmRestore, titleVisibility: .visible) {
+                            Button("Start disconnecting") { Task { await requestRestoration(deleting: false) } }
+                        } message: { Text("Shield stops ringing you. Ask your helper to finish restoring ordinary calls and voicemail. Keep the app until both work.") }
+                    if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Ask for setup help", destination: url) }
+                    DisclosureGroup("Delete my account") {
+                        Button("Delete my account", role: .destructive) { confirmDeletion = true }
+                            .disabled(model.isDemo || working)
+                            .confirmationDialog("Delete your account?", isPresented: $confirmDeletion, titleVisibility: .visible) {
+                                Button("Request deletion", role: .destructive) { Task { await requestRestoration(deleting: true) } }
+                            } message: { Text("First, your helper must bring back ordinary calls. Then your Shield information can be deleted.") }
+                    }
+                } footer: { Text("Deleting the app alone won’t disconnect Shield.").foregroundStyle(ShieldTheme.secondaryText) }
+            } else { ShieldLoadingView(title: "Getting your phone setup…") }
         }
-        .navigationTitle("Phone setup")
-        .navigationBarTitleDisplayMode(.inline)
+        .shieldListStyle()
+        .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
         .task { await load() }
     }
 

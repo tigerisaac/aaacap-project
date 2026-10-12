@@ -13,31 +13,32 @@ struct ForwardingCodeView: View {
                 } else {
                     Text("Your personal Tello code").font(.title2.bold())
                 }
-                Text(code).font(.title3.monospaced().bold()).textSelection(.enabled)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("forwarding-code")
+                DisclosureGroup("See copied code") {
+                    Text(code).font(.body.monospaced()).textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")
+                }
                 if model.codePreparedStep == model.step {
                     PhoneCodeGuide(returned: model.codeReturnedStep == model.step)
                     Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
-                        .frame(minHeight: 44).disabled(model.working)
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
                         .accessibilityIdentifier("forwarding-copy-code")
                 } else {
-                    Text("Copy the code below, then tap Open on the Phone banner. Paste it into Phone’s keypad. Shield saves your place while you switch apps.")
+                    Text("Copy your code, then open Phone and paste it into Keypad.")
                 }
                 if model.codePreparedStep == model.step {
                     Button("Show Phone again", systemImage: "phone") { model.copyCode() }
-                        .frame(minHeight: 44).disabled(model.working)
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
                         .accessibilityIdentifier("forwarding-phone-reopen")
                 }
                 Button("Need help?", systemImage: "questionmark.circle") { model.showingHelp.toggle() }
-                    .frame(minHeight: 44)
+                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                 if model.showingHelp {
-                    Text("No banner? Open the green Phone app from your Home Screen. If Paste doesn’t appear, touch and hold above the keypad. Include every star and the final #. If Tello reports an error again, stop here and use Restore my phone in Setup options.")
+                    Text("Open the green Phone app if there’s no banner. If Paste is missing, touch and hold above the keypad. If Tello gives an error, stop and ask your helper.")
                         .foregroundStyle(ForwardingStyle.secondaryText)
                 }
             } else {
-                Text("The call-test window has ended.").font(.title2.bold())
-                Text("Restart the test to show your code. Your earlier progress is saved. Existing forwarding stays in place until you restore it.")
+                Text("The call test ended.").font(.title2.bold())
+                Text("Start the test again to get your code. Your place is saved. Your phone is still connected to Shield.")
             }
         }
         .fixedSize(horizontal: false, vertical: true)

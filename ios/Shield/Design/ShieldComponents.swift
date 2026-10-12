@@ -6,6 +6,7 @@ extension View {
         listStyle(.insetGrouped)
             .environment(\.defaultMinListRowHeight, ShieldTheme.Layout.rowHeight)
             .scrollContentBackground(.hidden)
+            .scrollEdgeEffectStyle(.hard, for: .all)
             .background(ShieldTheme.surface)
     }
 

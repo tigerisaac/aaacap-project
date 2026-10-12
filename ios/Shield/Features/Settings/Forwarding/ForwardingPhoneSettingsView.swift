@@ -6,50 +6,28 @@ struct ForwardingPhoneSettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text(silence ? "Let Shield handle unknown calls." : "Let Tello send unanswered calls to Shield.").font(.title3)
-            VStack(alignment: .leading, spacing: 12) {
-                Text(silence ? "Screen Unknown Callers" : "Live Voicemail").font(.headline)
-                Label(silence ? "Choose Silence" : "Turn Off", systemImage: "hand.tap")
-                    .font(.title2.bold()).foregroundStyle(ShieldTheme.action)
-            }
-            .shieldCard()
-
+            SetupInstruction(number: 1, title: silence ? "Screen Unknown Callers" : "Live Voicemail", detail: silence ? "Choose Silence." : "Turn it off.")
             if silence {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("While you’re here: Live Voicemail").font(.headline)
-                    Label("Turn Off", systemImage: "hand.tap")
-                        .font(.title2.bold()).foregroundStyle(ShieldTheme.action)
-                    Text("Make both changes in this one visit. Keep voicemail enabled in your Tello account.")
-                        .foregroundStyle(ForwardingStyle.secondaryText)
-                }
-                .shieldCard()
+                SetupInstruction(number: 2, title: "Live Voicemail", detail: "Turn it off in the same visit.")
             }
+            Text("Keep voicemail on in your Tello account.").foregroundStyle(ForwardingStyle.secondaryText)
             if model.settingsReturned {
-                Text(silence ? "Your place is saved" : "Confirm the second change").font(.headline)
-                Text(silence ? "iPhone doesn’t share these settings with Shield. Confirm Silence below; we’ll confirm Live Voicemail next." : "If you turned Live Voicemail off during the last visit, confirm below. Otherwise, reopen Phone settings now. We’ll check forwarding with a real call after connecting Tello.")
-                    .foregroundStyle(ForwardingStyle.secondaryText)
+                Text(silence ? "Did you choose Silence?" : "Is Live Voicemail off?").font(.headline)
                     .accessibilityIdentifier("phone-settings-unverified")
-                Button("Open Phone settings again", systemImage: "gearshape") {
-                    Task { await model.openPhoneSettings() }
-                }.frame(minHeight: 44).accessibilityIdentifier("phone-settings-reopen")
+                Text("Confirm below. Shield can’t see this setting.").foregroundStyle(ForwardingStyle.secondaryText)
+                Button("Open Phone settings again", systemImage: "gearshape") { Task { await model.openPhoneSettings() } }
+                    .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("phone-settings-reopen")
             } else {
                 Text(model.settingsDestination.directions).foregroundStyle(ForwardingStyle.secondaryText)
-                Text("Use the Shield link at the top left of Settings to continue. Your place will be saved.")
-                    .foregroundStyle(ForwardingStyle.secondaryText)
+                Text("When done, return to Shield.").foregroundStyle(ForwardingStyle.secondaryText)
             }
-            if !silence {
-                Text("Keep voicemail enabled in your Tello account. Only turn off Live Voicemail on this iPhone.")
-                    .foregroundStyle(ForwardingStyle.secondaryText)
-            }
-            DisclosureGroup("Settings opened somewhere else?") {
-                Text("Open Settings → Apps → Phone. Then find \(silence ? "Screen Unknown Callers and choose Silence" : "Live Voicemail and turn it off").")
-                    .padding(.top, 8).foregroundStyle(ForwardingStyle.secondaryText)
+            DisclosureGroup("Can’t find it?") {
+                Text("Open Settings, then Apps, then Phone. Find \(silence ? "Screen Unknown Callers and choose Silence" : "Live Voicemail and turn it off").")
                 if !model.settingsReturned {
-                    Button("I’ve already changed this setting") { model.acknowledgeManualSettingsVisit() }
-                        .frame(minHeight: 44)
+                    Button("I already changed it") { model.acknowledgeManualSettingsVisit() }
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                 }
             }
-        }
-        .fixedSize(horizontal: false, vertical: true)
+        }.fixedSize(horizontal: false, vertical: true)
     }
 }

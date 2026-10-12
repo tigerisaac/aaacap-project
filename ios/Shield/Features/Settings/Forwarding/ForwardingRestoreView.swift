@@ -25,12 +25,14 @@ struct ForwardingRestoreView: View {
         VStack(alignment: .leading, spacing: 24) {
             if index < 7 {
                 FlowProgress(title: index < 3 ? "Disconnect Tello" : index < 5 ? "Restore settings" : "Check ordinary service", current: index + 1, total: 7)
-                Text(index < 3 ? "First, disconnect Tello forwarding. Then restore Phone settings and check ordinary calls." : "You confirmed the Tello resets. Finish the steps below to check ordinary phone service.")
+                Text(index < 3 ? "Do each reset, one at a time." : "Now check Phone settings and ordinary calls.")
                     .font(.title3).accessibilityFocused($stageFocused)
             }
             if codes.indices.contains(index) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(codes[index]).font(.title.monospaced().bold()).accessibilityIdentifier("forwarding-reset-code")
+                    DisclosureGroup("See copied code") {
+                        Text(codes[index]).font(.body.monospaced()).accessibilityIdentifier("forwarding-reset-code")
+                    }
                     if codeReady {
                         Label("Copied", systemImage: "checkmark.circle.fill")
                             .font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
@@ -44,11 +46,11 @@ struct ForwardingRestoreView: View {
                 .shieldPrimaryButton()
                 .accessibilityIdentifier("forwarding-reset-continue")
                 if codeReady {
-                    Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }.frame(minHeight: 44).accessibilityIdentifier("forwarding-reset-copy")
-                    Button("Show Phone again", systemImage: "phone") { copyCode() }.frame(minHeight: 44)
-                    Button("Need help?", systemImage: "questionmark.circle") { showingHelp.toggle() }.frame(minHeight: 44)
+                    Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }.frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("forwarding-reset-copy")
+                    Button("Show Phone again", systemImage: "phone") { copyCode() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    Button("Need help?", systemImage: "questionmark.circle") { showingHelp.toggle() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     if showingHelp {
-                        Text("No banner? Open the green Phone app from Home. If Paste doesn’t appear, touch and hold above the keypad. Include every #. Stop if Tello reports an error; contact Tello if ordinary voicemail does not return.")
+                        Text("Open the green Phone app if there’s no banner. Touch and hold above the keypad if Paste is missing. Stop if Tello gives an error; ask your helper.")
                             .foregroundStyle(ForwardingStyle.secondaryText)
                     }
                 }
@@ -57,10 +59,10 @@ struct ForwardingRestoreView: View {
             } else if index < 7 {
                 RestorationCallCheck(index: $index)
             } else {
-                Label("Restoration checklist complete", systemImage: "checkmark.circle")
+                Label("Your phone checks are done", systemImage: "checkmark.circle")
                     .font(.title2.bold()).accessibilityIdentifier("restoration-complete")
-                Text("You confirmed the three Tello resets, Phone settings, an ordinary call, and normal voicemail.")
-                Text("Shield callbacks remain stopped. Saved from your confirmations; Shield can’t independently read your phone or carrier settings.")
+                Text("You’ve confirmed ordinary calls and voicemail work.")
+                Text("Shield won’t ring you. These checks are saved from what you told us.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                 Button { dismiss() } label: { ShieldActionLabel(title: "Done") }
                     .shieldPrimaryButton()

@@ -16,7 +16,6 @@ struct CheckView: View {
     @ScaledMetric(relativeTo: .body) private var editorHeight = 120.0
 
     var body: some View {
-        NavigationShell {
             ScrollViewReader { proxy in
                 List {
                     Section {
@@ -33,34 +32,34 @@ struct CheckView: View {
                             VStack(alignment: .leading, spacing: 8) { inputActions }
                         }
                         .padding(.vertical, 4)
-                    } header: { Text("Message to check").foregroundStyle(ShieldTheme.secondaryText) } footer: {
+                    } header: { Text("Paste a text or choose a picture").foregroundStyle(ShieldTheme.secondaryText) } footer: {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Remove passwords, codes, and account numbers.")
-                            if !text.isEmpty { Text("\(text.count) of 6,000 characters").foregroundStyle(text.count > 6000 ? ShieldTheme.held : ShieldTheme.secondaryText) }
+                            Text("Leave out passwords and private numbers.").foregroundStyle(ShieldTheme.secondaryText)
+                            if text.count > 6000 { Text("Too much text. Try a shorter part.").foregroundStyle(ShieldTheme.held) }
                         }
                         .foregroundStyle(ShieldTheme.secondaryText)
                     }
                     Section {
                         Button { editing = false; showConsent = true } label: {
-                            ShieldActionLabel(title: checking ? "Checking message…" : "Check message", isWorking: checking)
+                            ShieldActionLabel(title: checking ? "Checking…" : "Check this text", isWorking: checking)
                         }
                         .shieldPrimaryButton()
                         .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).count < 3 || text.count > 6000 || checking || readingPhoto)
-                        .alert("Send this text for analysis?", isPresented: $showConsent) {
-                            Button(model.isDemo ? "Show sample result" : "Analyze with OpenAI") { Task { await check() } }
+                        .alert("Check this text?", isPresented: $showConsent) {
+                            Button(model.isDemo ? "Show sample answer" : "Check text") { Task { await check() } }
                             Button("Cancel", role: .cancel) {}
                         } message: {
-                            Text(model.isDemo ? "Demo checks use a sample response." : "Only this text is sent. Do not include passwords, codes, or account numbers.")
+                            Text(model.isDemo ? "This shows a sample answer. Your text won’t be checked." : "This text goes to Shield and OpenAI for a scam check. Leave out passwords and codes.")
                         }
                         .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
                     }
                     if let error {
-                        Section { ShieldNotice(title: "Couldn’t check this message", detail: error, symbol: "exclamationmark.circle") }
+                        Section { ShieldNotice(title: "Couldn’t check this text", detail: error, symbol: "exclamationmark.circle") }
                     }
                     if let result {
                         Section {
                             VStack(alignment: .leading, spacing: 16) {
-                                Label(result.isDemo ? "Sample result" : "Your result", systemImage: "text.bubble")
+                                Label(result.isDemo ? "Sample answer" : "About this text", systemImage: "text.bubble")
                                     .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 Label {
                                     Text(result.title).foregroundStyle(Color.primary)
@@ -77,14 +76,14 @@ struct CheckView: View {
                                 Text(result.nextStep)
                             }.padding(.vertical, 12)
                                 .id("check-result")
-                            Button("Check another message", systemImage: "plus.bubble") { text = ""; self.result = nil; editing = true }.frame(minHeight: 44)
-                        } footer: { Text("A check can miss a scam. It cannot verify who sent this.").foregroundStyle(ShieldTheme.secondaryText) }
+                            Button("Check another text", systemImage: "plus.bubble") { text = ""; self.result = nil; editing = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        } footer: { Text("This check can be wrong. It can’t prove who sent the text.").foregroundStyle(ShieldTheme.secondaryText) }
                         if model.isOwner {
-                            Section { NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Use a saved number", symbol: "phone") } }
+                            Section { NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Find a trusted number", symbol: "phone") } }
                         }
                     }
                 }
-                .navigationTitle("Check")
+                .navigationTitle("Check a text")
                 .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } } }
                 .task(id: selectedPhoto) { await readPhoto() }
                 .onChange(of: text) { _, _ in result = nil; error = nil }
@@ -97,7 +96,6 @@ struct CheckView: View {
                     resultFocused = true
                 }
             }
-        }
     }
 
     @ViewBuilder private var inputActions: some View {
@@ -105,7 +103,7 @@ struct CheckView: View {
             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule)
             .disabled(checking || readingPhoto)
         PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto] in
-            Label(readingPhoto ? "Reading…" : "Screenshot", systemImage: "photo")
+            Label(readingPhoto ? "Reading…" : "Picture", systemImage: "photo")
         }
         .buttonStyle(.bordered).buttonBorderShape(.capsule)
         .tint(ShieldTheme.action)
@@ -135,9 +133,9 @@ struct CheckView: View {
         resultFocused = false
         defer { checking = false }
         if model.isDemo {
-            result = CheckResult(decision: "message", reasonCode: "sample", title: "Check independently",
-                                 detail: "This is a sample result, not an analysis of your message.",
-                                 nextStep: "Contact the sender through a number or app you already trust.", isDemo: true)
+            result = CheckResult(decision: "message", reasonCode: "sample", title: "Check with the sender",
+                                 detail: "This is an example. Your text hasn’t been checked.",
+                                 nextStep: "Use a number you already know to check with the sender.", isDemo: true)
             resultVersion += 1
             return
         }

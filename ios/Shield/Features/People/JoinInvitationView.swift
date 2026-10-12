@@ -10,19 +10,20 @@ struct JoinInvitationView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Paste the code", text: $code, axis: .vertical)
+                    TextField("Invitation code", text: $code, axis: .vertical)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } header: { Text("Invitation code") } footer: {
-                    Text("Ask the participant to create an invitation in People → Share with someone.")
+                    Text("Paste the invitation code they sent you.").foregroundStyle(ShieldTheme.secondaryText)
                 }
                 Section {
-                    Button(joining ? "Joining…" : "Accept shared access") { Task { await join() } }
-                        .font(.headline).frame(minHeight: 44)
+                    Button(joining ? "Joining…" : "Join them") { Task { await join() } }
+                        .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         .disabled(code.trimmingCharacters(in: .whitespacesAndNewlines).count < 20 || joining)
                 }
             }
-            .navigationTitle("Join someone")
+            .shieldListStyle()
+            .navigationTitle("Use an invitation")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         }
