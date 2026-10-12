@@ -139,6 +139,24 @@ Both are read-only and print outcomes, reasons, timestamps and event kinds. They
 - **`check-live-calls.mjs`** without `--outcomes-only` also shows the bridge's decision log from the last 15 minutes.
 - **`check-monitoring.mjs`** shows connected-call protection state and the last hour's function errors.
 
+### Screening latency diagnostics (October 11, code only)
+
+The bridge now has optional `live_timing` logs, correlated by the internal call UUID. They contain phases, elapsed times, booleans and numeric usage counters only. No transcript, audio, model reasoning, tool arguments, caller/recipient numbers, provider IDs or signed URLs are logged. Logging failures cannot change a decision, and routine entries are capped at 240 per call; final usage and handoff entries remain available. Prompts, model settings, screening deadlines and call-control rules are unchanged.
+
+`check-live-calls.mjs` reads the timeline for the latest five calls, in chronological order, with pagination and an explicit truncation indicator. Build first to refresh its timing-field definitions.
+
+- **Startup:** `bridge_claimed` reports the process age, whether this is its first accepted call, and Firestore claim time. Follow `provider_started`, `model_socket_open`, `session_start_sent` and `model_ready` to separate the greeting/bridge path from a new OpenAI session. Process age and first-call status are clues, not a direct measurement of infrastructure cold-start time; compare Cloud Run system startup logs too.
+- **Caller and response:** compare `caller_speech_paused`, `delegation_created`, `response_started`, `first_tool_output`, `decision_received` and `response_completed`. Response ordinals are local counters, not provider IDs. Speech markers use the existing audio-level threshold and 800 ms pause; background noise can affect them. Transcript timing reports arrival, not when words were spoken.
+- **Extra work:** `decision_deferred`, `transcript_changed`, `decision_rejected`, `response_resume_sent`, `screening_check_sent` and research start/end show repeat decisions and lookups.
+- **Tokens:** `response_usage` records input, cached-input, cache-write, output and reasoning-token counts, when the API provides them, plus whether it reports the priority tier. Missing usage is unavailable, not zero. Final usage may arrive just after a terminal decision during the existing socket-drain period.
+- **Speaking and handoff:** `assistant_audio_received` versus `assistant_audio_sent` separates generated speech from bridge playback; the latter is when audio is sent to Telnyx, not proof the caller heard it. `outcome_saved`, `redirect_finished` and `handoff_finished` separate persistence from carrier API time.
+
+Read-only inspection of the October 11 evening calls found that the bridge started at 21:19 Central and all three calls finishing at 21:21, 21:24 and 21:35 used that same Cloud Run instance. The two held calls do not show a fresh bridge-process startup; their per-session OpenAI initialization, cache use and reasoning delays were not logged. The latest held call reached the audio stream in 5.9 s and voicemail was offered at 43.7 s from admission. These measurements include caller speech and do not isolate the reported silent pause.
+
+Not deployed or verified on a real call. A diagnostics-only rollout must use the current production v14 bridge as its base, preserving that policy and all other production modules; the checkout also contains newer, separately developed screening changes. Ask the owner before deploying.
+
+Local validation on October 11: `npm run check` passed (137 unit tests, typecheck and build), and `npm run test:firebase` passed all 86 emulator tests. Initial restricted runs could not open localhost sockets; the successful runs used the normal permission mechanism. Four timing tests cover exact model/carrier event equality with logging enabled and failing, late final usage, content filtering and bounded logs. A candidate package was prepared from the source archive of deployed image `shield-live:demo-1791645328955`, verified against revision `shield-live-00006-d9n`. Only `lib/live/server.js`, `session.js` and the new `timing.js` differ; policy, other modules, package manifest and Dockerfile are byte-identical. Eighteen synthetic control-flow comparisons against that production source passed, including approvals, holds, scam blocks, clarifications, stale decisions, rejected evidence and timeouts with both functioning and failing diagnostics. These are software checks, not model benchmarks or real-call evidence.
+
 ## Phone forwarding (Tello pilot)
 
 To send the owner's unanswered calls to Shield:

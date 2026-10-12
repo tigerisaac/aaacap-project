@@ -10,6 +10,10 @@ import { TelnyxVoice } from '../cloud/forwarding-provider.js';
 import { ScreeningSession } from './session.js';
 import { SCREENING_POLICY_VERSION } from './policy.js';
 import { DECISION_MODEL, researchScamPattern } from './research.js';
+import { callTiming } from './timing.js';
+
+const processStartedAt = Date.now() - process.uptime() * 1000;
+let acceptedCalls = 0;
 
 const config = cloudSchema.parse(JSON.parse(process.env.SHIELD_RUNTIME ?? '{}'));
 const apiKey = process.env.OPENAI_API_KEY;
@@ -28,9 +32,13 @@ server.on('upgrade', async (request, socket, head) => {
   const match = /^\/media\/([a-f0-9-]{36})\/(\d{13})\/([a-f0-9]{64})$/.exec(request.url ?? '');
   if (active || !match || !validStreamTicket(config, match[1]!, Number(match[2]), match[3]!)) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
   active = true;
+  const claimStartedAt = Date.now();
   try {
     const call = await live.claim(match[1]!);
     if (!call) { active = false; socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
+    const timing = callTiming(call.id, call.createdAt);
+    timing('bridge_claimed', { claimMs: Date.now() - claimStartedAt, processAgeMs: Date.now() - processStartedAt,
+      firstCallInProcess: acceptedCalls++ === 0 });
     sockets.handleUpgrade(request, socket, head, provider => {
       let openai: WebSocket | undefined, streamStarted = false, closing = false;
       const send = (ws: WebSocket | undefined, event: object) => {
@@ -38,14 +46,23 @@ server.on('upgrade', async (request, socket, head) => {
       };
       const close = () => {
         if (closing) return; closing = true; active = false; clearInterval(ticker); clearTimeout(startTimer);
+        timing('transport_closed', {});
         provider.close();
         // Allow final usage to arrive, but never keep a transport alive indefinitely.
         const timer = setTimeout(() => openai?.terminate(), 1500); timer.unref();
       };
       const finish = async (decision: Parameters<ForwardingLive['finish']>[1]) => {
+        const handoffAt = Date.now();
+        const save = async () => {
+          const began = Date.now();
+          try { const result = await live.finish(call.id, decision); timing('outcome_saved', { saveMs: Date.now() - began, successful: true }); return result; }
+          catch (error) { timing('outcome_saved', { saveMs: Date.now() - began, successful: false }); throw error; }
+        };
         const terminate = async () => {
           for (let attempt = 0; attempt < 3; attempt++) {
-            try { await telnyx.update(call.parentSid, { Status: 'completed' }); return; } catch { /* carrier-side deadline is the final fallback */ }
+            const began = Date.now(); timing('hangup_started', { attempt: attempt + 1 });
+            try { await telnyx.update(call.parentSid, { Status: 'completed' }); timing('hangup_finished', { attempt: attempt + 1, redirectMs: Date.now() - began, successful: true }); return; }
+            catch { timing('hangup_finished', { attempt: attempt + 1, redirectMs: Date.now() - began, successful: false }); /* carrier-side deadline is the final fallback */ }
           }
           console.error(JSON.stringify({ event: 'live_hangup_unconfirmed' }));
         };
@@ -53,17 +70,22 @@ server.on('upgrade', async (request, socket, head) => {
         // waits for the saved outcome and is routed to the offer or to voicemail.
         const cutOff = typeof decision === 'string' ? decision === 'silent_caller' : decision.action === 'block';
         if (cutOff) {
-          await Promise.allSettled([terminate(), live.finish(call.id, decision)]);
+          await Promise.allSettled([terminate(), save()]);
         } else {
           try {
-            const next = afterScreening(config, await live.finish(call.id, decision));
-            if (next) await telnyx.update(call.parentSid, next); else await terminate();
-          } catch { await terminate(); await forwarding.ended(call.parentSid).catch(() => {}); }
+            const next = afterScreening(config, await save());
+            if (next) {
+              const began = Date.now(); timing('redirect_started', {});
+              try { await telnyx.update(call.parentSid, next); timing('redirect_finished', { redirectMs: Date.now() - began, successful: true }); }
+              catch (error) { timing('redirect_finished', { redirectMs: Date.now() - began, successful: false }); throw error; }
+            } else await terminate();
+          } catch { timing('handoff_failed', {}); await terminate(); await forwarding.ended(call.parentSid).catch(() => {}); }
         }
-        console.info(JSON.stringify({ event: 'live_screening_finished', decision: typeof decision === 'string' ? decision : decision.action,
+        timing('handoff_finished', { handoffMs: Date.now() - handoffAt });
+        console.info(JSON.stringify({ event: 'live_screening_finished', callId: call.id, decision: typeof decision === 'string' ? decision : decision.action,
           elapsedMs: Date.now() - call.createdAt }));
       };
-      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close },
+      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close, timing },
         Date.now, { recentScamStopped: call.screeningCaution === true });
       const ticker = setInterval(() => session.tick(), 20);
       const startTimer = setTimeout(() => { void session.stop('screening_unavailable'); }, 5000);
@@ -74,9 +96,10 @@ server.on('upgrade', async (request, socket, head) => {
             void session.stop('screening_unavailable'); return;
           }
           streamStarted = true; clearTimeout(startTimer);
+          timing('provider_started', {});
           openai = new WebSocket('wss://api.openai.com/v1/live/sessions', { headers: { Authorization: `Bearer ${apiKey}` },
             handshakeTimeout: 5000, maxPayload: 1_000_000, perMessageDeflate: false, followRedirects: false });
-          openai.on('open', () => session.start());
+          openai.on('open', () => { timing('model_socket_open', {}); session.start(); });
           openai.on('message', raw => {
             try { const event = JSON.parse(raw.toString());
               if (event.type === 'session.closed' && session.ended) { openai?.close(); return; }
