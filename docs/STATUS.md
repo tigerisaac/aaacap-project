@@ -8,7 +8,7 @@ Read back from production on October 10:
 
 | Piece | State |
 |---|---|
-| Live bridge `shield-live` | Revision `shield-live-00007-bh7`, policy `2026-10-09-general-v14`, `gpt-live-1` + `gpt-6-luna`, OpenAI key version 2. Owner-approved timing logs and local wait acknowledgement deployed October 11 at 22:03 Central; ready and serving 100% of traffic. |
+| Live bridge `shield-live` | Revision `shield-live-00008-hnc`, policy `2026-10-11-general-v30`, `gpt-live-1` + `gpt-6-luna`, OpenAI key version 2. V30 deployed with owner approval October 11 at 22:20 Central; ready and serving 100%. Timing logs and the local wait acknowledgement remain enabled. |
 | Firebase Functions (codebase `shield`) | `shieldApi`, `cleanupShield`, `ingestForwardingVoicemail`, `monitorConnectedCall` |
 | Runtime config | `SHIELD_RUNTIME` v5: Telnyx only, live screening on, connected-call protection on at the server. Twilio and OpenRouter keys removed. |
 | Announcement audio | Prerecorded Soniox Grace: 25 generic 24 kHz WAV files on Hosting, with Functions backup. `shieldApi` revision `shieldapi-00012-heq`, updated October 10 at 15:52 UTC. All 50 primary/backup URLs verified HTTP 200, `audio/wav`, matching original SHA-256; public health ready. |

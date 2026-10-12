@@ -211,3 +211,11 @@ npx firebase login
 ```bash
 npm run check
 ```
+
+### V30 prompt-only rollout (October 11)
+
+Owner-requested v30 deployed as `shield-live-00008-hnc` and verified ready at `2026-10-12T03:20:36.999Z` (October 11 at 22:20 Central), serving 100% of traffic. Cloud Build `2fd66bd8-d6c8-480f-a1d9-24e860a4b598` completed at `2026-10-12T03:14:39.986689Z`; image digest `sha256:4481e9cf6af26352f2a604a61058f1c541fd8c8fb5894a7704db58c4db0a6931`. Only `lib/live/policy.js` differs from the prior `shield-live-00007-bh7` source archive. The frozen decision request matches SHA-256 `9256ca33e5dbf4b6c27db5d3c5ae21e1516d9655eca155816ffebf2cf0ec9fb1`; timing logs, the local acknowledgement, all other production modules, dependencies, Dockerfile, environment/secret references, resource/scaling settings, ingress, service identity and call limits were preserved. No runtime secret, Firebase Functions/Hosting or carrier configuration changed.
+
+Validation: 142 unit tests, typecheck/build and 86 Firebase emulator tests passed. Main synthetic voice: 24/24, separately 11/11 ordinary offers and 12/12 harmful stops plus silence. Existing main text checks: 33/33 ordinary offers and 36/36 harmful stops; source/request hashes still matched the frozen v30 validation. The new revision had no ERROR or missing-acknowledgement logs after deployment. V30 is not yet verified on a real call. The existing test window was retained through 22:35:58 Central; it was not renewed or broadened in this rollout.
+
+The private `artifacts/private/live-v30-deploy.json` contains the release manifest, base configuration, operations and readbacks. The canonical `artifacts/private/live-deploy.json` now points to the verified v30 image, with the prior record retained privately as `live-deploy-before-v30.json`.
