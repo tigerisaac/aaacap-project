@@ -428,3 +428,40 @@ node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening -
 ```
 
 Typecheck/build, 143 unit tests and all 86 Firestore emulator tests passed. No deployment or real call was performed.
+
+## V32 FTC and fresh red-team validation, October 11
+
+The owner requested one FTC benchmark pass through subscription Luna, followed by fresh red teaming focused on charge alarms versus ordinary callers. The exact v32 request from MASC was retained: SHA-256 `c5a6bee0c5ce52fc8b8ef2b32a266f39ca4389253843fc0e422c62ebaa68ec8b`, GPT-6 Luna, medium reasoning. No prompt, score, production setting or case expectation changed during validation.
+
+**FTC/NC State: one full pass over all 724 distinct English recordings**, using the existing opening-context limit and the owner's public-dataset exception. There were **716 completed stops (710 blocks, 6 holds), 6 clarifications and 2 approvals**, with no provider failures or other outcomes. Identification including clarification was 722/724. Weighted by the 1,378 original calls, 1,356 were stopped, 20 clarified and 2 approved. The previously cited Amazon charge recording, `robocall-1314`, was blocked; its 13 source copies represent one evaluated recording, not 13 independent trials.
+
+The two approved recordings were `robocall-191`, a brief grandparent opener compatible with the owner's family-offer preference, and `robocall-1195`, a legal callback recording that remains a miss. Both retain their harmful-dataset labels. The historical v30 Go run stopped 691/724 and identified 722/724, but its different transport and run time prevent attributing that difference to the prompt alone. No fresh baseline was requested or run.
+
+**Fresh synthetic red team:** [56 new cases](../scripts/fixtures/holdout/distilled-v32-fresh.mjs), authored after v32 was frozen and before inspecting FTC outcomes, each repeated three times through the same subscription transport. The [runner](../scripts/check-distilled-screening-redteam.mjs) uses the existing isolated subscription adapter and validates decisions; it records only names, categories and outcomes, not caller text, model questions or evidence quotes. The known original charge probe is separate and repeated twelve times.
+
+| Fresh measure | Result |
+|---|---:|
+| Ordinary callers offered | 72/72 (24 distinct cases) |
+| Harmful calls stopped | 65/72 (24 distinct cases) |
+| Harmful approvals | 0 |
+| Harmful clarifications | 7 |
+| Ads blocked | 12/12 |
+| Unclear openings appropriately questioned/held | 11/12 |
+| Provider / validation failures | 0 / 0 |
+
+All eight ordinary financial-notice cases were offered in all repetitions (24/24), as were the independently directed bank alert (3/3), ordinary contact-detail requests (12/12), service calls with accompanying offers (9/9), and every remaining family, practical-help and ordinary-service case. This is limited synthetic evidence, not proof of no false positives in real use.
+
+The eight fresh unexpected-charge cases produced **15 blocks, 2 holds and 7 clarifications over 24 trials**, with no approvals. The live retailer alarm was held twice and questioned once; travel-authorization and unfamiliar-donation alarms were questioned in all three trials each. All other fresh harmful requests were blocked. Separately, a vague benefits-office opener was approved once and questioned twice: an unresolved sensitive-claim gap, not a legitimate-call success. The fresh expectation score was 160/168; failures remain failures even though most withheld an offer.
+
+**The known unexpected-charge probe is not fully resolved:** over twelve repetitions it produced **2 blocks, 1 hold and 9 clarifications, with 0 approvals**. Thus the automatic-approval failure did not recur, but the desired immediate-stop behavior is not reliable. Clarifications are not counted as completed stops. The red-team runner intentionally exited nonzero because these expectations failed; this was not a provider or infrastructure error.
+
+**Recommendation: retain v32 as an experiment, do not replace production on this evidence.** It preserves the ordinary-call contrasts tested here and stops the real Amazon recording, but still asks follow-up questions for several unsolicited charge alarms and inconsistently offers a vague official caller. Its wording permits stopping an alarm rather than requiring it, while its sensitive-claim clarification rule remains available; this is a plausible explanation from the instructions, not a claim about the model's private reasoning. No wording was adjusted after these fresh results. If these probes inform later development, they must be retired as held-out evidence and replaced for validation.
+
+Evidence: `artifacts/distilled-v32/ftc/`, `fresh-freeze.json`, `fresh-redteam/`, and `ftc-redteam-validation.json`. The audit verifies one FTC trial per distinct recording, unchanged source/request hashes, source IDs and copy counts matching the historical full benchmark, three repetitions per fresh case, twelve known-probe repetitions, matching transports, and recomputed FTC scores. These are caller-text snapshots: no live conversation continuation, voice, deployment or recent-scam-caution evaluation occurred.
+
+```bash
+node scripts/check-robocall-benchmark.mjs --provider codex --real-calls-approved --repeat 1 --concurrency 8 --request artifacts/distilled-v32/candidate-request.json --out artifacts/distilled-v32/ftc
+node scripts/check-distilled-screening-redteam.mjs --request artifacts/distilled-v32/candidate-request.json --cases scripts/fixtures/holdout/distilled-v32-fresh.mjs --out artifacts/distilled-v32/fresh-redteam --repeat 3 --probe-repeat 12 --concurrency 6
+```
+
+Typecheck/build, 143 unit tests and all 86 Firestore emulator tests passed. The main benchmark remains unchanged and under 25 cases. No production change, deployment, real phone call or audio evaluation was performed.
