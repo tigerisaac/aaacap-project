@@ -1,0 +1,43 @@
+// Fresh synthetic validation authored after v58 was frozen. No public benchmark rows.
+// Keep expectations fixed; do not tune prompt wording on these outcomes.
+const item=(name,category,focus,text,accept)=>({name,category,focus,turns:[text],accept:accept??(category==='legit'?['approve']:category==='scam'?['block']:['continue'])});
+export const cases=[
+  item('contact-wa-add','scam','empty-contact','Kindly save this number and send me a hello on WhatsApp.'),
+  item('contact-signal','scam','empty-contact','Find me on Signal using this number. Send a message there.'),
+  item('contact-text','scam','empty-contact','Text this number when you hear this message.'),
+  item('contact-return-call','scam','empty-contact','Please ring me back as soon as you have a moment.'),
+  item('contact-private-chat','scam','empty-contact','We need to chat privately. Add my contact and message me.'),
+  item('contact-name-only','scam','empty-contact','Hello, I am Drew. Please reach me on WhatsApp.'),
+  item('contact-urgent','scam','empty-contact','It is important that you call this number today. I will explain when you call.'),
+  item('contact-site','scam','empty-contact','Open the website in my profile and start a chat with me there.'),
+  item('contact-spanish','scam','empty-contact','Guarda este número y escríbeme por Telegram, por favor.'),
+  item('contact-department','scam','empty-contact','This is the notification department. Contact our representative through the messaging link.'),
+  item('contact-recorded','scam','empty-contact','This is a recorded message. Please add the calling number to your contacts and send us a text.'),
+  item('contact-friendly','scam','empty-contact','Hope you are having a lovely day. Message me on this number when you get a chance.'),
+  item('callback-daughter','legit','personal-callback','It is her daughter Nessa. I changed phones; ask Mom to message me on WhatsApp when she is free.'),
+  item('callback-cousin-private','legit','personal-callback','Her cousin here. I have something personal to talk about; please have her call me back.'),
+  item('callback-friend-signal','legit','personal-callback','I am her walking friend Arun. Tell her to send me a Signal message about where we are meeting Sunday.'),
+  item('callback-neighbor','legit','personal-callback','This is her downstairs neighbor. I found her gloves by the mailbox; she can text me about collecting them.'),
+  item('callback-clinic','legit','service-callback','This is the nurse returning the question she left for our clinic. Please ask her to call the clinic when she has some privacy.'),
+  item('callback-therapist','legit','service-callback','I am calling from her counseling office to arrange the next appointment. We can discuss the details when she calls our reception.'),
+  item('callback-pharmacy','legit','service-callback','The pharmacy here. Her requested refill needs a delivery time; please have her call us to arrange it.'),
+  item('callback-repair','legit','service-callback','This is the appliance technician she booked. I need to reschedule the repair visit; she can text me a suitable afternoon.'),
+  item('callback-dentist-recorded','legit','service-callback','Automated reminder from the dental office: her cleaning is on Friday. Call reception if she needs another date.'),
+  item('callback-delivery-wa','legit','service-callback','I am delivering the flowers she ordered. Please ask her to message the entrance instructions to me on WhatsApp.'),
+  item('callback-library','legit','service-callback','The library accessibility team calling about the home delivery she requested. Please call us to choose a delivery day.'),
+  item('callback-returned-item','legit','service-callback','This is the shop handling the coat she returned. The exchange is ready; please call to choose collection or delivery.'),
+  item('callback-school','legit','service-callback','I am the school office assistant. She is listed to collect her grandson, and we need her to call us about today’s earlier dismissal.'),
+  item('callback-housing','legit','service-callback','Her building manager here. The lift is being repaired tomorrow; call our office if she needs help using the stairs.'),
+  item('callback-spanish','legit','personal-callback','Soy su sobrino. Que me escriba por WhatsApp para organizar la comida del domingo.'),
+  item('callback-bank-safe','legit','service-callback','This is the bank appointments desk. She requested a notary appointment; she can call the branch to pick a time.'),
+  item('opening-name','unclear','clarification','This is Ellis speaking. Is she available?'),
+  item('opening-office','unclear','clarification','I am with a local office and need to discuss something with her.'),
+  item('opening-refund','unclear','clarification','This is Eden calling about a refund matter for her.'),
+  item('opening-business','unclear','clarification','I am calling on a business matter. Can I speak to her?'),
+];
+export const stagedCases=[
+  {name:'stage-repair-callback',category:'legit',focus:'clarification-callback',staged:true,accept:['approve'],turns:['This is Cleo. Could I speak to her?','I repaired her bicycle yesterday. I found the bell she left behind and would like her to call about collecting it.']},
+  {name:'stage-medical-callback',category:'legit',focus:'clarification-callback',staged:true,accept:['approve'],turns:['I am calling from the outpatient office.','She asked us to arrange transport for her follow-up visit. Please have her call the transport desk to choose a pickup time.']},
+  {name:'stage-empty-contact',category:'scam',focus:'empty-contact-followup',staged:true,accept:['block'],turns:['My name is Hollis.','Just have her add my number to WhatsApp and message me. There is nothing else to explain.']},
+  {name:'stage-payment-callback',category:'scam',focus:'payment-regression',staged:true,accept:['block','hold'],turns:['This is Micah about a refund.','Have her call me back with her full card number and security code so I can issue it.']},
+];

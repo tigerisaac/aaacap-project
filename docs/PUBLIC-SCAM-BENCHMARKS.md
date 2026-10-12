@@ -1024,3 +1024,34 @@ The owner requested an explicit leakage check after v57 validation. **No answer-
 The scan covered 356 tracked text files. No files under `artifacts/` are Git-tracked. It found short 12-word-sequence overlaps with FTC recordings in the synthetic SSA and Amazon screening fixtures and a synthetic voicemail fixture, whose source explicitly says it paraphrases documented scripts. These overlaps are in development fixtures, not the v57 decision prompt. Public recordings were deliberately sent to the authorized subscription evaluator; this audit does not claim they were never transmitted. Inspected public result writers save metadata/outcomes rather than transcript text. The content-free local audit is `artifacts/screening-hardening/v57-leakage-audit.json`.
 
 For future generalization claims, freeze the prompt and have a separate evaluator author or obtain an unseen set without exposing its cases to prompt development. Keep known MASC/FTC cases as regression evidence and preserve both ordinary-call and harmful-call scores. No prompt, labels or outcomes were changed in this audit, and no new inference was run.
+
+### V58 empty-contact rule, October 12 — not selected
+
+The owner requested a minimal v57 addition that immediately blocks unsolicited, context-free requests to contact someone elsewhere while preserving ordinary callbacks. `scripts/experiments/distilled-screening-v58.mjs` adds: “BLOCK unsolicited requests to call, message, add a contact or visit a site without a personal relationship or concrete ordinary purpose. A name alone is insufficient.” Everything else, including tool definitions and caution-context handling, is unchanged. V58 has **6,289 instruction characters**, 168 more than v57 (**2.7%**) and 35.2% fewer than v30. Production remains v30; v57 remains the preferred experiment because v58 does not meet the requested boundary reliably.
+
+Both requests were frozen before authoring `scripts/fixtures/holdout/v58-contact-requests.mjs`. This fresh synthetic set has 12 empty-contact snapshots, 16 ordinary callback snapshots, four incomplete openings requiring clarification and four staged callers. Labels were fixed before inference and not revised. Each version ran five repetitions through **subscription GPT-6 Luna, medium reasoning**, with alternating version order: **360 paired trials**. No public benchmark rows were used and neither MASC nor FTC was rerun. The cases are author-designed, not independently blinded; repeats are not independent cases. The main 24-case benchmark is unchanged.
+
+| Paired fresh result | v57 | v58 |
+|---|---:|---:|
+| Empty-contact snapshots immediately blocked | 7/60 | 30/60 |
+| Empty-contact snapshots held | 0/60 | 1/60 |
+| Empty-contact snapshots still questioned | 53/60 | 29/60 |
+| Ordinary callbacks offered, including staged callers | 90/90 | 85/90 |
+| Ordinary callbacks blocked | 0 | 2 |
+| Ordinary callbacks still questioned | 0 | 3 |
+| Service callback snapshots offered | 55/55 | 55/55 |
+| Incomplete openings correctly questioned | 20/20 | 20/20 |
+| Staged empty-contact requests blocked after clarification | 0/5 | 4/5 |
+| Staged payment requests stopped | 5/5 | 5/5 |
+| Harmful approvals | 0 | 0 |
+| Provider failures | 0 | 0 |
+
+V58 blocked the simple WhatsApp-add snapshot in all five repetitions, but the broader result is insufficient. Four of its ordinary misses were a claimed daughter's new-phone callback (two blocks and two questions); the fifth was a walking friend's meeting message (one question). Service callbacks, including an ordinary delivery using WhatsApp, all passed. These observations do not establish the model's internal cause, but show that the added instruction does not consistently separate empty requests from personal callbacks. A hold prevents an offer but does not satisfy the frozen explicit-block expectation. No wording was tuned on these held-out outcomes.
+
+A supplementary native-history comparison used the **same four staged callers**, five repetitions per version (**40 trials**, not additional fresh cases). Both prompts offered 10/10 ordinary callbacks and stopped 10/10 harmful trials. V57 held all five empty-contact follow-ups; v58 blocked four and held one. Both blocked all five payment follow-ups. Thus strict passes were 15/20 and 19/20 respectively, with no missing questions, question-budget overruns or provider failures. This confirms the ordinary staged callbacks worked, but does not erase the snapshot regressions.
+
+Artifacts are under `artifacts/v57-v58-contact/`. `validation-summary.json` and each native run's corresponding audit verify frozen source/request hashes, all planned identities, unchanged expectations and recomputed outcomes. V58's normal request hash is `a22b228b94a3c2500e599201f4d5f1f03218a9c0e74acfd96c9bef6f636f91ca`. The paired harness passes caller text, not case IDs, labels or expected actions, to the target; native runs additionally pass prior assistant/tool history. All results are retained without outcome-based retries. No deployment, voice test, real call or forwarding change occurred. The owner requested that voice readiness be set aside for this task.
+
+**Assessment:** preserve v58 as evidence of an unsuccessful small addition, not a replacement for v57. Immediate empty-contact blocking remains unresolved. The extra block rule improves some requested outcomes while losing personal callbacks, so it fails the owner's combined acceptance condition.
+
+Repository validation passed `npm run check` (typecheck, **168 unit tests**, build), candidate/fixture syntax checks, runner mock checks, unchanged-v57-except-the-addition assertion and `git diff --check`. The full Firestore emulator run passed **126/128** tests; two transaction tests failed with `INVALID_ARGUMENT: Transaction is invalid or closed`. A targeted rerun of both affected suites passed **26/26**. The first failures remain recorded; this is not a clean full-suite pass. These checks cover the shared checkout; unrelated application changes are not part of this screening change.
