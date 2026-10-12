@@ -12,6 +12,7 @@ import { normalizeSharedPhone, sharedContactsSchema, syncSharedContacts } from '
 import { forwardingNumber } from './forwarding-provider.js';
 import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from './alerts.js';
 import { VOICEMAIL_LIMITS } from './voicemail-check.js';
+import { stoppedTotal } from './stopped-total.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -91,11 +92,11 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     const ctx = await access(request); const id = ctx.participant.id;
     const week = store.db.collection('callSessions').where('participantId', '==', id)
       .where('createdAt', '>=', store.now() - 7 * 86400_000).orderBy('createdAt', 'desc');
-    const [total, held, recent, connected, messages] = await Promise.all([week.count().get(), week.where('outcome', 'in', ['held', 'verification']).count().get(),
-      activeCalls(id).orderBy('createdAt', 'desc').orderBy(FieldPath.documentId(), 'desc').limit(6).get(), week.where('outcome', '==', 'connected').count().get(), week.where('outcome', '==', 'voicemail').count().get()]);
+    const [total, held, recent, connected, messages, stopped] = await Promise.all([week.count().get(), week.where('outcome', 'in', ['held', 'verification']).count().get(),
+      activeCalls(id).orderBy('createdAt', 'desc').orderBy(FieldPath.documentId(), 'desc').limit(6).get(), week.where('outcome', '==', 'connected').count().get(), week.where('outcome', '==', 'voicemail').count().get(), stoppedTotal(store, id)]);
     return { name: store.name(ctx.participant), status: ctx.participant.status, lastTestAt: null, isTrial: true,
       isDemo: false, isOwner: ctx.isOwner, canListen: ctx.canListen,
-      counts: { total: total.data().count, held: held.data().count, connected: connected.data().count, messages: messages.data().count },
+      counts: { total: total.data().count, held: held.data().count, connected: connected.data().count, messages: messages.data().count, stoppedTotal: stopped },
       recent: recent.docs.map(doc => cloudCallDTO(store, doc.data() as Call)) };
   });
   app.get('/api/calls', async request => {

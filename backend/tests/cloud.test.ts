@@ -7,6 +7,7 @@ import { cloudSchema, RETENTION_MS } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import { HttpError, type AuthProvider } from '../src/auth.js';
 import { extractionSchema, type MessageChecker } from '../src/cloud/message-check.js';
+import { stoppedTotal } from '../src/cloud/stopped-total.js';
 
 const enabled = !!process.env.FIRESTORE_EMULATOR_HOST;
 describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)', () => {
@@ -104,6 +105,35 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect((await app!.inject({ url: '/api/calls', headers: headers() })).json().calls).toEqual([]);
     expect((await app!.inject({ url: `/api/calls/${id}`, headers: headers() })).statusCode).toBe(404);
     await store.cleanup(); expect((await store.callRef(id).get()).exists).toBe(false);
+  });
+  it('preserves the total beyond seven days and cleanup, without duplicate backfills or another person’s calls', async () => {
+    const id = await seedCall();
+    await store.callRef(id).update({ createdAt: now - 20 * 86400_000 });
+    const other = await seedCall(); await store.callRef(other).update({ participantId: randomUUID() });
+    const totals = await Promise.all([stoppedTotal(store, config.TRIAL_PARTICIPANT_ID), stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)]);
+    expect(totals).toEqual([1, 1]);
+    const overview = (await app!.inject({ url: '/api/overview', headers: headers() })).json();
+    expect(overview.counts).toMatchObject({ held: 0, stoppedTotal: 1 });
+    now += 31 * 86400_000;
+    await store.cleanup();
+    expect((await store.callRef(id).get()).exists).toBe(false);
+    expect(await stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).toBe(1);
+    expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: headers() })).statusCode).toBe(200);
+    await expect(stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).rejects.toMatchObject({ statusCode: 403 });
+    expect((await store.personRef(config.TRIAL_PARTICIPANT_ID).collection('statistics').get()).empty).toBe(true);
+  });
+  it('backfills multiple pages and seeds expired history before its first cleanup', async () => {
+    const batch = db.batch();
+    for (let n = 0; n < 205; n++) {
+      const id = randomUUID();
+      batch.set(store.callRef(id), { id, participantId: config.TRIAL_PARTICIPANT_ID, createdAt: now - 31 * 86400_000,
+        expiresAt: now - 1, outcome: n % 2 ? 'verification' : 'held', events: [] });
+    }
+    await batch.commit();
+    await store.cleanup();
+    expect((await db.collection('callSessions').get()).empty).toBe(true);
+    expect(await stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).toBe(205);
+    expect(await stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).toBe(205);
   });
   it('commits quota groups atomically under contention', async () => {
     const outcomes = await Promise.allSettled(Array.from({ length: 8 }, () => store.quota([['paid-global', 3], ['paid-owner', 5]])));

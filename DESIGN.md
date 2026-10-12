@@ -106,7 +106,7 @@ The October 12 refinement makes an 80-year-old's understanding the bar. Ordinary
 - Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.
 - Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.
 
-**Evidence boundary:** Extracted from current local SwiftUI source on October 12, 2026, including the requested Home count and removed-message follow-up. This document records implemented styles and behavior, not final visual approval, accessibility certification, deployment, or real-call performance. The follow-up implementation pass reported typecheck/build and 162 unit tests, 86 Firebase emulator tests, and the original removed-message UI regression passing. Earlier forwarding validation passed 13 UI tests. Final targeted wrapping tests and visual review remain pending at this extraction; the dated results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). No live service, owner phone, carrier setting, or real call changed as part of this documentation pass.
+**Evidence boundary:** Extracted from current local source on October 12, 2026, including the requested persistent Home total and removed-message follow-up. This document records implemented styles and behavior, not final visual approval, accessibility certification, deployment, or real-call performance. The earlier presentation follow-up reported typecheck/build and 162 unit tests, 86 Firebase emulator tests, and the original removed-message UI regression passing; those results predate the persistent-total change. Earlier forwarding validation passed 13 UI tests. This documentation update checks its own format and consistency only; current implementation and visual results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). The new total API is local code and requires approved deployment before the existing live service can provide it. No deployment, owner-phone change, carrier setting, or real call occurred in this documentation pass.
 
 ## Colors
 
@@ -170,7 +170,7 @@ At accessibility text sizes, call titles and times stack, and busy primary-actio
 
 ## Elevation & Depth
 
-Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. The Home historical count uses one opaque Action-colored native list row when positive and a neutral card surface when zero. Navigation bars, menus, sheets, dialogs, and pressed feedback use operating-system materials and motion. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Voicemail's listening or restoration control uses a bottom safe-area inset with an opaque system surface.
+Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. The Home historical count uses one opaque Action-colored native list row when positive and a neutral card surface when zero or unavailable. Navigation bars, menus, sheets, dialogs, and pressed feedback use operating-system materials and motion. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Voicemail's listening or restoration control uses a bottom safe-area inset with an opaque system surface.
 
 **The Native Surface Rule.** Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.
 
@@ -206,13 +206,15 @@ Removed-message detail uses one readable panel: **Message removed**, the tentati
 
 ### Home historical count
 
-`StoppedCallsCard` shows **Calls stopped**, a prominent positive numeral, **Last 7 days**, and **See calls** on one opaque Action-accent native row with adaptive `actionInk`. The entire panel opens the held-call filter. A zero count uses the quiet neutral card surface and **None in the last 7 days**, without the enlarged numeral. Missing overview data or a context error never becomes a zero-count claim.
+`StoppedCallsCard` shows **Calls stopped**, a prominent positive numeral, **Total**, and **See calls** on one opaque Action-accent native row with adaptive `actionInk`. The entire panel opens the retained recent held-call filter. A zero total uses the quiet neutral card surface and **None so far**, without the enlarged numeral. A missing optional `counts.stoppedTotal` displays **Total unavailable** on the neutral surface; it never falls back to the weekly `held` count or invents a zero. Missing overview data or a context error never becomes a zero-count claim.
 
-The existing overview API counts both `held` and `verification` outcomes over the rolling seven days; the held-call filter includes both. This is historical activity, not a lifetime scam tally or proof that every stopped caller was malicious. Real phone status and actionable warnings stay above the count. Pure sample Home begins with this count, then voicemail and recent calls, while the persistent sample marker establishes its context.
+The new overview field is a persistent historical total, distinct from the existing seven-day aggregates. It includes `held` and `verification` calls and call-stopped, blocked-caller-ended, or voicemail-removed events. Restoring a message does not undo its historical stop. The total can exceed the recent held/review-needed records shown by See calls, since retained history expires and some blocked attempts exceed the daily history cap. Neither the label nor the number proves every caller was malicious or that checks are currently on. Real phone status and actionable warnings stay above the count. Pure sample Home begins with this total, then voicemail and recent calls, while the persistent sample marker establishes its context.
 
-**The Historical Count Rule.** Label the seven-day scope, include review-needed calls honestly, and keep historical activity distinct from current protection status; unavailable data is never zero.
+The backend stores the counter at `participants/{id}/statistics/stoppedCalls`, with a per-call `stoppedCounted` marker to prevent duplicate increments. Recoverable history is seeded transactionally in resumable 200-record pages, including before cleanup deletes old call records. Blocked attempts beyond the history cap still count once through the provider-key guard. Already-deleted history cannot be reconstructed; the total preserves recoverable and newly counted activity, not an independently verified complete lifetime record. The old deployed API cannot supply this field until the new backend is deployed with approval.
 
-Source: `ios/Shield/Features/Overview/StoppedCallsCard.swift`, `ios/Shield/Features/Overview/OverviewView.swift`, and `backend/src/cloud/api.ts`.
+**The Historical Count Rule.** Use the persistent stopped total, include review-needed calls honestly, and keep it distinct from recent retained history and current protection status; unavailable data is never zero or a weekly fallback.
+
+Source: `ios/Shield/Features/Overview/StoppedCallsCard.swift`, `ios/Shield/Features/Overview/OverviewView.swift`, `ios/Shield/Models/Overview.swift`, `backend/src/cloud/stopped-total.ts`, `backend/src/cloud/api.ts`, `backend/src/cloud/store.ts`, and `backend/src/cloud/forwarding-store.ts`.
 
 ### Status and notices
 
@@ -246,7 +248,7 @@ The sidecar's HTML/CSS is a schematic documentation preview. Browser type metric
 - Do give ordinary tasks one clear next action and reveal less common detail on request.
 - Do make person context, voicemail permission, and sample-only state visible in words.
 - Do retain explicit privacy, sharing, setup, and disconnection confirmations.
-- Do label the Home count as rolling seven-day historical activity, keep real status above it, and distinguish zero from unavailable data.
+- Do label the Home count as the persistent historical total, keep real status above it, and distinguish zero, unavailable data, and recent retained history.
 - Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval.
 
 ### Don't:
@@ -254,7 +256,7 @@ The sidecar's HTML/CSS is a schematic documentation preview. Browser type metric
 - Don't describe a checked, offered, or answered caller as verified, authenticated, or safe.
 - Don't infer active call checks from stale, missing, paused, or expired status.
 - Don't promote old tab labels or fixed Surface asset colors from earlier designs into new screens.
-- Don't present Calls stopped as a lifetime tally, confirmed scams, or evidence that current call checks are on.
+- Don't present Calls stopped as confirmed scams, complete recovery of already-deleted history, or evidence that current call checks are on.
 - Don't treat schematic sidecar HTML/CSS as a native pixel specification.
 - Don't treat helper access as ownership or extend voicemail access implicitly.
 - Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.

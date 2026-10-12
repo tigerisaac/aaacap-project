@@ -100,6 +100,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     expect(await call(callId)).toMatchObject({ outcome: 'voicemail', voicemail: { status: 'ready' } });
     expect((await db.collection('forwardingAudio').doc(callId).get()).data()!.expiresAt).toBe((await call(callId)).expiresAt);
     expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers() })).body).toBe('mp3 bytes');
+    expect((await app.inject({ url: '/api/overview', headers: headers() })).json().counts.stoppedTotal).toBe(1);
+    await s.callRef(callId).update({ 'voicemail.status': 'pending' });
+    await Promise.all([check.apply(callId, 'scam'), check.apply(callId, 'scam')]);
+    expect((await app.inject({ url: '/api/overview', headers: headers() })).json().counts.stoppedTotal).toBe(1);
   });
   it('purges a removed message after 7 days, after which it cannot be restored', async () => {
     const callId = await seed(); await check.check(callId, model('junk'));

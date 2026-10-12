@@ -388,6 +388,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await blocked().get()).data()!.attempts).toBe(BLOCKED_RECORDS_PER_DAY + 2);
     // A duplicate webhook for the same call is not a second attempt.
     await post('inbound', { CallSid: sid(2) }); expect((await blocked().get()).data()!.attempts).toBe(BLOCKED_RECORDS_PER_DAY + 2);
+    // The total also includes attempts beyond the history cap, once per provider call.
+    const overview = (await app.inject({ url: '/api/overview', headers: headers() })).json();
+    expect(overview.counts.stoppedTotal).toBe(BLOCKED_RECORDS_PER_DAY + 3);
   });
   it('lists blocked numbers to the person and lets only the person unblock', async () => {
     await screen(1, scamBlock); const id = s.vault.hash(from);

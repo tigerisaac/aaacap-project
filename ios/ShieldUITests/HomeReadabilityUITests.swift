@@ -8,7 +8,7 @@ final class HomeReadabilityUITests: XCTestCase {
         let app = launch()
         let stopped = app.buttons["home-stopped-calls"]
         XCTAssertTrue(stopped.waitForExistence(timeout: 5))
-        XCTAssertEqual(stopped.label, "3 calls stopped in the last 7 days. See calls.")
+        XCTAssertEqual(stopped.label, "3 calls stopped in total. See calls.")
         capture("readable-home-light")
         stopped.tap()
         XCTAssertTrue(app.navigationBars["Calls"].waitForExistence(timeout: 5))
@@ -35,8 +35,11 @@ final class HomeReadabilityUITests: XCTestCase {
         var app = launch(["--redesign-state", "empty"])
         let stopped = app.buttons["home-stopped-calls"]
         reveal(stopped, in: app)
-        XCTAssertEqual(stopped.label, "0 calls stopped in the last 7 days. See calls.")
+        XCTAssertEqual(stopped.label, "0 calls stopped in total. See calls.")
         capture("readable-home-zero-light")
+        app = launch(["--redesign-state", "legacy"])
+        XCTAssertEqual(app.buttons["home-stopped-calls"].label, "Calls stopped. Total unavailable. See calls.")
+        XCTAssertTrue(app.buttons["home-stopped-calls"].isHittable)
         app = XCUIApplication()
         app.launchArguments = ["--uitesting-account-error"]
         app.launch()

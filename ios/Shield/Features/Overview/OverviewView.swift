@@ -24,7 +24,7 @@ struct OverviewView: View {
                 if let overview = model.overview {
                     if model.contextError == nil {
                         Section {
-                            StoppedCallsCard(count: overview.counts.held) { model.showCalls(.held) }
+                            StoppedCallsCard(count: overview.counts.stoppedTotal) { model.showCalls(.held) }
                         }
                     }
                     let messages = overview.recent.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }

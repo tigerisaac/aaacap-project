@@ -2,6 +2,7 @@ import type { Firestore, DocumentData } from 'firebase-admin/firestore';
 import { HttpError } from '../auth.js';
 import { Vault } from '../crypto.js';
 import type { CloudConfig } from './config.js';
+import { stoppedTotal } from './stopped-total.js';
 
 export type Person = DocumentData & { id: string; ownerUid: string; nameEnc: string; phoneEnc: string; status: string };
 export type Call = DocumentData & { id: string; participantId: string; createdAt: number; expiresAt: number;
@@ -49,6 +50,13 @@ export class CloudStore {
   async cleanup(): Promise<void> {
     for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks']) {
       const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
+      // Preserve recoverable historical stops before the first post-upgrade cleanup deletes their records.
+      if (collection === 'callSessions') {
+        for (const participantId of new Set(expired.docs.map(doc => doc.data().participantId as string))) {
+          const person = (await this.personRef(participantId).get()).data();
+          if (person && person.status !== 'offboarded') await stoppedTotal(this, participantId);
+        }
+      }
       if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
     }
     const blocked = await this.db.collectionGroup('blocked-numbers').where('expiresAt', '<=', this.now()).limit(400).get();

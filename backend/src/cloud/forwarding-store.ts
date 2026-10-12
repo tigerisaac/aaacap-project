@@ -5,6 +5,7 @@ import { CONSENT_VERSION, RETENTION_MS } from './config.js';
 import { queueAlert } from './alerts.js';
 import { forwardingNumber } from './forwarding-provider.js';
 import { CloudStore, type Call } from './store.js';
+import { countStoppedCall, wasStopped } from './stopped-total.js';
 
 export const FORWARDING_CONSENT = `${CONSENT_VERSION}-forwarding-v1`;
 // Consent names the phone provider. Keep this exact value so the owner's existing consent stays valid.
@@ -55,6 +56,7 @@ export class ForwardingStore {
         const blocked = usage?.blocked ?? 0, call: ForwardingCall = { id, participantId: p.id, source: 'forwarding', provider: 'telnyx', parentSid: sid,
           eligible: false, createdAt: now, expiresAt: now + RETENTION_MS, callerEnc: s.vault.seal(from!, `call:${id}:caller`),
           state: 'ended', outcome: 'held', reason: 'blocked_caller', purpose: null, completedAt: now, events: [{ kind: 'blocked_caller_ended', at: now }] };
+        Object.assign(call, countStoppedCall(s, tx, call));
         if (blocked < BLOCKED_RECORDS_PER_DAY) tx.create(s.callRef(id), call);
         tx.create(s.keyRef(sid), { callId: id, expiresAt: now + RETENTION_MS });
         tx.set(quotaDoc.ref, { used: usage?.used ?? 0, blocked: blocked + 1, expiresAt: now + 2 * 86400_000 });
@@ -90,6 +92,9 @@ export class ForwardingStore {
       if (!call || call.source !== 'forwarding' || call.participantId !== s.config.TRIAL_PARTICIPANT_ID) return;
       const patch = update(call, ctrl!.data() ?? {}, person!.data() ?? {});
       if (!patch) return;
+      if (Object.keys(patch).length && person!.exists && wasStopped({ ...call, ...patch })) {
+        Object.assign(patch, countStoppedCall(s, tx, call));
+      }
       if (Object.keys(patch).length) tx.update(doc!.ref, patch);
       if (patch.state === 'ended' && ctrl!.data()?.activeCallId === id) tx.update(this.control, { activeCallId: FieldValue.delete() });
       const next = { ...call, ...patch };

@@ -36,7 +36,8 @@ enum DemoData {
                         counts: .init(total: activity.count,
                                       held: activity.filter { CallFilter.held.includes($0) }.count,
                                       connected: activity.filter { $0.outcome == .connected }.count,
-                                      messages: activity.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }.count),
+                                      messages: activity.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }.count,
+                                      stoppedTotal: activity.filter { CallFilter.held.includes($0) }.count),
                         recent: activity)
     }
 

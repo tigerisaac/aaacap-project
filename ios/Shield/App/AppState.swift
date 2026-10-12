@@ -352,10 +352,14 @@ final class AppState {
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "--redesign-state"), args.indices.contains(i + 1) {
             let state = args[i + 1]
-            if state == "paused" || state == "restoring" || state == "empty" {
+            if state == "paused" || state == "restoring" || state == "empty" || state == "legacy" {
+                let counts = state == "legacy"
+                    ? Overview.Counts(total: preview.counts.total, held: preview.counts.held,
+                                      connected: preview.counts.connected, messages: preview.counts.messages, stoppedTotal: nil)
+                    : state == "empty" ? .init(total: 0, held: 0, connected: 0, messages: 0, stoppedTotal: 0) : preview.counts
                 overview = Overview(name: preview.name, status: state, lastTestAt: preview.lastTestAt, isDemo: true,
                                     isOwner: preview.isOwner, canListen: preview.canListen,
-                                    counts: state == "empty" ? .init(total: 0, held: 0, connected: 0, messages: 0) : preview.counts,
+                                    counts: counts,
                                     recent: state == "empty" ? [] : preview.recent)
             }
             if state == "loading" { overview = nil; isLoading = true }

@@ -1,7 +1,8 @@
 import { callerText } from '../live/evidence.js';
 import { DECISION_MODEL } from '../live/research.js';
 import { queueAlert } from './alerts.js';
-import type { CloudStore } from './store.js';
+import type { Call, CloudStore } from './store.js';
+import { countStoppedCall } from './stopped-total.js';
 
 // Keep or remove each forwarded voicemail. GPT Transcribe turns the message into text, and the Decisions API
 // answers one choice question about it. Removing a real message counts as much as keeping a scam, so only a
@@ -112,6 +113,7 @@ export class VoicemailCheck {
         return;
       }
       tx.update(callDoc!.ref, { 'voicemail.status': 'removed', 'voicemail.removedAs': verdict, 'voicemail.removedAt': now, outcome: 'held',
+        ...countStoppedCall(s, tx, call as Call),
         events: [...call.events, { kind: 'voicemail_removed', at: now }] });
       tx.update(audioDoc!.ref, { expiresAt: Math.min(audioDoc!.data()!.expiresAt, now + VOICEMAIL_LIMITS.purgeMs) });
       // A scammer who left a message may call again; a robocall or empty recording isn't worth a helper's attention.

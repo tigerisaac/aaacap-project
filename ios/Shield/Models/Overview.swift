@@ -6,6 +6,7 @@ struct Overview: Codable, Sendable {
         let held: Int
         let connected: Int
         let messages: Int
+        let stoppedTotal: Int?
     }
     let name: String
     let status: String
