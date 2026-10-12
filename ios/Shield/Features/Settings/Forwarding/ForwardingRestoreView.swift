@@ -24,20 +24,24 @@ struct ForwardingRestoreView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             if index < 7 {
+                FlowProgress(title: index < 3 ? "Disconnect Tello" : index < 5 ? "Restore settings" : "Check ordinary service", current: index + 1, total: 7)
                 Text(index < 3 ? "First, disconnect Tello forwarding. Then restore Phone settings and check ordinary calls." : "You confirmed the Tello resets. Finish the steps below to check ordinary phone service.")
                     .font(.title3).accessibilityFocused($stageFocused)
             }
             if codes.indices.contains(index) {
-                Text("Restore connection \(index + 1) of 3").font(.headline)
-                Text(codes[index]).font(.title.monospaced().bold()).accessibilityIdentifier("forwarding-reset-code")
-                Text("Your reset code is copied").font(.headline)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(codes[index]).font(.title.monospaced().bold()).accessibilityIdentifier("forwarding-reset-code")
+                    if codeReady {
+                        Label("Copied", systemImage: "checkmark.circle.fill")
+                            .font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
+                    }
+                }
                 PhoneCodeGuide(restoring: true, returned: returnedFromPhone)
-                Button(codeReady ? "Tello confirmed this reset" : "Copy Tello reset code") {
+                Button {
                     if codeReady { showingPhoneLauncher = false; index += 1; codeReady = false; returnedFromPhone = false; showingHelp = false }
                     else { copyCode() }
-                }
-                .buttonStyle(.borderedProminent).controlSize(.large)
-                    .buttonBorderShape(.roundedRectangle(radius: 16)).foregroundStyle(ShieldTheme.actionInk)
+                } label: { ShieldActionLabel(title: codeReady ? "Tello confirmed this reset" : "Copy Tello reset code") }
+                .shieldPrimaryButton()
                 .accessibilityIdentifier("forwarding-reset-continue")
                 if codeReady {
                     Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }.frame(minHeight: 44).accessibilityIdentifier("forwarding-reset-copy")
@@ -58,13 +62,12 @@ struct ForwardingRestoreView: View {
                 Text("You confirmed the three Tello resets, Phone settings, an ordinary call, and normal voicemail.")
                 Text("Shield callbacks remain stopped. Saved from your confirmations; Shield can’t independently read your phone or carrier settings.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
-                Button("Done") { dismiss() }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
-                    .buttonBorderShape(.roundedRectangle(radius: 16))
-                    .foregroundStyle(ShieldTheme.actionInk)
+                Button { dismiss() } label: { ShieldActionLabel(title: "Done") }
+                    .shieldPrimaryButton()
 
             }
         }
+        .sensoryFeedback(.success, trigger: index) { old, new in new > old }
         .onChange(of: index) { _, _ in
             codeReady = false
             returnedFromPhone = false

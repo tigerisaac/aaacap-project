@@ -21,7 +21,7 @@ final class ForwardingUITests: XCTestCase {
         for title in ["When you don’t answer", "When your line is busy", "When you have no signal"] {
             expect(app, title)
             XCTAssertTrue(app.staticTexts["forwarding-code"].exists)
-            XCTAssertTrue(app.staticTexts["Your code is copied"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.staticTexts["Code copied"].waitForExistence(timeout: 5))
             if title == "When you don’t answer" { capture(app, "Guided Tello code") }
             tapPrimary(app)
         }
@@ -99,7 +99,7 @@ final class ForwardingUITests: XCTestCase {
     }
     func testCopyRequiresCarrierConfirmationAndResetsForNextCode() {
         let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
-        expect(app, "Your code is copied")
+        expect(app, "Code copied")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         app.swipeUp()
@@ -112,7 +112,7 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["forwarding-code"].label, "**67*12025550100#")
         app.terminate()
         let resumed = launch(["--forwarding-start-code"], title: "When you don’t answer")
-        expect(resumed, "Your code is copied")
+        expect(resumed, "Code copied")
         XCTAssertFalse(resumed.staticTexts["Check your forwarding"].exists)
     }
     func testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed() {
@@ -198,7 +198,7 @@ final class ForwardingUITests: XCTestCase {
         capture(app, "Carrier code largest text dark")
     }
 
-    private func launch(_ extra: [String] = [], title: String = "Let’s set up Shield") -> XCUIApplication {
+    private func launch(_ extra: [String] = [], title: String = "Set Up Call Screening") -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-forwarding"] + extra
         app.launch(); expect(app, title); return app

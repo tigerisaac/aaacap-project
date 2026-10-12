@@ -20,9 +20,12 @@ struct RootView: View {
         #endif
     }
     private var previewColorScheme: ColorScheme? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard isForwardingPreview || arguments.contains("--uitesting-protection-onboarding") || arguments.contains("--uitesting-helper-alerts-onboarding") else { return nil }
-        return ProcessInfo.processInfo.arguments.contains("--uitesting-dark") ? .dark : .light
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("--uitesting-dark") { return .dark }
+        if args.contains("--uitesting-light") { return .light }
+        #endif
+        return nil
     }
     var body: some View {
         @Bindable var model = model
@@ -41,6 +44,11 @@ struct RootView: View {
         .onAppear {
             #if DEBUG
             if isForwardingPreview { UIApplication.shared.isIdleTimerDisabled = true }
+            #if targetEnvironment(simulator)
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-check-clipboard") {
+                UIPasteboard.general.string = "A synthetic message to paste."
+            }
+            #endif
             #endif
         }
         .alert("Something needs attention", isPresented: $model.showingError) {
@@ -71,10 +79,12 @@ struct RootView: View {
             } else if let contactDemoAction, model.signedIn, model.isOwner {
                 NavigationStack { SharedContactsView(demoAction: contactDemoAction) }
             } else if model.signedIn {
-                VStack(spacing: 0) {
-                    if model.isDemo { DemoBanner() }
+                Group {
                     if model.people.isEmpty {
-                        JoinView()
+                        VStack(spacing: 0) {
+                            if model.isDemo { DemoBanner().background(.bar) }
+                            JoinView()
+                        }
                     } else {
                         TabView(selection: $model.selectedTab) {
                             Tab("Today", systemImage: "square.grid.2x2.fill", value: 0) {
@@ -90,6 +100,7 @@ struct RootView: View {
                                 PeopleView().id(model.selectedPersonID)
                             }
                         }
+                        .demoAccessory(model.isDemo)
                     }
                 }
             } else {

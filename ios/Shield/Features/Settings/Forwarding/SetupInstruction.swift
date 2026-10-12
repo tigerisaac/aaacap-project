@@ -7,8 +7,8 @@ struct SetupInstruction: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Text(number, format: .number).font(.headline).foregroundStyle(ShieldTheme.action)
-                .frame(minWidth: 24, alignment: .leading).accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 4) {
+                .frame(width: 32, height: 32).background(ShieldTheme.action.opacity(0.10), in: .circle).accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 8) {
                 Text(title).font(.headline)
                 Text(detail).foregroundStyle(ForwardingStyle.secondaryText)
             }

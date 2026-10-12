@@ -26,15 +26,15 @@ struct BlockedNumbersView: View {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: 10) {
                         VStack(alignment: .leading, spacing: 5) {
-                            Text(item.phone).font(.headline)
-                            Text(item.reasonText).foregroundStyle(.secondary)
-                            Text(detail(for: item)).font(.subheadline).foregroundStyle(.secondary)
+                            Text(PhoneDisplay.format(item.phone)).font(.headline)
+                            Text(item.reasonText).foregroundStyle(ShieldTheme.secondaryText)
+                            Text(detail(for: item)).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
                         .accessibilityElement(children: .combine)
                         // A visible button, not only a swipe: swipes are hard to discover.
                         if model.isOwner {
                             Button("Unblock", systemImage: "hand.raised.slash") { pendingUnblock = item }
-                                .buttonStyle(.bordered).accessibilityIdentifier("unblock-\(item.phone)")
+                                .buttonStyle(.bordered).buttonBorderShape(.capsule).accessibilityIdentifier("unblock-\(item.phone)")
                         }
                     }
                     .padding(.vertical, 2)
@@ -59,9 +59,10 @@ struct BlockedNumbersView: View {
                     description: Text("When Shield stops a scam call, it blocks that number so the caller can’t try again."))
             }
         }
+        .shieldListStyle()
         .navigationTitle("Blocked numbers")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog("Unblock \(pendingUnblock?.phone ?? "this number")?", isPresented: Binding(
+        .confirmationDialog("Unblock \(pendingUnblock.map { PhoneDisplay.format($0.phone) } ?? "this number")?", isPresented: Binding(
             get: { pendingUnblock != nil }, set: { if !$0 { pendingUnblock = nil } }), titleVisibility: .visible) {
             Button("Unblock", role: .destructive) { if let item = pendingUnblock { Task { await unblock(item) } } }
         } message: {

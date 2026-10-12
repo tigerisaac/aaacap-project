@@ -11,13 +11,19 @@ final class AppState {
     var signedIn = false
     var isPreview = false
     var isDemo = false
+    /// Debug-simulator-only sample account that also shows owner-only screens the demo hides. Never contacts the service.
+    var isTestAccount = false
     var people: [Person] = []
     var selectedPersonID: UUID?
     var overview: Overview?
     var calls: [CallRecord] = []
     var nextCursor: String?
     var filter: CallFilter = .all
+    private var callsFilter: CallFilter = .all
     var isLoading = false
+    var isLoadingCalls = false
+    var callsError: String?
+    var contextError: String?
     var errorMessage: String?
     var showingError = false
     var service: ServiceConfiguration?
@@ -63,6 +69,7 @@ final class AppState {
     }
 
     func exploreDemo() {
+        isTestAccount = false
         protectionOnboarding = nil
         helperAlertsOnboarding = false
         protectionParticipantID = nil
@@ -94,6 +101,9 @@ final class AppState {
         calls = []
         nextCursor = nil
         filter = .all
+        callsError = nil
+        contextError = nil
+        isLoadingCalls = false
         if isPreview { loadPreview() } else {
             await loadProtectionOnboarding(generation: sessionGeneration)
             await loadContext()
@@ -129,7 +139,7 @@ final class AppState {
             await loadProtectionOnboarding(generation: generation)
             await loadContext()
             await syncCallDirectory(generation: generation)
-        } catch { if generation == sessionGeneration { handle(error) } }
+        } catch { if generation == sessionGeneration { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
     /// Only the protected person's own phone blocks their scammers; a helper's phone never does.
@@ -201,20 +211,42 @@ final class AppState {
             let (newOverview, page) = try await (summary, activity)
             guard selectedPersonID == id, generation == sessionGeneration, requestedFilter == filter else { return }
             overview = newOverview
+            contextError = nil
             calls = page.calls
+            callsFilter = requestedFilter
             nextCursor = page.nextCursor
-        } catch { if generation == sessionGeneration, selectedPersonID == id { handle(error) } }
+        } catch { if generation == sessionGeneration, selectedPersonID == id { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
     func loadCalls(more: Bool = false) async {
         guard let id = selectedPersonID else { return }
+        if callsFilter != filter {
+            calls = []
+            nextCursor = nil
+            callsFilter = filter
+        }
         if isPreview {
+            #if DEBUG
+            let args = ProcessInfo.processInfo.arguments
+            if let i = args.firstIndex(of: "--uitesting-calls-state"), args.indices.contains(i + 1) {
+                let state = args[i + 1]
+                calls = []
+                nextCursor = nil
+                isLoadingCalls = state == "loading"
+                callsError = state == "error" ? "Your connection was interrupted. Please try again." : nil
+                return
+            }
+            #endif
+            callsError = nil
             calls = (person.map(DemoData.overview)?.recent ?? []).filter(filter.includes)
             nextCursor = nil
             return
         }
         let requestedFilter = filter
         let generation = sessionGeneration
+        isLoadingCalls = true
+        callsError = nil
+        defer { if generation == sessionGeneration, selectedPersonID == id, filter == requestedFilter { isLoadingCalls = false } }
         let cursor = more ? nextCursor : nil
         var path = "/api/calls?filter=\(requestedFilter.rawValue)"
         if let cursor { path += "&cursor=\(cursor)" }
@@ -223,7 +255,7 @@ final class AppState {
             guard selectedPersonID == id, filter == requestedFilter, generation == sessionGeneration else { return }
             calls = more ? calls + page.calls : page.calls
             nextCursor = page.nextCursor
-        } catch { if generation == sessionGeneration, selectedPersonID == id, filter == requestedFilter { handle(error) } }
+        } catch { if generation == sessionGeneration, selectedPersonID == id, filter == requestedFilter { callsError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
     func showCalls(_ selectedFilter: CallFilter) {
@@ -231,7 +263,18 @@ final class AppState {
         selectedTab = 1
     }
 
+    #if DEBUG && targetEnvironment(simulator)
+    /// Typed into the email field on the simulator to open the local test account. Not compiled into device or release builds.
+    static let testAccountSequence = "shield-test-account1"
+
+    func exploreTestAccount() {
+        exploreDemo()
+        isTestAccount = true
+    }
+    #endif
+
     func signOut() async {
+        isTestAccount = false
         sessionGeneration += 1
         signedIn = false
         isPreview = false
@@ -245,9 +288,16 @@ final class AppState {
         helperAlertsOnboarding = false
         protectionParticipantID = nil
         selectedTab = 0
+        callsError = nil
+        contextError = nil
+        isLoadingCalls = false
         errorMessage = nil
         showingError = false
         await api.signOut()
+    }
+
+    private func handleSessionFailure(_ error: Error) {
+        if case let APIError.service(_, status) = error, status == 401 || status == 403 { handle(error) }
     }
 
     func handle(_ error: Error) {
@@ -269,7 +319,21 @@ final class AppState {
         guard let person else { return }
         let preview = DemoData.overview(for: person)
         overview = preview
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "--redesign-state"), args.indices.contains(i + 1) {
+            let state = args[i + 1]
+            if state == "paused" || state == "restoring" || state == "empty" {
+                overview = Overview(name: preview.name, status: state, lastTestAt: preview.lastTestAt, isDemo: true,
+                                    isOwner: preview.isOwner, canListen: preview.canListen,
+                                    counts: state == "empty" ? .init(total: 0, held: 0, connected: 0, messages: 0) : preview.counts,
+                                    recent: state == "empty" ? [] : preview.recent)
+            }
+            if state == "loading" { overview = nil; isLoading = true }
+        }
+        #endif
         calls = preview.recent.filter(filter.includes)
+        callsFilter = filter
         nextCursor = nil
     }
 }

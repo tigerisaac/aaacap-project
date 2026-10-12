@@ -12,4 +12,14 @@ extension ForwardingStatus {
              readiness: "Demo call-test window. No phone settings are changed.", latestEvents: [])
     }
 }
+extension ForwardingStatus {
+    static func redesignFixture(state: String) -> Self {
+        Self(participantId: DemoData.participant.id, carrier: "Tello", phone: "+12025550101", shieldNumber: "+12025550100",
+             liveScreening: true, prepared: state != "setup", active: state == "window" || state == "expired",
+             expiresAt: .now.addingTimeInterval(state == "expired" ? -60 : 1800), remainingCalls: 7,
+             consentVersion: "ui-test", consented: state != "setup", phoneVerified: true,
+             stage: state == "restoring" ? "restore" : "checks", restorationRequested: state == "restoring", lastTestAt: .now,
+             activationCodes: [], restorationSteps: [], readiness: "Synthetic UI fixture", latestEvents: [])
+    }
+}
 #endif
