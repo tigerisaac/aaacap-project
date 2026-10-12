@@ -513,3 +513,57 @@ node scripts/check-distilled-screening-redteam.mjs --request artifacts/distilled
 ```
 
 Repository checks passed: typecheck/build, 143 unit tests and 86 Firestore emulator tests. Experimental modules were also imported by the completed evaluations. The main benchmark remains unchanged.
+
+## V36 versus v32, single subscription benchmark passes, October 12
+
+The owner requested exactly one v36 pass on MASC and FTC through subscription GPT-6 Luna, medium reasoning, compared with the saved v32 subscription runs. The v36 request is unchanged from the prior red team: SHA-256 `766f7aa6b0fc3afb14f7850b460ad678a292dfe448fd9c8d2fab3b11a8b86074`. The baseline request is `c5a6bee0c5ce52fc8b8ef2b32a266f39ca4389253843fc0e422c62ebaa68ec8b`. Non-instruction request settings, tools, transport, source revisions, input selection and scoring are identical. V32 was not rerun; these are one draw per case per version at different times, not proof of equivalence or a prompt-only causal effect. No prompt was changed after these outcomes.
+
+### MASC: ordinary callers preserved, scam regression
+
+| Measure | Saved v32 | New v36 |
+|---|---:|---:|
+| Ordinary callers offered | 78/80 | **80/80** |
+| Appointments offered | 39/40 | 40/40 |
+| Deliveries offered | 39/40 | 40/40 |
+| Completed scam stops | **160/160** | 156/160 |
+| Scam approvals | 0 | **3** |
+| Scam clarifications | 0 | 0 |
+| Scams with no usable decision | 0 | **1** |
+| Ads blocked, separate | 40/40 | 40/40 |
+
+There were **no lost ordinary callers** in this pass. V36 recovered both prior misses, `masc-test-24` (appointment) and `masc-test-61` (delivery), changing solicitation blocks to routine approvals. All 78 callers v32 offered remained offered.
+
+However, three refund scams, `masc-test-151`, `masc-test-153` and `masc-test-154`, changed from blocks to routine approvals. Reward scam `masc-test-184` produced `no_decision`. It receives no identification or stop credit, even though the existing runner does not classify `no_decision` as a provider/validation failure. No unusable result was rerun or silently treated as a stop. All 156 completed stops were blocks; identification was also 156/160. The run had no recorded transport or decision-validation failures. Wrong numbers remain outside the ordinary score: 25 approvals, 7 holds, 5 questions and 3 blocks.
+
+### FTC: no approvals, unchanged completed-stop count
+
+| Measure | Saved v32 | New v36 |
+|---|---:|---:|
+| Distinct recordings attempted | 724 | 724 |
+| Completed stops | 716/724 | 716/724 |
+| Blocks | 710 | 715 |
+| Holds | 6 | 1 |
+| Clarifications, not completed stops | 6 | 7 |
+| Approvals | 2 | **0** |
+| Evaluation failures | 0 | **1 timeout** |
+| Identification, including clarification | 722/724 | 723/724 |
+| Stops weighted by original call frequency | 1,356/1,378 | 1,370/1,378 |
+
+The previously cited Amazon unexpected-charge recording, `robocall-1314`, was blocked by both versions. Its 13 source copies remain one evaluated recording. Three prior clarifications became blocks (`robocall-89`, `robocall-1168`, `robocall-1185`). Two prior approvals became questions (`robocall-191`, `robocall-1195`), not completed stops. The short grandparent opener in recording 191 had been compatible with the owner's family-offer preference, so questioning it is not evidence of improved family-call usability; its original harmful dataset label remains unchanged.
+
+Two prior stops became questions (`robocall-227`, `robocall-528`); another prior block timed out (`robocall-532`). The seven final clarifications were recordings 191, 227, 528, 858, 958, 1195 and 1324. FTC contains no legitimate-call comparison group. The higher frequency-weighted stop count does not establish that arbitrary charge-only alarms or all ordinary financial notices are handled correctly.
+
+**Interruption accounting:** the adapter stopped after a 90-second evaluation timeout, with 407 completed rows. The partial summary and exact results prefix were preserved before resuming only the remaining 317 recordings. The failed case was not retried. All 724 case IDs have exactly one result with run number 1; the timeout remains in the denominator. The final nonzero runner exit reflects that retained timeout. There were no other recorded FTC evaluation failures.
+
+**Decision: do not adopt v36 as a replacement on these results.** The requested ordinary-call check passed in this single MASC draw, recovering two calls and losing none, but three newly approved refund scams are a material regression from v32. The unusable reward-scam result is also a miss. These findings supersede the earlier suggestion to retain v36 based only on its focused red team; preserve it as an experiment requiring further work. Neither this one-pass comparison nor the earlier red team establishes reliable equivalence across real calls. MASC measures completed caller text and FTC a fixed opening snapshot; neither exercises a live follow-up exchange. No prompt tuning, voice test, recent-scam-context check, production change or deployment was performed.
+
+Evidence is in `artifacts/distilled-v36/public-freeze.json`, `masc/`, `ftc/`, `finalize-public.mjs` and `public-validation.json`; baseline results remain untouched under `artifacts/distilled-v32/`. The audit recomputes every score, verifies the full 320/724 distinct-case sets, matching source hashes and score memberships, unchanged candidate/production/runner sources, identical subscription transport, and byte-for-byte preservation of the 407 results before resume. The MASC results hash is recorded in the audit; FTC results SHA-256 is `d68f7700ee1156cbcc5b1677d262ec07d9b3dbc8a2b0de21d00f605ec007a692`.
+
+Reproduce into fresh output directories, using the existing frozen request:
+
+```bash
+node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening --repeat 1 --concurrency 6 --request artifacts/distilled-v36/candidate-request.json --out artifacts/distilled-v36/masc-new-run
+node scripts/check-robocall-benchmark.mjs --provider codex --real-calls-approved --repeat 1 --concurrency 8 --request artifacts/distilled-v36/candidate-request.json --out artifacts/distilled-v36/ftc-new-run
+```
+
+Repository validation passed again: typecheck/build, 143 unit tests and 86 Firestore emulator tests. Only this benchmark report changed in tracked files; production remains v30.
