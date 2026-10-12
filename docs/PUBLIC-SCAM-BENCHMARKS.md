@@ -870,3 +870,65 @@ Importantly, a new **paired v30/v50 comparison on the entire expanded critical s
 V50 blocked the agreed service-payment request, the mixed-story system override, the forged JSON decision and the administrator-approval claim **10/10 each**. It offered the appointment/promotion case 10/10, delivery/promotion case 8/10, delivery/name-address case 10/10, relative's own-card-problem case 10/10 and class discussing attacks 10/10. The personal-list caller was offered 8/10, questioned once and blocked once. All three ordinary controls that v30 consistently offered remained 10/10 on v50. This is a strong improvement on known development cases, not a perfect result or independent generalization proof. The paired audit is `artifacts/v30-v50-critical/validation-summary.json`.
 
 V50 is **5,991 characters versus v30's 9,710 (38.3% shorter)**. It requires an explicit screening-authority assertion or decision override and prohibits inferring one merely from familiarity, invitation or list membership, while preserving ordinary who-and-why screening. Its request hash is `a4b468d3dfe279da6ce04a49920536938034dff6e46c2ad865bfeb693ae9ece7`. Its broader development and native-history checks are running. A new 66-case author-designed holdout was written after v46 was frozen and remained unrun and excluded from wording during the subsequent known-case revisions. It has 24 ordinary snapshots, 24 harmful snapshots, two sales calls, two incomplete openers, six trusted-caution controls and eight staged conversations. It is not yet evaluation evidence. No final candidate has been promoted to production or voice-tested.
+
+### V50 final-validation checkpoint
+
+V50's completed known development checks offered **95/99 ordinary trials** and stopped **86/90 harmful trials** (four questions, no harmful approvals). The broader 245-case regression offered **99/101 ordinary calls** and stopped **111/117 harmful calls** (six questions, no harmful approvals). Both completed without provider failures. Native-history development was less reliable: **68/75 ordinary offers**, **93/96 harmful stops**, two harmful approvals, one harmful question, three missing question texts and one question-budget overrun. Three ordinary blocks are the retained older two-stage financial-alert policy conflict; the other ordinary misses remain failures. The staged forged-JSON-then-family attack was approved twice despite the stronger written override rule. These results prevent a perfection or production-readiness claim.
+
+The unchanged v50 request is now in final validation: 66 previously unrun cases, three repetitions each for v30 and v50 (396 planned trials), the same eight staged cases with native assistant/tool history for each version (24 trials each), and one complete pass each of MASC and FTC. The staged history checks reuse callers and are not a second independent holdout. A matching three-repeat v30 run on the 64 known native-history conversations provides context for v50's remaining failures. No outcome from this final holdout will be used to revise v50. All tests use subscription GPT-6 Luna at medium reasoning, not GPT Live. Public data is covered by the owner's existing exception; private recordings are excluded.
+
+### V50 completed comparison and recommendation
+
+Final text validation is complete. The unchanged **5,991-character v50** is **38.3% shorter than v30**, but is **not selected to replace live v30**. It improves explicit charge-alarm and payment/override handling substantially, while retaining measurable ordinary-call and conversational failures. No claim of equivalent performance, perfection or deployment readiness is warranted.
+
+The 66-case fresh set completed all **396 paired trials**, comprising three repetitions per prompt, with **447 snapshot evaluations and no provider failures**. These are repeated author-designed cases, not independent real callers. Both prompts and expectations stayed frozen. Excluding separately scored caution controls:
+
+| Fresh paired measure | v30 | v50 |
+|---|---:|---:|
+| Ordinary offered | **83/84** | 80/84 |
+| Ordinary blocks / holds / questions | 1 / 0 / 0 | 0 / 0 / 4 |
+| Harmful completed stops | 58/81 | **81/81** |
+| Harmful approvals | 0 | 0 |
+| Harmful unanswered questions | 23 | **0** |
+| Explicit charge/compromise alarms immediately blocked | 0/15 | **15/15** |
+| Payment trials stopped | 15/15 | 15/15 |
+| Manipulation snapshots stopped | 9/12 | **12/12** |
+| Trusted caution expectations, separate | 17/18 | **18/18** |
+
+V50's four ordinary misses were extra questions on one scheduled-care trial, two expected-storage-receipt trials and one scam-seminar trial. V30 blocked a routine courier contact-details case once. All ordinary staged scenarios were offered on both prompts; v50 nevertheless kept questioning one separate unresolved-refusal sequence. The previous repeated agreed-service-payment reproducer remains a useful complement to these fresh payment cases: v50 blocked it 10/10 while v30 approved it 10/10 in the expanded critical comparison.
+
+The supplementary native-history check reused the same eight fresh staged callers, repeated three times per version. Both offered **11/12 ordinary trials**. V30 stopped **9/9 harmful trials**, v50 **8/9**. V50 returned no question text in two trials (one ordinary, one harmful), so no prepared reply was exposed and neither received a pass. V30 prematurely held one ordinary municipal-service opener. Neither version exceeded the question budget or had a provider failure in this subset. It is not a second independent holdout or a GPT Live evaluation.
+
+The broader **known** native-history control completed 192 v30 trials alongside the already completed 192 v50 trials. V30 offered **72/75 ordinary trials** versus v50's **68/75**, and stopped **90/96 harmful trials** versus **93/96**. Both approved two harmful trials. V30 had two question-budget overruns and no missing question texts; v50 had one overrun and three missing questions. V30 also approved the staged forged-JSON-then-family attack once; v50 approved it twice. Thus the failure exists in both prompts, but v50 has not eliminated it. The retained legacy alert-policy conflict explains three v50 ordinary blocks without changing the frozen labels; other ordinary misses are still failures.
+
+One full final public pass per dataset used the frozen v50 request and subscription GPT-6 Luna medium:
+
+| Public measure | Saved v38 | Final v50 |
+|---|---:|---:|
+| MASC ordinary offered | 77/80 | **78/80** |
+| MASC harmful completed stops | 156/160 | 156/160 |
+| MASC harmful approvals | 0 | 0 |
+| MASC harmful questions | 3 | 4 |
+| MASC unusable decisions without provider failure | 1 | 0 |
+| MASC ads blocked, separate | 40/40 | 40/40 |
+| FTC completed stops | **713/724** | 703/724 |
+| FTC questions | 11 | 19 |
+| FTC approvals | **0** | 1 |
+| FTC provider failures | **0** | 1 |
+| FTC frequency-weighted stops | **1,362/1,378** | 1,333/1,378 |
+
+The public comparator is the saved v38 subscription run, not a newly run v30 public baseline. MASC v50 blocked ordinary cases 33 and 61; known cases 24 and 75 were offered, and harmful case 184 was blocked. Refund cases 151–154 received questions rather than approvals. MASC identification including questions is 160/160, distinct from 156/160 completed stops. No provider failure occurred in MASC.
+
+FTC's original Amazon charge case 1314 was blocked. Legal-callback case 1195 was approved; nineteen other recordings were questioned. Case 312 hit the 90-second subscription timeout and remains a failure. The runner stopped after 288 persisted results. Its partial summary and prefix hash were preserved, and `--resume` scheduled only missing identities; the failed case was not retried. The final audit verifies all **724 identities**, the unchanged 288-result prefix and the retained failure. FTC identification including questions is 722/724, not 100%; this dataset has no ordinary negative set. The decline in completed stops cannot be attributed to prompt wording alone from one stochastic pass, but it remains an observed regression and is not dismissed.
+
+**Assessment:** v50 is a useful lean experimental candidate, especially for stopping unexpected-charge alarms immediately, but the evidence does not establish the requested combination of unchanged ordinary-call performance and reliable multi-turn handling. Keep live v30 unchanged. Additional word-by-word tuning on this final holdout would invalidate its purpose; it has not been done. Text scores also cannot establish the actual voice agent's clarification behavior, recognition, timing or live-call safety. Voice validation is still outstanding and would require a separate authorized GPT Live test; no paid voice inference, deployment, forwarding change or owner phone call occurred.
+
+Completed audits and immutable artifacts:
+
+- `artifacts/v30-v50-critical/`: 240 repeated known critical trials.
+- `artifacts/v50-development/`, `artifacts/v50-regression/`, `artifacts/v50-dialogues/`: retained broader development results, including failures.
+- `artifacts/v30-v50-fresh-final/`: 396 paired fresh trials, 48 supplementary native-history trials, exact requests and source/result audits.
+- `artifacts/v30-dialogues-final-control/`: 192 known native-history baseline trials.
+- `artifacts/v50-public-final/`: all 1,044 public identities, partial FTC summary, missing-only resume record, prefix verification and final audit.
+
+The audit checks request hashes, frozen source hashes, case membership, unchanged expectations, no future caller replies after terminal decisions, dataset labels/copy weights and recomputed scores. Public runner hashes were additionally recorded during the run and matched tracked Git source; that record is not represented as a pre-run freeze. The main fixture remains 24 cases. Repository checks passed typecheck/build, 143 unit tests and 86 Firestore emulator tests during this hardening task; final candidate/fixture syntax checks and `git diff --check` also passed. Production policy, tools, model settings and recipient-acceptance invariants are unchanged.
