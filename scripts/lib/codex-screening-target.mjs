@@ -6,7 +6,7 @@ import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { callerText, permittedDecision } from '../../dist/live/policy.js';
+import { callerText, permittedDecision, liveDecisionSchema, supportedEvidence } from '../../dist/live/policy.js';
 
 const disabled = ['apps', 'plugins', 'skill_search', 'skill_mcp_dependency_install',
   'shell_tool', 'unified_exec', 'browser_use', 'browser_use_external',
@@ -95,6 +95,14 @@ export async function codexScreeningTarget(config, { extraConfig = {} } = {}) {
       if (++a.rounds > 12) { a.finish({ kind: 'failure', failure: 'too_many_rounds' }); return; }
       if (params.tool === 'screen_call') {
         const decision = permittedDecision(params.arguments, a.state.transcript);
+        // Content-free diagnostics distinguish policy misses from rejected tool arguments.
+        const parsed = liveDecisionSchema.safeParse(params.arguments);
+        a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
+          evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,
+          ...(parsed.success ? { action: parsed.data.action, reason: parsed.data.reason, purpose: parsed.data.purpose,
+            hasName: parsed.data.hasName, hasReason: parsed.data.hasReason,
+            evidenceSupported: supportedEvidence(parsed.data.evidence, a.state.transcript) }
+            : { issueCodes: parsed.error.issues.map(issue => issue.code) }) });
         if (decision && decision.action !== 'continue') { a.finish({ kind: 'decision', decision }); return; }
         if (decision) {
           a.state.questions++; a.asking = true;
@@ -122,7 +130,7 @@ export async function codexScreeningTarget(config, { extraConfig = {} } = {}) {
     transport: { kind: 'codex-app-server-dynamic-tools', version: 1, promptRole: 'developer',
       research: 'unavailable', context: 'frozen instructions and caller only; verified with local mock',
       differencesFromGo: 'Codex uses non-strict tools, normalizes schemas (drops $schema and maxLength, sorts properties), uses its output limit and low verbosity, allows parallel tool calls, and wraps tool results as content items. Production permittedDecision still validates every decision. Compare only within this transport.' },
-    newState: text => ({ transcript: text, questions: 0, researches: 0 }),
+    newState: text => ({ transcript: text, questions: 0, researches: 0, validationAttempts: [] }),
     async advance(state) {
       if (state.started) throw new Error('subscription_fallback_one_shot_only');
       state.started = true;

@@ -14,7 +14,7 @@ export async function evaluateScenario(target,c) {
     const state=target.newState(transcript),start=Date.now();
     const step=await target.advance(state);
     const actual=step.kind==='decision'?step.decision.action:step.kind==='question'?'continue':step.kind;
-    steps.push({stage:i+1,actual,reason:step.decision?.reason,failure:step.failure,questions:state.questions,researches:state.researches,elapsedMs:Date.now()-start});
+    steps.push({stage:i+1,actual,reason:step.decision?.reason,failure:step.failure,questions:state.questions,researches:state.researches,validationAttempts:state.validationAttempts,elapsedMs:Date.now()-start});
     if(actual!=='continue')break;
   }
   const final=steps.at(-1),questions=steps.reduce((n,s)=>n+s.questions,0),researches=steps.reduce((n,s)=>n+s.researches,0);
@@ -45,7 +45,8 @@ async function main(){
   if(process.argv.includes('--self-test'))return selfTest();
   const args=process.argv.slice(2),option=(name,def)=>{const i=args.indexOf(name);return i<0?def:args.splice(i,2)[1];};
   const root=resolve(option('--root','artifacts/v30-v37-realworld')),casesFile=option('--cases','scripts/fixtures/holdout/v30-v37-realworld.mjs');
-  const candidate=option('--candidate','v37');assert.match(candidate,/^v[0-9]+$/);assert.notEqual(candidate,'v30');const versions=['v30',candidate];
+  const baseline=option('--baseline','v30'),candidate=option('--candidate','v37');for(const v of [baseline,candidate])assert.match(v,/^v[0-9]+$/);assert.notEqual(candidate,baseline);const versions=[baseline,candidate];
+  const suiteKind=option('--suite-kind','fresh');assert.ok(['fresh','development'].includes(suiteKind));
   const repeat=Number(option('--repeat','3')),concurrency=Number(option('--concurrency','8'));
   assert.ok(!args.length&&Number.isInteger(repeat)&&repeat>0&&repeat<=10&&Number.isInteger(concurrency)&&concurrency>0&&concurrency<=12);
   const {cases,stagedCases}=await import(pathToFileURL(resolve(casesFile)).href),all=[...cases,...stagedCases];
@@ -61,9 +62,9 @@ async function main(){
   const targets={};let results=[],writes=Promise.resolve(),cursor=0,stopped=false;
   try{
     for(const [key,request]of Object.entries(requests))targets[key]=await screeningTarget('codex',{request,subscriptionOneShot:true});
-    const manifest={startedAt:new Date().toISOString(),provider:'codex',model:'gpt-6-luna',effort:'medium',transport:targets.v30.transport,requestHashes:freeze.requestHashes,cautionIntegration:freeze.cautionIntegration,sourceHashes:before,repeat,concurrency,planned:jobs.length,
+    const manifest={startedAt:new Date().toISOString(),provider:'codex',model:'gpt-6-luna',effort:'medium',transport:targets[baseline].transport,requestHashes:freeze.requestHashes,cautionIntegration:freeze.cautionIntegration,sourceHashes:before,suiteKind,repeat,concurrency,planned:jobs.length,
       cases:all.map(({name,category,focus,accept,turns,staged,caution})=>({name,category,focus,accept,stages:turns.length,staged:!!staged,caution:!!caution})),
-      interpretation:'Fresh author-designed cases. Both versions unchanged, same cases/settings, alternating order per repetition. Follow-ups are fixed cumulative caller snapshots reached only after continue, without assistant-history or question-sensitive responses. No live conversation, voice or latency guarantee. Context cases use an explicit identical trusted caution paragraph; See the frozen cautionIntegration field for candidate context handling. No output-based retries; timeouts retained.'};
+      interpretation:(suiteKind==='development'?'Known development cases. ':'Fresh author-designed cases. ')+'Both versions unchanged, same cases/settings, alternating order per repetition. Follow-ups are fixed cumulative caller snapshots reached only after continue, without assistant-history or question-sensitive responses. No live conversation, voice or latency guarantee. Context cases use an explicit identical trusted caution paragraph; See the frozen cautionIntegration field for candidate context handling. No output-based retries; timeouts retained.'};
     await writeFile(`${out}/manifest.json`,JSON.stringify(manifest,null,2),{flag:'wx'});
     async function worker(){while(!stopped&&cursor<jobs.length){const {c,version,run}=jobs[cursor++];const result={case:c.name,category:c.category,focus:c.focus,suite:c.caution?'context':c.staged?'staged':'snapshot',version,run,...await evaluateScenario(targets[`${version}${c.caution?'Caution':''}`],c)};results.push(result);writes=writes.then(()=>appendFile(`${out}/results.jsonl`,`${JSON.stringify(result)}\n`));
       if(result.failure&&result.failure!=='codex_evaluation_timeout')stopped=true;

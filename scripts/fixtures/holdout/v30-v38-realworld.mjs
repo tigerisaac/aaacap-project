@@ -1,3 +1,4 @@
+// RETIRED from holdout: owner requested debugging these failures on October 12; new validation cases must be authored.
 // Fresh after v38 request freeze (2026-10-12). Keep held out from prompt changes.
 // Expectations are Shield's operational policy, not authentication or proof of fraud.
 const row=(name,category,focus,text,accept)=>({name,category,focus,turns:[text],accept});

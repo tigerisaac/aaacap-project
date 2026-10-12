@@ -46,8 +46,9 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 let target;
 try {
   target=await codexScreeningTarget(request,{extraConfig:{model_provider:'screening_mock','model_providers.screening_mock':{name:'Local screening preflight',base_url:`http://127.0.0.1:${server.address().port}/v1`,wire_api:'responses',requires_openai_auth:false,supports_websockets:false}}});
-  const result=await target.advance(target.newState(caller));
+  const state=target.newState(caller); const result=await target.advance(state);
   if(failure) throw failure;
   assert.equal(checks,1); assert.equal(result.kind,'decision'); assert.equal(result.decision.action,'approve');
+  assert.equal(state.validationAttempts.length,1);assert.equal(state.validationAttempts[0].accepted,true);assert.equal(state.validationAttempts[0].schemaValid,true);assert.equal(state.validationAttempts[0].evidenceSupported,true);assert.ok(!JSON.stringify(state.validationAttempts).includes('gardening'));
   console.log(JSON.stringify({passed:true,cli:execFileSync('codex',['--version'],{encoding:'utf8'}).trim(),checks:['exact_prompt','no_private_notes','only_screening_tools','normalized_schemas','luna_medium','native_tool_decision_validation'],externalInference:false}));
 } finally { await target?.close(); server.closeAllConnections(); await new Promise(resolve=>server.close(resolve)); }
