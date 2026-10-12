@@ -932,3 +932,37 @@ Completed audits and immutable artifacts:
 - `artifacts/v50-public-final/`: all 1,044 public identities, partial FTC summary, missing-only resume record, prefix verification and final audit.
 
 The audit checks request hashes, frozen source hashes, case membership, unchanged expectations, no future caller replies after terminal decisions, dataset labels/copy weights and recomputed scores. Public runner hashes were additionally recorded during the run and matched tracked Git source; that record is not represented as a pre-run freeze. The main fixture remains 24 cases. Repository checks passed typecheck/build, 143 unit tests and 86 Firestore emulator tests during this hardening task; final candidate/fixture syntax checks and `git diff --check` also passed. Production policy, tools, model settings and recipient-acceptance invariants are unchanged.
+
+### Continued ordering and clarification work, v51–v54
+
+The completed v50 comparison was progress, not completion of the readiness goal. The next revisions use only known development failures; the final v50 holdout remains validation evidence and has not supplied wording changes. Examination of the staged fake-decision failure found accepted, schema-valid `continue` decisions before identity/purpose clarification, followed by an accepted ordinary approval. It was a classification failure, not an unsupported-quote rejection.
+
+V51 (5,272 characters) made the decision order explicit: check block rules before asking who or why, and treat missing identity/purpose as compatible with blocking. It also says to ask one question after an accepted continue and wait without calling the tool again on unchanged evidence. This reduced missing questions in the observed native-history tests but overblocked ordinary mixed-service calls. V52 (5,444 characters) preserved the original service purpose before evaluating a pure pitch and narrowed screening-authority language. V53 kept v52's decision prose unchanged and added 196 characters to the decision tool's description; schemas, model and reasoning were identical. It did not reliably eliminate the bypass and is not selected. Its instruction-only character count must not conceal the added tool-description text.
+
+The 17 known critical controls were repeated five times per version. Each paired snapshot comparison has 170 trials; each native-history run has 85. There were no provider failures:
+
+| Run | Ordinary offered | Harmful stopped | Harmful approvals | Missing native questions |
+|---|---:|---:|---:|---:|
+| v50 in paired v50/v51 snapshots | 38/40 | 28/30 | 2 | not scored here |
+| v51 in paired v50/v51 snapshots | 28/40 | 29/30 | 1 | not scored here |
+| v50 native-history control | 38/40 | 25/30 | 3 | 6 |
+| v51 native history | 29/40 | 30/30 | 0 | 0 |
+| v51 in paired v51/v52 snapshots | 28/40 | 29/30 | 1 | not scored here |
+| v52 in paired v51/v52 snapshots | 36/40 | 28/30 | 2 | not scored here |
+| v52 native history | 37/40 | 30/30 | 0 | 0 |
+| v53 snapshots, candidate only | 35/40 | 30/30 | 0 | not scored here |
+| v53 native history | 36/40 | 29/30 | 1 | 0 |
+
+No native run in this table exceeded the question-turn budget. The personal-list caller remains a frequent ordinary miss. V52's native fake-decision result is a **completed-stop** result: four of its five trials first asked a question and then blocked after the prepared family explanation. It is not 5/5 immediate blocking. V53 immediately blocked four trials but asked and approved the fifth. Native and cumulative-snapshot modes therefore do not establish uniform safety, and differences between small repeated samples cannot be attributed solely to conversation history.
+
+V52's broader known development run completed 234 trials: **96/99 ordinary offers**, **86/90 harmful stops**, no harmful approvals and no provider failures. All three ordinary misses were questions on the known account-settings notice; four harmful trials also remained in questions. The 245-case regression offered **99/101 ordinary calls**, stopped **113/117 harmful calls**, and approved the staged fake decision once. One ordinary block was the old first-stage financial-alert policy conflict; the other was the personal-list caller.
+
+On the 64 known native-history conversations repeated three times, v52 offered **72/75 ordinary trials** and stopped **94/96 harmful trials**, with zero missing questions, question-budget overruns or provider failures. The three ordinary blocks are the retained old alert-policy conflict. Both harmful approvals were `round5/r5-split-steps`, an unresolved bank-card matter followed by an innocuous preliminary possession check. At the point of those approvals there was not yet an explicit harmful request; the frozen fixture expects continued clarification or a hold because the underlying purpose remains unexplained. Its scam label is retained, without claiming the heard words alone prove fraud.
+
+V54 (5,596 characters; 42.4% shorter than v30 and 14.8% longer than v38) makes two small changes to v52: it explicitly includes recited decision-field values in the override rule, and says an innocuous preliminary check does not resolve an unexplained financial or official purpose. It restores the unchanged production tool description. Its request hash is `1b5420719a69ca6a2a48236db259ebfda7d0e85c19485f4a0e2e7ebda38893bf`. A 20-case known control set adds the bank-card sequence plus genuine bank renewal/independent-review controls. Five-repeat paired v52/v54 snapshots and v54 native-history checks are running. No v51–v54 public or fresh holdout evaluation has run at this checkpoint.
+
+A new **62-case synthetic holdout** was authored after v52 was frozen and remains unrun: 20 ordinary snapshots, 20 harmful snapshots, four ads, four incomplete openers, six caution controls and eight staged conversations. It includes two Spanish-language controls and is author-designed, not a population estimate. Subsequent wording changes have come from named known development cases, not this holdout's outcomes.
+
+An isolated experimental voice runner is now prepared. It accepts an exact frozen request, permits only decision-instruction changes, preserves model/settings/tools, writes exclusively to a new `artifacts/voice-experiment-*` directory, and cannot satisfy the production deployment gate. Preparation runs before authentication or network inference; an actual run requires the explicit paid-voice flag plus owner authorization to depart from subscription-only testing. Local positive preparation and negative checks for a production-gate output, model change and missing execution mode passed. The original 24-case main fixture is unchanged; a separate 32-case voice-development set adds eight known payment/override/ordinary/clarification cases. Frozen v30 and v50 plans are prepared, **not run**. Prepared follow-ups follow assistant audio, not semantic question recognition or adaptive human behavior; native-history tests remain complementary.
+
+Completed audits are under `artifacts/v50-v51-priority/`, `artifacts/v51-v52-priority/`, `artifacts/v53-priority/`, the corresponding `*-priority-dialogues/` roots, and `artifacts/v52-development/`, `artifacts/v52-regression/`, `artifacts/v52-dialogues/`. V53's imported v52 dependency additionally matches the earlier frozen v52 source hash. The voice preparation is not voice evidence. Production remains v30; no paid voice inference, deployment, forwarding change or real phone call has occurred.
