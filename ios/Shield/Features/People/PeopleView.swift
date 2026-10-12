@@ -7,7 +7,13 @@ struct PeopleView: View {
     var body: some View {
         NavigationShell {
             List {
-                Section {
+                if let error = model.contextError {
+                    Section {
+                        ShieldNotice(title: "Activity couldn’t refresh", detail: error, symbol: "wifi.exclamationmark")
+                        Button("Try Again", systemImage: "arrow.clockwise") { Task { await model.refresh() } }.frame(minHeight: 44)
+                    }
+                }
+                ShieldSection("View activity for") {
                     ForEach(model.people) { person in
                         Button {
                             Task { await model.select(person) }
@@ -15,16 +21,17 @@ struct PeopleView: View {
                             HStack(spacing: 14) {
                                 Image(systemName: person.isOwner ? "person.crop.circle.fill" : "person.2.circle.fill")
                                     .font(.largeTitle)
-                                    .foregroundStyle(person.isOwner ? ShieldTheme.action : ShieldTheme.message)
+                                    .foregroundStyle(Color.secondary)
                                     .accessibilityHidden(true)
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(person.name).font(.headline).foregroundStyle(.primary)
-                                    Text(person.isOwner ? "Your phone" : person.canListen ? "History & voicemail shared" : "Call history shared")
-                                        .font(.subheadline).foregroundStyle(.secondary)
+                                    Text(person.name).font(.headline).foregroundStyle(Color.primary)
+                                    Text(person.isOwner ? "Your phone" : person.canListen ? "History & voicemail" : "History only")
+                                        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 }
                                 Spacer()
                                 if person.id == model.selectedPersonID {
-                                    Image(systemName: "checkmark.circle.fill")
+                                    Image(systemName: "checkmark")
+                                        .font(.body.weight(.semibold))
                                         .foregroundStyle(ShieldTheme.action)
                                         .accessibilityLabel("Selected")
                                 }
@@ -34,37 +41,34 @@ struct PeopleView: View {
                         .accessibilityIdentifier("person-\(person.name)")
                     }
                 }
-                if model.isOwner {
-                    Section {
-                        NavigationLink(value: AppRoute.sharing) {
-                            Label("Share with someone", systemImage: "person.badge.plus")
-                                .foregroundStyle(ShieldTheme.message)
-                                .padding(.vertical, 6)
-                        }
-                    } footer: {
-                        Text("You choose what to share. You can stop sharing anytime.")
-                    }
-                } else {
+                if !model.isOwner {
                     Section {
                         Label("Shared access", systemImage: "heart.text.clipboard")
                             .foregroundStyle(ShieldTheme.message)
-                        Text("Phone settings stay with the participant.").font(.subheadline).foregroundStyle(.secondary)
+                        Text("Phone settings stay with the participant.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
                 Section {
-                    Button("Join with an invitation", systemImage: "envelope.open") { joining = true }
-                        .frame(minHeight: 44)
-                        .disabled(model.isDemo)
-                }
-                Section {
-                    NavigationLink(value: AppRoute.settings) { Label("Settings", systemImage: "gearshape") }
+                    if model.isOwner {
+                        NavigationLink(value: AppRoute.sharing) {
+                            ActionRow(title: "Share with someone", symbol: "person.badge.plus")
+                        }
+                    }
+                    Button { joining = true } label: {
+                        ActionRow(title: "Join with an invitation", symbol: "envelope.open")
+                    }
+                    .frame(minHeight: 44)
+                    .disabled(model.isDemo)
+                } footer: {
+                    if model.isOwner {
+                        Text("You choose what to share. You can stop sharing anytime.").foregroundStyle(ShieldTheme.secondaryText)
+                    }
                 }
             }
             .navigationTitle("People")
             .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }
-            .scrollContentBackground(.hidden)
-            .background(ShieldTheme.surface)
+            .shieldListStyle()
         }
     }
 }

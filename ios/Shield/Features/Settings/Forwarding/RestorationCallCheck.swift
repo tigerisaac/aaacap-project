@@ -20,14 +20,6 @@ struct RestorationCallCheck: View {
             }
             Text("Already checked this? You can confirm below. Keep Shield installed until both checks work.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
-            Button { index += 1 } label: {
-                Text(answering ? "I answered an ordinary call" : "My normal voicemail works")
-                    .font(.headline).multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, minHeight: 38)
-            }
-                .buttonStyle(.borderedProminent).controlSize(.large)
-                .buttonBorderShape(.roundedRectangle(radius: 16))
-                .foregroundStyle(ShieldTheme.actionInk).accessibilityIdentifier("restoration-call-confirm")
             DisclosureGroup("The check didn’t work") {
                 Text("Stop here and contact Tello to restore normal call and voicemail routing. Keep Shield installed while you get help.")
                     .padding(.top, 8).foregroundStyle(ForwardingStyle.secondaryText)

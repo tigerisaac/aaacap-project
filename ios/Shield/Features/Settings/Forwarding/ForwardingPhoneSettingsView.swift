@@ -12,8 +12,7 @@ struct ForwardingPhoneSettingsView: View {
                 Label(silence ? "Choose Silence" : "Turn Off", systemImage: "hand.tap")
                     .font(.title2.bold()).foregroundStyle(ShieldTheme.action)
             }
-            .padding(20).frame(maxWidth: .infinity, alignment: .leading)
-            .background(ShieldTheme.card, in: .rect(cornerRadius: 16))
+            .shieldCard()
 
             if silence {
                 VStack(alignment: .leading, spacing: 12) {
@@ -23,8 +22,7 @@ struct ForwardingPhoneSettingsView: View {
                     Text("Make both changes in this one visit. Keep voicemail enabled in your Tello account.")
                         .foregroundStyle(ForwardingStyle.secondaryText)
                 }
-                .padding(20).frame(maxWidth: .infinity, alignment: .leading)
-                .background(ShieldTheme.card, in: .rect(cornerRadius: 16))
+                .shieldCard()
             }
             if model.settingsReturned {
                 Text(silence ? "Your place is saved" : "Confirm the second change").font(.headline)

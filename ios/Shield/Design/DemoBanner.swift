@@ -1,21 +1,24 @@
 import SwiftUI
 
+/// Persistent sample-data marker. Shown in the tab bar's bottom accessory so it stays visible
+/// on every tab without taking space from each screen. Exit lives on Today and in Settings.
 struct DemoBanner: View {
     @Environment(AppState.self) private var model
 
     var body: some View {
-        HStack {
-            Label("Demo", systemImage: "play.circle")
-                .accessibilityLabel("Demo, sample activity")
-                .accessibilityIdentifier("demoBanner")
-                .font(.caption.weight(.semibold))
-            Spacer()
-            Button("Exit") { Task { await model.signOut() } }
-                .font(.caption.weight(.bold))
-                .frame(minWidth: 44, minHeight: 44)
-        }
-        .foregroundStyle(ShieldTheme.action)
-        .padding(.horizontal, 20)
-        .background(ShieldTheme.surface)
+        Label(model.isTestAccount ? "Test account · Sample data" : "Demo · Sample data", systemImage: "play.circle")
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
+            .accessibilityLabel(model.isTestAccount ? "Test account, sample activity" : "Demo, sample activity")
+            .accessibilityIdentifier("demoBanner")
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func demoAccessory(_ isDemo: Bool) -> some View {
+        if isDemo { tabViewBottomAccessory { DemoBanner() } } else { self }
     }
 }

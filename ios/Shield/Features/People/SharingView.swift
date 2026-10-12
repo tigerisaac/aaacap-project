@@ -13,21 +13,24 @@ struct SharingView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Their name", text: $label)
+                TextField("Their name", text: $label, prompt: Text("Their name").foregroundStyle(ShieldTheme.secondaryText))
                     .textContentType(.givenName)
                 Toggle("Include voicemail", isOn: $canListen)
-                Button(creating ? "Creating…" : "Create invitation") { confirmShare = true }
+                Button { confirmShare = true } label: {
+                    Text(creating ? "Creating…" : "Create invitation")
+                        .foregroundStyle(creating || model.isDemo || label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? ShieldTheme.secondaryText : ShieldTheme.action)
+                }
                     .disabled(label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || creating || model.isDemo)
                     .confirmationDialog("Share your call history?", isPresented: $confirmShare, titleVisibility: .visible) {
                         Button("Create invitation") { Task { await createInvite() } }
                     } message: {
                         Text(canListen ? "Whoever accepts this code can see your call history and listen to voicemail. Share it only with the person you intend." : "Whoever accepts this code can see your call history. Voicemail stays private.")
                     }
-            } footer: {
-                Text("Invitations expire in 2 days. Phone settings stay yours.")
+            } header: { Text("Create an invitation").foregroundStyle(ShieldTheme.secondaryText) } footer: {
+                Text("Invitations expire in 2 days. Phone settings stay yours.").foregroundStyle(ShieldTheme.secondaryText)
             }
             if let inviteCode {
-                Section("Share this invitation") {
+                ShieldSection("Share this invitation") {
                     Text(inviteCode).font(.body.monospaced()).textSelection(.enabled)
                     ShareLink(item: "I’d like to share my Shield call history with you. In Shield, open People → Join with an invitation and enter:\n\n\(inviteCode)") {
                         Label("Share invitation", systemImage: "square.and.arrow.up")
@@ -35,18 +38,17 @@ struct SharingView: View {
                     .frame(minHeight: 44)
                 }
             }
-            Section("People with access") {
+            ShieldSection(model.isDemo ? "Demo" : "People with access") {
                 if model.isDemo {
-                    Label("Sample shared person", systemImage: "person.crop.circle")
-                    Text("Connect your account to manage sharing.").font(.subheadline).foregroundStyle(.secondary)
+                    Text("Sign in to manage sharing.").foregroundStyle(ShieldTheme.secondaryText)
                 } else if grants.isEmpty {
-                    Text("No one has access yet.").foregroundStyle(.secondary)
+                    Text("No one has access yet.").foregroundStyle(ShieldTheme.secondaryText)
                 }
                 ForEach(grants) { grant in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(grant.label).font(.headline)
                         Text(grant.accepted ? grant.canListen ? "History & voicemail" : "History only" : "Invitation pending")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         Button("Stop sharing", role: .destructive) { revokeID = grant.id }
                             .frame(minHeight: 44)
                     }
@@ -59,6 +61,7 @@ struct SharingView: View {
                 }
             }
         }
+        .shieldListStyle()
         .navigationTitle("Sharing")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

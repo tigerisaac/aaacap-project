@@ -23,6 +23,28 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["demoBanner"].waitForExistence(timeout: 5))
     }
 
+    func testSimulatorTestAccountSequenceOpensSampleAccount() {
+        let app = XCUIApplication()
+        app.launch()
+        let email = app.textFields["Email address"]
+        XCTAssertTrue(email.waitForExistence(timeout: 5))
+        email.tap()
+        email.typeText("shield-test-account1")
+        let banner = app.staticTexts["demoBanner"]
+        XCTAssertTrue(banner.waitForExistence(timeout: 5))
+        XCTAssertEqual(banner.label, "Test account, sample activity")
+        let check = app.staticTexts["protection-check-title"]
+        for _ in 0..<4 where !check.isHittable { app.swipeUp() }
+        XCTAssertTrue(check.exists)
+        XCTAssertFalse(app.buttons["Exit Demo"].exists)
+        capture(app, name: "Test account")
+        openSettings(app)
+        let signOut = app.buttons["Sign out"]
+        for _ in 0..<8 where !signOut.isHittable { app.swipeUp() }
+        XCTAssertTrue(signOut.isHittable)
+        XCTAssertFalse(app.buttons["Leave demo"].exists)
+    }
+
     func testEmailSentShowsAddressOnceAndCanChangeIt() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-email-sent"]
@@ -159,7 +181,7 @@ final class ShieldUITests: XCTestCase {
         capture(app, name: "Today")
         app.tabBars.buttons["Calls"].tap()
         XCTAssertTrue(app.navigationBars["Calls"].exists)
-        XCTAssertTrue(app.buttons["callFilter"].exists)
+        XCTAssertTrue(app.segmentedControls["callFilter"].exists || app.buttons["callFilter"].exists)
         capture(app, name: "Calls")
         app.staticTexts["Call held for review"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Call details"].waitForExistence(timeout: 3))
@@ -176,7 +198,7 @@ final class ShieldUITests: XCTestCase {
         for _ in 0..<4 where !blocked.isHittable { app.swipeUp() }
         blocked.tap()
         XCTAssertTrue(app.navigationBars["Blocked numbers"].waitForExistence(timeout: 3))
-        let row = app.staticTexts["+13125550199"]
+        let row = app.staticTexts["(312) 555-0199"]
         XCTAssertTrue(row.waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Shield stopped a scam call from this number"].exists)
         capture(app, name: "Blocked numbers")
@@ -205,8 +227,11 @@ final class ShieldUITests: XCTestCase {
         app.launchArguments = ["--uitesting-preview", "--uitesting-protection-check", "--protection-check-good",
                                "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
+        XCTAssertTrue(app.staticTexts["today-status-title"].waitForExistence(timeout: 5))
+        // At the largest size the setup check sits below the screening status card.
         let title = app.staticTexts["protection-check-title"]
-        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        for _ in 0..<8 where !title.isHittable { app.swipeUp() }
+        XCTAssertTrue(title.isHittable)
         XCTAssertEqual(title.label, "Protection is on")
         capture(app, name: "Protection all good large text")
     }
@@ -241,7 +266,7 @@ final class ShieldUITests: XCTestCase {
         let blocked = app.buttons["Blocked numbers"]
         for _ in 0..<4 where !blocked.isHittable { app.swipeUp() }
         blocked.tap()
-        let row = app.staticTexts["+13125550199"]
+        let row = app.staticTexts["(312) 555-0199"]
         XCTAssertTrue(row.waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Shield ends calls from these numbers without screening them. Only the person Shield protects can unblock a number."].exists)
         XCTAssertFalse(app.buttons["unblock-+13125550199"].exists)

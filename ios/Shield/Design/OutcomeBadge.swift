@@ -5,7 +5,7 @@ struct OutcomeBadge: View {
 
     var body: some View {
         Label(outcome.label, systemImage: outcome.symbol)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(ShieldTheme.color(for: outcome))
 
     }

@@ -9,7 +9,6 @@ struct RestorationSettingsGuide: View {
     @State private var working = false
     @State private var destination = PhoneSettingsLink.preferredDestination
     private var unknownCallers: Bool { index == 3 }
-    private var confirmation: String { unknownCallers ? "Screen Unknown Callers is Never" : "Live Voicemail is on" }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -24,19 +23,10 @@ struct RestorationSettingsGuide: View {
                     Text("During the same visit, turn Live Voicemail on. We’ll confirm it next.")
                 }
             }
-            .padding(20).frame(maxWidth: .infinity, alignment: .leading)
-            .background(ShieldTheme.card, in: .rect(cornerRadius: 16))
+            .shieldCard()
             Text(returned ? "Back from Settings? Confirm the value below. Shield can’t read this setting." : "Already done? Confirm the value below to continue without opening Settings again.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
                 .accessibilityIdentifier("restoration-settings-unverified")
-            Button { index += 1 } label: {
-                Text(confirmation).font(.headline).multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, minHeight: 38)
-            }
-                .buttonStyle(.borderedProminent).controlSize(.large)
-                .buttonBorderShape(.roundedRectangle(radius: 16))
-                .foregroundStyle(ShieldTheme.actionInk)
-                .accessibilityIdentifier("restoration-settings-confirm")
             Button(opened ? "Open Phone settings again" : "Open Phone settings", systemImage: "gearshape") {
                 Task { await openSettings() }
             }

@@ -20,15 +20,18 @@ struct ProtectionOnboardingView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
+                    ShieldBrand(compact: true)
                     Text(showsProtection ? "Protection while you talk" : "Alerts for your helpers").font(.largeTitle.bold())
                         .accessibilityAddTraits(.isHeader)
                     if showsProtection {
                         Text("Shield can keep checking for scam requests after you accept a screened call.").font(.title3)
-                        Toggle("Protect connected calls", isOn: $enabled)
-                            .font(.headline).frame(minHeight: 44)
-                            .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
-                        Text("Selected by default. You can turn it off here or change it later in Settings.")
-                            .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 12) {
+                            Toggle("Protect connected calls", isOn: $enabled)
+                                .font(.headline).frame(minHeight: 44)
+                                .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
+                            Text("Selected by default. You can turn it off here or change it later in Settings.")
+                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        }.shieldCard()
                         VStack(alignment: .leading, spacing: 20) {
                             Label("Calls you accept are transcribed by Telnyx and checked by OpenAI while you talk. The caller is told before your phone rings.", systemImage: "waveform")
                             Label("Shield may end a call it detects as a scam and tell you why. It can miss a scam or end an ordinary call.", systemImage: "phone.down")
@@ -37,33 +40,32 @@ struct ProtectionOnboardingView: View {
                     }
                     if showsHelpers {
                         Text("Scammers often call back, and a helper can step in sooner if they know.").font(.title3)
-                        Toggle("Alert my helpers", isOn: $alertHelpers)
-                            .font(.headline).frame(minHeight: 44)
-                            .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
-                        Text("Selected by default. You can change it later in Settings.").foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 12) {
+                            Toggle("Alert my helpers", isOn: $alertHelpers)
+                                .font(.headline).frame(minHeight: 44)
+                                .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
+                            Text("Selected by default. You can change it later in Settings.")
+                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        }.shieldCard()
                         VStack(alignment: .leading, spacing: 20) {
                             Label("People you share Shield with are told when Shield ends a scam call, a blocked caller tries again, or protection is paused.", systemImage: "bell.badge")
                             Label("Alerts include your name. They never include a caller’s words or number.", systemImage: "lock")
                         }
                     }
-                    Text(showsProtection && asksHelperAlerts ? "Next, you can choose alerts for your helpers." : "Continue to save your choice.").foregroundStyle(.secondary)
+                    Text(showsProtection && asksHelperAlerts ? "Next, you can choose alerts for your helpers." : "Continue to save your choice.")
+                        .foregroundStyle(ShieldTheme.secondaryText)
                     Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!)
                         .frame(minHeight: 44)
 
                 }
-                .padding(28).frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
+                .padding(ShieldTheme.Spacing.page).frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }
             .background(ShieldTheme.surface)
             .safeAreaInset(edge: .bottom) {
                 Button { if showsProtection && asksHelperAlerts { onHelperStep = true } else { Task { await save() } } } label: {
-                    HStack {
-                        if working { ProgressView().tint(ShieldTheme.actionInk) }
-                        Text(showsProtection && asksHelperAlerts ? "Next" : "Continue").font(.headline)
-                    }
-                    .foregroundStyle(ShieldTheme.actionInk).frame(maxWidth: .infinity, minHeight: 38)
+                    ShieldActionLabel(title: showsProtection && asksHelperAlerts ? "Next" : "Continue", isWorking: working)
                 }
-                .buttonStyle(.borderedProminent).controlSize(.large)
-                .buttonBorderShape(.roundedRectangle(radius: 16))
+                .shieldPrimaryButton()
                 .disabled(working).accessibilityIdentifier("onboarding-protection-continue")
                 .padding(20).background(ShieldTheme.surface)
             }

@@ -8,7 +8,7 @@ struct ForwardingCodeView: View {
             Text("Tello connection \((model.step.codeIndex ?? 0) + 1) of 3").foregroundStyle(ForwardingStyle.secondaryText)
             if let code = model.code {
                 if model.codePreparedStep == model.step {
-                    Text("Your code is copied").font(.title2.bold())
+                    Label("Code copied", systemImage: "checkmark.circle.fill").font(.title3.bold())
                         .accessibilityIdentifier("forwarding-code-copied")
                 } else {
                     Text("Your personal Tello code").font(.title2.bold())

@@ -12,26 +12,22 @@ struct ForwardingActions: View {
                     if model.step == .checks { dismiss() }
                     else { Task { await model.primaryAction(app) } }
                 } label: {
-                    HStack(spacing: 12) {
-                        if model.working || model.probeWaiting && (model.step == .ring || model.step == .test) {
-                            ProgressView().tint(ShieldTheme.actionInk)
-                        }
-                        Text(label).font(.headline).multilineTextAlignment(.center)
-                    }
-                    .foregroundStyle(ShieldTheme.actionInk)
-                    .frame(maxWidth: .infinity, minHeight: 38)
+                    ShieldActionLabel(title: label, isWorking: model.working || model.probeWaiting && (model.step == .ring || model.step == .test))
                 }
-                .buttonStyle(.borderedProminent).controlSize(.large)
-                .buttonBorderShape(.roundedRectangle(radius: 16))
+                .shieldPrimaryButton()
                 .disabled(model.working || ((model.step == .ring || model.step == .test) && model.probeWaiting)
                     || (model.step == .save && model.status?.prepared != true))
                 .accessibilityIdentifier("forwarding-continue")
+            } else if let status = model.status {
+                RestorationConfirmationAction(status: status)
             }
 
         }
         .tint(ShieldTheme.action)
         .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
         .background(ShieldTheme.surface)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("forwarding-action-area")
     }
     private var label: String {
         if model.step.codeIndex != nil {
@@ -52,6 +48,29 @@ struct ForwardingActions: View {
             return model.step == .ring ? "Call me now" : "Check forwarding now"
         case .checks: return "Done"
         default: return "Continue"
+        }
+    }
+}
+
+/// Explicit confirmations stay visible while the restoration instructions scroll.
+private struct RestorationConfirmationAction: View {
+    @AppStorage private var index: Int
+    init(status: ForwardingStatus) {
+        _index = AppStorage(wrappedValue: 0, "shield-restoration-step-" + status.participantId.uuidString)
+    }
+    var body: some View {
+        if (3..<7).contains(index) {
+            Button { index += 1 } label: { ShieldActionLabel(title: title) }
+                .shieldPrimaryButton()
+                .accessibilityIdentifier(index < 5 ? "restoration-settings-confirm" : "restoration-call-confirm")
+        }
+    }
+    private var title: String {
+        switch index {
+        case 3: "Screen Unknown Callers is Never"
+        case 4: "Live Voicemail is on"
+        case 5: "I answered an ordinary call"
+        default: "My normal voicemail works"
         }
     }
 }

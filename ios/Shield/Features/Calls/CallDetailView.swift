@@ -16,26 +16,26 @@ struct CallDetailView: View {
     var body: some View {
         List {
             Section {
-                VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 8) {
                     OutcomeBadge(outcome: call.outcome)
-                    Text(call.title).font(.title2.bold())
-                    Text(call.callerNumber).font(.body).foregroundStyle(.secondary)
-                    Text(call.occurredAt.formatted(date: .abbreviated, time: .shortened))
-                        .font(.subheadline).foregroundStyle(.secondary)
+                    Text(call.title).font(.title2.bold()).fixedSize(horizontal: false, vertical: true)
+                        .accessibilityAddTraits(.isHeader)
+                    Text("\(PhoneDisplay.format(call.callerNumber)) · \(call.occurredAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.vertical, 12)
+                .padding(.vertical, 8)
             } footer: {
-                Text("Screened doesn’t mean verified.")
+                Text("Screened doesn’t mean verified.").foregroundStyle(ShieldTheme.secondaryText)
             }
-            .listRowBackground(ShieldTheme.color(for: call.outcome).opacity(0.08))
-            Section("What happened") {
-                Text(call.detail)
+            ShieldSection("What happened") {
+                Text(call.detail).font(.body).padding(.vertical, 8)
                 if call.monitored == true {
-                    Label("Transcribed for connected-call protection", systemImage: "waveform").font(.subheadline).foregroundStyle(.secondary)
+                    Label("Transcribed for connected-call protection", systemImage: "waveform").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                 }
             }
             if let voicemail = call.voicemail {
-                Section("Voicemail") {
+                ShieldSection("Voicemail") {
                     if voicemail.status == "ready", model.canListen {
                         Button {
                             Task { await togglePlayback(voicemail) }
@@ -69,36 +69,36 @@ struct CallDetailView: View {
                             }
                             if let until = voicemail.restorableUntil {
                                 Text("You can restore it until \(until.formatted(date: .abbreviated, time: .shortened)).")
-                                    .font(.subheadline).foregroundStyle(.secondary)
+                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             }
                         } else if !voicemail.isRestorable {
-                            Text("The recording has been deleted.").font(.subheadline).foregroundStyle(.secondary)
+                            Text("The recording has been deleted.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
                     } else if !model.canListen {
                         Label("Voicemail isn’t shared", systemImage: "lock")
                     } else {
                         Label(model.isDemo ? "Sample message · no recording" : voicemail.status == "pending" ? "Message is processing" : "Recording unavailable",
                               systemImage: "waveform")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
             }
-            Section("Next step") {
+            ShieldSection("What you can do") {
                 Text(call.nextStep)
                 if model.isOwner {
                     NavigationLink(value: AppRoute.savedNumbers) {
-                        Label("Use a saved number", systemImage: "phone.arrow.up.right")
+                        ActionRow(title: "Use a saved number", symbol: "phone.arrow.up.right")
                     }
                 }
-                NavigationLink(value: AppRoute.help) { Label("Get help", systemImage: "lifepreserver") }
+                NavigationLink(value: AppRoute.help) { ActionRow(title: "Get help", symbol: "lifepreserver") }
             }
             if !events.isEmpty {
-                Section("Call timeline") {
+                ShieldSection("Call timeline") {
                     ForEach(events) { event in
                         HStack(alignment: .top) {
                             Text(event.label)
                             Spacer()
-                            Text(event.at, style: .time).font(.caption).foregroundStyle(.secondary)
+                            Text(event.at, style: .time).font(.caption).foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
                 }
@@ -110,8 +110,7 @@ struct CallDetailView: View {
         .onAppear { isVisible = true }
         .onDisappear { isVisible = false; player.stop() }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.stop() } }
-        .scrollContentBackground(.hidden)
-        .background(ShieldTheme.surface)
+        .shieldListStyle()
     }
 
     private func load() async {

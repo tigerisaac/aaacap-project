@@ -2,119 +2,108 @@ import SwiftUI
 
 struct SignInView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.colorSchemeContrast) private var contrast
     @State private var email = ""
     @State private var code = ""
     @State private var codeSent = false
     @State private var usesEmailLink = true
     @State private var working = false
+    @State private var error: String?
     @FocusState private var focusedField: Field?
     private enum Field { case email, code }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 36) {
-                    HStack(spacing: 11) {
-                        Image(systemName: "phone.bubble.fill")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(ShieldTheme.action)
-                            .frame(width: 44, height: 44)
-                            .background(ShieldTheme.action.opacity(0.09), in: .rect(cornerRadius: 14))
+                VStack(alignment: .leading, spacing: 28) {
+                    VStack(spacing: 18) {
+                        Image("ShieldMark").resizable().scaledToFit()
+                            .frame(width: 80, height: 80).clipShape(.rect(cornerRadius: 80 * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
                             .accessibilityHidden(true)
-                        Text("Shield").font(.title2.weight(.semibold))
+                        Text("Shield").font(.largeTitle.weight(.bold))
+                        Text("Screen unfamiliar calls and check messages.")
+                            .font(.title3).multilineTextAlignment(.center)
+                            .foregroundStyle(ShieldTheme.secondaryText)
                     }
+                    .frame(maxWidth: .infinity).padding(.top, 16)
 
-                    VStack(alignment: .leading, spacing: 24) {
-                        Text(waitingForLink ? "Check your email" : codeSent && !usesEmailLink ? "Enter code" : "Sign in")
-                            .font(.title2.weight(.semibold))
-                            .accessibilityAddTraits(.isHeader)
-
+                    VStack(alignment: .leading, spacing: 20) {
                         if waitingForLink {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(email)
-                                    .font(.body.weight(.medium))
-                                    .textSelection(.enabled)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Text("Open the link to sign in.")
-                                    .font(.subheadline).foregroundStyle(.secondary)
-                            }
+                            ScreenIntro(title: "Check your email", detail: "Open the link to sign in on this iPhone.", symbol: "envelope.badge")
+                            Text(email).font(.headline).textSelection(.enabled)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("No email? Check Junk or Spam, or send another link.")
+                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             ViewThatFits(in: .horizontal) {
                                 HStack(spacing: 24) { emailActions }
                                 VStack(alignment: .leading, spacing: 4) { emailActions }
                             }
                         } else {
-                            VStack(alignment: .leading, spacing: 12) {
-                                if codeSent && usesEmailLink {
-                                    Text("Confirm the email used for this link.")
-                                        .font(.subheadline).foregroundStyle(.secondary)
+                            if codeSent {
+                                Text(usesEmailLink ? "Confirm the email used for this link." : "Enter the code we emailed you.")
+                                    .font(.headline).accessibilityAddTraits(.isHeader)
+                            }
+                            Group {
+                                if codeSent && !usesEmailLink {
+                                    TextField("Verification code", text: $code, prompt: Text("Verification code").foregroundStyle(ShieldTheme.secondaryText))
+                                        .textContentType(.oneTimeCode).keyboardType(.numberPad)
+                                        .focused($focusedField, equals: .code)
+                                        .accessibilityLabel("Email verification code")
+                                } else {
+                                    TextField("Email address", text: $email, prompt: Text("Email address").foregroundStyle(ShieldTheme.secondaryText))
+                                        .textContentType(.emailAddress).keyboardType(.emailAddress)
+                                        .textInputAutocapitalization(.never).autocorrectionDisabled()
+                                        .focused($focusedField, equals: .email).accessibilityLabel("Email address")
+                                        #if DEBUG && targetEnvironment(simulator)
+                                        .onChange(of: email) { _, value in
+                                            if value == AppState.testAccountSequence { focusedField = nil; model.exploreTestAccount() }
+                                        }
+                                        #endif
                                 }
-                                Group {
-                                    if codeSent && !usesEmailLink {
-                                        TextField("Verification code", text: $code)
-                                            .textContentType(.oneTimeCode)
-                                            .keyboardType(.numberPad)
-                                            .focused($focusedField, equals: .code)
-                                            .accessibilityLabel("Email verification code")
-                                    } else {
-                                        TextField("Email address", text: $email)
-                                            .textContentType(.emailAddress)
-                                            .keyboardType(.emailAddress)
-                                            .textInputAutocapitalization(.never)
-                                            .autocorrectionDisabled()
-                                            .focused($focusedField, equals: .email)
-                                            .accessibilityLabel("Email address")
-                                    }
-                                }
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 16)
-                                .frame(minHeight: 56)
-                                .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .strokeBorder(focusedField == nil ? Color.primary.opacity(0.12) : ShieldTheme.action, lineWidth: focusedField == nil ? 1 : 2)
-                                }
-                                .disabled(working)
-                                .submitLabel(.continue)
-                                .onSubmit { if canSubmit { Task { await submit() } } }
-
-                                Button { Task { await submit() } } label: {
-                                    HStack(spacing: 10) {
-                                        if working { ProgressView().tint(ShieldTheme.actionInk) }
-                                        Text(buttonTitle).fixedSize(horizontal: false, vertical: true)
-                                    }
-                                    .font(.body.weight(.semibold))
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 16)
-                                    .frame(maxWidth: .infinity, minHeight: 56)
-                                    .foregroundStyle(canSubmit ? ShieldTheme.actionInk : ShieldTheme.action)
-                                    .background(ShieldTheme.action.opacity(canSubmit ? 1 : 0.12), in: .rect(cornerRadius: 14))
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(!canSubmit)
-
-                                if codeSent { changeEmailButton }
+                            }
+                            .frame(minHeight: 44)
+                            .padding(16).frame(minHeight: 56)
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? Color.primary.opacity(contrast == .increased ? 0.55 : 0.12) : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
+                            .disabled(working).submitLabel(.continue)
+                            .onSubmit { if canSubmit { Task { await submit() } } }
+                            Button { Task { await submit() } } label: {
+                                ShieldActionLabel(title: buttonTitle, isWorking: working)
+                            }
+                            .shieldPrimaryButton().disabled(!canSubmit)
+                            if codeSent { changeEmailButton }
+                            else {
+                                Text(usesEmailLink ? "Shield emails you a link to sign in." : "Shield emails you a code to sign in.")
+                                    .font(.footnote).foregroundStyle(ShieldTheme.secondaryText)
+                                    .frame(maxWidth: .infinity)
                             }
                         }
-
-                        if model.configuration.baseURL == nil {
-                            Text("Sign-in is unavailable.")
-                                .font(.subheadline).foregroundStyle(.secondary)
+                        if let error {
+                            ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle")
+                                .accessibilityIdentifier("sign-in-error")
                         }
-
-                        if !codeSent {
-                            Text("After signing in, you can choose protection for calls you accept.")
-                                .font(.subheadline).foregroundStyle(.secondary)
-                            Button("View demo") { model.exploreDemo() }
-                                .font(.subheadline)
-                                .frame(minHeight: 44)
-                                .disabled(working)
+                        if model.configuration.baseURL == nil {
+                            Text("Sign-in is unavailable. You can still explore the demo.")
+                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
 
+                    if !codeSent {
+                        Button("View demo") { model.exploreDemo() }
+                            .frame(maxWidth: .infinity, minHeight: 44).disabled(working)
+                        Text("After phone setup, calls are screened during test windows.")
+                            .font(.footnote).foregroundStyle(ShieldTheme.secondaryText).multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                    }
                 }
-                .padding(28)
-                .frame(maxWidth: 520, alignment: .leading)
+                .padding(24)
+                .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading)
                 .frame(maxWidth: .infinity)
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                Color.clear.frame(height: 1)
+                    .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .top))
+                    .accessibilityHidden(true)
             }
             .scrollDismissesKeyboard(.interactively)
             .background(ShieldTheme.surface)
@@ -122,6 +111,17 @@ struct SignInView: View {
         }
         .task {
             #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-auth-loading") {
+                email = "synthetic@example.com"
+                working = true
+                return
+            }
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-auth-return"),
+               let host = Bundle.main.object(forInfoDictionaryKey: "ShieldAuthHost") as? String,
+               let url = URL(string: "https://\(host)/__/auth/action?mode=signIn&oobCode=SyntheticCodeForUIOnly") {
+                await receiveLink(url)
+                return
+            }
             // Offline fixture for verifying the sent state without emailing anyone.
             if ProcessInfo.processInfo.arguments.contains("--uitesting-email-sent") {
                 email = "beta@example.com"
@@ -157,6 +157,7 @@ struct SignInView: View {
         Button("Change email") {
             codeSent = false
             code = ""
+            error = nil
             focusedField = .email
         }
         .frame(minHeight: 44)
@@ -190,7 +191,14 @@ struct SignInView: View {
 
     private func submit() async {
         working = true
+        error = nil
         defer { working = false }
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-auth-error") {
+            error = "Your connection was interrupted. Please try again."
+            return
+        }
+        #endif
         do {
             if codeSent && (!usesEmailLink || !code.isEmpty) {
                 try await model.api.signIn(email: email.trimmingCharacters(in: .whitespacesAndNewlines), code: code)
@@ -201,6 +209,6 @@ struct SignInView: View {
                 codeSent = true
                 focusedField = usesEmailLink ? nil : .code
             }
-        } catch { model.handle(error) }
+        } catch { self.error = error.localizedDescription }
     }
 }

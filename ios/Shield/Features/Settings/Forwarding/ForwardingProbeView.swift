@@ -23,7 +23,7 @@ struct ForwardingProbeView: View {
                 Text("Your place is saved. A failed check does not mean forwarding is off.").foregroundStyle(ForwardingStyle.secondaryText)
             } else {
                 Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")
-                    .font(.system(size: 52)).foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
+                    .font(.largeTitle).imageScale(.large).foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
                 Text(ring ? "Shield will call you. Answer, listen, and press 1." : "Shield will call your mobile number. Leave the call ringing. We’ll check that it reaches Shield.")
                     .font(.title3)
                 Text(ring ? "This is a short sound check. It won’t change your phone settings." : "If you accidentally answer, you may hear a few tones. Hang up and retry the check.")

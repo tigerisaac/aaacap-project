@@ -10,8 +10,7 @@ struct SetupInfoCard: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
-        .background(ShieldTheme.card, in: .rect(cornerRadius: 20))
+        .shieldCard()
         .accessibilityElement(children: .combine)
     }
 }

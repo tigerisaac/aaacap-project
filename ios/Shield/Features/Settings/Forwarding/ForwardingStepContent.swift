@@ -9,10 +9,13 @@ struct ForwardingStepContent: View {
         VStack(alignment: .leading, spacing: 24) {
             switch step {
             case .overview:
-                Text("A quieter phone, one step at a time.").font(.title3)
                 Text("Shield asks unknown callers why they’re calling. You decide which screened calls to answer.")
                 Label("Your progress is saved", systemImage: "bookmark").foregroundStyle(ForwardingStyle.secondaryText)
-                Text("We’ll save Shield as a contact, connect Tello, and check the calls together.").foregroundStyle(ForwardingStyle.secondaryText)
+                VStack(alignment: .leading, spacing: 20) {
+                    SetupInstruction(number: 1, title: "Save Shield", detail: "Save a contact and check that your phone rings.")
+                    SetupInstruction(number: 2, title: "Connect your phone", detail: "Follow the Phone settings and Tello instructions.")
+                    SetupInstruction(number: 3, title: "Check calls", detail: "Confirm the forwarding and ordinary call behavior.")
+                }.shieldCard()
                 Text("Tello · one phone line · data plan confirmed").font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
             case .consent:
                 Text("A screened call is always your choice.").font(.title3)
@@ -22,7 +25,7 @@ struct ForwardingStepContent: View {
                 Text("Finishing setup leaves forwarding connected. To disconnect Shield later, choose Restore my phone in Setup options. Deleting the app does not undo forwarding.").foregroundStyle(ForwardingStyle.secondaryText)
                 Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!).frame(minHeight: 44)
             case .save:
-                Image(systemName: "person.crop.circle.badge.checkmark").font(.system(size: 52))
+                Image(systemName: "person.crop.circle.badge.checkmark").font(.largeTitle).imageScale(.large)
                     .foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
                 Text("Save one contact so screened calls can ring through.").font(.title3)
                 VStack(alignment: .leading, spacing: 8) {

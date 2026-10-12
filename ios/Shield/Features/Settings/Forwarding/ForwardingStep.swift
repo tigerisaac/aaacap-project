@@ -5,7 +5,7 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .overview: "Let’s set up Shield"
+        case .overview: "Set Up Call Screening"
         case .consent: "You’re in control"
         case .save: "Know when Shield calls"
         case .ring: "First, a sound check"
@@ -40,6 +40,28 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
     }
     var codeIndex: Int? {
         switch self { case .forward0: 0; case .forward1: 1; case .forward2: 2; default: nil }
+    }
+    var progressIndex: Int {
+        switch self {
+        case .overview: 0
+        case .consent: 1
+        case .save, .ring: 2
+        case .settings, .liveVoicemail: 3
+        case .forward0, .forward1, .forward2: 4
+        case .test, .checks: 5
+        case .restore: 0
+        }
+    }
+    var progressTitle: String {
+        switch self {
+        case .overview: "Before you begin"
+        case .consent: "Your choice"
+        case .save, .ring: "Meet Shield"
+        case .settings, .liveVoicemail: "Phone settings"
+        case .forward0, .forward1, .forward2: "Connect Tello"
+        case .test, .checks: "Call checks"
+        case .restore: "Phone recovery"
+        }
     }
     var progress: String {
         switch self {

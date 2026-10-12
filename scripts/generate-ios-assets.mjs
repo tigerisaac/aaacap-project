@@ -6,10 +6,23 @@ const assets = path.resolve(import.meta.dirname, '../ios/Shield/Resources/Assets
 const writeJSON = async (directory, value) => { await mkdir(directory, { recursive: true }); await writeFile(path.join(directory, 'Contents.json'), JSON.stringify(value, null, 2) + '\n'); };
 const info = { author: 'xcode', version: 1 };
 await writeJSON(assets, { info });
-const colors = { Action: ['#224CC5', '#9BB3FF'], Held: ['#B53742', '#FF9B9C'], Connected: ['#076C5C', '#74DDC6'], Message: ['#7244B9', '#CAAEFF'], Surface: ['#F7F7F2', '#171918'] };
-for (const [name, pair] of Object.entries(colors)) {
-  const colors = pair.map((hex, index) => ({ idiom: 'universal', ...(index ? { appearances: [{ appearance: 'luminosity', value: 'dark' }] } : {}),
-    color: { 'color-space': 'srgb', components: { red: `0x${hex.slice(1, 3)}`, green: `0x${hex.slice(3, 5)}`, blue: `0x${hex.slice(5, 7)}`, alpha: '1.000' } } }));
+// Normal light/dark, then increased-contrast light/dark. Keep color roles stable.
+const colorVariants = {
+  Action: ['#224CC5', '#9BB3FF', '#173AA3', '#BDD0FF'],
+  PasteFill: ['#224CC5', '#224CC5', '#173AA3', '#173AA3'],
+  Held: ['#B53742', '#FF9B9C', '#8F2230', '#FFBCC1'],
+  Connected: ['#076C5C', '#74DDC6', '#005043', '#A2F3DF'],
+  Message: ['#7244B9', '#CAAEFF', '#58308F', '#DECAFF'],
+  Surface: ['#F2F2F7', '#000000', '#EBEBF0', '#000000']
+};
+for (const [name, variants] of Object.entries(colorVariants)) {
+  const colors = variants.map((hex, index) => {
+    const appearances = [];
+    if (index % 2) appearances.push({ appearance: 'luminosity', value: 'dark' });
+    if (index >= 2) appearances.push({ appearance: 'contrast', value: 'high' });
+    return { idiom: 'universal', ...(appearances.length ? { appearances } : {}),
+      color: { 'color-space': 'srgb', components: { red: `0x${hex.slice(1, 3)}`, green: `0x${hex.slice(3, 5)}`, blue: `0x${hex.slice(5, 7)}`, alpha: '1.000' } } };
+  });
   await writeJSON(path.join(assets, `${name}.colorset`), { colors, info });
 }
 // Original geometric artwork. Same polygons generate the vector source and opaque PNG.
@@ -51,4 +64,9 @@ const icon = Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR'
 const iconDirectory = path.join(assets, 'AppIcon.appiconset');
 await writeJSON(iconDirectory, { images: [{ filename: 'AppIcon.png', idiom: 'universal', platform: 'ios', size: '1024x1024' }], info });
 await writeFile(path.join(iconDirectory, 'AppIcon.png'), icon);
-console.log('Generated light/dark semantic colors and original app icon.');
+const markDirectory = path.join(assets, 'ShieldMark.imageset');
+await writeJSON(markDirectory, { images: [{ filename: 'ShieldMark.png', idiom: 'universal' }], info });
+await writeFile(path.join(markDirectory, 'ShieldMark.png'), icon);
+// LaunchMark.imageset (rounded launch-screen logo) is derived from ShieldMark.png on macOS:
+// swift scripts/make-launch-mark.swift <ShieldMark.png> <LaunchMark.png>
+console.log('Generated adaptive semantic colors and original app icon.');

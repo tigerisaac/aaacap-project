@@ -76,7 +76,7 @@ struct ProtectionCheckCard: View {
                     ForEach(items) { item in
                         VStack(alignment: .leading, spacing: 6) {
                             Text(item.title).font(.subheadline.weight(.semibold))
-                            Text(item.detail).font(.subheadline).foregroundStyle(.secondary)
+                            Text(item.detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 .fixedSize(horizontal: false, vertical: true)
                             fixButton(item.fix).disabled(working)
                         }
@@ -84,7 +84,7 @@ struct ProtectionCheckCard: View {
                     }
                     if items.isEmpty {
                         Text("Shield checked what it can on this phone. Test calls check the rest.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
                 .padding(.vertical, 8)
@@ -107,11 +107,11 @@ struct ProtectionCheckCard: View {
             }
         case .saveShieldContact(let number):
             Button("Save Shield contact") { Task { await perform { try await SaveShieldContact.save(number: number) } } }
-                .buttonStyle(.bordered).accessibilityIdentifier("protection-fix-contact")
+                .buttonStyle(.bordered).buttonBorderShape(.capsule).accessibilityIdentifier("protection-fix-contact")
         case .contactsAccess:
             Button("Allow Contacts access") {
                 Task { await perform { _ = try await CNContactStore().requestAccess(for: .contacts) } }
-            }.buttonStyle(.bordered)
+            }.buttonStyle(.bordered).buttonBorderShape(.capsule)
         case .allowNotifications:
             Button("Turn on notifications") {
                 Task {
@@ -123,7 +123,7 @@ struct ProtectionCheckCard: View {
                         }
                     }
                 }
-            }.buttonStyle(.bordered)
+            }.buttonStyle(.bordered).buttonBorderShape(.capsule)
         case .sharedContacts:
             NavigationLink(value: AppRoute.trustedNumbers) { Text("Update shared contacts") }
         }
@@ -139,7 +139,7 @@ struct ProtectionCheckCard: View {
     private func refresh() async {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("--uitesting-protection-check") {
+        if arguments.contains("--uitesting-protection-check") || model.isTestAccount {
             items = arguments.contains("--protection-check-good") ? [] : [
                 .init(id: "paused", title: "Protection is paused", detail: "Unknown callers go to voicemail without being screened.", fix: .setup),
                 .init(id: "contact", title: "Shield’s number isn’t in your Contacts", detail: "Calls Shield offers you may go to voicemail instead of ringing.", fix: .saveShieldContact("+15125550100"))]

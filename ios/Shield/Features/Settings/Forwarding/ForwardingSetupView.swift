@@ -13,6 +13,9 @@ struct ForwardingSetupView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     if let status = model.status {
+                        if model.step.progressIndex > 0 {
+                            FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 5)
+                        }
                         Text(model.step.title).font(.largeTitle.bold()).id("forwarding-heading")
                             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
                         if model.step == .ring || model.step == .test {
@@ -51,7 +54,10 @@ struct ForwardingSetupView: View {
         .safeAreaInset(edge: .bottom) {
             if model.status != nil { ForwardingActions(model: model, app: app) }
         }
-        .navigationTitle(model.step.progress).navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
+        .sensoryFeedback(.success, trigger: model.step) { old, new in
+            (ForwardingStep.allCases.firstIndex(of: new) ?? 0) > (ForwardingStep.allCases.firstIndex(of: old) ?? 0)
+        }
         .navigationBarBackButtonHidden(model.step.previous != nil)
         .toolbar {
             if let previous = model.step.previous {
