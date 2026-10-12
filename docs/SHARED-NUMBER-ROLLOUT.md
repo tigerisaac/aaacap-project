@@ -34,6 +34,16 @@ Ten connected screened calls use ten inbound caller legs plus ten outbound recip
 
 The prior Tello/T-Mobile diagnostic confirmed two correctly identified forwarded calls on the same DID overlapping for **72.434 seconds**, with two provider-active legs. One was on hold. That did not test two simultaneous GPT conversations, outbound offers, acceptance, voicemail or ten live audio sessions. Verizon has not been verified on a real call.
 
+## Deployment — October 12
+
+The owner confirmed Phone B's forwarding reset and approved deployment and the number switch. At approximately 18:30 Central, the existing public DID was switched to the active shared application and read back successfully. One verified participant is enrolled, with a pending route; the owner-controlled fresh forwarding check is required before ordinary calls are admitted. The initial supervised window ends at 19:00 Central. Additional users, including Phone B, are not yet enrolled.
+
+Runtime v6 changes only the shared-mode flag and application ID. `shieldApi` is `shieldapi-00017-vuy`; all eight functions are ACTIVE. Bridge `shield-live-00011-tnt` serves 100%, using image digest `sha256:b8ed24ae9259de3c8e66590f9823d1d57b4ae6becfebd36ce1f0a657d19073ec`; its policy remains v30. `/public/shared-ready` and bridge `/ready` passed, unauthenticated API access returned 401, unsigned voice events returned 403, and an isolated synthetic account passed ownership, history and token checks. The private scheduled sweep ran successfully.
+
+Deployment surfaced three packaging/operator issues, fixed before the number switch: Firestore URL paths must escape the DID's plus sign; the bridge package needs the announcement catalog imported by monitoring; and the Functions lockfile must be generated with its pinned npm 11.4.2. Failed new function records from the initial build were removed and recreated; existing functions were preserved. New scheduled jobs also needed the direct Cloud Run target and matching OIDC audience, now enforced by `finalize-firebase.mjs`. The packager now boots the assembled bridge with synthetic credentials before upload. Media-stream stop events retain a shared reservation until telephone termination is confirmed.
+
+Private release snapshots, runtime version, cloud readbacks and Telnyx assignment evidence are under `artifacts/private/shared-release/`; no credentials belong in this document. No real phone calls or texts were placed by the deployment.
+
 ## Operator steps
 
 Run from the canonical checkout. All files under `artifacts/private` are ignored, mode 0600, and must never be pasted into chat. All operator mutations below default to a dry run until `--confirm`/`--apply` is supplied. Do not place owner calls automatically.

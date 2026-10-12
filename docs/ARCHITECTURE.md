@@ -1,8 +1,10 @@
 # Architecture
 
-## Shared-number implementation (October 12, 2026; rollout pending)
+## Shared-number deployment (October 12, 2026)
 
-The source now includes a complete Call Control path for ten participants on one DID, documented in [SHARED-NUMBER-ROLLOUT.md](SHARED-NUMBER-ROLLOUT.md). It uses strict Diversion routing, immutable per-call recipients, per-person controls, durable command receipts, a distributed ten-call cap and independent live sessions. TeXML remains the current production path until migration/deployment/cutover are explicitly verified. The existing screening policy is unchanged. The shared Telnyx application is staged inactive with 10 inbound and 10 outbound channels; its outbound profile and account limit are 10. No number was purchased.
+The shared Call Control path is deployed for a supervised ten-person pilot on the existing DID. It uses strict Diversion routing, immutable per-call recipients, per-person controls, durable command receipts, a distributed ten-call cap and independent live sessions. Telnyx's shared application is active at 10 inbound/10 outbound channels; the profile and account outbound limit are 10. One verified participant is enrolled and awaits a fresh forwarding check. Capacity is configured, not yet measured with ten real audio sessions. Policy v30 is unchanged. TeXML remains available for operator rollback. See [current rollout evidence and tests](SHARED-NUMBER-ROLLOUT.md).
+
+The detailed descriptions below retain the October 10 TeXML baseline where explicitly named. The shared path uses Call Control speech, streaming, dialing, gathering and bridging throughout a call; its current admission, qualification and cleanup rules are in the rollout document.
 
 Current as of October 10, 2026. Shield answers unfamiliar calls that a person's phone forwards to it, screens them with a GPT Live voice agent, and only rings the person if the call looks ordinary. The person then decides privately whether to take it. Screening never verifies who is calling.
 
@@ -10,9 +12,9 @@ Current as of October 10, 2026. Shield answers unfamiliar calls that a person's 
 
 | Component | Where it runs | Code |
 |---|---|---|
-| Phone number and call control | Telnyx TeXML application with one number (+1 507 473 1802) | `backend/src/cloud/forwarding-voice.ts`, `forwarding-provider.ts` |
+| Phone number and call control | Telnyx Call Control shared application, one number (+1 507 473 1802); TeXML retained for rollback | `backend/src/cloud/call-control.ts`, `shared-routing.ts` |
 | HTTP API and call webhooks | Firebase Functions `shieldApi` (us-central1, scales to zero), served through Firebase Hosting at `shield-calls-isaac.web.app` | `backend/src/cloud/app.ts`, `api.ts`, `forwarding-api.ts` |
-| Live screening bridge | Cloud Run service `shield-live` (WebSocket, one instance max) in the same Google Cloud project | `backend/src/live/server.ts`, `session.ts`, `policy.ts` |
+| Live screening bridge | Cloud Run service `shield-live` (WebSocket, two instances max, ten sessions per instance) in the same Google Cloud project | `backend/src/live/server.ts`, `session.ts`, `policy.ts` |
 | Screening voice | OpenAI `gpt-live-1`, voice `marin`, 8 kHz μ-law (PCMU) | `backend/src/live/policy.ts` |
 | Screening decisions | OpenAI `gpt-6-luna`, medium reasoning effort, called by GPT Live through delegation | `backend/src/live/policy.ts`, `research.ts` |
 | Connected-call protection (opt-in) | Telnyx transcription plus Firebase Function `monitorConnectedCall` (`gpt-6-luna`, OpenAI Fast mode since October 11) | `backend/src/cloud/monitoring.ts` |
