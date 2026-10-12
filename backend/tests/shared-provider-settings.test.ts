@@ -26,3 +26,9 @@ it('refuses to prepare a profile without its existing spending and destination r
   await expect(prepareSharedTelnyx({ TELNYX_APPLICATION_ID: 'legacy' }, { apply: true, request })).rejects.toThrow('existing_profile_safeguards_required');
   expect(request.mock.calls.every(c => c.length < 3 || c[2] === 'GET')).toBe(true);
 });
+
+it('escapes plus signs in Firestore document URLs without changing the resource hierarchy', async () => {
+  // @ts-expect-error Operator helper is JavaScript.
+  const { docPath } = await import('../../scripts/lib/firestore-rest.mjs');
+  expect(docPath('shieldNumbers/+12025550999/routes/hash')).toContain('/documents/shieldNumbers/%2B12025550999/routes/hash');
+});

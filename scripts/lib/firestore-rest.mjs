@@ -5,7 +5,7 @@ import { firestore, documentRoot, fields } from '../firebase-client.mjs';
 const decode = v => 'mapValue' in v ? decodeFields(v.mapValue.fields ?? {}) : 'arrayValue' in v ? (v.arrayValue.values ?? []).map(decode)
   : 'integerValue' in v ? Number(v.integerValue) : 'doubleValue' in v ? v.doubleValue : 'nullValue' in v ? null : v.stringValue ?? v.booleanValue ?? null;
 export const decodeFields = f => Object.fromEntries(Object.entries(f).map(([k, v]) => [k, decode(v)]));
-export const docPath = path => `${documentRoot}/${path}`;
+export const docPath = path => `${documentRoot}/${path.split('/').map(encodeURIComponent).join('/')}`;
 
 export function rest() {
   const db = firestore();

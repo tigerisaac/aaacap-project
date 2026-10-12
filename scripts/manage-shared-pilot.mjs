@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { connect, firestore, documentRoot, fields } from './firebase-client.mjs';
 import { rest } from './lib/firestore-rest.mjs';
 import { telnyxRequest } from './telnyx-provider.mjs';
@@ -22,6 +23,10 @@ async function main() {
       update: { name: `${documentRoot.slice(1)}/${path}`, fields: fields(data) }, updateMask: { fieldPaths: Object.keys(data) },
       currentDocument: existing ? { updateTime: existing.updateTime } : { exists: false }
     })) });
+    for (const change of changes) {
+      const saved = await db.read(change.path);
+      if (!saved || Object.entries(change.data).some(([key, value]) => !isDeepStrictEqual(saved.data[key], value))) throw new Error('migration_readback_failed');
+    }
   };
   if (command === 'prepare') {
     const id = c.TRIAL_PARTICIPANT_ID, personPath = `participants/${id}`;
