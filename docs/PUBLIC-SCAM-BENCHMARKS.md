@@ -633,3 +633,56 @@ node scripts/check-robocall-benchmark.mjs --provider codex --real-calls-approved
 ```
 
 Repository checks passed: typecheck/build, 143 unit tests and 86 Firestore emulator tests. Both new modules also passed syntax checks and were imported by the evaluations. The main benchmark remains unchanged and under 25 cases.
+
+## Fresh real-world-oriented v30 versus v37 red team, October 12
+
+The owner requested a direct red team of the short v37 candidate and the older longer prompt, with a recommendation for real-world use. The older version is **production v30, 9,710 characters**; v37 is **4,899 characters**. Both were frozen unchanged before this new set was authored. This comparison makes no prompt edits and does not rerun MASC or FTC.
+
+[The fresh fixtures](../scripts/fixtures/holdout/v30-v37-realworld.mjs) contain 70 scenarios: 56 ordinary/unsafe/ad/unclear single-snapshot cases, six trusted recent-scam-context cases, and eight staged scenarios. Three draws per prompt give **420 scenario trials and 459 model requests**, all through subscription GPT-6 Luna at medium reasoning. Each case used the same frozen expectations for both prompts; prompt order alternated by repetition. No provider failures occurred and no result was retried. These are synthetic, author-designed stress tests, not estimates of real-call prevalence or statistically established failure rates.
+
+The ordinary cases cover care demographics, family privacy and distress, small reimbursements, warnings about scams, practical help, mixed service/offers, expected charges, real refunds, safe independent account review and official appointments. Unsafe cases include charge/refund bait, secrets, remote access, secrecy, investments, manipulation and payment collection during an unfamiliar inbound call. The last category follows Shield's current product policy; it does not claim that every real merchant asking for payment by phone is fraudulent. Ads and missing-information cases are scored separately.
+
+The [paired runner](../scripts/check-paired-screening-redteam.mjs) provides a prepared next caller statement only after a `continue`, and stops after the first terminal decision. Four matched opener pairs split into legitimate and harmful follow-ups, testing whether clarification can distinguish them. Each step is a fresh decision over cumulative caller text. The model does **not** receive future statements, but also does not retain prior assistant questions or receive answers adapted to those questions. Thus these are **staged caller snapshots**, not a validated live-dialogue or voice simulation. A local mock check verified terminal stopping, conditional follow-up exposure, cumulative caller evidence and retention of failures without success credit.
+
+### Main results, excluding the separate caution-context group
+
+| Outcome | Longer v30 | Shorter v37 |
+|---|---:|---:|
+| Ordinary callers offered | **80/84** | 79/84 |
+| Ordinary hard blocks | **0** | 5 |
+| Ordinary holds | 3 | 0 |
+| Ordinary unresolved questions | 1 | 0 |
+| Unsafe calls with completed block/hold | 65/84 | **81/84** |
+| Unsafe calls offered | **0** | 1 |
+| Unsafe calls still being questioned | 19 | 2 |
+| Ads blocked | 12/12 | 12/12 |
+| Missing-information cases handled as expected | 12/12 | 12/12 |
+
+A `continue` is neither an offer nor a completed stop. V30's lower completed-stop count therefore does not mean it connected nineteen unsafe callers. The static cases provide no answer, and this harness does not model the production recording timer or timeout-to-voicemail path. Offers are also only offers: recipient acceptance remains necessary for a real connection.
+
+**Where v37 helps:** on complete ordinary snapshots it offered 72/72 versus v30's 68/72. It handled the safe account-settings notice and branch appointment consistently; v30 produced three holds and one question across those two cases. V37 blocked all twelve charge-alarm trials; v30 blocked three and asked questions on nine. V37 also blocked all twelve refund-bait snapshots; v30 held two and questioned ten. Neither prompt missed the tested explicit secrets, remote-access, secrecy, investment or manipulation requests.
+
+**Where v37 loses information too early:** the staged ordinary cases were 7/12 offered for v37 versus **12/12 for v30**. A genuine billing-office refund opener was blocked immediately 3/3 by v37, before the caller could explain the canceled class and automatic refund. A vague bank opener was blocked 2/3 before the branch-appointment explanation. V30 asked once, then offered all six of those ordinary trials. In the matched harmful branches it asked, heard the gift-card/transfer demand, and blocked. Both prompts completed stops on **12/12 staged harmful trials**. This demonstrates a clarification tradeoff in the supplied scenarios, not proof that a live scammer will cooperate or reveal their intent.
+
+**The material payment gap:** `rw-known-service-pay-now` asks to collect a repair invoice during the inbound call. V30 blocked 3/3. V37 approved once and questioned twice. Its block rule describes extracting money through pressure or unsafe methods, while v30 explicitly prohibits collecting payment during the call. A familiar service story and an apparently conventional payment can therefore fall outside v37's narrower wording. This is an inference from the rule difference and outcomes, not the model's private reasoning. The one approval remains a failure under the predeclared policy expectation; it is not relabeled as legitimate to improve v37's score.
+
+### Recent-scam context and integration limit
+
+Six separate cases tested legitimate callbacks, unrelated callers, an in-person follow-up and a harmful callback. Both prompts received the **exact existing trusted caution paragraph**, using production's context-aware request for v30 and an explicit appended paragraph for v37. V30 passed 15/18; v37 passed 18/18. V30 wrongly held the in-person lesson follow-up in all three trials. Both held the actual phone callbacks and blocked the harmful callback.
+
+The current v37 experiment helper simply replaces the base instructions, so it would drop the production caution paragraph if naively applied to a context-bearing request. The context test is therefore a **hypothetical correctly integrated v37**, not validation of that helper as a production integration. The wrapper is unchanged in this task; preserving trusted runtime context is a prerequisite to any future adoption. Context cases are excluded from ordinary/harmful headline ratios because some intentionally require holding a genuine callback under the owner's existing preference.
+
+### Recommendation
+
+**Prefer the longer v30 for live use today.** Its payment guard is clearer, it offered slightly more ordinary callers in the combined set, and it used clarification to avoid prematurely ending real refund/appointment calls. The shorter prompt's higher completed-stop score is useful, especially for charge alarms, but does not outweigh an unsafe offer plus five hard blocks of legitimate staged trials in this stress test. V30 is not flawless: its unnecessary bank-notice holds and repeated charge-alarm questions remain relevant problems.
+
+For the next lean revision, retain v37's concise structure and explicit charge-alarm handling while restoring v30's precise payment restriction and room for safe clarification of incomplete ordinary/refund claims. This is a recommendation, not a new implemented or validated prompt. A large prompt is not inherently better; the observed differences concern policy boundaries and precedence as well as length. Do not deploy v37 unchanged based on its public benchmark counts alone.
+
+Artifacts: `artifacts/v30-v37-realworld/` contains four frozen request variants, prompt/case freezes, paired manifest/results/summary, and `validation-summary.json`. The audit verifies every case/version/repetition pair, 420 distinct trials, unchanged requests/sources, no future follow-up exposure after terminal actions, predeclared expectations, and recomputed scores. Raw results and misses remain intact. Request hashes for caution-off v30 and v37 are `9256ca33e5dbf4b6c27db5d3c5ae21e1516d9655eca155816ffebf2cf0ec9fb1` and `82ac7d4239336db260c828d6db87fd714a9299fe706d2658378c4af45a0ce718`.
+
+```bash
+node scripts/check-paired-screening-redteam.mjs --self-test
+node scripts/check-paired-screening-redteam.mjs --root artifacts/v30-v37-realworld --repeat 3 --concurrency 8
+```
+
+The evaluation command creates outputs exclusively; reproduction needs a fresh root with copies of the frozen request files and `prompt-freeze.json`. This set must remain validation evidence unless explicitly retired before future development. The main benchmark is unchanged and under 25 cases. Typecheck/build, 143 unit tests and 86 Firestore emulator tests passed. No production prompt, caller forwarding, deployment, voice session or real call changed. The existing recipient acceptance and failure-never-connects invariants are untouched.
