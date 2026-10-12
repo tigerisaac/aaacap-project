@@ -45,7 +45,7 @@ async function main(){
   if(process.argv.includes('--self-test'))return selfTest();
   const args=process.argv.slice(2),option=(name,def)=>{const i=args.indexOf(name);return i<0?def:args.splice(i,2)[1];};
   const root=resolve(option('--root','artifacts/v30-v37-realworld')),casesFile=option('--cases','scripts/fixtures/holdout/v30-v37-realworld.mjs');
-  const baseline=option('--baseline','v30'),candidate=option('--candidate','v37');for(const v of [baseline,candidate])assert.match(v,/^v[0-9]+$/);assert.notEqual(candidate,baseline);const versions=[baseline,candidate];
+  const baseline=option('--baseline','v30'),candidate=option('--candidate','v37');const versions=baseline==='none'?[candidate]:[baseline,candidate];for(const v of versions)assert.match(v,/^v[0-9]+$/);assert.notEqual(candidate,baseline);
   const suiteKind=option('--suite-kind','fresh');assert.ok(['fresh','development'].includes(suiteKind));
   const repeat=Number(option('--repeat','3')),concurrency=Number(option('--concurrency','8'));
   assert.ok(!args.length&&Number.isInteger(repeat)&&repeat>0&&repeat<=10&&Number.isInteger(concurrency)&&concurrency>0&&concurrency<=12);
@@ -62,14 +62,15 @@ async function main(){
   const targets={};let results=[],writes=Promise.resolve(),cursor=0,stopped=false;
   try{
     for(const [key,request]of Object.entries(requests))targets[key]=await screeningTarget('codex',{request,subscriptionOneShot:true});
-    const manifest={startedAt:new Date().toISOString(),provider:'codex',model:'gpt-6-luna',effort:'medium',transport:targets[baseline].transport,requestHashes:freeze.requestHashes,cautionIntegration:freeze.cautionIntegration,sourceHashes:before,suiteKind,repeat,concurrency,planned:jobs.length,
-      cases:all.map(({name,category,focus,accept,turns,staged,caution})=>({name,category,focus,accept,stages:turns.length,staged:!!staged,caution:!!caution})),
-      interpretation:(suiteKind==='development'?'Known development cases. ':'Fresh author-designed cases. ')+'Both versions unchanged, same cases/settings, alternating order per repetition. Follow-ups are fixed cumulative caller snapshots reached only after continue, without assistant-history or question-sensitive responses. No live conversation, voice or latency guarantee. Context cases use an explicit identical trusted caution paragraph; See the frozen cautionIntegration field for candidate context handling. No output-based retries; timeouts retained.'};
+    const manifest={startedAt:new Date().toISOString(),provider:'codex',model:'gpt-6-luna',effort:'medium',transport:targets[versions[0]].transport,requestHashes:freeze.requestHashes,cautionIntegration:freeze.cautionIntegration,sourceHashes:before,suiteKind,repeat,concurrency,planned:jobs.length,
+      cases:all.map(({name,category,focus,accept,turns,staged,caution})=>({name,category,focus,accept,stages:turns.length,staged:!!staged,caution:!!caution,inputHash:digest(JSON.stringify(turns))})),
+      interpretation:(suiteKind==='development'?'Known development cases. ':'Fresh author-designed cases. ')+(versions.length===2?'Both versions unchanged, same cases/settings, alternating order per repetition.':'One frozen candidate; no paired baseline in this run.')+' Follow-ups are fixed cumulative caller snapshots reached only after continue, without assistant-history or question-sensitive responses. No live conversation, voice or latency guarantee. Context cases use an explicit identical trusted caution paragraph; See the frozen cautionIntegration field for candidate context handling. No output-based retries; timeouts retained.'};
     await writeFile(`${out}/manifest.json`,JSON.stringify(manifest,null,2),{flag:'wx'});
     async function worker(){while(!stopped&&cursor<jobs.length){const {c,version,run}=jobs[cursor++];const result={case:c.name,category:c.category,focus:c.focus,suite:c.caution?'context':c.staged?'staged':'snapshot',version,run,...await evaluateScenario(targets[`${version}${c.caution?'Caution':''}`],c)};results.push(result);writes=writes.then(()=>appendFile(`${out}/results.jsonl`,`${JSON.stringify(result)}\n`));
       if(result.failure&&result.failure!=='codex_evaluation_timeout')stopped=true;
       if(results.length%40===0||stopped)console.log(JSON.stringify({completed:results.length,planned:jobs.length,stopped}));}}
     await Promise.all(Array.from({length:concurrency},worker));await writes;
+    for(const c of all)assert.equal(digest(JSON.stringify(c.turns)),manifest.cases.find(x=>x.name===c.name).inputHash);
     const unchanged=JSON.stringify(before)===JSON.stringify(await hashes());assert.ok(unchanged);
     for(const key of Object.keys(requests))assert.equal(digest(JSON.stringify(JSON.parse(await readFile(`${root}/${key}.json`,'utf8')))),freeze.requestHashes[key]);
     const summary={...manifest,completedAt:new Date().toISOString(),completed:results.length,stopped,sourcesUnchanged:unchanged,resultsHash:digest(await readFile(`${out}/results.jsonl`)),versions:Object.fromEntries(versions.map(v=>[v,Object.fromEntries(['snapshot','staged','context'].map(s=>[s,summarize(results.filter(r=>r.version===v&&r.suite===s))]))]))};
