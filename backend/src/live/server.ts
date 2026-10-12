@@ -138,7 +138,14 @@ server.on('upgrade', async (request, socket, head) => {
           openai.on('error', () => { void session.stop('screening_unavailable'); });
           openai.on('close', () => { if (!session.ended) void session.stop('screening_unavailable'); });
         } else if (e.event === 'media' && streamStarted && e.media?.track === 'inbound') session.input(Number(e.media.chunk), e.media.payload);
-        else if (e.event === 'stop' && !session.ended) { session.providerEnded(); void forwarding.ended(call.parentSid).catch(() => {}); }
+        else if (e.event === 'stop' && !session.ended) {
+          session.providerEnded();
+          // A media stream stopping is not proof that either telephone leg has ended.
+          if (call.transport === 'call-control') {
+            const cc = new SharedCallControl(store);
+            void cc.exclusive(call.id, () => cc.stop(call)).catch(() => console.error(JSON.stringify({ event: 'live_hangup_unconfirmed' })));
+          } else void forwarding.ended(call.parentSid).catch(() => {});
+        }
       });
       provider.on('error', () => { void session.stop('screening_unavailable'); });
       provider.on('close', () => { if (!session.ended) void session.stop('screening_unavailable'); });

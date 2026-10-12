@@ -17,6 +17,9 @@ if (command === 'build') {
   await mkdir(`${stage}/lib/live`, { recursive: true }); await mkdir(`${stage}/lib/cloud`, { recursive: true });
   for (const file of ['auth', 'crypto', 'firebase-auth']) await copyFile(`dist/${file}.js`, `${stage}/lib/${file}.js`);
   for (const dir of ['cloud','live']) for (const file of await readdir(`dist/${dir}`)) if (file.endsWith('.js')) await copyFile(`dist/${dir}/${file}`, `${stage}/lib/${dir}/${file}`);
+  // Monitoring imports the approved announcement catalog even when shared calls use Call Control speech.
+  await mkdir(`${stage}/lib/cloud/announcement-audio`, { recursive: true });
+  await copyFile('dist/cloud/announcement-audio/manifest.json', `${stage}/lib/cloud/announcement-audio/manifest.json`);
   await mkdir(`${stage}/lib/live/ack-audio`, {recursive:true});
   for(const file of ['one-moment.pcmu','manifest.json'])await copyFile(`dist/live/ack-audio/${file}`,`${stage}/lib/live/ack-audio/${file}`);
   const root = JSON.parse(await readFile('package.json', 'utf8'));
@@ -24,6 +27,7 @@ if (command === 'build') {
   await writeFile(`${stage}/package.json`, JSON.stringify({name:'shield-live-bridge',private:true,type:'module',overrides:root.overrides,
     dependencies:Object.fromEntries(names.map(name=>[name,root.dependencies[name]]))}));
   await writeFile(`${stage}/Dockerfile`, 'FROM node:22-slim\nWORKDIR /app\nCOPY package.json ./\nRUN npm install --omit=dev --ignore-scripts\nCOPY lib ./lib\nUSER node\nCMD ["node", "lib/live/server.js"]\n');
+  execFileSync(process.execPath, ['scripts/check-live-package.mjs', stage], { stdio: 'inherit' });
   const tag = `demo-${Date.now()}`, object = `shield-live/${tag}.tgz`, bucket = 'gcf-v2-sources-562628621854-us-central1';
   const archive = '/tmp/shield-live-deploy.tgz'; execFileSync('/usr/bin/tar',['-czf',archive,'-C',stage,'package.json','Dockerfile','lib']);
   const upload = new Client({urlPrefix:'https://storage.googleapis.com',apiVersion:'upload/storage/v1'});

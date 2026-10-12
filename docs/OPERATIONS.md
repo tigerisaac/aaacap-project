@@ -31,7 +31,7 @@ npm run firebase:package
 ```
 
 ```bash
-npm install --prefix artifacts/firebase-functions
+npx --yes npm@11.4.2 install --prefix artifacts/firebase-functions --ignore-scripts
 ```
 
 ```bash
@@ -67,8 +67,8 @@ node scripts/deploy-live-bridge.mjs publish
 ```
 
 Run `node scripts/deploy-live-bridge.mjs status` between steps.
-- **`build`** packages only compiled modules and a dependency manifest. No keys are in the image.
-- **`deploy`** updates Cloud Run service `shield-live`: one instance max, scales to zero, OpenAI key from Secret Manager.
+- **`build`** packages compiled modules, the announcement catalog, acknowledgement audio and dependencies, then starts the assembled package locally with synthetic credentials before uploading it. No keys are in the image.
+- **`deploy`** updates Cloud Run service `shield-live`: two instances max, up to ten independent sessions per instance, scales to zero, OpenAI key from Secret Manager.
 - **`publish`** allows public WebSocket upgrades. Each call still needs its own short-lived signed ticket.
 
 Check the running version with:
