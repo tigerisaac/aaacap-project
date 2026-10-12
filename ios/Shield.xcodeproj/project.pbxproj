@@ -447,6 +447,13 @@
 			"path" = "Shield/Features/Settings/PhoneContacts.swift";
 			"sourceTree" = "<group>";
 		};
+		"46676D3FA9F6E9E964B2EE83" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "QuietHoursView.swift";
+			"path" = "Shield/Features/Settings/QuietHoursView.swift";
+			"sourceTree" = "<group>";
+		};
 		"A74D83A135332FB456107AFF" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1018,6 +1025,7 @@
 				"ECFD8673363EAF4D32CE14EC",
 				"61D972671442EB135A78E664",
 				"22773E7A335C60D136AAC546",
+				"46676D3FA9F6E9E964B2EE83",
 				"A74D83A135332FB456107AFF",
 				"0D26A78514CDF4B5827B707B",
 				"51DC14E924CE1D8B46B9A7BD",
@@ -1562,6 +1570,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "22773E7A335C60D136AAC546";
 		};
+		"B612141E955FA67FBE7E2F5E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "46676D3FA9F6E9E964B2EE83";
+		};
 		"CA5B05C21D938511CD37F64F" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "A74D83A135332FB456107AFF";
@@ -1781,6 +1793,7 @@
 				"C0A81B927AFB4AD345DE6737",
 				"D3845A247E288DB9104E57ED",
 				"C7AF71DAB61C90D3B3057A4F",
+				"B612141E955FA67FBE7E2F5E",
 				"CA5B05C21D938511CD37F64F",
 				"4BDA37D533B2790B424B520D",
 				"12AB26B6D8A99E255C69B6F7",

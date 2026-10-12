@@ -18,7 +18,7 @@ struct ForwardingStepContent: View {
                     ? "Shield checks unfamiliar calls. Press 1 to take a call. Shield can’t prove who is calling."
                     : "Call checks are off. Callers can leave voicemail instead.")
                 SetupInstruction(number: 2, title: "Voicemail comes to Shield", detail: "Messages and call history are deleted after 30 days.")
-                SetupInstruction(number: 3, title: "Try it for 30 minutes", detail: "Up to 10 calls can be checked. Your usual Tello charges apply.")
+                SetupInstruction(number: 3, title: "Try it for 30 minutes", detail: "Up to 10 calls can be checked. Your usual \(status.carrier) charges apply.")
                 Text("To leave Shield, use Disconnect Shield in Setup options. Deleting the app won’t disconnect it.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                 DisclosureGroup("More before you agree") {

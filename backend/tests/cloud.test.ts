@@ -12,10 +12,9 @@ import { stoppedTotal } from '../src/cloud/stopped-total.js';
 const enabled = !!process.env.FIRESTORE_EMULATOR_HOST;
 describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)', () => {
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'emulator-test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-    TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+15127697536',
-    TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
+    TRIAL_PROXY_SECRET: 'c'.repeat(64), DATA_ENCRYPTION_KEY: 'd'.repeat(64),
     TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: `${'A'.repeat(43)}=`,
-    TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109' });
+    TELNYX_APPLICATION_ID: '123456789012345678' });
   const admin = initializeApp({ projectId: 'demo-shield' }, 'cloud-tests');
   const db = getFirestore(admin);
   let now: number; let store: CloudStore; let checked: string[];
@@ -27,11 +26,12 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}
   };
   let app: Awaited<ReturnType<typeof buildCloudApp>> | undefined;
-  const headers = (token = 'owner') => ({ authorization: `Bearer ${token}`, 'x-shield-participant': config.TRIAL_PARTICIPANT_ID });
+  const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', PHONE = '+12025550101', NUMBER = '+12025550109';
+  const headers = (token = 'owner') => ({ authorization: `Bearer ${token}`, 'x-shield-participant': PERSON });
   /** A finished forwarded call, as call control leaves it. */
   const seedCall = async () => {
     const id = randomUUID();
-    await store.callRef(id).set({ id, participantId: config.TRIAL_PARTICIPANT_ID, source: 'forwarding', provider: 'telnyx', parentSid: randomUUID(),
+    await store.callRef(id).set({ id, participantId: PERSON, source: 'forwarding', provider: 'telnyx', parentSid: randomUUID(),
       eligible: true, createdAt: now, expiresAt: now + RETENTION_MS, callerEnc: store.vault.seal('+13125550148', `call:${id}:caller`),
       state: 'ended', outcome: 'held', reason: 'scam', purpose: 'other', completedAt: now,
       events: [{ kind: 'screening_started', at: now }, { kind: 'call_stopped', at: now }] });
@@ -42,9 +42,9 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     const cleared = await fetch(`http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/demo-shield/databases/(default)/documents`, { method: 'DELETE' });
     if (!cleared.ok) throw new Error('Emulator reset failed');
     now = Date.now(); store = new CloudStore(db, config, () => now); checked = [];
-    await store.personRef(config.TRIAL_PARTICIPANT_ID).set({ id: config.TRIAL_PARTICIPANT_ID, ownerUid: 'owner', status: 'setup',
-      nameEnc: store.vault.seal('Isaac', `person:${config.TRIAL_PARTICIPANT_ID}:name`),
-      phoneEnc: store.vault.seal(config.TRIAL_VERIFIED_CALLER, `person:${config.TRIAL_PARTICIPANT_ID}:phone`) });
+    await store.personRef(PERSON).set({ id: PERSON, ownerUid: 'owner', status: 'setup',
+      nameEnc: store.vault.seal('Isaac', `person:${PERSON}:name`),
+      phoneEnc: store.vault.seal(PHONE, `person:${PERSON}:phone`), shieldNumber: NUMBER });
     app = await buildCloudApp(store, { auth, checker });
   });
   afterEach(async () => { await app?.close(); app = undefined; });
@@ -55,8 +55,8 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect((await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers('stranger'), payload })).statusCode).toBe(403);
     const synced = await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers(), payload });
     expect(synced.json()).toEqual({ shared: 1, skipped: 1 });
-    expect((await store.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()).toMatchObject({ contactsSyncedAt: now, contactsSyncUntil: 0 });
-    const saved = (await store.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').get()).docs;
+    expect((await store.personRef(PERSON).get()).data()).toMatchObject({ contactsSyncedAt: now, contactsSyncUntil: 0 });
+    const saved = (await store.personRef(PERSON).collection('trusted-numbers').get()).docs;
     expect(saved).toHaveLength(1); expect(saved[0]!.data().phoneEnc).not.toContain('3125550148');
     const list = (await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json();
     expect(list.items[0]).toMatchObject({ label: 'Mom', phone: '+13125550148', enabled: true });
@@ -72,7 +72,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect((await app!.inject({ method: 'PATCH', url: `/api/trusted-numbers/${id}`, headers: headers('stranger'), payload: { enabled: true } })).statusCode).toBe(403);
     await sync([entry]);
     list = (await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json(); expect(list.items).toHaveLength(1); expect(list.items[0]).toMatchObject({ id, enabled: true });
-    await store.personRef(config.TRIAL_PARTICIPANT_ID).update({ contactsSyncUntil: now + 60_000, contactsSyncToken: 'other' });
+    await store.personRef(PERSON).update({ contactsSyncUntil: now + 60_000, contactsSyncToken: 'other' });
     expect((await sync([entry])).statusCode).toBe(409);
   });
 
@@ -83,7 +83,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     const result = await app!.inject({ url: `/api/calls/${id}`, headers: headers() }); expect(result.statusCode).toBe(200);
     expect(result.json().call.id).toBe(id); expect(result.json().call.voicemail).toBeNull();
     const native = await app!.inject({ url: `/api/calls/${id.toUpperCase()}`, headers: {
-      authorization: 'Bearer owner', 'x-shield-participant': config.TRIAL_PARTICIPANT_ID.toUpperCase() } });
+      authorization: 'Bearer owner', 'x-shield-participant': PERSON.toUpperCase() } });
     expect(native.statusCode).toBe(200); expect(native.json().call.id).toBe(id);
   });
   it('accepts invitations once and enforces immediate revocation and owner-only writes', async () => {
@@ -110,30 +110,30 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     const id = await seedCall();
     await store.callRef(id).update({ createdAt: now - 20 * 86400_000 });
     const other = await seedCall(); await store.callRef(other).update({ participantId: randomUUID() });
-    const totals = await Promise.all([stoppedTotal(store, config.TRIAL_PARTICIPANT_ID), stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)]);
+    const totals = await Promise.all([stoppedTotal(store, PERSON), stoppedTotal(store, PERSON)]);
     expect(totals).toEqual([1, 1]);
     const overview = (await app!.inject({ url: '/api/overview', headers: headers() })).json();
     expect(overview.counts).toMatchObject({ held: 0, stoppedTotal: 1 });
     now += 31 * 86400_000;
     await store.cleanup();
     expect((await store.callRef(id).get()).exists).toBe(false);
-    expect(await stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).toBe(1);
+    expect(await stoppedTotal(store, PERSON)).toBe(1);
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: headers() })).statusCode).toBe(200);
-    await expect(stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).rejects.toMatchObject({ statusCode: 403 });
-    expect((await store.personRef(config.TRIAL_PARTICIPANT_ID).collection('statistics').get()).empty).toBe(true);
+    await expect(stoppedTotal(store, PERSON)).rejects.toMatchObject({ statusCode: 403 });
+    expect((await store.personRef(PERSON).collection('statistics').get()).empty).toBe(true);
   });
   it('backfills multiple pages and seeds expired history before its first cleanup', async () => {
     const batch = db.batch();
     for (let n = 0; n < 205; n++) {
       const id = randomUUID();
-      batch.set(store.callRef(id), { id, participantId: config.TRIAL_PARTICIPANT_ID, createdAt: now - 31 * 86400_000,
+      batch.set(store.callRef(id), { id, participantId: PERSON, createdAt: now - 31 * 86400_000,
         expiresAt: now - 1, outcome: n % 2 ? 'verification' : 'held', events: [] });
     }
     await batch.commit();
     await store.cleanup();
     expect((await db.collection('callSessions').get()).empty).toBe(true);
-    expect(await stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).toBe(205);
-    expect(await stoppedTotal(store, config.TRIAL_PARTICIPANT_ID)).toBe(205);
+    expect(await stoppedTotal(store, PERSON)).toBe(205);
+    expect(await stoppedTotal(store, PERSON)).toBe(205);
   });
   it('commits quota groups atomically under contention', async () => {
     const outcomes = await Promise.allSettled(Array.from({ length: 8 }, () => store.quota([['paid-global', 3], ['paid-owner', 5]])));
@@ -151,6 +151,6 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
   });
   it('reports the Telnyx number in setup and no longer reports a direct-call trial window', async () => {
     const setup = (await app!.inject({ url: '/api/setup', headers: headers() })).json();
-    expect(setup).toMatchObject({ shieldNumber: config.TELNYX_NUMBER, trial: null });
+    expect(setup).toMatchObject({ shieldNumber: NUMBER, trial: null });
   });
 });

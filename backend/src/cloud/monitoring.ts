@@ -1,3 +1,4 @@
+import { CallControlProvider } from './call-control-provider.js';
 import { z } from 'zod';
 import type { DocumentData, Transaction } from 'firebase-admin/firestore';
 import { callerText, supportedEvidence } from '../live/evidence.js';
@@ -201,10 +202,16 @@ export class CallMonitor {
     try {
       if (!call.childSid) throw new Error('child_missing');
       // Her leg leaves the bridge to hear the warning; that ends the caller's Dial, which hangs up on them.
-      await this.telnyx.update(call.childSid, { Url: `${c.PUBLIC_BASE_URL}/forwarding/${c.TRIAL_PROXY_SECRET}/monitor-warning/${id}`, Method: 'POST' });
+      if (call.transport === 'call-control') {
+        const cc = new CallControlProvider(c);
+        await s.db.collection('callControlDeadlines').doc(id).set({ callId: id, dueAt: now + 30_000, expiresAt: now + 2 * 3600_000 });
+        await cc.action(call.parentSid, 'hangup', { command_id: s.vault.hash(`${id}:intervene`) });
+        await cc.action(call.childSid, 'speak', { payload: warningText(concern), voice: 'AWS.Polly.Joanna', client_state: cc.state(id, 'warning'), command_id: s.vault.hash(`${id}:warning`) });
+      } else await this.telnyx.update(call.childSid, { Url: `${c.PUBLIC_BASE_URL}/forwarding/${c.TRIAL_PROXY_SECRET}/monitor-warning/${id}`, Method: 'POST' });
       redirected = true;
     } catch {
-      await this.telnyx.update(call.parentSid, { Status: 'completed' }).catch(() => undefined);
+      if (call.transport === 'call-control') await Promise.allSettled([call.parentSid, call.childSid].filter((v): v is string => !!v).map(sid => new CallControlProvider(c).action(sid, 'hangup')));
+      else await this.telnyx.update(call.parentSid, { Status: 'completed' }).catch(() => undefined);
     }
     const redirectedAt = s.now();
     await s.callRef(id).update({ monitorRedirectedAt: redirectedAt }).catch(() => undefined);

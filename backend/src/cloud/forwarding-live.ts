@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { announcementResponse } from './announcements.js';
-import { CAUTION_MS, ForwardingStore, type ForwardingCall } from './forwarding-store.js';
+import { CAUTION_MS, ForwardingStore, inQuietHours, screeningOpen, type ForwardingCall } from './forwarding-store.js';
 import type { LiveDecision, StopReason } from '../live/policy.js';
 import type { CloudConfig } from './config.js';
 
@@ -30,7 +30,7 @@ export class ForwardingLive {
   async claim(id: string): Promise<ForwardingCall | undefined> {
     const f = this.forwarding, now = f.store.now();
     return f.transition(id, (c, ctrl, person) => c.state === 'screening' && c.eligible && c.provider === 'telnyx' && !c.liveConnectedAt
-      && ctrl.activeCallId === id && ctrl.enabled && ctrl.expiresAt > now && person.status === 'setup' && now - c.createdAt < 85_000
+      && ctrl.activeCallId === id && screeningOpen(ctrl, person, now) && person.status === 'setup' && now - c.createdAt < 85_000
       ? { liveConnectedAt: now, screeningModel: 'gpt-live-1', ...(person.scamStoppedAt > now - CAUTION_MS ? { screeningCaution: true } : {}),
         events: [...c.events, { kind: 'live_screening_started', at: now }] } : undefined);
   }
@@ -42,14 +42,16 @@ export class ForwardingLive {
       // Preserve the terminal screening decision without reviving an ended call.
       const carrierEndedFirst = !approve && c.state === 'ended' && c.outcome === 'missed' && !c.liveFinishedAt;
       if ((c.state !== 'screening' && !carrierEndedFirst) || !c.liveConnectedAt) return;
-      const offer = approve && c.eligible && ctrl.activeCallId === id && ctrl.enabled && ctrl.expiresAt > now && person.status === 'setup';
+      // Overnight, always-on screening sends a caller it would offer to voicemail; a supervised test window still rings.
+      const quiet = approve && c.admittedBy === 'always' && inQuietHours(person, now);
+      const offer = approve && !quiet && c.eligible && ctrl.activeCallId === id && screeningOpen(ctrl, person, now) && person.status === 'setup';
       const purpose = typeof decision === 'string' ? null : decision.purpose;
       // Only clear scams, robocalls, solicitors and silence hang up. A caller Shield could not clear, or
       // could not offer, may be real: give them voicemail instead of dropping the call.
       const fallback = !carrierEndedFirst && (approve ? !offer : typeof decision === 'string'
         ? decision === 'screening_unavailable' || decision === 'screening_timeout' : decision.action === 'hold');
       if (fallback) {
-        const reason = approve ? 'message_only' : typeof decision === 'string' ? decision : 'uncertain';
+        const reason = quiet ? 'quiet_hours' : approve ? 'message_only' : typeof decision === 'string' ? decision : 'uncertain';
         return { state: 'voicemail', outcome: 'voicemail', purpose, reason, completedAt: null, liveFinishedAt: now,
           events: [...c.events, { kind: 'voicemail_offered', at: now }] };
       }
@@ -59,6 +61,12 @@ export class ForwardingLive {
         events: [...c.events, { kind: offer ? 'callback_offered' : 'call_stopped', at: now }] };
     // Robocall and solicitation numbers are usually spoofed and change constantly, so only scams are remembered.
     }, (tx, next, personExists) => { if (next.outcome === 'held' && next.reason === 'scam') f.rememberScam(tx, next, 'scam', personExists); });
+  }
+  /** The bridge had no room for this call: never connect it, offer voicemail instead. */
+  async unavailable(id: string) {
+    const f = this.forwarding, now = f.store.now();
+    return f.transition(id, c => c.state === 'screening' && !c.liveConnectedAt ? { state: 'voicemail', outcome: 'voicemail', reason: 'screening_unavailable',
+      liveFinishedAt: now, events: [...c.events, { kind: 'voicemail_offered', at: now }] } : undefined);
   }
 }
 

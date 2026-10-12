@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vites
 import { initializeApp, deleteApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { generateKeyPairSync, sign } from 'node:crypto';
-import { forwardingNumber } from '../src/cloud/forwarding-provider.js';
+import { enroll } from './enroll.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { afterScreening, ForwardingLive } from '../src/cloud/forwarding-live.js';
 import { ForwardingProbes } from '../src/cloud/forwarding-probes.js';
@@ -15,21 +15,21 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   const project = 'demo-shield-forwarding';
   const keys = generateKeyPairSync('ed25519');
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-    TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+12025550101',
-    TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
+    TRIAL_PROXY_SECRET: 'c'.repeat(64), DATA_ENCRYPTION_KEY: 'd'.repeat(64),
     LIVE_SCREENING_ENABLED: true, LIVE_BRIDGE_URL: 'https://shield-live-test.a.run.app', TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8),
-    TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109',
+    TELNYX_APPLICATION_ID: '123456789012345678',
     TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64') });
-  const number = forwardingNumber(config);
+  const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', NUMBER = '+12025550109', PHONE = '+12025550101';
+  const number = NUMBER;
   const admin = initializeApp({ projectId: project }, 'forwarding-tests'), db = getFirestore(admin);
   const sid = (n = 1) => `10123456-1234-4321-1234-${n.toString(16).padStart(12, '0')}`;
-  const startProbe = vi.fn<(id: string) => Promise<void>>();
+  const startProbe = vi.fn<(id: string, from: string, to: string) => Promise<void>>();
   const warmLiveBridge = vi.fn<() => void>();
-  let inboundFrom: string;
+  let inboundFrom: string, inboundTo: string;
   const from = '+12025550102';
   let now: number, s: CloudStore, f: ForwardingStore, app: Awaited<ReturnType<typeof buildCloudApp>>;
   const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {} };
-  const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': config.TRIAL_PARTICIPANT_ID });
+  const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': PERSON });
   const approve = { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true } as const;
   const post = (step: string, extra: Record<string, string> = {}, signed = true) => {
     const url = `/forwarding/${config.TRIAL_PROXY_SECRET}/${step}`;
@@ -51,22 +51,18 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);
     await live.finish(c.id, approve);
     const response = await post('result'); expect(response.body).toContain('<Dial');
-    if (bind) await post(`child/${c.id}`, { CallSid: sid(2), ParentCallSid: sid(), From: number, To: config.TRIAL_VERIFIED_CALLER, CallStatus: 'ringing' });
+    if (bind) await post(`child/${c.id}`, { CallSid: sid(2), ParentCallSid: sid(), From: number, To: PHONE, CallStatus: 'ringing' });
     return c.id;
   };
   beforeEach(async () => {
     if (!/^127\.0\.0\.1:\d+$/.test(process.env.FIRESTORE_EMULATOR_HOST!)) throw new Error('Local emulator required');
     await fetch(`http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${project}/databases/(default)/documents`, { method: 'DELETE' });
-    startProbe.mockReset().mockResolvedValue(undefined); warmLiveBridge.mockReset(); inboundFrom = from;
-    now = Date.now(); s = new CloudStore(db, config, () => now); f = new ForwardingStore(s);
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).set({ id: config.TRIAL_PARTICIPANT_ID, ownerUid: 'owner', status: 'setup', phoneVerifiedAt: now,
-      forwardingConsent, nameEnc: s.vault.seal('Test', `person:${config.TRIAL_PARTICIPANT_ID}:name`),
-      phoneEnc: s.vault.seal(config.TRIAL_VERIFIED_CALLER, `person:${config.TRIAL_PARTICIPANT_ID}:phone`) });
-    await f.control.set({ provisioned: true, enabled: true, dataPlanConfirmed: true, restorationGuide: ['Restore saved carrier settings'],
-      allowAnyCaller: true, used: 0, expiresAt: now + 1800_000 });
+    startProbe.mockReset().mockResolvedValue(undefined); warmLiveBridge.mockReset(); inboundFrom = from; inboundTo = number;
+    now = Date.now(); s = new CloudStore(db, config, () => now);
+    f = await enroll(s, { id: PERSON, uid: 'owner', phone: PHONE, shieldNumber: NUMBER, now });
     app = await buildCloudApp(s, { auth, warmLiveBridge, startForwardingProbe: startProbe, lookupForwardingChild: async () => ({ parentCallSid: sid(), from: number,
-      to: config.TRIAL_VERIFIED_CALLER, status: 'in-progress' }),
-      lookupForwardingInbound: async () => ({ from: inboundFrom, to: number, status: 'in-progress', direction: 'inbound' }) });
+      to: PHONE, status: 'in-progress' }),
+      lookupForwardingInbound: async () => ({ from: inboundFrom, to: inboundTo, status: 'in-progress', direction: 'inbound' }) });
   });
   afterEach(async () => { await app.close(); });
   afterAll(async () => { await db.terminate(); await deleteApp(admin); });
@@ -81,43 +77,43 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect(startProbe).toHaveBeenCalledTimes(1);
     const state = (await app.inject({ url: '/api/forwarding', headers: headers() })).json();
     expect(state.probe.state).toBe('waiting'); expect(state.probe.nonce).toBeUndefined();
-    expect((await f.begin(sid(), from))!.eligible).toBe(false);
+    expect((await f.begin(sid(), NUMBER, from))!.eligible).toBe(false);
   });
   it('opens an owner-approved window without extending it or resetting consumed calls', async () => {
     const open = () => app.inject({ method: 'POST', url: '/api/forwarding/test-window', headers: headers(), payload: { allowAnyCaller: true } });
-    await f.control.update({ enabled: false });
+    await f.controlRef(PERSON).update({ enabled: false });
     expect((await open()).statusCode).toBe(200);
-    const expiry = (await f.control.get()).data()!.expiresAt;
-    now += 1000; await f.control.update({ used: 4 }); await open();
-    expect((await f.control.get()).data()).toMatchObject({ used: 4, expiresAt: expiry });
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).update({ forwardingConsent: 'old' });
+    const expiry = (await f.controlRef(PERSON).get()).data()!.expiresAt;
+    now += 1000; await f.controlRef(PERSON).update({ used: 4 }); await open();
+    expect((await f.controlRef(PERSON).get()).data()).toMatchObject({ used: 4, expiresAt: expiry });
+    await s.personRef(PERSON).update({ forwardingConsent: 'old' });
     expect((await open()).statusCode).toBe(409); expect((await start('ring')).statusCode).toBe(409);
   });
   it('requires the sound-check digit on the bound signed outbound leg', async () => {
-    await start('ring'); const probe = (await f.control.get()).data()!.probe;
-    expect((await post(`probe/${probe.id}`, { CallSid: sid(9), From: from, To: config.TRIAL_VERIFIED_CALLER })).body).toContain('<Hangup');
-    const outbound = { CallSid: sid(8), From: number, To: config.TRIAL_VERIFIED_CALLER };
+    await start('ring'); const probe = (await f.controlRef(PERSON).get()).data()!.probe;
+    expect((await post(`probe/${probe.id}`, { CallSid: sid(9), From: from, To: PHONE })).body).toContain('<Hangup');
+    const outbound = { CallSid: sid(8), From: number, To: PHONE };
     expect((await post(`probe/${probe.id}`, outbound, false)).statusCode).toBe(403);
     expect((await post(`probe/${probe.id}`, outbound)).body).toContain('/10-sound-check.wav');
     await post(`probe-confirm/${probe.id}`, { ...outbound, CallSid: sid(7), Digits: '1' });
-    expect((await f.control.get()).data()!.probe.state).toBe('waiting');
+    expect((await f.controlRef(PERSON).get()).data()!.probe.state).toBe('waiting');
     await post(`probe-confirm/${probe.id}`, { ...outbound, Digits: '1' });
-    expect((await f.control.get()).data()!.probe.state).toBe('passed');
-    expect((await f.control.get()).data()!.ringTestAt).toBe(now);
-    expect((await f.control.get()).data()!.forwardingTestAt).toBeUndefined();
+    expect((await f.controlRef(PERSON).get()).data()!.probe.state).toBe('passed');
+    expect((await f.controlRef(PERSON).get()).data()!.ringTestAt).toBe(now);
+    expect((await f.controlRef(PERSON).get()).data()!.forwardingTestAt).toBeUndefined();
   });
   it('requires the unique challenge to traverse both legs before reporting forwarding', async () => {
-    await start('forwarding'); const probe = (await f.control.get()).data()!.probe;
+    await start('forwarding'); const probe = (await f.controlRef(PERSON).get()).data()!.probe;
     inboundFrom = number;
-    const outbound = { CallSid: sid(8), From: number, To: config.TRIAL_VERIFIED_CALLER };
+    const outbound = { CallSid: sid(8), From: number, To: PHONE };
     expect((await post(`probe/${probe.id}`, outbound)).body).toContain(`digits="${probe.nonce}"`);
     expect((await post('inbound', { From: number })).body).toContain('numDigits="8"');
     await post(`probe-confirm/${probe.id}`, { Digits: 'wrong' });
-    expect((await f.control.get()).data()!.probe.state).toBe('waiting');
+    expect((await f.controlRef(PERSON).get()).data()!.probe.state).toBe('waiting');
     await post(`probe-confirm/${probe.id}`, { CallSid: sid(6), Digits: probe.nonce });
-    expect((await f.control.get()).data()!.probe.state).toBe('waiting');
+    expect((await f.controlRef(PERSON).get()).data()!.probe.state).toBe('waiting');
     await post(`probe-confirm/${probe.id}`, { Digits: probe.nonce });
-    expect((await f.control.get()).data()!.probe.state).toBe('passed');
+    expect((await f.controlRef(PERSON).get()).data()!.probe.state).toBe('passed');
     const state = (await app.inject({ url: '/api/forwarding', headers: headers() })).json();
     expect(state.forwardingTestAt).not.toBeNull(); expect(state.lastTestAt).toBeNull();
     expect((await db.collection('callSessions').get()).empty).toBe(true);
@@ -125,15 +121,15 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   it('does not retry an uncertain provider request and enforces expiry and daily limits', async () => {
     startProbe.mockRejectedValueOnce(new Error('provider timeout'));
     await start('ring'); await start('ring'); expect(startProbe).toHaveBeenCalledTimes(1);
-    const probe = (await f.control.get()).data()!.probe;
+    const probe = (await f.controlRef(PERSON).get()).data()!.probe;
     now += 90_001;
     expect((await app.inject({ url: '/api/forwarding', headers: headers() })).json().probe.state).toBe('failed');
     expect(await new ForwardingProbes(s).confirm(probe.id, sid(), '1')).toBeUndefined();
-    await f.control.update({ probeCount: 6, probeDay: Math.floor(now / 86400_000) });
+    await f.controlRef(PERSON).update({ probeCount: 6, probeDay: Math.floor(now / 86400_000) });
     expect((await start('ring')).statusCode).toBe(429);
   });
   it('restoration stops in-flight test evidence from passing', async () => {
-    await start('ring'); const probe = (await f.control.get()).data()!.probe;
+    await start('ring'); const probe = (await f.controlRef(PERSON).get()).data()!.probe;
     await new ForwardingProbes(s).outbound(probe.id, sid());
     await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() });
     expect(await new ForwardingProbes(s).confirm(probe.id, sid(), '1')).toBeUndefined();
@@ -143,18 +139,18 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   it('rejects a child without authenticated parent binding, wrong parent and wrong destination', async () => {
     const id = await offer(false);
     expect((await post(`whisper/${id}`, { CallSid: sid(2) })).body).toContain('<Hangup');
-    await post(`child/${id}`, { CallSid: sid(2), ParentCallSid: sid(8), From: number, To: config.TRIAL_VERIFIED_CALLER, CallStatus: 'ringing' });
+    await post(`child/${id}`, { CallSid: sid(2), ParentCallSid: sid(8), From: number, To: PHONE, CallStatus: 'ringing' });
     expect((await f.find(sid()))!.childSid).toBeUndefined();
     await post(`child/${id}`, { CallSid: sid(2), ParentCallSid: sid(), From: number, To: from, CallStatus: 'ringing' });
     expect((await f.find(sid()))!.childSid).toBeUndefined();
-    const child = { CallSid: sid(2), ParentCallSid: sid(), From: number, To: config.TRIAL_VERIFIED_CALLER, CallStatus: 'in-progress' };
+    const child = { CallSid: sid(2), ParentCallSid: sid(), From: number, To: PHONE, CallStatus: 'in-progress' };
     await Promise.all([post(`child/${id}`, child), post(`child/${id}`, child)]);
     expect((await post(`whisper/${id}`, { CallSid: sid(2) })).body).toContain('/offer-personal.wav');
     expect((await post(`accept/${id}`, { CallSid: sid(2), Digits: '1' })).body).not.toContain('<Hangup');
   });
   it('rejects the wrong application and requires renewed provider consent', async () => {
     expect((await post('inbound', { ConnectionId: '999999999999' })).statusCode).toBe(403);
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).update({ forwardingConsent: 'old-provider-consent' });
+    await s.personRef(PERSON).update({ forwardingConsent: 'old-provider-consent' });
     expect((await post('inbound')).body).toContain('/07-not-ready.wav');
     expect((await db.collection('callSessions').get()).empty).toBe(true);
   });
@@ -166,7 +162,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   });
   it.each(['anonymous', 'Restricted', '+anonymous', ''])('screens a withheld caller ID (%j) without storing it or trusting it', async withheld => {
     inboundFrom = withheld;
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').add({ phoneHash: s.vault.hash(withheld), enabled: true });
+    await s.personRef(PERSON).collection('trusted-numbers').add({ phoneHash: s.vault.hash(withheld), enabled: true });
     expect((await post('inbound', { From: withheld })).body).toContain('<Stream');
     expect(warmLiveBridge).toHaveBeenCalledTimes(1);
     const call = (await f.find(sid()))!;
@@ -186,27 +182,27 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect(await f.find(sid(2))).toBeUndefined(); expect(await f.find(sid(3))).toBeUndefined();
   });
   it('never matches a withheld caller to a single-caller test scope', async () => {
-    await f.control.update({ allowAnyCaller: false, callerHash: s.vault.hash('') });
-    expect((await f.begin(sid(), undefined))!.eligible).toBe(false);
+    await f.controlRef(PERSON).update({ allowAnyCaller: false, callerHash: s.vault.hash('') });
+    expect((await f.begin(sid(), NUMBER, undefined))!.eligible).toBe(false);
   });
   it('allows any caller but only one offer at a time, including recursive forwarding', async () => {
-    const calls = await Promise.all([f.begin(sid(), from), f.begin(sid(2), '+12025550103')]);
+    const calls = await Promise.all([f.begin(sid(), NUMBER, from), f.begin(sid(2), NUMBER, '+12025550103')]);
     expect(calls.filter(c => c?.eligible)).toHaveLength(1);
     expect(calls.filter(c => c?.state === 'voicemail')).toHaveLength(1);
-    expect((await f.control.get()).data()!.used).toBe(1);
-    expect(await f.begin(sid(), from)).toBeUndefined();
+    expect((await f.controlRef(PERSON).get()).data()!.used).toBe(1);
+    expect(await f.begin(sid(), NUMBER, from)).toBeUndefined();
     await f.ended(calls.find(c => c?.eligible)!.parentSid);
-    expect((await f.control.get()).data()!.activeCallId).toBeUndefined();
-    expect((await f.begin(sid(3), from))!.eligible).toBe(true);
+    expect((await f.controlRef(PERSON).get()).data()!.activeCallId).toBeUndefined();
+    expect((await f.begin(sid(3), NUMBER, from))!.eligible).toBe(true);
   });
   it('never offers outside the window, over quota, paused, or to a trusted caller', async () => {
-    await f.control.update({ used: 10 }); expect((await f.begin(sid(), from))!.eligible).toBe(false);
-    await f.control.update({ used: 0, expiresAt: now - 1 }); expect((await f.begin(sid(2), from))!.eligible).toBe(false);
-    await f.control.update({ expiresAt: now + 10000 }); await s.personRef(config.TRIAL_PARTICIPANT_ID).update({ status: 'paused' });
-    expect((await f.begin(sid(3), from))!.eligible).toBe(false);
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).update({ status: 'setup' });
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').add({ phoneHash: s.vault.hash(from) });
-    expect((await f.begin(sid(4), from))!.eligible).toBe(false);
+    await f.controlRef(PERSON).update({ used: 10 }); expect((await f.begin(sid(), NUMBER, from))!.eligible).toBe(false);
+    await f.controlRef(PERSON).update({ used: 0, expiresAt: now - 1 }); expect((await f.begin(sid(2), NUMBER, from))!.eligible).toBe(false);
+    await f.controlRef(PERSON).update({ expiresAt: now + 10000 }); await s.personRef(PERSON).update({ status: 'paused' });
+    expect((await f.begin(sid(3), NUMBER, from))!.eligible).toBe(false);
+    await s.personRef(PERSON).update({ status: 'setup' });
+    await s.personRef(PERSON).collection('trusted-numbers').add({ phoneHash: s.vault.hash(from) });
+    expect((await f.begin(sid(4), NUMBER, from))!.eligible).toBe(false);
   });
   it('offers only the fixed enrolled recipient, requires the bound child and press 1', async () => {
     const id = await offer();
@@ -232,7 +228,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() })).statusCode).toBe(200);
     expect((await post(`accept/${id}`, { CallSid: sid(2), Digits: '1' })).body).toContain('<Hangup');
     expect((await post(`dial-ended/${id}`, { DialCallSid: sid(2), DialCallStatus: 'no-answer' })).body).toContain('<Record');
-    expect((await f.control.get()).data()!.enabled).toBe(false);
+    expect((await f.controlRef(PERSON).get()).data()!.enabled).toBe(false);
   });
   it('expires acceptance even if the callback started during the window', async () => {
     const id = await offer(); await post(`whisper/${id}`, { CallSid: sid(2) }); now += 1800_001;
@@ -243,12 +239,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     let state = (await app.inject({ url: '/api/forwarding', headers: headers() })).json();
     expect(state.activationCodes).toEqual(['61', '67', '62'].map(code => `**${code}*${number.slice(1)}#`));
     expect(state.lastTestAt).toBeNull();
-    await f.control.update({ enabled: false });
+    await f.controlRef(PERSON).update({ enabled: false });
     state = (await app.inject({ url: '/api/forwarding', headers: headers() })).json(); expect(state.activationCodes).toEqual([]);
     expect((await app.inject({ method: 'POST', url: '/api/forwarding/progress', headers: headers(), payload: { stage: 'forward0' } })).statusCode).toBe(409);
   });
   it('deduplicates voicemail, rejects invalid durations and protects encrypted audio', async () => {
-    await f.control.update({ enabled: false }); const c = (await f.begin(sid(), from))!;
+    await f.controlRef(PERSON).update({ enabled: false }); const c = (await f.begin(sid(), NUMBER, from))!;
     const recordingSid = 'ab123456-1234-4321-1234-000000000001';
     await f.recording(sid(), recordingSid, NaN); expect((await db.collection('forwardingRecordings').get()).empty).toBe(true);
     await Promise.all([f.recording(sid(), recordingSid, 12), f.recording(sid(), recordingSid, 12)]);
@@ -268,10 +264,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     const xml = (await post('inbound')).body;
     expect(xml).toContain('<Record'); expect(xml).not.toContain('<Stream'); expect(warmLiveBridge).not.toHaveBeenCalled();
     expect(await f.find(sid())).toMatchObject({ state: 'voicemail', eligible: false, reason: 'message_only' });
-    expect((await f.control.get()).data()).toMatchObject({ used: 0 });
+    expect((await f.controlRef(PERSON).get()).data()).toMatchObject({ used: 0 });
   });
   it('screens a number removed from the shared list and skips screening for one still saved', async () => {
-    const ref = s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').doc('test-contact');
+    const ref = s.personRef(PERSON).collection('trusted-numbers').doc('test-contact');
     await ref.set({ phoneHash: s.vault.hash(from), enabled: true });
     await post('inbound'); expect((await f.find(sid()))?.state).toBe('voicemail');
     await f.ended(sid()); await ref.update({ enabled: false });
@@ -284,7 +280,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect(claims.filter(Boolean)).toHaveLength(1);
     await live.finish(c.id, 'silent_caller'); await f.ended(sid());
     expect(await f.find(sid())).toMatchObject({ state: 'ended', outcome: 'held', reason: 'silent_caller', screeningModel: 'gpt-live-1' });
-    expect((await f.control.get()).data()?.activeCallId).toBeUndefined();
+    expect((await f.controlRef(PERSON).get()).data()?.activeCallId).toBeUndefined();
   });
   it('preserves the block when the carrier completion callback arrives first', async () => {
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);
@@ -293,7 +289,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   });
   it('rechecks the test window before a live approval can offer a call', async () => {
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);
-    await f.control.update({ enabled: false });
+    await f.controlRef(PERSON).update({ enabled: false });
     const result = await live.finish(c.id, approve);
     expect(result).toMatchObject({ state: 'voicemail', reason: 'message_only' });
     expect((await post('result')).body).not.toContain('<Dial');
@@ -325,8 +321,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   });
   const scamBlock = { action: 'block', reason: 'scam', purpose: 'other', evidence: 'read me the code', hasName: true, hasReason: true } as const;
   /** A fresh test window after the clock jumps past the last one. */
-  const reopen = () => f.control.update({ enabled: true, used: 0, expiresAt: now + 1800_000 });
-  const blocked = (phone = from) => s.personRef(config.TRIAL_PARTICIPANT_ID).collection('blocked-numbers').doc(s.vault.hash(phone));
+  const reopen = () => f.controlRef(PERSON).update({ enabled: true, used: 0, expiresAt: now + 1800_000 });
+  const blocked = (phone = from) => s.personRef(PERSON).collection('blocked-numbers').doc(s.vault.hash(phone));
   /** Screen the call `n` from `inboundFrom` and apply a decision. */
   const screen = async (n: number, decision: Parameters<ForwardingLive['finish']>[1]) => {
     await post('inbound', { CallSid: sid(n), From: inboundFrom }); const c = (await f.find(sid(n)))!; const live = new ForwardingLive(f);
@@ -336,13 +332,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     await screen(1, scamBlock);
     const entry = (await blocked().get()).data()!;
     expect(entry).toMatchObject({ reason: 'scam', expiresAt: now + BLOCK_MS, attempts: 0 }); expect(JSON.stringify(entry)).not.toContain(from.slice(2));
-    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBe(now);
-    const used = (await f.control.get()).data()!.used;
+    expect((await s.personRef(PERSON).get()).data()!.scamStoppedAt).toBe(now);
+    const used = (await f.controlRef(PERSON).get()).data()!.used;
     warmLiveBridge.mockReset(); now += 60_000;
     const xml = (await post('inbound', { CallSid: sid(2) })).body;
     expect(xml).toContain('/08-cannot-connect.wav'); expect(xml).not.toContain('<Stream'); expect(xml).not.toContain('<Record');
     expect(await f.find(sid(2))).toMatchObject({ state: 'ended', outcome: 'held', reason: 'blocked_caller', eligible: false });
-    expect((await f.control.get()).data()).toMatchObject({ used }); expect((await f.control.get()).data()!.activeCallId).toBeUndefined();
+    expect((await f.controlRef(PERSON).get()).data()).toMatchObject({ used }); expect((await f.controlRef(PERSON).get()).data()!.activeCallId).toBeUndefined();
     expect((await blocked().get()).data()).toMatchObject({ attempts: 1, lastAttemptAt: now });
     // A late carrier callback must not revive it, and voicemail is never offered.
     await f.ended(sid(2)); expect((await post(`voicemail/${(await f.find(sid(2)))!.id}`, { CallSid: sid(2) })).body).not.toContain('<Record');
@@ -353,9 +349,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   });
   it('blocks a saved contact that turned out to be a scam, and screens again once the block expires', async () => {
     await screen(1, scamBlock);
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').add({ phoneHash: s.vault.hash(from), enabled: true });
+    await s.personRef(PERSON).collection('trusted-numbers').add({ phoneHash: s.vault.hash(from), enabled: true });
     expect((await post('inbound', { CallSid: sid(2) })).body).toContain('/08-cannot-connect.wav');
-    await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('trusted-numbers').get().then(q => Promise.all(q.docs.map(d => d.ref.delete())));
+    await s.personRef(PERSON).collection('trusted-numbers').get().then(q => Promise.all(q.docs.map(d => d.ref.delete())));
     now += BLOCK_MS; await reopen(); expect((await post('inbound', { CallSid: sid(3) })).body).toContain('<Stream');
   });
   it.each([
@@ -364,12 +360,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   ] as const)('does not remember the number or set caution after %s', async (_label, decision) => {
     await screen(1, decision as Parameters<ForwardingLive['finish']>[1]);
     expect((await blocked().get()).exists).toBe(false);
-    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBeUndefined();
+    expect((await s.personRef(PERSON).get()).data()!.scamStoppedAt).toBeUndefined();
   });
   it('sets caution after a withheld scam caller, who cannot be blocked by number', async () => {
     inboundFrom = 'anonymous'; await screen(1, scamBlock);
-    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).collection('blocked-numbers').get()).empty).toBe(true);
-    expect((await s.personRef(config.TRIAL_PARTICIPANT_ID).get()).data()!.scamStoppedAt).toBe(now);
+    expect((await s.personRef(PERSON).collection('blocked-numbers').get()).empty).toBe(true);
+    expect((await s.personRef(PERSON).get()).data()!.scamStoppedAt).toBe(now);
     expect((await post('inbound', { CallSid: sid(2), From: 'anonymous' })).body).toContain('<Stream');
   });
   it('screens with caution for 24 hours after a stopped scam, and only then', async () => {
@@ -413,7 +409,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     await live.finish(c.id, approve);
     const xml = (await post('result')).body;
     expect(xml).toContain('<Stop><Stream name="shield-live"');
-    expect(xml).toContain(config.TRIAL_VERIFIED_CALLER);
+    expect(xml).toContain(PHONE);
     expect(xml).toContain('/whisper/');
     expect((await f.find(sid()))?.state).toBe('offering');
   });

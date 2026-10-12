@@ -58,7 +58,7 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         case .consent: "Your choice"
         case .save, .ring: "Meet Shield"
         case .settings, .liveVoicemail: "Phone settings"
-        case .forward0, .forward1, .forward2: "Connect Tello"
+        case .forward0, .forward1, .forward2: "Connect your carrier"
         case .test, .checks: "Call checks"
         case .restore: "Phone recovery"
         }
@@ -69,7 +69,7 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         case .consent: "1 of 5 · Your choice"
         case .save, .ring: "2 of 5 · Meet Shield"
         case .settings, .liveVoicemail: "3 of 5 · Phone settings"
-        case .forward0, .forward1, .forward2: "4 of 5 · Connect Tello"
+        case .forward0, .forward1, .forward2: "4 of 5 · Connect your carrier"
         case .test, .checks: "5 of 5 · Call checks"
         case .restore: "Bring back ordinary calls"
         }

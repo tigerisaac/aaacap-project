@@ -6,20 +6,23 @@ export const cloudSchema = z.object({
   IOS_BUNDLE_ID: z.string().default('org.isaaczhang.Shield'),
   PUBLIC_BASE_URL: z.literal('https://shield-calls-isaac.web.app'),
   TRIAL_PROXY_SECRET: z.string().regex(/^[a-f0-9]{64}$/),
-  TRIAL_VERIFIED_CALLER: z.string().regex(/^\+1\d{10}$/),
-  TRIAL_PARTICIPANT_ID: z.string().uuid(),
   DATA_ENCRYPTION_KEY: z.string().regex(/^[a-f0-9]{64}$/),
   TELNYX_ACCOUNT_ID: z.string().uuid(),
   TELNYX_API_KEY: z.string().min(16),
   TELNYX_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9+/]{43}=$/),
   TELNYX_APPLICATION_ID: z.string().regex(/^\d{6,30}$/),
-  TELNYX_NUMBER: z.string().regex(/^\+1\d{10}$/),
+  SHARED_NUMBER_ENABLED: z.boolean().default(false),
+  TELNYX_SHARED_APPLICATION_ID: z.string().regex(/^\d{6,30}$/).optional(),
+  TELNYX_NUMBER: z.string().regex(/^\+1[2-9]\d{9}$/).default('+15074731802'),
+  // Each person's Shield number and verified phone live in Firestore (shieldNumbers, participants), not here.
   TELNYX_RECORDING_HOSTS: z.array(z.string().regex(/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/)).default([]),
   LIVE_SCREENING_ENABLED: z.boolean().default(false),
   LIVE_BRIDGE_URL: z.string().regex(/^https:\/\/[a-z0-9-]+\.a\.run\.app$/).optional(),
   // Connected-call protection is offered only when this is on AND the recipient opts in.
   CALL_MONITORING_ENABLED: z.boolean().default(false),
   MONITOR_TRANSCRIPTION_ENGINE: z.enum(['Parakeet', 'Soniox', 'Deepgram']).default('Soniox'),
+  // A second Telnyx number, never in anyone's contacts, that places the daily setup check. Unset: no checks.
+  SETUP_CHECK_NUMBER: z.string().regex(/^\+1[2-9]\d{9}$/).optional(),
   // Keep-or-remove checks on forwarded voicemail (GPT Transcribe + Decisions API). Off: every message is shown.
   VOICEMAIL_SCREENING_ENABLED: z.boolean().default(false),
   // Push alerts are offered only when an APNs auth key (.p8) from the Apple Developer account is configured.

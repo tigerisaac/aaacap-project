@@ -49,8 +49,8 @@ if (command === 'build') {
   if(!binding.members.includes(`serviceAccount:${runtimeIdentity}`))binding.members.push(`serviceAccount:${runtimeIdentity}`);
   await secrets.post(`${secretPath}:setIamPolicy`,{policy});
   const name=`${parent}/services/shield-live`;
-  const body={name:name.slice(1),description:'Shield supervised GPT Live 1 call screener; signed single-call streams only.',ingress:'INGRESS_TRAFFIC_ALL',
-    template:{serviceAccount:runtimeIdentity,timeout:'120s',maxInstanceRequestConcurrency:4,scaling:{minInstanceCount:0,maxInstanceCount:1},
+  const body={name:name.slice(1),description:'Shield GPT Live screening with signed per-call streams; up to ten sessions per instance.',ingress:'INGRESS_TRAFFIC_ALL',
+    template:{serviceAccount:runtimeIdentity,timeout:'120s',maxInstanceRequestConcurrency:10,scaling:{minInstanceCount:0,maxInstanceCount:2},
       containers:[{image:s.image,ports:[{containerPort:8080}],resources:{limits:{cpu:'1',memory:'512Mi'},cpuIdle:true,startupCpuBoost:true},
         env:[{name:'SHIELD_RUNTIME',valueSource:{secretKeyRef:{secret:'SHIELD_RUNTIME',version:'latest'}}},
           {name:'OPENAI_API_KEY',valueSource:{secretKeyRef:{secret:'SHIELD_OPENAI_API_KEY',version:'2'}}}]}]}};

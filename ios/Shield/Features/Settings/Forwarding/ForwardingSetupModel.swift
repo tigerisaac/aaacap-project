@@ -4,6 +4,7 @@ import UIKit
 
 @MainActor @Observable
 final class ForwardingSetupModel {
+    var carrier: String { status?.carrier ?? "your carrier" }
     var status: ForwardingStatus?
     var step = ForwardingStep.overview
     var working = false

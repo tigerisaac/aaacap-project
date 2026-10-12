@@ -14,6 +14,8 @@ struct ForwardingStatus: Decodable, Sendable {
         let consentVersion: String
         var choiceRecorded: Bool? = nil
     }
+    struct QuietHours: Codable, Equatable, Sendable { var enabled: Bool; var start: Int; var end: Int }
+    var quietHours: QuietHours? = nil
     var monitoring: Monitoring? = nil
     var probe: Probe? = nil
     var ringTestAt: Date? = nil

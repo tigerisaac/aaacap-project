@@ -13,14 +13,14 @@ import { HttpError, type AuthProvider } from '../src/auth.js';
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore emulator)', () => {
   const project = 'demo-shield-alerts';
   const base = { FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-    TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+12025550101',
-    TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
+    TRIAL_PROXY_SECRET: 'c'.repeat(64), DATA_ENCRYPTION_KEY: 'd'.repeat(64),
     TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: `${'A'.repeat(43)}=`,
-    TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109' };
+    TELNYX_APPLICATION_ID: '123456789012345678' };
   const apns = { keyId: 'ABCDEF1234', teamId: '6R6HMW3DWN',
     privateKey: generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }).toString() };
   const admin = initializeApp({ projectId: project }, 'alerts-tests'), db = getFirestore(admin);
-  const id = base.TRIAL_PARTICIPANT_ID;
+  const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', PHONE = '+12025550101', NUMBER = '+12025550109';
+  const id = PERSON;
   const tokens = { owner: 'aa'.repeat(32), helper: 'bb'.repeat(32), viewer: 'cc'.repeat(32) };
   const auth: AuthProvider = {
     async identify(token) { if (!['owner', 'helper', 'viewer', 'stranger'].includes(token)) throw new HttpError(401, 'sign_in_required'); return { subject: token }; },
@@ -52,8 +52,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
     now = Date.now(); sent.length = 0;
     send.mockReset().mockImplementation(async (token, _environment, body) => { sent.push({ token, body }); return 'sent'; });
     await build();
-    await s.personRef(id).set({ id, ownerUid: 'owner', status: 'setup', phoneVerifiedAt: now, forwardingConsent,
-      nameEnc: s.vault.seal('Margaret', `person:${id}:name`), phoneEnc: s.vault.seal(base.TRIAL_VERIFIED_CALLER, `person:${id}:phone`) });
+    await s.personRef(id).set({ id, ownerUid: 'owner', status: 'setup', phoneVerifiedAt: now, forwardingConsent, shieldNumber: NUMBER,
+      nameEnc: s.vault.seal('Margaret', `person:${id}:name`), phoneEnc: s.vault.seal(PHONE, `person:${id}:phone`) });
   });
   afterEach(async () => { await app.close(); });
   afterAll(async () => { await db.terminate(); await deleteApp(admin); });
@@ -128,12 +128,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
   });
   it('alerts helpers once an hour when a blocked number keeps calling, and when Shield ends a connected call', async () => {
     const f = new ForwardingStore(s), from = '+12025550102', hash = s.vault.hash(from);
-    await f.control.set({ provisioned: true, enabled: false, used: 0, expiresAt: now });
+    await f.controlRef(PERSON).set({ provisioned: true, enabled: false, used: 0, expiresAt: now });
+    await s.personRef(id).update({ shieldNumber: NUMBER });
+    await db.collection('shieldNumbers').doc(NUMBER).set({ state: 'assigned', participantId: id, assignedAt: now });
     await f.blockedRef(id, hash).set({ reason: 'scam', expiresAt: now + 86400_000, createdAt: now, attempts: 0 });
-    await f.begin('10123456-1234-4321-1234-000000000001', from); now += 60_000;
-    await f.begin('10123456-1234-4321-1234-000000000002', from);
+    await f.begin('10123456-1234-4321-1234-000000000001', NUMBER, from); now += 60_000;
+    await f.begin('10123456-1234-4321-1234-000000000002', NUMBER, from);
     expect(await queued()).toEqual(['blocked_caller']);
-    now += 3600_000; await f.begin('10123456-1234-4321-1234-000000000003', from);
+    now += 3600_000; await f.begin('10123456-1234-4321-1234-000000000003', NUMBER, from);
     expect(await queued()).toEqual(['blocked_caller', 'blocked_caller']);
 
     const call = randomUUID();

@@ -10,7 +10,7 @@ struct ForwardingPhoneSettingsView: View {
             if silence {
                 SetupInstruction(number: 2, title: "Live Voicemail", detail: "Turn it off in the same visit.")
             }
-            Text("Keep voicemail on in your Tello account.").foregroundStyle(ForwardingStyle.secondaryText)
+            Text("Keep voicemail on in your \(model.carrier) account.").foregroundStyle(ForwardingStyle.secondaryText)
             if model.settingsReturned {
                 Text(silence ? "Did you choose Silence?" : "Is Live Voicemail off?").font(.headline)
                     .accessibilityIdentifier("phone-settings-unverified")

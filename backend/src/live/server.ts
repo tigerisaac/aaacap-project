@@ -1,3 +1,4 @@
+import { SharedCallControl } from '../cloud/call-control.js';
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -35,28 +36,43 @@ const server = createServer((request, response) => {
   if (request.url !== '/ready') { response.writeHead(404).end(); return; }
   response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify({ status: 'ready', model: 'gpt-live-1', decisionModel: DECISION_MODEL, policyVersion: SCREENING_POLICY_VERSION,
-      timingLogs: true, waitAcknowledgement: !!acknowledgementAudio }));
+      timingLogs: true, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1' }));
 });
 const sockets = new WebSocketServer({ noServer: true, maxPayload: 32_768, perMessageDeflate: false });
-let active = false;
+// Each session only relays 8 kHz audio, so one instance can carry several people's screenings at once.
+const MAX_SESSIONS = Math.max(1, Math.min(10, Number(process.env.LIVE_SESSIONS_PER_INSTANCE) || 10));
+let sessions = 0;
+/** No room on this instance: never connect the caller, and don't leave them on hold. Voicemail instead. */
+async function refuse(id: string) {
+  try {
+    const call = await live.unavailable(id), next = afterScreening(config, call);
+    if (call?.transport === 'call-control') await new SharedCallControl(store).outcome(call.id);
+    else if (call && next) await telnyx.update(call.parentSid, next);
+    console.info(JSON.stringify({ event: 'live_screening_refused', reason: 'capacity' }));
+  } catch { console.error(JSON.stringify({ event: 'live_refusal_unrouted' })); }
+}
 server.on('upgrade', async (request, socket, head) => {
   const match = /^\/media\/([a-f0-9-]{36})\/(\d{13})\/([a-f0-9]{64})$/.exec(request.url ?? '');
-  if (active || !match || !validStreamTicket(config, match[1]!, Number(match[2]), match[3]!)) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
-  active = true;
+  if (!match || !validStreamTicket(config, match[1]!, Number(match[2]), match[3]!)) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
+  if (sessions >= MAX_SESSIONS) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); void refuse(match[1]!); return; }
+  sessions++;
+  let released = false;
+  const release = () => { if (!released) { released = true; sessions--; } };
   const claimStartedAt = Date.now();
   try {
     const call = await live.claim(match[1]!);
-    if (!call) { active = false; socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
+    if (!call) { release(); socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
     const timing = callTiming(call.id, call.createdAt);
     timing('bridge_claimed', { claimMs: Date.now() - claimStartedAt, processAgeMs: Date.now() - processStartedAt,
       firstCallInProcess: acceptedCalls++ === 0 });
+
     sockets.handleUpgrade(request, socket, head, provider => {
       let openai: WebSocket | undefined, streamStarted = false, closing = false;
       const send = (ws: WebSocket | undefined, event: object) => {
         if (ws?.readyState === WebSocket.OPEN && ws.bufferedAmount < 100_000) ws.send(JSON.stringify(event));
       };
       const close = () => {
-        if (closing) return; closing = true; active = false; clearInterval(ticker); clearTimeout(startTimer);
+        if (closing) return; closing = true; release(); clearInterval(ticker); clearTimeout(startTimer);
         timing('transport_closed', {});
         provider.close();
         // Allow final usage to arrive, but never keep a transport alive indefinitely.
@@ -72,8 +88,8 @@ server.on('upgrade', async (request, socket, head) => {
         const terminate = async () => {
           for (let attempt = 0; attempt < 3; attempt++) {
             const began = Date.now(); timing('hangup_started', { attempt: attempt + 1 });
-            try { await telnyx.update(call.parentSid, { Status: 'completed' }); timing('hangup_finished', { attempt: attempt + 1, redirectMs: Date.now() - began, successful: true }); return; }
-            catch { timing('hangup_finished', { attempt: attempt + 1, redirectMs: Date.now() - began, successful: false }); /* carrier-side deadline is the final fallback */ }
+            try { if (call.transport === 'call-control') await new SharedCallControl(store).hangup(call.parentSid); else await telnyx.update(call.parentSid, { Status: 'completed' }); timing('hangup_finished', { attempt: attempt + 1, redirectMs: Date.now() - began, successful: true }); return; }
+            catch { timing('hangup_finished', { attempt: attempt + 1, redirectMs: Date.now() - began, successful: false }); /* TeXML carrier deadline or the durable shared-call sweep is the final fallback */ }
           }
           console.error(JSON.stringify({ event: 'live_hangup_unconfirmed' }));
         };
@@ -84,7 +100,9 @@ server.on('upgrade', async (request, socket, head) => {
           await Promise.allSettled([terminate(), save()]);
         } else {
           try {
-            const next = afterScreening(config, await save());
+            const saved = await save();
+            if (call.transport === 'call-control') { await new SharedCallControl(store).outcome(call.id); return; }
+            const next = afterScreening(config, saved);
             if (next) {
               const began = Date.now(); timing('redirect_started', {});
               try { await telnyx.update(call.parentSid, next); timing('redirect_finished', { redirectMs: Date.now() - began, successful: true }); }
@@ -125,6 +143,6 @@ server.on('upgrade', async (request, socket, head) => {
       provider.on('error', () => { void session.stop('screening_unavailable'); });
       provider.on('close', () => { if (!session.ended) void session.stop('screening_unavailable'); });
     });
-  } catch { active = false; socket.destroy(); }
+  } catch { release(); socket.destroy(); }
 });
 server.listen(Number(process.env.PORT ?? 8080), '0.0.0.0');

@@ -5,7 +5,9 @@ import { purposes } from './copy.js';
 import { CloudStore } from './store.js';
 import { ForwardingProbes } from './forwarding-probes.js';
 import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
-import { callerNumber, forwardingNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
+import { callerNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
+import { assignedTo, isShieldNumber, knownShieldNumber, numberRef } from './numbers.js';
+import { SETUP_CHECK_MESSAGE, SetupChecks } from './setup-check.js';
 import { CallMonitor, warningText } from './monitoring.js';
 import { VoiceResponse } from './texml.js';
 import { announcementResponse } from './announcements.js';
@@ -15,8 +17,8 @@ export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string
 
 export async function registerForwardingVoice(app: FastifyInstance, store: CloudStore, deps: ForwardingVoiceDependencies = {}) {
   const f = new ForwardingStore(store), config = store.config;
-  const probes = new ForwardingProbes(store);
-  const number = forwardingNumber(config), telnyx = new TelnyxVoice(config);
+  const probes = new ForwardingProbes(store), checks = new SetupChecks(store);
+  const telnyx = new TelnyxVoice(config);
   const childLookup = deps.lookupForwardingChild ?? (sid => telnyx.call(sid));
   const inboundLookup = deps.lookupForwardingInbound ?? (sid => telnyx.call(sid));
   const monitor = deps.callMonitor ?? new CallMonitor(f, telnyx);
@@ -51,23 +53,29 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       reply.type('text/xml');
     });
     voice.post('/forwarding/:secret/inbound', async request => {
-      const b = request.body as Record<string, string>;
-      if (b.To !== number) return hangup();
-      if (config.LIVE_SCREENING_ENABLED && b.From !== number) warmLiveBridge();
+      const b = request.body as Record<string, string>, to = b.To;
+      // Whose call it is comes only from the Shield number it arrived on; admission checks that number's owner.
+      if (!isShieldNumber(to)) return hangup();
+      if (config.LIVE_SCREENING_ENABLED && b.From !== to) warmLiveBridge();
       // Clinics, hospitals and international family often withhold or lack a US number; screen them like anyone else.
       const caller = callerNumber(b.From);
       // TeXML does not promise Direction on its instruction-fetch webhook, so ask Telnyx.
       let remote; try { remote = await inboundLookup(b.CallSid!); } catch { return hangup(); }
       const sameCaller = caller ? remote.from === caller : !callerNumber(remote.from);
-      if (!sameCaller || remote.to !== number || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
-      if (b.From === number) {
-        const probe = await probes.incoming(b.CallSid!);
+      if (!sameCaller || remote.to !== to || remote.direction !== 'inbound' || !['ringing', 'in-progress'].includes(remote.status)) return hangup();
+      // The daily setup check coming back through her forwarding: record how long it took, then hang up silently.
+      if (checks.checkNumber && caller === checks.checkNumber) { await checks.arrived(to); return hangup(); }
+      // Loop guard: a call from any Shield number is never screened. The only one answered is a forwarding test
+      // coming back from a person's own Shield number to itself.
+      if (await knownShieldNumber(store, caller)) {
+        const participantId = caller === to ? assignedTo((await numberRef(store, to).get()).data()) : undefined;
+        const probe = participantId ? await probes.incoming(b.CallSid!, participantId) : undefined;
         if (!probe) return hangup();
         const r = xml();
         r.gather({ input: ['dtmf'], numDigits: 8, timeout: 10, action: callback('probe-confirm', probe.id), method: 'POST' });
         r.hangup(); return r.toString();
       }
-      const call = await f.begin(b.CallSid!, caller);
+      const call = await f.begin(b.CallSid!, to, caller);
       if (!call) return hangup('Shield is not ready to receive this call. Please try again later.');
       // A number Shield stopped a scam from. It may be spoofed, so point a real person to a number they already know.
       if (call.state === 'ended') return hangup('This person cannot take this call. Please contact them through a number or service they already know.');
@@ -75,9 +83,15 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       if (call.state === 'voicemail') return voicemail(call);
       return liveStreamXML(config, call, store.now());
     });
+    // A probe call must go from the probe's own person's Shield number to their verified phone.
+    const probeEnds = async (id: string, from: string | undefined, to: string | undefined) => {
+      const participantId = (await probes.indexRef(id).get()).data()?.participantId as string | undefined;
+      const ends = participantId ? await f.endpointsFor(participantId) : undefined;
+      return !!ends && from === ends.shieldNumber && to === ends.phone;
+    };
     voice.post('/forwarding/:secret/probe/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
-      if (b.From !== number || b.To !== config.TRIAL_VERIFIED_CALLER) return hangup();
+      if (!await probeEnds(id, b.From, b.To)) return hangup();
       const probe = await probes.outbound(id, b.CallSid!); if (!probe) return hangup();
       const r = xml();
       if (probe.kind === 'ring') {
@@ -88,6 +102,22 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       }
       r.hangup(); return r.toString();
     });
+    // The check call reached her phone itself and was answered: tell her once, in fixed words, then hang up.
+    const checkEnds = async (id: string, from: string | undefined, to: string | undefined) => {
+      const participantId = (await checks.ref(id).get()).data()?.participantId as string | undefined;
+      const ends = participantId ? await f.endpointsFor(participantId) : undefined;
+      return !!ends && !!checks.checkNumber && from === checks.checkNumber && to === ends.phone;
+    };
+    voice.post('/forwarding/:secret/setup-check/:id', async request => {
+      const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
+      if (!await checkEnds(id, b.From, b.To) || !await checks.answered(id)) return hangup();
+      const r = xml(); r.pause({ length: 1 }); r.say(SETUP_CHECK_MESSAGE); r.hangup(); return r.toString();
+    });
+    voice.post('/forwarding/:secret/setup-check-status/:id', async request => {
+      const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
+      if (await checkEnds(id, b.From, b.To) && ['completed', 'busy', 'failed', 'no-answer', 'canceled'].includes(b.CallStatus ?? '')) await checks.ended(id);
+      return xml().toString();
+    });
     voice.post('/forwarding/:secret/probe-confirm/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
       const result = await probes.confirm(id, b.CallSid!, b.Digits ?? '');
@@ -95,7 +125,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     });
     voice.post('/forwarding/:secret/probe-status/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
-      if (b.From === number && b.To === config.TRIAL_VERIFIED_CALLER) {
+      if (await probeEnds(id, b.From, b.To)) {
         await probes.outbound(id, b.CallSid!);
         await probes.ended(id, b.CallSid!, b.CallStatus ?? '');
       }
@@ -104,7 +134,9 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     voice.post('/forwarding/:secret/result', async request => {
       const call = await f.find((request.body as Record<string, string>).CallSid!); if (!call) return hangup();
       if (call.state === 'voicemail') return voicemail(call);
-      if (call.state !== 'offering') return hangup('This person cannot take this call. Please contact them through a number or service they already know.');
+      // The recipient is fixed: always this call's own person's verified phone, called from their own Shield number.
+      const ends = await f.endpointsFor(call.participantId);
+      if (call.state !== 'offering' || !ends) return hangup('This person cannot take this call. Please contact them through a number or service they already know.');
       const r = xml();
       if (call.screeningModel === 'gpt-live-1') r.stop().stream({ name: 'shield-live' });
       const monitored = await monitor.begin(call.id);
@@ -114,15 +146,17 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       if (monitored) r.start().transcription({ transcriptionEngine: config.MONITOR_TRANSCRIPTION_ENGINE,
         ...(config.MONITOR_TRANSCRIPTION_ENGINE === 'Soniox' ? { model: 'soniox/stt-rt-v4' } : {}), transcriptionTracks: 'both',
         transcriptionCallback: callback('monitor', call.id), transcriptionCallbackMethod: 'POST' });
-      const dial = r.dial({ callerId: number, answerOnBridge: true, timeout: 20, timeLimit: 300,
+      const dial = r.dial({ callerId: ends.shieldNumber, answerOnBridge: true, timeout: 20, timeLimit: 300,
         action: callback('dial-ended', call.id), method: 'POST' });
       dial.number({ url: callback('whisper', call.id), method: 'POST',
-        statusCallback: callback('child', call.id), statusCallbackMethod: 'POST', statusCallbackEvent: ['initiated', 'ringing', 'answered'] }, config.TRIAL_VERIFIED_CALLER);
+        statusCallback: callback('child', call.id), statusCallbackMethod: 'POST', statusCallbackEvent: ['initiated', 'ringing', 'answered'] }, ends.phone);
       r.hangup(); return r.toString();
     });
     voice.post('/forwarding/:secret/child/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
-      if (b.From === number && b.To === config.TRIAL_VERIFIED_CALLER
+      const call = (await store.callRef(id).get()).data() as ForwardingCall | undefined;
+      const ends = call?.source === 'forwarding' ? await f.endpointsFor(call.participantId) : undefined;
+      if (ends && b.From === ends.shieldNumber && b.To === ends.phone
         && validCallId(b.ParentCallSid ?? '') && b.ParentCallSid !== b.CallSid
         && ['initiated', 'ringing', 'in-progress'].includes(b.CallStatus ?? '')) {
         await f.bindChild(id, b.CallSid!, b.ParentCallSid!);
@@ -131,11 +165,12 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
     });
     voice.post('/forwarding/:secret/whisper/:id', async request => {
       const b = request.body as Record<string, string>, id = (request.params as { id: string }).id;
-      let child; try { child = await childLookup(b.CallSid!); } catch { return hangup(); }
-      if (child.from !== number || child.to !== config.TRIAL_VERIFIED_CALLER || child.status !== 'in-progress') return hangup();
       // Bind from an authenticated child-status event, never from an unverified URL parameter.
       const bound = (await store.callRef(id).get()).data() as ForwardingCall | undefined;
-      if (bound?.provider !== 'telnyx' || bound.childSid !== b.CallSid) return hangup();
+      if (bound?.source !== 'forwarding' || bound.provider !== 'telnyx' || bound.childSid !== b.CallSid) return hangup();
+      const ends = await f.endpointsFor(bound.participantId);
+      let child; try { child = await childLookup(b.CallSid!); } catch { return hangup(); }
+      if (!ends || child.from !== ends.shieldNumber || child.to !== ends.phone || child.status !== 'in-progress') return hangup();
       const call = await f.whisper(id, b.CallSid!, bound.parentSid); if (!call) return hangup();
       const r = xml(); const g = r.gather({ input: ['dtmf'], numDigits: 1, timeout: 7, method: 'POST', action: callback('accept', id) });
       g.say(`Shield screened a call about ${purposes[call.purpose as keyof typeof purposes] ?? 'a routine matter'}. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.`);

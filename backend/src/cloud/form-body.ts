@@ -4,6 +4,11 @@ declare module 'fastify' { interface FastifyRequest { rawFormBody?: Buffer } }
 
 export function registerSignedFormBody(app: FastifyInstance) {
   app.decorateRequest('rawFormBody');
+  app.removeContentTypeParser('application/json');
+  app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (request, body, done) => {
+    request.rawFormBody = body as Buffer;
+    try { done(null, JSON.parse((body as Buffer).toString('utf8'))); } catch { done(Object.assign(new Error('invalid_json'), { statusCode: 400 })); }
+  });
   app.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'buffer' }, (request, body, done) => {
     const raw = body as Buffer;
     const values: Record<string, string> = Object.create(null);

@@ -1,8 +1,8 @@
+import { CallControlProvider } from './call-control-provider.js';
 import { createPublicKey, verify } from 'node:crypto';
 import type { CloudConfig } from './config.js';
 
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-export const forwardingNumber = (c: CloudConfig) => c.TELNYX_NUMBER;
 export const validCallId = (value: string) => uuid.test(value) || /^v[23]:[a-zA-Z0-9_-]{10,512}$/.test(value);
 export const validRecordingId = (value: string) => uuid.test(value);
 /** An E.164 caller number, or undefined when the network withheld it ("anonymous", "restricted", empty). Never store the raw value. */
@@ -40,13 +40,24 @@ export class TelnyxVoice {
     });
     if (!response.ok && !(response.status === 404 && 'Status' in body)) throw new Error(`telnyx_http_${response.status}`);
   }
-  async startProbe(id: string) {
-    if (!uuid.test(id)) throw new Error('invalid_probe_id');
+  /** `from` and `to` come from the enrolled person's record: their Shield number and their verified phone. */
+  async startProbe(id: string, from: string, to: string) {
+    if (!uuid.test(id) || !/^\+1\d{10}$/.test(from) || !/^\+1\d{10}$/.test(to)) throw new Error('invalid_probe');
     const base = `${this.config.PUBLIC_BASE_URL}/forwarding/${this.config.TRIAL_PROXY_SECRET}`;
     await this.request('Calls', 'POST', { ApplicationSid: this.config.TELNYX_APPLICATION_ID,
-      From: forwardingNumber(this.config), To: this.config.TRIAL_VERIFIED_CALLER, Url: `${base}/probe/${id}`,
+      From: from, To: to, Url: `${base}/probe/${id}`,
       Method: 'POST', StatusCallback: `${base}/probe-status/${id}`, StatusCallbackMethod: 'POST',
       StatusCallbackEvent: 'initiated ringing answered completed', Timeout: 40, TimeLimit: 30, Record: false });
+  }
+  /** The daily setup check: from Shield's check number to the person's verified phone. Returns the call's id if Telnyx gives one. */
+  async startSetupCheck(id: string, from: string, to: string): Promise<string | undefined> {
+    if (!uuid.test(id) || !/^\+1\d{10}$/.test(from) || !/^\+1\d{10}$/.test(to)) throw new Error('invalid_setup_check');
+    const base = `${this.config.PUBLIC_BASE_URL}/forwarding/${this.config.TRIAL_PROXY_SECRET}`;
+    const created = await this.request('Calls', 'POST', { ApplicationSid: this.config.TELNYX_APPLICATION_ID, From: from, To: to,
+      Url: `${base}/setup-check/${id}`, Method: 'POST', StatusCallback: `${base}/setup-check-status/${id}`, StatusCallbackMethod: 'POST',
+      StatusCallbackEvent: 'completed', Timeout: 45, TimeLimit: 20, Record: false });
+    const sid = created?.sid ?? created?.call_sid;
+    return typeof sid === 'string' && validCallId(sid) ? sid : undefined;
   }
   async call(sid: string) {
     if (!validCallId(sid)) throw new Error('invalid_call_id');
@@ -73,7 +84,18 @@ export class TelnyxVoice {
   }
 }
 
-export function recordingProvider(c: CloudConfig) {
+export function recordingProvider(c: CloudConfig, transport?: string) {
+  if (transport === 'call-control') {
+    const cc = new CallControlProvider(c);
+    return { fetch: async (sid: string, parent: string) => {
+      if (!validRecordingId(sid)) throw new Error('invalid_recording_id');
+      const r = await cc.request(`/recordings/${sid}`);
+      if (r?.id !== sid || r.call_control_id !== parent || r.connection_id !== c.TELNYX_SHARED_APPLICATION_ID || !Number.isFinite(r.duration_millis) || r.status !== 'completed' || r.duration_millis > 65000 || r.duration_millis < 0) throw new Error('recording_mismatch');
+      const url = new URL(r.download_urls?.mp3 ?? '');
+      if (url.protocol !== 'https:' || url.username || url.password || url.port || !c.TELNYX_RECORDING_HOSTS.includes(url.hostname)) throw new Error('unapproved_recording_origin');
+      return fetch(url, { redirect: 'error', signal: AbortSignal.timeout(10000) });
+    }, remove: async (sid: string) => { if (!validRecordingId(sid)) throw new Error('invalid_recording_id'); await cc.request(`/recordings/${sid}`, undefined, 'DELETE'); } };
+  }
   const client = new TelnyxVoice(c);
   return { fetch: (sid: string, parent: string) => client.recording(sid, parent), remove: (sid: string) => client.deleteRecording(sid) };
 }

@@ -12,6 +12,7 @@ struct SettingsView: View {
                 ShieldSection("Your phone") {
                     NavigationLink(value: AppRoute.setup) { ActionRow(title: "Phone setup", detail: "Connect or disconnect Shield", symbol: "phone") }
                     NavigationLink { CallProtectionView() } label: { ActionRow(title: "Checks while you talk", symbol: "waveform") }
+                    NavigationLink { QuietHoursView() } label: { ActionRow(title: "Quiet hours", symbol: "moon") }
                     NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") }
                 }
                 ShieldSection("People you trust") {

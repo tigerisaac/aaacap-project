@@ -19,7 +19,7 @@ struct ForwardingProbeView: View {
             } else if model.probe != nil {
                 Label("This check didn’t finish", systemImage: "exclamationmark.circle")
                     .font(.title2.bold()).foregroundStyle(ShieldTheme.held)
-                Text(ring ? "Turn Focus off. Check your signal. Answer the next call and press 1." : "Check Live Voicemail is off and Tello accepted your codes. Let the next call ring.")
+                Text(ring ? "Turn Focus off. Check your signal. Answer the next call and press 1." : "Check Live Voicemail is off and \(model.carrier) accepted your codes. Let the next call ring.")
                 Text("Your place is saved. Your phone may still be connected to Shield.").foregroundStyle(ForwardingStyle.secondaryText)
             } else {
                 Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")

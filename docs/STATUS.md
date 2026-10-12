@@ -1,5 +1,9 @@
 # Status
 
+## October 12 — shared-number implementation
+
+Source implementation and operator rollout steps are in [SHARED-NUMBER-ROLLOUT.md](SHARED-NUMBER-ROLLOUT.md). Per-person backend foundations were integrated from `pilot-multi-person`, preserving the newer Home total and live timing changes. The shared Call Control path is behind `SHARED_NUMBER_ENABLED` (default false). Telnyx's shared application is staged inactive at 10 inbound/10 outbound channels, the existing outbound profile is set to 10 with its spending cap preserved, and the portal confirms the account outbound limit is 10. No new number, call or message was purchased/placed. Production deployment and shared-number assignment are not yet recorded as complete. Validation passed: `npm run check` (167 unit tests, typecheck and build), `npm run test:firebase` (128 emulator tests), and an unsigned iPhone simulator build. The diagnostic supervisor restored the original Telnyx assignment after its October 12 window; Phone B’s carrier reset still needs the owner’s confirmation. Real-call evidence remains the Tello/T-Mobile diagnostic's 72.434-second overlap; Verizon and the complete shared screening/offer/voicemail path still need supervised calls.
+
 Updated October 10, 2026, after Twilio and Gemini were retired. Shield is a supervised single-recipient pilot. It screens calls only during test windows the owner opens, and it isn't cleared for anyone else's phone.
 
 ## Deployed now

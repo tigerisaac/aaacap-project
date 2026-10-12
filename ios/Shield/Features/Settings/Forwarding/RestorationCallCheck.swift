@@ -21,7 +21,7 @@ struct RestorationCallCheck: View {
             Text("Confirm below when it works. Keep Shield until both checks pass.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
             DisclosureGroup("The check didn’t work") {
-                Text("Stop and ask your helper or Tello to bring back ordinary calls and voicemail. Keep Shield installed.")
+                Text("Stop and ask your helper or your carrier to bring back ordinary calls and voicemail. Keep Shield installed.")
                     .padding(.top, 8).foregroundStyle(ForwardingStyle.secondaryText)
             }
         }

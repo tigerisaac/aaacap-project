@@ -53,6 +53,15 @@ export const ingestForwardingVoicemail = onDocumentCreated({ ...options, documen
   await ingestForwardingRecording(getStore(), event.params.recordingId);
 });
 
+// The daily setup check for each always-on person, mid-morning Central so it never lands in quiet hours.
+export const dailySetupChecks = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 10:30', timeZone: 'America/Chicago',
+  retryCount: 0, timeoutSeconds: 120 }, async () => {
+  const [{ SetupChecks }, { TelnyxVoice }] = await Promise.all([import('./setup-check.js'), import('./forwarding-provider.js')]);
+  const s = getStore(); if (!s.config.SETUP_CHECK_NUMBER) return;
+  const telnyx = new TelnyxVoice(s.config);
+  await new SetupChecks(s).runDaily((id, from, to) => telnyx.startSetupCheck(id, from, to));
+});
+
 // Keep or remove each forwarded voicemail once its audio is stored; any failure keeps it.
 export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
   document: 'voicemailChecks/{callId}', retry: false, concurrency: 2 }, async event => {
@@ -74,4 +83,9 @@ export const monitorConnectedCall = onDocumentCreated({ ...options, secrets: [ru
   const [{ CallMonitor, assessCall }, { ForwardingStore }] = await Promise.all([import('./monitoring.js'), import('./forwarding-store.js')]);
   const key = openaiKey.value();
   await new CallMonitor(new ForwardingStore(getStore())).check(event.params.jobId, transcript => assessCall(transcript, key));
+});
+
+export const expireSharedCalls = onSchedule({ ...options, maxInstances: 1, schedule: 'every 1 minutes', retryCount: 1, timeoutSeconds: 120 }, async () => {
+  const { SharedCallControl } = await import('./call-control.js');
+  await new SharedCallControl(getStore()).sweep();
 });

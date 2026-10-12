@@ -1,5 +1,9 @@
 # Architecture
 
+## Shared-number implementation (October 12, 2026; rollout pending)
+
+The source now includes a complete Call Control path for ten participants on one DID, documented in [SHARED-NUMBER-ROLLOUT.md](SHARED-NUMBER-ROLLOUT.md). It uses strict Diversion routing, immutable per-call recipients, per-person controls, durable command receipts, a distributed ten-call cap and independent live sessions. TeXML remains the current production path until migration/deployment/cutover are explicitly verified. The existing screening policy is unchanged. The shared Telnyx application is staged inactive with 10 inbound and 10 outbound channels; its outbound profile and account limit are 10. No number was purchased.
+
 Current as of October 10, 2026. Shield answers unfamiliar calls that a person's phone forwards to it, screens them with a GPT Live voice agent, and only rings the person if the call looks ordinary. The person then decides privately whether to take it. Screening never verifies who is calling.
 
 ## Components

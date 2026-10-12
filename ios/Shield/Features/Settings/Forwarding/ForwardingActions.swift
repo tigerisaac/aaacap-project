@@ -32,7 +32,7 @@ struct ForwardingActions: View {
     private var label: String {
         if model.step.codeIndex != nil {
             if model.code == nil { return "Restart call test" }
-            return model.codePreparedStep == model.step ? "Tello confirmed the change" : "Copy Tello code"
+            return model.codePreparedStep == model.step ? "\(model.carrier) confirmed the change" : "Copy \(model.carrier) code"
         }
         if model.isPhoneSettingsStep && !model.settingsReturned { return "Open Phone settings" }
         switch model.step {

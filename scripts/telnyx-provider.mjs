@@ -10,17 +10,30 @@ export async function telnyxRequest(config, path, method = 'GET', data) {
   return response.json();
 }
 const base = c => `${c.PUBLIC_BASE_URL}/forwarding/${c.TRIAL_PROXY_SECRET}`;
-export async function verifyTelnyxSetup(c) {
+// Ten-person pilot: admission allows one call per person, so these account limits bound cost, not who gets connected.
+// Ten channels cover the pilot; offers and phone tests share the outbound ceiling. Existing lower spend caps are preserved.
+export const PILOT_LIMITS = { inboundChannels: 10, outboundChannels: 10, dailySpendUSD: '3.00' };
+/** `number` is the Shield number being checked: a person's from the registry, or the original pilot number. */
+export async function verifyTelnyxSetup(c, number = c.TELNYX_NUMBER) {
+  if (c.SHARED_NUMBER_ENABLED) {
+    const [numbers, application] = await Promise.all([telnyxRequest(c, `/phone_numbers?filter[phone_number]=${encodeURIComponent(number)}`), telnyxRequest(c, `/call_control_applications/${c.TELNYX_SHARED_APPLICATION_ID}`)]);
+    const matches = numbers.data?.filter(n => n.phone_number === number), a = application.data;
+    if (matches?.length !== 1 || matches[0].connection_id !== c.TELNYX_SHARED_APPLICATION_ID || !a.active || a.webhook_event_url !== `${c.PUBLIC_BASE_URL}/voice/shared`
+      || a.inbound?.channel_limit !== 10 || a.outbound?.channel_limit !== 10) throw new Error('shared_telnyx_not_ready');
+    const profile = (await telnyxRequest(c, `/outbound_voice_profiles/${a.outbound.outbound_voice_profile_id}`)).data;
+    if (!profile.enabled || profile.concurrent_call_limit < 10 || !profile.daily_spend_limit_enabled || profile.whitelisted_destinations?.join(',') !== 'US' || profile.call_recording?.call_recording_type !== 'none') throw new Error('shared_outbound_not_ready');
+    return { number: matches[0], application: a };
+  }
   const [numbers, application, balance] = await Promise.all([
-    telnyxRequest(c, `/phone_numbers?filter[phone_number]=${encodeURIComponent(c.TELNYX_NUMBER)}`),
+    telnyxRequest(c, `/phone_numbers?filter[phone_number]=${encodeURIComponent(number)}`),
     telnyxRequest(c, `/texml_applications/${c.TELNYX_APPLICATION_ID}`), telnyxRequest(c, '/balance')]);
-  const matches = numbers.data?.filter(n => n.phone_number === c.TELNYX_NUMBER);
+  const matches = numbers.data?.filter(n => n.phone_number === number);
   if (matches?.length !== 1 || matches[0].status !== 'active' || matches[0].connection_id !== c.TELNYX_APPLICATION_ID) throw new Error('telnyx_number_not_ready');
   const a = application.data;
   if (!a.active || a.voice_method !== 'post' || a.voice_url !== `${base(c)}/inbound` || a.voice_fallback_url !== `${base(c)}/fallback`
-    || a.status_callback !== `${base(c)}/status` || a.status_callback_method !== 'post' || a.outbound?.channel_limit !== 1) throw new Error('telnyx_webhooks_not_ready');
+    || a.status_callback !== `${base(c)}/status` || a.status_callback_method !== 'post' || ![1, PILOT_LIMITS.outboundChannels].includes(a.outbound?.channel_limit)) throw new Error('telnyx_webhooks_not_ready');
   const p = (await telnyxRequest(c, `/outbound_voice_profiles/${a.outbound.outbound_voice_profile_id}`)).data;
-  if (!p.enabled || p.concurrent_call_limit !== 1 || !p.daily_spend_limit_enabled || Number(p.daily_spend_limit) > 1
+  if (!p.enabled || p.concurrent_call_limit < a.outbound.channel_limit || p.concurrent_call_limit > PILOT_LIMITS.outboundChannels || !p.daily_spend_limit_enabled || Number(p.daily_spend_limit) > Number(PILOT_LIMITS.dailySpendUSD)
     || p.whitelisted_destinations?.length !== 1 || p.whitelisted_destinations[0] !== 'US'
     || p.call_recording?.call_recording_type !== 'none') throw new Error('telnyx_outbound_limits_not_ready');
   if (!(Number(balance.data?.available_credit) > 0)) throw new Error('telnyx_funding_required');
@@ -33,15 +46,15 @@ export async function provisionTelnyx(c) {
   const profiles = (await telnyxRequest(c, '/outbound_voice_profiles?page[size]=100')).data.filter(p => p.name === profileName);
   if (profiles.length > 1) throw new Error('ambiguous_telnyx_profile');
   const profileSettings = { name: profileName, enabled: true, traffic_type: 'conversational', service_plan: 'global',
-    concurrent_call_limit: 1, whitelisted_destinations: ['US'], max_destination_rate: 0.05,
-    daily_spend_limit: '1.00', daily_spend_limit_enabled: true, call_recording: { call_recording_type: 'none' } };
+    concurrent_call_limit: PILOT_LIMITS.outboundChannels, whitelisted_destinations: ['US'], max_destination_rate: 0.05,
+    daily_spend_limit: PILOT_LIMITS.dailySpendUSD, daily_spend_limit_enabled: true, call_recording: { call_recording_type: 'none' } };
   const profile = (await telnyxRequest(c, profiles[0] ? `/outbound_voice_profiles/${profiles[0].id}` : '/outbound_voice_profiles', profiles[0] ? 'PATCH' : 'POST', profileSettings)).data;
   const applications = (await telnyxRequest(c, '/texml_applications?page[size]=100')).data.filter(a => a.friendly_name === appName);
   if (applications.length > 1) throw new Error('ambiguous_telnyx_application');
   const applicationSettings = { friendly_name: appName, active: true, voice_method: 'post', voice_url: `${base(c)}/inbound`,
     voice_fallback_url: `${base(c)}/fallback`, status_callback: `${base(c)}/status`, status_callback_method: 'post',
-    inbound: { channel_limit: 2, shaken_stir_enabled: true, sip_subdomain_receive_settings: 'only_my_connections' },
-    outbound: { channel_limit: 1, outbound_voice_profile_id: profile.id } };
+    inbound: { channel_limit: PILOT_LIMITS.inboundChannels, shaken_stir_enabled: true, sip_subdomain_receive_settings: 'only_my_connections' },
+    outbound: { channel_limit: PILOT_LIMITS.outboundChannels, outbound_voice_profile_id: profile.id } };
   const application = (await telnyxRequest(c, applications[0] ? `/texml_applications/${applications[0].id}` : '/texml_applications', applications[0] ? 'PATCH' : 'POST', applicationSettings)).data;
   const numbers = (await telnyxRequest(c, `/phone_numbers?filter[phone_number]=${encodeURIComponent(c.TELNYX_NUMBER)}`)).data.filter(n => n.phone_number === c.TELNYX_NUMBER);
   if (numbers.length !== 1 || numbers[0].status !== 'active') throw new Error('purchased_telnyx_number_required');

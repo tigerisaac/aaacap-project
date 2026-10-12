@@ -1,12 +1,16 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { HttpError } from '../auth.js';
-import { CloudStore, type Person } from './store.js';
+import { CloudStore } from './store.js';
+import { routeRef } from './shared-routing.js';
 import { ForwardingStore, forwardingConsent } from './forwarding-store.js';
 
 export type ProbeKind = 'ring' | 'forwarding';
 export type SetupProbe = { id: string; kind: ProbeKind; state: 'waiting' | 'passed' | 'failed'; expiresAt: number;
-  nonce: string; outboundSid?: string; inboundSid?: string; passedAt?: number };
-export type ProbeDependencies = { startForwardingProbe?: (id: string) => Promise<void> };
+  nonce: string; outboundSid?: string; inboundSid?: string; passedAt?: number; participantId?: string; routeVersion?: string };
+/** Places the probe call from the person's Shield number to their verified phone. */
+export type ProbeDependencies = { startForwardingProbe?: (id: string, from: string, to: string) => Promise<void>;
+  /** Places the daily setup check call; returns the provider's call id if it gives one. */
+  startSetupCheck?: (id: string, from: string, to: string) => Promise<string | undefined> };
 
 export class ForwardingProbes {
   readonly f: ForwardingStore;
@@ -16,10 +20,12 @@ export class ForwardingProbes {
     return p ? { id: p.id, kind: p.kind, state: p.state === 'waiting' && p.expiresAt <= this.store.now() ? 'failed' : p.state,
       expiresAt: new Date(p.expiresAt).toISOString() } : null;
   }
-  async openWindow() {
-    const s = this.store, now = s.now();
+  /** Probe ids route webhooks to their person; the index lives as long as the probe can be answered. */
+  indexRef(id: string) { return this.store.db.collection('forwardingProbes').doc(id); }
+  async openWindow(participantId: string) {
+    const s = this.store, now = s.now(), controlRef = this.f.controlRef(participantId);
     await s.db.runTransaction(async tx => {
-      const [control, person] = await tx.getAll(this.f.control, s.personRef(s.config.TRIAL_PARTICIPANT_ID));
+      const [control, person] = await tx.getAll(controlRef, s.personRef(participantId));
       const c = control!.data(), p = person!.data();
       this.requireReady(c, p);
       if (c!.enabled && c!.expiresAt > now) {
@@ -29,20 +35,22 @@ export class ForwardingProbes {
       if (c!.activeCallId) throw new HttpError(409, 'call_still_active');
       const day = Math.floor(now / 86400_000), count = c!.windowDay === day ? c!.windowCount ?? 0 : 0;
       if (count >= 3) throw new HttpError(429, 'test_limit_reached');
-      tx.update(this.f.control, { enabled: true, allowAnyCaller: true, used: 0, startedAt: now, expiresAt: now + 1800_000,
+      tx.update(controlRef, { enabled: true, allowAnyCaller: true, used: 0, startedAt: now, expiresAt: now + 1800_000,
         windowDay: day, windowCount: count + 1 });
     });
   }
   private requireReady(c: FirebaseFirestore.DocumentData | undefined, p: FirebaseFirestore.DocumentData | undefined) {
     if (!c?.provisioned || !c.dataPlanConfirmed || !c.restorationGuide?.length || p?.status !== 'setup'
-      || !p.phoneVerifiedAt || p.forwardingConsent !== forwardingConsent
-      || this.store.phone(p as Person) !== this.store.config.TRIAL_VERIFIED_CALLER) throw new HttpError(409, 'setup_not_ready');
+      || !p.phoneVerifiedAt || p.forwardingConsent !== forwardingConsent || !this.f.endpoints(p)) throw new HttpError(409, 'setup_not_ready');
   }
-  async reserve(kind: ProbeKind) {
-    const s = this.store, now = s.now();
+  async reserve(participantId: string, kind: ProbeKind) {
+    const s = this.store, now = s.now(), controlRef = this.f.controlRef(participantId);
     return s.db.runTransaction(async tx => {
-      const [control, person] = await tx.getAll(this.f.control, s.personRef(s.config.TRIAL_PARTICIPANT_ID));
+      const [control, person] = await tx.getAll(controlRef, s.personRef(participantId));
       const c = control!.data(), p = person!.data(); this.requireReady(c, p);
+      const ends = this.f.endpoints(p)!;
+      const route = s.config.SHARED_NUMBER_ENABLED ? (await tx.get(routeRef(s, ends.shieldNumber, ends.phone))).data() : undefined;
+      if (s.config.SHARED_NUMBER_ENABLED && (!route || route.participantId !== participantId || route.disabledAt || typeof route.version !== 'string')) throw new HttpError(409, 'shared_route_unavailable');
       if (!c!.enabled || c!.expiresAt <= now) throw new HttpError(409, 'test_window_closed');
       if (c!.activeCallId) throw new HttpError(409, 'call_still_active');
       const existing = c!.probe as SetupProbe | undefined;
@@ -50,15 +58,18 @@ export class ForwardingProbes {
       const day = Math.floor(now / 86400_000), count = c!.probeDay === day ? c!.probeCount ?? 0 : 0;
       if (count >= 6) throw new HttpError(429, 'test_limit_reached');
       const probe: SetupProbe = { id: randomUUID(), kind, state: 'waiting', expiresAt: now + 90_000,
-        nonce: randomInt(10_000_000, 100_000_000).toString() };
-      tx.update(this.f.control, { probe, probeDay: day, probeCount: count + 1 }); return probe;
+        nonce: randomInt(10_000_000, 100_000_000).toString(), participantId, ...(route ? { routeVersion: route.version } : {}) };
+      tx.update(controlRef, { probe, probeDay: day, probeCount: count + 1 });
+      tx.create(this.indexRef(probe.id), { participantId, expiresAt: now + 86400_000 });
+      return probe;
     });
   }
   async outbound(id: string, sid: string) {
     return this.change(id, p => p.outboundSid && p.outboundSid !== sid ? undefined : { outboundSid: sid });
   }
-  async incoming(sid: string) {
-    const p = (await this.f.control.get()).data()?.probe as SetupProbe | undefined;
+  /** A forwarded probe arrives back on the person's own Shield number. */
+  async incoming(sid: string, participantId: string) {
+    const p = (await this.f.controlRef(participantId).get()).data()?.probe as SetupProbe | undefined;
     if (!p || p.kind !== 'forwarding') return;
     return this.change(p.id, current => current.inboundSid && current.inboundSid !== sid ? undefined : { inboundSid: sid });
   }
@@ -74,16 +85,18 @@ export class ForwardingProbes {
       || (status === 'completed' && p.kind === 'ring')) ? { state: 'failed' } : undefined);
   }
   private async change(id: string, update: (p: SetupProbe) => Partial<SetupProbe> | undefined) {
-    const s = this.store;
+    const s = this.store, participantId = (await this.indexRef(id).get()).data()?.participantId as string | undefined;
+    if (!participantId) return;
+    const controlRef = this.f.controlRef(participantId);
     return s.db.runTransaction(async tx => {
-      const [control, person] = await tx.getAll(this.f.control, s.personRef(s.config.TRIAL_PARTICIPANT_ID));
+      const [control, person] = await tx.getAll(controlRef, s.personRef(participantId));
       const c = control!.data(), p = c?.probe as SetupProbe | undefined;
       if (!p || p.id !== id || p.state !== 'waiting' || p.expiresAt <= s.now() || !c?.enabled || c.expiresAt <= s.now()
         || person!.data()?.status !== 'setup' || person!.data()?.forwardingConsent !== forwardingConsent) return;
       const patch = update(p); if (!patch) return;
       const next = { ...p, ...patch };
-      tx.update(this.f.control, { probe: next, ...(patch.state === 'passed' ? { [p.kind === 'ring' ? 'ringTestAt' : 'forwardingTestAt']: s.now() } : {}) });
-      return next;
+      tx.update(controlRef, { probe: next, ...(patch.state === 'passed' ? { [p.kind === 'ring' ? 'ringTestAt' : 'forwardingTestAt']: s.now() } : {}) });
+      return { ...next, participantId };
     });
   }
 }

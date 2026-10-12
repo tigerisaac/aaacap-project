@@ -11,11 +11,11 @@ const timestamp = '1780000000', now = Number(timestamp) * 1000;
 const raw = Buffer.from('CallSid=hello&SpeechResult=hello+there');
 const signature = sign(null, Buffer.concat([Buffer.from(`${timestamp}|`), raw]), keys.privateKey).toString('base64');
 const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
-  TRIAL_PROXY_SECRET: 'c'.repeat(64), TRIAL_VERIFIED_CALLER: '+12025550101',
-  TRIAL_PARTICIPANT_ID: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', DATA_ENCRYPTION_KEY: 'd'.repeat(64),
+  TRIAL_PROXY_SECRET: 'c'.repeat(64), DATA_ENCRYPTION_KEY: 'd'.repeat(64),
   TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'private-test-key-value', TELNYX_PUBLIC_KEY: publicKey,
-  TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_NUMBER: '+12025550109', TELNYX_RECORDING_HOSTS: ['media.example.com'] });
+  TELNYX_APPLICATION_ID: '123456789012345678', TELNYX_RECORDING_HOSTS: ['media.example.com'] });
 const sid = '10123456-1234-4321-1234-000000000001', recId = '20123456-1234-4321-1234-000000000001';
+const NUMBER = '+12025550109', PHONE = '+12025550101';
 
 describe('Telnyx authenticated voice adapter', () => {
   it('uses the documented form-encoded call update to hang up and resume, without dialing a new destination', async () => {
@@ -79,15 +79,16 @@ describe('Telnyx authenticated voice adapter', () => {
     }
     expect(mock).toHaveBeenCalledTimes(8);
   });
-  it('places bounded unrecorded probes only to the configured owner', async () => {
+  it('places bounded unrecorded probes only between the person\'s own Shield number and phone', async () => {
     const mock = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ status: 'queued' }));
-    await new TelnyxVoice(config, mock).startProbe(sid);
+    await new TelnyxVoice(config, mock).startProbe(sid, NUMBER, PHONE);
     expect(mock).toHaveBeenCalledTimes(1);
     const [url, options] = mock.mock.calls[0]!;
     expect(url).toBe(`https://api.telnyx.com/v2/texml/Accounts/${config.TELNYX_ACCOUNT_ID}/Calls`);
-    expect(JSON.parse(options!.body as string)).toMatchObject({ From: config.TELNYX_NUMBER, To: config.TRIAL_VERIFIED_CALLER,
+    expect(JSON.parse(options!.body as string)).toMatchObject({ From: NUMBER, To: PHONE,
       ApplicationSid: config.TELNYX_APPLICATION_ID, Timeout: 40, TimeLimit: 30, Record: false });
-    await expect(new TelnyxVoice(config, mock).startProbe('../unsafe')).rejects.toThrow();
+    await expect(new TelnyxVoice(config, mock).startProbe('../unsafe', NUMBER, PHONE)).rejects.toThrow();
+    await expect(new TelnyxVoice(config, mock).startProbe(sid, NUMBER, 'anonymous')).rejects.toThrow();
     expect(mock).toHaveBeenCalledTimes(1);
   });
   it('deletes recordings idempotently', async () => {

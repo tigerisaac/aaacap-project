@@ -8,7 +8,7 @@ export async function ingestForwardingRecording(store: CloudStore, sid: string, 
   const ref = store.db.collection('forwardingRecordings').doc(sid), job = (await ref.get()).data();
   if (!job || job.status === 'done') return;
   if (job.provider !== 'telnyx') throw new Error('invalid_recording_provider');
-  const client = provider ?? recordingProvider(store.config);
+  const client = provider ?? recordingProvider(store.config, job.transport);
   const callRef = store.callRef(job.callId), call = (await callRef.get()).data();
   if (job.status !== 'stored' && job.expiresAt > store.now() && call && !call.voicemailDeletedAt) {
     const response = await client.fetch(sid, job.parentSid);
