@@ -65,7 +65,7 @@ Deploy Hosting assets and Functions together after approval, and check all prima
 Firestore holds the following. Clients can't read or write it directly (deny-all rules); everything goes through `shieldApi`.
 
 - **`participants`:** the enrolled person, consent, forwarding stage, and `scamStoppedAt` (starts 24 hours of cautious screening). Subcollections:
-  - `statistics/stoppedCalls` (in code, not deployed): persistent stopped-call total, seeded once from recoverable history. Transactional per-call markers prevent duplicate counts. Cleanup and message restoration do not reduce it; account deletion removes it. Calls already deleted before tracking cannot be reconstructed.
+  - `statistics/stoppedCalls` (API and cleanup deployed October 12): persistent stopped-call total, seeded once from recoverable history. Transactional per-call markers prevent duplicate counts. Cleanup and message restoration do not reduce it; account deletion removes it. Calls already deleted before tracking cannot be reconstructed. Counter hooks for repository-only blocked-number/message-removal features accompany those features when deployed.
   - `trusted-numbers`: contacts synced from the phone
   - `blocked-numbers`: one document per blocked number, keyed by its keyed hash, holding the number encrypted, the reason, the source call and a 180-day expiry
 - **`callSessions`:** one record per call, with state, outcome, reason, purpose and an event timeline. The caller's number is encrypted with `DATA_ENCRYPTION_KEY`.

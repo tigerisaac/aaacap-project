@@ -24,5 +24,6 @@ struct NavigationShell<Content: View>: View {
                     }.id(model.selectedPersonID)
                 }
         }
+        .background(ShieldTheme.surface.ignoresSafeArea())
     }
 }

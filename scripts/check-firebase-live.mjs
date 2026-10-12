@@ -36,14 +36,20 @@ try {
   const now = Date.now();
   await db.patch(`${documentRoot}/participants/${personId}`, { fields: fields({ id: personId, ownerUid: uid, status: 'setup', trial: true,
     nameEnc: vault.seal('Integration check', `person:${personId}:name`), phoneEnc: vault.seal('+13125550148', `person:${personId}:phone`) }) });
-  await db.patch(`${documentRoot}/callSessions/${callId}`, { fields: fields({ id: callId, participantId: personId, createdAt: now, expiresAt: now + 86400_000,
+  await db.patch(`${documentRoot}/callSessions/${callId}`, { fields: fields({ id: callId, participantId: personId, createdAt: now - 20 * 86400_000, expiresAt: now + 86400_000,
     callerEnc: vault.seal('+13125550148', `call:${callId}:caller`), state: 'ended', outcome: 'held', reason: 'prohibited_request',
     purpose: null, completedAt: now, polls: 0, events: [{ kind: 'integration_fixture', at: now }] }) });
   const [overview, detail, calls] = await Promise.all([request('/api/overview', { headers }), request(`/api/calls/${callId.toUpperCase()}`, { headers }), request('/api/calls?filter=held', { headers })]);
-  assert.equal(overview.status, 200, `overview status ${overview.status}`); assert.equal(overview.body.counts.held, 1);
+  assert.equal(overview.status, 200, `overview status ${overview.status}`);
+  assert.equal(overview.body.counts.held, 0); assert.equal(overview.body.counts.stoppedTotal, 1);
   assert.equal(detail.status, 200); assert.equal(detail.body.call.id, callId);
   assert.equal(calls.status, 200); assert.equal(calls.body.calls.length, 1);
   results.push({ check: 'encrypted_firestore_history_and_native_uuid_contract', passed: true });
+  await db.delete(`${documentRoot}/callSessions/${callId}`);
+  const retained = await request('/api/overview', { headers });
+  assert.equal(retained.status, 200); assert.equal(retained.body.counts.stoppedTotal, 1);
+  assert.equal(retained.body.recent.length, 0);
+  results.push({ check: 'persistent_total_survives_history_removal_and_is_not_weekly', passed: true });
   const refresh = await request('/auth/refresh', json({ refreshToken: session.body.refreshToken }));
   assert.equal(refresh.status, 200); assert.ok(refresh.body.accessToken);
   // Revocation timestamps have second precision; make this session older than revocation.
@@ -54,6 +60,7 @@ try {
 } finally {
   // Only the exact synthetic IDs created above are removed; the owner's data is untouched.
   await db.delete(`${documentRoot}/callSessions/${callId}`);
+  await db.delete(`${documentRoot}/participants/${personId}/statistics/stoppedCalls`);
   await db.delete(`${documentRoot}/participants/${personId}`);
   if (uid) await users.post(`/projects/${project}/accounts:delete`, { localId: uid });
 }

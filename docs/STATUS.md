@@ -12,6 +12,7 @@ Read back from production on October 10:
 
 | Piece | State |
 |---|---|
+| Persistent stopped-call total | Deployed with owner approval October 12 at 22:51 UTC: `shieldApi` revision `shieldapi-00016-tuv` and `cleanupShield` `cleanupshield-00008-nuc`. Counter-only changes were applied to the prior production source package; runtime configuration and other function revisions were preserved. Isolated synthetic account verified the authenticated `counts.stoppedTotal` response for a call older than seven days and persistence after its history was removed. Health HTTP 200; unauthenticated overview 401; cleanup remains private. No real-call verification. |
 | Live bridge `shield-live` | Revision `shield-live-00009-799`, policy `2026-10-11-general-v30`, `gpt-live-1` + `gpt-6-luna`, OpenAI key version 2. Clarification duplicate-check fix deployed with owner approval October 11 at 22:56 Central; ready and serving 100%. V30, timing logs, the local wait acknowledgement and all runtime settings were preserved. |
 | Firebase Functions (codebase `shield`) | `shieldApi`, `cleanupShield`, `ingestForwardingVoicemail`, `monitorConnectedCall` |
 | Runtime config | `SHIELD_RUNTIME` v5: Telnyx only, live screening on, connected-call protection on at the server. Twilio and OpenRouter keys removed. |

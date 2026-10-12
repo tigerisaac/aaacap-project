@@ -63,11 +63,13 @@ struct OverviewView: View {
                 }
             }
             .shieldListStyle()
+            .scrollEdgeEffectHidden(for: .top)
             .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.overview?.status ?? "")-\(model.isTestAccount)") {
                 if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
             }
             .navigationTitle("Home")
             .toolbar { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
+            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
             .refreshable { await refresh() }
             .task(id: model.selectedPersonID) {
                 await loadStatus()

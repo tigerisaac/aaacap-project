@@ -55,7 +55,8 @@ final class HomeReadabilityUITests: XCTestCase {
         capture("readable-home-large-dark")
         stopped.tap()
         let removed = app.staticTexts["Suspicious message removed"].firstMatch
-        reveal(removed, in: app); removed.tap()
+        reveal(removed, in: app)
+        revealFully(removed, above: app.tabBars.firstMatch, in: app); removed.tap()
         XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["restore-voicemail"].isHittable)
         capture("readable-removed-large-dark")
@@ -69,7 +70,7 @@ final class HomeReadabilityUITests: XCTestCase {
     }
 
     private func launch(_ extra: [String] = []) -> XCUIApplication {
-        let app = XCUIApplication(); app.launchArguments = ["--uitesting-preview"] + extra
+        let app = XCUIApplication(); app.launchArguments = ["--uitesting-preview", "--uitesting-light"] + extra
         app.launch(); return app
     }
 
@@ -83,7 +84,7 @@ final class HomeReadabilityUITests: XCTestCase {
 
     private func revealFully(_ element: XCUIElement, above action: XCUIElement, in app: XCUIApplication) {
         let list = app.collectionViews.firstMatch
-        let top = app.navigationBars["Voicemail"].frame.maxY
+        let top = app.navigationBars.firstMatch.frame.maxY
         for _ in 0..<20 {
             if element.exists && element.frame.minY >= top && element.frame.maxY <= action.frame.minY { break }
             let endY: CGFloat = element.frame.minY < top ? 0.59 : 0.51
