@@ -216,6 +216,8 @@ Use the contracted tier rate for the actual number volume. Sharing also adds mig
 
 ## Shared-number qualification and routing algorithm
 
+The [standalone shared-number test](SHARED-NUMBER-TEST.md) implements the initial metadata/overlap experiment. It does not implement production tenant routing or multi-user screening.
+
 This is the first implementation milestone. Shared routing remains disabled in production until its gates pass; it need not wait for ten dedicated-number enrollments.
 
 1. **Test one shared destination with two known test lines.** Use consenting direct Verizon and direct T-Mobile test lines, both forwarding to one isolated test destination. Compare the independently recorded intended recipient for each test with provider-exposed redirecting information. Capture presence, equality, reason, chain length and opaque call/profile IDs; do not log raw headers, numbers or audio. Begin with diagnostic ingress and generic termination, then test the full offer flow after tenant isolation is implemented. Test setup records establish ground truth; timing is never a production routing key.

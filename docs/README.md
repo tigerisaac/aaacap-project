@@ -12,6 +12,7 @@ Start with [Architecture](ARCHITECTURE.md), then [Status](STATUS.md).
 | [Protection plan](PROTECTION-PLAN.md) | Not built yet: faster and broader in-call monitoring, blocking repeat scammers, caregiver alerts, setup health checks, voicemail keep-or-destroy, cutting the caller's wait and shorter disclosures |
 | [Carriers](CARRIERS.md) | October 12 research: Verizon and T-Mobile setup, brand-specific conditional codes, evidence gaps, restoration, and per-line acceptance tests |
 | [Ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md) | Proposed: shared forwarding numbers, carrier-metadata qualification, optional keypad fallback, exception allocation, tenant isolation, capacity controls and rollout to ten seniors |
+| [Shared-number test](SHARED-NUMBER-TEST.md) | Runnable isolated Telnyx diagnostic, Verizon/T-Mobile instructions, independent recipient checks and confirmed overlapping-call evidence |
 | [iOS app](../ios/README.md) | Building, signing and the app's screens |
 | [Design system](../DESIGN.md) and [product brief](../PRODUCT.md) | Visual language and product principles for the app |
 | [Shield Open Phone shortcut](shortcuts/README.md) | The Apple Shortcut the forwarding setup uses to open the Phone app |
