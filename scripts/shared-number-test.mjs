@@ -18,7 +18,7 @@ if (mode === 'init') {
     await writeFile(envFile, 'SHARED_TEST_TELNYX_API_KEY=\nSHARED_TEST_TELNYX_PUBLIC_KEY=\nSHARED_TEST_WEBHOOK_BASE_URL=\n', { flag: 'wx', mode: 0o600 });
     console.log('Created private config and environment templates. See docs/SHARED-NUMBER-TEST.md.');
   } catch { console.error('Templates already exist or could not be created; existing files were preserved.'); process.exitCode = 1; }
-} else if (mode === 'check' || mode === 'serve') {
+} else if (mode === 'check' || mode === 'serve' || mode === 'serve-maintenance') {
   try { await run(); } catch { console.error('Test setup failed. Check the private config, credentials, test application and guide. No raw provider response is printed.'); process.exitCode = 1; }
 } else {
   console.log('Usage: node scripts/shared-number-test.mjs init|check|serve\nFor check/serve, load .env.shared-number-test with Node --env-file. Build first.');
@@ -28,6 +28,14 @@ if (mode === 'init') {
 async function run() {
   const { probeConfig, SharedNumberProbe, createProbeServer } = await import('../dist/diagnostics/shared-number.js');
   const config = probeConfig.parse(JSON.parse(await readFile(configFile, 'utf8')));
+  let maintenance;
+  if (config.destination === '+15074731802') {
+    maintenance = JSON.parse(await readFile(resolve(dir, 'maintenance.json'), 'utf8'));
+    if (maintenance.destination !== config.destination || maintenance.testApplicationId !== config.applicationId
+      || maintenance.expiresAt !== config.productionTestUntil || !maintenance.originalConnectionId
+      || maintenance.originalConnectionId === config.applicationId) throw new Error('restoration_snapshot_required');
+  }
+  if (mode === 'serve-maintenance' && !maintenance) throw new Error('maintenance_required');
   const key = process.env.SHARED_TEST_TELNYX_API_KEY;
   const publicKey = process.env.SHARED_TEST_TELNYX_PUBLIC_KEY;
   if (!key || !publicKey || Buffer.from(publicKey, 'base64').length !== 32) throw new Error('credentials_required');
@@ -35,7 +43,7 @@ async function run() {
   if (base.protocol !== 'https:' || base.username || base.password || base.search || base.hash || base.pathname !== '/') throw new Error('https_origin_required');
   const webhook = new URL('/webhooks/telnyx', base).href;
   const credentials = { TELNYX_API_KEY: key };
-  // GET-only preflight; never repoint the live number/application or purchase anything.
+  // GET-only preflight. Only the separate maintenance supervisor changes assignments.
   const [application, numbers] = await Promise.all([
     telnyxRequest(credentials, `/call_control_applications/${config.applicationId}`),
     telnyxRequest(credentials, `/phone_numbers?filter[phone_number]=${encodeURIComponent(config.destination)}`),
@@ -48,7 +56,8 @@ async function run() {
     inboundCapacity: Number(a?.inbound?.channel_limit) >= config.maxConcurrent,
     unansweredTimeout: a?.first_command_timeout === true && Number(a?.first_command_timeout_secs) >= 10 && Number(a?.first_command_timeout_secs) <= 60,
     privateSipIngress: a?.inbound?.sip_subdomain_receive_settings === 'only_my_connections',
-    assignedTestNumber: matches?.length === 1 && matches[0].status === 'active' && matches[0].connection_id === config.applicationId,
+    assignedTestNumber: matches?.length === 1 && matches[0].status === 'active' && (matches[0].connection_id === config.applicationId
+      || (mode === 'serve-maintenance' && matches[0].connection_id === maintenance?.originalConnectionId)),
   };
   console.log(JSON.stringify({ preflight: checks }));
   if (!Object.values(checks).every(Boolean)) throw new Error('preflight_failed');
@@ -93,6 +102,6 @@ async function run() {
   process.once('SIGINT', () => { void stop(); });
   process.once('SIGTERM', () => { void stop(); });
   // Supervised experiment only: never leave an unattended public answering service.
-  const stopTimer = setTimeout(() => { void stop(); }, 30 * 60 * 1000);
+  const stopTimer = setTimeout(() => { void stop(); }, Math.min(30 * 60 * 1000, (config.productionTestUntil ?? Infinity) - Date.now()));
   stopTimer.unref();
 }

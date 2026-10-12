@@ -13,9 +13,14 @@ export const probeConfig = z.object({
   holdSeconds: z.number().int().min(20).max(60).default(40),
   maxCalls: z.number().int().min(2).max(100).default(40),
   maxConcurrent: z.number().int().min(2).max(10).default(2),
+  // Only the maintenance supervisor supplies this after saving a restoration snapshot.
+  productionTestUntil: z.number().int().optional(),
 }).strict().superRefine((c, ctx) => {
-  if (new Set([c.destination, c.lineA, c.lineB]).size !== 3 || c.destination === '+15074731802') {
+  if (new Set([c.destination, c.lineA, c.lineB]).size !== 3) {
     ctx.addIssue({ code: 'custom', message: 'distinct_test_numbers_required' });
+  }
+  if (c.destination === '+15074731802' && (!c.productionTestUntil || c.productionTestUntil <= Date.now() || c.productionTestUntil > Date.now() + 30 * 60_000)) {
+    ctx.addIssue({ code: 'custom', message: 'bounded_maintenance_window_required' });
   }
 });
 export type ProbeConfig = z.infer<typeof probeConfig>;
@@ -125,7 +130,8 @@ export class SharedNumberProbe {
       // Ignore old initiations after a restart, rather than resurrecting a call.
       if (Date.parse(e.occurred_at) < this.startedAt - 5000 || this.endedBeforeStart.has(p.call_control_id)) return 200;
       const active = [...this.sessions.values()].filter(v => v.row.endedAt === undefined).length;
-      if (this.closing || this.sessions.size >= this.config.maxCalls || active >= this.config.maxConcurrent) {
+      if (this.closing || (this.config.productionTestUntil !== undefined && Date.now() >= this.config.productionTestUntil)
+        || this.sessions.size >= this.config.maxCalls || active >= this.config.maxConcurrent) {
         this.rejected++; this.changed(); return 503; // Provider first-command timeout closes unanswered calls.
       }
       s = { callId: p.call_control_id, legId: p.call_leg_id, answerRequested: false, prompted: false, chain: Promise.resolve(), row: {

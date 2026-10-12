@@ -40,6 +40,23 @@ describe('conservative diversion observation', () => {
     expect(probeConfig.safeParse({ ...config, destination: '+15074731802' }).success).toBe(false);
     expect(probeConfig.safeParse({ ...config, lineB: config.lineA }).success).toBe(false);
   });
+  it('allows production only with an unexpired window of at most thirty minutes', () => {
+    vi.useFakeTimers();
+    const live = { ...config, destination: '+15074731802' };
+    expect(probeConfig.safeParse({ ...live, productionTestUntil: Date.now() + 30 * 60_000 }).success).toBe(true);
+    for (const productionTestUntil of [Date.now(), Date.now() - 1, Date.now() + 30 * 60_000 + 1]) {
+      expect(probeConfig.safeParse({ ...live, productionTestUntil }).success).toBe(false);
+    }
+  });
+  it('stops admitting new calls at the production deadline', async () => {
+    vi.useFakeTimers();
+    const live = probeConfig.parse({ ...config, destination: '+15074731802', productionTestUntil: Date.now() + 1000 });
+    const command = vi.fn(async () => {});
+    const probe = new SharedNumberProbe(live, command); probes.push(probe);
+    vi.advanceTimersByTime(1000);
+    expect(probe.accept(event('call.initiated', 'late', { to: live.destination }))).toBe(503);
+    await probe.drain(); expect(command).not.toHaveBeenCalled();
+  });
 });
 
 describe('isolated concurrent diagnostic', () => {

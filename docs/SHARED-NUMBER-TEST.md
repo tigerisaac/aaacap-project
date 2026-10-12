@@ -1,18 +1,44 @@
-# Test shared forwarding with Verizon and T-Mobile
+# Test shared forwarding on one Telnyx number
 
 Built October 12, 2026. **Local diagnostic, not deployed or verified on real calls.** This answers two questions: does one Telnyx number receive usable recipient information from both carriers, and can correctly identified calls overlap? It does not test AI screening, recipient ownership verification, outbound offers, press-1 bridging, voicemail or production reliability.
 
-The test reads forwarding metadata before asking anything. A caller then presses **1 for Verizon test line A**, **2 for T-Mobile test line B**, or **0 for a direct call to the test number**. This keypad response is independent test ground truth. It never supplies a missing routing identity, chooses an outbound destination or connects anyone. If a tester presses the wrong key, discard that attempt explicitly and repeat it; don't silently change a failed result.
+The test reads forwarding metadata before asking anything. A caller then presses **1 for test line A**, **2 for T-Mobile test line B**, or **0 for a direct call to the test number**. This keypad response is independent test ground truth. It never supplies a missing routing identity, chooses an outbound destination or connects anyone. If a tester presses the wrong key, discard that attempt explicitly and repeat it; don't silently change a failed result.
 
 ## What you need
 
-- One consenting Verizon mobile test line (A) and one consenting T-Mobile mobile test line (B). Use spare/test lines where possible. Keep the owner's existing Shield route intact.
+- Two consenting mobile test lines. The owner selected **Tello for A and T-Mobile for B** on October 12. Verizon remains untested until a Verizon line is supplied. Use spare/test lines where possible.
 - An external caller phone for sequential checks. For the overlap check, use **two independent calling lines**, in addition to A and B. Each caller must know which test line they dialed. Don't merge the calls into a conference.
-- One separate, voice-capable Telnyx test number, and a separate Call Control / Voice API application. Reuse suitable unused test inventory if available. Do not repoint Shield's production number. The runner explicitly refuses the current production destination.
+- One separate, voice-capable Telnyx test number, and a separate Call Control / Voice API application. Reuse suitable unused test inventory if available. The ordinary runner refuses Shield's production destination. An owner-authorized, supervised maintenance window can temporarily reuse it through the procedure below.
 - A funded Telnyx account, an API key, the account's Ed25519 public key, Node 22.14+ and installed repository dependencies. Keep credentials and phone numbers in the local private files below.
 - A public HTTPS tunnel to this computer, such as an installed/configured ngrok agent. Keep the computer awake and both terminals running. Disable HTTP body inspection/capture in the tunnel service, including any separately enabled cloud traffic capture. Forwarded webhooks contain phone numbers even though this tool discards them.
 
 This is a supervised test: forwarded test calls hear a diagnostic prompt instead of reaching voicemail. Record the original forwarding destinations, voicemail and phone settings first. Restore forwarding before stopping the test. Normal carrier/Telnyx voice and speech charges can apply.
+
+## Reusing the existing Shield number temporarily
+
+The owner authorized this alternative on October 12. No purchase is needed. **While the number is assigned to the diagnostic, all incoming calls reach the test instead of normal Shield screening or voicemail.** Neither carrier forwarding nor the production application is changed by the maintenance tool. The user configures the phones and makes all test calls. Do not text test B or place automated calls to either line.
+
+`scripts/shared-number-maintenance.mjs run --owner-authorized` saves the original number/application settings privately before any change, checks both applications have no active calls, starts an independent restoration watchdog, starts the signed diagnostic listener, checks public readiness and rejection of unsigned requests, then changes only the number's `connection_id`. The original production application remains intact. The test permits two concurrent calls, 40 admitted calls and a maximum 30-minute window. It stops admitting calls at the deadline.
+
+Operator prerequisites: build/check the code; retain the private `credentials.json`, `application.json` and A/B config created during staging; restart the temporary HTTPS tunnel to port 8789 and update `SHARED_TEST_WEBHOOK_BASE_URL` in `.env.shared-number-test`. The supervisor updates the diagnostic application's callback. Run:
+
+```sh
+node --env-file=.env.shared-number-test scripts/shared-number-maintenance.mjs run --owner-authorized
+```
+
+Wait for `testReady: true` and note the printed deadline. Do not run the ordinary `serve` command alongside the supervisor. Keep this computer awake, the tunnel running and Internet connected. First dial the public Shield number directly and press 0; then call A and B's normal numbers and press 1 and 2 respectively. Sequential and simultaneous attempts can share the supervised report; privately label the actual condition and attempt time. This run's `caseId: overlap` does not establish which phone condition was exercised.
+
+The supervisor restores the number when the window expires, the endpoint fails, the diagnostic exits or the operator stops it. A separate process attempts restoration if the supervisor exits unexpectedly or the deadline arrives. **This is local recovery, not a Telnyx-hosted expiry:** loss of this computer or Internet can delay restoration. No automatic restoration is claimed until provider readback succeeds. Stop immediately on any unexpected call behavior. To restore early from another terminal:
+
+```sh
+node scripts/shared-number-maintenance.mjs restore
+```
+
+Restoration changes only an assignment still pointing to this diagnostic; it refuses to overwrite another operator's reassignment. It verifies the original connection before marking restoration complete and disabling the diagnostic. On a network/provider failure it retries every 15 seconds. The private `maintenance.json` snapshot also contains the original assignment for manual restoration in Telnyx: **Numbers → the Shield number → Connection**, select the original application. Do not delete this snapshot while the window is open.
+
+After Telnyx restoration, return **each phone** to its own recorded original forwarding settings and verify normal calls and voicemail. For the existing Shield user's Tello line, restoring the original setup may mean keeping forwarding to Shield; do not blindly reset it to carrier voicemail. The temporary T-Mobile test line must not remain forwarded into the single-recipient production setup. Shut down the tunnel after restoration is verified. These are operator/user steps; the tool does not alter phones.
+
+[Telnyx documents reassignment through `connection_id`](https://github.com/team-telnyx/ai/blob/main/guides/phone-numbers.md). A [Cloudflare Quick Tunnel](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/) is temporary and has no uptime guarantee; every restart changes its hostname.
 
 ## 1. Prepare the local tool
 
@@ -28,7 +54,7 @@ node scripts/shared-number-test.mjs init
 
 | File | Fill in locally |
 |---|---|
-| `artifacts/private/shared-number-test/config.json` | Test `applicationId`; test `destination`; `lineA` (Verizon) and `lineB` (T-Mobile), all numbers in +1 plus ten-digit format. Start with `caseId: "direct"`. |
+| `artifacts/private/shared-number-test/config.json` | Test `applicationId`; test `destination`; `lineA` (currently Tello) and `lineB` (T-Mobile), all numbers in +1 plus ten-digit format. Start with `caseId: "direct"`. |
 | `.env.shared-number-test` | `SHARED_TEST_TELNYX_API_KEY`, `SHARED_TEST_TELNYX_PUBLIC_KEY`, and `SHARED_TEST_WEBHOOK_BASE_URL` (HTTPS origin only). |
 
 Keep the defaults of 40 seconds per call, 40 admitted calls per run and two simultaneous calls. Do not put real numbers, keys or raw webhooks into committed files, screenshots or chat. Public reports use A/B labels and random test IDs.
@@ -83,10 +109,11 @@ Let `N` mean the test Telnyx number's **ten digits**, without punctuation. `1N` 
 
 | Test line | Enable conditional forwarding | Restore ordinary carrier defaults after testing |
 |---|---|---|
-| A — Verizon mobile | `*71N` (busy/no answer) | `*73` |
+| Alternate A — Verizon mobile | `*71N` (busy/no answer) | `*73` |
+| A — Tello mobile | Separately: `**61*1N#` (no answer), `**67*1N#` (busy), `**62*1N#` (unreachable) | Restore recorded original destinations; for ordinary defaults, separately `##61#`, `##67#`, `##62#` |
 | B — T-Mobile mobile | Separately: `**61*1N#` (no answer), `**67*1N#` (busy), `**62*1N#` (unreachable) | `##004#` |
 
-Wait for carrier confirmation after every operation. If either line had custom forwarding before the test, restore those recorded destinations instead of assuming the default reset recreates them. Verizon's documented busy/no-answer operation does not establish powered-off coverage. [Verizon activation](https://www.verizon.com/support/knowledge-base-181139/), [Verizon cancellation](https://www.verizon.com/support/call-forwarding-faqs/), [T-Mobile codes](https://www.t-mobile.com/support/plans-features/self-service-short-codes).
+Wait for carrier confirmation after every operation. If either line had custom forwarding before the test, restore those recorded destinations instead of assuming the default reset recreates them. Verizon's documented busy/no-answer operation does not establish powered-off coverage. [Tello codes](https://tello.com/help_center/device-settings/how-can-i-set-up-call-forwarding), [Verizon activation](https://www.verizon.com/support/knowledge-base-181139/), [Verizon cancellation](https://www.verizon.com/support/call-forwarding-faqs/), [T-Mobile codes](https://www.t-mobile.com/support/plans-features/self-service-short-codes).
 
 Start with ordinary no-answer forwarding. Leave iPhone unknown-call silence changes until their dedicated test. Do not use unconditional forwarding as a substitute: it may travel a different network path from Shield's intended conditions.
 
