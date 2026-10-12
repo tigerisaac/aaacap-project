@@ -1,6 +1,6 @@
 # Public scam benchmarks
 
-Reviewed October 11, 2026. The first public diagnostic used frozen screening v16 and monitor-v2. Subsequent screening changes came only from development cases: v17 clarified manipulation precedence, and v18 clarified ordinary demographics with an existing healthcare office. No public or held-out result was used to tune either production prompt. The owner later requested a separate benchmark-specific binary classifier, described below; it does not enter Shield's production harness or policy. All executed cases here are synthetic; no real caller audio or transcripts are used.
+Reviewed October 11, 2026. The first public diagnostic used frozen screening v16 and monitor-v2. Subsequent screening changes came only from development cases: v17 clarified manipulation precedence, and v18 clarified ordinary demographics with an existing healthcare office. No public or held-out result was used to tune either production prompt. The owner later requested a separate benchmark-specific binary classifier, described below; it does not enter Shield's production harness or policy. The initial MASC checks were synthetic. Later FTC/NC State transcript checks use the owner’s explicit public-dataset exception described below; audio is not used.
 
 ## Sources and suitability
 
@@ -334,3 +334,36 @@ The full subscription robocall comparison completed 2,172 trials per version:
 **The owner selected the 11.4% cut after explicitly accepting the one-trial identification difference:** “Allow this difference and keep the 11.4% cut”. The original strict observed-score gate remains false in the audit; this is an accepted tradeoff, not a claim of identical performance or a statistically established improvement. Completed robocall stops and the call-weighted score improved, while MASC completed stops decreased by seven as shown above. The complete matched results and preserved-prefix checks are recorded in `artifacts/lean-v24/public-comparison.json`. Production prompt and grading sources remained unchanged throughout those evaluations.
 
 The selected v24 wording is adopted unchanged as **v26** (`2026-10-11-general-v26`), with a version bump after the intervening v25 experiment. The final model request exactly matches the frozen v24 request, including all non-instruction settings. v25 was superseded and its partial artifacts are retained separately, not counted as completed validation. The owner's acceptance and final request identity are recorded in `artifacts/lean-v24/final-adoption.json`. No voice validation, deployment or phone call was performed.
+
+## Financial-notice fix v30, October 11
+
+The owner requested a recheck of the recorded automated-charge weakness. Synthetic development reproduced it on v26 and motivated a general clarification of the financial-alarm boundary. The final v30 wording was frozen before the runs below. No public or held-out dialogue was added to the prompt. Both public sets are known regression data, not fresh unseen evidence.
+
+**One complete paired pass through OpenCode Go**, GPT-6 Luna, medium reasoning, identical production tools/settings and unchanged scoring. FTC includes all 724 distinct English recordings, weighted back to 1,378 original English calls. MASC includes all 320 test conversations. Every selected case ran on each frozen prompt; the audit verifies matching IDs and source hashes.
+
+| FTC/NC State measure | v26 | v30 |
+|---|---:|---:|
+| Identified, including clarification | 722/724 | 722/724 |
+| Completed blocks/holds | 693/724 | 691/724 |
+| Clarifications | 29 | 31 |
+| Harmful-dataset approvals | 2 | 2 |
+| Call-weighted identified | 1375/1378 | 1375/1378 |
+| Call-weighted completed stops | 1304/1378 | 1302/1378 |
+| Failures / other outcomes | 0 / 0 | 0 / 0 |
+
+| MASC measure | v26 | v30 |
+|---|---:|---:|
+| Scams identified, including clarification | 160/160 | 160/160 |
+| Completed harmful stops | 153/160 | 149/160 |
+| Legitimate calls offered | 78/80 | 79/80 |
+| Ads blocked, separate score | 40/40 | 40/40 |
+| Harmful approvals | 0 | 0 |
+| Provider / validation failures | 0 / 0 | 0 / 0 |
+
+Both prompts approved the same two recordings: a brief family-only opener (robocall-858) and an energy-account callback (robocall-1164). They remain misses under the harmful-only dataset score. The family offer follows the owner's deliberate acceptance policy; the service/callback boundary remains a limitation. No exception was added for either recording.
+
+A clarification does not offer a call, but it is not a completed stop. These are single full passes and can vary across repeats; they do not establish perfect future detection. Selection weighs ordinary callers alongside harmful calls and retains the owner's family-only acceptance rule.
+
+**Preserved earlier diagnostics:** the first large Go batches reached HTTP 429 and stopped. The authorized subscription fallback ran the intermediate v29 candidate on all 724 FTC cases (723 identified, 708 stopped, one approval, no failures) and all 320 MASC cases. Its contemporaneous v26 FTC baseline stopped at 705/724 after one provider failure, so it is not a complete paired FTC baseline. The exact FTC recording cited by the owner was approved 0/20 times on both v26 and v29 through that fallback; this did not establish an improvement on that recording. v29 was rejected because development repeats exposed an ordinary hospital-news regression under caution. These outcomes were retained, not pooled with the final v30 Go comparison. Go subsequently completed the final runs at lower concurrency.
+
+Final requests and scoring sources stayed unchanged throughout. `artifacts/notice-v30/validation-summary.json` contains the freeze, matching-case checks and raw-result hashes; original incomplete and intermediate runs remain under `artifacts/notice-v29/`. See [Screening](SCREENING.md#financial-notice-follow-up-v30-october-11-text-only) for the independent synthetic contrasts, held-out checks and remaining costs. No voice, timing, deployment or real-call claim follows from these offline results.
