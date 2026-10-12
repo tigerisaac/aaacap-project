@@ -2,10 +2,10 @@
 // Offline text diagnostic of harmful calls stopped; there are no legitimate calls, and no voice, timing or live-call claim.
 // Requires `npm run build`. The owner's exception to the synthetic-only evaluation rule covers this dataset only.
 // Usage: node scripts/check-robocall-benchmark.mjs [--prepare-only] [--real-calls-approved] [--screening-context opening|full]
-//   [--repeat N] [--concurrency N] [--limit N] [--provider go|openai] [--out directory]
+//   [--repeat N] [--concurrency N] [--limit N] [--provider go|openai] [--out directory] [--request frozen-screening.json]
 import { mkdir, readFile, writeFile, appendFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { SCREENING_POLICY_VERSION, LIVE_LIMITS } from '../dist/live/policy.js';
+import { liveSessionConfig, SCREENING_POLICY_VERSION, LIVE_LIMITS } from '../dist/live/policy.js';
 import { screeningTarget } from './lib/screening-target.mjs';
 import { digest, parseCSV } from './lib/public-scam-benchmark.mjs';
 import { ROBOCALL, robocallCase, selectRobocalls, summarizeRobocalls } from './lib/robocall-benchmark.mjs';
@@ -19,6 +19,7 @@ const provider = option('--provider') ?? 'go', context = option('--screening-con
 const repeat = integer(option('--repeat'), 1, 100), concurrency = integer(option('--concurrency'), 4, 16);
 const limit = integer(option('--limit'), ROBOCALL.expectedRows, ROBOCALL.expectedRows);
 const out = resolve(option('--out') ?? `artifacts/public-benchmarks/robocall-${Date.now()}`);
+const frozen = option('--request');
 if (args.length || !['opening', 'full'].includes(context) || !['go', 'openai'].includes(provider)) throw new Error('invalid_options');
 
 // Pinned download of the transcript metadata only; audio is not fetched. The cache is verified on reuse.
@@ -57,9 +58,11 @@ const resultsFile = `${out}/results.jsonl`;
 await writeFile(resultsFile, '', { flag: 'wx' });
 const productionFiles = ['backend/src/live/policy.ts'];
 const hashes = async files => Object.fromEntries(await Promise.all(files.map(async f => [f, digest(await readFile(f, 'utf8'))])));
-const screening = await screeningTarget(provider, { effort: 'medium' });
+const request = frozen ? JSON.parse(await readFile(frozen, 'utf8')) : liveSessionConfig().delegation.responses;
+const screening = await screeningTarget(provider, { effort: 'medium', request });
 const run = { ...source, provider, model: screening.model, effort: 'medium', repeat, concurrency, screeningContext: context,
-  screeningVersion: SCREENING_POLICY_VERSION, selection: { excluded, unique: unique.length, limit }, fullUniqueSet: cases.length === unique.length,
+  screeningVersion: frozen ? 'frozen-request' : SCREENING_POLICY_VERSION, frozenRequest: frozen, screeningRequestHash: digest(JSON.stringify(request)),
+  selection: { excluded, unique: unique.length, limit }, fullUniqueSet: cases.length === unique.length,
   selectedIds: cases.map(c => c.id), productionHashesBefore: await hashes(productionFiles), startedAt: new Date().toISOString(),
   realCallApproval: 'Owner exception to the synthetic-only evaluation rule, October 11, 2026, for this public-domain FTC robocall dataset only.',
   interpretation: 'Real illegal-robocall recordings, Whisper transcripts of the robocaller side only. Screening sees one recorded message: about the first 75 s by default, or up to the production transcript limit. No legitimate calls: measures harmful calls stopped only. No voice, timing or live-call claim; the production no-pause robocall timer is not modeled. Results must never tune a production prompt.' };

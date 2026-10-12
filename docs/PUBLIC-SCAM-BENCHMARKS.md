@@ -256,3 +256,29 @@ These are repeated checks of the same 160 unique scam and 80 unique ordinary con
 Ad blocking remains 40/40 at screening; insurance monitoring results are not ad scores. Wrong numbers stay separate. No public case was relabeled or removed after outcomes were observed. End-of-conversation monitoring still misses source-labeled scams, and its ordinary-call result varies. These checks neither measure live intervention timing nor establish that every source label corresponds to a current prohibited request. No production deployment or real phone call took place.
 
 Rescoring validation (October 11): `npm run check` passed 117 unit tests, typecheck and build. The first emulator run passed 85/86 with a closed-transaction error in a forwarding test; a separate rerun passed all 86. Raw benchmark results matched their recorded SHA-256, and the original summary remained intact. This scoring-only change made no model requests and changed no production prompt.
+
+
+## Lean v23 comparison, October 11
+
+A general compression of the production screening decision prompt was selected using synthetic development cases, then frozen for a paired comparison with v20 (`bb084f3`). Both requests used OpenCode Go, GPT-6 Luna, medium reasoning, the same tools and unchanged benchmark scoring. This evaluates Shield's screening policy, not the separate MASC-specific classifier. No public conversation or held-out probe shaped the new wording.
+
+All 320 MASC test conversations ran three times per version (960 trials each):
+
+| Screening measure | v20 baseline | Lean v23 |
+|---|---:|---:|
+| Labeled scams identified, including valid clarification | 479/480 (99.8%) | 479/480 (99.8%) |
+| Completed blocks/holds | 460/480 (95.8%) | 455/480 (94.8%) |
+| Clarifications | 19 | 24 |
+| Harmful approvals | 1 | 0 |
+| No decision on a labeled scam | 0 | 1 |
+| Ordinary calls offered | 234/240 (97.5%) | 236/240 (98.3%) |
+| Ads blocked, scored separately | 120/120 | 120/120 |
+| Provider failures / rejected evidence | 0 / 0 | 0 / 0 |
+
+One v23 result produced no decision and received no identification credit. It is not a completed stop or an approval. These are three draws on the same 320 conversations, not new unique calls. The identification score matches in aggregate, but individual outcomes and completed-stop rates are not identical; v23 asked five more questions and completed five fewer stops. No failed or missing result was dropped or replaced. Wrong numbers remain separate from ordinary-call scores, and insurance remains separate from scam scores.
+
+Raw results: `artifacts/lean-v23/masc/` and `baseline-masc/`. Request hashes, source hashes and raw-result hashes are recorded in `artifacts/lean-v23/validation-summary.json`. The final request and all frozen source files were checked unchanged after evaluation. The broader development/held-out/caution results and unchanged runtime settings are in [Screening](SCREENING.md#lean-decision-prompt-candidate-v23-october-11).
+
+**FTC/NC State comparison pending:** automatic approval review rejected the attempted rerun because AGENTS.md prohibits real call transcripts in evaluations. The script did not execute and made no model requests. An explicit exception for this previously used public-domain dataset has been requested. Historical v20 numbers above must not be treated as a v23 result. The second benchmark is not yet validated.
+
+No deployment, voice benchmark or real phone call was performed. This remains an offline text candidate, not live-call evidence.

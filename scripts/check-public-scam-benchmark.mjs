@@ -1,10 +1,10 @@
 // Offline, full-conversation diagnostics, NOT an early-screen or real-call safety score.
 // Usage: node scripts/check-public-scam-benchmark.mjs [--prepare-only] [--mode both|screening|monitor]
-//   [--repeat N] [--concurrency N] [--limit-per-type N] [--provider go|openai] [--out directory]
+//   [--repeat N] [--concurrency N] [--limit-per-type N] [--provider go|openai] [--out directory] [--request frozen-screening.json]
 // Default: pinned MASC test split, all 320 cases, both production prompts, medium reasoning, free Go.
 import { mkdir, readFile, writeFile, appendFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { SCREENING_POLICY_VERSION } from '../dist/live/policy.js';
+import { liveSessionConfig, SCREENING_POLICY_VERSION } from '../dist/live/policy.js';
 import { screeningTarget } from './lib/screening-target.mjs';
 import { monitorTarget } from './lib/monitor-target.mjs';
 import { MASC, MASC_SCORING, digest, parseCSV, mascCase, summarizeMASC } from './lib/public-scam-benchmark.mjs';
@@ -17,6 +17,8 @@ const prepare = flag('--prepare-only'), provider = option('--provider') ?? 'go',
 const repeat = integer(option('--repeat'), 1, 100), concurrency = integer(option('--concurrency'), 4, 8);
 const perType = integer(option('--limit-per-type'), 320, 320);
 const out = resolve(option('--out') ?? `artifacts/public-benchmarks/masc-${Date.now()}`);
+const frozen = option('--request');
+if (frozen && mode === 'monitor') throw new Error('screening_request_requires_screening_mode');
 if (args.length || !['both', 'screening', 'monitor'].includes(mode) || !['go', 'openai'].includes(provider)) throw new Error('invalid_options');
 const cache = 'artifacts/public-benchmarks'; await mkdir(cache, { recursive: true });
 const sourceFile = `${cache}/masc-${MASC.revision}.csv`, manifestFile = `${sourceFile}.json`;
@@ -48,11 +50,13 @@ await mkdir(out, { recursive: true });
 const resultsFile = `${out}/results.jsonl`;
 // Exclusive create avoids silently overwriting an earlier run.
 await writeFile(resultsFile, '', { flag: 'wx' });
-const screening = mode !== 'monitor' ? await screeningTarget(provider, { effort: 'medium' }) : undefined;
+const request = frozen ? JSON.parse(await readFile(frozen, 'utf8')) : liveSessionConfig().delegation.responses;
+const screening = mode !== 'monitor' ? await screeningTarget(provider, { effort: 'medium', request }) : undefined;
 const monitor = mode !== 'screening' ? await monitorTarget(provider) : undefined;
 const run = { ...manifest, provider, model: screening?.model ?? monitor.model, effort: 'medium', mode, repeat, concurrency,
   scoring: MASC_SCORING,
-  screeningVersion: SCREENING_POLICY_VERSION, monitorVersion: monitor?.policyVersion,
+  screeningVersion: frozen ? 'frozen-request' : SCREENING_POLICY_VERSION, monitorVersion: monitor?.policyVersion,
+  frozenRequest: frozen, screeningRequestHash: screening ? digest(JSON.stringify(request)) : undefined,
   monitorContextChars: monitor?.contextChars,
   conversationsBeyondMonitorWindow: monitor ? cases.filter(c => c.transcript.length > monitor.contextChars).length : undefined,
   selectedIds: cases.map(c => c.id), startedAt: new Date().toISOString(),

@@ -230,6 +230,34 @@ Every miss was compared with v18. The three held-out approvals are the known fam
 
 Policy SHA-256 `7e7f9db2…66e7bf` was frozen before both public runs. On MASC, v20 identified 160/160 scams (156 stopped, 4 questions, none approved), offered 79/80 ordinary calls and blocked 40/40 sales calls. On the real robocalls it stopped 2,086/2,172 checks and approved 7 ([results](PUBLIC-SCAM-BENCHMARKS.md#v19v20-reruns-october-11)). Both public sets motivated parts of this change, so neither is untouched evidence for these categories. Logs are in `artifacts/redteam-v19/` and `artifacts/redteam-v20/`. Synthetic voice checks have not run for v20; they are required before deployment and use paid OpenAI requests. Nothing was deployed.
 
+## Lean decision prompt candidate (v23, October 11)
+
+The owner requested a shorter prompt, with normal grammar and equivalent results on the two established public benchmarks plus red teaming. Candidate v23 reduces the decision instructions from **10,508 to 8,085 characters (23.1%)**, or **1,679 to 1,216 whitespace-delimited words (27.6%)**. These are character/word measurements, not measured token savings. Repeated explanations were condensed; the broad secrets/identifiers rule, category boundaries and exceptions remain. The model, medium reasoning, tools, reference notes, voice-front-end instructions, recent-scam caution paragraph and call-control limits are unchanged. Monitoring remains monitor-v2.
+
+All model checks used OpenCode Go and GPT-6 Luna at medium reasoning. The subscription fallback was located but not needed. Baseline requests were captured from `bb084f3` (v20), before editing. `check-screening-suites.mjs` supports concurrent synthetic checks and frozen request snapshots; both public runners now accept `--request` and record the request hash. Benchmark selection, scoring and expectations were not changed.
+
+Twenty-four new synthetic development probes in `scripts/fixtures/redteam/lean-boundaries.mjs` pair ordinary requests with secret, payment, remote-access, solicitation and manipulation boundaries. They do not enlarge the 24-case main benchmark. Prompt selection ended before public and held-out validation; no public or held-out dialogue shaped the wording.
+
+| Text checks, three passes | v20 baseline | v23 candidate |
+|---|---:|---:|
+| Main benchmark: legitimate offered / harmful stopped | 33/33 / 36/36 | 33/33 / 36/36 |
+| Fresh red team: legitimate offered / harmful stopped | 36/36 / 36/36 | 36/36 / 36/36 |
+| All development, including main: legitimate offered | 255/258 | 256/258 |
+| All development: harmful stopped / clarified / approved | 300/315 / 14 / 1 | 300/315 / 15 / 0 |
+| Held-out plus original manipulation probes: legitimate offered | 72/72 | 72/72 |
+| Held-out plus manipulation: harmful stopped / clarified / approved | 52/69 / 14 / 3 | 52/69 / 15 / 2 |
+| Caution: legitimate offered / harmful stopped / callbacks held | 75/75 / 72/72 / 21/21 | 75/75 / 72/72 / 21/21 |
+
+The development comparison has 603 trials per version, including 30 gray cases excluded from ordinary/harmful scores. All 72 fresh trials and 69 main text trials passed on both versions. Caution covers the existing caution cases, main and fresh set, 168/168 passes on each. Held-out approvals are the known family-accident opener, which the owner's family-acceptance rule deliberately offers. Some sensitive claims still end in clarification; those are not completed stops. There were no provider failures in these completed comparisons.
+
+Twelve additional repeats per version of four unstable development probes found that both stopped the structured override 12/12 and offered the existing-adviser call 12/12. The claimed system-test call was blocked 3/12 on v23 versus 7/12 on v20 (all others clarified, no approvals); the ordinary friend claiming to be on a list was offered 8/12 versus 3/12. These remain variable boundaries, not proof of universal robustness. The earlier v22 draft and its failures are retained separately in `artifacts/lean-v22/`.
+
+MASC validation is complete: both versions identified 479/480 labeled scam trials, with 236/240 ordinary calls offered on v23 versus 234/240 on v20. Completed stops were 455/480 versus 460/480. See [the public comparison](PUBLIC-SCAM-BENCHMARKS.md#lean-v23-comparison-october-11). **The real-robocall rerun is pending an explicit owner exception:** automatic approval review rejected feeding its public real transcripts to the evaluator under AGENTS.md's synthetic-only rule. The exception question is pending. Equivalence on both benchmarks has therefore not been established, and v23 remains a candidate.
+
+The request hash is `7549888de7fafae36c8c085c21c569cc543c488674b3099eac15f6448dad866a`; v20 is `5364f2150192775cb6da3eba8e4feb938518bd1adf35cd9801897c20b7749387`. Each public runner recorded its request hash before evaluation. `artifacts/lean-v23/freeze.json` additionally records source hashes, written immediately after public launch and before inspecting results; all remain unchanged. `validation-summary.json` records results-file hashes and aggregate counts. The full comparison artifacts are in `artifacts/lean-v23/`, with original baseline development runs in `artifacts/lean-v22/`.
+
+`npm run check` passed 130 unit tests, typecheck and build; `npm run test:firebase` passed 86 emulator tests. Sandbox-only attempts first failed on blocked networking/local ports and were repeated with the required permissions; no such failed attempt is counted as a successful model test. No voice validation ran: the owner restricted model testing to Go with a Luna subscription fallback, while the voice benchmark requires paid GPT Live. Voice validation is still required before deployment. Nothing was deployed and no phone calls were placed.
+
 ## Historical results (v14)
 
 | Check | Legitimate offered | Harmful stopped |
