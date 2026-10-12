@@ -1,3 +1,4 @@
+// RETIRED from holdout on October 12: owner authorized using these findings to design v38.
 // Fresh paired comparison, written after both prompts were frozen. No case may tune either prompt.
 // Expected behavior follows Shield's operational policy, not whether a caller's claimed identity is true.
 const row = (name, category, focus, text, accept) => ({ name, category, focus, turns: [text], accept });

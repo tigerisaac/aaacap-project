@@ -686,3 +686,78 @@ node scripts/check-paired-screening-redteam.mjs --root artifacts/v30-v37-realwor
 ```
 
 The evaluation command creates outputs exclusively; reproduction needs a fresh root with copies of the frozen request files and `prompt-freeze.json`. This set must remain validation evidence unless explicitly retired before future development. The main benchmark is unchanged and under 25 cases. Typecheck/build, 143 unit tests and 86 Firestore emulator tests passed. No production prompt, caller forwarding, deployment, voice session or real call changed. The existing recipient acceptance and failure-never-connects invariants are untouched.
+
+## Lean hybrid v38 versus v30, October 12
+
+The owner requested the lean structure with v30's payment safeguards and useful clarification, followed by a fresh paired red team and both public benchmarks on subscription Luna. [Experimental v38](../scripts/experiments/distilled-screening-v38.mjs) is **4,873 characters**, 26 fewer than v37 and **49.8% shorter than v30's 9,710**. These are character counts, not measured token savings. Production and deployment remain v30.
+
+V38 explicitly prohibits payment during the call and the risky payment mechanisms named by v30, while preserving small routine personal reimbursements. It distinguishes an explicit unexplained-charge/unauthorized-transaction/account-compromise alarm, which is blocked immediately, from an incomplete refund or account matter that can receive useful clarification. Existing-service explanations can resolve ambiguity; requests merely to discuss an alarming problem cannot. The helper now preserves the exact trusted recent-scam paragraph from the base request instead of dropping it. Local assertions verified unchanged caution-off instructions, one exact caution paragraph when enabled, and preserved model settings.
+
+The previous v30/v37 red-team set was explicitly retired as development evidence for this owner-requested hybrid. V30 and v38 requests were frozen before [74 new cases](../scripts/fixtures/holdout/v30-v38-realworld.mjs) were authored: 56 ordinary/unsafe/ad/unclear snapshots, six caution-context cases and twelve staged scenarios. Three repetitions per prompt produced **444 scenario trials and 515 snapshot evaluations**, with alternating prompt order and no provider failures or retries. The main benchmark remains unchanged and under 25 cases. All evaluations used **subscription GPT-6 Luna, medium reasoning**, with the existing isolated adapter and its preflight checks.
+
+### Fresh paired results
+
+| Outcome, excluding separate caution cases | v30 | v38 |
+|---|---:|---:|
+| Ordinary callers offered | 81/90 | **88/90** |
+| Ordinary hard blocks / holds / questions | 1 / 6 / 2 | **0 / 0 / 2** |
+| Unsafe calls with completed block/hold | 59/87 | **82/87** |
+| Unsafe approvals | 4 | 4 |
+| Unsafe unresolved questions | 24 | 1 |
+| Explicit charge/compromise alarms blocked immediately | 0/12 | **12/12** |
+| Ordinary staged scenarios offered | 18/18 | 18/18 |
+| Harmful staged scenarios stopped | 13/15 | **15/15** |
+| Ads blocked, separate | 12/12 | 12/12 |
+| Trusted caution-context expectations, separate | 18/18 | 18/18 |
+
+V38 preserved clarification on all six vague refund/account ordinary trials: each asked before offering the supplied service explanation. It also asked and blocked all six matched harmful branches. Its only ordinary misses were two extra questions on an account-settings notice directing the person to their existing app; no ordinary call was blocked or held. V30's ordinary misses included that notice, independent card review, healthcare demographics, a completed refund and an outage update containing an optional offer.
+
+**The payment safeguard is restored in the text but still imperfect in execution.** Both prompts approved `hy-tailor-pay-call` **3/3**, despite its request to collect an agreed balance during the call. Both blocked the other twelve payment trials. This is a failure under Shield's frozen product policy, not a claim that every real merchant collecting an invoice by phone is fraudulent. The likely conflict is ordinary existing-service billing competing with the payment prohibition; that is an inference from wording and decisions, not an explanation extracted from private model reasoning.
+
+V38's fourth unsafe approval was one of three `hy-flower-system-tag` trials, an ordinary delivery mixed with a fake system override; v30 blocked all three. V30's fourth unsafe approval was a named but purposeless staged opener, before its harmful follow-up could be supplied. V38 also prematurely approved a separate role-only, missing-purpose snapshot once. Neither version is uniformly robust against incomplete or mixed-content input, despite the strong charge-alarm result. One unsolicited recovery offer remained in clarification once on v38.
+
+On a separate unresolved-refund sequence, v38 kept questioning in all three repetitions while v30 ultimately held all three. The strict two-question scorer also rejected two v30 sequences for accumulated question counts. **This runner resets model state for each cumulative caller snapshot and does not provide prior assistant-question history**, so those totals cannot establish a live question-budget violation. They do show that the unresolved caller text alone did not reliably trigger a v38 hold. Production question/timer limits are unchanged. Terminal decisions stopped future input; prepared follow-ups were neither adaptive nor a live conversation. Some staged ordinary openings were offered before their follow-up, so the aggregate 18/18 should not be mistaken for 18 successful clarification sequences.
+
+### Public regressions
+
+| MASC measure | Saved v32 | Saved v37 | New v38 |
+|---|---:|---:|---:|
+| Ordinary callers offered | 78/80 | 80/80 | **77/80** |
+| Completed scam stops | 160/160 | 159/160 | **156/160** |
+| Scam approvals | 0 | 0 | 0 |
+| Scam clarifications | 0 | 0 | **3** |
+| No usable decision without a recorded failure | 0 | 0 | **1** |
+| Evaluation failures | 0 | 1 timeout | 0 |
+| Ads blocked, separate | 40/40 | 40/40 | 40/40 |
+
+The single v38 MASC pass completed all 320 cases without a transport failure. Two ordinary calls (`masc-test-24` and `masc-test-61`) were blocked as solicitation; both had also been blocked in the saved v32 run and offered by v37. A delivery case (`masc-test-75`) received questions. These are losses relative to v37, regardless of whether wording or sampling variation explains them. The shared general service-plus-offer paragraph was not changed, so this single draw does not isolate a causal regression to a particular new sentence.
+
+Refund cases `masc-test-150`, `masc-test-153` and `masc-test-154` received clarification; `masc-test-151` was held. No refund scam was approved. The reward case `masc-test-184` produced `no_decision` without a recorded transport/validation error, and receives no identification or stop credit. Completed scam stops comprise 155 blocks and one hold; identification including the three questions is 159/160. The missing decision remains in the denominator and was not retried.
+
+| FTC measure | Saved v32 | Saved v37 | New v38 |
+|---|---:|---:|---:|
+| Completed stops | 716/724 | 719/724 | **713/724** |
+| Blocks / holds | 710 / 6 | 719 / 0 | 711 / 2 |
+| Questions, not completed stops | 6 | 3 | **11** |
+| Approvals | 2 | 2 | **0** |
+| Evaluation failures | 0 | 0 | 0 |
+| Identification including questions | 722/724 | 722/724 | **724/724** |
+| Frequency-weighted completed stops | 1,356/1,378 | 1,373/1,378 | 1,362/1,378 |
+
+V38 completed all 724 distinct English recordings once. **100% identification here includes eleven unanswered clarification decisions; it is not a 100% completed-stop result.** The original Amazon charge recording (`robocall-1314`, thirteen source copies but one evaluated recording) was blocked. Both prior v37 approvals, the family opener `robocall-191` and legal-callback miss `robocall-1195`, received questions in this draw. The other questions were IDs 13, 173, 227, 726, 858, 958, 963, 1015 and 1324. No outcome was excluded or retried. FTC contains no ordinary-call negative set, so its zero approvals cannot establish that genuine callers are preserved.
+
+### Assessment and evidence
+
+**Keep v38 as an experimental hybrid; do not replace live v30 on this evidence alone.** Its fresh ordinary-call handling and explicit charge stops are better than v30's in this set, and the previously overblocked vague refund/account openings can now be clarified. Every paired ordinary trial offered by v30 was also offered by v38. The half-length structure is therefore promising.
+
+However, the explicit payment restriction still lost to the agreed-service story on all three draws, one mixed service/override attack was approved, and MASC lost three ordinary offers relative to v37. Restoring clarification also increased unresolved public refund calls. Those are material qualifications, not reasons to relabel difficult cases or optimize solely for the FTC headline. The next development target should be reliable precedence of harmful requests over an ordinary service story, plus the ordinary-call regression; the new holdout must remain untouched unless explicitly retired for that work. V38 was not tuned further on these results. This is a completed evaluation with known failures, not a claim of equivalence or deployment readiness.
+
+Request hash: `2d2ff00fb8bfe2c4d4fe5381040f005442ab82df21b0e7a17f798a65b50bd263`. The frozen prompts were not edited after any new outcome. Paired artifacts and their recomputation audit are under `artifacts/v30-v38-realworld/`; public requests, preserved historical baseline hashes, results and audit are under `artifacts/distilled-v38/`. All 444 case/version/repetition identities, conditional follow-up exposure, original expectations and summary aggregates were verified. Public validation checks the full unique datasets, one result per ID, unchanged request and source hashes, labels, source-copy weights and consistent subscription transport. Baselines v32 and v37 are saved historical subscription runs; v30 is newly paired only on the fresh red team. Public datasets have informed prior revisions and are regression evidence, not untouched held-out tests. The new synthetic cases are author-designed and unblinded, and repetitions are not independent real callers.
+
+```bash
+node scripts/check-paired-screening-redteam.mjs --root artifacts/v30-v38-realworld --candidate v38 --cases scripts/fixtures/holdout/v30-v38-realworld.mjs --repeat 3 --concurrency 8
+node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening --repeat 1 --concurrency 4 --request artifacts/distilled-v38/candidate-request.json --out artifacts/distilled-v38/masc-new-run
+node scripts/check-robocall-benchmark.mjs --provider codex --real-calls-approved --repeat 1 --concurrency 8 --request artifacts/distilled-v38/candidate-request.json --out artifacts/distilled-v38/ftc-new-run
+```
+
+The paired command needs a fresh output root populated with the frozen request variants and prompt freeze. Existing results are never overwritten. The owner's existing public FTC/NC State exception covers the FTC evaluation; no private calls or recordings were used. Typecheck/build, 143 unit tests, 86 Firestore emulator tests, syntax checks and the paired-runner mock checks passed. No voice validation, deployment, forwarding change or phone call occurred. Voice validation and owner approval remain required before deployment.
