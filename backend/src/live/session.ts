@@ -239,6 +239,9 @@ export class ScreeningSession {
   private apply(d: LiveDecision, callId: string, delegationId: string) {
     this.timing('decision_applied', this.responseTiming(delegationId));
     if (d.action !== 'continue') { void this.finish(d); return; }
+    // This fresh decision has already assessed the current caller turn. Do not let the periodic
+    // fallback assess it again while Live is wording/speaking the question and awaiting an answer.
+    this.checkedLength = this.transcript.length;
     this.clarificationAt = this.now(); this.timing('clarification_requested');
     this.toolOutput(callId, delegationId, { status: 'continue_screening', instruction: 'Ask one brief clarifying question about only the missing information. Do not announce connection or rejection.' });
   }

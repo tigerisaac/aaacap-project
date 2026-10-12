@@ -79,6 +79,32 @@ describe('GPT Live screening controls', () => {
     expect(permittedDecision({ ...routine, to: '+12025550199' }, 'lunch tomorrow')).toBeUndefined();
     expect(permittedDecision({ ...routine, hasName: false }, 'lunch tomorrow')).toBeUndefined();
   });
+  it('waits for a caller answer after a fresh clarification instead of rechecking old speech during the question', () => {
+    const h = harness(); h.ready();
+    h.speech('A synthetic business is calling about an account issue.');
+    h.advance(1500); // A periodic check starts on this partial caller turn.
+    h.delegate();
+    h.speech(' There are more details about the same account issue.');
+    h.advance(LIVE_LIMITS.speechPauseMs);
+    // A fresh backend response has the complete turn and asks for clarification.
+    h.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.created' } });
+    h.tool({ ...routine, action: 'continue', reason: 'unclear', evidence: '' });
+    const completed = () => h.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.completed' } });
+    completed(); // Resume once to word the question.
+    h.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.created' } });
+    completed(); // The backend finished wording it; GPT Live is about to speak.
+    const checks = () => h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'message').length;
+    expect(checks()).toBe(1);
+    h.s.event({ type: 'session.output_audio.delta', delta: Buffer.alloc(320, 10).toString('base64') });
+    h.advance(2000); // It is now long enough for the periodic-check throttle.
+    expect(checks()).toBe(1); // Same evidence must not produce a hold over an unanswered question.
+    expect(h.io.finish).not.toHaveBeenCalled();
+    h.speech(' I need them to send me their login code.');
+    h.advance(1500);
+    expect(checks()).toBe(2); // Fresh caller evidence still triggers immediate assessment.
+    h.tool({ ...scam, evidence: 'send me their login code' }, 'new-request');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith({ ...scam, evidence: 'send me their login code' });
+  });
   it('does not execute stale approval when caller adds new information', () => {
     const h = harness(); h.ready(); h.speech('This is Anna about lunch tomorrow.'); h.delegate(); h.speech('Send your bank code first.'); h.tool(routine);
     expect(h.io.finish).not.toHaveBeenCalled();

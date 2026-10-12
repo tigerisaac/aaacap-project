@@ -219,3 +219,28 @@ Owner-requested v30 deployed as `shield-live-00008-hnc` and verified ready at `2
 Validation: 142 unit tests, typecheck/build and 86 Firebase emulator tests passed. Main synthetic voice: 24/24, separately 11/11 ordinary offers and 12/12 harmful stops plus silence. Existing main text checks: 33/33 ordinary offers and 36/36 harmful stops; source/request hashes still matched the frozen v30 validation. The new revision had no ERROR or missing-acknowledgement logs after deployment. V30 is not yet verified on a real call. The existing test window was retained through 22:35:58 Central; it was not renewed or broadened in this rollout.
 
 The private `artifacts/private/live-v30-deploy.json` contains the release manifest, base configuration, operations and readbacks. The canonical `artifacts/private/live-deploy.json` now points to the verified v30 image, with the prior record retained privately as `live-deploy-before-v30.json`.
+
+### V30 real-call latency investigation (October 11, 22:23 Central)
+
+Content-free timing logs for the owner's latest test call confirm revision `shield-live-00008-hnc`. The call was held and routed to voicemail. No recording or transcript was inspected. Times below are measured from call admission; audio-send events mean sent to Telnyx, not confirmed heard by the caller.
+
+| Phase | Time / duration |
+| --- | --- |
+| Bridge claimed the call | 6.592 s; claim request 0.564 s |
+| OpenAI session ready | 7.370 s; 0.778 s after claim |
+| Initial partial-turn decision | 1.506 s model time; deferred because the caller added words |
+| Deferred decision resumed with updated caller evidence | 2.312 s after deferral |
+| Fresh clarification requested | 15.615 s; 1.381 s model time |
+| Backend finished wording the question | 17.021 s; 1.127 s model time |
+| Automatic check sent without new caller words | 17.040 s |
+| Question audio sent | 18.041 s; 2.426 s after clarification requested |
+| Hold applied and playback cleared | 19.571 s; 2.314 s model time, assistant audio sent 17 ms earlier, 360 ms still queued |
+| Voicemail handoff finished | 19.969 s; persistence 116 ms, redirect 281 ms |
+
+The bridge process was already 213.3 s old, although this was its first call: the logs do not show a fresh process cold start. The first backend request used 3,416 input tokens, with 2,923 cached (85.6%). Token processing and startup therefore do not explain the entire delay. The last caller transcript update preceded the hold by 6.262 s. The local acknowledgement played from 15.119 to 16.250 s.
+
+The immediate coordination bug is that a fresh `continue` decision did not update the periodic fallback's assessed-transcript marker. Once the backend finished wording a question, the fallback rechecked already-assessed words while Live was starting to ask it. A terminal verdict then cleared that unfinished playback. Waiting for changed caller evidence before applying a stale decision remains necessary; this fix only removes the duplicate fallback on the unchanged turn.
+
+**Local fix, not deployed:** `ScreeningSession.apply` marks the current transcript assessed when a fresh clarification is accepted. A regression reproduces the duplicate check on the previous code, suppresses it with the fix, and confirms new caller evidence still triggers assessment and an explicit scam block still stops immediately. An exact production-source candidate changes only `lib/live/session.js`; v30, other modules, dependencies and configuration are unchanged. Packaged before/after checks also passed. Full validation passed typecheck/build, 143 unit tests and 86 Firebase emulator tests.
+
+Four focused synthetic voice cases passed their existing outcome criteria: two ordinary calls offered, one injection blocked, and one bank pretext held. The bank-pretext trial ended before its scripted answer despite a question transcript, so an allowed outcome alone does not establish that coordination is fully solved. An additional timing-instrumented synthetic repeat waited for the answer and blocked the harmful request, but also showed a Live-initiated delegation before the answer, without another fallback check. Removing the duplicate application check cannot guarantee that every model-initiated overlap disappears. These are synthetic diagnostics, not proof of improved real-call latency. No new prompt or production deployment occurred in this investigation.
