@@ -22,6 +22,11 @@ struct OverviewView: View {
                     Section { ProtectionCheckCard(check: protectionCheck) }
                 }
                 if let overview = model.overview {
+                    if model.contextError == nil {
+                        Section {
+                            StoppedCallsCard(count: overview.counts.held) { model.showCalls(.held) }
+                        }
+                    }
                     let messages = overview.recent.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }
                     Section {
                         if messages.isEmpty {

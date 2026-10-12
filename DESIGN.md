@@ -83,6 +83,10 @@ components:
   card-container:
     rounded: "{rounded.card}"
     padding: "{spacing.card}"
+  home-stopped-calls:
+    backgroundColor: "{colors.action-light}"
+    typography: "{typography.display}"
+    padding: "12pt 0"
 ---
 
 # Design System: Shield
@@ -102,7 +106,7 @@ The October 12 refinement makes an 80-year-old's understanding the bar. Ordinary
 - Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.
 - Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.
 
-**Evidence boundary:** Extracted from current local SwiftUI source on October 12, 2026. This document records implemented styles and behavior, not final visual approval, accessibility certification, deployment, or real-call performance. Repository checks reported by the implementation pass passed typecheck/build and 157 unit tests, 86 Firebase emulator tests, and 13 forwarding UI tests. Final simulator review and accessibility diagnostics are still pending at extraction; the dated results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). No live service, owner phone, carrier setting, or real call changed as part of this documentation pass.
+**Evidence boundary:** Extracted from current local SwiftUI source on October 12, 2026, including the requested Home count and removed-message follow-up. This document records implemented styles and behavior, not final visual approval, accessibility certification, deployment, or real-call performance. The follow-up implementation pass reported typecheck/build and 162 unit tests, 86 Firebase emulator tests, and the original removed-message UI regression passing. Earlier forwarding validation passed 13 UI tests. Final targeted wrapping tests and visual review remain pending at this extraction; the dated results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). No live service, owner phone, carrier setting, or real call changed as part of this documentation pass.
 
 ## Colors
 
@@ -110,7 +114,7 @@ Color gives actions and call outcomes a consistent identity while opaque support
 
 ### Primary
 
-- **Action blue** (`Action`; `action-*`): application tint, selected navigation, primary actions, setup context, and calls being checked or offered.
+- **Action blue** (`Action`; `action-*`): application tint, selected navigation, primary actions, setup context, calls being checked or offered, and the positive Home Calls stopped panel. The historical panel does not represent current protection status.
 
 ### Secondary
 
@@ -150,6 +154,8 @@ Native system fonts supply interface text and SF Symbols supply iconography. The
 
 Invitation and carrier codes use native monospaced text where appropriate. They are task-specific content, not a display face. Call timestamps expose full dates to accessibility even when visible text uses a local time, Yesterday, or a short date.
 
+The user-requested Home count uses `.largeTitle.scaled(by: 1.5).bold()` with monospaced digits beneath a wrapping `.title3.bold()` heading. This emphasis belongs to the single historical count panel; it does not replace the native type ramp across other screens.
+
 **The Native Type Rule.** Preserve semantic text styles and allow wrapping or stacking before introducing a fixed text size.
 
 ## Layout
@@ -164,7 +170,7 @@ At accessibility text sizes, call titles and times stack, and busy primary-actio
 
 ## Elevation & Depth
 
-Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. Navigation bars, menus, sheets, dialogs, and pressed feedback use operating-system materials and motion. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Voicemail's listening control uses a bottom safe-area inset with an opaque system surface.
+Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. The Home historical count uses one opaque Action-colored native list row when positive and a neutral card surface when zero. Navigation bars, menus, sheets, dialogs, and pressed feedback use operating-system materials and motion. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Voicemail's listening or restoration control uses a bottom safe-area inset with an opaque system surface.
 
 **The Native Surface Rule.** Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.
 
@@ -190,15 +196,27 @@ The tabs are **Home**, **Calls**, **Voicemail**, and **More**, with house, phone
 
 ### Call and voicemail rows
 
-CallRow follows Phone's Recents pattern: purpose or name and time, followed by outcome and optional number. The call symbol is paired with an outcome word unless the title already supplies it. An adaptive violet dot marks unheard voicemail. Home hides the number while Calls and detail retain it. There is no decorative outcome tile or weekly-count dashboard in the daily view.
+CallRow follows Phone's Recents pattern: purpose or name and time, followed by outcome and optional number. The call symbol is paired with an outcome word unless the title already supplies it. An adaptive violet dot marks unheard voicemail. Home hides the number while Calls and detail retain it. The user-requested Home count is one focused historical action, rather than a grid of competing outcome totals.
 
 OutcomeBadge is an unboxed subheadline label with an SF Symbol. The labels are **Checking call**, **Phone rang**, **Answered**, **Stopped**, **Check first**, **Voicemail**, and **Missed**. Call rows expand Missed to Missed call. Preserve these distinctions and the uncertainty behind Check first.
 
 VoicemailRow leads with the message purpose, then an optional sample summary and a short New, Kept, or Removed state with a date. The dedicated inbox offers native loading, retry, empty, pagination, and removed-message disclosure states. Listening is the main bottom action on a playable message. More about this call opens additional detail rather than placing it all in the first view.
 
+Removed-message detail uses one readable panel: **Message removed**, the tentative explanation **It seemed suspicious.**, and the available restoration deadline. The heading, explanation, and deadline grow vertically with Dynamic Type. The timestamp and callback advice live inside More about this call. **Bring back message** is a sticky bottom primary action only when listening permission and restoration eligibility allow it; it retains the confirmation, expiry, working-state, and sample-disabled guards. Simplified presentation does not change the real restore API.
+
+### Home historical count
+
+`StoppedCallsCard` shows **Calls stopped**, a prominent positive numeral, **Last 7 days**, and **See calls** on one opaque Action-accent native row with adaptive `actionInk`. The entire panel opens the held-call filter. A zero count uses the quiet neutral card surface and **None in the last 7 days**, without the enlarged numeral. Missing overview data or a context error never becomes a zero-count claim.
+
+The existing overview API counts both `held` and `verification` outcomes over the rolling seven days; the held-call filter includes both. This is historical activity, not a lifetime scam tally or proof that every stopped caller was malicious. Real phone status and actionable warnings stay above the count. Pure sample Home begins with this count, then voicemail and recent calls, while the persistent sample marker establishes its context.
+
+**The Historical Count Rule.** Label the seven-day scope, include review-needed calls honestly, and keep historical activity distinct from current protection status; unavailable data is never zero.
+
+Source: `ios/Shield/Features/Overview/StoppedCallsCard.swift`, `ios/Shield/Features/Overview/OverviewView.swift`, and `backend/src/cloud/api.ts`.
+
 ### Status and notices
 
-Home's real-phone status depends on current forwarding evidence. Loading, unavailable, stale, expired, paused, and disconnection states are handled explicitly. Missing or old status never becomes an active-protection claim. Retry and setup appear when actionable; a healthy ProtectionCheckCard stays out of the daily path. Pure sample Home starts with voicemail and calls, relying on the persistent sample marker rather than another introductory status block.
+Home's real-phone status depends on current forwarding evidence. Loading, unavailable, stale, expired, paused, and disconnection states are handled explicitly. Missing or old status never becomes an active-protection claim. Retry and setup appear when actionable; a healthy ProtectionCheckCard stays out of the daily path. Pure sample Home relies on the persistent sample marker rather than another introductory status block.
 
 ShieldNotice combines a headline, supporting explanation, and recognizable symbol. ShieldLoadingView combines a system spinner and a short description. Use ordinary words for the result and reveal technical context only when needed for the person's task.
 
@@ -228,13 +246,15 @@ The sidecar's HTML/CSS is a schematic documentation preview. Browser type metric
 - Do give ordinary tasks one clear next action and reveal less common detail on request.
 - Do make person context, voicemail permission, and sample-only state visible in words.
 - Do retain explicit privacy, sharing, setup, and disconnection confirmations.
+- Do label the Home count as rolling seven-day historical activity, keep real status above it, and distinguish zero from unavailable data.
 - Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval.
 
 ### Don't:
 
 - Don't describe a checked, offered, or answered caller as verified, authenticated, or safe.
 - Don't infer active call checks from stale, missing, paused, or expired status.
-- Don't promote weekly counters, old tab labels, or fixed Surface asset colors from earlier designs into new screens.
+- Don't promote old tab labels or fixed Surface asset colors from earlier designs into new screens.
+- Don't present Calls stopped as a lifetime tally, confirmed scams, or evidence that current call checks are on.
 - Don't treat schematic sidecar HTML/CSS as a native pixel specification.
 - Don't treat helper access as ownership or extend voicemail access implicitly.
 - Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.

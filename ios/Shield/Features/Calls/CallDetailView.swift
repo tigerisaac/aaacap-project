@@ -13,23 +13,40 @@ struct CallDetailView: View {
     @State private var restoring = false
     @State private var isVisible = false
     private var call: CallRecord { updatedCall ?? initialCall }
+    private var messageRemoved: Bool { call.voicemail?.status == "removed" }
 
     var body: some View {
         List {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(CallPresentation.title(call)).font(call.voicemail == nil ? .title2.bold() : .headline)
+                    Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
+                        .font(call.voicemail == nil || messageRemoved ? .title2.bold() : .headline)
                         .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
                     if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
                         OutcomeBadge(outcome: call.outcome)
                     }
-                    Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
-                        .foregroundStyle(ShieldTheme.secondaryText)
-                }.padding(.vertical, 8)
+                    if !messageRemoved {
+                        Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
+                            .foregroundStyle(ShieldTheme.secondaryText)
+                    }
+                    if messageRemoved {
+                        Text("It seemed suspicious.")
+                            .fixedSize(horizontal: false, vertical: true).padding(.top, 8)
+                        if let voicemail = call.voicemail, voicemail.isRestorable {
+                            if model.canListen, let until = voicemail.restorableUntil {
+                                Text("Bring it back by \(until.formatted(.dateTime.month(.wide).day())).")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        } else {
+                            Text("This message is no longer available.").foregroundStyle(ShieldTheme.secondaryText)
+                        }
+                    }
+                }.padding(.vertical, 8).fixedSize(horizontal: false, vertical: true)
             }
             if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.status != "removed" {
                 VoicemailPreviewCard(call: call)
-            } else if let voicemail = call.voicemail {
+            } else if let voicemail = call.voicemail, !messageRemoved {
                 Section {
                     if voicemail.status == "ready", model.canListen {
                         Text(voicemail.durationLabel).foregroundStyle(ShieldTheme.secondaryText)
@@ -40,24 +57,6 @@ struct CallDetailView: View {
                                     Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
                                     Button("Keep message", role: .cancel) {}
                                 } message: { Text("You won’t be able to listen to it again.") }
-                        }
-                    } else if voicemail.status == "removed" {
-                        Label("Shield removed this message", systemImage: "trash.slash").font(.headline)
-                        Text("It looked like a scam or junk.")
-                        if voicemail.isRestorable, model.canListen {
-                            Button(restoring ? "Bringing it back…" : "Bring back message", systemImage: "arrow.uturn.backward") { confirmRestore = true }
-                                .disabled(restoring || model.isDemo)
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                .accessibilityIdentifier("restore-voicemail")
-                                .confirmationDialog("Bring back this message?", isPresented: $confirmRestore, titleVisibility: .visible) {
-                                    Button("Bring back message") { Task { await restore(voicemail) } }
-                                } message: { Text("Don’t call a number from the message. Use one you already know.") }
-                            if let until = voicemail.restorableUntil {
-                                Text("Available until \(until.formatted(date: .abbreviated, time: .omitted)).")
-                                    .foregroundStyle(ShieldTheme.secondaryText)
-                            }
-                        } else if !voicemail.isRestorable {
-                            Text("The message is gone.").foregroundStyle(ShieldTheme.secondaryText)
                         }
                     } else if !model.canListen {
                         Label("Voicemail is private", systemImage: "lock")
@@ -72,7 +71,7 @@ struct CallDetailView: View {
             if call.voicemail == nil {
                 Section { Text(CallPresentation.explanation(call)) }
             }
-            if call.outcome == .held || call.outcome == .verification {
+            if !messageRemoved, call.outcome == .held || call.outcome == .verification {
                 Section {
                     Text("Need to call back? Use a number you already know.")
                     if model.isOwner {
@@ -89,6 +88,14 @@ struct CallDetailView: View {
                     Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
                     if call.monitored == true { Text("Shield checked the words while you talked.") }
                     Text("Shield can’t prove who called.").foregroundStyle(ShieldTheme.secondaryText)
+                    if messageRemoved {
+                        Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
+                            .foregroundStyle(ShieldTheme.secondaryText)
+                        Text("If you call back, use a number you already know.")
+                        if model.isOwner {
+                            NavigationLink("Find a trusted number", value: AppRoute.savedNumbers)
+                        }
+                    }
                     if !events.isEmpty {
                         ForEach(events) { event in
                             VStack(alignment: .leading, spacing: 4) {
@@ -102,6 +109,17 @@ struct CallDetailView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
+            if let voicemail = call.voicemail, messageRemoved, voicemail.isRestorable, model.canListen {
+                Button { confirmRestore = true } label: {
+                    ShieldActionLabel(title: restoring ? "Bringing it back…" : "Bring back message", isWorking: restoring)
+                }
+                .shieldPrimaryButton().disabled(restoring || model.isDemo)
+                .accessibilityIdentifier("restore-voicemail")
+                .padding(16).background(ShieldTheme.surface)
+                .confirmationDialog("Bring back this message?", isPresented: $confirmRestore, titleVisibility: .visible) {
+                    Button("Bring back message") { Task { await restore(voicemail) } }
+                } message: { Text("Don’t call a number from the message. Use one you already know.") }
+            }
             if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
                 if model.isDemo {
                     Button { toggleSample() } label: {

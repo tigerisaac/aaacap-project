@@ -258,7 +258,7 @@ final class ShieldUITests: XCTestCase {
         for _ in 0..<4 where !removed.isHittable { app.swipeUp() }
         removed.tap()
         XCTAssertTrue(app.navigationBars["Voicemail"].waitForExistence(timeout: 3))
-        let label = app.staticTexts["Shield removed this message"]
+        let label = app.staticTexts["Message removed"]
         for _ in 0..<4 where !label.isHittable { app.swipeUp() }
         XCTAssertTrue(label.exists)
         XCTAssertTrue(app.buttons["restore-voicemail"].exists)

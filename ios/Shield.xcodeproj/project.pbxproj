@@ -195,6 +195,13 @@
 			"path" = "Shield/Features/Overview/ProtectionCheckCard.swift";
 			"sourceTree" = "<group>";
 		};
+		"87BC0C35E9C08F86CBFC8116" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "StoppedCallsCard.swift";
+			"path" = "Shield/Features/Overview/StoppedCallsCard.swift";
+			"sourceTree" = "<group>";
+		};
 		"F494176C0E85792C3AAE0723" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -804,6 +811,13 @@
 			"path" = "ShieldUITests/ForwardingUITests.swift";
 			"sourceTree" = "<group>";
 		};
+		"6AE064B5938732D2243500EB" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "HomeReadabilityUITests.swift";
+			"path" = "ShieldUITests/HomeReadabilityUITests.swift";
+			"sourceTree" = "<group>";
+		};
 		"515A771173B8B086FAA2A319" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -947,6 +961,7 @@
 				"E3C200C03B3D662110ED329F",
 				"F02E8923A7073706612515AD",
 				"C2867212F07B099805857BB9",
+				"87BC0C35E9C08F86CBFC8116",
 			);
 			"sourceTree" = "<group>";
 		};
@@ -1155,6 +1170,7 @@
 			"children" = (
 				"8B0B6BF3B4417093ABE37537",
 				"3640F22CE8E38A0235EE2F67",
+				"6AE064B5938732D2243500EB",
 				"515A771173B8B086FAA2A319",
 				"C93FD066648E96BD0E86767B",
 				"3A6FCB90CEAE6B12A26A61C2",
@@ -1401,6 +1417,10 @@
 		"7A5EAB61B54D6D529ABEC2F4" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "C2867212F07B099805857BB9";
+		};
+		"E34A536483F709383490678A" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "87BC0C35E9C08F86CBFC8116";
 		};
 		"8BCBB522D11F05D3C5AC441D" = {
 			"isa" = "PBXBuildFile";
@@ -1725,6 +1745,7 @@
 				"421E4A76636B66C1DA4315BE",
 				"51418B5FD73AD9856F2ECFDF",
 				"7A5EAB61B54D6D529ABEC2F4",
+				"E34A536483F709383490678A",
 				"8BCBB522D11F05D3C5AC441D",
 				"66C805635822E7EB5EF60EA8",
 				"C2B7E8437348A0A0BFDAAAC2",
@@ -2100,6 +2121,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "3640F22CE8E38A0235EE2F67";
 		};
+		"76AA97AA30FA974FC9EF9A6B" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6AE064B5938732D2243500EB";
+		};
 		"E2AE624731EB65BD0E608846" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "515A771173B8B086FAA2A319";
@@ -2122,6 +2147,7 @@
 			"files" = (
 				"402C2022F960E07033C486EC",
 				"03A2C749BD7950CD137E4B23",
+				"76AA97AA30FA974FC9EF9A6B",
 				"E2AE624731EB65BD0E608846",
 				"DAD5E547CC6ACE58622D0773",
 				"E06C370E1C055C2CC90F6199",
