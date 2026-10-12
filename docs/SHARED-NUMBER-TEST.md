@@ -57,7 +57,7 @@ node scripts/shared-number-test.mjs init
 | `artifacts/private/shared-number-test/config.json` | Test `applicationId`; test `destination`; `lineA` (currently Tello) and `lineB` (T-Mobile), all numbers in +1 plus ten-digit format. Start with `caseId: "direct"`. |
 | `.env.shared-number-test` | `SHARED_TEST_TELNYX_API_KEY`, `SHARED_TEST_TELNYX_PUBLIC_KEY`, and `SHARED_TEST_WEBHOOK_BASE_URL` (HTTPS origin only). |
 
-Keep the defaults of 40 seconds per call, 40 admitted calls per run and two simultaneous calls. Do not put real numbers, keys or raw webhooks into committed files, screenshots or chat. Public reports use A/B labels and random test IDs.
+Keep the defaults of 120 seconds per call, 40 admitted calls per run and two simultaneous calls. Do not put real numbers, keys or raw webhooks into committed files, screenshots or chat. Public reports use A/B labels and random test IDs.
 
 In a second terminal, start the tunnel:
 
@@ -99,9 +99,9 @@ The server listens only on localhost port 8789. `GET /health` returns readiness;
 
 ## 3. Prove the setup before changing forwarding
 
-Call the **test Telnyx number directly** from the external caller phone. Hear the diagnostic prompt, press **0**, and stay on the line. The tool requests hangup 40 seconds after receiving the initiation event. In the local terminal/report, expect `DIRECT_OK` and a populated `endedAt` after the hangup webhook arrives.
+Call the **test Telnyx number directly** from the external caller phone. Hear the diagnostic prompt, press **0**, and stay on the line. The tool requests hangup 120 seconds after receiving the initiation event. In the local terminal/report, expect `DIRECT_OK` and a populated `endedAt` after the hangup webhook arrives.
 
-If there is no prompt, no report row, a command failure, or unexpected diversion, resolve that before enabling forwarding. If a call is still connected **60 seconds after the prompt**, the caller must hang up manually. Local timers and Ctrl-C send hangup commands, but a process/network failure can prevent delivery. The provider's first-command timeout protects unanswered calls; it is **not** a maximum duration for an already answered call. Do not run this as an unattended service.
+If there is no prompt, no report row, a command failure, or unexpected diversion, resolve that before enabling forwarding. If a call is still connected **150 seconds after the prompt**, the caller must hang up manually. Local timers and Ctrl-C send hangup commands, but a process/network failure can prevent delivery. The provider's first-command timeout protects unanswered calls; it is **not** a maximum duration for an already answered call. Do not run this as an unattended service.
 
 ## 4. Forward both test lines to the same destination
 
@@ -138,6 +138,12 @@ For every attempted call, privately record the case, intended A/B label, caller 
 Also have the **same external caller call A and B sequentially**, and repeat from a second originating network where available. Testing the same caller identity concurrently requires two independent call legs from an appropriately configured originating service; don't spoof a caller ID just to simulate this. That advanced test remains outstanding if the hardware/service isn't available.
 
 The stated repetition counts are a feasibility sample, not a statistical reliability guarantee or permission to enroll seniors. Provider limits can be raised and the local `maxConcurrent` increased up to ten for a later controlled test, but adding callers on two lines does not validate ten distinct users.
+
+### Three-phone overlap procedure
+
+Use C to originate both calls while A and B remain idle. C calls A, waits for the diagnostic and presses 1, then uses **Add Call / Add People** to call B without ending the first call. Let B forward and press 2. Leave the first call on hold; do not merge. This demonstrates overlapping call legs with independent recipient identities, not simultaneous two-way audio. It depends on C's carrier allowing a second outgoing call. Both calls now have a 120-second timer, with a repeated generic holding announcement after keypad collection. The caller must hang up manually if still connected after 150 seconds.
+
+October 12 real-call evidence before this adjustment: direct call passed, and individual forwarded calls matched Tello A and T-Mobile B. In the latest Add Call attempt, A ended at 22:04:54 UTC under the diagnostic's former 40-second timer and B answered at 22:05:10 UTC, so they did not overlap. Earlier forwarded calls ended about 30 seconds after keypad collection with caller-side normal clearing and no provider command failure; the cause of those endings is unconfirmed. These results establish individual metadata matches only, not a concurrency or reliability pass. The longer hold and added audio require a new real-call check.
 
 ## 6. Read the result
 

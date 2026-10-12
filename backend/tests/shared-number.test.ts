@@ -2,7 +2,7 @@ import { generateKeyPairSync, randomUUID, sign } from 'node:crypto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createProbeServer, observeDiversion, probeConfig, SharedNumberProbe } from '../src/diagnostics/shared-number.js';
 
-const config = probeConfig.parse({ applicationId: '123456789', destination: '+12025550100', lineA: '+12025550101', lineB: '+12025550102', caseId: 'overlap' });
+const config = probeConfig.parse({ applicationId: '123456789', destination: '+12025550100', lineA: '+12025550101', lineB: '+12025550102', caseId: 'overlap', holdSeconds: 40 });
 const header = (number = config.lineA) => [{ name: 'Diversion', value: `<sip:${number}@carrier.example>;reason=no-answer;counter=1` }];
 const probes: SharedNumberProbe[] = [];
 function setup() {
@@ -76,7 +76,7 @@ describe('isolated concurrent diagnostic', () => {
     await probe.drain();
     expect(probe.report().rows.map(r => r.result)).toEqual(['MATCH', 'MATCH']);
     expect(probe.report().confirmedMatchedOverlapAB).toBe(true);
-    expect(command.mock.calls.map(c => c[1])).toEqual(['answer', 'answer', 'gather_using_speak', 'gather_using_speak']);
+    expect(command.mock.calls.map(c => c[1])).toEqual(['answer', 'answer', 'gather_using_speak', 'gather_using_speak', 'speak', 'speak']);
     const report = JSON.stringify(probe.report());
     for (const privateData of [config.lineA, config.lineB, config.destination, '2025550199', 'carrier.example', 'leg-a', 'call_control_id']) expect(report).not.toContain(privateData);
   });
@@ -147,6 +147,32 @@ describe('isolated concurrent diagnostic', () => {
     expect(probe.report().rows[0]).toMatchObject({ terminationRequested: true, errors: ['hangup_failed'] });
     expect(probe.report().rows[0]?.endedAt).toBeUndefined();
     expect(JSON.stringify(probe.report())).not.toContain('private provider response');
+  });
+  it('keeps the three-phone window open for two minutes with one idempotent holding command', async () => {
+    vi.useFakeTimers();
+    const extended = probeConfig.parse({ ...config, holdSeconds: 120 });
+    expect(probeConfig.safeParse({ ...config, holdSeconds: 121 }).success).toBe(false);
+    const command = vi.fn(async () => {});
+    const probe = new SharedNumberProbe(extended, command); probes.push(probe);
+    probe.accept(event()); probe.accept(event('call.answered'));
+    probe.accept(event('call.gather.ended', 'call-a', { digits: '1' }));
+    probe.accept(event('call.gather.ended', 'call-a', { digits: '1' }));
+    await probe.drain();
+    expect(command.mock.calls.filter(c => c[1] === 'speak')).toHaveLength(1);
+    expect(command.mock.calls.find(c => c[1] === 'speak')?.[2]).toMatchObject({ loop: 20, payload_type: 'ssml' });
+    await vi.advanceTimersByTimeAsync(119_000);
+    expect(command.mock.calls.filter(c => c[1] === 'hangup')).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(command.mock.calls.filter(c => c[1] === 'hangup')).toHaveLength(1);
+    expect(probe.report().rows[0]?.endedAt).toBeUndefined();
+  });
+  it('ends the test and records a failed holding command rather than claiming a clean pass', async () => {
+    const { probe, command } = setup();
+    probe.accept(event()); probe.accept(event('call.answered')); await probe.drain();
+    command.mockRejectedValueOnce(new Error('speech failed'));
+    probe.accept(event('call.gather.ended', 'call-a', { digits: '1' })); await probe.drain();
+    expect(probe.report().rows[0]).toMatchObject({ errors: ['speak_failed'], terminationRequested: true });
+    expect(command.mock.calls.at(-1)?.[1]).toBe('hangup');
   });
   it('terminates after a provider answer error and stops active calls on shutdown', async () => {
     const { probe, command } = setup(); command.mockRejectedValueOnce(new Error('failure'));

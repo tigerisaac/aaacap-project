@@ -10,7 +10,7 @@ export const probeConfig = z.object({
   lineA: z.string().regex(/^\+1[2-9]\d{9}$/),
   lineB: z.string().regex(/^\+1[2-9]\d{9}$/),
   caseId: z.enum(['direct', 'no-answer', 'decline', 'busy', 'unreachable', 'silence', 'wifi', 'private', 'overlap', 'chain']),
-  holdSeconds: z.number().int().min(20).max(60).default(40),
+  holdSeconds: z.number().int().min(20).max(120).default(120),
   maxCalls: z.number().int().min(2).max(100).default(40),
   maxConcurrent: z.number().int().min(2).max(10).default(2),
   // Only the maintenance supervisor supplies this after saving a restoration snapshot.
@@ -75,7 +75,7 @@ const eventSchema = z.object({ data: z.object({
   }),
 }) });
 type Event = z.infer<typeof eventSchema>['data'];
-type Action = 'answer' | 'gather_using_speak' | 'hangup';
+type Action = 'answer' | 'gather_using_speak' | 'speak' | 'hangup';
 export type Command = (callId: string, action: Action, body: Record<string, unknown>) => Promise<void>;
 type Row = {
   probeId: string; observation: Observation; expected?: Label | 'direct';
@@ -182,7 +182,7 @@ export class SharedNumberProbe {
       if (!s.prompted) {
         s.prompted = true;
         if (!(await this.send(s, 'gather_using_speak', {
-          payload: 'Shield routing test. Press 1 if you called test line A, 2 for test line B, or 0 if you dialed this test service directly. Then stay on the line until it ends. Nothing is recorded.',
+          payload: 'Shield routing test. Press 1 if you called test line A, 2 for test line B, or 0 if you dialed this test service directly. Then stay on the line. The test can last two minutes. Nothing is recorded.',
           voice: 'AWS.Polly.Joanna', payload_type: 'text', minimum_digits: 1, maximum_digits: 1,
           maximum_tries: 1, valid_digits: '012', timeout_millis: 10000,
         }))) await this.stop(s);
@@ -195,6 +195,12 @@ export class SharedNumberProbe {
         : s.row.expected === 'direct' ? (o.kind === 'missing' ? 'DIRECT_OK' : 'UNEXPECTED_DIVERSION')
         : o.kind === 'candidate' ? (o.candidate === s.row.expected ? 'MATCH' : 'MISMATCH')
         : o.kind.toUpperCase();
+      // Keep media flowing while the operator establishes the second call. A
+      // single idempotent command repeats finite generic audio; no audio is captured.
+      if (!(await this.send(s, 'speak', {
+        payload: '<speak>The routing test is still running. Please keep this call connected.<break time="5s"/></speak>',
+        voice: 'AWS.Polly.Joanna', payload_type: 'ssml', loop: 20,
+      }))) await this.stop(s);
     }
     this.changed();
   }

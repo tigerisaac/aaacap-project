@@ -12,7 +12,7 @@ if (mode === 'init') {
   await mkdir(dir, { recursive: true, mode: 0o700 });
   const config = { applicationId: 'REPLACE_WITH_TEST_CALL_CONTROL_APP_ID', destination: 'REPLACE_WITH_TEST_NUMBER_E164',
     lineA: 'REPLACE_WITH_VERIZON_E164', lineB: 'REPLACE_WITH_TMOBILE_E164',
-    caseId: 'direct', holdSeconds: 40, maxCalls: 40, maxConcurrent: 2 };
+    caseId: 'direct', holdSeconds: 120, maxCalls: 40, maxConcurrent: 2 };
   try {
     await writeFile(configFile, JSON.stringify(config, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
     await writeFile(envFile, 'SHARED_TEST_TELNYX_API_KEY=\nSHARED_TEST_TELNYX_PUBLIC_KEY=\nSHARED_TEST_WEBHOOK_BASE_URL=\n', { flag: 'wx', mode: 0o600 });
@@ -69,7 +69,7 @@ async function run() {
   let latestSummary = '';
   const probe = new SharedNumberProbe(config, async (id, action, body) => {
     // This command surface cannot dial, transfer, bridge, record or stream a call.
-    if (!['answer', 'gather_using_speak', 'hangup'].includes(action)) throw new Error('action_not_allowed');
+    if (!['answer', 'gather_using_speak', 'speak', 'hangup'].includes(action)) throw new Error('action_not_allowed');
     const response = await fetch(`https://api.telnyx.com/v2/calls/${encodeURIComponent(id)}/actions/${action}`, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(4000),
       headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify(body),
@@ -90,7 +90,7 @@ async function run() {
   });
   const server = createProbeServer(probe, publicKey);
   await server.listen({ host: '127.0.0.1', port: 8789 });
-  console.log('Diagnostic ready on localhost port 8789. Keep this terminal open. Callers must hang up if a call lasts over 60 seconds after the prompt.');
+  console.log(`Diagnostic ready on localhost port 8789. Calls last at most ${config.holdSeconds} seconds. Keep this terminal open; callers must hang up manually after ${config.holdSeconds + 30} seconds if still connected.`);
   console.log('Reports are private under artifacts/private/shared-number-test. Stop with Ctrl-C after restoring both test lines.');
   let stopping = false;
   const stop = async () => {
