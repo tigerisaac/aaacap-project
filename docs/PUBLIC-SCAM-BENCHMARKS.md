@@ -567,3 +567,69 @@ node scripts/check-robocall-benchmark.mjs --provider codex --real-calls-approved
 ```
 
 Repository validation passed again: typecheck/build, 143 unit tests and 86 Firestore emulator tests. Only this benchmark report changed in tracked files; production remains v30.
+
+## Refund-context revision v37, October 12
+
+The owner requested analysis of v36's three MASC refund approvals, a small general correction, and fresh subscription Luna checks plus both public benchmarks. This is explicitly a **MASC-informed revision**, not an unseen public test. The three synthetic caller inputs all offered to process money allegedly owed without a concrete underlying purchase, return, or recipient request. Their reassurance and verification stayed within caller-supplied contacts, sites or colleagues. None needed an explicit credential/payment demand to expose that pattern. V36's charge-alarm rule did not explicitly cover this pending entitlement claim; its ordinary-refund and existing-service permissions left room for routine approval. This is an inference from the inputs and policy wording, not access to the model's reasoning.
+
+The [v37 experiment](../scripts/experiments/distilled-screening-v37.mjs) distinguishes unsolicited offers to obtain money without concrete transaction/request context from genuine service refunds. Vague account or entitlement claims do not supply that context, and caller-arranged verification does not authenticate the caller. Existing completed-refund, ordinary-billing and independently chosen review permissions remain. No benchmark wording, brand, amount, case ID or label is embedded in the prompt. Instructions are **4,899 characters: 161 more than v36 (+3.4%), still 49.5% shorter than production v30**. Model, medium reasoning, tools and non-instruction request settings are unchanged. Request SHA-256: `82ac7d4239336db260c828d6db87fd714a9299fe706d2658378c4af45a0ce718`.
+
+The candidate was frozen before writing [40 new synthetic cases](../scripts/fixtures/holdout/distilled-v37-fresh.mjs), and expectations were frozen before inference. These are author-designed contrasts, not an external blind evaluation. Each ran three times on subscription GPT-6 Luna; the known original shopping-charge probe ran twelve times separately. No prompt or expectation was revised after results.
+
+| Fresh measure | V37 result |
+|---|---:|
+| Ordinary callers offered | 58/60 |
+| Ordinary blocks / holds | 0 / 0 |
+| Ordinary extra questions | 2 |
+| Harmful calls blocked | 48/48 |
+| Harmful approvals / questions | 0 / 0 |
+| Refund bait blocked | 18/18 |
+| Unexpected-charge/security alarms blocked | 12/12 |
+| Ads blocked | 6/6 |
+| Missing-information cases questioned | 6/6 |
+| Known original charge probe blocked, separate | 12/12 |
+| Provider failures | 0 |
+
+All 21 concrete-service refund trials, nine independent-review notices, six routine financial notices, and six service-plus-offer trials were offered. Family, personal reimbursement, healthcare demographic, contact-detail and practical-help cases also passed. The two misses were repetitions of `d37-refund-posted-only`: an unnamed completed-refund notification with no action requested. It was offered on its other draw. Its approval expectation remains unchanged; the questions count as misses, even though there was no block or hold. The fresh runner's nonzero exit reflects those misses, not a transport error. The total fresh expectation score is 118/120, excluding the known probe.
+
+### V37 MASC regression
+
+| Measure | Saved v32 | Saved v36 | New v37 |
+|---|---:|---:|---:|
+| Ordinary callers offered | 78/80 | 80/80 | **80/80** |
+| Completed scam stops | 160/160 | 156/160 | **159/160** |
+| Scam approvals | 0 | 3 | **0** |
+| Scam clarifications | 0 | 0 | 0 |
+| No usable decision without a recorded failure | 0 | 1 | 0 |
+| Evaluation failures | 0 | 0 | **1 timeout** |
+| Ads blocked, separate | 40/40 | 40/40 | 40/40 |
+
+All three targeted refund misses (`masc-test-151`, `masc-test-153`, `masc-test-154`) became scam blocks. Every refund case was blocked (40/40), and the previously unusable reward case `masc-test-184` became a block too. No ordinary caller offered by v32 or v36 was lost: appointments and deliveries each reached 40/40. These are new draws on a known MASC test split, not proof that every difference was caused by the wording.
+
+An SSN-scam case, `masc-test-217`, hit the adapter's 90-second evaluation timeout. The run stopped with 272 results. Its partial summary and complete result prefix were saved, and only the remaining 48 cases were resumed. The timed-out case was not retried or excluded, so the reported score remains 159/160 rather than 100%. All 159 valid scam outcomes were blocks. The final runner's nonzero exit reflects that retained timeout. No other MASC evaluation failure was recorded.
+
+### V37 FTC regression and decision
+
+| Measure | Saved v32 | Saved v36 | New v37 |
+|---|---:|---:|---:|
+| Completed stops | 716/724 | 716/724 | **719/724** |
+| Blocks / holds | 710 / 6 | 715 / 1 | 719 / 0 |
+| Clarifications, not completed stops | 6 | 7 | 3 |
+| Approvals | 2 | 0 | **2** |
+| Evaluation failures | 0 | 1 | 0 |
+| Identification, including clarification | 722/724 | 723/724 | 722/724 |
+| Frequency-weighted completed stops | 1,356/1,378 | 1,370/1,378 | 1,373/1,378 |
+
+V37 completed one pass over all 724 distinct English recordings with no transport failures. The cited Amazon charge recording `robocall-1314` was blocked; its 13 source copies still represent one evaluated recording. The three clarifications were `robocall-858`, `robocall-958` and `robocall-1324`. The two approvals were the same as v32: `robocall-191`, a short grandparent opener compatible with the owner's family-offer preference, and `robocall-1195`, the unresolved legal-callback miss. Both retain their harmful-dataset labels. V36 had questioned these two instead, so v37 has a worse approval count than v36 despite three more completed stops. No FTC result changed prompt wording or score membership.
+
+**Retain v37 as an improved experimental candidate, with limits.** The requested three refund regressions are fixed in this pass, fresh refund bait is blocked, and no MASC ordinary caller was lost. However, the one MASC timeout, two extra questions for a fresh ordinary notice, and FTC legal-callback approval prevent a claim of equivalent reliability or complete coverage. The family opener is an intentional policy tradeoff rather than a reason to optimize blindly for 100% FTC. No production prompt, voice configuration or deployment changed; v30 remains production. There was no voice, real-call, live follow-up, or recent-scam-context test.
+
+Evidence is under `artifacts/distilled-v37/`: `freeze.json`, `baseline-freeze.json`, `fresh-freeze.json`, frozen request, all three run directories, `finalize.mjs`, and `validation-summary.json`. The audit verifies unchanged prompt/production/runner hashes and historical baseline artifacts; recomputes all public scores; checks the same datasets, row hashes, labels, copy counts and subscription transport; verifies 320 MASC and 724 FTC unique IDs with one result each; preserves the MASC pre-resume prefix byte-for-byte; and checks every fresh case/repetition against its predeclared expectation. Previous v32/v36 runs were not rerun or modified. These are historical one-pass comparisons on known benchmarks, not controlled estimates of a prompt-only effect. Fresh cases were independently authored after the prompt freeze, but by the same evaluator and without external blinding.
+
+```bash
+node scripts/check-distilled-screening-redteam.mjs --request artifacts/distilled-v37/candidate-request.json --candidate scripts/experiments/distilled-screening-v37.mjs --cases scripts/fixtures/holdout/distilled-v37-fresh.mjs --out artifacts/distilled-v37/fresh-new-run --repeat 3 --probe-repeat 12 --concurrency 6
+node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening --repeat 1 --concurrency 6 --request artifacts/distilled-v37/candidate-request.json --out artifacts/distilled-v37/masc-new-run
+node scripts/check-robocall-benchmark.mjs --provider codex --real-calls-approved --repeat 1 --concurrency 8 --request artifacts/distilled-v37/candidate-request.json --out artifacts/distilled-v37/ftc-new-run
+```
+
+Repository checks passed: typecheck/build, 143 unit tests and 86 Firestore emulator tests. Both new modules also passed syntax checks and were imported by the evaluations. The main benchmark remains unchanged and under 25 cases.
