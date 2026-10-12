@@ -399,3 +399,32 @@ node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening -
 ```
 
 Repository validation passed: typecheck/build, 143 unit tests and 86 Firestore emulator tests. The first sandboxed unit run could not bind the APNs test server on localhost; rerunning with local server access passed. These checks do not establish screening accuracy beyond the single benchmark above.
+
+## Distilled screening revision v32, October 11
+
+The owner requested inspection of v31's thirteen ordinary-call misses, a compact general adjustment, and exactly one more MASC pass on subscription Luna. Ten misses were recorded as solicitation (five appointments and five deliveries); these had concrete service purposes, mostly alongside promotional content. The other three were delivery calls marked scam twice and unclear once, involving ordinary contact/logistics details. These diagnoses use recorded decision reasons and source-content features, not retained model reasoning. No transcripts or contact details are reproduced here.
+
+The [v32 experiment](../scripts/experiments/distilled-screening-v32.mjs) makes the existing-service purpose take precedence over accompanying marketing, while retaining the block for calls whose purpose is solicitation. It distinguishes contact/logistics details from access credentials and specifies government identity numbers rather than the broader term identity numbers. No case-specific examples, brands, IDs or labels enter the prompt. A shorter introduction offsets most of the added clarification: **4,415 characters, only 46 more than v31, and 54.5% below production v30**. Production and voice prompts remain unchanged.
+
+This revision is explicitly **benchmark-adapted**, as requested: MASC errors informed the changes. It is not an unseen generalization check. The candidate was frozen before the one full 320-case run, with GPT-6 Luna medium, the same subscription transport, tools, dataset and scoring as v31. No additional inference or post-result prompt revision is included in this experiment.
+
+| Measure | v31, one subscription pass | v32, one subscription pass |
+|---|---:|---:|
+| Legitimate calls offered | 67/80 | 78/80 |
+| Completed harmful stops | 159/160 | 160/160 |
+| Harmful clarifications | 1 | 0 |
+| Harmful approvals | 0 | 0 |
+| Ads blocked, separate score | 40/40 | 40/40 |
+| Provider / validation failures | 0 / 0 | 0 / 0 |
+
+V32 recovered eleven of the thirteen original ordinary misses without introducing a new ordinary miss. Appointments and deliveries each reached 39/40 offered. The remaining misses, `masc-test-24` and `masc-test-61`, were still blocked as solicitation. Every scam stop was a block, not a hold or clarification. Wrong numbers remain outside the ordinary-call score: 28 approved, 6 held, 4 blocked and 2 clarifications. No research lookup was requested. Source labels and score membership remain unchanged.
+
+This supports retaining v32 for further independent evaluation, not deploying it or claiming general equivalence. One pass per version cannot establish statistical reliability, and this completed-caller-text diagnostic does not exercise live question/answer exchanges, early stopping, the FTC charge probe or dataset, fresh red-team cases, voice or recent-scam caution. Production remains v30.
+
+Frozen requests, source hashes, results and the case-by-case comparison are preserved in `artifacts/distilled-v32/`. `validation-summary.json` verifies all 320 unique IDs, one run each, the same dataset and transport as v31, recomputed scores, and unchanged production/candidate/scoring sources. Request SHA-256: `c5a6bee0c5ce52fc8b8ef2b32a266f39ca4389253843fc0e422c62ebaa68ec8b`. The single run used:
+
+```bash
+node scripts/check-public-scam-benchmark.mjs --provider codex --mode screening --repeat 1 --concurrency 6 --request artifacts/distilled-v32/candidate-request.json --out artifacts/distilled-v32/masc
+```
+
+Typecheck/build, 143 unit tests and all 86 Firestore emulator tests passed. No deployment or real call was performed.
