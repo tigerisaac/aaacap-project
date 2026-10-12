@@ -465,3 +465,51 @@ node scripts/check-distilled-screening-redteam.mjs --request artifacts/distilled
 ```
 
 Typecheck/build, 143 unit tests and all 86 Firestore emulator tests passed. The main benchmark remains unchanged and under 25 cases. No production change, deployment, real phone call or audio evaluation was performed.
+
+## Mandatory charge-alarm stop, v33–v36, October 12
+
+The owner requested a compact generalized change that stops unexpected-charge alarms instead of asking questions while preserving ordinary notices, followed by fresh subscription Luna tests. Each candidate was frozen before its new fixtures were written, then tested through subscription GPT-6 Luna at medium reasoning. Earlier probes became development evidence when used to diagnose the next candidate; their original expectations and results remain intact. These are author-designed contrasts, not an external blind benchmark. Production remains v30.
+
+The final [v36 candidate](../scripts/experiments/distilled-screening-v36.mjs) resolves the rules in this order:
+
+1. Explicit harmful requests remain decisive.
+2. Expected receipts, completed refunds and agreed-service billing are ordinary. An alert is also ordinary when it only suggests independent review later through an existing app or contact channel, with no further interaction with the caller. The alert need not literally instruct the person to hang up.
+3. Other unsolicited unexplained-charge, unauthorized-transaction and account-security alarms are blocked even before a demand. A bare charge announcement without expected-purchase or agreed-service context is an alarm, not a reason to ask a question. This overrides general service approval and clarification rules.
+
+The request is **4,738 characters**, versus v32's 4,415: **323 characters added (7.3%)**, still **51.2% shorter than production v30's 9,710**. No brand, benchmark row or case-specific example was added. The model, reasoning setting, tools and non-instruction request settings are unchanged. The evaluation runner now accepts `--candidate` so its audit hashes the chosen experiment module; its default remains v32 for old commands.
+
+**Rejected candidates are preserved:**
+
+- [V33](../scripts/experiments/distilled-screening-v33.mjs), 4,503 characters: all 48 fresh alarm trials and all 12 known-probe repetitions blocked, but only 61/72 ordinary trials offered, with 5 blocks, 2 holds and 4 questions. Its unconditional stop wording incorrectly overrode safe independent-review notices. All 24 other harmful trials and 12 ads blocked; 12 unclear openings questioned.
+- [V34](../scripts/experiments/distilled-screening-v34.mjs), 4,655 characters: its different fresh set offered 71/72 ordinary trials, with one question and no ordinary blocks or holds. Alarm trials produced 32 blocks, 2 holds, 13 questions and 1 approval out of 48. The known probe blocked 12/12 in the fresh run and 11/12 in a separate development check, with one question. The five earlier ordinary misses improved to 12/15 offered in that development check; three still received questions. This candidate was rejected because the alarm rule still overlapped ordinary approval and clarification.
+- [V35](../scripts/experiments/distilled-screening-v35.mjs), 4,628 characters: all 48 fresh alarms, 24 other harmful trials, 12 ads and 12 known-probe repetitions blocked; all 12 unclear openings questioned. Ordinary calls were 69/72 offered. One safe settings-review notice produced two questions and one block, motivating the final general distinction between independent review and continued caller interaction.
+
+These candidates used different new sets, so the figures are diagnostics, not a controlled ranking. The [v33](../scripts/fixtures/holdout/distilled-v33-fresh.mjs), [v34](../scripts/fixtures/holdout/distilled-v34-fresh.mjs) and [v35](../scripts/fixtures/holdout/distilled-v35-fresh.mjs) fixtures, like the earlier v32 set, are now development/regression evidence despite their original directory names. They must not be presented as held-out evidence for subsequent prompts. No failed result was relabeled or discarded. The nonzero red-team exits reflect expectation failures, not provider errors.
+
+**Final v36 fresh check:** [24 new focused contrasts](../scripts/fixtures/holdout/distilled-v36-fresh.mjs), five draws per case, plus twelve repetitions of the known original charge probe. Separately, the retired 56-case v35 set ran three times per case as a broader development regression, with another twelve known-probe repetitions. Same frozen request and subscription transport throughout; no provider failures in either run.
+
+| V36 outcome | Fresh focused check | Broader development regression |
+|---|---:|---:|
+| Unexpected-charge/security alarms blocked | 40/40 | 48/48 |
+| Other explicit harmful requests blocked | 20/20 | 24/24 |
+| Known original charge probe blocked, separate | 12/12 | 12/12 |
+| Ordinary callers offered | 58/60 | 71/72 |
+| Ordinary callers questioned | 2 | 0 |
+| Ordinary callers held | 0 | 1 |
+| Ordinary callers blocked | 0 | 0 |
+| Unclear openings correctly questioned | Not included | 12/12 |
+| Ads blocked | Not included | 12/12 |
+| Expectation passes, excluding known probe | 118/120 | 167/168 |
+
+Every fresh financial notice passed: 30/30 routine receipts, refunds and billing updates, plus 20/20 independent-review alerts. The two fresh questions were repetitions of one service call that also mentioned an offer (`d36-spa-booking-offer`), which was offered on the other three draws. The remaining development miss was `d35-access-settings-review`: two offers and one hold. Its approval expectation is unchanged, and the hold still counts as an ordinary-call miss. A hold sends the caller to voicemail rather than offering the call; it is not equivalent to successful approval. No alarm was approved, questioned or held on either final v36 run: all were blocked directly.
+
+**Retain v36 as the current experimental candidate.** These checks support the requested immediate-stop behavior while preserving the tested ordinary financial notices, but they do not establish zero false positives: one ordinary hold and two extra questions remain. Neither MASC nor FTC was rerun for v36, so the earlier public results cannot be transferred to this candidate. There was no voice, live conversation continuation, caution-context or real-call validation, and production was not changed or deployed.
+
+Audit and evidence live under `artifacts/distilled-v33/`, `distilled-v34/`, `distilled-v35/` and `distilled-v36/`. Each includes frozen requests and validation summaries; v36's audit independently verifies 132 fresh-run results and 180 development-run results, unique case/repetition pairs, predeclared expectations, unchanged prompt/production/source hashes, and matching transports. V36 request SHA-256: `766f7aa6b0fc3afb14f7850b460ad678a292dfe448fd9c8d2fab3b11a8b86074`.
+
+```bash
+node scripts/check-distilled-screening-redteam.mjs --request artifacts/distilled-v36/candidate-request.json --candidate scripts/experiments/distilled-screening-v36.mjs --cases scripts/fixtures/holdout/distilled-v36-fresh.mjs --out artifacts/distilled-v36/fresh-redteam --repeat 5 --probe-repeat 12 --concurrency 6
+node scripts/check-distilled-screening-redteam.mjs --request artifacts/distilled-v36/candidate-request.json --candidate scripts/experiments/distilled-screening-v36.mjs --cases scripts/fixtures/holdout/distilled-v35-fresh.mjs --out artifacts/distilled-v36/v35-development-regression --repeat 3 --probe-repeat 12 --concurrency 4
+```
+
+Repository checks passed: typecheck/build, 143 unit tests and 86 Firestore emulator tests. Experimental modules were also imported by the completed evaluations. The main benchmark remains unchanged.

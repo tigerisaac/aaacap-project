@@ -1,6 +1,7 @@
 // Frozen, synthetic one-shot checks on the isolated subscription transport.
 // No real transcripts, live actions, question text or evidence quotes are saved.
-// --request frozen.json --cases fresh.mjs --out directory [--repeat 3] [--probe-repeat 12] [--concurrency 6]
+// --request frozen.json --cases fresh.mjs --out directory [--candidate candidate.mjs]
+// [--repeat 3] [--probe-repeat 12] [--concurrency 6]
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile, appendFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -11,6 +12,7 @@ import { screeningTarget } from './lib/screening-target.mjs';
 const args = process.argv.slice(2);
 const option = name => { const i = args.indexOf(name); return i < 0 ? undefined : args.splice(i, 2)[1]; };
 const requestFile = option('--request'), casesFile = option('--cases'), output = option('--out');
+const candidateFile = option('--candidate') ?? 'scripts/experiments/distilled-screening-v32.mjs';
 const repeat = Number(option('--repeat') ?? 3), probeRepeat = Number(option('--probe-repeat') ?? 12), concurrency = Number(option('--concurrency') ?? 6);
 assert.ok(!args.length && requestFile && casesFile && output, 'required_options');
 assert.ok([repeat, probeRepeat, concurrency].every(n => Number.isInteger(n) && n > 0 && n <= 16), 'invalid_count');
@@ -23,7 +25,7 @@ for (const c of [...cases, probe]) {
   assert.ok(c.text && ['legit', 'scam', 'ad', 'unclear'].includes(c.category));
   assert.ok(c.accept.length && c.accept.every(a => ['approve', 'block', 'hold', 'continue'].includes(a)));
 }
-const files = [casesFile, 'scripts/check-distilled-screening-redteam.mjs', 'scripts/experiments/distilled-screening-v32.mjs',
+const files = [casesFile, 'scripts/check-distilled-screening-redteam.mjs', candidateFile,
   'backend/src/live/policy.ts', 'scripts/lib/screening-target.mjs', 'scripts/lib/codex-screening-target.mjs'];
 const hashes = async () => Object.fromEntries(await Promise.all(files.map(async f => [f, digest(await readFile(f))])));
 const before = await hashes();
@@ -33,7 +35,7 @@ await mkdir(out, { recursive: true });
 await writeFile(`${out}/results.jsonl`, '', { flag: 'wx' });
 const target = await screeningTarget('codex', { request, subscriptionOneShot: true });
 const manifest = { startedAt: new Date().toISOString(), provider: 'codex', model: target.model, effort: target.effort,
-  transport: target.transport, requestFile, requestHash: digest(JSON.stringify(request)), sourceHashes: before,
+  transport: target.transport, requestFile, candidateFile, requestHash: digest(JSON.stringify(request)), sourceHashes: before,
   freshCases: cases.length, repeat, probeRepeat, concurrency, planned: jobs.length,
   expectations: [...cases, probe].map(({ name, category, focus, accept }) => ({ name, category, focus, accept })),
   interpretation: 'Synthetic caller-text snapshots only. Fresh cases frozen before inference; known charge reproducer separate. No live multi-turn, voice or caution claim. Do not tune the frozen candidate from these results.' };
