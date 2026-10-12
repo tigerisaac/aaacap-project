@@ -7,7 +7,8 @@ export const TIMING_PHASES = [
   'transcript_changed', 'clarification_requested', 'response_resume_sent', 'screening_check_sent',
   'research_started', 'research_finished', 'assistant_audio_received', 'assistant_audio_sent',
   'terminal_decision', 'provider_ended', 'outcome_saved', 'redirect_started', 'redirect_finished',
-  'hangup_started', 'hangup_finished', 'handoff_failed', 'handoff_finished', 'transport_closed'
+  'hangup_started', 'hangup_finished', 'handoff_failed', 'handoff_finished', 'transport_closed',
+  'acknowledgement_started', 'acknowledgement_finished', 'acknowledgement_interrupted'
 ] as const;
 export type TimingPhase = typeof TIMING_PHASES[number];
 export type TimingMetrics = Partial<Record<

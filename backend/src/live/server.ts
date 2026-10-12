@@ -1,4 +1,6 @@
 import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { WebSocket, WebSocketServer } from 'ws';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -14,6 +16,14 @@ import { callTiming } from './timing.js';
 
 const processStartedAt = Date.now() - process.uptime() * 1000;
 let acceptedCalls = 0;
+let acknowledgementAudio: Buffer | undefined;
+try {
+  const metadata = JSON.parse(readFileSync(new URL('./ack-audio/manifest.json', import.meta.url), 'utf8'));
+  const audio = readFileSync(new URL('./ack-audio/one-moment.pcmu', import.meta.url));
+  if (audio.length < 160 || audio.length > 16000 || metadata.format !== 'PCMU' || metadata.sampleRate !== 8000
+    || createHash('sha256').update(audio).digest('hex') !== metadata.sha256) throw new Error('invalid_acknowledgement');
+  acknowledgementAudio = audio;
+} catch { console.warn(JSON.stringify({ event: 'acknowledgement_unavailable' })); }
 
 const config = cloudSchema.parse(JSON.parse(process.env.SHIELD_RUNTIME ?? '{}'));
 const apiKey = process.env.OPENAI_API_KEY;
@@ -24,7 +34,8 @@ const server = createServer((request, response) => {
   response.setHeader('Cache-Control', 'no-store');
   if (request.url !== '/ready') { response.writeHead(404).end(); return; }
   response.setHeader('Content-Type', 'application/json');
-  response.end(JSON.stringify({ status: 'ready', model: 'gpt-live-1', decisionModel: DECISION_MODEL, policyVersion: SCREENING_POLICY_VERSION }));
+    response.end(JSON.stringify({ status: 'ready', model: 'gpt-live-1', decisionModel: DECISION_MODEL, policyVersion: SCREENING_POLICY_VERSION,
+      timingLogs: true, waitAcknowledgement: !!acknowledgementAudio }));
 });
 const sockets = new WebSocketServer({ noServer: true, maxPayload: 32_768, perMessageDeflate: false });
 let active = false;
@@ -85,7 +96,7 @@ server.on('upgrade', async (request, socket, head) => {
         console.info(JSON.stringify({ event: 'live_screening_finished', callId: call.id, decision: typeof decision === 'string' ? decision : decision.action,
           elapsedMs: Date.now() - call.createdAt }));
       };
-      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close, timing },
+      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close, timing, acknowledgementAudio },
         Date.now, { recentScamStopped: call.screeningCaution === true });
       const ticker = setInterval(() => session.tick(), 20);
       const startTimer = setTimeout(() => { void session.stop('screening_unavailable'); }, 5000);

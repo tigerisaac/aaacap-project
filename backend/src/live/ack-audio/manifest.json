@@ -1,0 +1,10 @@
+{
+  "text": "One moment, please.",
+  "voice": "Grace",
+  "model": "tts-rt-v2",
+  "provider": "Soniox",
+  "format": "PCMU",
+  "sampleRate": 8000,
+  "durationMs": 1102.5,
+  "sha256": "36c3f6fbee658844e03fb2d1feb6222a624532a1957d675c94254958a5cf790b"
+}

@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc -p backend/tsconfig.json && node scripts/package-announcements.mjs",
+    "build": "rm -rf dist && tsc -p backend/tsconfig.json && node scripts/package-announcements.mjs && node scripts/package-live-acknowledgement.mjs",
     "typecheck": "tsc -p backend/tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -17,6 +17,8 @@ if (command === 'build') {
   await mkdir(`${stage}/lib/live`, { recursive: true }); await mkdir(`${stage}/lib/cloud`, { recursive: true });
   for (const file of ['auth', 'crypto', 'firebase-auth']) await copyFile(`dist/${file}.js`, `${stage}/lib/${file}.js`);
   for (const dir of ['cloud','live']) for (const file of await readdir(`dist/${dir}`)) if (file.endsWith('.js')) await copyFile(`dist/${dir}/${file}`, `${stage}/lib/${dir}/${file}`);
+  await mkdir(`${stage}/lib/live/ack-audio`, {recursive:true});
+  for(const file of ['one-moment.pcmu','manifest.json'])await copyFile(`dist/live/ack-audio/${file}`,`${stage}/lib/live/ack-audio/${file}`);
   const root = JSON.parse(await readFile('package.json', 'utf8'));
   const names = ['fastify','@fastify/helmet','firebase-admin','firebase-functions','libphonenumber-js','openai','zod','ws'];
   await writeFile(`${stage}/package.json`, JSON.stringify({name:'shield-live-bridge',private:true,type:'module',overrides:root.overrides,

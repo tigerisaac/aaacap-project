@@ -2,6 +2,7 @@ import { researchSchema, type ResearchTopic, type ResearchResult } from './resea
 import { LIVE_LIMITS, callerText, liveSessionConfig, permittedDecision, type LiveDecision, type ScreeningContext, type StopReason } from './policy.js';
 import type { TimingSink, TimingPhase, TimingMetrics } from './timing.js';
 import { responseUsage } from './timing.js';
+import { WaitAcknowledgement } from './acknowledgement.js';
 
 type Event = Record<string, any>;
 export interface ScreeningIO {
@@ -11,6 +12,7 @@ export interface ScreeningIO {
   finish(decision: LiveDecision | StopReason): Promise<void>;
   close(): void;
   timing?: TimingSink;
+  acknowledgementAudio?: Buffer;
 }
 
 /** One owner per call. Terminal decisions synchronously cut playback before network I/O. */
@@ -51,6 +53,7 @@ export class ScreeningSession {
   private lastModelSoundAt?: number;
   private clarificationAt?: number;
   private responseNumber = 0;
+  private acknowledgement?: WaitAcknowledgement;
   private responseTimings = new Map<string, { response: number; at: number; toolOutput?: boolean }>();
   private timing(phase: TimingPhase, metrics: TimingMetrics = {}) {
     const now = this.now();
@@ -65,7 +68,10 @@ export class ScreeningSession {
     const response = this.responseTimings.get(delegationId);
     return response ? { response: response.response, responseMs: this.now() - response.at } : {};
   }
-  constructor(readonly io: ScreeningIO, readonly now: () => number = Date.now, readonly context: ScreeningContext = {}) { this.startedAt = now(); }
+  constructor(readonly io: ScreeningIO, readonly now: () => number = Date.now, readonly context: ScreeningContext = {}) {
+    this.startedAt = now();
+    if (io.acknowledgementAudio?.length) this.acknowledgement = new WaitAcknowledgement(io.acknowledgementAudio, phase => this.timing(phase));
+  }
   get ended() { return this.terminal; }
   start() { this.timing('session_start_sent'); this.io.openai({ type: 'session.start', session: liveSessionConfig(this.context) }); }
   async stop(reason: StopReason) { await this.finish(reason); }
@@ -287,17 +293,25 @@ export class ScreeningSession {
     }
     if (this.backendBusy && this.backendSince !== undefined && now - this.backendSince >= LIVE_LIMITS.backendMs) { void this.stop('screening_unavailable'); return; }
     if (!this.backendBusy && this.lastSpeechAt === undefined && !this.modelAudioReceived && now - this.readyAt >= LIVE_LIMITS.startupMs) { void this.stop('screening_unavailable'); return; }
+    let frame: Buffer | undefined;
     if (this.outgoing.length) {
-      const frame = Buffer.alloc(160, 255); this.outgoing.copy(frame, 0, 0, Math.min(160, this.outgoing.length));
+      frame = Buffer.alloc(160, 255); this.outgoing.copy(frame, 0, 0, Math.min(160, this.outgoing.length));
       if (audiblePCMU(frame)) {
         if (this.lastAssistantSoundAt === 0 || now - this.lastAssistantSoundAt >= LIVE_LIMITS.speechPauseMs) {
           this.timing('assistant_audio_sent', this.clarificationAt === undefined ? {} : { sinceClarificationMs: now - this.clarificationAt });
         }
         this.lastAssistantSoundAt = now;
       }
-      this.io.telnyx({ event: 'media', media: { payload: frame.toString('base64') } });
       this.outgoing = this.outgoing.subarray(160);
     }
+    // Replace model silence only; real model speech and fresh caller speech interrupt immediately.
+    const acknowledgement = this.acknowledgement?.frame(now, {
+      waitingSince: this.backendBusy ? this.backendSince : undefined,
+      callerLastAt: this.lastSpeechAt === undefined ? undefined : Math.max(this.lastSpeechAt, this.callerSoundAt ?? 0),
+      assistantLastAt: this.lastAssistantSoundAt, modelSpeaking: frame !== undefined && audiblePCMU(frame)
+    });
+    const playback = acknowledgement ?? frame;
+    if (playback) this.io.telnyx({ event: 'media', media: { payload: playback.toString('base64') } });
     // Audible caller audio with no transcript means the model stopped hearing them: report a failed check,
     // which the recipient sees, rather than blaming a caller who was talking.
     const quiet: StopReason = this.callerSoundAt !== undefined && now - this.callerSoundAt < LIVE_LIMITS.idleMs / 2 ? 'screening_unavailable' : 'silent_caller';
