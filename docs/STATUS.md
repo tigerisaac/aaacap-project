@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — event-attribution experiments complete; ordinary-call losses prevent promotion
+
+The [v136–v138 comparison](SCREENING-EVENT-ATTRIBUTION-AUDIT.md) completes 15 scored runs / 4,024 trials on subscription GPT-6 Luna medium, plus three unscored label diagnostics. V137 is 22.3% shorter than runtime v134 by instruction/tool characters and passes 152/152 fresh trials, but offers only 78/80 ordinary MASC calls. V138 stops all 164 intended-block development trials, including charge and empty-contact cases, but loses three ordinary offers to questions and offers 77/80 ordinary MASC calls. Both preserve all 26 development notices and all trusted-caution outcomes. Neither is promoted.
+
+V137 FTC records 595 stops, 122 unverified saves, three questions and four approvals. V138 records 601 stops, 114 saves, four questions, four approvals and one retained no-decision from a mapper/validator purpose mismatch. Both stop the three known charge recordings. There are no transport timeouts; source labels and completed outcomes are unchanged. Typecheck, 198 unit tests/build and 154 emulator tests pass; a sandbox loopback failure is retained beside the successful permitted rerun. Input and source/result audits pass, with no direct public-passage overlap detected. These are text regressions, not real-call or 100% confidence evidence.
+
+Runtime screening remains v134, post-call filtering v10, and the separate deployed release v31 / voicemail v4. No deployment, voice test, phone call or forwarding change occurred. The goal remains unfinished; the new validation sets are spent and must not guide further prompt wording.
+
 ## October 13 — stale screening verdicts rechecked; prompt experiments remain offline
 
 Repository screening is now `2026-10-13-general-v134`. Its initial session/decision instructions match v99 exactly. The runtime no longer applies a stale scam verdict after more caller words arrive, and an older response cannot displace a pending decision that heard more speech. Six seconds of continuous speech triggers reassessment of a pending block rather than forcing an outdated verdict. Fresh scam stops remain immediate; existing deadlines, question/tool budgets, fixed recipients and press-1 connection remain. Seven new session tests cover the change; five reproduced failures before the fix.
