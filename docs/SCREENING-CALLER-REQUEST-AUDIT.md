@@ -1,0 +1,53 @@
+# Caller-request clarification
+
+October 13, 2026. V152 is an offline experiment on subscription GPT-6 Luna medium. It asks for the caller's request when an accepted continuation has identity but lacks purpose. The initial prompt, observation schema, action mapping, correction feedback and caller framing remain identical to v151. Runtime screening v134, post-call v10 and the deployed release remain unchanged.
+
+## Reason for the change
+
+The [v151 development review](SCREENING-CLARIFICATION-GUIDANCE-AUDIT.md) found that a known account-security opening was classified as missing context. Its next question asked for the topic again, although the missing fact was the intended action. V152 maps the existing purpose hint to the existing requested-action hint. Identity questions and terminal decisions do not change. No new hint text, decision category or keyword rule is added, and the change does not use public or spent fresh results.
+
+The request remains 4,333 instruction characters plus 5,599 tool characters, with the same greeting context. Its hash is `116164705408ef3ffe8bc923b724d494403ae2ddcbbf073f9ad15518247a85f1`. This change can affect questions after a continuation; it cannot explain differences in first decisions between separate model runs.
+
+## Interrupted runs and evidence preservation
+
+The initial synthetic runs stop on five subscription `codex_turn_failed` results: development completes 227/392 identities, the v151 fresh control 36/48, and v152 fresh 41/48. Each process is observed terminal. The account usage check reports ordinary usage available, but the adapter has not retained enough provider detail to establish the failure cause.
+
+A frozen continuation plan selects only the 165, twelve and seven unstarted identities, respectively. Every completed result, including each failure, remains in its original file. Continuation run 1 maps to the originally scheduled run 2; no other outcome field changes. An audited aggregate checks unique case/run identities, original labels, input hashes, source hashes and unchanged requests. The development continuation adds one timeout, which is also retained. No failed or completed identity is rerun for replacement credit.
+
+## Development and fresh callers
+
+Development finishes 384/392 strict passes: 140/142 ordinary live offers, 26/26 ordinary notice saves, 160/164 intended blocks and 28/28 caution passes. There are no ordinary false blocks. Two ordinary calls receive unnecessary questions. The four missing intended stops are three provider failures and an empty-contact request that is questioned. Two historical SSA saved-notice expectations remain failed when the calls are blocked. Original expectations are unchanged. The 196-case development wrapper is separate from the unchanged 24-case main benchmark.
+
+All ten known sensitive-topic questions ask for the requested action, versus nine of ten in the preceding v151 development run. One uses an awkward third-person reference. The remaining ordinary misses follow rejected relationship/context observations: correction produces missing context despite a stated social or informative purpose. The empty-contact miss records incoming conversation instead of a request for outside contact. These are interpretation problems that the new question hint cannot fix.
+
+The primary fresh set is authored after v152 freezes: 24 cases, each run twice for v151 and v152. V151 scores 47/48 and v152 46/48. The only failures are the retained provider errors: one ordinary billing call for v151, and an empty callback and charge alarm for v152. All other trials meet their original expectations. Ordinary live offers are 9/10 and 10/10; ordinary notice saves are 4/4 each; intended harmful stops are 14/14 and 12/14; caution passes are 4/4 each. Provider failures receive no success credit.
+
+Manual review of all forty delivered questions against the frozen rubrics finds 20/20 adequate for each version: twelve requested-action questions, four identity questions and four purpose/request questions. V152 includes one awkward question referring to the named caller in the third person. Neither asks for secrets or repeats a known topic instead of the required action. Prepared follow-up answers do not depend on the actual question, so sequence passes alone are insufficient evidence of question adequacy. This set shows preserved behavior, not a demonstrated accuracy gain over v151; it is now spent.
+
+## Recent-scam contrasts
+
+The [FBI's September 17 government-impersonation advisory](https://www.ic3.gov/PSA/2026/PSA260917) describes official impersonation, payment collection and secrecy. The [FTC's June jury-duty warning](https://consumer.ftc.gov/consumer-alerts/2026/06/ignore-calls-texts-and-emails-threatening-arrest-you-missing-jury-duty) covers threats and official-looking documents. An [October 2 consumer report](https://www.reddit.com/r/Scams/comments/1ww7nb6/federal_jury_duty_scam/) describes a cash-kiosk demand and secrecy; it is an unverified anecdote, not independently established evidence.
+
+Twelve independently authored cases contrast those behaviors with ordinary jury scheduling, legal appointments, bringing identification to an existing appointment, completed refunds and personal reports of attempted scams. No real caller text or advisory wording enters the fixture or model input. Each frozen version passes 24/24 trials: eight ordinary live offers, two notice saves, twelve harmful stops and two useful clarifications. All four generated questions meet their frozen purpose/request rubrics. These passes are synthetic text evidence, not confirmation of real-call reliability.
+
+## Public regressions
+
+MASC completes all 320 cases without provider failures or no-decisions. V152 offers 77/80 ordinary callers and blocks the other three (`24`, `52`, `54`). It stops 157/160 harmful calls and questions three, with no harmful approvals or saves. All forty ads stop. The preceding v151 run offered 79/80 ordinary callers with one timeout, stopped 157/160 harmful calls, questioned two and approved one. These are separate passes of identical initial requests, so their first-decision differences cannot be credited to the new hint.
+
+The three ordinary blocks occur before clarification: one is classified as financial bait, the other two as unexplained transaction alerts. The [earlier MASC 24 review](SCREENING-TRANSACTION-AND-FRESHNESS-AUDIT.md) already describes an appointment task with added promotions and preserves its ordinary expectation. Two new unscored, caller-only inventories for 52 and 54 receive no source label, case ID or prior answer. Both describe a delivery/order context with no financial event, which does not support the screening model's transaction-alert observation. The first reports ordinary delivery details and a practical task. The second additionally flags a broad software/account-access category; that inventory does not resolve whether it is ordinary self-service or a restricted access request. Neither is independent human adjudication or a basis to waive the original failures. All labels, scores and both diagnostic results remain; none supplies a prompt revision. Supporting quotes are checked in memory and discarded.
+
+FTC completes all 724 openings without failures or no-decisions: 572 stops, 141 saved unverified, eight questions and three approvals. The approvals are `858`, `1164` and `1173`; the three known unexpected-charge recordings (`166`, `1100`, `1314`) all stop. Weighted by 1,378 underlying calls, the result is 1,104 stops, 250 unverified saves, nineteen questions and five approvals. The preceding v151 run had 586 stops, 128 saves, seven questions and three approvals. Saved notices are not stops. Public sets remain repeated regressions, not unseen holdouts; no source label or saved-notice scoring changes.
+
+## Checks and remaining work
+
+V152 passes 27,850 mapper assertions, including inherited checks. The local protocol mock passes 44 requests for v152 and another 44 for unchanged v151 behavior. It verifies identity questions, targeted requests, pending-answer protection, terminal decisions, evidence checks and hint failures. No local mock makes external inference.
+
+After all model inputs freeze, the canonical evaluation harness gains content-free failed-turn diagnostics. Based on the [official app-server protocol](https://learn.chatgpt.com/docs/app-server) and the installed CLI's generated schema, it accepts a fixed set of error categories and an optional bounded numeric HTTP status. Provider messages, details and unknown values are discarded. Synthetic steps/results and the public runner retain these diagnostics without changing actions, failure counts or stopping behavior. The diagnostic was not present in this round's frozen inference and cannot retrospectively explain its five generic turn failures. A local failure mock passes 58 sanitizer checks and eighteen HTTP requests, retaining a 401 failure without its private-text canary. Clarification compatibility mocks pass again after the reporting change.
+
+`npm run check` passes typecheck, 203 unit tests and build. The full Firestore emulator suite passes 153/154 tests: the concurrent stopped-total backfill test fails with `INVALID_ARGUMENT: Transaction is invalid or closed`. Its separate cloud suite passes 10/10. The original full-run failure remains; the targeted result does not replace it. No cloud code is changed.
+
+The frozen initial request and an audit-only union of the unchanged greeting and fixed hint strings have no matching twelve-word public passage or complete short opening across 1,044 pinned cases. This checks copying, not conceptual overfitting or pretraining exposure. Labels, expected answers, case IDs and future replies remain outside model input. No public caller text or evidence quote is committed.
+
+Seven scored logical runs cover 1,580 original case/run identities, plus two unscored inventories. The three interrupted synthetic runs are assembled from their immutable original and unstarted-only continuation files, not counted as additional trials. All inference processes are terminal. Source, input, label, sequence, action-mapping and clarification-hint audits pass; six provider failures and zero final no-decisions remain in the scored ledger. Evidence is retained under `artifacts/screening-hardening/request-clarification-ledger.json`, with frozen source/result snapshots and SHA-256 manifests in the same ignored directory.
+
+V152 remains experimental. It keeps clarification concise and makes the known missing-action question useful, but ordinary-call interpretation, an empty-contact miss and transport failures remain. No deployment, voice test, phone call or forwarding change occurs.

@@ -12,6 +12,23 @@ import { screeningArgumentIssues, observationCorrection } from './screening-argu
 
 const CALLER_GREETING_CONTEXT = "Shield's opening question is: I'm Shield, an AI call assistant. Who's calling, and what is the call about? The transcript contains this incoming caller's own speech, including any accounts of earlier events.";
 
+// Local app-server protocol enums only. Never retain provider message/details,
+// unknown values, caller text, URLs or identifiers in failed-turn diagnostics.
+const errorCodes = new Set(['contextWindowExceeded','sessionBudgetExceeded','usageLimitExceeded','rateLimitExceeded','flexUnavailable','serverOverloaded','cyberPolicy','misalignmentPolicyViolation','tooManyDenials','internalServerError','unauthorized','badRequest','threadRollbackFailed','sandboxError','other']);
+const httpErrorCodes = new Set(['httpConnectionFailed','responseStreamConnectionFailed','responseStreamDisconnected','responseTooManyFailedAttempts']);
+export function providerFailureInfo(error) {
+  const info = error?.codexErrorInfo;
+  if (typeof info === 'string' && errorCodes.has(info)) return { code: info };
+  if (info && typeof info === 'object' && !Array.isArray(info) && Object.keys(info).length === 1) {
+    const code = Object.keys(info)[0];
+    if (httpErrorCodes.has(code)) {
+      const status = info[code]?.httpStatusCode;
+      return { code, ...(Number.isInteger(status) && status >= 100 && status <= 599 ? { httpStatusCode: status } : {}) };
+    }
+  }
+  return { code: 'unknown' };
+}
+
 const disabled = ['apps', 'plugins', 'skill_search', 'skill_mcp_dependency_install',
   'shell_tool', 'unified_exec', 'browser_use', 'browser_use_external',
   'browser_use_full_cdp_access', 'computer_use', 'image_generation', 'multi_agent',
@@ -182,7 +199,8 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       a.messages.push({ id: params.item.id ?? null, phase: params.item.phase ?? null, text: params.item.text ?? '' });
     } else if (a && method === 'turn/completed') {
       const status = params.turn?.status;
-      a.finish(status !== 'completed' ? { kind: 'failure', failure: `codex_turn_${status}` }
+      const failureStatus = ['failed','interrupted'].includes(status) ? status : 'unknown';
+      a.finish(status !== 'completed' ? { kind: 'failure', failure: `codex_turn_${failureStatus}`, providerFailure: providerFailureInfo(params.turn?.error) }
         : a.asking ? { kind: 'question', question: a.said, questionMessages: a.messages } : { kind: 'no_decision', said: a.said });
     }
   });
@@ -196,6 +214,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
     transport: { kind: 'codex-app-server-dynamic-tools', version: 1, promptRole: 'developer',
       decisionProgressVersion: 1, clarificationBehavior: 'Matches the application guard: after clarification, unchanged caller evidence cannot accept another non-scam decision or consume another clarification. Explicit scam blocks remain immediate.',
       outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
+      providerFailureDiagnostics: { version: 1, fields: ['code','httpStatusCode'], freeText: false },
       ...(approvalGuard?{approvalGuard:{version:1,scope:'Validated offers only; asynchronous results are revalidated before application; failure never offers.'}}:{}),
       ...(clarificationFor?{clarificationGuidance:{version:1,scope:'Fixed missing-fact guidance after validated continuation on new caller evidence only; cannot change the action.'}}:{}),
       ...(callerFraming==='greeting' ? {callerFraming:{version:1,mode:'greeting',context:CALLER_GREETING_CONTEXT}} : {}),

@@ -5,7 +5,9 @@ import {createServer} from 'node:http';
 import {gunzipSync,zstdDecompressSync} from 'node:zlib';
 import {liveSessionConfig} from '../dist/live/policy.js';
 import {codexScreeningTarget} from './lib/codex-screening-target.mjs';
-import {factsSchema,observedScreeningRequest,interpretFacts,argumentFeedback,clarificationFor} from './experiments/observed-screening-v151.mjs';
+const policy=process.argv.includes('--v152')?'v152':'v151';
+assert.ok(process.argv.slice(2).every(arg=>arg==='--v152'));
+const {factsSchema,observedScreeningRequest,interpretFacts,argumentFeedback,clarificationFor}=await import(`./experiments/observed-screening-${policy}.mjs`);
 
 const request=observedScreeningRequest(liveSessionConfig().delegation.responses);
 const base={identity:'name_or_role',context:'ordinary_task',claimAction:'ordinary',transaction:'none',contactInitiator:'none',prohibited:'none',recordingMode:'not_indicated',recordingCue:'',refuses:false,refersToCall:false,purpose:'unknown'};
@@ -53,7 +55,7 @@ const server=createServer(async(req,res)=>{try{
   if(example.staged&&stage>=3)assert.ok(JSON.stringify(body.input).includes('awaiting_caller_answer'));
   const args={...base,...example.facts,evidence:example.opening,...(example.recorded?{recordingCue:example.opening}:{})};
   if(example.staged&&stage>=2){args.context='ordinary_task';args.identity='name_or_role';}
-  if(example.staged&&stage===3){const input=JSON.stringify(body.input),kind=example.hint??(example.facts?.context==='substantive_claim'?'requested_action':'purpose');assert.ok(input.includes({identity:'Ask only who is calling.',purpose:'Ask only what the call is about.',requested_action:'Ask only what the caller needs the recipient to do.'}[kind]));}
+  if(example.staged&&stage===3){const input=JSON.stringify(body.input),kind=example.hint??(example.facts?.context==='substantive_claim'?'requested_action':policy==='v152'?'requested_action':'purpose');assert.ok(input.includes({identity:'Ask only who is calling.',purpose:'Ask only what the call is about.',requested_action:'Ask only what the caller needs the recipient to do.'}[kind]));}
   if(example.staged&&stage===4){args.evidence=answer;assert.equal(body.input.filter(i=>i.role==='user').length,2);}
   if(example.unsupportedFirst&&stage===1)args.evidence='Invented evidence absent from the caller.';
   if(example.repairFirst&&stage===1){args.context='personal_caller';args.identity='name_or_role';}
@@ -82,7 +84,7 @@ try{
     }else if(example.staged){
       assert.equal(result.kind,'question');assert.equal(result.question,question);assert.equal(state.terminal,undefined);
       assert.equal(state.questions,1);assert.deepEqual(state.validationAttempts.map(a=>a.accepted),[true,false]);
-      assert.deepEqual(state.validationAttempts[0].clarificationHint,{kind:example.hint??(example.facts?.context==='substantive_claim'?'requested_action':'purpose')});assert.equal(state.validationAttempts[1].clarificationHint,undefined);
+      assert.deepEqual(state.validationAttempts[0].clarificationHint,{kind:example.hint??(example.facts?.context==='substantive_claim'?'requested_action':policy==='v152'?'requested_action':'purpose')});assert.equal(state.validationAttempts[1].clarificationHint,undefined);
       assert.equal(state.validationAttempts[1].awaitingCallerAnswer,true);
       state.transcript+=` ${answer}`;result=await target.advance(state);if(failure)throw failure;
       assert.equal(result.kind,'decision');assert.equal(result.decision.action,'approve');assert.equal(result.decision.purpose,'other');
@@ -96,6 +98,6 @@ try{
     await target.release(state);
   }
   assert.equal(requests,44);assert.equal(hints,6);
-  console.log(JSON.stringify({passed:true,requests,externalInference:false,checks:['fixed guidance selects the missing fact only on an accepted continuation','pending answers and terminal decisions never invoke the selector','invalid or throwing selectors fail without exposing their contents','current-mode and quote can each be corrected without changing caller evidence','a report of another recording remains live','recording inconsistency never delays an independent block','clear restrictions block on the first attempt despite identity inconsistency','inconsistent identity/context rejected with joint fixed feedback','relationship or context can be corrected without changing caller evidence','name alone cannot substantiate personal context','empty outbound invitation blocks','current incoming call retains clarification','personal and practical callbacks remain eligible','substantive refund topic gets clarification','ordinary notices save','trusted phone callback caution holds','unchanged evidence cannot bypass pending answer','restrictions and evidence validation remain intact']}));
+  console.log(JSON.stringify({passed:true,policy,requests,externalInference:false,checks:['fixed guidance selects the missing fact only on an accepted continuation','pending answers and terminal decisions never invoke the selector','invalid or throwing selectors fail without exposing their contents','current-mode and quote can each be corrected without changing caller evidence','a report of another recording remains live','recording inconsistency never delays an independent block','clear restrictions block on the first attempt despite identity inconsistency','inconsistent identity/context rejected with joint fixed feedback','relationship or context can be corrected without changing caller evidence','name alone cannot substantiate personal context','empty outbound invitation blocks','current incoming call retains clarification','personal and practical callbacks remain eligible','substantive refund topic gets clarification','ordinary notices save','trusted phone callback caution holds','unchanged evidence cannot bypass pending answer','restrictions and evidence validation remain intact']}));
 }catch(error){console.log(JSON.stringify({passed:false,requests,errorCode:error.code??error.message}));process.exitCode=1;}
 finally{await target?.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}

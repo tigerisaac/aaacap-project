@@ -16,12 +16,12 @@ export async function evaluateDialogue(target,c){
     const priorQuestions=state.questions,priorResearches=state.researches,priorAttempts=state.validationAttempts.length,start=Date.now();
     const step=await target.advance(state),actual=step.kind==='decision'?step.decision.action:step.kind==='question'?'continue':step.kind;
     if(step.kind==='question'){questionTurns++;questionsPresent&&=Boolean(step.question?.trim());}
-    steps.push({stage:index+1,actual,reason:step.decision?.reason,failure:step.failure,continueToolCalls:state.questions-priorQuestions,researches:state.researches-priorResearches,questionChars:step.kind==='question'?(step.question?.trim().length??0):0,validationAttempts:state.validationAttempts.slice(priorAttempts),elapsedMs:Date.now()-start});
+    steps.push({stage:index+1,actual,reason:step.decision?.reason,failure:step.failure,...(step.providerFailure?{providerFailure:step.providerFailure}:{}),continueToolCalls:state.questions-priorQuestions,researches:state.researches-priorResearches,questionChars:step.kind==='question'?(step.question?.trim().length??0):0,validationAttempts:state.validationAttempts.slice(priorAttempts),elapsedMs:Date.now()-start});
     if(actual!=='continue'||questionTurns>2||!questionsPresent)break;
   }
   const final=steps.at(-1);
   const sequenceMatches=!c.expectedSteps||JSON.stringify(steps.map(s=>s.actual))===JSON.stringify(c.expectedSteps);
-  return {steps,actual:final.actual,failure:final.failure,questionTurns,questionsPresent,sequenceMatches,continueToolCalls:state.questions,researches:state.researches,passed:!final.failure&&c.accept.includes(final.actual)&&questionTurns<=2&&questionsPresent&&sequenceMatches&&(c.category!=='legit'||state.researches===0)};
+  return {steps,actual:final.actual,failure:final.failure,...(final.providerFailure?{providerFailure:final.providerFailure}:{}),questionTurns,questionsPresent,sequenceMatches,continueToolCalls:state.questions,researches:state.researches,passed:!final.failure&&c.accept.includes(final.actual)&&questionTurns<=2&&questionsPresent&&sequenceMatches&&(c.category!=='legit'||state.researches===0)};
   } finally { await target.release?.(state); }
 }
 export function summarizeDialogues(rows){

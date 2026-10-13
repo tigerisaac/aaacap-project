@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — caller-request guidance and failure reporting remain experimental
+
+The [v152 audit](SCREENING-CALLER-REQUEST-AUDIT.md) completes seven scored logical runs / 1,580 subscription Luna medium trials and two unscored inventories. V152 reuses the existing requested-action hint when a known caller lacks purpose, with no initial prompt growth. All forty primary fresh questions meet their information rubrics, and both versions pass 24/24 additional government-impersonation contrasts. Six provider failures remain scored; interrupted runs continue only identities that never ran. No candidate is promoted.
+
+MASC offers 77/80 ordinary callers, stops 157/160 harmful calls, questions three harmful calls and approves none. The three ordinary blocks remain failures; caller-only inventories do not justify waiving them. FTC stops 572/724, saves 141 unverified notices, questions eight and approves three. All three known charge recordings stop. Both public runs have no provider failures or no-decisions. Repeated public scores do not establish unseen or real-call accuracy.
+
+The canonical evaluation harness now retains only fixed provider error categories and bounded HTTP status codes, with no provider messages. That reporting change is locally tested and postdates this round's frozen inference. Typecheck, 203 unit tests/build, mapper and protocol checks pass. The emulator full run passes 153/154; the affected cloud suite separately passes 10/10, retaining the original transaction failure. Runtime screening v134, post-call v10 and the deployed release below remain unchanged. No deployment, voice test, call or forwarding change occurs.
+
 ## October 13 — clarification guidance improves questions but remains experimental
 
 The [v151 audit](SCREENING-CLARIFICATION-GUIDANCE-AUDIT.md) completes seven scored subscription Luna medium runs / 1,580 trials and one unscored diagnostic. Fixed guidance identifies the missing fact after a valid continuation without enlarging the initial prompt. V151 passes 48/48 primary fresh trials and 24/24 additional messaging contrasts, but direct question review finds only four of ten required action questions adequate. Known development retains five unnecessary ordinary-call questions. No candidate is promoted.
