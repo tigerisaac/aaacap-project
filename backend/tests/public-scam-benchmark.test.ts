@@ -3,6 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { parseCSV, mascCase, summarizeMASC } from '../../scripts/lib/public-scam-benchmark.mjs';
 
 describe('public synthetic benchmark import', () => {
+  it('reports subscription failures separately from invalid model behavior without crediting either', () => {
+    const failures = ['codex_evaluation_timeout', 'codex_thread_start_failed', 'codex_pipe_closed', 'codex_turn_failed',
+      'too_many_rounds', 'unexpected_tool', 'invalid_assessment'];
+    const rows = failures.map(failure => ({ label: 1, type: 'refund', screening: { actual: 'block', failure } }));
+    expect(summarizeMASC(rows)).toMatchObject({
+      evaluationFailures: 7, providerFailures: 4, validationFailures: 3,
+      harmfulStopped: { passed: 0, total: 7 }, scamsIdentified: { passed: 0, total: 7 },
+      harmfulApproved: 0, harmfulSavedUnverified: 0,
+    });
+  });
   it('separates saved notices and never credits failed screening or monitoring outcomes', () => {
     const rows = [
       { label: 0, type: 'appointment', screening: { actual: 'message' } },

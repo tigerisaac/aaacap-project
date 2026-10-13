@@ -4,6 +4,8 @@ Reviewed October 11, 2026. The first public diagnostic used frozen screening v16
 
 ## Sources and suitability
 
+**October 13 reporting update:** version `2026-10-13-public-identification-v3` includes subscription transport failures in the provider subtotal and invalid tool behavior in the validation subtotal. These rows already received no success credit; verdict metrics and historical reports are unchanged. The [context audit](SCREENING-CONTEXT-AUDIT.md) also records the limitations of concatenating complete caller turns when evaluating saved-notice routing.
+
 **October 12–13 update:** the [current-policy hardening report](SCREENING-CURRENT-HARDENING.md) adds five-action v31/v88 comparisons and a separate post-call message check. Scoring version `2026-10-12-public-identification-v2` reports saved unverified notices separately, never as identified scams or completed stops. Failed action-shaped results receive no success credit. Earlier four-action results and source labels are unchanged; do not pool the two policies.
 
 | Source | What it provides | Fit for Shield |

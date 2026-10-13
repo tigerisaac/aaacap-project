@@ -115,10 +115,14 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       send({ id: message.id, result: { success: true, contentItems: [{ type: 'inputText', text: JSON.stringify(output) }] } });
     } else if (a && method === 'item/completed' && params.item?.type === 'agentMessage') {
       a.said += params.item.text ?? '';
+      // Preserve the original joined text for score compatibility, but retain
+      // item boundaries so synthetic question review can distinguish commentary,
+      // final text and duplicate completion events. Never send this to the model.
+      a.messages.push({ id: params.item.id ?? null, phase: params.item.phase ?? null, text: params.item.text ?? '' });
     } else if (a && method === 'turn/completed') {
       const status = params.turn?.status;
       a.finish(status !== 'completed' ? { kind: 'failure', failure: `codex_turn_${status}` }
-        : a.asking ? { kind: 'question', question: a.said } : { kind: 'no_decision', said: a.said });
+        : a.asking ? { kind: 'question', question: a.said, questionMessages: a.messages } : { kind: 'no_decision', said: a.said });
     }
   });
   try {
@@ -129,6 +133,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
   return {
     provider: 'codex', model: config.model, effort: 'medium', conversation,
     transport: { kind: 'codex-app-server-dynamic-tools', version: 1, promptRole: 'developer',
+      outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
       research: 'unavailable', context: conversation ? 'frozen instructions plus cumulative caller snapshots and native assistant/tool history; verified with local mock' : 'frozen instructions and caller only; verified with local mock',
       differencesFromGo: 'Codex uses non-strict tools, normalizes schemas (drops $schema and maxLength, sorts properties), uses its output limit and low verbosity, allows parallel tool calls, and wraps tool results as content items. Production permittedDecision still validates every decision. Compare only within this transport.' },
     newState: text => ({ transcript: text, questions: 0, researches: 0, validationAttempts: [] }),
@@ -149,7 +154,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
         const threadId = state.threadId;
         return await new Promise(resolve => {
           let finished = false;
-          const a = { state, rounds: 0, said: '', asking: false, turnId: null, finish: async result => {
+          const a = { state, rounds: 0, said: '', messages: [], asking: false, turnId: null, finish: async result => {
             if (finished) return; finished = true; clearTimeout(timer); active.delete(threadId);
             // Questions retain native history only in explicit conversation mode.
             if (!(conversation && result.kind === 'question')) {

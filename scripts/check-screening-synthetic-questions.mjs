@@ -9,14 +9,17 @@ import { codexScreeningTarget } from './lib/codex-screening-target.mjs';
 import { evaluateDialogue, summarizeDialogues } from './check-screening-dialogues.mjs';
 
 export async function evaluateWithQuestions(target, caller) {
-  const questions = [];
+  const questions = [], questionMessages = [];
   // Observe returned questions without adding anything to the model's conversation.
   const observed = { ...target, advance: async state => {
     const result = await target.advance(state);
-    if (result.kind === 'question') questions.push(result.question ?? '');
+    if (result.kind === 'question') {
+      questions.push(result.question ?? '');
+      questionMessages.push(structuredClone(result.questionMessages ?? []));
+    }
     return result;
   } };
-  return { ...await evaluateDialogue(observed, caller), questions };
+  return { ...await evaluateDialogue(observed, caller), questions, questionMessages };
 }
 
 async function main() {
@@ -29,7 +32,13 @@ async function main() {
     } };
     const result = await evaluateWithQuestions(target, { category: 'legit', turns: ['An appointment needs moving.', 'Her tutor.'], accept: ['approve'], expectedSteps: ['continue', 'approve'], questionRubric: { missing: 'who' } });
     assert.equal(calls, 2); assert.equal(result.passed, true); assert.deepEqual(result.questions, ['Who is calling, please?']);
-    console.log(JSON.stringify({ passed: true, checks: ['question observer leaves input unchanged', 'native sequence preserved', 'question text captured'] })); return;
+    assert.deepEqual(result.questionMessages, [[]]);
+    const fragments = [{ id: 'm1', phase: 'commentary', text: 'Who is calling?' }, { id: 'm2', phase: 'final_answer', text: 'Who is calling, please?' }];
+    const fragmented = { ...target, advance: async state => { state.questions++; return { kind: 'question', question: fragments.map(m => m.text).join(''), questionMessages: fragments }; } };
+    const captured = await evaluateWithQuestions(fragmented, { category: 'unclear', turns: ['An incomplete opener.'], accept: ['continue'], expectedSteps: ['continue'] });
+    assert.deepEqual(captured.questionMessages, [fragments]); assert.notEqual(captured.questionMessages[0], fragments);
+    assert.deepEqual(captured.questions, [fragments.map(m => m.text).join('')]); assert.equal(captured.questionTurns, 1);
+    console.log(JSON.stringify({ passed: true, checks: ['question observer leaves input unchanged', 'native sequence preserved', 'question text captured', 'item boundaries preserved without changing joined text or turn counts', 'legacy observation remains supported'] })); return;
   }
   const args = process.argv.slice(2), option = (key, fallback) => { const i = args.indexOf(key); return i < 0 ? fallback : args.splice(i, 2)[1]; };
   const requestFile = option('--request'), cautionFile = option('--caution-request'), fixtureFile = option('--cases'), out = option('--out');
