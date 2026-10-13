@@ -49,6 +49,9 @@ final class AppState {
         self.configuration = configuration
         self.api = APIClient(configuration: configuration)
         #if DEBUG
+        #if targetEnvironment(simulator)
+        if ScreenPreview.requested != nil { exploreDemo() }
+        #endif
         if ProcessInfo.processInfo.arguments.contains("--uitesting-preview") || ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") { exploreDemo() }
         if ProcessInfo.processInfo.arguments.contains("--uitesting-protection-onboarding") {
             exploreDemo()
@@ -323,7 +326,7 @@ final class AppState {
         await api.signOut()
     }
 
-    private func handleSessionFailure(_ error: Error) {
+    func handleSessionFailure(_ error: Error) {
         if case let APIError.service(_, status) = error, status == 401 || status == 403 { handle(error) }
     }
 

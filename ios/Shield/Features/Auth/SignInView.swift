@@ -10,7 +10,9 @@ struct SignInView: View {
     @State private var working = false
     @State private var error: String?
     @FocusState private var focusedField: Field?
+    @AccessibilityFocusState private var statusFocused: Status?
     private enum Field { case email, code }
+    private enum Status { case emailSent, error }
 
     var body: some View {
         NavigationStack {
@@ -21,16 +23,25 @@ struct SignInView: View {
                             .frame(width: 80, height: 80).clipShape(.rect(cornerRadius: 80 * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
                             .accessibilityHidden(true)
                         Text("Shield").font(.largeTitle.weight(.bold))
-                        Text("Sign in to see your calls.")
-                            .font(.title3).multilineTextAlignment(.center)
-                            .foregroundStyle(ShieldTheme.secondaryText)
+                        if !codeSent {
+                            Text("Help with unfamiliar calls")
+                                .font(.title2.bold()).multilineTextAlignment(.center)
+                            Text("Shield asks why someone is calling. You choose whether to answer.")
+                                .font(.body).multilineTextAlignment(.center)
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                        }
                     }
                     .frame(maxWidth: .infinity).padding(.top, 16)
 
                     VStack(alignment: .leading, spacing: 20) {
                         if waitingForLink {
-                            ScreenIntro(title: "Check your email", detail: "Open the link to sign in on this iPhone.", symbol: "envelope.badge")
+                            Text("Check your email").font(.title2.bold())
+                                .accessibilityAddTraits(.isHeader).accessibilityFocused($statusFocused, equals: .emailSent)
                             Text(email).font(.headline).textSelection(.enabled)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityLabel("Email sent to \(email)")
+                                .accessibilityIdentifier("sign-in-address")
+                            Text("Open your email app on this iPhone. Tap the sign-in link from Shield.")
                                 .fixedSize(horizontal: false, vertical: true)
                             Text("No email? Check Junk or Spam.")
                                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
@@ -40,9 +51,14 @@ struct SignInView: View {
                             }
                         } else {
                             if codeSent {
-                                Text(usesEmailLink ? "Enter your email to finish signing in." : "Enter the code from your email.")
-                                    .font(.headline).accessibilityAddTraits(.isHeader)
+                                Text(usesEmailLink ? "Finish signing in" : "Enter your email code")
+                                    .font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                                Text(usesEmailLink ? "Use the same email address where you received the link." : "Type the code we sent to \(email).")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
+                            Text(codeSent && !usesEmailLink ? "Email code" : "Your email")
+                                .font(.headline)
                             Group {
                                 if codeSent && !usesEmailLink {
                                     TextField("Email code", text: $code, prompt: Text("Email code").foregroundStyle(ShieldTheme.secondaryText))
@@ -50,7 +66,9 @@ struct SignInView: View {
                                         .focused($focusedField, equals: .code)
                                         .accessibilityLabel("Email code")
                                 } else {
-                                    TextField("Email address", text: $email, prompt: Text("Email address").foregroundStyle(ShieldTheme.secondaryText))
+                                    HStack(spacing: ShieldTheme.Spacing.regular) {
+                                    TextField("Email address", text: $email, prompt: Text("you@example.com").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
+                                        .lineLimit(1...3)
                                         .textContentType(.emailAddress).keyboardType(.emailAddress)
                                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                                         .focused($focusedField, equals: .email).accessibilityLabel("Email address")
@@ -59,14 +77,25 @@ struct SignInView: View {
                                             if value == AppState.testAccountSequence { focusedField = nil; model.exploreTestAccount() }
                                         }
                                         #endif
+                                        if !email.isEmpty && focusedField == .email {
+                                            Button("Clear") { email = ""; error = nil }
+                                                .font(.subheadline).frame(minWidth: 52, minHeight: ShieldTheme.Layout.minimumTarget)
+                                                .accessibilityLabel("Clear email address").accessibilityInputLabels(["Clear", "Clear email address"])
+                                        }
+                                    }
                                 }
                             }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            .padding(16).frame(minHeight: 56)
+                            .padding(16)
                             .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
                             .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? Color.primary.opacity(contrast == .increased ? 0.55 : 0.12) : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
                             .disabled(working).submitLabel(.continue)
                             .onSubmit { if canSubmit { Task { await submit() } } }
+                            if !email.isEmpty && !validEmail && focusedField != .email && !(codeSent && !usesEmailLink) {
+                                Text("Check the email address, including the part after @.")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                             Button { Task { await submit() } } label: {
                                 ShieldActionLabel(title: buttonTitle, isWorking: working)
                             }
@@ -81,6 +110,7 @@ struct SignInView: View {
                         if let error {
                             ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle")
                                 .accessibilityIdentifier("sign-in-error")
+                                .accessibilityFocused($statusFocused, equals: .error)
                         }
                         if model.configuration.baseURL == nil {
                             Text("Sign-in isn’t ready. You can try the sample app.")
@@ -91,6 +121,10 @@ struct SignInView: View {
                     if !codeSent {
                         Button("Try sample app") { model.exploreDemo() }
                             .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
+                    }
+                    if let origin = model.configuration.baseURL {
+                        Link("Privacy", destination: origin.appending(path: "privacy"))
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
                     }
                 }
                 .padding(24)
@@ -105,6 +139,12 @@ struct SignInView: View {
             .scrollDismissesKeyboard(.interactively)
             .background(ShieldTheme.surface)
             .toolbar(.hidden, for: .navigationBar)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { focusedField = nil }
+                }
+            }
         }
         .task {
             #if DEBUG
@@ -142,7 +182,7 @@ struct SignInView: View {
         Button { Task { await submit() } } label: {
             HStack(spacing: 8) {
                 if working { ProgressView() }
-                Text("Resend link")
+                Text(working ? "Sending…" : "Resend link")
             }
             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
         }
@@ -163,10 +203,19 @@ struct SignInView: View {
 
     private var canSubmit: Bool {
         !working && model.configuration.baseURL != nil &&
-        (codeSent && !usesEmailLink ? code.count >= 6 : email.contains("@"))
+        validEmail && (!(codeSent && !usesEmailLink) || code.count >= 6)
+    }
+
+    private var validEmail: Bool {
+        let address = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let parts = address.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2, !parts[0].isEmpty, !address.contains(where: \.isWhitespace) else { return false }
+        let domain = parts[1].split(separator: ".", omittingEmptySubsequences: false)
+        return domain.count >= 2 && domain.allSatisfy { !$0.isEmpty }
     }
 
     private var buttonTitle: String {
+        if working { return codeSent && (!usesEmailLink || !code.isEmpty) ? "Signing in…" : "Sending email…" }
         if usesEmailLink {
             if !code.isEmpty { return "Sign in" }
             return codeSent ? "Resend link" : "Continue"
@@ -182,7 +231,7 @@ struct SignInView: View {
         codeSent = true
         code = receivedCode
         // Do not take an email address from the URL. A cold launch asks the user for it.
-        if email.contains("@") { await submit() }
+        if validEmail { await submit() }
         else { focusedField = .email }
     }
 
@@ -205,7 +254,8 @@ struct SignInView: View {
                 try await model.api.requestCode(email: email.trimmingCharacters(in: .whitespacesAndNewlines))
                 codeSent = true
                 focusedField = usesEmailLink ? nil : .code
+                statusFocused = usesEmailLink ? .emailSent : nil
             }
-        } catch { self.error = error.localizedDescription }
+        } catch { self.error = error.localizedDescription; statusFocused = .error }
     }
 }

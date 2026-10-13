@@ -15,37 +15,54 @@ struct ProtectionOnboardingView: View {
     @State private var working = false
     @State private var error: String?
     @State private var showingSaveError = false
+    @AccessibilityFocusState private var headingFocused: Bool
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if monitoring != nil && asksHelperAlerts {
+                        FlowProgress(title: "Your choices", current: onHelperStep ? 2 : 1, total: 2)
+                    }
                     Text(showsProtection ? "Help while you talk" : "Let a helper know")
-                        .font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                        .font(.title.bold()).accessibilityAddTraits(.isHeader)
+                        .id("choice-heading").accessibilityFocused($headingFocused)
                     if showsProtection {
+                        CallProtectionExplanation()
                         Toggle("Check calls while I talk", isOn: $enabled)
                             .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            .padding(ShieldTheme.Spacing.content)
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
                             .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
-                        CallProtectionExplanation()
                     }
                     if showsHelpers {
+                        Text("People you invite can get an alert when Shield stops a scam call or call checks are paused.")
                         Toggle("Let my helpers know", isOn: $alertHelpers)
                             .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            .padding(ShieldTheme.Spacing.content)
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
                             .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
-                        Text("People you share with can get an alert when Shield stops a scam call, a blocked caller tries again, or call checks are paused.")
                         DisclosureGroup("What does the alert say?") {
-                            Text("It includes your name. It doesn’t include a caller’s words or number.")
+                            Text("It includes your name, but no caller’s words or number. Helpers can also be told when a blocked caller tries again.")
                                 .foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
                 }
+                .id("choice-top")
                 .padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
+            }
+            .id(onHelperStep)
+            .onChange(of: onHelperStep) { _, _ in
+                proxy.scrollTo("choice-top", anchor: .top)
+                headingFocused = true
+            }
             }
             .background(ShieldTheme.surface)
             .safeAreaInset(edge: .bottom) {
                 Button { if showsProtection && asksHelperAlerts { onHelperStep = true } else { Task { await save() } } } label: {
-                    ShieldActionLabel(title: showsProtection && asksHelperAlerts ? "Next" : "Save my choice", isWorking: working)
+                    ShieldActionLabel(title: working ? "Saving…" : showsProtection && asksHelperAlerts ? "Next" : "Save my choice", isWorking: working)
                 }
                 .shieldPrimaryButton().disabled(working).accessibilityIdentifier("onboarding-protection-continue")
                 .padding(20).background(ShieldTheme.surface)

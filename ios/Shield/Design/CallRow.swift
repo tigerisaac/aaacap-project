@@ -5,6 +5,7 @@ struct CallRow: View {
     let call: CallRecord
     var showsNumber = true
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
     @ScaledMetric(relativeTo: .body) private var dotSize = 9.0
 
     private var number: String { PhoneDisplay.format(call.callerNumber) }
@@ -18,7 +19,7 @@ struct CallRow: View {
         case .missed: "Missed call"
         case .held: "Stopped"
         case .verification: "Check first"
-        case .voicemail: "Voicemail"
+        case .voicemail: call.voicemail?.kindLabel ?? "Voicemail"
         default: call.outcome.label
         }
     }
@@ -28,7 +29,7 @@ struct CallRow: View {
         !title.localizedCaseInsensitiveContains(outcomeLabel)
     }
 
-    private var unheard: Bool { call.voicemail != nil && call.voicemail?.heardAt == nil }
+    private var unheard: Bool { call.voicemail != nil && call.voicemail?.heardAt == nil && call.voicemail?.status != "removed" }
 
     private var callTime: String {
         let time = call.occurredAt.formatted(date: .omitted, time: .shortened)
@@ -39,13 +40,13 @@ struct CallRow: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
+            if unheard && !typeSize.isAccessibilitySize && !differentiateWithoutColor {
             Circle().fill(ShieldTheme.message)
                 .frame(width: dotSize, height: dotSize)
-                .opacity(unheard ? 1 : 0)
-                .accessibilityLabel(unheard ? "Unheard message" : "")
-                .accessibilityHidden(!unheard)
+                .accessibilityHidden(true)
+            }
             VStack(alignment: .leading, spacing: 4) {
-                if typeSize.isAccessibilitySize {
+                if typeSize >= .xxxLarge {
                     titleText
                     timeText
                 } else {
@@ -56,10 +57,14 @@ struct CallRow: View {
                     }
                 }
                 detailLine
+                if unheard && (typeSize.isAccessibilitySize || differentiateWithoutColor) {
+                    Text("New message").font(.subheadline).foregroundStyle(ShieldTheme.message)
+                }
             }
         }
         .padding(.vertical, 8)
         .accessibilityElement(children: .combine)
+        .accessibilityValue(unheard ? "New message" : "")
     }
 
     private var titleText: some View {
@@ -75,7 +80,24 @@ struct CallRow: View {
     }
 
     private var detailLine: some View {
-        // Wraps rather than truncating at larger text sizes.
+        Group {
+            if typeSize >= .xxxLarge {
+                VStack(alignment: .leading, spacing: 6) {
+                    outcomeText
+                    numberText
+                }
+            } else {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    outcomeText
+                    numberText
+                }
+            }
+        }
+        .font(.subheadline)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var outcomeText: some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Image(systemName: call.outcome.symbol)
                 .foregroundStyle(ShieldTheme.color(for: call.outcome))
@@ -84,10 +106,12 @@ struct CallRow: View {
             if showsOutcomeWord {
                 Text(outcomeLabel).foregroundStyle(ShieldTheme.color(for: call.outcome)).fontWeight(.medium)
             }
-            if showsNumber && title != number {
-                Text(number).foregroundStyle(ShieldTheme.secondaryText)
-            }
         }
-        .font(.subheadline)
+    }
+
+    @ViewBuilder private var numberText: some View {
+        if showsNumber && title != number {
+            Text(number).foregroundStyle(ShieldTheme.secondaryText)
+        }
     }
 }

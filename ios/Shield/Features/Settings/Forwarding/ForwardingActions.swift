@@ -38,7 +38,7 @@ struct ForwardingActions: View {
         switch model.step {
         case .overview: return "Set up my phone"
         case .consent: return "Agree and continue"
-        case .save: return "Save Shield to Contacts"
+        case .save: return "Save Shield"
         case .settings: return "I selected Silence"
         case .liveVoicemail: return "Live Voicemail is off"
         case .ring, .test:
@@ -67,7 +67,7 @@ private struct RestorationConfirmationAction: View {
     }
     private var title: String {
         switch index {
-        case 3: "Screen Unknown Callers is Never"
+        case 3: "I selected Never"
         case 4: "Live Voicemail is on"
         case 5: "I answered an ordinary call"
         default: "My normal voicemail works"

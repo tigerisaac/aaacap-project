@@ -19,8 +19,8 @@ struct VoicemailPreviewCard: View {
             }
             .accessibilityIdentifier("keep-sample-message")
             }
-        } header: { Text("Sample summary").foregroundStyle(ShieldTheme.secondaryText) } footer: {
-            Text("Sample features only. Real messages don’t change.").foregroundStyle(ShieldTheme.secondaryText)
+        } footer: {
+            Text("Sample features only. Real messages don’t change.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
         }
     }
 }

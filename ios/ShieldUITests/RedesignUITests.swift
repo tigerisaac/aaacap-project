@@ -7,7 +7,7 @@ final class RedesignUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Your account couldn’t load"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Use an invitation"].exists)
         XCTAssertFalse(app.staticTexts["Welcome to Shield"].exists)
-        app.buttons["Try Again"].tap()
+        app.buttons["Try again"].tap()
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["Your account couldn’t load"].exists)
     }
@@ -30,7 +30,7 @@ final class RedesignUITests: XCTestCase {
     func testWelcomeAndRecoverableSignInError() {
         let app = launch(["--uitesting-auth-error"])
         XCTAssertTrue(app.textFields["Email address"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Sign in to see your calls."].exists)
+        XCTAssertTrue(app.staticTexts["Help with unfamiliar calls"].exists)
         capture(app, "Redesign Sign in")
         app.textFields["Email address"].tap()
         app.textFields["Email address"].typeText("synthetic@example.com")
@@ -44,7 +44,7 @@ final class RedesignUITests: XCTestCase {
 
     func testSignInReturnAndLoadingStayInContext() {
         var app = launch(["--uitesting-auth-return", "--uitesting-auth-error"])
-        XCTAssertTrue(app.staticTexts["Enter your email to finish signing in."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Finish signing in"].waitForExistence(timeout: 5))
         let email = app.textFields["Email address"]
         XCTAssertTrue(email.exists)
         XCTAssertFalse(app.buttons["Sign in"].isEnabled)
@@ -59,7 +59,7 @@ final class RedesignUITests: XCTestCase {
         app = launch(["--uitesting-auth-loading"])
         XCTAssertTrue(app.textFields["Email address"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.textFields["Email address"].isEnabled)
-        XCTAssertFalse(app.buttons["Continue"].isEnabled)
+        XCTAssertFalse(app.buttons["Sending email…"].isEnabled)
         XCTAssertTrue(app.activityIndicators.firstMatch.exists)
         capture(app, "Redesign Sign in loading")
     }
@@ -99,7 +99,7 @@ final class RedesignUITests: XCTestCase {
             let expected = state == "loading" ? "Getting your calls…" : state == "error" ? "Your calls couldn’t load" : "No calls yet"
             XCTAssertTrue(app.staticTexts[expected].waitForExistence(timeout: 5))
             if state != "empty" { XCTAssertFalse(app.staticTexts["No calls yet"].exists) }
-            if state == "error" { XCTAssertTrue(app.buttons["Try Again"].exists); XCTAssertFalse(app.alerts.firstMatch.exists) }
+            if state == "error" { XCTAssertTrue(app.buttons["Try again"].exists); XCTAssertFalse(app.alerts.firstMatch.exists) }
             capture(app, "Redesign Calls \(state)")
         }
     }

@@ -2,9 +2,10 @@ import SwiftUI
 
 struct PersonPicker: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        if model.people.count > 1 {
+        if !typeSize.isAccessibilitySize, model.people.count > 1 {
         Menu {
             ForEach(model.people) { person in
                 Button {
@@ -23,7 +24,8 @@ struct PersonPicker: View {
             .frame(minHeight: 44)
         }
         .accessibilityLabel("Viewing \(model.person?.name ?? "people"). Change person.")
-        } else if !model.isOwner {
+        .accessibilityInputLabels([model.person?.name ?? "People", "Change person"])
+        } else if !typeSize.isAccessibilitySize, !model.isOwner {
             Text(model.person?.name ?? "Shared calls").font(.headline)
         }
     }

@@ -9,7 +9,7 @@ npm run ios:generate
 open ios/Shield.xcodeproj
 ```
 
-Select the shared **Shield** scheme and an iPhone simulator, then press **⌘R**. On 2026-09-21 the license blocker was cleared, the simulator build passed with Xcode 27, and Xcode launched Shield on an iPhone 17 running iOS 27. Installation and the running app process were independently verified. The source navigator is grouped by app feature. Automated UI tests and a rendered/accessibility review remain to be run; simulator-window inspection timed out, so no visual approval is claimed.
+Select the shared **Shield** scheme and an iPhone simulator, then press **⌘R**. The source navigator is grouped by app feature. The current source and simulator review, including unresolved native accessibility diagnostics, is recorded in [the senior-polish audit](../docs/IOS-POLISH-AUDIT.md). Deployment and physical-phone evidence are recorded separately in [Status](../docs/STATUS.md).
 
 Use **Try sample app** for offline synthetic activity. Sample mode never changes phone routing or places calls. To use real data, point `Config/Local.xcconfig` at `shield-calls-isaac.web.app` and sign in with the email link.
 
@@ -39,12 +39,12 @@ On October 12, the app was simplified for older adults, with calls and voicemail
 
 - **Home:** a short phone status, recent voicemail, and recent calls. Missing or stale status is never described as on. Setup problems can be opened when needed; a healthy setup check adds no extra block.
 - **Calls:** filters, history, short outcomes, and details on request. History includes only calls reaching Shield. Outcomes use everyday words such as Answered and Stopped.
-- **Voicemail:** a separate inbox, authorized playback/deletion, and access to removed messages. Sample data also previews summaries and Keep this message; these features do not change real-message storage or expiry.
+- **Messages:** voicemail and saved notices, readable summaries, authorized playback/deletion, and eligible legacy removed messages. Audio offers pause/resume, progress and Start over. Sample data also previews Keep this message; it does not change real-message storage or expiry.
 - **More → Check a text:** pasted text or local OCR of a picture. The person agrees before sending text for a scam check; the picture itself is not uploaded. Checks cannot prove who sent a message.
-- **More → Family & friends:** person switching, one-use invitations, optional voicemail sharing and revocation. Helpers can see shared calls; phone settings stay with the person using the phone.
+- **More → Family & friends:** person switching, one-use invitations, optional message sharing and revocation. Helpers can see shared calls; phone settings stay with the person using the phone.
 - **More → Settings:** guided phone setup and call checks, saved Shield contact, contact updates, checks while talking, trusted numbers, alerts, automatic text-check instructions, and disconnection/deletion requests. The setup menu now calls restoration **Disconnect Shield**.
 
-The [senior design notes](../docs/IOS-SENIOR-DESIGN.md) record the screen simplification and the work needed to turn sample voicemail summaries and keeping into real features.
+The [senior design notes](../docs/IOS-SENIOR-DESIGN.md) preserve the earlier design history. The [current polish audit](../docs/IOS-POLISH-AUDIT.md) records onboarding, text scaling, controls and recovery corrections. Real summaries follow the service implementation below; permanent keeping remains a sample-only feature.
 
 Each forwarding and restoration step automatically copies its current Tello code and presents Apple’s native Phone banner. Tap Open once, choose Keypad, tap above the numbers, choose Paste, and tap Call. Touch and hold is a fallback if Paste does not appear. The window-scene presentation stays independent of scrolling. Three short instructions cover Open, Paste, and Call. Returning dismisses the banner and replaces them with a reminder to check Tello’s result. Show Phone again restores the instructions and recopies the same code; Copy again preserves the result reminder. If the banner cannot load, the screen directs the person to the green Phone app on the Home Screen. The complete code stays on the device-local pasteboard for 30 minutes. Copying, switching apps, and returning never confirm a carrier change. Each connection needs the person’s explicit carrier confirmation, and a separate successful call probe is required for verification. No installed Shortcut is used.
 
@@ -56,7 +56,7 @@ The normal signed Debug build was reinstalled and launched on the enrolled iPhon
 
 Physical link experiments on October 10 rejected `mobilephone://`, `mobilephone-keypad://`, and `vmshow://`; empty `tel://` showed an empty Call confirmation and was canceled. Further empty-link tests rejected `phone:`, `dialer:`, `x-apple-phone:` and `callto:`; `telephony:`, `telprompt:` and `tel:` displayed empty Call confirmations and were canceled. A window-scene StoreKit overlay for Apple’s Phone app (1146562108) subsequently opened Phone successfully from the integrated onboarding screen. The full synthetic forwarding code pasted intact, and returning retained the unconfirmed step. Dismissal and repeated opening were physically verified. The signed build was installed on the enrolled iPhone. Two targeted simulator tests passed after the launcher integration, covering copy/next-code reset and no automatic dialing or carrier confirmation. That initial version needed Copy → Open → Paste; the later automatic preparation below removes the Copy tap. Automatic prefill remains unresolved. Apple’s documented `tel:` scheme initiates a call confirmation and restricts carrier-code characters ([Phone Links](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html)); Apple DTS is investigating the iOS 27 forwarding-link restriction ([Developer Forums](https://developer.apple.com/forums/thread/847164)).
 
-Manual saved-number calls require the user to tap a native call button. No incoming caller-provided number becomes an approved callback destination. Native Contacts access is requested only to save the Shield DID; the existing address book is not uploaded.
+Manual saved-number calls require the user to tap a native call button. No incoming caller-provided number becomes an approved callback destination. Saving Shield and sharing the iPhone calling list require Contacts permission. The calling-list update sends contact names and phone numbers; local backups preserve removed phone fields for restoration. Other contact fields are not uploaded by that path.
 
 APNs alerts contain no caller/message details. Registration is refreshed for authorized people after sign-in/foreground refresh; signing out removes that subject’s server registrations when the logout request succeeds. If the device is offline, provider token cleanup can be delayed; the generic alert does not reveal call content.
 
@@ -90,7 +90,7 @@ Enable through Messages → Filters → Manage Filtering → Text Message Filter
 
 ## Required device verification
 
-Run the UI tests and inspect a small supported iPhone and a larger one in light/dark mode, default/largest accessibility text, VoiceOver and Reduce Motion. Check keyboard dismissal, menu/sheet affordances, safe-area layout, contrast, large text and touch targets. Compilation and simulator launch have passed; no rendered or accessibility pass has been completed yet.
+Before claiming device accessibility, inspect a small supported iPhone and a larger one in light/dark mode, default/largest accessibility text, VoiceOver and Reduce Motion. Check keyboard dismissal, menu/sheet affordances, safe-area layout, contrast, large text and touch targets. Automated synthetic journeys and rendered simulator review have passed as recorded in [the audit](../docs/IOS-POLISH-AUDIT.md); the overall native diagnostic suite is not clean, and physical VoiceOver and older-participant usability have not been established.
 
 Test login refresh, logout during slow requests, switching participants during loads, expired invitations, revoked history/voicemail access, network failures, and stopping audio on navigation/backgrounding. Then test live APNs, contact saving, on-device OCR, message deferral and actual carrier routing. Simulator tests cannot validate forwarding, conditional call delivery, native voicemail or a physical private acceptance step.
 

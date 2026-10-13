@@ -12,27 +12,44 @@ struct SavedNumbersView: View {
     @Environment(\.openURL) private var openURL
     @State private var items: [SavedNumber] = []
     @State private var showingAdd = false
+    @State private var loading = true
+    @State private var loadError: String?
+    @State private var loadAttempts = 0
+    @State private var pendingRemoval: SavedNumber?
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         List {
+            if let loadError {
+                Section {
+                    ShieldLoadFailure(title: "Numbers couldn’t load", detail: loadError) { Task { await load() } }
+                }
+            }
+            if loading && items.isEmpty {
+                Section { ShieldLoadingView(title: "Getting your numbers…") }
+            } else if items.isEmpty && loadError == nil {
+                Section {
+                    ContentUnavailableView("No numbers yet", systemImage: "phone",
+                        description: Text("Save a number from a card, bill, or official website."))
+                    Button("Add a number", systemImage: "plus") { showingAdd = true }
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
+                }
+            }
             Section {
                 ForEach(items) { item in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(item.label).font(.headline)
-                            Text(PhoneDisplay.format(item.phone)).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        if kind == .destinations {
-                            Button("Call", systemImage: "phone.fill") { call(item.phone) }
-                                .accessibilityLabel("Call \(item.label)")
-                                 .labelStyle(.titleAndIcon)
-                                .buttonStyle(.bordered).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                .disabled(model.isDemo)
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                        Text(item.label).font(.headline).fixedSize(horizontal: false, vertical: true)
+                        Text(PhoneDisplay.format(item.phone)).foregroundStyle(ShieldTheme.secondaryText)
+                            .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                        if typeSize.isAccessibilitySize {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) { numberActions(item) }
+                        } else {
+                            HStack(spacing: ShieldTheme.Spacing.content) { numberActions(item) }
                         }
                     }
+                    .padding(.vertical, ShieldTheme.Spacing.compact)
                     .swipeActions {
-                        Button("Remove", role: .destructive) { Task { await remove(item) } }
+                        Button("Remove", role: .destructive) { pendingRemoval = item }
                             .disabled(model.isDemo)
                     }
                 }
@@ -42,26 +59,47 @@ struct SavedNumbersView: View {
                      : "Unanswered calls from these numbers go to voicemail. A displayed number can be faked.").foregroundStyle(ShieldTheme.secondaryText)
             }
         }
-        .overlay {
-            if items.isEmpty {
-                ContentUnavailableView("No numbers yet", systemImage: "person.crop.square", description: Text("Add a number you already know."))
-            }
-        }
         .shieldListStyle()
         .navigationTitle(kind.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button("Add number", systemImage: "plus") { showingAdd = true }
+                Button("Add", systemImage: "plus") { showingAdd = true }
+                    .labelStyle(.titleAndIcon).accessibilityLabel("Add number")
                     .disabled(model.isDemo)
             }
         }
         .sheet(isPresented: $showingAdd, onDismiss: { Task { await load() } }) { AddNumberView(kind: kind) }
         .task { await load() }
         .refreshable { await load() }
+        .confirmationDialog("Remove this saved number?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } }), titleVisibility: .visible) {
+            Button("Remove number", role: .destructive) { if let item = pendingRemoval { Task { await remove(item) } } }
+            Button("Keep number", role: .cancel) { pendingRemoval = nil }
+        } message: { Text("You can add it again later.") }
+    }
+
+    @ViewBuilder private func numberActions(_ item: SavedNumber) -> some View {
+        if kind == .destinations {
+            Button { call(item.phone) } label: {
+                Label("Call", systemImage: "phone.fill").frame(minHeight: ShieldTheme.Layout.minimumTarget)
+            }
+            .accessibilityLabel("Call \(item.label)").accessibilityInputLabels(["Call \(item.label)", "Call"])
+            .shieldSecondaryButton().disabled(model.isDemo)
+        }
+        Button("Remove", systemImage: "minus.circle", role: .destructive) { pendingRemoval = item }
+            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
+            .accessibilityLabel("Remove \(item.label)")
     }
 
     private func load() async {
+        loading = true
+        loadError = nil
+        defer { loading = false }
+        if let failure = PreviewScenario.loadFailure("numbers", attempt: loadAttempts, preview: model.isPreview) {
+            loadAttempts += 1
+            loadError = failure
+            return
+        }
         if model.isPreview {
             items = [SavedNumber(id: UUID(), label: "Sample clinic", phone: "+13125550148", provenance: "card", createdAt: .now)]
             return
@@ -71,13 +109,16 @@ struct SavedNumbersView: View {
             let response: APIResponses.Numbers = try await model.api.send(kind.path, participantID: personID)
             guard model.selectedPersonID == personID else { return }
             items = response.items
-        } catch { model.handle(error) }
+        } catch is CancellationError { return }
+        catch { loadError = error.localizedDescription; model.handleSessionFailure(error) }
     }
 
     private func remove(_ item: SavedNumber) async {
+        guard !model.isPreview, !model.isDemo else { return }
         do {
             let _: APIResponses.Empty = try await model.api.send("\(kind.path)/\(item.id)", method: "DELETE", participantID: model.selectedPersonID)
             items.removeAll { $0.id == item.id }
+            pendingRemoval = nil
         } catch { model.handle(error) }
     }
 

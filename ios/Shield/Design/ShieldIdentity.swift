@@ -37,6 +37,7 @@ struct ScreenIntro: View {
 }
 
 struct ActionRow: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
     @ScaledMetric(relativeTo: .title3) private var symbolWidth = 36.0
     let title: String
     var detail: String = ""
@@ -44,8 +45,10 @@ struct ActionRow: View {
     var color: Color = ShieldTheme.action
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
-            Image(systemName: symbol).font(.title3).foregroundStyle(color)
-                .frame(width: symbolWidth).accessibilityHidden(true)
+            if !typeSize.isAccessibilitySize {
+                Image(systemName: symbol).font(.title3).foregroundStyle(color)
+                    .frame(width: symbolWidth).accessibilityHidden(true)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.body).foregroundStyle(Color.primary)
                 if !detail.isEmpty {
@@ -66,11 +69,9 @@ struct FlowProgress: View {
     let total: Int
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(title).font(.subheadline.weight(.semibold))
-                Spacer(minLength: 8)
-                Text("\(current) of \(total)").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-            }
+            Text("Step \(current) of \(total)")
+                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
             ProgressView(value: Double(current), total: Double(total)).tint(ShieldTheme.action)
         }
         .accessibilityElement(children: .ignore)
@@ -86,6 +87,6 @@ struct ShieldSection<Content: View>: View {
         self.title = title; self.content = content()
     }
     var body: some View {
-        Section { content } header: { Text(title).font(.headline).foregroundStyle(ShieldTheme.secondaryText).textCase(nil) }
+        Section { content } header: { Text(title).font(.headline).foregroundStyle(ShieldTheme.secondaryText).textCase(nil).accessibilityAddTraits(.isHeader) }
     }
 }

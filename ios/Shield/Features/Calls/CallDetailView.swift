@@ -4,6 +4,7 @@ struct CallDetailView: View {
     let initialCall: CallRecord
     @Environment(AppState.self) private var model
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
     @State private var updatedCall: CallRecord?
     @State private var events: [CallEvent] = []
     @State private var player = VoicePlayer()
@@ -12,11 +13,23 @@ struct CallDetailView: View {
     @State private var confirmRestore = false
     @State private var restoring = false
     @State private var isVisible = false
+    @State private var deleting = false
+    @State private var loadError: String?
+    @State private var playbackError: String?
+    @State private var showingPlaybackError = false
+    @State private var loadingDetails = false
+    @State private var playedStatusFailed = false
+    @State private var updatingPlayedStatus = false
+    @State private var playbackRequest = UUID()
     private var call: CallRecord { updatedCall ?? initialCall }
     private var messageRemoved: Bool { call.voicemail?.status == "removed" }
+    private var usesAudioFixture: Bool { PreviewScenario.requested("audio", preview: model.isPreview) }
 
     var body: some View {
         List {
+            if let loadError {
+                Section { ShieldLoadFailure(title: "Call details couldn’t update", detail: loadError) { Task { await load() } } }
+            }
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
@@ -25,7 +38,7 @@ struct CallDetailView: View {
                     if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
                         OutcomeBadge(outcome: call.outcome)
                     }
-                    if !messageRemoved {
+                    if call.voicemail == nil {
                         Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
                             .foregroundStyle(ShieldTheme.secondaryText)
                     }
@@ -50,8 +63,8 @@ struct CallDetailView: View {
                     else { Section {
                         Text(summary).font(.title3).fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("message-summary")
-                    } header: { Text(model.isDemo ? "Sample summary" : "Summary") } footer: {
-                        Text("Generated from the message. The caller’s claims haven’t been verified.")
+                    } footer: {
+                        Text("The caller’s claims haven’t been verified.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     } }
                 }
                 if message.summary == nil, message.status == "ready" {
@@ -68,13 +81,36 @@ struct CallDetailView: View {
             }
             if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
                 VoicemailPreviewCard(call: call)
-            } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen {
+            } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen || usesAudioFixture {
                 Section {
                     if voicemail.status == "ready", model.canListen {
                         Text(voicemail.durationLabel).foregroundStyle(ShieldTheme.secondaryText)
+                        if player.hasAudio {
+                            MessagePlaybackProgress(player: player) {
+                                Task {
+                                    do { try await player.restart() }
+                                    catch is CancellationError { return }
+                                    catch { playbackError = error.localizedDescription }
+                                }
+                            }
+                        }
+                        if playedStatusFailed {
+                            Text("You can listen. Shield couldn’t mark this message as played.")
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                            Button(updatingPlayedStatus ? "Updating…" : "Update played status") {
+                                Task { await markPlayed(voicemail) }
+                            }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            .disabled(updatingPlayedStatus)
+                        }
+                        DisclosureGroup("Can’t hear the message?") {
+                            Text("Turn up the volume with the buttons on the side of your iPhone.")
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                        }
                         if model.isOwner {
-                            Button("Delete message", role: .destructive) { confirmDelete = true }
+                            Button(deleting ? "Deleting…" : "Delete message", role: .destructive) { confirmDelete = true }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                .disabled(deleting || model.isDemo)
                                 .confirmationDialog("Delete this message?", isPresented: $confirmDelete, titleVisibility: .visible) {
                                     Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
                                     Button("Keep message", role: .cancel) {}
@@ -85,8 +121,12 @@ struct CallDetailView: View {
                         Text("This person hasn’t shared their messages with you.")
                             .foregroundStyle(ShieldTheme.secondaryText)
                     } else {
-                        Text(voicemail.status == "pending" ? "Your message is getting ready." : "This message can’t be played.")
+                        Text(voicemail.status == "pending" ? "Your message is getting ready. You can come back later." : "This message can’t be played.")
                             .foregroundStyle(ShieldTheme.secondaryText)
+                        if voicemail.status == "pending" {
+                            Button(loadingDetails ? "Checking…" : "Check again") { Task { await load() } }
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(loadingDetails)
+                        }
                     }
                 }
             }
@@ -110,9 +150,11 @@ struct CallDetailView: View {
                     Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
                     if call.monitored == true { Text("Shield checked the words while you talked.") }
                     Text("Shield can’t prove who called.").foregroundStyle(ShieldTheme.secondaryText)
-                    if messageRemoved {
+                    if call.voicemail != nil {
                         Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
                             .foregroundStyle(ShieldTheme.secondaryText)
+                    }
+                    if messageRemoved {
                         Text("If you call back, use a number you already know.")
                         if model.isOwner {
                             NavigationLink("Find a trusted number", value: AppRoute.savedNumbers)
@@ -131,6 +173,7 @@ struct CallDetailView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 0) {
             if let voicemail = call.voicemail, messageRemoved, voicemail.isRestorable, model.canListen {
                 Button { confirmRestore = true } label: {
                     ShieldActionLabel(title: restoring ? "Bringing it back…" : "Bring back message", isWorking: restoring)
@@ -143,25 +186,41 @@ struct CallDetailView: View {
                 } message: { Text("Don’t call a number from the message. Use one you already know.") }
             }
             if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
-                if model.isDemo {
+                if model.isDemo && !usesAudioFixture {
                     Button { toggleSample() } label: {
                         ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
                     }
                     .shieldPrimaryButton().padding(16).background(ShieldTheme.surface)
                 } else if voicemail.status == "ready" {
                     Button { Task { await togglePlayback(voicemail) } } label: {
-                        ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Stop message" : "Listen to message", isWorking: player.loading)
+                        ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Pause message" : player.paused ? "Resume message" : "Listen to message", isWorking: player.loading)
                     }
                     .shieldPrimaryButton().disabled(player.loading).padding(16).background(ShieldTheme.surface)
                 }
             }
+            }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("message-action-area")
         }
         .navigationTitle(call.voicemail?.kindLabel ?? "Call")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
+        .refreshable { await load() }
+        .onChange(of: playbackError) { _, error in if error != nil { showingPlaybackError = true } }
+        .onChange(of: player.failure) { _, error in if let error { playbackError = error } }
+        .alert("Message couldn’t play", isPresented: $showingPlaybackError) {
+            if let voicemail = call.voicemail {
+                Button("Try again") { Task { await togglePlayback(voicemail) } }
+            }
+            Button("Cancel", role: .cancel) { playbackError = nil }
+        } message: { Text(playbackError ?? "Please try again.") }
         .onAppear { isVisible = true }
-        .onDisappear { isVisible = false; player.stop(); samplePlayer?.stop() }
-        .onChange(of: scenePhase) { _, phase in if phase != .active { player.stop(); samplePlayer?.stop() } }
+        .onDisappear { isVisible = false; stopPlayback() }
+        .onChange(of: scenePhase) { _, phase in if phase != .active { stopPlayback() } }
+        .onChange(of: model.selectedPersonID) { _, _ in stopPlayback(); dismiss() }
+        .onChange(of: model.canListen) { _, canListen in
+            if !canListen { stopPlayback() }
+        }
         .shieldListStyle()
     }
 
@@ -172,32 +231,99 @@ struct CallDetailView: View {
         speaker.play(VoicemailPreview.message(for: call))
     }
 
+    private func stopPlayback() {
+        playbackRequest = UUID()
+        player.stop()
+        samplePlayer?.stop()
+    }
+
     private func load() async {
+        loadError = nil
         guard !model.isPreview, let personID = model.selectedPersonID else { return }
+        loadingDetails = true
+        defer { loadingDetails = false }
         do {
             let response: APIResponses.CallDetail = try await model.api.send("/api/calls/\(initialCall.id)", participantID: personID)
             guard model.selectedPersonID == personID else { return }
             updatedCall = response.call
             events = response.events
-        } catch { model.handle(error) }
+        } catch is CancellationError { return }
+        catch { loadError = error.localizedDescription; model.handleSessionFailure(error) }
     }
 
     private func togglePlayback(_ voicemail: Voicemail) async {
-        if player.playing { player.stop(); return }
-        guard let personID = model.selectedPersonID else { return }
-        player.loading = true
-        defer { player.loading = false }
+        guard isVisible, scenePhase == .active, model.signedIn, model.canListen, !player.loading else { return }
+        playbackError = nil
+        if player.playing { player.pause(); return }
+        if player.paused {
+            do { try await player.resume() }
+            catch is CancellationError { return }
+            catch { playbackError = error.localizedDescription }
+            return
+        }
+        guard let personID = model.selectedPersonID, !model.isPreview || usesAudioFixture else { return }
+        let request = UUID()
+        playbackRequest = request
         do {
-            let data = try await model.api.data("/api/voicemails/\(voicemail.id)/audio", participantID: personID)
-            guard model.selectedPersonID == personID else { return }
-            guard isVisible, scenePhase == .active, model.signedIn else { return }
-            try player.play(data: data)
+            player.loading = true
+            defer { if playbackRequest == request { player.loading = false } }
+            let data: Data
+            #if DEBUG && targetEnvironment(simulator)
+            if usesAudioFixture {
+                if ProcessInfo.processInfo.arguments.contains("--uitesting-delayed-audio") { try await Task.sleep(for: .seconds(4)) }
+                data = PreviewAudio.data
+            } else {
+                data = try await model.api.data("/api/voicemails/\(voicemail.id)/audio", participantID: personID)
+            }
+            #else
+            data = try await model.api.data("/api/voicemails/\(voicemail.id)/audio", participantID: personID)
+            #endif
+            guard playbackRequest == request, model.selectedPersonID == personID else { return }
+            guard isVisible, scenePhase == .active, model.signedIn, model.canListen else { return }
+            try await player.play(data: data)
+        } catch is CancellationError { return }
+        catch {
+            guard playbackRequest == request else { return }
+            playbackError = error.localizedDescription
+            model.handleSessionFailure(error)
+            return
+        }
+        await markPlayed(voicemail)
+    }
+
+    private func markPlayed(_ voicemail: Voicemail) async {
+        guard model.canListen, model.signedIn, let personID = model.selectedPersonID, !updatingPlayedStatus else { return }
+        updatingPlayedStatus = true
+        defer { updatingPlayedStatus = false }
+        do {
+            #if DEBUG && targetEnvironment(simulator)
+            if usesAudioFixture {
+                if ProcessInfo.processInfo.arguments.contains("--uitesting-played-status-fails") {
+                    try await Task.sleep(for: .seconds(1))
+                    throw APIError.invalidResponse
+                }
+                playedStatusFailed = false
+                return
+            }
+            #endif
             let _: APIResponses.Empty = try await model.api.send("/api/voicemails/\(voicemail.id)/heard", method: "POST", participantID: personID)
-        } catch { model.handle(error) }
+            guard model.selectedPersonID == personID else { return }
+            playedStatusFailed = false
+        } catch is CancellationError { return }
+        catch {
+            guard model.selectedPersonID == personID else { return }
+            model.handleSessionFailure(error)
+            if case let APIError.service(_, status) = error, status == 401 || status == 403 {
+                stopPlayback()
+                playedStatusFailed = false
+                return
+            }
+            playedStatusFailed = model.signedIn && model.canListen
+        }
     }
 
     private func restore(_ voicemail: Voicemail) async {
-        guard let personID = model.selectedPersonID else { return }
+        guard let personID = model.selectedPersonID, !model.isPreview, !model.isDemo, !restoring else { return }
         restoring = true
         defer { restoring = false }
         do {
@@ -208,7 +334,10 @@ struct CallDetailView: View {
     }
 
     private func delete(_ voicemail: Voicemail) async {
-        player.stop()
+        guard !model.isPreview, !model.isDemo, !deleting else { return }
+        deleting = true
+        defer { deleting = false }
+        stopPlayback()
         do {
             let _: APIResponses.Empty = try await model.api.send("/api/voicemails/\(voicemail.id)", method: "DELETE", participantID: model.selectedPersonID)
             await load()

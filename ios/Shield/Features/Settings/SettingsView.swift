@@ -1,6 +1,4 @@
 import SwiftUI
-import UIKit
-import UserNotifications
 
 struct SettingsView: View {
     @Environment(AppState.self) private var model
@@ -10,7 +8,7 @@ struct SettingsView: View {
         List {
             if model.isOwner {
                 ShieldSection("Your phone") {
-                    NavigationLink(value: AppRoute.setup) { ActionRow(title: "Phone setup", detail: "Connect or disconnect Shield", symbol: "phone") }
+                    NavigationLink(value: AppRoute.setup) { ActionRow(title: "Phone setup", symbol: "phone") }
                     NavigationLink { CallProtectionView() } label: { ActionRow(title: "Checks while you talk", symbol: "waveform") }
                     NavigationLink { QuietHoursView() } label: { ActionRow(title: "Quiet hours", symbol: "moon") }
                     NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") }
@@ -24,10 +22,12 @@ struct SettingsView: View {
             }
             Section {
                 if model.service?.notificationsAvailable == true, !model.isDemo {
-                    Button { Task { await enableNotifications() } } label: { ActionRow(title: "Turn on message alerts", symbol: "bell") }
+                    NavigationLink { MessageAlertsView() } label: { ActionRow(title: "Message alerts", symbol: "bell") }
                 }
                 NavigationLink { MessageFilterSetupView() } label: { ActionRow(title: "Automatic text checks", symbol: "text.badge.checkmark") }
-                if let origin = model.configuration.baseURL { Link("Privacy", destination: origin.appending(path: "privacy")) }
+                if let origin = model.configuration.baseURL {
+                    Link(destination: origin.appending(path: "privacy")) { ActionRow(title: "Privacy", symbol: "lock.shield") }
+                }
             }
             Section {
                 let leavesSample = model.isDemo && !model.isTestAccount
@@ -45,10 +45,4 @@ struct SettingsView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func enableNotifications() async {
-        do {
-            let allowed = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
-            if allowed { UIApplication.shared.registerForRemoteNotifications() }
-        } catch { model.handle(error) }
-    }
 }

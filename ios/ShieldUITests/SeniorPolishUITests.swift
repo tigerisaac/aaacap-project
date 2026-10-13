@@ -1,0 +1,393 @@
+import XCTest
+
+@MainActor
+final class SeniorPolishUITests: XCTestCase {
+    override func setUp() { continueAfterFailure = false }
+
+    func testIncompleteEmailHasAnExplanationAndCanBeCorrected() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-auth-error"]
+        app.launch()
+        let email = app.textFields["Email address"]
+        XCTAssertTrue(email.waitForExistence(timeout: 5))
+        email.tap(); email.typeText("synthetic@")
+        app.buttons["Done"].tap()
+        XCTAssertFalse(app.buttons["Continue"].isEnabled)
+        XCTAssertTrue(app.staticTexts["Check the email address, including the part after @."].exists)
+        email.tap(); app.buttons["Clear email address"].tap(); email.typeText("synthetic@example.com")
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["Continue"].isEnabled)
+        app.buttons["Continue"].tap()
+        XCTAssertTrue(app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
+        XCTAssertEqual(email.value as? String, "synthetic@example.com")
+    }
+
+    func testFailedListsHaveRecoveryWithoutFalseEmptyClaims() {
+        let cases = [("numbers", "Numbers couldn’t load", "No numbers yet", "Sample clinic"),
+                     ("blocked", "Blocked numbers couldn’t load", "No blocked numbers", "(312) 555-0199"),
+                     ("contacts", "Contacts couldn’t load", "No contacts shared yet", "Jamie"),
+                     ("quiet", "Quiet hours couldn’t load", "", "Quiet hours"),
+                     ("setup", "Phone setup couldn’t load", "", "Phone setup is done with a helper, one step at a time."),
+                     ("sharing", "Your helpers couldn’t load", "No one has access yet.", "Sign in to manage sharing.")]
+        for (screen, error, empty, recovered) in cases {
+            let app = launch(screen, extra: ["--uitesting-load-failure"])
+            let notice = app.staticTexts[error]
+            reveal(notice, in: app)
+            XCTAssertTrue(notice.exists, screen)
+            if !empty.isEmpty { XCTAssertFalse(app.staticTexts[empty].exists, screen) }
+            capture(app, "polish-\(screen)-error")
+            let retry = app.buttons["Try again"].firstMatch
+            reveal(retry, in: app); retry.tap()
+            XCTAssertFalse(notice.waitForExistence(timeout: 1), screen)
+            XCTAssertTrue(app.staticTexts[recovered].waitForExistence(timeout: 5) || app.switches[recovered].exists, screen)
+        }
+    }
+
+    func testAddNumberKeepsLabelsAndInputAfterAnInterruptedSave() {
+        let app = launch("add-number")
+        let name = app.textFields["Name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        name.tap(); name.typeText("My clinic")
+        let phone = app.textFields["Phone number"]
+        phone.tap(); phone.typeText("5550100")
+        app.buttons["Done"].tap()
+        XCTAssertFalse(app.buttons["Save number"].isEnabled)
+        phone.tap(); app.buttons["Clear phone number"].tap(); phone.typeText("3125550100")
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["Save number"].isEnabled)
+        XCTAssertTrue(app.staticTexts["Name"].exists)
+        XCTAssertTrue(app.staticTexts["Phone number"].exists)
+        app.buttons["Save number"].tap()
+        let error = app.staticTexts["Save not confirmed"]
+        reveal(error, in: app)
+        XCTAssertEqual(name.value as? String, "My clinic")
+        XCTAssertEqual(phone.value as? String, "3125550100")
+        XCTAssertTrue(app.buttons["Save number"].isEnabled)
+        capture(app, "polish-add-number-error")
+    }
+
+    func testExpiredInvitationRetainsTheCodeAndExplainsRecovery() {
+        let app = launch("invitation")
+        let code = app.textFields["Invitation code"]
+        XCTAssertTrue(code.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Paste"].exists)
+        XCTAssertFalse(app.buttons["Join them"].isEnabled)
+        code.tap(); code.typeText("SyntheticExpiredInvitationCode")
+        app.buttons["Done"].tap()
+        app.buttons["Join them"].tap()
+        XCTAssertTrue(app.staticTexts["You couldn’t join yet"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["This invitation expired or was used. Ask for a new code."].exists)
+        XCTAssertEqual(code.value as? String, "SyntheticExpiredInvitationCode")
+        XCTAssertTrue(app.buttons["Cancel"].isEnabled)
+        capture(app, "polish-invitation-error")
+    }
+
+    func testContactSavedOnPhoneExplainsAnUnconfirmedShieldUpdate() {
+        let app = launch("add-contact", extra: ["--uitesting-contact-save-sync-fails"])
+        let name = app.textFields["Name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        name.tap(); name.typeText("My clinic")
+        app.buttons["Done"].tap()
+        let phone = app.textFields["Phone number"]
+        reveal(phone, in: app); phone.tap(); phone.typeText("3125550100")
+        app.buttons["Done"].tap(); app.buttons["Save number"].tap()
+        XCTAssertTrue(app.staticTexts["Save not confirmed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["The number is in iPhone Contacts. Try saving again to update Shield."].exists)
+        XCTAssertEqual(phone.value as? String, "3125550100")
+        XCTAssertTrue(app.buttons["Save number"].isEnabled)
+        capture(app, "polish-contact-partial-save")
+    }
+
+    func testQuietHoursFailureKeepsTheUnsavedChoice() {
+        let app = launch("quiet")
+        let enabled = app.switches["Quiet hours"]
+        XCTAssertTrue(enabled.waitForExistence(timeout: 5))
+        XCTAssertEqual(enabled.value as? String, "0")
+        enabled.tap()
+        XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
+        app.buttons["Save quiet hours"].tap()
+        XCTAssertTrue(app.staticTexts["Hours not confirmed"].waitForExistence(timeout: 5))
+        XCTAssertEqual(enabled.value as? String, "1")
+        XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
+        capture(app, "polish-quiet-unsaved")
+    }
+
+    func testCopyingTheWholeInvitationPastesOnlyItsCode() {
+        for signature in [false, true] {
+            let options = ["--uitesting-invitation-paste"] + (signature ? ["--uitesting-invitation-signature"] : [])
+            let app = launch("invitation", extra: options)
+            let code = app.textFields["Invitation code"]
+            XCTAssertTrue(code.waitForExistence(timeout: 5))
+            app.buttons["Paste"].tap()
+            XCTAssertEqual(code.value as? String, "0123456789abcdefghijklmnopqrstuv")
+            XCTAssertTrue(app.buttons["Join them"].isEnabled)
+            app.buttons["Join them"].tap()
+            XCTAssertTrue(app.staticTexts["You couldn’t join yet"].waitForExistence(timeout: 5))
+            capture(app, "polish-copied-invitation\(signature ? "-email-signature" : "")")
+        }
+    }
+
+    func testPlayedStatusFailureKeepsPlaybackControlsUsable() {
+        let app = launch("audio", extra: ["--uitesting-played-status-fails"])
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        app.buttons["Listen to message"].tap()
+        let pause = app.buttons["Pause message"]
+        XCTAssertTrue(pause.waitForExistence(timeout: 5))
+        XCTAssertTrue(pause.isEnabled); pause.tap()
+        XCTAssertTrue(app.buttons["Resume message"].exists)
+        XCTAssertTrue(app.staticTexts["You can listen. Shield couldn’t mark this message as played."].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.alerts["Message couldn’t play"].exists)
+        app.buttons["Resume message"].tap()
+        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        let recovery = app.buttons["Update played status"]
+        reveal(recovery, in: app)
+        XCTAssertTrue(recovery.isHittable)
+        capture(app, "polish-audio-status-recovery")
+    }
+
+    func testLostListeningAccessDiscardsStartedAudio() {
+        let app = launch("audio", extra: ["--uitesting-listening-access-changes"])
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Message is private"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["Pause message"].exists)
+        XCTAssertFalse(app.buttons["Resume message"].exists)
+        capture(app, "polish-audio-private")
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.buttons["Resume message"].exists)
+        XCTAssertFalse(app.buttons["Start over"].exists)
+        capture(app, "polish-audio-permission-restored")
+    }
+
+    func testBackgroundingWhileAudioLoadsDoesNotStartItLater() {
+        let app = launch("audio", extra: ["--uitesting-delayed-audio"])
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Getting message…"].waitForExistence(timeout: 2))
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].isEnabled)
+        XCTAssertFalse(app.buttons["Start over"].exists)
+        capture(app, "polish-audio-canceled-download")
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 8))
+    }
+
+    func testPersonContextChangeClosesThePreviousCallDetail() {
+        let app = launch("audio", extra: ["--uitesting-detail-context-changes"])
+        let open = app.buttons["Open sample call"]
+        XCTAssertTrue(open.waitForExistence(timeout: 5)); open.tap()
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(open.waitForExistence(timeout: 12))
+        XCTAssertTrue(open.isHittable)
+        expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: app.staticTexts["Sample audio message"])
+        waitForExpectations(timeout: 5)
+        XCTAssertFalse(app.buttons["Pause message"].exists)
+        capture(app, "polish-call-context-changed")
+    }
+
+    func testLargestTextBringsSaveAndInvitationErrorsIntoView() {
+        let options = ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        var app = launch("add-number", extra: options)
+        let name = app.textFields["Name"]
+        reveal(name, in: app); name.tap(); name.typeText("My clinic")
+        app.buttons["Done"].tap()
+        XCTAssertFalse(app.keyboards.firstMatch.exists)
+        let phone = app.textFields["Phone number"]
+        reveal(phone, in: app); phone.tap(); phone.typeText("3125550100")
+        app.buttons["Done"].tap()
+        app.buttons["Save number"].tap()
+        expectVisible(app.staticTexts["Save not confirmed"], in: app)
+        capture(app, "polish-number-save-error-large-dark")
+        app.collectionViews.firstMatch.swipeDown()
+        app.collectionViews.firstMatch.swipeDown()
+        app.buttons["Save number"].tap()
+        expectVisible(app.staticTexts["Save not confirmed"], in: app)
+        capture(app, "polish-number-repeated-error-large-dark")
+
+        app = launch("invitation", extra: options)
+        let code = app.textFields["Invitation code"]
+        reveal(code, in: app); code.tap(); code.typeText("SyntheticExpiredInvitationCode")
+        app.buttons["Done"].tap(); app.buttons["Join them"].tap()
+        expectVisible(app.staticTexts["You couldn’t join yet"], in: app)
+        capture(app, "polish-invitation-error-large-dark")
+        reveal(code, in: app, towardTop: true); code.tap(); code.typeText("Corrected")
+        XCTAssertFalse(app.staticTexts["You couldn’t join yet"].exists)
+
+        app = launch("quiet", extra: options)
+        let enabled = app.switches["Quiet hours"]
+        reveal(enabled, in: app, towardTop: true); enabled.tap()
+        app.buttons["Save quiet hours"].tap()
+        expectVisible(app.staticTexts["Hours not confirmed"], in: app)
+        capture(app, "polish-quiet-save-error-large-dark")
+        reveal(enabled, in: app, towardTop: true); enabled.tap()
+        XCTAssertFalse(app.staticTexts["Hours not confirmed"].exists)
+    }
+
+    func testAudioCanPauseResumeRestartAndStopsWhenBackgrounded() {
+        let app = launch("audio")
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        app.buttons["Pause message"].tap()
+        XCTAssertTrue(app.buttons["Resume message"].exists)
+        app.buttons["Resume message"].tap()
+        let restart = app.buttons["Start over"]
+        reveal(restart, in: app)
+        XCTAssertTrue(restart.isHittable); restart.tap()
+        XCTAssertTrue(app.buttons["Pause message"].exists)
+        capture(app, "polish-audio-playing")
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Resume message"].exists)
+    }
+
+    func testLargestTextCanChangePeopleAndReadFullCallMetadata() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let people = app.buttons["change-person"]
+        XCTAssertTrue(people.waitForExistence(timeout: 5))
+        XCTAssertTrue(people.isHittable); people.tap()
+        let alex = app.buttons["person-Alex"]
+        reveal(alex, in: app); alex.tap()
+        if app.navigationBars["Family & friends"].exists { app.navigationBars.buttons.firstMatch.tap() }
+        XCTAssertTrue(app.buttons["change-person"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["change-person"].label.contains("Alex"))
+        app.tabBars.buttons["Calls"].tap()
+        let filter = app.buttons["callFilter"]
+        reveal(filter, in: app)
+        filter.tap()
+        app.buttons["Stopped"].tap()
+        let number = app.staticTexts["(512) 555-0129"].firstMatch
+        reveal(number, in: app)
+        XCTAssertTrue(number.exists)
+        XCTAssertGreaterThanOrEqual(number.frame.height, 40)
+        capture(app, "polish-helper-call-large-dark")
+        app.tabBars.buttons["More"].tap()
+        let settings = app.staticTexts["Settings"].firstMatch
+        reveal(settings, in: app); settings.tap()
+        XCTAssertFalse(app.staticTexts["Checks while you talk"].exists)
+        XCTAssertFalse(app.staticTexts["Quiet hours"].exists)
+    }
+
+    func testOnboardingChoiceBackRestoresTheUnsavedSelection() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let toggle = app.switches["onboarding-protection-toggle"]
+        reveal(toggle, in: app); toggle.tap()
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.staticTexts["Let a helper know"].waitForExistence(timeout: 5))
+        let secondStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 2 of 2")).firstMatch
+        expectVisible(secondStep, in: app)
+        capture(app, "polish-helper-onboarding-large-dark")
+        app.buttons["Back"].tap()
+        let firstStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 1 of 2")).firstMatch
+        expectVisible(firstStep, in: app)
+        capture(app, "polish-protection-onboarding-large-dark")
+        reveal(toggle, in: app)
+        XCTAssertEqual(toggle.value as? String, "0")
+        capture(app, "polish-protection-choice-control-large-dark")
+    }
+
+    func testSecondaryScreensAtLargestTextKeepAllActionsReachable() {
+        for screen in ["numbers", "add-number", "sharing", "contacts", "quiet", "blocked", "invitation", "help", "automatic-texts"] {
+            let app = launch(screen, extra: ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+            capture(app, "polish-\(screen)-large-dark-top")
+            switch screen {
+            case "numbers": reveal(app.buttons["Call Sample clinic"], in: app)
+            case "add-number": XCTAssertTrue(app.buttons["Save number"].isHittable)
+            case "sharing": reveal(app.buttons["Make invitation"], in: app)
+            case "contacts": reveal(app.buttons["Contacts settings"], in: app)
+            case "quiet": reveal(app.switches["Quiet hours"], in: app)
+            case "blocked": reveal(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'unblock-'")).firstMatch, in: app)
+            case "invitation": XCTAssertTrue(app.buttons["Join them"].isHittable)
+            case "help": reveal(app.buttons["In an emergency"], in: app)
+            case "automatic-texts": reveal(app.buttons["What will Shield see?"], in: app)
+            default: break
+            }
+            capture(app, "polish-\(screen)-large-dark-actions")
+        }
+    }
+
+    func testConfiguredSettingsAndSharingScopesStayReadable() {
+        for large in [false, true] {
+            let options = large ? ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []
+            for screen in ["setup-details", "trial-options", "sharing-access", "alerts-on", "alerts-off", "quiet-alerts"] {
+                let app = launch(screen, extra: options)
+                capture(app, "polish-\(screen)-\(large ? "large-dark" : "light")-top")
+                switch screen {
+                case "setup-details": reveal(app.buttons["Disconnect Shield"], in: app)
+                case "trial-options": reveal(app.buttons["Pause call checks"], in: app)
+                case "sharing-access":
+                    reveal(app.staticTexts["Calls and messages"], in: app)
+                    XCTAssertTrue(app.buttons["Stop sharing with Jamie"].exists)
+                case "alerts-on": XCTAssertTrue(app.staticTexts["Message alerts are on"].exists)
+                case "alerts-off": reveal(app.buttons["Open iPhone settings"], in: app)
+                case "quiet-alerts": reveal(app.buttons["Open iPhone settings"], in: app)
+                default: break
+                }
+                capture(app, "polish-\(screen)-\(large ? "large-dark" : "light")-details")
+            }
+        }
+    }
+
+    private func launch(_ screen: String, extra: [String] = []) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-screen", screen, "--uitesting-light"] + extra
+        app.launch()
+        return app
+    }
+
+    private func reveal(_ element: XCUIElement, in app: XCUIApplication, towardTop: Bool = false) {
+        _ = element.waitForExistence(timeout: 2)
+        for _ in 0..<25 {
+            let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
+            var bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
+            if app.keyboards.firstMatch.exists { bottom = min(bottom, app.keyboards.firstMatch.frame.minY) }
+            for title in ["Save number", "Join them", "Save quiet hours", "Saved", "Next", "Save my choice"] {
+                let button = app.buttons[title]
+                if button.exists && button.frame.height > 0 { bottom = min(bottom, button.frame.minY) }
+            }
+            let actions = app.otherElements["message-action-area"]
+            if actions.exists && actions.frame.height > 0 { bottom = min(bottom, actions.frame.minY) }
+            if element.exists && element.isHittable && element.frame.minY >= top && element.frame.maxY <= bottom { return }
+            let list = app.collectionViews.firstMatch.exists ? app.collectionViews.firstMatch : app.scrollViews.firstMatch
+            if list.exists {
+                let downward = towardTop || (element.exists && element.frame.minY < top)
+                let origin = app.coordinate(withNormalizedOffset: .zero)
+                let high = top + (bottom - top) * 0.25
+                let low = top + (bottom - top) * 0.75
+                origin.withOffset(CGVector(dx: app.frame.midX, dy: downward ? high : low))
+                    .press(forDuration: 0.1, thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: downward ? low : high)))
+            } else { app.swipeUp() }
+        }
+        XCTAssertTrue(element.exists); XCTAssertTrue(element.isHittable)
+    }
+
+    private func expectVisible(_ element: XCUIElement, in app: XCUIApplication) {
+        XCTAssertTrue(element.waitForExistence(timeout: 5))
+        let visible = NSPredicate { _, _ in
+            element.isHittable && element.frame.minY >= app.navigationBars.firstMatch.frame.maxY && element.frame.maxY <= app.frame.maxY
+        }
+        expectation(for: visible, evaluatedWith: element)
+        waitForExpectations(timeout: 5)
+    }
+
+    private func capture(_ app: XCUIApplication, _ name: String) {
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = name; shot.lifetime = .keepAlways; add(shot)
+        do {
+            let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("PolishScreens")
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try app.screenshot().pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
+        } catch { XCTFail("Couldn’t save simulator capture: \(error.localizedDescription)") }
+    }
+}

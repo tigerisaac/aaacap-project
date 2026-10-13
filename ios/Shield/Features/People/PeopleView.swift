@@ -24,7 +24,7 @@ struct PeopleView: View {
                                     .accessibilityHidden(true)
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(person.name).font(.headline).foregroundStyle(Color.primary)
-                                    Text(person.isOwner ? "Your phone" : person.canListen ? "Calls and voicemail" : "Calls only")
+                                    Text(person.isOwner ? "Your phone" : person.canListen ? "Calls and messages" : "Calls only")
                                         .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 }
                                 Spacer()
@@ -32,18 +32,18 @@ struct PeopleView: View {
                                     Image(systemName: "checkmark")
                                         .font(.body.weight(.semibold))
                                         .foregroundStyle(ShieldTheme.action)
-                                        .accessibilityLabel("Selected")
+                                        .accessibilityHidden(true)
                                 }
                             }
                             .padding(.vertical, 8)
                         }
                         .accessibilityIdentifier("person-\(person.name)")
+                        .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(person.id == model.selectedPersonID ? .isSelected : [])
                     }
                 }
                 if !model.isOwner {
                     Section {
-                        Label("Shared with you", systemImage: "heart.text.clipboard")
-                            .foregroundStyle(ShieldTheme.message)
                         Text("Only they can change their phone settings.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
@@ -60,7 +60,7 @@ struct PeopleView: View {
                     .disabled(model.isDemo)
                 } footer: {
                     if model.isOwner {
-                        Text("You choose what they can see.").foregroundStyle(ShieldTheme.secondaryText)
+                        Text("You choose what they can see.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
             }

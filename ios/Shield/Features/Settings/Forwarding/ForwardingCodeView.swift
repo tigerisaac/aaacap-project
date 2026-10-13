@@ -5,17 +5,12 @@ struct ForwardingCodeView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("\(model.carrier) connection \((model.step.codeIndex ?? 0) + 1) of 3").foregroundStyle(ForwardingStyle.secondaryText)
             if let code = model.code {
                 if model.codePreparedStep == model.step {
-                    Label("Code copied", systemImage: "checkmark.circle.fill").font(.title3.bold())
+                    Label("Code copied", systemImage: "checkmark.circle.fill").font(.headline)
                         .accessibilityIdentifier("forwarding-code-copied")
                 } else {
                     Text("Your personal \(model.carrier) code").font(.title2.bold())
-                }
-                DisclosureGroup("See copied code") {
-                    Text(code).font(.body.monospaced()).textSelection(.enabled)
-                        .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")
                 }
                 if model.codePreparedStep == model.step {
                     PhoneCodeGuide(returned: model.codeReturnedStep == model.step, carrier: model.carrier)
@@ -29,6 +24,10 @@ struct ForwardingCodeView: View {
                     Button("Show Phone again", systemImage: "phone") { model.copyCode() }
                         .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
                         .accessibilityIdentifier("forwarding-phone-reopen")
+                }
+                DisclosureGroup("See copied code") {
+                    Text(code).font(.body.monospaced()).textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")
                 }
                 Button("Need help?", systemImage: "questionmark.circle") { model.showingHelp.toggle() }
                     .frame(minHeight: ShieldTheme.Layout.minimumTarget)

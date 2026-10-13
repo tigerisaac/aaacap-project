@@ -96,8 +96,12 @@ struct ProtectionCheckCard: View {
             Button("Save Shield contact") { Task { await perform { try await SaveShieldContact.save(number: number) } } }
                 .buttonStyle(.bordered).buttonBorderShape(.capsule).accessibilityIdentifier("protection-fix-contact")
         case .contactsAccess:
-            Button("Allow Contacts") {
-                Task { await perform { _ = try await CNContactStore().requestAccess(for: .contacts) } }
+            Button(CNContactStore.authorizationStatus(for: .contacts) == .notDetermined ? "Allow Contacts" : "Open Contacts settings") {
+                if CNContactStore.authorizationStatus(for: .contacts) == .notDetermined {
+                    Task { await perform { _ = try await CNContactStore().requestAccess(for: .contacts) } }
+                } else if let url = URL(string: UIApplication.openSettingsURLString) {
+                    openURL(url)
+                }
             }.buttonStyle(.bordered).buttonBorderShape(.capsule)
         case .allowNotifications:
             Button("Turn on notifications") {

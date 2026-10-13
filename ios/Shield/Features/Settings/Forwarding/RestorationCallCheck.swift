@@ -6,7 +6,6 @@ struct RestorationCallCheck: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Ordinary calls · \(answering ? 1 : 2) of 2").foregroundStyle(ForwardingStyle.secondaryText)
             Text(answering ? "Check that calls reach you" : "Check your normal voicemail")
                 .font(.title2.bold()).accessibilityAddTraits(.isHeader)
             SetupInstruction(number: 1, title: "Ask your helper to call", detail: answering

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T01:20:05+00:00",
+  "generatedAt": "2026-10-13T06:33:22+00:00",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -283,6 +283,34 @@
           "oklch(83.57% 0.0000 0.00)",
           "oklch(95.00% 0.0000 0.00)"
         ]
+      },
+      "action-ink-light": {
+        "role": "neutral",
+        "displayName": "Action ink — Light Mode",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "action-ink-dark": {
+        "role": "neutral",
+        "displayName": "Action ink — Dark Mode",
+        "tonalRamp": [
+          "oklch(15% 0.025 265)",
+          "oklch(26% 0.025 265)",
+          "oklch(38% 0.025 265)",
+          "oklch(49% 0.025 265)",
+          "oklch(61% 0.025 265)",
+          "oklch(72% 0.025 265)",
+          "oklch(84% 0.025 265)",
+          "oklch(95% 0.025 265)"
+        ]
       }
     },
     "typographyMeta": {
@@ -292,7 +320,7 @@
       },
       "title": {
         "displayName": "Focused title",
-        "purpose": "SwiftUI title2.bold() and title3.bold() for details, text results, and introductions."
+        "purpose": "SwiftUI title.bold(), title2.bold(), and title3.bold() for onboarding, setup, details, results, and introductions; message summaries use unbolded title3."
       },
       "headline": {
         "displayName": "Primary row and action text",
@@ -320,31 +348,31 @@
       "name": "Native primary action",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Schematic documentation preview, not the actual native implementation. Native large capsule borderedProminent action; its wrapping label has a 52-point minimum, not fixed height. Source: Design/ShieldComponents.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview, not the actual native implementation. Native large capsule borderedProminent action. Its wrapping ShieldActionLabel has a 52-point minimum, names working state, stacks the spinner at accessibility sizes, and returns to primary foreground when disabled. Add number uses its full-width bottom action as Done while editing, then Save number after editing; failed responses remain unconfirmed, with a successful iPhone Contacts save distinguished from a failed Shield update. Pause message remains usable during the separate mark-played update. Leaving, scene inactivity, person changes, and permission loss invalidate pending audio requests; stale results do not restart playback. Audio-session transitions are serialized and stale cleanup is ignored. The Forwarding Contacts step uses Save Shield. Source: Design/ShieldComponents.swift, Features/Settings/AddNumberView.swift, Features/Calls/CallDetailView.swift, Features/Calls/MessageAudioSession.swift, and Features/Settings/Forwarding/ForwardingActions.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<button class=\"ds-primary\" type=\"button\">Listen to message</button>",
-      "css": ".ds-primary{width:100%;max-width:360px;min-height:52px;padding:12px 20px;border:0;border-radius:999px;background:#224CC5;color:white;font:600 1rem system-ui;white-space:normal;cursor:pointer}.ds-primary:hover{filter:brightness(.96)}.ds-primary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-primary:active{filter:brightness(.9)}.ds-primary:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-primary{background:#9BB3FF;color:rgb(8% 12% 22%)}.ds-primary:focus-visible{outline-color:#9BB3FF}}"
+      "css": ".ds-primary{width:100%;max-width:360px;min-height:52px;padding:12px 20px;border:0;border-radius:999px;background:#224CC5;color:white;font:600 1rem system-ui;white-space:normal;cursor:pointer}.ds-primary:hover{filter:brightness(.96)}.ds-primary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-primary:active{filter:brightness(.9)}.ds-primary:disabled{background:ButtonFace;color:CanvasText;cursor:default}@media(prefers-color-scheme:dark){.ds-primary{background:#9BB3FF;color:rgb(8% 12% 22%)}.ds-primary:focus-visible{outline-color:#9BB3FF}}"
     },
     {
       "name": "Native secondary action",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Schematic documentation preview, not the actual native implementation. Native bordered Picture action; platform geometry and target size are system-owned, so the preview uses roomy illustrative geometry. Source: Features/Check/CheckView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<button class=\"ds-secondary\" type=\"button\">Picture</button>",
-      "css": ".ds-secondary{min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:rgb(34 76 197 / .1);color:#224CC5;font:600 1rem system-ui;cursor:pointer}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:rgb(155 179 255 / .1);color:#9BB3FF}}"
+      "description": "Schematic documentation preview, not the actual native implementation. Shared native large bordered capsule treatment for visible secondary and recovery actions. Allow calls again uses a wrapping full-width word label without a hand symbol. Contacts Remove separately fills its row as a borderless action. Source: Design/ShieldComponents.swift, Features/Settings/BlockedNumbersView.swift, and Features/Settings/SharedContactsView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-secondary\" type=\"button\">Allow calls again</button>",
+      "css": ".ds-secondary{width:100%;max-width:360px;white-space:normal;min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:rgb(34 76 197 / .1);color:#224CC5;font:600 1rem system-ui;cursor:pointer}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{background:ButtonFace;color:CanvasText;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:rgb(155 179 255 / .1);color:#9BB3FF}}"
     },
     {
       "name": "Email field",
       "kind": "input",
       "refersTo": "input-email",
-      "description": "Schematic documentation preview, not the actual native implementation. Rounded card-color field with explicit email label, keyboard/content type, Dynamic Type, and native focus border. Source: Features/Auth/SignInView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview, not the actual native implementation. Card-colored email field with a persistent label, email keyboard/content type, wrapping vertical input, visible Clear while editing, and an Action focus border. Increased contrast strengthens the unfocused border. Source: Features/Auth/SignInView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<input class=\"ds-email\" type=\"email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" spellcheck=\"false\" placeholder=\"Email address\" aria-label=\"Email address\">",
-      "css": ".ds-email{font:1rem system-ui;max-width:100%;width:260px;min-height:52px;padding:16px;color:CanvasText;background:Canvas;border:1px solid rgb(0 0 0 / .12);border-radius:14px}.ds-email::placeholder{color:rgb(34% 34% 34%)}.ds-email:hover{border-color:#224CC5}.ds-email:focus-visible{outline:2px solid #224CC5;outline-offset:0}.ds-email:disabled{opacity:.5}@media(prefers-color-scheme:dark){.ds-email{border-color:rgb(255 255 255 / .12)}.ds-email::placeholder{color:rgb(76% 76% 76%)}.ds-email:focus-visible{outline-color:#9BB3FF}}"
+      "css": ".ds-email{font:1rem system-ui;max-width:100%;width:260px;min-height:52px;padding:16px;color:CanvasText;background:Canvas;border:1px solid rgb(0 0 0 / .12);border-radius:14px}.ds-email::placeholder{color:rgb(34% 34% 34%)}.ds-email:hover{border-color:#224CC5}.ds-email:focus-visible{outline:2px solid #224CC5;outline-offset:0}.ds-email:disabled{background:ButtonFace;color:CanvasText}@media(prefers-color-scheme:dark){.ds-email{border-color:rgb(255 255 255 / .12)}.ds-email::placeholder{color:rgb(76% 76% 76%)}.ds-email:focus-visible{outline-color:#9BB3FF}}@media(prefers-contrast:more){.ds-email{border-width:2px;border-color:rgb(0 0 0 / .55)}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-email{border-color:rgb(255 255 255 / .55)}}"
     },
     {
       "name": "Four native tabs",
       "kind": "nav",
       "refersTo": "navigation",
-      "description": "Schematic documentation preview, not the actual native implementation. Native TabView destinations Home, Calls, Messages, More; Messages uses tray.fill and holds both Voicemail and Saved notice in one inbox. Home keeps its large title and native person capsule while hiding the top scroll-edge effect and navigation-bar background; NavigationShell supplies the adaptive grouped page surface behind the stack. Other screens and edges retain the shared hard scroll effect. Preview buttons show tab labels and selection only; they do not render the native header or navigate. Source: App/RootView.swift, Features/Overview/OverviewView.swift, and Navigation/NavigationShell.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview, not the actual native implementation. Native TabView destinations Home, Calls, Messages, More. Messages combines Voicemail and Saved notice. Home explicitly uses a large native title, a grouped-color navigation background, and automatic visibility: continuous grouped canvas at rest, opaque matching background when collapsed. At accessibility sizes person context moves from the toolbar into a wrapping page section. Changing the person stops audio and dismisses the old call detail. Preview buttons show selection only and do not navigate. Source: App/RootView.swift, Features/Overview/OverviewView.swift, Design/PersonContextSection.swift, Features/Calls/CallDetailView.swift, and Navigation/NavigationShell.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10\"/></svg><span>Home</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 4h14l3 12v5H2v-5zM2 16h6l2 3h4l2-3h6\"/></svg><span>Messages</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg><span>More</span></button></nav>",
       "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:Canvas}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-height:52px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:rgb(34% 34% 34%);font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#224CC5}.ds-tabs button:hover{background:rgb(34 76 197 / .08)}.ds-tabs button:focus-visible{outline:2px solid #224CC5}.ds-tabs button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button{color:rgb(76% 76% 76%)}.ds-tabs button[aria-current]{color:#9BB3FF}}"
     },
@@ -360,33 +388,17 @@
       "name": "Call history row",
       "kind": "custom",
       "refersTo": "call-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Sample call purpose and time lead; outcome follows. Home omits the number. Native accessibility combines the row and supplies the full date. Source: Design/CallRow.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview, not the actual native implementation. Purpose and time lead, then outcome and optional number. From xxxLarge titles, times, outcomes, and numbers stack. Unheard messages use a violet dot ordinarily and New message words at accessibility sizes or with Differentiate Without Color. Home omits the number. Native accessibility combines the row and provides the full date. Source: Design/CallRow.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<button class=\"ds-call\" type=\"button\"><span class=\"ds-call-main\"><strong>Appointment reminder</strong><span>Yesterday</span></span><span class=\"ds-call-detail\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Answered</span></span></button>",
-      "css": ".ds-call{display:grid;gap:4px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-call-main{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.ds-call-main>span{color:rgb(34% 34% 34%);font-size:.9375rem}.ds-call-detail{display:flex;align-items:center;gap:6px;color:#076C5C;font-size:.9375rem}.ds-call-detail svg{width:18px;height:18px}.ds-call:hover{filter:brightness(.96)}.ds-call:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-call:active{filter:brightness(.9)}.ds-call:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-call-main>span{color:rgb(76% 76% 76%)}.ds-call-detail{color:#74DDC6}}"
-    },
-    {
-      "name": "More action row",
-      "kind": "custom",
-      "refersTo": "action-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Generous native NavigationLink row with a single familiar label. The icon column uses ScaledMetric; no Check a text subtitle. Source: Design/ShieldIdentity.swift and Features/Overview/MoreView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<button class=\"ds-action\" type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4\"/></svg><span>Check a text</span><span class=\"ds-chevron\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 6 6 6-6 6\"/></svg></span></button>",
-      "css": ".ds-action{display:flex;align-items:center;gap:14px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-action>svg{width:36px;height:22px;color:#224CC5;flex-shrink:0}.ds-action>span:first-of-type{flex:1;white-space:normal}.ds-chevron svg{width:14px;height:14px;color:GrayText}.ds-action:hover{filter:brightness(.96)}.ds-action:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-action:active{filter:brightness(.9)}.ds-action:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-action>svg{color:#9BB3FF}}"
+      "css": ".ds-call{display:grid;gap:4px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-call-main{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.ds-call-main>span{color:rgb(34% 34% 34%);font-size:.9375rem}.ds-call-detail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:#076C5C;font-size:.9375rem}.ds-call-detail svg{width:18px;height:18px}.ds-call:hover{filter:brightness(.96)}.ds-call:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-call:active{filter:brightness(.9)}.ds-call:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-call-main>span{color:rgb(76% 76% 76%)}.ds-call-detail{color:#74DDC6}}"
     },
     {
       "name": "Message inbox row",
       "kind": "custom",
       "refersTo": "voicemail-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Voicemail and Saved notice share the Messages inbox. Purpose leads, an authorized summary occupies up to three lines, and supporting metadata names kind, state when applicable, and date. Real summaries are service-generated; this preview uses synthetic content. Helpers without canListen see no summary. Full transcripts are not saved or displayed. Sample Keep remains in-memory and does not extend real retention. Source: Features/Calls/VoicemailRow.swift, Features/Calls/VoicemailView.swift, and Features/Calls/CallDetailView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\">Saved notice · New · Today</span></button>",
-      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(34% 34% 34%)}.ds-vm-meta{font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(76% 76% 76%)}}"
-    },
-    {
-      "name": "Persistent sample marker",
-      "kind": "custom",
-      "refersTo": "sample-banner",
-      "description": "Schematic documentation preview, not the actual native implementation. Noninteractive marker in its own opaque top area. No bottom overlay or Exit button; Leave sample app lives in More. Source: Design/DemoBanner.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<div class=\"ds-sample\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m10 8 6 4-6 4z\"/></svg><span>Sample app</span></div>",
-      "css": ".ds-sample{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;max-width:390px;background:Canvas;color:CanvasText;font:600 .9375rem system-ui}.ds-sample svg{width:18px;height:18px}"
+      "description": "Schematic documentation preview, not the actual native implementation. Voicemail and Saved notice share the Messages inbox. Purpose leads; authorized summaries use up to three lines ordinarily and two at accessibility sizes, with the full summary in detail. Kind, state, and date stack from xxxLarge. Helpers without canListen see no summary. Content here is synthetic. Source: Features/Calls/VoicemailRow.swift and Features/Calls/CallDetailView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\"><span>Saved notice</span><span>New</span><span>Today</span></span></button>",
+      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(34% 34% 34%)}.ds-vm-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(76% 76% 76%)}}"
     },
     {
       "name": "Grouped card surface",
@@ -400,9 +412,17 @@
       "name": "Home calls stopped panel",
       "kind": "card",
       "refersTo": "home-stopped-calls",
-      "description": "Schematic documentation preview, not the actual native implementation. One positive historical Action panel shows Calls stopped, a large numeral, Total, and See calls. The optional counts.stoppedTotal is a durable historical total including stopped and review-needed calls; it is not proof of confirmed scams or current protection. The full panel opens retained recent held/review-needed history, which may contain fewer records than the total. Zero uses a neutral surface with None so far; a missing API field uses Total unavailable, never a weekly fallback or zero. Real status stays above this panel. Native source retains title3.bold(), largeTitle.scaled(by: 1.5).bold() with monospaced digits, adaptive actionInk, and native list-row background. The backend preserves recoverable history and new events beyond retention and prevents duplicate counts; already-deleted records cannot be reconstructed. The counter API and cleanup were deployed with approval October 12 at 22:51 UTC as shieldapi-00016-tuv and cleanupshield-00008-nuc, using only counter patches to the previous production package. Synthetic live API/storage checks passed; they are not real-call evidence. Counter hooks for blocked-number and voicemail-removal features remain tied to those pending deployments. Source: Features/Overview/StoppedCallsCard.swift, Features/Overview/OverviewView.swift, Models/Overview.swift, backend/src/cloud/stopped-total.ts, and docs/OPERATIONS.md. The number below is a synthetic example; browser pixel sizes, corner shape, symbol, and interaction states are illustrative, not a native specification.",
+      "description": "Schematic documentation preview, not the actual native implementation. One positive historical Action panel shows Calls stopped, a large numeral, Total, and See calls. It uses the optional persistent stopped total, including review-needed calls; it is not proof of confirmed scams, current protection, or complete recovery of deleted history. It opens recent retained history, which can have fewer records. Zero uses None so far; missing data uses Total unavailable. Real status stays above it. Source: Features/Overview/StoppedCallsCard.swift and Models/Overview.swift. The numeral is synthetic. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<button class=\"ds-stopped\" type=\"button\" aria-label=\"3 calls stopped in total. See calls.\"><span class=\"ds-stopped-heading\"><strong>Calls stopped</strong><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 12V7a1.5 1.5 0 0 1 3 0v4-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v7c0 4-3 6-6 6-3 0-5-2-7-5l-3-4a1.7 1.7 0 0 1 2-2l2 3\"/></svg></span><span class=\"ds-stopped-count\">3</span><span>Total</span><span class=\"ds-stopped-action\">See calls <svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16m-6-6 6 6-6 6\"/></svg></span></button>",
       "css": ".ds-stopped{display:grid;gap:12px;min-height:52px;width:100%;max-width:360px;padding:20px;border:0;border-radius:16px;background:#224CC5;color:white;font:1rem system-ui;text-align:left;cursor:pointer;white-space:normal}.ds-stopped-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:1.25rem}.ds-stopped-heading svg{width:22px;height:22px;flex-shrink:0}.ds-stopped-count{font-size:3.1875rem;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ds-stopped-action{display:flex;align-items:center;gap:8px;font-weight:600}.ds-stopped-action svg{width:18px;height:18px}.ds-stopped:hover{filter:brightness(.96)}.ds-stopped:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-stopped:active{filter:brightness(.9)}@media(prefers-color-scheme:dark){.ds-stopped{background:#9BB3FF;color:rgb(8% 12% 22%)}.ds-stopped:focus-visible{outline-color:#9BB3FF}}@media(prefers-contrast:more){.ds-stopped{background:#173AA3}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-stopped{background:#BDD0FF}}"
+    },
+    {
+      "name": "Full-row native switch",
+      "kind": "custom",
+      "refersTo": "switch-row",
+      "description": "Schematic documentation preview, not the actual native implementation. The complete wrapping label and switch row is tappable with a 52-point minimum. Native source renders one accessibility Toggle representation while hiding the decorative switch. This preview illustrates the arrangement; it does not establish VoiceOver approval. Source: Design/ShieldSwitchStyle.swift and App/RootView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<label class=\"ds-switch-row\"><span>Check calls while I talk</span><input class=\"ds-switch\" type=\"checkbox\" role=\"switch\" checked aria-label=\"Check calls while I talk\"></label>",
+      "css": ".ds-switch-row{display:flex;align-items:center;gap:16px;width:100%;max-width:360px;min-height:52px;color:CanvasText;font:600 1rem system-ui;cursor:pointer}.ds-switch-row>span{flex:1;white-space:normal}.ds-switch{appearance:none;position:relative;flex-shrink:0;width:51px;height:31px;margin:0;border:1px solid GrayText;border-radius:18px;background:ButtonFace;cursor:pointer}.ds-switch::after{content:\"\";position:absolute;top:2px;left:2px;width:25px;height:25px;border-radius:50%;background:Canvas}.ds-switch:checked{background:#224CC5;border-color:#224CC5}.ds-switch:checked::after{left:22px;background:#fff}.ds-switch-row:hover .ds-switch{filter:brightness(.96)}.ds-switch:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-switch:active{filter:brightness(.9)}.ds-switch:disabled{cursor:default;background:ButtonFace;border-color:GrayText}@media(prefers-color-scheme:dark){.ds-switch:checked{background:#9BB3FF;border-color:#9BB3FF}.ds-switch:checked::after{background:rgb(8% 12% 22%)}.ds-switch:focus-visible{outline-color:#9BB3FF}}"
     }
   ],
   "narrative": {
@@ -413,7 +433,8 @@
       "Action blue, stopped-call red, answered-call teal, and voicemail violet with Light, Dark, and increased-contrast variants.",
       "Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.",
       "Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.",
-      "Home's native large title and person control share an uninterrupted grouped page background."
+      "Home's native large title shares the grouped canvas at rest; its collapsed navigation background matches that surface.",
+      "One choice per onboarding screen, progressive disclosure, and visible recovery when a task fails."
     ],
     "rules": [
       {
@@ -427,6 +448,11 @@
         "section": "typography"
       },
       {
+        "name": "The Room for Words Rule",
+        "body": "Stack metadata and move person context into the page before shrinking text; at accessibility sizes remove decorative row icons when they compete with the label.",
+        "section": "layout"
+      },
+      {
         "name": "The Native Surface Rule",
         "body": "Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.",
         "section": "elevation"
@@ -437,8 +463,18 @@
         "section": "components"
       },
       {
+        "name": "The Recoverable State Rule",
+        "body": "Name loading, unsaved, unavailable, and failed states in words; offer a visible recovery action and never turn a failed read into a claim that data is empty or protection is active.",
+        "section": "components"
+      },
+      {
         "name": "The Visible Context Rule",
         "body": "Show the viewed person and sharing scope in words, and keep participant ownership distinct from helper access.",
+        "section": "components"
+      },
+      {
+        "name": "The Explicit Confirmation Rule",
+        "body": "Keep the action and the proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.",
         "section": "components"
       }
     ],
@@ -447,6 +483,10 @@
       "Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.",
       "Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.",
       "Do give ordinary tasks one clear next action and reveal less common detail on request.",
+      "Do make switches tappable through their labeled row and keep one native accessibility toggle representation.",
+      "Do stack call and message metadata from `.xxxLarge` and keep person context in the scrollable page at accessibility sizes.",
+      "Do name unsaved changes and failed loads, and place a visible retry or save action beside the relevant task.",
+      "Do show playback progress with elapsed and total time, clear pause/resume labels, and a visible Start over action.",
       "Do make person context, message permission, and sample-only state visible in words.",
       "Do retain explicit privacy, sharing, setup, and disconnection confirmations.",
       "Do label the Home count as the persistent historical total, keep real status above it, and distinguish zero, unavailable data, and recent retained history.",
@@ -460,7 +500,9 @@
       "Don't treat schematic sidecar HTML/CSS as a native pixel specification.",
       "Don't treat helper access as ownership or extend message access implicitly.",
       "Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.",
-      "Don't claim final visual approval, deployment, or real-call evidence from this source extraction."
+      "Don't use a failed load as an empty-state, saved-choice, or active-protection claim.",
+      "Don't treat an app return, call-test completion, sign-out, or app deletion as confirmation that forwarding is disconnected.",
+      "Don't claim a clean native audit, real VoiceOver approval, older-person usability, deployment, or real-call evidence from source extraction or simulator captures."
     ]
   }
 }

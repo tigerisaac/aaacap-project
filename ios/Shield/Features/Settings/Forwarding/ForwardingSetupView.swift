@@ -3,10 +3,12 @@ import SwiftUI
 struct ForwardingSetupView: View {
     @Environment(AppState.self) private var app
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
     @State private var model = ForwardingSetupModel()
     @State private var confirmRestore = false
     @State private var leftForPhone = false
     @AccessibilityFocusState private var headingFocused: Bool
+    @AccessibilityFocusState private var errorFocused: Bool
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -14,7 +16,7 @@ struct ForwardingSetupView: View {
                 VStack(alignment: .leading, spacing: 28) {
                     if let status = model.status {
                         if model.step.progressIndex > 0 {
-                            FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 5)
+                            FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 10)
                         }
                         Text(model.step.title).font(.title.bold()).id("forwarding-heading")
                             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
@@ -29,13 +31,15 @@ struct ForwardingSetupView: View {
                         }
                         if let error = model.error {
                             VStack(alignment: .leading, spacing: 8) {
-                                Label(error, systemImage: "exclamationmark.circle")
-                                    .foregroundStyle(ShieldTheme.held).accessibilityIdentifier("forwarding-error")
+                                ShieldNotice(title: "This step didn’t finish", detail: error, symbol: "exclamationmark.circle")
+                                    .accessibilityIdentifier("forwarding-error")
+                                    .accessibilityFocused($errorFocused)
                                 if model.step == .save {
                                     Link("Allow Contacts in Settings", destination: URL(string: UIApplication.openSettingsURLString)!)
                                         .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                                 }
                             }
+                            .id("forwarding-step-error")
                         }
                     } else if let error = model.error {
                         ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
@@ -46,6 +50,16 @@ struct ForwardingSetupView: View {
                 }
                 .padding(24)
                 .frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
+            }
+            .onChange(of: model.error) { _, value in
+                guard value != nil, model.status != nil else { return }
+                proxy.scrollTo("forwarding-step-error", anchor: .top)
+                errorFocused = true
+            }
+            .onChange(of: model.errorRevision) { _, _ in
+                guard model.error != nil, model.status != nil else { return }
+                proxy.scrollTo("forwarding-step-error", anchor: .top)
+                errorFocused = true
             }
         }
         .id(model.step)
@@ -62,16 +76,25 @@ struct ForwardingSetupView: View {
         .toolbar {
             if let previous = model.step.previous {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Previous step", systemImage: "chevron.left") {
-                        Task { do { try await model.move(to: previous, app: app) } catch { model.error = error.localizedDescription } }
+                    Button("Back", systemImage: "chevron.left") {
+                        Task { do { try await model.move(to: previous, app: app) } catch { model.reportError(error.localizedDescription) } }
                     }
-                    .labelStyle(.iconOnly).disabled(model.working || model.probeWaiting)
+                    .labelStyle(.titleAndIcon).disabled(model.working || model.probeWaiting)
+                    .accessibilityLabel("Previous step")
+                    .accessibilityInputLabels(["Back", "Previous step"])
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("Setup options", systemImage: "ellipsis.circle") {
+                Button { dismiss() } label: { Text("Close").foregroundStyle(Color.primary) }
+                    .disabled(model.working)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu("Options", systemImage: "ellipsis.circle") {
                     Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
                 }
+                .labelStyle(.titleOnly).accessibilityLabel("Setup options")
+                .accessibilityIdentifier("Setup options")
+                .accessibilityInputLabels(["Options", "Setup options"])
             }
         }
         .task { await model.load(app) }

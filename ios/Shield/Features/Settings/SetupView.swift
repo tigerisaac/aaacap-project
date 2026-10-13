@@ -9,10 +9,19 @@ struct SetupView: View {
     @State private var confirmRestore = false
     @State private var confirmDeletion = false
     @State private var confirmPause = false
+    @State private var loadError: String?
+    @State private var loading = true
+    @State private var loadAttempts = 0
+    private var usesFixture: Bool { PreviewScenario.requested("setup-details", preview: model.isPreview) || PreviewScenario.requested("trial-options", preview: model.isPreview) }
 
     var body: some View {
         Form {
-            if model.isPreview {
+            if let loadError {
+                Section {
+                    ShieldLoadFailure(title: "Phone setup couldn’t load", detail: loadError) { Task { await load() } }
+                }
+            }
+            if model.isPreview && !usesFixture {
                 Section {
                     Text("Phone setup is done with a helper, one step at a time.")
                     Text("The sample app doesn’t change your phone.").foregroundStyle(ShieldTheme.secondaryText)
@@ -30,6 +39,7 @@ struct SetupView: View {
                     Label(setup.phoneVerified ? "Your phone has been checked" : "Your phone needs a check", systemImage: setup.phoneVerified ? "checkmark.circle" : "phone")
                     if !setup.consented {
                         Button("Agree to use Shield") { confirmConsent = true }
+                            .disabled(working || model.isDemo)
                             .confirmationDialog("Use Shield to check calls?", isPresented: $confirmConsent, titleVisibility: .visible) {
                                 Button("I agree") { Task { await consent(setup) } }
                             } message: {
@@ -74,8 +84,8 @@ struct SetupView: View {
                                 Button("Request deletion", role: .destructive) { Task { await requestRestoration(deleting: true) } }
                             } message: { Text("First, your helper must bring back ordinary calls. Then your Shield information can be deleted.") }
                     }
-                } footer: { Text("Deleting the app alone won’t disconnect Shield.").foregroundStyle(ShieldTheme.secondaryText) }
-            } else { ShieldLoadingView(title: "Getting your phone setup…") }
+                } footer: { Text("Deleting the app alone won’t disconnect Shield.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
+            } else if loading { Section { ShieldLoadingView(title: "Getting your phone setup…") } }
         }
         .shieldListStyle()
         .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
@@ -83,17 +93,40 @@ struct SetupView: View {
     }
 
     private func load() async {
-        guard !model.isPreview else { return }
-        do { setup = try await model.api.send("/api/setup", participantID: model.selectedPersonID) }
-        catch { model.handle(error) }
+        loading = true
+        loadError = nil
+        defer { loading = false }
+        #if DEBUG && targetEnvironment(simulator)
+        if usesFixture {
+            setup = PreviewSetupStatus.make(trial: PreviewScenario.requested("trial-options", preview: model.isPreview))
+            return
+        }
+        #endif
+        if let failure = PreviewScenario.loadFailure("setup", attempt: loadAttempts, preview: model.isPreview) {
+            loadAttempts += 1
+            loadError = failure
+            return
+        }
+        guard !model.isPreview, let person = model.selectedPersonID else { return }
+        let session = model.sessionGeneration
+        do {
+            let response: SetupStatus = try await model.api.send("/api/setup", participantID: person)
+            guard model.selectedPersonID == person, model.sessionGeneration == session else { return }
+            setup = response
+        } catch is CancellationError { return }
+        catch { loadError = error.localizedDescription; model.handleSessionFailure(error) }
     }
     private func saveContact(_ number: String) async {
+        guard !model.isPreview, !model.isDemo, !working else { return }
         working = true
         defer { working = false }
         do { try await SaveShieldContact.save(number: number); contactSaved = true }
         catch { model.handle(error) }
     }
     private func consent(_ setup: SetupStatus) async {
+        guard !model.isPreview, !model.isDemo, !working else { return }
+        working = true
+        defer { working = false }
         do {
             let _: APIResponses.Empty = try await model.api.send("/api/setup/consent", method: "POST",
                 body: APIClient.payload(["version": setup.consentVersion, "accepted": true]), participantID: model.selectedPersonID)
@@ -101,6 +134,9 @@ struct SetupView: View {
         } catch { model.handle(error) }
     }
     private func pause(_ paused: Bool) async {
+        guard !model.isPreview, !model.isDemo, !working else { return }
+        working = true
+        defer { working = false }
         do {
             let _: APIResponses.Empty = try await model.api.send("/api/setup/pause", method: "POST",
                 body: APIClient.payload(["paused": paused]), participantID: model.selectedPersonID)
@@ -109,6 +145,9 @@ struct SetupView: View {
         } catch { model.handle(error) }
     }
     private func requestRestoration(deleting: Bool) async {
+        guard !model.isPreview, !model.isDemo, !working else { return }
+        working = true
+        defer { working = false }
         do {
             let _: APIResponses.Empty = try await model.api.send(deleting ? "/api/account/delete" : "/api/setup/restore",
                 method: "POST", participantID: model.selectedPersonID)

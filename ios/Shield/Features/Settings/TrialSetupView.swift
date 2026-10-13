@@ -6,27 +6,34 @@ struct TrialSetupView: View {
     @Environment(AppState.self) private var model
     @State private var working = false
     @State private var confirmDeletion = false
+    @State private var confirmPause = false
 
     var body: some View {
         Section {
             NavigationLink {
                 ForwardingSetupView()
             } label: {
-                Label("Set up my phone", systemImage: "phone.arrow.right")
+                ActionRow(title: setup.status == "restoring" ? "Finish disconnecting" : setup.phoneVerified ? "Open phone setup" : "Set up my phone", symbol: "phone.arrow.right")
             }
-            Text("We’ll help you one step at a time.")
-                .foregroundStyle(.secondary)
-        } header: { Text("Phone setup") }
+        }
+        if ["active", "paused"].contains(setup.status) {
         Section {
             Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks",
-                   systemImage: setup.status == "paused" ? "play.circle" : "pause.circle", action: togglePause)
-                .disabled(working)
+                   systemImage: setup.status == "paused" ? "play.circle" : "pause.circle") { confirmPause = true }
+                .disabled(working || model.isDemo)
+                .confirmationDialog(setup.status == "paused" ? "Resume call checks?" : "Pause call checks?", isPresented: $confirmPause, titleVisibility: .visible) {
+                    Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks", action: togglePause)
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text(setup.status == "paused" ? "Shield checks calls that reach it until the call test ends." : "Calls that reach Shield go to voicemail. Your phone still sends those calls to Shield.")
+                }
         } footer: {
-            Text("This keeps the same end time and call limit.").foregroundStyle(ShieldTheme.secondaryText)
+            Text("The call test still ends at the same time.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+        }
         }
         Section {
             Button("Delete my information", role: .destructive) { confirmDeletion = true }
-                .disabled(working)
+                .disabled(working || model.isDemo)
                 .confirmationDialog("Delete your information?", isPresented: $confirmDeletion, titleVisibility: .visible) {
                     Button("Delete my information", role: .destructive, action: deleteData)
                 } message: {
@@ -36,6 +43,7 @@ struct TrialSetupView: View {
     }
 
     private func togglePause() {
+        guard !model.isPreview, !model.isDemo, !working else { return }
         Task {
             working = true
             defer { working = false }
@@ -49,6 +57,7 @@ struct TrialSetupView: View {
     }
 
     private func deleteData() {
+        guard !model.isPreview, !model.isDemo, !working else { return }
         Task {
             working = true
             defer { working = false }

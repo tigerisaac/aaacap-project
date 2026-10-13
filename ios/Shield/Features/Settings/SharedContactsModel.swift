@@ -7,18 +7,31 @@ final class SharedContactsModel {
     var items: [SavedNumber] = []
     var working = false
     var message: String?
+    var loading = false
+    var loadError: String?
+    private var loadAttempts = 0
 
     private func key(_ person: UUID) -> String { "shared-phone-contacts-" + person.uuidString }
     func hasShared(_ person: UUID?) -> Bool { person.map { UserDefaults.standard.bool(forKey: key($0)) } ?? false }
 
     func load(_ app: AppState) async {
+        loading = true
+        loadError = nil
+        defer { loading = false }
+        if let failure = PreviewScenario.loadFailure("contacts", attempt: loadAttempts, preview: app.isPreview) {
+            loadAttempts += 1
+            loadError = failure
+            return
+        }
         if app.isPreview {
             items = [SavedNumber(id: UUID(), label: "Jamie", phone: "+13125550102", provenance: "contacts", createdAt: .now),
                      SavedNumber(id: UUID(), label: "My clinic", phone: "+13125550103", provenance: "contacts", createdAt: .now)]
             return
         }
         guard let person = app.selectedPersonID, !app.isPreview else { return }
-        do { try await fetch(app, person) } catch { app.handle(error) }
+        do { try await fetch(app, person) }
+        catch is CancellationError { return }
+        catch { loadError = error.localizedDescription; app.handleSessionFailure(error) }
     }
     private func fetch(_ app: AppState, _ person: UUID) async throws {
         let result: APIResponses.Numbers = try await app.api.send("/api/trusted-numbers", participantID: person)
@@ -27,7 +40,7 @@ final class SharedContactsModel {
     }
     func share(_ app: AppState) async {
         guard let person = app.selectedPersonID, app.isOwner, !app.isPreview, !working else { return }
-        working = true; message = "Updating contacts…"
+        working = true; message = "Updating contacts…"; loadError = nil
         defer { working = false }
         do {
             let contacts = try await PhoneContacts.shared.all()

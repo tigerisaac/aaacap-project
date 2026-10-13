@@ -20,18 +20,41 @@ struct SharedContactsView: View {
                 Button { Task { await model.share(app) } } label: {
                     Label(model.working ? "Updating contacts…" : model.hasShared(app.selectedPersonID) ? "Update my contacts" : "Use my iPhone contacts", systemImage: "person.2.badge.plus")
                         .font(.headline).padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
                 }
                 .disabled(model.working || app.isDemo)
                 .accessibilityIdentifier("share-all-contacts")
-                if let message = model.message { Text(message).font(.subheadline).foregroundStyle(.secondary) }
+                if let message = model.message { Text(message).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
             } footer: {
-                Text("Names and numbers go to Shield. Your saved contacts can ring you as usual.").foregroundStyle(ShieldTheme.secondaryText)
+                Text("Names and numbers go to Shield. Your saved contacts can ring you as usual.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            }
+            if let error = model.loadError {
+                Section { ShieldLoadFailure(title: "Contacts couldn’t load", detail: error) { Task { await model.load(app) } } }
+            } else if model.loading && model.items.isEmpty {
+                Section { ShieldLoadingView(title: "Getting your contacts…") }
+            } else if filtered.isEmpty {
+                Section {
+                    if search.isEmpty {
+                        ContentUnavailableView("Your calling list is empty", systemImage: "person.2",
+                            description: Text("Use your iPhone contacts to let Shield know who you already know."))
+                    } else {
+                        ContentUnavailableView.search(text: search)
+                    }
+                }
             }
             Section {
                 ForEach(filtered) { item in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.label).font(.headline)
-                        Text(PhoneDisplay.format(item.phone)).font(.subheadline).foregroundStyle(.secondary)
+                        Text(PhoneDisplay.format(item.phone)).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Button(role: .destructive) { pendingRemoval = item } label: {
+                            Label("Remove", systemImage: "minus.circle")
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                .contentShape(.rect)
+                        }
+                        .buttonStyle(.borderless).disabled(model.working || app.isDemo)
+                        .accessibilityLabel("Remove \(item.label) from Contacts")
                     }
                     .padding(.vertical, 4)
                     .swipeActions {
@@ -39,13 +62,29 @@ struct SharedContactsView: View {
                             .disabled(model.working || app.isDemo)
                     }
                 }
-            } header: { Text("Your contacts").foregroundStyle(ShieldTheme.secondaryText) } footer: {
-                Text("Removing a number here also removes it from iPhone Contacts.").foregroundStyle(ShieldTheme.secondaryText)
+            } footer: {
+                Text("Removing a number here also removes it from iPhone Contacts.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            }
+            if model.items.contains(where: { !$0.isEnabled }) {
+                Section {
+                    DisclosureGroup("Removed contacts") {
+                        ForEach(model.items.filter { !$0.isEnabled }) { item in
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                                Text(item.label).font(.headline)
+                                Button("Add back to Contacts", systemImage: "arrow.uturn.backward") {
+                                    Task { _ = await model.change(true, item: item, app: app) }
+                                }
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working || app.isDemo)
+                                .accessibilityLabel("Add \(item.label) back to Contacts")
+                            }
+                        }
+                    }
+                }
             }
             Section {
                 Button("Contacts settings", systemImage: "gearshape") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                }
+                }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
             }
         }
         .confirmationDialog("Remove from iPhone Contacts?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } }), titleVisibility: .visible) {
@@ -58,7 +97,9 @@ struct SharedContactsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $search, prompt: "Name or number")
         .toolbar { ToolbarItem(placement: .primaryAction) {
-            Button("Add contact", systemImage: "plus") { showingAdd = true }.disabled(model.working || app.isDemo || !model.hasShared(app.selectedPersonID))
+            Button("Add", systemImage: "plus") { showingAdd = true }
+                .labelStyle(.titleAndIcon).accessibilityLabel("Add contact")
+                .disabled(model.working || app.isDemo || !model.hasShared(app.selectedPersonID))
         } }
         .sheet(isPresented: $showingAdd, onDismiss: { Task { await model.load(app) } }) { AddNumberView(kind: .trusted) }
         .task {

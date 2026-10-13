@@ -15,7 +15,8 @@ enum CallPresentation {
     }
 
     static func explanation(_ call: CallRecord) -> String {
-        switch call.outcome {
+        if call.outcome == .held, call.acceptedAt != nil { return "Shield ended this call after you answered." }
+        return switch call.outcome {
         case .held: "Shield stopped this call from reaching you."
         case .verification: "Shield couldn’t tell whether this call was genuine."
         case .connected: "You chose to answer this call."

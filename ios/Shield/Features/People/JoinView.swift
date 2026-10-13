@@ -3,6 +3,7 @@ import SwiftUI
 struct JoinView: View {
     @Environment(AppState.self) private var model
     @State private var joining = false
+    @State private var confirmSignOut = false
 
     var body: some View {
         NavigationStack {
@@ -31,7 +32,11 @@ struct JoinView: View {
                     }
                 }
                 Section {
-                    Button("Sign out") { Task { await model.signOut() } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    Button("Sign out") { confirmSignOut = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        .confirmationDialog("Sign out?", isPresented: $confirmSignOut, titleVisibility: .visible) {
+                            Button("Sign out") { Task { await model.signOut() } }
+                            Button("Cancel", role: .cancel) {}
+                        }
                 }
             }
             .navigationTitle(model.isLoading || model.contextError != nil ? "Your account" : "Get started")

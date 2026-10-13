@@ -5,10 +5,11 @@ struct DemoBanner: View {
     @Environment(AppState.self) private var model
 
     var body: some View {
-        Label(model.isTestAccount ? "Test account · Sample data" : "Sample app", systemImage: "play.circle")
+        Text(model.isTestAccount ? "Test account · Sample data" : "Sample app")
             .font(.subheadline.weight(.semibold))
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)
+            .foregroundStyle(ShieldTheme.secondaryText)
             .accessibilityLabel(model.isTestAccount ? "Test account, sample activity" : "Sample app, no real calls")
             .accessibilityIdentifier("demoBanner")
     }

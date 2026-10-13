@@ -9,6 +9,7 @@ final class ForwardingSetupModel {
     var step = ForwardingStep.overview
     var working = false
     var error: String?
+    var errorRevision = 0
     var codePreparedStep: ForwardingStep?
     var codeReturnedStep: ForwardingStep?
     private var pendingCodeReturn: ForwardingStep?
@@ -37,6 +38,11 @@ final class ForwardingSetupModel {
     var code: String? {
         guard let status, let index = step.codeIndex, status.activationCodes.indices.contains(index) else { return nil }
         return status.activationCodes[index]
+    }
+
+    func reportError(_ message: String) {
+        error = message
+        errorRevision += 1
     }
 
     func load(_ app: AppState) async {
@@ -108,6 +114,12 @@ final class ForwardingSetupModel {
         working = true
         defer { working = false }
         do {
+            #if DEBUG && targetEnvironment(simulator)
+            if isUITest && step == .save && ProcessInfo.processInfo.arguments.contains("--forwarding-save-fails") {
+                reportError("Contacts access is off. Allow Contacts in Settings, then try saving again.")
+                return
+            }
+            #endif
             if !isUITest {
                 if step == .consent {
                     let _: APIResponses.Empty = try await app.api.send("/api/forwarding/consent", method: "POST",
@@ -117,7 +129,7 @@ final class ForwardingSetupModel {
                 if step == .liveVoicemail { try await openWindow(app, status: status) }
             }
             try await move(to: step.next, app: app)
-        } catch { self.error = error.localizedDescription }
+        } catch { reportError(error.localizedDescription) }
     }
 
     func move(to next: ForwardingStep, app: AppState) async throws {
@@ -195,7 +207,7 @@ final class ForwardingSetupModel {
         if settingsDestination == .unavailable {
             pendingSettingsStep = nil
             settingsReturned = true
-            error = "iPhone couldn’t open Settings. Open Settings → Apps → Phone, then make the change shown above."
+            reportError("iPhone couldn’t open Settings. Open Settings → Apps → Phone, then make the change shown above.")
         }
     }
 
@@ -224,7 +236,7 @@ final class ForwardingSetupModel {
         working = true
         defer { working = false }
         do { try await openWindow(app, status: status); await load(app) }
-        catch { self.error = error.localizedDescription }
+        catch { reportError(error.localizedDescription) }
     }
     private func startProbe(_ app: AppState) async {
         guard let status, !working, !probeWaiting else { return }
@@ -247,7 +259,7 @@ final class ForwardingSetupModel {
             let _: APIResponses.Empty = try await app.api.send("/api/forwarding/probe", method: "POST",
                 body: APIClient.payload(["kind": probeKind]), participantID: status.participantId)
             await load(app)
-        } catch { self.error = error.localizedDescription }
+        } catch { reportError(error.localizedDescription) }
     }
     func restore(_ app: AppState) async {
         guard let status, !working else { return }
@@ -260,6 +272,6 @@ final class ForwardingSetupModel {
             UserDefaults.standard.set(0, forKey: "shield-restoration-step-" + status.participantId.uuidString)
             step = .restore
             await load(app)
-        } catch { self.error = error.localizedDescription }
+        } catch { reportError(error.localizedDescription) }
     }
 }

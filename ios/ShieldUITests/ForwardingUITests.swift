@@ -63,6 +63,25 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Change two Phone settings"].exists)
         capture(app, "Call check recovery")
     }
+    func testLargestTextContactsFailureIsVisibleWithoutAdvancing() {
+        let app = launch(["--forwarding-save-fails", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        tapPrimary(app); tapPrimary(app)
+        expect(app, "Save Shield in Contacts")
+        tapPrimary(app)
+        let error = app.staticTexts["forwarding-error"]
+        XCTAssertTrue(error.waitForExistence(timeout: 5))
+        let visible = NSPredicate { _, _ in error.isHittable && error.frame.minY >= app.navigationBars.firstMatch.frame.maxY }
+        expectation(for: visible, evaluatedWith: error)
+        waitForExpectations(timeout: 5)
+        let settings = app.descendants(matching: .any).matching(identifier: "Allow Contacts in Settings").firstMatch
+        for _ in 0..<5 {
+            if settings.exists && settings.isHittable { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(settings.isHittable)
+        XCTAssertFalse(app.staticTexts["Can you hear Shield?"].exists)
+        capture(app, "Contact save error large dark")
+    }
     func testLargestTextKeepsActionsVisibleAndInstructionsScrollable() {
         let app = launch(["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         capture(app, "Guided welcome large text")
@@ -143,7 +162,7 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
         app.buttons["restoration-settings-open"].tap()
         expect(app, "Let ordinary calls ring")
-        XCTAssertEqual(app.buttons["restoration-settings-confirm"].label, "Screen Unknown Callers is Never")
+        XCTAssertEqual(app.buttons["restoration-settings-confirm"].label, "I selected Never")
         XCTAssertFalse(app.staticTexts["Restore iPhone voicemail"].exists)
         app.buttons["restoration-settings-confirm"].tap()
         expect(app, "Restore iPhone voicemail")

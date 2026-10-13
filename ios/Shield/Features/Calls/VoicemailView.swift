@@ -2,6 +2,7 @@ import SwiftUI
 
 struct VoicemailView: View {
     @Environment(AppState.self) private var app
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var inbox = VoicemailInbox()
     @State private var keptOnly = false
 
@@ -13,10 +14,9 @@ struct VoicemailView: View {
     var body: some View {
         NavigationShell {
             List {
+                PersonContextSection()
                 if app.isDemo, app.isOwner, app.canListen {
                     Section {
-                        Text("Try summaries and kept messages.")
-                            .foregroundStyle(ShieldTheme.secondaryText)
                         Picker("Messages", selection: $keptOnly) {
                             Text("All").tag(false)
                             Text("Kept").tag(true)
@@ -25,8 +25,7 @@ struct VoicemailView: View {
                 }
                 if let error = inbox.error {
                     Section {
-                        ShieldNotice(title: "Messages couldn’t load", detail: error, symbol: "wifi.exclamationmark")
-                        Button("Try again") { Task { await inbox.load(app) } }
+                        ShieldLoadFailure(title: "Messages couldn’t load", detail: error) { Task { await inbox.load(app) } }
                     }
                 }
                 if inbox.loading, inbox.calls.isEmpty {
@@ -63,7 +62,7 @@ struct VoicemailView: View {
             }
             .shieldListStyle()
             .navigationTitle("Messages")
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
+            .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task { await inbox.load(app) }
             .refreshable { await inbox.load(app) }
         }

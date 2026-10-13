@@ -13,6 +13,7 @@ struct CheckView: View {
     @State private var error: String?
     @FocusState private var editing: Bool
     @AccessibilityFocusState private var resultFocused: Bool
+    @AccessibilityFocusState private var errorFocused: Bool
     @ScaledMetric(relativeTo: .body) private var editorHeight = 120.0
 
     var body: some View {
@@ -32,12 +33,13 @@ struct CheckView: View {
                             VStack(alignment: .leading, spacing: 8) { inputActions }
                         }
                         .padding(.vertical, 4)
-                    } header: { Text("Paste a text or choose a picture").foregroundStyle(ShieldTheme.secondaryText) } footer: {
+                    } footer: {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Leave out passwords and private numbers.").foregroundStyle(ShieldTheme.secondaryText)
                             if text.count > 6000 { Text("Too much text. Try a shorter part.").foregroundStyle(ShieldTheme.held) }
                         }
                         .foregroundStyle(ShieldTheme.secondaryText)
+                        .font(.subheadline)
                     }
                     Section {
                         Button { editing = false; showConsent = true } label: {
@@ -53,14 +55,24 @@ struct CheckView: View {
                         }
                         .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
                     }
+                    if result == nil {
+                        Section {
+                            DisclosureGroup("How do I copy a text?") {
+                                Text("In Messages, touch and hold the message and tap Copy. To copy just part, tap Select first and choose the words.")
+                                Text("Return to Shield and tap Paste.").foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                        }
+                    }
                     if let error {
-                        Section { ShieldNotice(title: "Couldn’t check this text", detail: error, symbol: "exclamationmark.circle") }
+                        Section {
+                            ShieldNotice(title: "Couldn’t check this text", detail: error, symbol: "exclamationmark.circle")
+                                .id("check-error").accessibilityFocused($errorFocused)
+                        }
                     }
                     if let result {
                         Section {
                             VStack(alignment: .leading, spacing: 16) {
-                                Label(result.isDemo ? "Sample answer" : "About this text", systemImage: "text.bubble")
-                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                if result.isDemo { Text("Sample answer").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                                 Label {
                                     Text(result.title).foregroundStyle(Color.primary)
                                 } icon: {
@@ -77,7 +89,7 @@ struct CheckView: View {
                             }.padding(.vertical, 12)
                                 .id("check-result")
                             Button("Check another text", systemImage: "plus.bubble") { text = ""; self.result = nil; editing = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                        } footer: { Text("This check can be wrong. It can’t prove who sent the text.").foregroundStyle(ShieldTheme.secondaryText) }
+                        } footer: { Text("This check can be wrong. It can’t prove who sent the text.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                         if model.isOwner {
                             Section { NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Find a trusted number", symbol: "phone") } }
                         }
@@ -95,18 +107,22 @@ struct CheckView: View {
                     proxy.scrollTo("check-result", anchor: .top)
                     resultFocused = true
                 }
+                .onChange(of: error) { _, value in
+                    if value != nil { proxy.scrollTo("check-error", anchor: .top); errorFocused = true }
+                }
             }
     }
 
     @ViewBuilder private var inputActions: some View {
         PasteButton(payloadType: String.self) { values in text = values.joined(separator: "\n") }
             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule)
+            .controlSize(.large)
             .disabled(checking || readingPhoto)
         PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto] in
-            Label(readingPhoto ? "Reading…" : "Picture", systemImage: "photo")
+            Label(readingPhoto ? "Reading picture…" : "Choose picture", systemImage: "photo")
+                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
         }
-        .buttonStyle(.bordered).buttonBorderShape(.capsule)
-        .tint(ShieldTheme.action)
+        .shieldSecondaryButton()
         .disabled(readingPhoto || checking)
     }
 

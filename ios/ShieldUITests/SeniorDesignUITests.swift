@@ -19,7 +19,7 @@ final class SeniorDesignUITests: XCTestCase {
         app.staticTexts["Appointment message"].firstMatch.tap()
         let keep = app.buttons["keep-sample-message"]
         XCTAssertTrue(keep.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Sample summary"].exists)
+        XCTAssertTrue(app.staticTexts["message-summary"].exists)
         XCTAssertTrue(app.buttons["Hear sample message"].exists)
         app.buttons["Hear sample message"].tap()
         XCTAssertTrue(app.buttons["Stop sample"].waitForExistence(timeout: 3))
@@ -123,10 +123,25 @@ final class SeniorDesignUITests: XCTestCase {
 
     private func tap(_ element: XCUIElement, in app: XCUIApplication) {
         _ = element.waitForExistence(timeout: 1)
-        for _ in 0..<10 {
-            if element.exists && element.isHittable { break }
-            if app.collectionViews.firstMatch.exists { app.collectionViews.firstMatch.swipeUp() }
-            else { app.swipeUp() }
+        for _ in 0..<20 {
+            let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
+            var bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
+            let actions = app.otherElements["message-action-area"]
+            if actions.exists && actions.frame.height > 0 { bottom = min(bottom, actions.frame.minY) }
+            if element.exists && element.isHittable && element.frame.minY >= top && element.frame.maxY <= bottom { break }
+            if app.collectionViews.firstMatch.exists {
+                let downward = element.exists && element.frame.minY < top
+                let origin = app.coordinate(withNormalizedOffset: .zero)
+                let high = top + (bottom - top) * 0.25
+                let low = top + (bottom - top) * 0.75
+                origin.withOffset(CGVector(dx: app.frame.midX, dy: downward ? high : low))
+                    .press(forDuration: 0.1, thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: downward ? low : high)))
+            } else { app.swipeUp() }
+        }
+        if !element.exists || !element.isHittable {
+            capture(app, "polish-unreachable-control")
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "Unreachable control accessibility tree"; tree.lifetime = .keepAlways; add(tree)
         }
         XCTAssertTrue(element.exists); XCTAssertTrue(element.isHittable); element.tap()
     }

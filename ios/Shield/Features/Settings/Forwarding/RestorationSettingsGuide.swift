@@ -12,7 +12,6 @@ struct RestorationSettingsGuide: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Phone settings · \(unknownCallers ? 1 : 2) of 2").foregroundStyle(ForwardingStyle.secondaryText)
             Text(unknownCallers ? "Let ordinary calls ring" : "Restore iPhone voicemail")
                 .font(.title2.bold()).accessibilityAddTraits(.isHeader)
             VStack(alignment: .leading, spacing: 12) {

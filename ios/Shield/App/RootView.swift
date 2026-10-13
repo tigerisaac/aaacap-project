@@ -41,6 +41,7 @@ struct RootView: View {
             #endif
         }
         .preferredColorScheme(previewColorScheme)
+        .toggleStyle(ShieldSwitchStyle())
         .onAppear {
             #if DEBUG
             if isForwardingPreview { UIApplication.shared.isIdleTimerDisabled = true }
@@ -59,6 +60,18 @@ struct RootView: View {
     }
 
     @ViewBuilder private var content: some View {
+            #if DEBUG && targetEnvironment(simulator)
+            if let screen = ScreenPreview.requested {
+                ScreenPreview(screen: screen)
+            } else {
+                appContent
+            }
+            #else
+            appContent
+            #endif
+    }
+
+    @ViewBuilder private var appContent: some View {
             @Bindable var model = model
             if isForwardingPreview && ProcessInfo.processInfo.arguments.contains("--forwarding-navigation-test") {
                 NavigationStack {

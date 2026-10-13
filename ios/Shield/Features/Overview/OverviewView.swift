@@ -3,6 +3,7 @@ import SwiftUI
 struct OverviewView: View {
     @Environment(AppState.self) private var model
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var protectionCheck = ProtectionCheckState()
     @State private var forwarding: ForwardingStatus?
     @State private var checkedAt: Date?
@@ -11,6 +12,7 @@ struct OverviewView: View {
     var body: some View {
         NavigationShell {
             List {
+                PersonContextSection()
                 if !model.isDemo || isStatusFixture {
                     Section {
                         TimelineView(.periodic(from: .now, by: 15)) { context in
@@ -44,7 +46,7 @@ struct OverviewView: View {
                         }
                     } header: { Text("Messages").font(.headline).foregroundStyle(ShieldTheme.secondaryText) }
                     Section {
-                        if overview.recent.isEmpty {
+                        if overview.recent.filter({ $0.voicemail == nil }).isEmpty {
                             Text("Your calls will appear here.").foregroundStyle(ShieldTheme.secondaryText)
                         } else {
                             ForEach(overview.recent.filter { $0.voicemail == nil }.prefix(2)) { call in
@@ -57,8 +59,14 @@ struct OverviewView: View {
                     Section { ShieldLoadingView(title: "Getting your calls…") }
                 } else {
                     Section {
-                        ShieldNotice(title: "Your calls couldn’t load", detail: "Please try again.", symbol: "wifi.exclamationmark")
-                        Button("Try again") { Task { await refresh() } }
+                        ShieldLoadFailure(title: "Your calls couldn’t load", detail: "Check your internet connection and try again.") {
+                            Task { await refresh() }
+                        }
+                    }
+                }
+                if model.overview != nil, let error = model.contextError {
+                    Section {
+                        ShieldLoadFailure(title: "These calls may be out of date", detail: error) { Task { await refresh() } }
                     }
                 }
             }
@@ -68,8 +76,10 @@ struct OverviewView: View {
                 if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
             }
             .navigationTitle("Home")
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
-            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
+            .toolbarBackground(ShieldTheme.surface, for: .navigationBar)
+            .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
             .refreshable { await refresh() }
             .task(id: model.selectedPersonID) {
                 await loadStatus()
@@ -100,12 +110,12 @@ struct OverviewView: View {
                     Button(checkingStatus ? "Checking…" : "Try again") { Task { await refresh() } }
                         .disabled(checkingStatus)
                 } else if presentation.needsSetup {
-                    if model.isTrial {
+                    if model.isTrial && !presentation.useSetupMenu {
                         NavigationLink { ForwardingSetupView() } label: {
-                            Text(presentation.title == "Disconnecting Shield" ? "Continue" : "Set up my phone")
+                            Text(presentation.actionTitle)
                         }
                     } else {
-                        NavigationLink("Set up my phone", value: AppRoute.setup)
+                        NavigationLink(presentation.actionTitle, value: AppRoute.setup)
                     }
                 }
             }
@@ -113,7 +123,15 @@ struct OverviewView: View {
         .padding(.vertical, 8)
     }
 
-    private struct Summary { let title: String; let detail: String; let symbol: String; var retry = false; var needsSetup = false }
+    private struct Summary {
+        let title: String
+        let detail: String
+        let symbol: String
+        var retry = false
+        var needsSetup = false
+        var actionTitle = "Set up my phone"
+        var useSetupMenu = false
+    }
     private func summary(now: Date) -> Summary {
         if model.isDemo && !isStatusFixture { return .init(title: model.isOwner ? "Sample phone" : "\(model.person?.name ?? "Your person")’s sample calls", detail: "Try a message or call below.", symbol: "phone.badge.waveform") }
         if model.contextError != nil { return .init(title: "Couldn’t check your phone", detail: "Please try again.", symbol: "wifi.exclamationmark", retry: true) }
@@ -122,13 +140,13 @@ struct OverviewView: View {
         guard let status = forwarding, let checkedAt, now.timeIntervalSince(checkedAt) < 75 else {
             return .init(title: "Couldn’t check your phone", detail: "Please try again.", symbol: "wifi.exclamationmark", retry: true)
         }
-        if status.restorationRequested || model.overview?.status == "restoring" { return .init(title: "Disconnecting Shield", detail: "Finish the steps to bring back ordinary calls.", symbol: "arrow.uturn.backward.circle", needsSetup: true) }
-        if model.overview?.status == "paused" { return .init(title: "Call checks are paused", detail: "Your phone may still send calls to Shield.", symbol: "pause.circle", needsSetup: true) }
+        if status.restorationRequested || model.overview?.status == "restoring" { return .init(title: "Disconnecting Shield", detail: "Finish the steps to bring back ordinary calls.", symbol: "arrow.uturn.backward.circle", needsSetup: true, actionTitle: "Finish disconnecting") }
+        if model.overview?.status == "paused" { return .init(title: "Call checks are paused", detail: "Your phone may still send calls to Shield.", symbol: "pause.circle", needsSetup: true, actionTitle: "Resume call checks", useSetupMenu: true) }
         if !status.consented || !status.prepared || !status.phoneVerified { return .init(title: "Your phone needs setup", detail: "We’ll help you one step at a time.", symbol: "phone.badge.checkmark", needsSetup: true) }
         if status.active, status.liveScreening == true, let expiry = status.expiresAt, expiry > now, status.remainingCalls > 0 {
             return .init(title: "Call checks are on", detail: "Calls that reach Shield are checked until \(expiry.formatted(date: .omitted, time: .shortened)).", symbol: "phone.badge.waveform")
         }
-        return .init(title: "Call checks are off", detail: "Calls that reach Shield may go to voicemail.", symbol: "clock", needsSetup: true)
+        return .init(title: "Call checks are off", detail: "Calls that reach Shield may go to voicemail.", symbol: "clock", needsSetup: true, actionTitle: "Phone options", useSetupMenu: true)
     }
 
     private var isStatusFixture: Bool {

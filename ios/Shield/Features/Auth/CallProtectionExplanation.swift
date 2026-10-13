@@ -3,8 +3,8 @@ import SwiftUI
 struct CallProtectionExplanation: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Shield reads the words in calls you answer and checks for scam requests.")
-            Text("It may end a suspicious call. It can miss a scam or stop an ordinary call.")
+            Text("On calls you answer through Shield, it checks the words for scam requests.")
+            Text("It may warn you and end a suspicious call. Checks can miss a scam or stop an ordinary call.")
                 .foregroundStyle(ShieldTheme.secondaryText)
             DisclosureGroup("What happens to my words?") {
                 VStack(alignment: .leading, spacing: 12) {

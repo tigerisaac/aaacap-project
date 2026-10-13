@@ -51,7 +51,8 @@ final class ShieldUITests: XCTestCase {
         app.launchArguments = ["--uitesting-email-sent"]
         app.launch()
         XCTAssertTrue(app.staticTexts["Check your email"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts.matching(identifier: "beta@example.com").count, 1)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "sign-in-address").count, 1)
+        XCTAssertEqual(app.staticTexts["sign-in-address"].label, "Email sent to beta@example.com")
         XCTAssertFalse(app.textFields["Email address"].exists)
         XCTAssertFalse(app.buttons["Try sample app"].exists)
         XCTAssertTrue(app.buttons["Resend link"].exists)

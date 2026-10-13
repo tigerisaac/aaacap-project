@@ -7,9 +7,22 @@ struct BlockedNumbersView: View {
     @State private var loaded = false
     @State private var pendingUnblock: BlockedNumber?
     @State private var phoneBlocking: Bool?
+    @State private var loadError: String?
+    @State private var loadAttempts = 0
+    @State private var working = false
 
     var body: some View {
         List {
+            if let loadError {
+                Section { ShieldLoadFailure(title: "Blocked numbers couldn’t load", detail: loadError) { Task { await load() } } }
+            } else if !loaded {
+                Section { ShieldLoadingView(title: "Getting blocked numbers…") }
+            } else if items.isEmpty {
+                Section {
+                    ContentUnavailableView("No blocked numbers", systemImage: "hand.raised",
+                        description: Text("Numbers blocked by Shield will appear here."))
+                }
+            }
             if model.isOwner, !model.isPreview, phoneBlocking != nil {
                 Section {
                     LabeledContent("Block on this iPhone", value: phoneBlocking == true ? "On" : "Off")
@@ -33,8 +46,14 @@ struct BlockedNumbersView: View {
                         .accessibilityElement(children: .combine)
                         // A visible button, not only a swipe: swipes are hard to discover.
                         if model.isOwner {
-                            Button("Allow calls again", systemImage: "hand.raised.slash") { pendingUnblock = item }
-                                .buttonStyle(.bordered).buttonBorderShape(.capsule).accessibilityIdentifier("unblock-\(item.phone)")
+                            Button { pendingUnblock = item } label: {
+                                Text("Allow calls again")
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .shieldSecondaryButton().disabled(working)
+                            .accessibilityLabel("Allow calls from \(PhoneDisplay.format(item.phone)) again")
+                            .accessibilityIdentifier("unblock-\(item.phone)")
                         }
                     }
                     .padding(.vertical, 2)
@@ -44,7 +63,7 @@ struct BlockedNumbersView: View {
                         }
                     }
                     .contextMenu {
-                        if model.isOwner { Button("Allow calls again", systemImage: "hand.raised.slash") { pendingUnblock = item } }
+                        if model.isOwner { Button("Allow calls again") { pendingUnblock = item } }
                     }
                 }
             }
@@ -53,12 +72,6 @@ struct BlockedNumbersView: View {
                     Text("Shield stops calls from these numbers. Blocks end after 180 days.")
                     Text(model.isOwner ? "Scammers can use someone else’s number. Allow calls again only if you know who it belongs to." : "Only the person using Shield can allow calls again.")
                 }
-            }
-        }
-        .overlay {
-            if loaded && items.isEmpty {
-                ContentUnavailableView("No blocked numbers", systemImage: "hand.raised",
-                    description: Text("Numbers blocked by Shield will appear here."))
             }
         }
         .shieldListStyle()
@@ -84,6 +97,12 @@ struct BlockedNumbersView: View {
     }
 
     private func load() async {
+        loadError = nil
+        if let failure = PreviewScenario.loadFailure("blocked", attempt: loadAttempts, preview: model.isPreview) {
+            loadAttempts += 1
+            loadError = failure
+            return
+        }
         if model.isPreview {
             items = [BlockedNumber(id: String(repeating: "a", count: 64), phone: "+13125550199", reason: "scam",
                 blockedAt: .now.addingTimeInterval(-86400), expiresAt: .now.addingTimeInterval(179 * 86400), attempts: 2, lastAttemptAt: .now)]
@@ -100,12 +119,15 @@ struct BlockedNumbersView: View {
                 await CallDirectorySync.update(phones: response.items.map(\.phone))
                 phoneBlocking = await CallDirectorySync.isEnabled()
             }
-        } catch is CancellationError { return } catch { model.handle(error) }
+        } catch is CancellationError { return }
+        catch { loadError = error.localizedDescription; model.handleSessionFailure(error) }
     }
 
     private func unblock(_ item: BlockedNumber) async {
         pendingUnblock = nil
-        guard model.isOwner else { return }
+        guard model.isOwner, !working else { return }
+        working = true
+        defer { working = false }
         if model.isPreview { items.removeAll { $0.id == item.id }; return }
         do {
             let _: APIResponses.Empty = try await model.api.send("/api/blocked-numbers/\(item.id)", method: "DELETE", participantID: model.selectedPersonID)

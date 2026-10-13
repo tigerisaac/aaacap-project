@@ -5,21 +5,38 @@ struct HelperAlertsToggle: View {
     @Environment(AppState.self) private var model
     @State private var status: APIResponses.HelperAlerts?
     @State private var working = false
+    @State private var loading = true
+    @State private var loadError: String?
 
     var body: some View {
-        Toggle(isOn: Binding(get: { status?.enabled == true }, set: { on in Task { await save(on) } })) {
-            Label("Let my helpers know", systemImage: "person.2.badge.gearshape")
+        Group {
+            if loading && status == nil {
+                ShieldLoadingView(title: "Checking helper alerts…")
+            } else if let loadError {
+                ShieldLoadFailure(title: "Helper alerts couldn’t load", detail: loadError) { Task { await load() } }
+            } else if status?.available == true {
+                Toggle("Let my helpers know", isOn: Binding(get: { status?.enabled == true }, set: { on in Task { await save(on) } }))
+                    .disabled(working || model.isDemo)
+                    .accessibilityIdentifier("helper-alerts-toggle")
+                if working { ProgressView("Saving helper alerts…") }
+            } else {
+                Text("Helper alerts aren’t available yet.").foregroundStyle(ShieldTheme.secondaryText)
+            }
         }
-        .disabled(working || model.isDemo || status?.available != true)
-        .accessibilityIdentifier("helper-alerts-toggle")
         .task { await load() }
     }
 
     private func load() async {
+        loading = true
+        loadError = nil
+        defer { loading = false }
         guard !model.isPreview, let id = model.selectedPersonID else { return }
-        // A service without push alerts reads as unavailable here, not as an error.
         do { status = try await model.api.send("/api/helper-alerts", participantID: id) }
-        catch is CancellationError { return } catch { status = nil }
+        catch is CancellationError { return }
+        catch {
+            if case let APIError.service(_, code) = error, code == 404 { status = nil }
+            else { loadError = error.localizedDescription; model.handleSessionFailure(error) }
+        }
     }
 
     private func save(_ enabled: Bool) async {
@@ -30,6 +47,6 @@ struct HelperAlertsToggle: View {
             let _: APIResponses.Empty = try await model.api.send("/api/helper-alerts", method: "POST",
                 body: APIClient.payload(["enabled": enabled]), participantID: id)
             await load()
-        } catch { model.handle(error) }
+        } catch { await load(); model.handle(error) }
     }
 }

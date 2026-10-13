@@ -45,10 +45,15 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         switch self {
         case .overview: 0
         case .consent: 1
-        case .save, .ring: 2
-        case .settings, .liveVoicemail: 3
-        case .forward0, .forward1, .forward2: 4
-        case .test, .checks: 5
+        case .save: 2
+        case .ring: 3
+        case .settings: 4
+        case .liveVoicemail: 5
+        case .forward0: 6
+        case .forward1: 7
+        case .forward2: 8
+        case .test: 9
+        case .checks: 10
         case .restore: 0
         }
     }

@@ -8,6 +8,7 @@ struct CallProtectionView: View {
     @State private var confirmEnable = false
     @State private var loaded = false
     @State private var loadFailed = false
+    @State private var loadAttempts = 0
 
     private var monitoring: ForwardingStatus.Monitoring? { status?.monitoring }
 
@@ -26,9 +27,10 @@ struct CallProtectionView: View {
                         if on { confirmEnable = true } else { Task { await save(enabled: false) } }
                     }))
                     .disabled(working || model.isPreview || model.isDemo || monitoring?.available != true)
+                if working { ProgressView("Saving your choice…") }
                 }
             } footer: {
-                Text(footer).foregroundStyle(ShieldTheme.secondaryText)
+                Text(footer).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             Section { CallProtectionExplanation() }
         }
@@ -45,15 +47,21 @@ struct CallProtectionView: View {
 
     private var footer: String {
         if model.isPreview || model.isDemo { return "This setting doesn’t change in the sample app." }
-        if loadFailed { return "Your saved choice hasn’t changed." }
+        if loadFailed { return "Your saved choice couldn’t be checked." }
         guard let monitoring else { return loaded ? "This isn’t ready for your phone yet." : "" }
         if !monitoring.available { return "This isn’t ready for your phone yet." }
         return monitoring.enabled ? "On for calls you answer through Shield." : "Off. Shield can still check calls before your phone rings."
     }
 
     private func load() async {
-        guard !model.isPreview, let id = model.selectedPersonID else { return }
         loadFailed = false
+        if PreviewScenario.loadFailure("protection", attempt: loadAttempts, preview: model.isPreview) != nil {
+            loadAttempts += 1
+            loadFailed = true
+            loaded = true
+            return
+        }
+        guard !model.isPreview, let id = model.selectedPersonID else { return }
         do {
             let response: ForwardingStatus = try await model.api.send("/api/forwarding", participantID: id)
             guard model.selectedPersonID == id else { return }
@@ -76,6 +84,6 @@ struct CallProtectionView: View {
             let _: APIResponses.Empty = try await model.api.send("/api/forwarding/monitoring", method: "POST",
                 body: APIClient.payload(body), participantID: id)
             await load()
-        } catch { model.handle(error) }
+        } catch { await load(); model.handle(error) }
     }
 }
