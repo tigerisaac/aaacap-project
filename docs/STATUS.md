@@ -1,5 +1,9 @@
 # Status
 
+## October 13 — charge/offer experiments remain offline
+
+The owner's current target is to stop unexpected-charge alarms and preserve ordinary receipts/notices. Repository v99 and post-call v7 remain unchanged pending a validated replacement. The separate release below deployed screening v31 and voicemail v4 during this round. [V122–v125 audit](SCREENING-CHARGE-AND-OFFER-REVIEW.md): 14 scored runs, 2,116 trials on subscription Luna medium, one retained MASC timeout. V124 blocks all ten fresh empty-contact trials but loses ordinary live offers on MASC (62/80 offered, 17 saved, one blocked), and charge alarms still sometimes save. V125's recording sentence does not resolve this. This prompt round promoted no candidate and performed no paid voice test, phone call, forwarding change or deployment. Typecheck, 191 unit tests/build and 154 emulator tests pass.
+
 ## October 13 — Grace and audio/summary release (deployed)
 
 With owner approval, release source `62b2ada` was deployed and verified by **08:09 Central** (`2026-10-13T13:09:28.570Z`). Production uses prerecorded Soniox Grace for fixed call prompts, with Joanna only after confirmed playback failure or definite audio-command rejection. Saved voicemails and potentially useful notices retain encrypted audio, a summary and a decision; temporary transcription is discarded. Answered calls and known scams are discarded. Production versions are screening `2026-10-12-general-v31`, voicemail `2026-10-12-voicemail-v4` and summary `2026-10-12-message-v2`.

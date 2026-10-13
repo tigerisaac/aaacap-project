@@ -39,18 +39,22 @@ export async function codexMessageTarget({extraConfig={}}={}) {
   try{await rpc('initialize',{clientInfo:{name:'shield_message_eval',title:'Shield message evaluation',version:'1.0'},capabilities:{experimentalApi:true}});send({method:'initialized',params:{}});}catch(e){child.kill();throw e;}
   return {
     transport:{kind:'codex-app-server-output-schema',version:1,model:'gpt-6-luna',effort:'medium',promptRole:'developer',context:'Frozen message instructions, production user input and output schema only; no tools. Verified by local mock.',differencesFromResponses:'Codex uses low verbosity, its own output limit and an offline 90-second evaluation deadline. This is not production latency or a transcription test.'},
-    async evaluate(request){
+    async evaluate(request,{signal}={}){
       if(request.model!=='gpt-6-luna'||request.reasoning?.effort!=='medium'||request.store!==false||request.text?.format?.type!=='json_schema'||request.input?.length!==1||request.input[0].role!=='user'||typeof request.input[0].content!=='string')throw new Error('unexpected_message_request');
+      if(signal?.aborted)return {failure:'codex_evaluation_cancelled'};
       let thread;
       try{thread=await rpc('thread/start',{model:request.model,allowProviderModelFallback:false,cwd:'/private/tmp',ephemeral:true,sandbox:'read-only',approvalPolicy:'never',baseInstructions:request.instructions,developerInstructions:'',environments:[],dynamicTools:[]});
         if(thread.model!==request.model||thread.reasoningEffort!=='medium')throw new Error('model_mismatch');
       }catch{return {failure:'codex_thread_start_failed'};}
       const threadId=thread.thread.id;
+      if(signal?.aborted){try{await rpc('thread/unsubscribe',{threadId});}catch{}return {failure:'codex_evaluation_cancelled'};}
       return await new Promise(resolve=>{
         let finished=false;
-        const a={text:'',turnId:null,finish:async result=>{if(finished)return;finished=true;clearTimeout(timer);active.delete(threadId);if(result.failure&&a.turnId)try{await rpc('turn/interrupt',{threadId,turnId:a.turnId});}catch{}try{await rpc('thread/unsubscribe',{threadId});}catch{}resolve(result);}};
+        const onAbort=()=>void a.finish({failure:'codex_evaluation_cancelled'});
+        const a={text:'',turnId:null,finish:async result=>{if(finished)return;finished=true;clearTimeout(timer);signal?.removeEventListener('abort',onAbort);active.delete(threadId);if(result.failure&&a.turnId)try{await rpc('turn/interrupt',{threadId,turnId:a.turnId});}catch{}try{await rpc('thread/unsubscribe',{threadId});}catch{}resolve(result);}};
         const timer=setTimeout(()=>void a.finish({failure:'codex_evaluation_timeout'}),90000);active.set(threadId,a);
-        rpc('turn/start',{threadId,model:request.model,effort:'medium',summary:'none',outputSchema:request.text.format.schema,input:[{type:'text',text:request.input[0].content}]}).then(r=>{a.turnId=r.turn.id;}).catch(()=>void a.finish({failure:'codex_turn_start_failed'}));
+        signal?.addEventListener('abort',onAbort,{once:true});
+        rpc('turn/start',{threadId,model:request.model,effort:'medium',summary:'none',outputSchema:request.text.format.schema,input:[{type:'text',text:request.input[0].content}]}).then(async r=>{a.turnId=r.turn.id;if(finished)try{await rpc('turn/interrupt',{threadId,turnId:a.turnId});}catch{}}).catch(()=>void a.finish({failure:'codex_turn_start_failed'}));
       });
     },
     async close(){if(!closed){closed=true;child.stdin.end();child.kill();}},

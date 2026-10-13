@@ -41,7 +41,8 @@ export function codexArgs(extra = {}) {
     ...Object.entries(config).flatMap(([k, v]) => ['-c', `${k}=${toml(v)}`])];
 }
 
-export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision, argumentSchema, argumentFeedback = false, callerFraming = 'legacy' } = {}) {
+export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision, argumentSchema, argumentFeedback = false, callerFraming = 'legacy', approvalGuard } = {}) {
+  if (approvalGuard !== undefined && typeof approvalGuard !== 'function') throw new Error('invalid_approval_guard');
   if (typeof conversation !== 'boolean') throw new Error('invalid_conversation_mode');
   if (interpretDecision !== undefined && typeof interpretDecision !== 'function') throw new Error('invalid_decision_interpreter');
   if (argumentSchema !== undefined && (typeof argumentSchema?.safeParse !== 'function' || !argumentSchema.shape)) throw new Error('invalid_argument_schema');
@@ -87,6 +88,63 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
     for (const p of pending.values()) p.reject(new Error(reason)); pending.clear();
     for (const a of active.values()) a.finish({ kind: 'failure', failure: reason });
   }
+  async function handleToolMessage(message,a,params) {
+      if (active.get(params.threadId)!==a) return;
+      a.turnId = params.turnId;
+      let output;
+      if (++a.rounds > 12) { a.finish({ kind: 'failure', failure: 'too_many_rounds' }); return; }
+      if (params.tool === 'screen_call') {
+        const inputIssues = argumentSchema ? screeningArgumentIssues(argumentSchema, params.arguments) : [];
+        // Offline experiments may record structured observations and map them to
+        // an action. The normal application validator still checks every result.
+        let interpreted;
+        try { interpreted = interpretDecision ? interpretDecision(params.arguments, a.state.transcript, a.state) : params.arguments; }
+        catch { interpreted = undefined; } // A failed mapper cannot bypass validation or connect.
+        if (inputIssues.length) interpreted = undefined;
+        let proposed = permittedDecision(interpreted, a.state.transcript);
+        let guardApplied=false,guardFailure=false,clarification;
+        // Guard only valid offers on new caller evidence. It cannot override a
+        // primary block, a schema/evidence rejection, or the unanswered guard.
+        if (approvalGuard && proposed?.action==='approve' && !awaitingCallerAnswer(proposed,a.state.clarifiedSpoken,spokenLength(a.state.transcript))) {
+          guardApplied=true;
+          try {
+            const reviewed=await approvalGuard(structuredClone(proposed),a.state.transcript,a.state,{signal:a.abort.signal});
+            if (active.get(params.threadId)!==a) return;
+            if (!reviewed || Object.keys(reviewed).some(k=>!['decision','clarification'].includes(k)) || (reviewed.clarification!==undefined&&!['identity','purpose','requested_action'].includes(reviewed.clarification))) throw new Error('invalid_guard_result');
+            interpreted=reviewed.decision;proposed=permittedDecision(interpreted,a.state.transcript);
+            if (!proposed || (proposed.action==='continue'&&!reviewed.clarification)) throw new Error('invalid_guard_decision');
+            clarification=reviewed.clarification;
+          } catch { if (active.get(params.threadId)!==a) return; guardFailure=true;interpreted=undefined;proposed=undefined; }
+        }
+        const needsAnswer = proposed && awaitingCallerAnswer(proposed, a.state.clarifiedSpoken, spokenLength(a.state.transcript));
+        const decision = needsAnswer ? undefined : proposed;
+        // Content-free diagnostics distinguish policy misses from rejected tool arguments.
+        const parsed = liveDecisionSchema.safeParse(interpreted);
+        a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
+          ...(argumentSchema ? { inputIssues } : {}),
+          ...(guardApplied?{approvalGuard:{applied:true,failed:guardFailure}}:{}),
+          ...(needsAnswer ? { awaitingCallerAnswer: true } : {}),
+          evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,
+          ...(parsed.success ? { action: parsed.data.action, reason: parsed.data.reason, purpose: parsed.data.purpose,
+            hasName: parsed.data.hasName, hasReason: parsed.data.hasReason,
+            evidenceSupported: supportedEvidence(parsed.data.evidence, a.state.transcript) }
+            : { issueCodes: parsed.error.issues.map(issue => issue.code) }) });
+        if (guardFailure) { a.finish({kind:'failure',failure:'approval_guard_failed'}); return; }
+        if (decision && decision.action !== 'continue') { a.finish({ kind: 'decision', decision }); return; }
+        if (needsAnswer) {
+          a.asking = true; output = CALLER_ANSWER_PENDING;
+        } else if (decision) {
+          a.state.questions++; a.asking = true;
+          a.state.clarifiedSpoken = spokenLength(a.state.transcript);
+          const missing={identity:'Ask only who is calling.',purpose:'Ask only what the call is about.',requested_action:'Ask only what the caller needs the recipient to do.'}[clarification];
+          output = { status: 'continue_screening', instruction: missing ? `${missing} Use one brief question and wait for the answer. Do not announce connection or rejection.` : 'Ask one brief clarifying question about only the missing information. Do not announce connection or rejection.' };
+        } else output = { status: 'decision_not_applied', untrustedCallerTranscript: callerText(a.state.transcript),
+          ...(argumentFeedback ? observationCorrection(inputIssues,argumentSchema,argumentFeedback===2?2:1) : { instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." }) };
+      } else if (params.tool === 'research_scam_pattern') {
+        a.state.researches++; output = { status: 'unavailable' };
+      } else { a.finish({ kind: 'failure', failure: 'unexpected_tool' }); return; }
+      send({ id: message.id, result: { success: true, contentItems: [{ type: 'inputText', text: JSON.stringify(output) }] } });
+  }
   createInterface({ input: process.stdout }).on('line', line => {
     let message; try { message = JSON.parse(line); } catch { return; }
     if (message.id !== undefined && !message.method) {
@@ -99,43 +157,10 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       if (method !== 'item/tool/call' || !a) {
         send({ id: message.id, error: { code: -32601, message: 'Evaluation permits screening tools only' } }); return;
       }
-      a.turnId = params.turnId;
-      let output;
-      if (++a.rounds > 12) { a.finish({ kind: 'failure', failure: 'too_many_rounds' }); return; }
-      if (params.tool === 'screen_call') {
-        const inputIssues = argumentSchema ? screeningArgumentIssues(argumentSchema, params.arguments) : [];
-        // Offline experiments may record structured observations and map them to
-        // an action. The normal application validator still checks every result.
-        let interpreted;
-        try { interpreted = interpretDecision ? interpretDecision(params.arguments, a.state.transcript, a.state) : params.arguments; }
-        catch { interpreted = undefined; } // A failed mapper cannot bypass validation or connect.
-        if (inputIssues.length) interpreted = undefined;
-        const proposed = permittedDecision(interpreted, a.state.transcript);
-        const needsAnswer = proposed && awaitingCallerAnswer(proposed, a.state.clarifiedSpoken, spokenLength(a.state.transcript));
-        const decision = needsAnswer ? undefined : proposed;
-        // Content-free diagnostics distinguish policy misses from rejected tool arguments.
-        const parsed = liveDecisionSchema.safeParse(interpreted);
-        a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
-          ...(argumentSchema ? { inputIssues } : {}),
-          ...(needsAnswer ? { awaitingCallerAnswer: true } : {}),
-          evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,
-          ...(parsed.success ? { action: parsed.data.action, reason: parsed.data.reason, purpose: parsed.data.purpose,
-            hasName: parsed.data.hasName, hasReason: parsed.data.hasReason,
-            evidenceSupported: supportedEvidence(parsed.data.evidence, a.state.transcript) }
-            : { issueCodes: parsed.error.issues.map(issue => issue.code) }) });
-        if (decision && decision.action !== 'continue') { a.finish({ kind: 'decision', decision }); return; }
-        if (needsAnswer) {
-          a.asking = true; output = CALLER_ANSWER_PENDING;
-        } else if (decision) {
-          a.state.questions++; a.asking = true;
-          a.state.clarifiedSpoken = spokenLength(a.state.transcript);
-          output = { status: 'continue_screening', instruction: 'Ask one brief clarifying question about only the missing information. Do not announce connection or rejection.' };
-        } else output = { status: 'decision_not_applied', untrustedCallerTranscript: callerText(a.state.transcript),
-          ...(argumentFeedback ? observationCorrection(inputIssues,argumentSchema,argumentFeedback===2?2:1) : { instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." }) };
-      } else if (params.tool === 'research_scam_pattern') {
-        a.state.researches++; output = { status: 'unavailable' };
-      } else { a.finish({ kind: 'failure', failure: 'unexpected_tool' }); return; }
-      send({ id: message.id, result: { success: true, contentItems: [{ type: 'inputText', text: JSON.stringify(output) }] } });
+      if (approvalGuard) {
+        a.toolQueue=(a.toolQueue??Promise.resolve()).then(()=>handleToolMessage(message,a,params)).catch(()=>a.finish({kind:'failure',failure:'approval_guard_failed'}));
+      } else void handleToolMessage(message,a,params).catch(()=>a.finish({kind:'failure',failure:'tool_handler_failed'}));
+
     } else if (a && method === 'item/completed' && params.item?.type === 'agentMessage') {
       a.said += params.item.text ?? '';
       // Preserve the original joined text for score compatibility, but retain
@@ -158,6 +183,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
     transport: { kind: 'codex-app-server-dynamic-tools', version: 1, promptRole: 'developer',
       decisionProgressVersion: 1, clarificationBehavior: 'Matches the application guard: after clarification, unchanged caller evidence cannot accept another non-scam decision or consume another clarification. Explicit scam blocks remain immediate.',
       outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
+      ...(approvalGuard?{approvalGuard:{version:1,scope:'Validated offers only; asynchronous results are revalidated before application; failure never offers.'}}:{}),
       ...(callerFraming==='greeting' ? {callerFraming:{version:1,mode:'greeting',context:CALLER_GREETING_CONTEXT}} : {}),
       ...(argumentSchema ? { argumentValidation: { version: 1, feedback: !!argumentFeedback, ...(argumentFeedback===2?{correctionVersion:2}:{}), diagnostics: 'Only fixed schema field names and issue codes; no input values or free-form messages.' } } : {}),
       research: 'unavailable', context: conversation ? 'frozen instructions plus cumulative caller snapshots and native assistant/tool history; verified with local mock' : 'frozen instructions and caller only; verified with local mock',
@@ -180,8 +206,8 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
         const threadId = state.threadId;
         return await new Promise(resolve => {
           let finished = false;
-          const a = { state, rounds: 0, said: '', messages: [], asking: false, turnId: null, finish: async result => {
-            if (finished) return; finished = true; clearTimeout(timer); active.delete(threadId);
+          const a = { state, abort:new AbortController(), rounds: 0, said: '', messages: [], asking: false, turnId: null, finish: async result => {
+            if (finished) return; finished = true; clearTimeout(timer); active.delete(threadId); a.abort.abort();
             // Questions retain native history only in explicit conversation mode.
             if (!(conversation && result.kind === 'question')) {
               state.terminal = true;

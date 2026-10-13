@@ -1,0 +1,24 @@
+// Offline single-pass revision. The owner's latest instruction stops unexpected
+// charge alarms; other useful recordings remain unverified saved notices.
+// No public/held-out transcript or result is an instruction source.
+import assert from 'node:assert/strict';
+import {z} from 'zod';
+import {factsSchema as baseSchema,instructions as previousInstructions,interpretFacts as baseInterpret,observeFacts as baseObserve,selfTest as baseTest} from './observed-screening-v111.mjs';
+export const SCREENING_POLICY_VERSION='2026-10-13-observed-v123-experiment';
+export const argumentFeedback=true;
+export const instructions=previousInstructions
+ .replace('An unexplained live financial/account alarm, official claim or third-party emergency needs its intended action clarified;', 'An unsolicited unexpected-charge or unauthorized-purchase alarm about her account is restricted, even without a demand. A bare charge announcement without expected-purchase or agreed-service context counts; ordinary receipts and completed refunds do not. Other live account-security, official or third-party emergency claims need their intended action clarified;')
+ .replace('Record separate contact independently: another call/chat, contact addition or site visit differs from speaking on this incoming call. Ordinary callbacks and substantive unresolved claims have context; an empty invitation does not.', 'Separate contact is communication outside this incoming call, by any medium. An invitation without a stated relationship or substantive matter is restricted empty contact, even with a name or title; do not clarify it. Contextual callbacks follow their purpose. Asking to speak now may need clarification.')
+ .replace('A keypress, supplied callback, urgency or account alarm alone is not restricted conduct.', 'A keypress, supplied callback or urgency alone is not restricted conduct. Apply the charge-alarm block before saving a notice.');
+export const factsSchema=baseSchema.extend({
+ prohibited:z.enum([...baseSchema.shape.prohibited.options.filter(x=>x!=='none'),'empty_contact','charge_alarm','none']).describe('Any restricted request, empty contact invitation or unexpected-charge alarm defined in the instructions. Optional or deferred requests count. A report, warning or refusal is not the caller making that request. Use none for an ordinary contextual callback or receipt.'),
+}).strict();
+// The existing non-none priority already covers the two added categories.
+function normalized(raw){const parsed=factsSchema.safeParse(raw);if(!parsed.success)return;return {...parsed.data,prohibited:['empty_contact','charge_alarm'].includes(parsed.data.prohibited)?'financial_bait':parsed.data.prohibited};}
+export function interpretFacts(raw,transcript,state,options){return baseInterpret(normalized(raw),transcript,state,options);}
+export function observeFacts(raw,transcript){const parsed=factsSchema.safeParse(raw);if(!parsed.success)return {invalidFacts:true};const observed=baseObserve(normalized(raw),transcript);return {...observed,facts:{...observed.facts,prohibited:parsed.data.prohibited}};}
+export function observedScreeningRequest(base){const request=structuredClone(base);request.instructions=instructions;const tool=request.tools.find(t=>t.name==='screen_call');tool.description='Record caller context and requested conduct. The application returns whether to ask a missing detail or finish screening.';tool.parameters=z.toJSONSchema(factsSchema);return request;}
+export function selfTest(){baseTest();const text='Synthetic continuous evidence.',base={who:true,context:'ordinary_task',separateContact:false,prohibited:'none',recordingMode:'not_indicated',recordingCue:'',refuses:false,refersToCall:false,purpose:'other',evidence:text};let checks=0;
+ for(const prohibited of ['empty_contact','charge_alarm'])for(const context of factsSchema.shape.context.options)for(const recordingMode of factsSchema.shape.recordingMode.options){const raw={...base,prohibited,context,recordingMode,recordingCue:recordingMode==='current'?text:''};assert.equal(interpretFacts(raw,text,{questions:0}).action,'block');assert.equal(observeFacts(raw,text).facts.prohibited,prohibited);checks++;}
+ assert.equal(interpretFacts(base,text,{questions:0}).action,'approve');assert.equal(interpretFacts({...base,recordingMode:'current',recordingCue:text},text,{questions:0}).action,'message');assert.equal(interpretFacts({...base,context:'missing'},text,{questions:0}).action,'continue');assert.equal(interpretFacts({...base,context:'substantive_claim'},text,{questions:1}).action,'hold');assert.equal(interpretFacts({...base,prohibited:'not_a_category'},text,{questions:0}),undefined);checks+=5;
+ console.log(JSON.stringify({passed:true,checks,scope:'New category priority, original action mapping, ordinary offers and notices, clarification, strict fields and redacted observations; no inference.'}));}
