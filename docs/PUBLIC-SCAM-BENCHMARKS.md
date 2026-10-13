@@ -1055,3 +1055,8 @@ Artifacts are under `artifacts/v57-v58-contact/`. `validation-summary.json` and 
 **Assessment:** preserve v58 as evidence of an unsuccessful small addition, not a replacement for v57. Immediate empty-contact blocking remains unresolved. The extra block rule improves some requested outcomes while losing personal callbacks, so it fails the owner's combined acceptance condition.
 
 Repository validation passed `npm run check` (typecheck, **168 unit tests**, build), candidate/fixture syntax checks, runner mock checks, unchanged-v57-except-the-addition assertion and `git diff --check`. The full Firestore emulator run passed **126/128** tests; two transaction tests failed with `INVALID_ARGUMENT: Transaction is invalid or closed`. A targeted rerun of both affected suites passed **26/26**. The first failures remain recorded; this is not a clean full-suite pass. These checks cover the shared checkout; unrelated application changes are not part of this screening change.
+
+
+### Empty-contact rule and recent-report red team, October 12
+
+A separate [contact-rule evaluation report](SCREENING-CONTACT-EVALUATION.md) records v59–v74 development, online source provenance, fresh paired subscription-Luna comparisons with v57, native-history checks, source-isolation audits and retained failures. MASC and FTC were not rerun for this request. The report distinguishes useful clarification from unnecessary questions on empty contact requests, and records ordinary-call regressions rather than treating better harmful-stop counts as sufficient.
