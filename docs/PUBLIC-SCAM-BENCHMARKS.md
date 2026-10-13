@@ -1065,3 +1065,12 @@ A separate [contact-rule evaluation report](SCREENING-CONTACT-EVALUATION.md) rec
 ### V74 callback repair, October 12–13
 
 The [v74 repair report](SCREENING-V74-REPAIR.md) records five subscription-Luna revisions, fresh red teams, native-history checks and complete MASC/FTC comparisons. V79 adds 154 instruction characters and improves final fresh ordinary offers from 49/57 to 56/57, but still approves empty contact requests. MASC ordinary offers were 79/80 for both v74 and v79; harmful completed stops were 158/160 and 157/160. FTC completed stops were 704/724 and 711/724, with zero versus one approval and one versus zero retained timeouts. No candidate meets the full requested boundary, so none is promoted. All outcomes, frozen labels and interrupted-run prefixes are retained; no further prompt revision used the final v79 validation results.
+
+
+## V79 empty-contact repair: v84 (October 2026)
+
+The subscription-Luna comparison and diagnostic are in [the v79 repair report](SCREENING-V79-REPAIR.md). V84 keeps v79's instructions and adds 144 characters to the existing purpose-field metadata. Fresh paired red teaming blocked 30/30 empty-contact snapshots versus 28/30, while both offered 66/66 ordinary trials. Both passed all 30 native expected sequences.
+
+The newly run public controls are mixed: MASC ordinary offers are 80/80 for v79 and 79/80 for v84; harmful stops are 156/160 and 157/160, with three questions each, no harmful approvals and one retained v79 timeout. FTC stops are 707/724 and 709/724, questions 16 and 13, approvals zero and two, and no-decisions one and zero. Call-weighted stops are equal at 1,344/1,378. V84's approvals include the family-style greeting (858), compatible with the owner's family-call preference in the available text, and an anonymous broadcast (89), which remains an error. Neither source label nor result was changed. Both blocked charge-alarm recording 1314.
+
+V84 is a stronger observed empty-contact candidate, not an unqualified overall benchmark improvement. The report retains the other failures, rejected alternatives, source/request/result audits, footprint and leakage checks, and all 3,779 scored trials. No voice or deployment change was made.
