@@ -104,7 +104,7 @@ describe('GPT Live screening controls', () => {
   it('discards an earlier notice decision when its tail makes a clear harmful demand', () => {
     const h = harness(); h.ready(); h.speech('An automated account notice'); h.delegate();
     h.tool({ ...routine, action: 'message', reason: 'unclear', evidence: 'account notice' });
-    h.advance(1500); h.speech(' Please send me your login code'); h.tool(scam, 'harmful-tail');
+    h.advance(1500); h.speech(' Please send me your login code'); h.delegate(); h.tool(scam, 'harmful-tail');
     expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(scam);
   });
   it('uses the exact Live model, telephone codec, and no session recording', () => {
@@ -121,7 +121,7 @@ describe('GPT Live screening controls', () => {
   });
   it('clears queued speech immediately and ends once without an announcement', async () => {
     const h = harness(); h.ready(); h.s.event({ type: 'session.output_audio.delta', delta: Buffer.alloc(320).toString('base64') });
-    h.speech('Please send me your login code.'); h.tool(scam); h.tool(scam); h.s.tick(); await Promise.resolve();
+    h.speech('Please send me your login code.'); h.delegate(); h.tool(scam); h.tool(scam); h.s.tick(); await Promise.resolve();
     expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(scam);
     expect(h.io.telnyx.mock.calls).toEqual([[{ event: 'clear' }]]);
     expect(h.io.openai).toHaveBeenCalledWith({ type: 'session.close' });
@@ -189,6 +189,7 @@ describe('GPT Live screening controls', () => {
     h.speech(' I need them to send me their login code.');
     h.advance(1500);
     expect(checks()).toBe(2); // Fresh caller evidence still triggers immediate assessment.
+    h.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.created' } });
     h.tool({ ...scam, evidence: 'send me their login code' }, 'new-request');
     expect(h.io.finish).toHaveBeenCalledExactlyOnceWith({ ...scam, evidence: 'send me their login code' });
   });
@@ -198,6 +199,44 @@ describe('GPT Live screening controls', () => {
     h.advance(LIVE_LIMITS.speechPauseMs);
     expect(h.io.finish).not.toHaveBeenCalled();
     expect(h.io.openai).toHaveBeenCalledWith(expect.objectContaining({ type: 'response.item.create' }));
+  });
+  it('rechecks a stale scam verdict after the caller explains they are reporting another caller', () => {
+    const h = harness(); h.ready(); h.speech('Send me your login code'); h.delegate();
+    h.speech(' is what the stranger told me. This is Anna about lunch tomorrow.');
+    h.tool(scam);
+    expect(h.io.finish).not.toHaveBeenCalled();
+    h.advance(LIVE_LIMITS.speechPauseMs);
+    const outputs = h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').map(([e]) => JSON.parse(e.item.output));
+    expect(outputs).toEqual([expect.objectContaining({ status: 'transcript_changed' })]);
+    h.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.created' } });
+    h.tool(routine, 'reassessed');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(routine);
+  });
+  it.each(['scam', 'robocall', 'solicitation'])('reassesses a stale %s block at the patience limit instead of applying it', reason => {
+    const h = harness(); h.ready(); h.speech('Please send me your login code'); h.delegate();
+    h.speech(' is what the stranger told me.'); h.tool({ ...scam, reason });
+    for (let t = 0; t < LIVE_LIMITS.robocallPatienceMs; t += 500) {
+      h.advance(500); h.speech(' I am reporting what happened.');
+    }
+    expect(h.io.finish).not.toHaveBeenCalled();
+    const outputs = h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').map(([e]) => JSON.parse(e.item.output));
+    expect(outputs).toEqual([expect.objectContaining({ status: 'transcript_changed' })]);
+    // A missing reassessment still uses the existing bounded failure path.
+    h.advance(LIVE_LIMITS.backendMs);
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith('screening_unavailable');
+  });
+  it('does not let an older response replace a pending decision that heard more caller words', () => {
+    const h = harness(); h.ready(); h.speech('Please send me your login code'); h.delegate();
+    h.speech(' is what the stranger told me. This is Anna about lunch tomorrow.');
+    h.s.event({ type: 'session.delegation.created', delegation: { id: 'd2' } });
+    h.s.event({ type: 'response.event', delegation_id: 'd2', event: { type: 'response.output_item.done', item: {
+      type: 'function_call', name: 'screen_call', call_id: 'newer', arguments: JSON.stringify(routine) } } });
+    h.tool(scam, 'late-older');
+    expect(h.io.finish).not.toHaveBeenCalled();
+    const outputs = h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').map(([e]) => [e.item.call_id, JSON.parse(e.item.output).status]);
+    expect(outputs).toEqual([['late-older', 'superseded']]);
+    h.advance(LIVE_LIMITS.speechPauseMs);
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(routine);
   });
   it('waits for the caller to pause, then re-decides a stale approval once without questioning them', () => {
     const h = harness(); h.ready(); h.speech('This is Anna about lunch'); h.delegate(); h.speech(' tomorrow'); h.tool(routine);
@@ -222,15 +261,39 @@ describe('GPT Live screening controls', () => {
     h.advance(LIVE_LIMITS.speechPauseMs - 1); expect(h.io.finish).not.toHaveBeenCalled();
     h.advance(1); expect(h.io.finish).toHaveBeenCalledWith(hold);
   });
-  it('blocks an explicit scam request at once but lets a recording finish its sentence before a robocall verdict', () => {
+  it('blocks a fresh explicit scam request at once and rechecks a recording that keeps speaking', () => {
     const a = harness(); a.ready(); a.speech('Please send me your login code'); a.delegate(); a.tool(scam);
     expect(a.io.finish).toHaveBeenCalledWith(scam);
     const robocall = { ...scam, reason: 'robocall', evidence: 'press one now' };
     const b = harness(); b.ready(); b.speech('Your warranty is expiring, press one now'); b.delegate(); b.tool(robocall);
     expect(b.io.finish).not.toHaveBeenCalled();
-    // A recording that never pauses is stopped after bounded patience rather than at the overall deadline.
+    // Bounded patience triggers another assessment of the recording's current words.
     for (let t = 0; t < LIVE_LIMITS.robocallPatienceMs; t += 500) { b.advance(500); b.speech(' to speak with an agent'); }
+    expect(b.io.finish).not.toHaveBeenCalled();
+    b.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.created' } });
+    b.tool(robocall, 'fresh-recording'); b.advance(LIVE_LIMITS.speechPauseMs);
     expect(b.io.finish).toHaveBeenCalledWith(robocall);
+  });
+  it('requires a known transcript snapshot even for a supported scam verdict', () => {
+    const h = harness(); h.ready(); h.speech('Please send me your login code'); h.tool(scam);
+    expect(h.io.finish).not.toHaveBeenCalled();
+    h.advance(LIVE_LIMITS.speechPauseMs);
+    const output = h.io.openai.mock.calls.find(([e]) => e.item?.type === 'function_call_output')![0];
+    expect(JSON.parse(output.item.output).status).toBe('transcript_changed');
+    h.delegate(); h.tool(scam, 'fresh');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(scam);
+  });
+  it('keeps the overall deadline while repeated stale blocks wait for continuous caller speech', () => {
+    const h = harness(); h.ready(); h.speech('Please send me your login code');
+    for (let i = 0; i < 8; i++) {
+      h.delegate(); h.speech(' More words while the backend is assessing.'); h.tool(scam, `stale-${i}`);
+      for (let t = 0; t < LIVE_LIMITS.robocallPatienceMs; t += 500) { h.advance(500); h.speech(' More caller words.'); }
+      expect(h.io.finish).not.toHaveBeenCalled();
+    }
+    h.advance(LIVE_LIMITS.maximumMs);
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith('screening_timeout');
+    h.delegate(); h.tool(scam, 'late');
+    expect(h.io.finish).toHaveBeenCalledTimes(1);
   });
   it('does not ask a question decided mid-sentence when the caller goes on to answer it', () => {
     const ask = { ...routine, action: 'continue', reason: 'unclear', purpose: 'unknown', evidence: '', hasReason: false };

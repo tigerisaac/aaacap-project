@@ -5,7 +5,7 @@ import { SCAM_RESOURCES } from './scam-resources.js';
 import { supportedEvidence } from './evidence.js';
 export { callerText, supportedEvidence, supportedQuote } from './evidence.js';
 
-export const SCREENING_POLICY_VERSION = '2026-10-13-general-v99';
+export const SCREENING_POLICY_VERSION = '2026-10-13-general-v134';
 export const LIVE_LIMITS = { startupMs: 10_000, backendMs: 20_000, initialSilenceMs: 8_000, idleMs: 8_000, speechPauseMs: 800, robocallPatienceMs: 6_000, maximumMs: 75_000, maxTranscript: 12_000, maxToolCalls: 12, maxClarifications: 2 } as const;
 export const liveDecisionSchema = z.object({
   action: z.enum(['block', 'approve', 'continue', 'hold', 'message']),

@@ -199,17 +199,22 @@ export class ScreeningSession {
           }
           const d = item.name === 'screen_call' ? permittedDecision(value, this.transcript) : undefined;
           if (d) {
+            const heardLength = this.delegationTranscript.get(event.delegation_id);
+            // Arrival order is not evidence order. A delayed response must not discard a
+            // pending decision that assessed more of the caller's speech.
+            if (this.deferred?.heardLength !== undefined && (heardLength === undefined || heardLength < this.deferred.heardLength)) {
+              this.supersededOutput(item.call_id, event.delegation_id);
+              return;
+            }
             if (this.rejectUnansweredDecision(d, item.call_id, event.delegation_id)) return;
             this.timing('decision_received', this.responseTiming(event.delegation_id));
-            // An explicit scam request is decisive, so cut the caller off at once. Any other verdict, or a
-            // question, can be overturned by the rest of a sentence ("call the number... on the back of your
-            // card"), and a newly revealed request must not be overruled by an older benign decision: wait for a
-            // pause, then act if nothing new was said, or re-decide once on the full transcript.
+            // A fresh scam verdict is immediate. Any stale verdict needs reassessment:
+            // subsequent words may identify a quoted demand as a report or warning.
+            // Other fresh verdicts wait for the caller to finish their sentence.
             this.supersedeDeferred();
-            const heardLength = this.delegationTranscript.get(event.delegation_id);
             const settleMs = d.action === 'message' ? LIVE_LIMITS.idleMs : LIVE_LIMITS.speechPauseMs;
             const speaking = this.lastSpeechAt !== undefined && this.now() - this.lastSpeechAt < settleMs;
-            if (!(d.action === 'block' && d.reason === 'scam') && (heardLength !== this.spoken || speaking)) {
+            if (heardLength !== this.spoken || (!(d.action === 'block' && d.reason === 'scam') && speaking)) {
               this.deferred = { callId: item.call_id, delegationId: event.delegation_id, decision: d, heardLength, since: this.now() };
               this.timing('decision_deferred', { ...this.responseTiming(event.delegation_id), transcriptChanged: heardLength !== this.spoken });
               this.backendBusy = true; this.backendSince = undefined; // Waiting on the caller, not the backend.
@@ -237,7 +242,12 @@ export class ScreeningSession {
     if (!this.deferred) return;
     const { callId, delegationId } = this.deferred;
     this.timing('decision_superseded', { deferredMs: this.now() - this.deferred.since });
-    this.deferred = undefined; this.completedDelegations.delete(delegationId);
+    this.deferred = undefined;
+    this.supersededOutput(callId, delegationId);
+  }
+  private supersededOutput(callId: string, delegationId: string) {
+    this.completedDelegations.delete(delegationId);
+    this.continueDelegations.delete(delegationId);
     this.io.openai({ type: 'response.item.create', item: { type: 'function_call_output', call_id: callId,
       output: JSON.stringify({ status: 'superseded', instruction: 'A newer screening check replaced this decision. Do not respond.' }) } });
   }
@@ -300,13 +310,14 @@ export class ScreeningSession {
     if (this.deferred) {
       const settleMs = this.deferred.decision.action === 'message' ? LIVE_LIMITS.idleMs : LIVE_LIMITS.speechPauseMs;
       const paused = this.lastSpeechAt === undefined || now - this.lastSpeechAt >= settleMs;
-      // A recording that never pauses is not a person waiting to be heard; stop it rather than wait forever.
+      // Continuous speech cannot postpone checking a pending block indefinitely.
+      // The patience limit triggers reassessment, never permission to apply stale evidence.
       const overdue = this.deferred.decision.action === 'block' && now - this.deferred.since >= LIVE_LIMITS.robocallPatienceMs;
       if (paused || overdue) {
         const { callId, delegationId, decision, heardLength } = this.deferred;
         this.timing('decision_deferred', { deferredMs: now - this.deferred.since, transcriptChanged: heardLength !== this.spoken });
         this.deferred = undefined; this.backendSince = now;
-        if (heardLength === this.spoken || overdue) { this.apply(decision, callId, delegationId); if (this.terminal) return; }
+        if (heardLength === this.spoken) { this.apply(decision, callId, delegationId); if (this.terminal) return; }
         else {
           this.timing('transcript_changed');
           this.toolOutput(callId, delegationId, { status: 'transcript_changed', untrustedCallerTranscript: callerText(this.transcript),

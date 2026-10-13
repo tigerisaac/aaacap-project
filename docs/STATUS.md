@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — stale screening verdicts rechecked; prompt experiments remain offline
+
+Repository screening is now `2026-10-13-general-v134`. Its initial session/decision instructions match v99 exactly. The runtime no longer applies a stale scam verdict after more caller words arrive, and an older response cannot displace a pending decision that heard more speech. Six seconds of continuous speech triggers reassessment of a pending block rather than forcing an outdated verdict. Fresh scam stops remain immediate; existing deadlines, question/tool budgets, fixed recipients and press-1 connection remain. Seven new session tests cover the change; five reproduced failures before the fix.
+
+The [transaction/contact audit](SCREENING-TRANSACTION-AND-FRESHNESS-AUDIT.md) records separate v132/v133/v135 prompt experiments on subscription Luna medium. V135 passes 72/72 new validation trials and is 18.4% shorter than the runtime request by instruction/tool characters, but remains offline after two ordinary false blocks, two held charge alarms and one inappropriate caution hold in development. V135 MASC offers 79/80 ordinary calls, falsely blocks one, stops 157/160 harmful calls and questions three. FTC records 611 stops, 104 unverified saves, three questions and six approvals. The round retains four timeouts across 16 scored runs / 3,760 trials; no outcome is retried away. The full prompt goal is unfinished. Post-call policy remains v10; the separate deployed release remains screening v31 / voicemail v4.
+
+Typecheck, 198 unit tests/build, 154 Firestore emulator tests and local subscription isolation/progress/schema mocks pass. No deployment, paid voice test, phone call or forwarding change occurred.
+
 ## October 13 — claim/action experiments improve MASC; not promoted
 
 The [v128–v131 audit](SCREENING-CLAIM-ACTION-AUDIT.md) completes 17 scored runs / 3,864 trials on subscription GPT-6 Luna medium. V131 offers 80/80 ordinary MASC calls, stops 160/160 harmful calls, blocks 40/40 ads and passes 72/72 latest fresh trials. Its request is 23.9% shorter than repository v99 by instruction/tool characters. FTC records 586 stops, 119 unverified saves, 13 questions and six approvals. Four timeouts across the round are retained; no outcome is retried away.
