@@ -3,6 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { parseCSV, mascCase, summarizeMASC } from '../../scripts/lib/public-scam-benchmark.mjs';
 
 describe('public synthetic benchmark import', () => {
+  it('keeps missing decisions visible in diagnostic groups, independently of coded failures', () => {
+    const rows = [
+      { label: 0, type: 'appointment', screening: { actual: 'approve' } },
+      { label: 0, type: 'wrong', screening: { actual: 'no_decision' }, monitor: { actual: 'no_decision' } },
+      { label: 1, type: 'refund', screening: { actual: 'no_decision', failure: 'too_many_rounds' } },
+    ];
+    expect(summarizeMASC(rows)).toMatchObject({
+      noDecisions: 2, evaluationFailures: 1, validationFailures: 1, providerFailures: 0,
+      legitimateOffered: { passed: 1, total: 1 }, harmfulStopped: { passed: 0, total: 1 },
+      scamsIdentified: { passed: 0, total: 1 }, separateGroups: { wrongNumbers: 1, ads: 0 },
+    });
+  });
   it('reports subscription failures separately from invalid model behavior without crediting either', () => {
     const failures = ['codex_evaluation_timeout', 'codex_thread_start_failed', 'codex_pipe_closed', 'codex_turn_failed',
       'too_many_rounds', 'unexpected_tool', 'invalid_assessment'];
@@ -74,7 +86,7 @@ describe('public synthetic benchmark import', () => {
     ];
     expect(summarizeMASC(screening.map(result => ({ label: 1, type: 'refund', screening: result })))).toMatchObject({
       scamsIdentified: { passed: 3, total: 7 }, harmfulStopped: { passed: 2, total: 7 },
-      harmfulApproved: 1, harmfulClarifications: 1, evaluationFailures: 1, providerFailures: 1,
+      harmfulApproved: 1, harmfulClarifications: 1, evaluationFailures: 1, providerFailures: 1, noDecisions: 1,
     });
   });
 });

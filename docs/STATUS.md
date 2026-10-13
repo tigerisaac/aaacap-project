@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — contact consistency tested; missing decisions exposed in reporting
+
+The [v143–v145 audit](SCREENING-CONTACT-CONSISTENCY-AUDIT.md) completes thirteen scored runs / 3,536 trials on subscription GPT-6 Luna medium. V143 distinguishes contact initiator and identity kind. V144 asks for correction of contradictory facts; a local audit then shows it can delay a separately justified block. V145 repairs that priority issue with no initial prompt change. Its 9,911-character instruction/tool request is 17.9% below runtime. It offers 140/142 ordinary development calls, saves 26/26 notices, stops 164/164 intended blocks and passes 28/28 caution checks. None is promoted.
+
+Fresh comparisons score 46/48 for v143 versus 48/48 for v139, then 48/48 for v143/v144 and 40/40 for v143/v145. The earlier refund-callback false blocks remain unresolved by deterministic replay. MASC offers are 79/80 for v143 and 78/80 for v145, with 159/160 harmful stops for each. FTC stops are 595/584, unverified saves 119/126, questions five/ten and approvals five/four. Both stop the three known charge recordings. One development timeout and one wrong-number no-decision remain visible; no labels or completed outcomes change.
+
+Public reporting v4 adds a top-level no-decision count, including diagnostic groups, without changing verdict credit. The final check passes typecheck, 199 unit tests and build; Firestore passes 154/154. Mapper matrices and 23/27/29-request local mocks pass; no inference is used in those checks. Runtime remains v134, post-call v10, and the separate deployed release v31 / voicemail v4. There is no deployment, paid voice, phone or forwarding action. All new validation sets are spent and the goal remains unfinished.
+
 ## October 13 — direct-decision candidates rejected after ordinary-call regressions
 
 The [v141/v142 audit](SCREENING-DIRECT-DECISION-AUDIT.md) completes eight scored runs / 2,020 trials on subscription GPT-6 Luna medium, with no transport failures or final no-decisions. V141 reduces instruction/tool characters by 42.7% but fails charge/contact priority. V142 adds two independent observations and is still 31.4% shorter; it stops 164/164 intended development blocks but offers only 125/142 ordinary development calls and 63/80 ordinary MASC calls. Fresh results are 44/48 for v141 and 43/48 for v142 on separate sets, with v139 comparisons of 47/48 and 44/48. Current-call openings still receive premature blocks. Neither candidate is promoted.

@@ -63,6 +63,7 @@ export function summarizeRobocalls(results) {
     // A response with no applicable decision or question: neither a stop nor an approval.
     otherOutcomes: ok.length - stopped.length - clarified.length - is('approve').length - is('message').length,
     failures: results.length - ok.length,
+    noDecisions: results.filter(r => r.screening.actual === 'no_decision').length,
     byReason: stopped.reduce((counts, r) => ({ ...counts, [r.screening.reason]: (counts[r.screening.reason] ?? 0) + 1 }), {}),
     // Each distinct recording's outcome applied to every original call that replayed it.
     callWeighted: { calls: weighted(results), stopped: weighted(stopped), approved: weighted(is('approve')), savedUnverified: weighted(is('message')) },

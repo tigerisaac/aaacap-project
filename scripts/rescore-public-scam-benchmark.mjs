@@ -19,10 +19,10 @@ for (const row of rows) {
 }
 const summary = { ...original, ...summarizeMASC(rows), rescoredAt: new Date().toISOString(),
   rescoring: { originalSummary: 'summary.json', sourceResultsSHA256: digest(raw), modelRequests: 0,
-    note: 'Owner changed the identification score after the run. Source groups, raw outcomes, production policies and the original summary are unchanged.' } };
+    note: 'Offline reporting update. Source groups, raw outcomes, production policies and the original summary are unchanged.' } };
 const output = `${directory}/summary-scoring-${MASC_SCORING.version}.json`;
 await writeFile(output, JSON.stringify(summary, null, 2), { flag: 'wx' });
 console.log(JSON.stringify({ output, scoringVersion: MASC_SCORING.version, completed: rows.length,
   scamsIdentified: summary.scamsIdentified, completedStops: summary.harmfulStopped, clarifications: summary.harmfulClarifications,
   harmfulApproved: summary.harmfulApproved, adsBlocked: summary.adsBlocked, legitimateOffered: summary.legitimateOffered,
-  evaluationFailures: summary.evaluationFailures }));
+  evaluationFailures: summary.evaluationFailures, noDecisions: summary.noDecisions }));

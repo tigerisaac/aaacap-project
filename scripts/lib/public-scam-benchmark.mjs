@@ -8,7 +8,7 @@ export const MASC = {
 export const digest = text => createHash('sha256').update(text).digest('hex');
 // Owner-requested public-benchmark scoring. This changes reporting, not either policy.
 export const MASC_SCORING = {
-  version: '2026-10-13-public-identification-v3',
+  version: '2026-10-13-public-identification-v4',
   rule: 'A labeled scam is correctly identified by a successful block, hold, or clarifying question when this completed-dialogue benchmark has no answer to give. Approvals, saved unverified notices, missing decisions and failed checks receive no credit. Completed blocks/holds and saved notices remain separate.'
 };
 
@@ -81,6 +81,9 @@ export function summarizeMASC(results) {
     },
     researchRequests: screen.reduce((n, r) => n + (r.screening.researches ?? 0), 0),
     evaluationFailures: results.filter(r => r.screening?.failure || r.monitor?.failure).length,
+    // Include diagnostic groups too. This outcome count can overlap a coded
+    // failure; it changes neither score membership nor successful verdict credit.
+    noDecisions: results.filter(r => r.screening?.actual === 'no_decision' || r.monitor?.actual === 'no_decision').length,
     // Includes subscription transport failures, which previously appeared only
     // in evaluationFailures. This taxonomy never changes verdict credit.
     providerFailures: results.filter(r => [r.screening?.failure, r.monitor?.failure].some(f => /^(http_|transport_|codex_|unavailable$|response_incomplete$)/.test(f ?? ''))).length,
