@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — identity and billing repairs remain experimental
+
+The [v146/v147 audit](SCREENING-IDENTITY-AND-FINANCIAL-PURPOSE-AUDIT.md) completes ten scored runs / 3,048 trials on subscription Luna medium, with no timeouts or no-decisions. V146 restores unnamed business/service-role identity and adds joint correction of inconsistent facts. V147 lets an ordinary financial update supply otherwise-missing purpose. Their identical 9,932-character initial request is 17.7% below runtime. Local replay verifies the billing repair, but the new model runs do not exercise an action change from it.
+
+All 176 fresh comparative trials pass. Broader development still offers only 136/142 ordinary callers for both candidates, with one ordinary false block each. V147 stops all 164 development trials expecting a block. MASC offers 78/80 ordinary callers for each; harmful stops are 156/160 and 160/160. FTC stops are 597/587, saved notices 116/126, questions six/seven and approvals five/four. Both stop the three known charge recordings. Labels and completed outcomes remain unchanged; saves are not stops. Neither candidate is promoted.
+
+Typecheck, 202 unit tests/build and 154 emulator tests pass. Input/result/source audits and local mapper/protocol checks pass. Runtime remains v134, post-call v10 and the separate deployed release v31 / voicemail v4. No deployment, paid voice, calls or forwarding changes occur. Both fresh sets are now spent; ordinary-call interpretation and question quality remain unresolved.
+
 ## October 13 — contact consistency tested; missing decisions exposed in reporting
 
 The [v143–v145 audit](SCREENING-CONTACT-CONSISTENCY-AUDIT.md) completes thirteen scored runs / 3,536 trials on subscription GPT-6 Luna medium. V143 distinguishes contact initiator and identity kind. V144 asks for correction of contradictory facts; a local audit then shows it can delay a separately justified block. V145 repairs that priority issue with no initial prompt change. Its 9,911-character instruction/tool request is 17.9% below runtime. It offers 140/142 ordinary development calls, saves 26/26 notices, stops 164/164 intended blocks and passes 28/28 caution checks. None is promoted.

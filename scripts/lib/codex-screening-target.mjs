@@ -46,7 +46,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
   if (typeof conversation !== 'boolean') throw new Error('invalid_conversation_mode');
   if (interpretDecision !== undefined && typeof interpretDecision !== 'function') throw new Error('invalid_decision_interpreter');
   if (argumentSchema !== undefined && (typeof argumentSchema?.safeParse !== 'function' || !argumentSchema.shape)) throw new Error('invalid_argument_schema');
-  if (![false,true,2].includes(argumentFeedback) || (argumentFeedback && !argumentSchema)) throw new Error('invalid_argument_feedback');
+  if (![false,true,2,3].includes(argumentFeedback) || (argumentFeedback && !argumentSchema)) throw new Error('invalid_argument_feedback');
   if (!['legacy','greeting'].includes(callerFraming)) throw new Error('invalid_caller_framing');
   if (config.model !== 'gpt-6-luna' || config.reasoning?.effort !== 'medium') throw new Error('fallback_requires_luna_medium');
   if (config.tools.length !== 2 || config.tools.some(t => !['screen_call', 'research_scam_pattern'].includes(t.name))) throw new Error('unexpected_screening_tools');
@@ -139,7 +139,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
           const missing={identity:'Ask only who is calling.',purpose:'Ask only what the call is about.',requested_action:'Ask only what the caller needs the recipient to do.'}[clarification];
           output = { status: 'continue_screening', instruction: missing ? `${missing} Use one brief question and wait for the answer. Do not announce connection or rejection.` : 'Ask one brief clarifying question about only the missing information. Do not announce connection or rejection.' };
         } else output = { status: 'decision_not_applied', untrustedCallerTranscript: callerText(a.state.transcript),
-          ...(argumentFeedback ? observationCorrection(inputIssues,argumentSchema,argumentFeedback===2?2:1) : { instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." }) };
+          ...(argumentFeedback ? observationCorrection(inputIssues,argumentSchema,Number.isInteger(argumentFeedback)?argumentFeedback:1) : { instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." }) };
       } else if (params.tool === 'research_scam_pattern') {
         a.state.researches++; output = { status: 'unavailable' };
       } else { a.finish({ kind: 'failure', failure: 'unexpected_tool' }); return; }
@@ -185,7 +185,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
       ...(approvalGuard?{approvalGuard:{version:1,scope:'Validated offers only; asynchronous results are revalidated before application; failure never offers.'}}:{}),
       ...(callerFraming==='greeting' ? {callerFraming:{version:1,mode:'greeting',context:CALLER_GREETING_CONTEXT}} : {}),
-      ...(argumentSchema ? { argumentValidation: { version: 1, feedback: !!argumentFeedback, ...(argumentFeedback===2?{correctionVersion:2}:{}), diagnostics: 'Only fixed schema field names and issue codes; no input values or free-form messages.' } } : {}),
+      ...(argumentSchema ? { argumentValidation: { version: 1, feedback: !!argumentFeedback, ...(Number.isInteger(argumentFeedback)?{correctionVersion:argumentFeedback}:{}), diagnostics: 'Only fixed schema field names and issue codes; no input values or free-form messages.' } } : {}),
       research: 'unavailable', context: conversation ? 'frozen instructions plus cumulative caller snapshots and native assistant/tool history; verified with local mock' : 'frozen instructions and caller only; verified with local mock',
       differencesFromGo: 'Codex uses non-strict tools, normalizes schemas (drops $schema and maxLength, sorts properties), uses its output limit and low verbosity, allows parallel tool calls, and wraps tool results as content items. Production permittedDecision still validates every decision. Compare only within this transport.' },
     newState: text => ({ transcript: text, questions: 0, researches: 0, validationAttempts: [] }),

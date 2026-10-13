@@ -31,9 +31,13 @@ export function argumentConstraints(schema,issues){
 }
 
 export function observationCorrection(issues,schema,version=1){
+  const joint=version===3&&['identity','context'].every(field=>issues.some(i=>i.field===field&&i.code==='custom'));
   return {
-    ...(issues.length?{invalidFields:version===2?argumentConstraints(schema,issues):issues}:{}),
-    instruction:issues.length
+    ...(issues.length?{invalidFields:version>=2?argumentConstraints(schema,issues):issues}:{}),
+    ...(joint?{jointConstraint:{fields:['identity','context'],rule:'Personal context requires this caller’s stated personal relationship.'}}:{}),
+    instruction:joint
+      ? 'Recheck both identity and context against the same caller evidence; correct whichever is unsupported. A name or role alone is not a personal relationship. Preserve correctly observed facts. A rejected call adds no caller evidence. Do not announce a decision.'
+      : issues.length
       ? 'Correct the listed screen_call fields to match its schema, then submit the observations again using the same caller evidence. Do not change a correctly observed fact to force acceptance. Do not announce a decision.'
       : 'Recheck the observations and their quoted evidence against this caller transcript, then call screen_call with corrected fields. A rejected call adds no caller evidence. Do not announce a decision.',
   };
