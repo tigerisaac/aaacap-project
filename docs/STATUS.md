@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — caller attribution and contact boundaries (not promoted)
+
+The v105–v110 subscription Luna medium round completed 18 scored runs and 3,092 trials. Frozen v110's instructions plus tools are 35.2% shorter than v99. It passed the new boundary grid 72/72, the existing main/caution suites 32/32, and broader development 257/260. The latter misses were one unnecessary clinic question and two unchanged historical outage expectations that conflict with saving recorded notices.
+
+Fresh paired validation scored 93/96 for both v104 and v110. Both stopped every empty invitation and preserved ordinary callback offers. V110 improved normal-context ordinary live offers from 34/36 to 35/36, but falsely blocked one ordinary report and incorrectly held two automated confirmations under caution. MASC offered 80/80 ordinary calls and blocked 40/40 ads, with 155 harmful stops, two questions and three no-decisions after invalid tool arguments. FTC produced 347 blocks, 361 unverified notices, 13 questions and three approvals; saved notices are never credited as stops. There were no provider failures, and all invalid/no-decision outcomes remain in the scores.
+
+V110 remains offline; runtime v99, post-call v7 and deployed v30 are unchanged. Typecheck, 191 unit tests, build, 154 emulator tests, mapper checks and local protocol mocks passed. No voice tests, deployment, calls or forwarding changes occurred. The [complete audit](SCREENING-ATTRIBUTION-AUDIT.md) records the untouched holdouts, evidence/quote redaction, public comparison, source snapshots and remaining general conduct/schema-correction work.
+
 ## October 13 — lean context and evidence experiments (not promoted)
 
 The v100–v104 subscription GPT-6 Luna medium round keeps the repository runtime at v99 and post-call policy at v7. V104 is the strongest balance in this round, but remains an offline structured-observation experiment: Luna reports caller facts, a deterministic mapper chooses an existing action, and the current evidence/clarification guards still validate it. Its instructions plus tool definitions are 36.4% shorter than v99; this is not a measured token or cost saving.

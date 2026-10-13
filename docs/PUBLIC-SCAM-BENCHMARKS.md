@@ -1,5 +1,7 @@
 # Public scam benchmarks
 
+**October 13 attribution round:** the [v105–v110 audit](SCREENING-ATTRIBUTION-AUDIT.md) adds one full frozen v110 pass on each public set. MASC: 80/80 ordinary offers, 40/40 ads blocked, 155/160 harmful stops, two questions and three no-decisions from invalid tool arguments, with no harmful approval. FTC: 347/724 blocks, 361 saved unverified, 13 questions and three approvals. No provider failures occurred. V110 remains offline; the fresh ordinary-report false block and invalid-tool outcomes are retained limitations. Source labels, scoring and benchmark inputs are unchanged.
+
 Reviewed October 11, 2026. The first public diagnostic used frozen screening v16 and monitor-v2. Subsequent screening changes came only from development cases: v17 clarified manipulation precedence, and v18 clarified ordinary demographics with an existing healthcare office. No public or held-out result was used to tune either production prompt. The owner later requested a separate benchmark-specific binary classifier, described below; it does not enter Shield's production harness or policy. The initial MASC checks were synthetic. Later FTC/NC State transcript checks use the owner’s explicit public-dataset exception described below; audio is not used.
 
 ## Sources and suitability

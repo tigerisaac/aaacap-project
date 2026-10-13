@@ -12,10 +12,16 @@ import {liveSessionConfig,permittedDecision} from '../dist/live/policy.js';
 import * as v102 from './experiments/observed-screening-v102.mjs';
 import * as v103 from './experiments/observed-screening-v103.mjs';
 import * as v104 from './experiments/observed-screening-v104.mjs';
+import * as v105 from './experiments/observed-screening-v105.mjs';
+import * as v106 from './experiments/observed-screening-v106.mjs';
+import * as v107 from './experiments/observed-screening-v107.mjs';
+import * as v108 from './experiments/observed-screening-v108.mjs';
+import * as v109 from './experiments/observed-screening-v109.mjs';
+import * as v110 from './experiments/observed-screening-v110.mjs';
 const policyIndex=process.argv.indexOf('--policy');
 const policy=policyIndex<0?'v102':process.argv.splice(policyIndex,2)[1];
-assert.ok(['v102','v103','v104'].includes(policy));
-const selected={v102,v103,v104}[policy];
+assert.ok(['v102','v103','v104','v105','v106','v107','v108','v109','v110'].includes(policy));
+const selected={v102,v103,v104,v105,v106,v107,v108,v109,v110}[policy];
 const {factsSchema,observedScreeningRequest,interpretFacts,SCREENING_POLICY_VERSION}=selected;
 
 if(process.argv.includes('--self-test')&&policy!=='v102') {
@@ -48,12 +54,12 @@ if(process.argv.includes('--self-test')&&policy!=='v102') {
   assert.ok(!args.length&&fixtureFile&&out);assert.ok(Number.isInteger(repeat)&&repeat>0&&repeat<=5);assert.ok(Number.isInteger(concurrency)&&concurrency>0&&concurrency<=6);
   const fixture=await import(pathToFileURL(resolve(fixtureFile)).href);assert.equal(fixture.synthetic,true);
   const cases=[...(fixture.cases??[]),...(fixture.stagedCases??[])];assert.ok(cases.length);assert.ok(policy!=='v102'||cases.every(c=>!c.caution));
-  const request=observedScreeningRequest(liveSessionConfig().delegation.responses),files=[fixtureFile,...(fixture.sourceFiles??[]),'scripts/check-screening-observations.mjs','scripts/experiments/observed-screening-v102.mjs','scripts/experiments/observed-screening-v103.mjs','scripts/experiments/observed-screening-v104.mjs','scripts/lib/codex-screening-target.mjs','scripts/check-screening-dialogues.mjs','scripts/check-screening-synthetic-questions.mjs','scripts/check-screening-subscription-dialogue.mjs','scripts/lib/screening-codex-models.json','backend/src/live/policy.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js'];
+  const request=observedScreeningRequest(liveSessionConfig().delegation.responses),files=[fixtureFile,...(fixture.sourceFiles??[]),'scripts/check-screening-observations.mjs','scripts/experiments/observed-screening-v102.mjs','scripts/experiments/observed-screening-v103.mjs','scripts/experiments/observed-screening-v104.mjs','scripts/experiments/observed-screening-v105.mjs','scripts/experiments/observed-screening-v106.mjs','scripts/experiments/observed-screening-v107.mjs','scripts/experiments/observed-screening-v108.mjs','scripts/experiments/observed-screening-v109.mjs','scripts/experiments/observed-screening-v110.mjs','scripts/lib/codex-screening-target.mjs','scripts/check-screening-dialogues.mjs','scripts/check-screening-synthetic-questions.mjs','scripts/check-screening-subscription-dialogue.mjs','scripts/lib/screening-codex-models.json','backend/src/live/policy.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js'];
   const hashes=async()=>Object.fromEntries(await Promise.all(files.map(async p=>[p,digest(await readFile(p))]))),sourceHashes=await hashes();
   await mkdir(out,{recursive:true});await writeFile(`${out}/request.json`,JSON.stringify(request,null,2),{flag:'wx'});await writeFile(`${out}/results.jsonl`,'',{flag:'wx'});
   const target=await codexScreeningTarget(request,{conversation:true,interpretDecision:(raw,transcript,state)=>{
     const parsed=factsSchema.safeParse(raw),decision=interpretFacts(raw,transcript,state,{caution:state.caution});
-    if(parsed.success){const {evidence,...facts}=parsed.data;state.factObservations.push({facts,mappedAction:decision?.action,questionCount:state.questions});}
+    if(parsed.success){const {evidence,...facts}=parsed.data;const observation=selected.observeFacts?selected.observeFacts(raw,transcript):{facts};state.factObservations.push({...observation,mappedAction:decision?.action,questionCount:state.questions});}
     else state.factObservations.push({invalidFacts:true});
     return decision;
   }});

@@ -18,6 +18,8 @@ The [payment and action audit](SCREENING-PAYMENT-CONTEXT-AUDIT.md) tests lean v9
 
 The [purpose, context and evidence audit](SCREENING-PURPOSE-ROUTING-AUDIT.md) continues with v100–v104. The structured-observation experiments keep model interpretation separate from deterministic action priority, then apply the existing evidence and clarification guards. They are offline only. Fresh ordinary-call results improve, but empty-contact, promotion and recording-classification misses remain; none replaces the repository prompt.
 
+The [caller-attribution audit](SCREENING-ATTRIBUTION-AUDIT.md) tests v105–v110 against new development, fresh callers and both public sets. V110 offers 80/80 ordinary MASC calls and blocks 40/40 ads, but remains offline after a fresh ordinary-report false block, notice holds and three public no-decision outcomes from invalid tool arguments. It does not replace v99.
+
 ## How a decision is made
 
 This section describes the repository's five-action policy and runtime. The deployed v30 bridge still uses the earlier four-action policy.
