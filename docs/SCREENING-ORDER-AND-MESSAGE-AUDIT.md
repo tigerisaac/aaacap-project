@@ -105,3 +105,5 @@ Repository validation passed `npm run check` (**182 unit tests**, typecheck and 
 The screening replacement remains unresolved. V94's ordinary-call regressions are sufficient to reject it regardless of its harmful-call improvements. The immediate-block versus saved-alarm policy needs a consistent decision before selecting a final prompt. The earlier v88/v91 held-out failures and all prior evidence remain valid; this round does not erase them or establish 100% real-world confidence.
 
 The subsequent [context and question-output audit](SCREENING-CONTEXT-AUDIT.md) preserves message item boundaries, checks MASC's caller-only presentation and records a small matched synthetic diagnostic. It does not replace the outcomes above.
+
+The later [post-call v7 report](SCREENING-MESSAGE-CONTACT-RELEASE.md) records fresh validation and the subsequent undeployed repository adoption of that contact-filter policy, with public disagreements retained.

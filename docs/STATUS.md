@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — empty-contact message filtering (not deployed)
+
+Repository post-call policy `2026-10-13-voicemail-v7` treats contact-only invitations as junk when no personal relationship or ordinary task/service context is stated. Normal callbacks and useful uncertain notices remain eligible for saving. The combined decision/summary request is 232 instruction characters longer; it adds no model call or output field. Live screening remains v31 in code and v30 in the deployed bridge.
+
+Subscription GPT-6 Luna, medium reasoning: a fresh 48-case paired check removed 12/12 empty invitations versus 0/12 with v4; both kept all 28 ordinary/useful messages and removed all eight explicit harmful requests. V7 also kept all 80 ordinary MASC messages and removed 98/543 previously saved FTC openings, versus the unchanged historical v4 result of 52/543. Twenty source-labeled FTC messages changed from remove to keep; an unscored diagnostic flagged two potential payment misses. These are retained limitations, not a 100% reliability claim. The later owner requirement to preserve potentially useful bank/account notices was confirmed from its originating task, so saved unverified alerts remain separate from scam stops.
+
+The compiled request exactly matches the tested candidate. Typecheck, 183 unit tests, build and 154 emulator tests passed in an isolated snapshot. The initial unit run was blocked from binding a local test port; its authorized rerun passed. Earlier intermittent emulator counter failures remain documented. No deployment, voice test, real call, phone installation or forwarding change occurred. See the [complete evidence and limits](SCREENING-MESSAGE-CONTACT-RELEASE.md).
+
 ## October 12 — Grace default, Joanna backup (not deployed)
 
 The owner clarified that prerecorded Soniox Grace is the default and Polly Joanna is the backup. The shared Call Control path now uses Grace WAV playback for the capture-disclosure greeting, hold/monitoring disclosure, recipient purpose/press-1 offer, voicemail and fraud warnings. Sound checks also use Grace by default. Confirmed media failures or definite HTTP 400/422 audio-command rejection select the same script in Joanna once; network timeouts retry the original command. Durable fallback markers, command receipts and signed backup phases reject late primary completions and gathers. Streaming/dialing wait for successful prompt completion, canceled gathers cannot accept a call, and only the bound recipient's press 1 can bridge after capture stops. Existing deadlines remain bounded. TeXML uses its packaged Grace backup URL, with explicit Joanna only on the provider-error route. Unknown catalog wording fails closed until a recording is added.
