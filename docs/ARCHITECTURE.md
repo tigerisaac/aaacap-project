@@ -1,14 +1,14 @@
 # Architecture
 
-## Shared-number deployment (October 12, 2026)
+## Shared-number deployment (October 13, 2026)
 
-The shared Call Control path is deployed for a supervised ten-person pilot on the existing DID. It uses strict Diversion routing, immutable per-call recipients, per-person controls, durable command receipts, a distributed ten-call cap and independent live sessions. Telnyx's shared application is active at 10 inbound/10 outbound channels; the profile and account outbound limit are 10. One verified participant is enrolled and awaits a fresh forwarding check. Capacity is configured, not yet measured with ten real audio sessions. Policy v30 is unchanged. TeXML remains available for operator rollback. See [current rollout evidence and tests](SHARED-NUMBER-ROLLOUT.md).
+The shared Call Control path is deployed for a supervised ten-person pilot on the existing DID. It uses strict Diversion routing, immutable per-call recipients, per-person controls, durable command receipts, a distributed ten-call cap and independent live sessions. Telnyx's shared application is active at 10 inbound/10 outbound channels; the profile and account outbound limit are 10. One verified participant's route is enrolled and qualified. Capacity is configured, not yet measured with ten real audio sessions. Owner-approved release `62b2ada` deployed October 13 uses screening v31, Grace-default/Joanna-backup announcements and the audio/summary/decision message backend. TeXML remains available for operator rollback. See [deployment evidence](STATUS.md) and [pilot routing and tests](SHARED-NUMBER-ROLLOUT.md).
 
-The detailed descriptions below retain the October 10 TeXML baseline where explicitly named. The deployed shared path uses Call Control speech, streaming, dialing, gathering and bridging throughout a call; its current admission, qualification and cleanup rules are in the rollout document. The October 12 source revision below replaces default Call Control speech with prerecorded Grace playback; that revision is not deployed.
+The detailed descriptions below retain the October 10 TeXML baseline where explicitly named. The shared path uses prerecorded Grace playback/audio gathering, streaming, dialing and bridging, with Joanna only as backup. Its current admission, qualification and cleanup rules are in the rollout document.
 
 Current as of October 10, 2026. Shield answers unfamiliar calls that a person's phone forwards to it, screens them with a GPT Live voice agent, and only rings the person if the call looks ordinary. The person then decides privately whether to take it. Screening never verifies who is calling.
 
-## Saved messages (October 12 implementation, not deployed)
+## Saved messages (October 13 deployment)
 
 The shared Call Control path captures the inbound track with Telnyx `record-from-answer`, before greeting/model startup, bounded to 240 seconds. The greeting says an unconnected message may be saved. A durable recording job is created from the answer response when available and correlated recording callbacks update it. Ingestion waits for the final outcome; a callback arriving after acceptance cannot hang up the connected call or create a saved message. Recording must stop successfully before a press-1 bridge. Every provider copy is deleted, including answered, blocked, expired, deleted-account and orphaned captures; provider deletion failures retry.
 
@@ -18,7 +18,7 @@ Ingestion stores pending, encrypted audio in a `forwardingAudio` manifest and bo
 
 Kept summaries are encrypted within the call's `voicemail` object. API responses decrypt them only for the owner or a helper with `canListen`; history-only helpers receive no summary. Messages retain their decision and policy version as metadata. The API never returns full transcripts, including any left by the earlier repository candidate. All content shares the call's 30-day expiry, and message/account deletion removes audio chunks and readable text together. Text/summary failures keep audio playable. Summaries attribute claims, omit caller-supplied contact details and are generated with OpenAI response storage disabled. The iPhone app uses a single **Messages** tab for **Voicemail** and **Saved notice**, with a summary and playback, without a transcript section. Notices direct users to contact organizations independently.
 
-This section describes repository code, not deployment or real-call verification. Shared record-from-answer audio, stop-before-bridge behavior, provider deletion and one-shot notices still need a supervised real-call check after owner-approved deployment.
+This section describes the October 13 deployed release. Live synthetic message-worker checks verified summaries, playback, transcript absence and removal of harmful/answered/known-scam captures. Shared record-from-answer audio, stop-before-bridge behavior, provider deletion and one-shot notices still need a supervised real-call check.
 
 ## Components
 
@@ -60,7 +60,7 @@ If the caller clearly asks for a code, password, identity number, payment, remot
 
 ## Voice and speech
 
-The October 12 source revision uses these voice paths (not deployed):
+The October 13 deployed release uses these voice paths:
 
 | What the caller or recipient hears | How it's produced |
 |---|---|
@@ -75,7 +75,7 @@ Build verifies each recording's SHA-256 and copies it to versioned Firebase Host
 
 Shared calls default to Grace. An explicit media failure (`failed`, `file_not_found`, `unknown`) or a definite HTTP 400/422 rejection of an audio command selects Joanna once, with durable receipts and a signed `-backup` phase. Network timeouts retry the original command rather than start a possibly overlapping voice. A completed primary or fallback greeting gates streaming; a completed hold disclosure gates dialing. Late primary callbacks after fallback cannot advance the call or accept a recipient. Gather cancellation for a keypad press stays valid; only the fixed recipient's press 1 on the active gather can bridge, after capture stops. Canceled/unsuccessful prompts and expired deadlines fail closed. Sound checks use the same Grace-default/Joanna-backup rule. Routing diagnostics play Grace with a recorded pause and retain their bounded lifetime.
 
-Deploy the versioned Hosting assets and Functions together, plus the bridge's updated call outcome/monitoring code, after owner approval. Check every primary and backup audio URL before opening a test window. Historical asset deployment: October 10 Hosting and `shieldApi` revision `shieldapi-00012-heq`; all 25 primary and 25 backup audio URLs returned HTTP 200 with the original SHA-256 and WAV content type. The October 12 shared-path Grace integration and new assets remain undeployed and unverified on real calls. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
+Deploy the versioned Hosting assets and Functions together, plus the bridge's call outcome/monitoring code, after owner approval. Check every primary and backup audio URL before opening a test window. On October 13, all 30 primary and 30 backup URLs matched their approved hashes after deployment to Hosting and `shieldapi-00018-god`; bridge `shield-live-00012-vrw` serves the Grace integration. Carrier playback remains unverified on real calls. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
 
 ## Data
 

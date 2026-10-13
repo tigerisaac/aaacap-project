@@ -10,7 +10,7 @@ const config = JSON.parse(await readFile('artifacts/private/firebase-runtime.jso
 const vault = new Vault(config.DATA_ENCRYPTION_KEY);
 const db = firestore();
 const users = new Client({ urlPrefix: 'https://identitytoolkit.googleapis.com', apiVersion: 'v1' });
-const personId = randomUUID(); const callId = randomUUID();
+const personId = randomUUID(); const callId = randomUUID(); const protectedPersonId = randomUUID();
 const email = `shield-integration-${randomUUID()}@example.test`;
 let uid; const results = [];
 async function request(path, options = {}) {
@@ -31,8 +31,11 @@ try {
   results.push({ check: 'real_email_link_exchange', passed: true, universalLink: outer });
   const headers = { authorization: `Bearer ${session.body.accessToken}`, 'x-shield-participant': personId.toUpperCase() };
   const empty = await request('/api/people', { headers }); assert.equal(empty.status, 200); assert.deepEqual(empty.body.people, []);
-  const blocked = await request('/api/overview', { headers: { ...headers, 'x-shield-participant': config.TRIAL_PARTICIPANT_ID.toUpperCase() } });
-  assert.equal(blocked.status, 403); results.push({ check: 'real_owner_data_isolation', passed: true });
+  // Shared runtimes have no single trial participant. Exercise foreign ownership using only synthetic data.
+  await db.patch(`${documentRoot}/participants/${protectedPersonId}`, { fields: fields({ id: protectedPersonId, ownerUid: `synthetic-${randomUUID()}`, status: 'setup', trial: true,
+    nameEnc: vault.seal('Protected integration check', `person:${protectedPersonId}:name`), phoneEnc: vault.seal('+13125550149', `person:${protectedPersonId}:phone`) }) });
+  const blocked = await request('/api/overview', { headers: { ...headers, 'x-shield-participant': protectedPersonId.toUpperCase() } });
+  assert.equal(blocked.status, 403); results.push({ check: 'synthetic_owner_data_isolation', passed: true });
   const now = Date.now();
   await db.patch(`${documentRoot}/participants/${personId}`, { fields: fields({ id: personId, ownerUid: uid, status: 'setup', trial: true,
     nameEnc: vault.seal('Integration check', `person:${personId}:name`), phoneEnc: vault.seal('+13125550148', `person:${personId}:phone`) }) });
@@ -62,6 +65,7 @@ try {
   await db.delete(`${documentRoot}/callSessions/${callId}`);
   await db.delete(`${documentRoot}/participants/${personId}/statistics/stoppedCalls`);
   await db.delete(`${documentRoot}/participants/${personId}`);
+  await db.delete(`${documentRoot}/participants/${protectedPersonId}`);
   if (uid) await users.post(`/projects/${project}/accounts:delete`, { localId: uid });
 }
 await writeFile('artifacts/private/firebase-live-checks.json', JSON.stringify({ testedAt: new Date().toISOString(), results }, null, 2), { mode: 0o600 });
