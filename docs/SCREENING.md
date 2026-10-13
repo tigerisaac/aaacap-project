@@ -20,6 +20,8 @@ The [purpose, context and evidence audit](SCREENING-PURPOSE-ROUTING-AUDIT.md) co
 
 The [caller-attribution audit](SCREENING-ATTRIBUTION-AUDIT.md) tests v105–v110 against new development, fresh callers and both public sets. V110 offers 80/80 ordinary MASC calls and blocks 40/40 ads, but remains offline after a fresh ordinary-report false block, notice holds and three public no-decision outcomes from invalid tool arguments. It does not replace v99.
 
+The [schema and contact-scope audit](SCREENING-SCHEMA-CONTRACT-AUDIT.md) adds safe, versioned correction feedback for invalid observation fields and tests v111–v117. V111's MASC run recovers three malformed context values within their original trials, with no final no-decisions. V117 retains 80/80 ordinary MASC offers but is rejected after empty-contact and payment approvals and a weaker FTC run. The runtime remains v99; the new feedback is an opt-in offline evaluation feature.
+
 ## How a decision is made
 
 This section describes the repository's five-action policy and runtime. The deployed v30 bridge still uses the earlier four-action policy.

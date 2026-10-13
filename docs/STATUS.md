@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — schema correction and contact scope (not promoted)
+
+The v111–v117 subscription Luna medium round completed 24 scored runs and 3,624 trials. The offline adapter now rejects malformed observation input independently of its mapper, records only trusted schema fields/issue codes, and optionally returns versioned correction feedback with trusted constraints. A 52-request local mock verifies correction, privacy, evidence checks and bounds. V111's unchanged initial v110 request completed MASC with 80/80 ordinary offers, 156/160 harmful stops, four harmful questions and no final no-decisions; three invalid context values were corrected within their original trials.
+
+The semantic revisions remain offline. V117 is 32.7% smaller than v99 in combined instruction/tool characters and offered all 80 ordinary MASC calls, blocked all 40 ads and stopped 157/160 harmful callers, questioning three. Both v111 and v117 passed 78/80 fresh trials with different failures: two ordinary-service misses for v111, versus an ordinary-report question and harmful payment approval for v117. V117 also approved a named empty callback in development. Its FTC run produced 297 blocks, 409 unverified saved notices, twelve questions and six approvals, compared with historical v110's 347/361/13/3. Saved notices are not credited as stops.
+
+Runtime v99, post-call v7 and deployed v30 are unchanged. Typecheck, 191 unit tests, build and 154 emulator tests passed. One development subscription timeout remains in the results; the public runs had no failures. No voice tests, deployment, calls or forwarding changes occurred. The [full report](SCREENING-SCHEMA-CONTRACT-AUDIT.md) records immutable validation fixtures, benchmark audits, all candidate failures and durable snapshots.
+
 ## October 13 — caller attribution and contact boundaries (not promoted)
 
 The v105–v110 subscription Luna medium round completed 18 scored runs and 3,092 trials. Frozen v110's instructions plus tools are 35.2% shorter than v99. It passed the new boundary grid 72/72, the existing main/caution suites 32/32, and broader development 257/260. The latter misses were one unnecessary clinic question and two unchanged historical outage expectations that conflict with saving recorded notices.

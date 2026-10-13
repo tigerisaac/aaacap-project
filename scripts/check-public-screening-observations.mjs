@@ -11,9 +11,16 @@ import * as v103 from './experiments/observed-screening-v103.mjs';
 import * as v104 from './experiments/observed-screening-v104.mjs';
 import * as v109 from './experiments/observed-screening-v109.mjs';
 import * as v110 from './experiments/observed-screening-v110.mjs';
+import * as v111 from './experiments/observed-screening-v111.mjs';
+import * as v112 from './experiments/observed-screening-v112.mjs';
+import * as v113 from './experiments/observed-screening-v113.mjs';
+import * as v114 from './experiments/observed-screening-v114.mjs';
+import * as v115 from './experiments/observed-screening-v115.mjs';
+import * as v116 from './experiments/observed-screening-v116.mjs';
+import * as v117 from './experiments/observed-screening-v117.mjs';
 const args=process.argv.slice(2),option=(name,def)=>{const i=args.indexOf(name);return i<0?def:args.splice(i,2)[1];},flag=name=>{const i=args.indexOf(name);if(i<0)return false;args.splice(i,1);return true;};
-const policy=option('--policy','v103');assert.ok(['v103','v104','v109','v110'].includes(policy));
-const selected={v103,v104,v109,v110}[policy];
+const policy=option('--policy','v103');assert.ok(['v103','v104','v109','v110','v111','v112','v113','v114','v115','v116','v117'].includes(policy));
+const selected={v103,v104,v109,v110,v111,v112,v113,v114,v115,v116,v117}[policy];
 const {factsSchema,observedScreeningRequest,interpretFacts,SCREENING_POLICY_VERSION}=selected;
 const dataset=option('--dataset'),out=option('--out'),concurrency=Number(option('--concurrency','6')),approved=flag('--real-calls-approved');
 const resumeFrom=option('--resume-from'),resumeSourceRoot=option('--resume-source-root');
@@ -50,10 +57,10 @@ if(resumeFrom){
   continuation={source:resolve(resumeFrom),sourceRoot:resolve(resumeSourceRoot),originalSummaryHash:digest(await readFile(`${resumeFrom}/summary.json`)),prefixHash:digest(prefix),prefixBytes:Buffer.byteLength(prefix),completedPrefixRows:previousRows.length,remainingInputs:cases.length-previousRows.length,completedFailuresRetained:true};
 }
 if(prepareOnly){console.log(JSON.stringify({prepared:true,externalInference:false,dataset,requestHash:digest(JSON.stringify(request)),completedPrefixRows:previousRows.length,remainingInputs:cases.length-previousRows.length}));process.exit(0);}
-const files=['scripts/check-public-screening-observations.mjs','scripts/experiments/observed-screening-v105.mjs','scripts/experiments/observed-screening-v106.mjs','scripts/experiments/observed-screening-v107.mjs','scripts/experiments/observed-screening-v108.mjs','scripts/experiments/observed-screening-v109.mjs','scripts/experiments/observed-screening-v110.mjs','scripts/experiments/observed-screening-v104.mjs','scripts/experiments/observed-screening-v103.mjs','scripts/experiments/observed-screening-v102.mjs','scripts/lib/codex-screening-target.mjs','scripts/check-screening-subscription.mjs','scripts/lib/screening-codex-models.json','scripts/lib/public-scam-benchmark.mjs','scripts/lib/robocall-benchmark.mjs','backend/src/live/policy.ts','backend/src/live/evidence.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js'];
+const files=['scripts/check-public-screening-observations.mjs','scripts/experiments/observed-screening-v105.mjs','scripts/experiments/observed-screening-v106.mjs','scripts/experiments/observed-screening-v107.mjs','scripts/experiments/observed-screening-v108.mjs','scripts/experiments/observed-screening-v109.mjs','scripts/experiments/observed-screening-v110.mjs','scripts/experiments/observed-screening-v111.mjs','scripts/experiments/observed-screening-v112.mjs','scripts/experiments/observed-screening-v113.mjs','scripts/experiments/observed-screening-v114.mjs','scripts/experiments/observed-screening-v115.mjs','scripts/experiments/observed-screening-v116.mjs','scripts/experiments/observed-screening-v117.mjs','scripts/experiments/observed-screening-v104.mjs','scripts/experiments/observed-screening-v103.mjs','scripts/experiments/observed-screening-v102.mjs','scripts/lib/codex-screening-target.mjs','scripts/lib/screening-argument-issues.mjs','scripts/check-screening-subscription.mjs','scripts/lib/screening-codex-models.json','scripts/lib/public-scam-benchmark.mjs','scripts/lib/robocall-benchmark.mjs','backend/src/live/policy.ts','backend/src/live/evidence.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js'];
 const hashes=async()=>Object.fromEntries(await Promise.all(files.map(async p=>[p,digest(await readFile(p))]))),sourceHashes=await hashes();
 await mkdir(out,{recursive:true});await writeFile(`${out}/request.json`,JSON.stringify(request,null,2),{flag:'wx'});await writeFile(`${out}/results.jsonl`,prefix,{flag:'wx'});
-const target=await codexScreeningTarget(request,{interpretDecision:(value,transcript,state)=>{
+const target=await codexScreeningTarget(request,{argumentSchema:factsSchema,argumentFeedback:selected.argumentFeedback??false,interpretDecision:(value,transcript,state)=>{
   const checked=factsSchema.safeParse(value),decision=interpretFacts(value,transcript,state);
   if(checked.success){const {evidence,...facts}=checked.data;const observation=selected.observeFacts?selected.observeFacts(value,transcript):{facts};state.factObservations.push({...observation,mappedAction:decision?.action,questionCount:state.questions});}
   else state.factObservations.push({invalidFacts:true});

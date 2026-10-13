@@ -26,7 +26,7 @@ for (const c of [...cases, probe]) {
   assert.ok(c.accept.length && c.accept.every(a => ['approve', 'block', 'hold', 'continue'].includes(a)));
 }
 const files = [casesFile, 'scripts/check-distilled-screening-redteam.mjs', candidateFile,
-  'backend/src/live/policy.ts', 'scripts/lib/screening-target.mjs', 'scripts/lib/codex-screening-target.mjs'];
+  'backend/src/live/policy.ts', 'scripts/lib/screening-target.mjs', 'scripts/lib/codex-screening-target.mjs', 'scripts/lib/screening-argument-issues.mjs'];
 const hashes = async () => Object.fromEntries(await Promise.all(files.map(async f => [f, digest(await readFile(f))])));
 const before = await hashes();
 const jobs = Array.from({ length: repeat }, (_, i) => cases.map(c => ({ c, run: i + 1, suite: 'fresh' }))).flat()

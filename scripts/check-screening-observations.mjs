@@ -18,10 +18,17 @@ import * as v107 from './experiments/observed-screening-v107.mjs';
 import * as v108 from './experiments/observed-screening-v108.mjs';
 import * as v109 from './experiments/observed-screening-v109.mjs';
 import * as v110 from './experiments/observed-screening-v110.mjs';
+import * as v111 from './experiments/observed-screening-v111.mjs';
+import * as v112 from './experiments/observed-screening-v112.mjs';
+import * as v113 from './experiments/observed-screening-v113.mjs';
+import * as v114 from './experiments/observed-screening-v114.mjs';
+import * as v115 from './experiments/observed-screening-v115.mjs';
+import * as v116 from './experiments/observed-screening-v116.mjs';
+import * as v117 from './experiments/observed-screening-v117.mjs';
 const policyIndex=process.argv.indexOf('--policy');
 const policy=policyIndex<0?'v102':process.argv.splice(policyIndex,2)[1];
-assert.ok(['v102','v103','v104','v105','v106','v107','v108','v109','v110'].includes(policy));
-const selected={v102,v103,v104,v105,v106,v107,v108,v109,v110}[policy];
+assert.ok(['v102','v103','v104','v105','v106','v107','v108','v109','v110','v111','v112','v113','v114','v115','v116','v117'].includes(policy));
+const selected={v102,v103,v104,v105,v106,v107,v108,v109,v110,v111,v112,v113,v114,v115,v116,v117}[policy];
 const {factsSchema,observedScreeningRequest,interpretFacts,SCREENING_POLICY_VERSION}=selected;
 
 if(process.argv.includes('--self-test')&&policy!=='v102') {
@@ -54,10 +61,10 @@ if(process.argv.includes('--self-test')&&policy!=='v102') {
   assert.ok(!args.length&&fixtureFile&&out);assert.ok(Number.isInteger(repeat)&&repeat>0&&repeat<=5);assert.ok(Number.isInteger(concurrency)&&concurrency>0&&concurrency<=6);
   const fixture=await import(pathToFileURL(resolve(fixtureFile)).href);assert.equal(fixture.synthetic,true);
   const cases=[...(fixture.cases??[]),...(fixture.stagedCases??[])];assert.ok(cases.length);assert.ok(policy!=='v102'||cases.every(c=>!c.caution));
-  const request=observedScreeningRequest(liveSessionConfig().delegation.responses),files=[fixtureFile,...(fixture.sourceFiles??[]),'scripts/check-screening-observations.mjs','scripts/experiments/observed-screening-v102.mjs','scripts/experiments/observed-screening-v103.mjs','scripts/experiments/observed-screening-v104.mjs','scripts/experiments/observed-screening-v105.mjs','scripts/experiments/observed-screening-v106.mjs','scripts/experiments/observed-screening-v107.mjs','scripts/experiments/observed-screening-v108.mjs','scripts/experiments/observed-screening-v109.mjs','scripts/experiments/observed-screening-v110.mjs','scripts/lib/codex-screening-target.mjs','scripts/check-screening-dialogues.mjs','scripts/check-screening-synthetic-questions.mjs','scripts/check-screening-subscription-dialogue.mjs','scripts/lib/screening-codex-models.json','backend/src/live/policy.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js'];
+  const request=observedScreeningRequest(liveSessionConfig().delegation.responses),files=[fixtureFile,...(fixture.sourceFiles??[]),'scripts/check-screening-observations.mjs','scripts/experiments/observed-screening-v102.mjs','scripts/experiments/observed-screening-v103.mjs','scripts/experiments/observed-screening-v104.mjs','scripts/experiments/observed-screening-v105.mjs','scripts/experiments/observed-screening-v106.mjs','scripts/experiments/observed-screening-v107.mjs','scripts/experiments/observed-screening-v108.mjs','scripts/experiments/observed-screening-v109.mjs','scripts/experiments/observed-screening-v110.mjs','scripts/experiments/observed-screening-v111.mjs','scripts/experiments/observed-screening-v112.mjs','scripts/experiments/observed-screening-v113.mjs','scripts/experiments/observed-screening-v114.mjs','scripts/experiments/observed-screening-v115.mjs','scripts/experiments/observed-screening-v116.mjs','scripts/experiments/observed-screening-v117.mjs','scripts/lib/codex-screening-target.mjs','scripts/lib/screening-argument-issues.mjs','scripts/check-screening-dialogues.mjs','scripts/check-screening-synthetic-questions.mjs','scripts/check-screening-subscription-dialogue.mjs','scripts/lib/screening-codex-models.json','backend/src/live/policy.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js'];
   const hashes=async()=>Object.fromEntries(await Promise.all(files.map(async p=>[p,digest(await readFile(p))]))),sourceHashes=await hashes();
   await mkdir(out,{recursive:true});await writeFile(`${out}/request.json`,JSON.stringify(request,null,2),{flag:'wx'});await writeFile(`${out}/results.jsonl`,'',{flag:'wx'});
-  const target=await codexScreeningTarget(request,{conversation:true,interpretDecision:(raw,transcript,state)=>{
+  const target=await codexScreeningTarget(request,{argumentSchema:factsSchema,argumentFeedback:selected.argumentFeedback??false,conversation:true,interpretDecision:(raw,transcript,state)=>{
     const parsed=factsSchema.safeParse(raw),decision=interpretFacts(raw,transcript,state,{caution:state.caution});
     if(parsed.success){const {evidence,...facts}=parsed.data;const observation=selected.observeFacts?selected.observeFacts(raw,transcript):{facts};state.factObservations.push({...observation,mappedAction:decision?.action,questionCount:state.questions});}
     else state.factObservations.push({invalidFacts:true});

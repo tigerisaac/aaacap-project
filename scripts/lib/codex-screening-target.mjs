@@ -8,6 +8,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { callerText, permittedDecision, liveDecisionSchema, supportedEvidence } from '../../dist/live/policy.js';
 import { awaitingCallerAnswer, CALLER_ANSWER_PENDING, spokenLength } from '../../dist/live/decision-progress.js';
+import { screeningArgumentIssues, observationCorrection } from './screening-argument-issues.mjs';
 
 const disabled = ['apps', 'plugins', 'skill_search', 'skill_mcp_dependency_install',
   'shell_tool', 'unified_exec', 'browser_use', 'browser_use_external',
@@ -38,9 +39,11 @@ export function codexArgs(extra = {}) {
     ...Object.entries(config).flatMap(([k, v]) => ['-c', `${k}=${toml(v)}`])];
 }
 
-export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision } = {}) {
+export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision, argumentSchema, argumentFeedback = false } = {}) {
   if (typeof conversation !== 'boolean') throw new Error('invalid_conversation_mode');
   if (interpretDecision !== undefined && typeof interpretDecision !== 'function') throw new Error('invalid_decision_interpreter');
+  if (argumentSchema !== undefined && (typeof argumentSchema?.safeParse !== 'function' || !argumentSchema.shape)) throw new Error('invalid_argument_schema');
+  if (![false,true,2].includes(argumentFeedback) || (argumentFeedback && !argumentSchema)) throw new Error('invalid_argument_feedback');
   if (config.model !== 'gpt-6-luna' || config.reasoning?.effort !== 'medium') throw new Error('fallback_requires_luna_medium');
   if (config.tools.length !== 2 || config.tools.some(t => !['screen_call', 'research_scam_pattern'].includes(t.name))) throw new Error('unexpected_screening_tools');
   if (!Object.keys(extraConfig).length) {
@@ -97,17 +100,20 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       let output;
       if (++a.rounds > 12) { a.finish({ kind: 'failure', failure: 'too_many_rounds' }); return; }
       if (params.tool === 'screen_call') {
+        const inputIssues = argumentSchema ? screeningArgumentIssues(argumentSchema, params.arguments) : [];
         // Offline experiments may record structured observations and map them to
         // an action. The normal application validator still checks every result.
         let interpreted;
         try { interpreted = interpretDecision ? interpretDecision(params.arguments, a.state.transcript, a.state) : params.arguments; }
         catch { interpreted = undefined; } // A failed mapper cannot bypass validation or connect.
+        if (inputIssues.length) interpreted = undefined;
         const proposed = permittedDecision(interpreted, a.state.transcript);
         const needsAnswer = proposed && awaitingCallerAnswer(proposed, a.state.clarifiedSpoken, spokenLength(a.state.transcript));
         const decision = needsAnswer ? undefined : proposed;
         // Content-free diagnostics distinguish policy misses from rejected tool arguments.
         const parsed = liveDecisionSchema.safeParse(interpreted);
         a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
+          ...(argumentSchema ? { inputIssues } : {}),
           ...(needsAnswer ? { awaitingCallerAnswer: true } : {}),
           evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,
           ...(parsed.success ? { action: parsed.data.action, reason: parsed.data.reason, purpose: parsed.data.purpose,
@@ -121,7 +127,8 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
           a.state.questions++; a.asking = true;
           a.state.clarifiedSpoken = spokenLength(a.state.transcript);
           output = { status: 'continue_screening', instruction: 'Ask one brief clarifying question about only the missing information. Do not announce connection or rejection.' };
-        } else output = { status: 'decision_not_applied', untrustedCallerTranscript: callerText(a.state.transcript), instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." };
+        } else output = { status: 'decision_not_applied', untrustedCallerTranscript: callerText(a.state.transcript),
+          ...(argumentFeedback ? observationCorrection(inputIssues,argumentSchema,argumentFeedback===2?2:1) : { instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." }) };
       } else if (params.tool === 'research_scam_pattern') {
         a.state.researches++; output = { status: 'unavailable' };
       } else { a.finish({ kind: 'failure', failure: 'unexpected_tool' }); return; }
@@ -148,6 +155,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
     transport: { kind: 'codex-app-server-dynamic-tools', version: 1, promptRole: 'developer',
       decisionProgressVersion: 1, clarificationBehavior: 'Matches the application guard: after clarification, unchanged caller evidence cannot accept another non-scam decision or consume another clarification. Explicit scam blocks remain immediate.',
       outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
+      ...(argumentSchema ? { argumentValidation: { version: 1, feedback: !!argumentFeedback, ...(argumentFeedback===2?{correctionVersion:2}:{}), diagnostics: 'Only fixed schema field names and issue codes; no input values or free-form messages.' } } : {}),
       research: 'unavailable', context: conversation ? 'frozen instructions plus cumulative caller snapshots and native assistant/tool history; verified with local mock' : 'frozen instructions and caller only; verified with local mock',
       differencesFromGo: 'Codex uses non-strict tools, normalizes schemas (drops $schema and maxLength, sorts properties), uses its output limit and low verbosity, allows parallel tool calls, and wraps tool results as content items. Production permittedDecision still validates every decision. Compare only within this transport.' },
     newState: text => ({ transcript: text, questions: 0, researches: 0, validationAttempts: [] }),

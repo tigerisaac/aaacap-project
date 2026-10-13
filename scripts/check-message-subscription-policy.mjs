@@ -18,7 +18,7 @@ const production=decisionRequest(''),base=frozenFile?JSON.parse(await readFile(f
 // Only instruction changes are supported; the production input/schema/transport stay intact.
 assert.deepEqual({...base,instructions:production.instructions},production);
 const requestFor=text=>({...structuredClone(base),input:decisionRequest(text).input});
-const files=[fixtureFile,...(frozenFile?[frozenFile]:[]),'scripts/check-message-subscription-policy.mjs','scripts/check-message-subscription.mjs','scripts/lib/codex-message-target.mjs','scripts/lib/codex-screening-target.mjs','scripts/lib/screening-codex-models.json','dist/cloud/voicemail-check.js','dist/cloud/message-summary.js','dist/live/evidence.js',...(fixture.sourceFiles??[])];
+const files=[fixtureFile,...(frozenFile?[frozenFile]:[]),'scripts/check-message-subscription-policy.mjs','scripts/check-message-subscription.mjs','scripts/lib/codex-message-target.mjs','scripts/lib/codex-screening-target.mjs','scripts/lib/screening-argument-issues.mjs','scripts/lib/screening-codex-models.json','dist/cloud/voicemail-check.js','dist/cloud/message-summary.js','dist/live/evidence.js',...(fixture.sourceFiles??[])];
 const hashes=async()=>Object.fromEntries(await Promise.all(files.map(async p=>[p,digest(await readFile(p))]))),sourceHashes=await hashes();
 await mkdir(out,{recursive:true});await writeFile(`${out}/results.jsonl`,'',{flag:'wx'});
 const target=await codexMessageTarget(),rows=[];let cursor=0,writes=Promise.resolve(),stopped=false;
