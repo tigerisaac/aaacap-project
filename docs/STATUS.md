@@ -1,5 +1,11 @@
 # Status
 
+## October 13 — claim/action experiments improve MASC; not promoted
+
+The [v128–v131 audit](SCREENING-CLAIM-ACTION-AUDIT.md) completes 17 scored runs / 3,864 trials on subscription GPT-6 Luna medium. V131 offers 80/80 ordinary MASC calls, stops 160/160 harmful calls, blocks 40/40 ads and passes 72/72 latest fresh trials. Its request is 23.9% shorter than repository v99 by instruction/tool characters. FTC records 586 stops, 119 unverified saves, 13 questions and six approvals. Four timeouts across the round are retained; no outcome is retried away.
+
+V131 is not promoted: development still falsely blocks three ordinary scam reports/warnings, questions an empty invitation and saves one charge alert. The known FTC charge recordings all stop, but that does not establish a general fix. Source labels, original expectations and all failures remain visible. Typecheck, 191 unit tests/build, 154 emulator tests and local protocol/integrity checks pass. Runtime screening remains v99, post-call filtering remains v10, and the separate release below remains the latest deployment evidence. No deployment, voice test, phone call or forwarding change occurred.
+
 ## October 13 — post-call charge filter updated; screening remains experimental
 
 Repository post-call policy is now `2026-10-13-voicemail-v10`, with an exact compiled-request match to the subscription Luna medium candidate. Unexpected-charge alarms are removed before useful-notice checking; ordinary receipts/refunds and personal reports remain eligible to keep. Optional payment collection and software/command/account-permission requests are explicit. The update adds 453 instruction characters and no model call, output field or storage change. Clear, supported evidence remains required for removal; failures keep messages.

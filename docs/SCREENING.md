@@ -32,6 +32,8 @@ The [charge/contact boundary audit](SCREENING-CHARGE-CONTACT-BOUNDARY.md) record
 
 ## How a decision is made
 
+The later [claim/action audit](SCREENING-CLAIM-ACTION-AUDIT.md) tests v128–v131 on subscription Luna medium. V131 is 23.9% shorter than v99 in instruction/tool characters and achieves 80/80 ordinary offers, 160/160 harmful stops and 40/40 ad blocks on MASC, plus 72/72 latest fresh trials. It remains offline: development still has ordinary-report false blocks, an empty-contact question and a saved charge alert; FTC has six approvals despite 586/724 completed stops. The higher public scores do not resolve these failures. Runtime screening remains v99 and post-call policy remains v10.
+
 Both repository v99 and deployed v31 support the five-action policy. V99 additionally has the unanswered-clarification guard; deployment evidence is recorded separately in STATUS.md.
 
 **The voice agent** (`gpt-live-1`) talks to the caller. It never decides anything itself. It:
