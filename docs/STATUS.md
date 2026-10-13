@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — purpose-contract repair tested; lean candidates still fail contact and ordinary-call checks
+
+The [v139/v140 audit](SCREENING-PURPOSE-CONTRACT-AUDIT.md) completes 12 scored runs / 3,096 trials on subscription GPT-6 Luna medium. V139 repairs the offline observation mapper's approval/display-purpose mismatch without changing v138's request; v140 separately clarifies ordinary-purpose wording from known development misses. V139 preserves 142/142 intended ordinary development offers, 26/26 notices and 164/164 intended blocks. Both candidates score 110/112 across fresh validation, but terse empty-contact requests are sometimes mistaken for an established personal relationship. Neither is promoted.
+
+Each offers 78/80 ordinary MASC callers; harmful stops are 159/160 and 158/160. FTC records 596/586 stops, 119/131 unverified saves, four/six questions and three/one approvals. Both stop the three known charge recordings. V139 retains two subscription timeouts; no outcomes are retried or relabeled. The contract repair also makes an incorrect approval admissible when the model invents personal context, so it is not a semantic safety guarantee.
+
+Typecheck, 198 unit tests/build, 11,193 mapper assertions and an 11-request local adapter mock pass. Firestore passes 154/154 on a full repeat after one retained closed-transaction failure. Source/result/input audits pass, with no detected direct public-passage copy. Runtime screening remains v134, post-call v10, and the separate deployed release v31 / voicemail v4. No deployment, paid voice, call or forwarding change occurred. The charge/contact goal remains unfinished; all three new validation sets are spent.
+
 ## October 13 — event-attribution experiments complete; ordinary-call losses prevent promotion
 
 The [v136–v138 comparison](SCREENING-EVENT-ATTRIBUTION-AUDIT.md) completes 15 scored runs / 4,024 trials on subscription GPT-6 Luna medium, plus three unscored label diagnostics. V137 is 22.3% shorter than runtime v134 by instruction/tool characters and passes 152/152 fresh trials, but offers only 78/80 ordinary MASC calls. V138 stops all 164 intended-block development trials, including charge and empty-contact cases, but loses three ordinary offers to questions and offers 77/80 ordinary MASC calls. Both preserve all 26 development notices and all trusted-caution outcomes. Neither is promoted.
