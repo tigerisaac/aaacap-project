@@ -1,12 +1,11 @@
 import SwiftUI
 
-/// Two-line history row modeled on Phone's Recents: summary and time, then outcome and number.
+/// Familiar Recents layout with a stable leading column and explicit outcome text.
 struct CallRow: View {
     let call: CallRecord
     var showsNumber = true
     @Environment(\.dynamicTypeSize) private var typeSize
-    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
-    @ScaledMetric(relativeTo: .body) private var dotSize = 9.0
+    @ScaledMetric(relativeTo: .body) private var symbolSize = 36.0
 
     private var number: String { PhoneDisplay.format(call.callerNumber) }
 
@@ -39,13 +38,16 @@ struct CallRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 10) {
-            if unheard && !typeSize.isAccessibilitySize && !differentiateWithoutColor {
-            Circle().fill(ShieldTheme.message)
-                .frame(width: dotSize, height: dotSize)
-                .accessibilityHidden(true)
+        HStack(alignment: .top, spacing: 14) {
+            if !typeSize.isAccessibilitySize {
+                Image(systemName: call.outcome.symbol)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(ShieldTheme.color(for: call.outcome))
+                    .frame(width: symbolSize, height: symbolSize)
+                    .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
+                    .accessibilityHidden(true)
             }
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 if typeSize >= .xxxLarge {
                     titleText
                     timeText
@@ -57,18 +59,17 @@ struct CallRow: View {
                     }
                 }
                 detailLine
-                if unheard && (typeSize.isAccessibilitySize || differentiateWithoutColor) {
-                    Text("New message").font(.subheadline).foregroundStyle(ShieldTheme.message)
+                if unheard {
+                    Text("New message").font(.subheadline.weight(.medium)).foregroundStyle(ShieldTheme.message)
                 }
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .accessibilityElement(children: .combine)
-        .accessibilityValue(unheard ? "New message" : "")
     }
 
     private var titleText: some View {
-        Text(title).font(.body.weight(.semibold)).foregroundStyle(.primary)
+        Text(title).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
             .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -98,14 +99,8 @@ struct CallRow: View {
     }
 
     private var outcomeText: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Image(systemName: call.outcome.symbol)
-                .foregroundStyle(ShieldTheme.color(for: call.outcome))
-                .accessibilityHidden(showsOutcomeWord)
-                .accessibilityLabel(outcomeLabel)
-            if showsOutcomeWord {
-                Text(outcomeLabel).foregroundStyle(ShieldTheme.color(for: call.outcome)).fontWeight(.medium)
-            }
+        Group {
+            if showsOutcomeWord { Text(outcomeLabel).foregroundStyle(ShieldTheme.color(for: call.outcome)).fontWeight(.medium) }
         }
     }
 

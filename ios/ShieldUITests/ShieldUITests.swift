@@ -164,6 +164,8 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(toggle.isHittable)
         toggle.tap()
         XCTAssertEqual(toggle.value as? String, "0")
+        for _ in 0..<8 where !continueButton.isHittable { scroll.swipeUp() }
+        XCTAssertGreaterThanOrEqual(continueButton.frame.minY, toggle.frame.maxY)
         XCTAssertTrue(app.buttons["onboarding-protection-continue"].isHittable)
         capture(app, name: "Onboarding protection largest text dark")
     }

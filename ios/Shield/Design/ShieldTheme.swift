@@ -13,15 +13,22 @@ enum ShieldTheme {
     enum Layout {
         static let minimumTarget: CGFloat = 52
         static let rowHeight: CGFloat = 60
-        static let cardRadius: CGFloat = 26
+        static let cardRadius: CGFloat = 20
         /// App-icon corner radius as a fraction of the icon's width (continuous corners).
         static let iconCornerRatio: CGFloat = 0.2237
         static let readableWidth: CGFloat = 560
     }
+    enum Typography {
+        static let display = Font.system(.largeTitle, design: .serif)
+        static let title = Font.system(.title, design: .serif)
+        static let section = Font.system(.title3, design: .serif)
+    }
     static let secondaryText = Color(uiColor: UIColor { traits in
         let highContrast = traits.accessibilityContrast == .high
-        let white = traits.userInterfaceStyle == .dark ? (highContrast ? 0.86 : 0.76) : (highContrast ? 0.20 : 0.34)
-        return UIColor(white: white, alpha: 1)
+        if traits.userInterfaceStyle == .dark {
+            return highContrast ? UIColor(red: 0.85, green: 0.90, blue: 0.96, alpha: 1) : UIColor(red: 0.72, green: 0.77, blue: 0.84, alpha: 1)
+        }
+        return highContrast ? UIColor(red: 0.18, green: 0.23, blue: 0.30, alpha: 1) : UIColor(red: 0.32, green: 0.37, blue: 0.44, alpha: 1)
     })
     static let action = Color("Action")
     // Native Paste draws a white label, so its fill stays deep in both appearances.
@@ -29,9 +36,11 @@ enum ShieldTheme {
     static let held = Color("Held")
     static let connected = Color("Connected")
     static let message = Color("Message")
-    // Matches the system grouped background so Shield sits in the same visual family as Settings and Phone.
-    static let surface = Color(uiColor: .systemGroupedBackground)
-    static let card = Color(uiColor: .secondarySystemGroupedBackground)
+    static let surface = Color("Surface")
+    static let card = Color("Card")
+    static let ink = Color("Ink")
+    static let quietSurface = Color("QuietSurface")
+    static let fieldBorder = Color("FieldBorder")
     static let actionInk = Color(uiColor: UIColor { traits in
         traits.userInterfaceStyle == .dark ? UIColor(red: 0.08, green: 0.12, blue: 0.22, alpha: 1) : .white
     })

@@ -14,17 +14,17 @@ struct BlockedNumbersView: View {
     var body: some View {
         List {
             if let loadError {
-                Section { ShieldLoadFailure(title: "Blocked numbers couldn’t load", detail: loadError) { Task { await load() } } }
+                ShieldGroup { ShieldLoadFailure(title: "Blocked numbers couldn’t load", detail: loadError) { Task { await load() } } }
             } else if !loaded {
-                Section { ShieldLoadingView(title: "Getting blocked numbers…") }
+                ShieldGroup { ShieldLoadingView(title: "Getting blocked numbers…") }
             } else if items.isEmpty {
-                Section {
+                ShieldGroup {
                     ContentUnavailableView("No blocked numbers", systemImage: "hand.raised",
                         description: Text("Numbers blocked by Shield will appear here."))
                 }
             }
             if model.isOwner, !model.isPreview, phoneBlocking != nil {
-                Section {
+                ShieldGroup {
                     LabeledContent("Block on this iPhone", value: phoneBlocking == true ? "On" : "Off")
                     if phoneBlocking == false {
                         Button("Turn on in Settings", systemImage: "gear") { Task { await CallDirectorySync.openSettings() } }
@@ -35,7 +35,7 @@ struct BlockedNumbersView: View {
                          : "In Phone settings, open Call Blocking & Identification and turn on Shield.").foregroundStyle(ShieldTheme.secondaryText)
                 }
             }
-            Section {
+            ShieldGroup {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: 10) {
                         VStack(alignment: .leading, spacing: 5) {
@@ -67,7 +67,7 @@ struct BlockedNumbersView: View {
                     }
                 }
             }
-            Section {
+            ShieldGroup {
                 DisclosureGroup("About blocked numbers") {
                     Text("Shield stops calls from these numbers. Blocks end after 180 days.")
                     Text(model.isOwner ? "Scammers can use someone else’s number. Allow calls again only if you know who it belongs to." : "Only the person using Shield can allow calls again.")

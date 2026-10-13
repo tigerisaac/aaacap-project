@@ -6,7 +6,7 @@ struct MessageFilterSetupView: View {
 
     var body: some View {
         List {
-            Section {
+            ShieldGroup {
                 Text(available ? "Shield can check some texts from people you don’t know." : "Automatic text checks aren’t ready yet.")
                 NavigationLink("Check a text yourself", value: AppRoute.check)
             }
@@ -17,7 +17,7 @@ struct MessageFilterSetupView: View {
                     Text("3. Under Text Message Filter, choose Shield.")
                 }
             }
-            Section {
+            ShieldGroup {
                 DisclosureGroup("What will Shield see?") {
                     Text("Some texts from unknown senders go to Shield and OpenAI for a scam check. Shield can’t see your whole inbox or iMessage conversations.")
                     Text("Checks can be wrong. Look in Messages for anything that was moved. Turn Shield off in the same settings any time.")

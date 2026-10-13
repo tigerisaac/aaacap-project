@@ -9,16 +9,15 @@ struct CallsView: View {
         NavigationShell {
             List {
                 PersonContextSection()
-                Section { CallFilterPicker() }
-                    .listRowBackground(Color.clear)
+                ShieldGroup(background: .clear) { CallFilterPicker() }
                     .listRowInsets(EdgeInsets())
                 if let error = model.callsError {
-                    Section {
+                    ShieldGroup {
                         ShieldLoadFailure(title: "Your calls couldn’t load", detail: error) { Task { await model.loadCalls() } }
                     }
                 }
                 if model.calls.isEmpty && model.callsError == nil {
-                    Section {
+                    ShieldGroup {
                         if model.isLoadingCalls || model.isLoading {
                             ShieldLoadingView(title: "Getting your calls…")
                         } else {
@@ -27,7 +26,7 @@ struct CallsView: View {
                         }
                     }
                 } else if !model.calls.isEmpty {
-                    Section {
+                    ShieldGroup {
                         ForEach(model.calls) { call in NavigationLink(value: call) { CallRow(call: call) } }
                         if model.nextCursor != nil {
                             Button(model.isLoadingCalls ? "Getting more…" : "Older calls") { Task { await model.loadCalls(more: true) } }

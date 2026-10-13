@@ -282,12 +282,24 @@ final class SeniorPolishUITests: XCTestCase {
         app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
         let toggle = app.switches["onboarding-protection-toggle"]
+        let completion = app.buttons["onboarding-protection-continue"]
+        XCTAssertFalse(completion.isHittable, "Read the choice before advancing at accessibility text sizes.")
+        capture(app, "polish-protection-onboarding-large-dark-start")
         reveal(toggle, in: app); toggle.tap()
-        app.buttons["onboarding-protection-continue"].tap()
+        reveal(completion, in: app)
+        XCTAssertGreaterThanOrEqual(completion.frame.minY, toggle.frame.maxY)
+        capture(app, "polish-protection-choice-and-next-large-dark")
+        completion.tap()
         XCTAssertTrue(app.staticTexts["Let a helper know"].waitForExistence(timeout: 5))
         let secondStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 2 of 2")).firstMatch
         expectVisible(secondStep, in: app)
         capture(app, "polish-helper-onboarding-large-dark")
+        XCTAssertFalse(completion.isHittable, "Read the helper choice before saving at accessibility text sizes.")
+        let helperToggle = app.switches["onboarding-helper-alerts-toggle"]
+        reveal(helperToggle, in: app)
+        reveal(completion, in: app)
+        XCTAssertGreaterThanOrEqual(completion.frame.minY, helperToggle.frame.maxY)
+        capture(app, "polish-helper-choice-and-save-large-dark")
         app.buttons["Back"].tap()
         let firstStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 1 of 2")).firstMatch
         expectVisible(firstStep, in: app)
@@ -315,6 +327,33 @@ final class SeniorPolishUITests: XCTestCase {
             }
             capture(app, "polish-\(screen)-large-dark-actions")
         }
+    }
+
+    func testLargestOnboardingSaveFailureRetainsBothChoices() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding", "--protection-save-fails", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let protection = app.switches["onboarding-protection-toggle"]
+        let completion = app.buttons["onboarding-protection-continue"]
+        reveal(protection, in: app); protection.tap()
+        reveal(completion, in: app); completion.tap()
+        let helpers = app.switches["onboarding-helper-alerts-toggle"]
+        reveal(helpers, in: app); helpers.tap()
+        reveal(completion, in: app); completion.tap()
+        let failure = app.alerts["Couldn’t save your choice"]
+        XCTAssertTrue(failure.waitForExistence(timeout: 5))
+        capture(app, "polish-onboarding-save-error-large-dark")
+        failure.buttons["Try again"].tap()
+        XCTAssertTrue(failure.waitForExistence(timeout: 5))
+        failure.buttons["Cancel"].tap()
+        XCTAssertEqual(helpers.value as? String, "0")
+        reveal(completion, in: app)
+        XCTAssertTrue(completion.isEnabled)
+        capture(app, "polish-onboarding-save-recovery-large-dark")
+        app.buttons["Back"].tap()
+        reveal(protection, in: app)
+        XCTAssertEqual(protection.value as? String, "0")
+        XCTAssertFalse(app.staticTexts["demoBanner"].exists)
     }
 
     func testConfiguredSettingsAndSharingScopesStayReadable() {
@@ -352,7 +391,7 @@ final class SeniorPolishUITests: XCTestCase {
             let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
             var bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
             if app.keyboards.firstMatch.exists { bottom = min(bottom, app.keyboards.firstMatch.frame.minY) }
-            for title in ["Save number", "Join them", "Save quiet hours", "Saved", "Next", "Save my choice"] {
+            for title in ["Save number", "Join them", "Save quiet hours", "Saved"] {
                 let button = app.buttons[title]
                 if button.exists && button.frame.height > 0 { bottom = min(bottom, button.frame.minY) }
             }

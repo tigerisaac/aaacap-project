@@ -6,7 +6,7 @@ struct VoicemailPreviewCard: View {
     private var kept: Bool { app.demoKeptMessages.contains(call.id) }
 
     var body: some View {
-        Section {
+        ShieldGroup {
             Text(VoicemailPreview.summary(for: call)).font(.title3)
                 .accessibilityIdentifier("message-summary")
                 .fixedSize(horizontal: false, vertical: true)

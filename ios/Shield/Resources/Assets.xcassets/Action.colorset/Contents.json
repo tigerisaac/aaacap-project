@@ -5,51 +5,60 @@
       "color": {
         "color-space": "srgb",
         "components": {
-          "red": "0x22",
-          "green": "0x4C",
-          "blue": "0xC5",
+          "red": "0x00",
+          "green": "0x26",
+          "blue": "0x64",
           "alpha": "1.000"
         }
       }
     },
     {
       "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0xB9",
+          "green": "0xCD",
+          "blue": "0xF2",
+          "alpha": "1.000"
+        }
+      },
       "appearances": [
         {
           "appearance": "luminosity",
           "value": "dark"
         }
-      ],
-      "color": {
-        "color-space": "srgb",
-        "components": {
-          "red": "0x9B",
-          "green": "0xB3",
-          "blue": "0xFF",
-          "alpha": "1.000"
-        }
-      }
+      ]
     },
     {
       "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0x00",
+          "green": "0x1A",
+          "blue": "0x45",
+          "alpha": "1.000"
+        }
+      },
       "appearances": [
         {
           "appearance": "contrast",
           "value": "high"
         }
-      ],
-      "color": {
-        "color-space": "srgb",
-        "components": {
-          "red": "0x17",
-          "green": "0x3A",
-          "blue": "0xA3",
-          "alpha": "1.000"
-        }
-      }
+      ]
     },
     {
       "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0xD6",
+          "green": "0xE4",
+          "blue": "0xFF",
+          "alpha": "1.000"
+        }
+      },
       "appearances": [
         {
           "appearance": "luminosity",
@@ -59,16 +68,7 @@
           "appearance": "contrast",
           "value": "high"
         }
-      ],
-      "color": {
-        "color-space": "srgb",
-        "components": {
-          "red": "0xBD",
-          "green": "0xD0",
-          "blue": "0xFF",
-          "alpha": "1.000"
-        }
-      }
+      ]
     }
   ],
   "info": {

@@ -17,19 +17,19 @@ struct SetupView: View {
     var body: some View {
         Form {
             if let loadError {
-                Section {
+                ShieldGroup {
                     ShieldLoadFailure(title: "Phone setup couldn’t load", detail: loadError) { Task { await load() } }
                 }
             }
             if model.isPreview && !usesFixture {
-                Section {
+                ShieldGroup {
                     Text("Phone setup is done with a helper, one step at a time.")
                     Text("The sample app doesn’t change your phone.").foregroundStyle(ShieldTheme.secondaryText)
                 }
             } else if let setup, setup.isTrial == true {
                 TrialSetupView(setup: setup, reload: load)
             } else if let setup {
-                Section {
+                ShieldGroup {
                     LabeledContent("My number", value: PhoneDisplay.format(setup.phone))
                     Button(contactSaved ? "Shield contact saved" : "Save Shield in Contacts", systemImage: contactSaved ? "checkmark" : "person.crop.circle.badge.plus") {
                         Task { await saveContact(setup.shieldNumber) }
@@ -64,7 +64,7 @@ struct SetupView: View {
                             } message: { Text("While paused, calls that reach Shield go to voicemail. Your phone still sends those calls to Shield.") }
                     }
                 }
-                Section {
+                ShieldGroup {
                     if setup.status == "restoring" {
                         Text("Finish bringing back ordinary calls.").font(.headline)
                         if let steps = setup.carrierProfile?.restorationSteps {
@@ -85,7 +85,7 @@ struct SetupView: View {
                             } message: { Text("First, your helper must bring back ordinary calls. Then your Shield information can be deleted.") }
                     }
                 } footer: { Text("Deleting the app alone won’t disconnect Shield.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
-            } else if loading { Section { ShieldLoadingView(title: "Getting your phone setup…") } }
+            } else if loading { ShieldGroup { ShieldLoadingView(title: "Getting your phone setup…") } }
         }
         .shieldListStyle()
         .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)

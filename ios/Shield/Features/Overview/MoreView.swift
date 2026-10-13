@@ -6,7 +6,7 @@ struct MoreView: View {
     var body: some View {
         NavigationShell {
             List {
-                Section {
+                ShieldGroup {
                     NavigationLink(value: AppRoute.check) {
                         ActionRow(title: "Check a text", symbol: "text.magnifyingglass")
                     }
@@ -17,13 +17,13 @@ struct MoreView: View {
                         ActionRow(title: "Get help", symbol: "questionmark.circle")
                     }
                 }
-                Section {
+                ShieldGroup {
                     NavigationLink(value: AppRoute.settings) {
                         ActionRow(title: "Settings", symbol: "gearshape")
                     }
                 }
                 if model.isDemo && !model.isTestAccount {
-                    Section {
+                    ShieldGroup {
                         Button("Leave sample app") { Task { await model.signOut() } }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }

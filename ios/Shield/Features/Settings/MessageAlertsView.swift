@@ -14,7 +14,7 @@ struct MessageAlertsView: View {
 
     var body: some View {
         List {
-            Section {
+            ShieldGroup {
                 if authorization == nil {
                     ShieldLoadingView(title: "Checking message alerts…")
                 } else {
@@ -26,7 +26,7 @@ struct MessageAlertsView: View {
                 }
             }
             if authorization == .notDetermined {
-                Section {
+                ShieldGroup {
                     Button { Task { await request() } } label: {
                         ShieldActionLabel(title: working ? "Turning on…" : "Turn on alerts", isWorking: working)
                     }
@@ -34,14 +34,14 @@ struct MessageAlertsView: View {
                     .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
                 }
             } else if authorization != nil {
-                Section {
+                ShieldGroup {
                     Button("Open iPhone settings", systemImage: "gearshape") {
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                     }.frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
                     if !allowed { Text("Open Notifications, then turn on Allow Notifications.").foregroundStyle(ShieldTheme.secondaryText) }
                 }
             }
-            if let error { Section { ShieldNotice(title: "Alerts couldn’t be changed", detail: error, symbol: "exclamationmark.circle") } }
+            if let error { ShieldGroup { ShieldNotice(title: "Alerts couldn’t be changed", detail: error, symbol: "exclamationmark.circle") } }
         }
         .shieldListStyle()
         .navigationTitle("Message alerts").navigationBarTitleDisplayMode(.inline)

@@ -5,10 +5,11 @@ struct ShieldBrand: View {
     var body: some View {
         HStack(spacing: 12) {
             Image("ShieldMark").resizable().scaledToFit()
-                .frame(width: compact ? 36 : 68, height: compact ? 36 : 68)
-                .clipShape(.rect(cornerRadius: (compact ? 36 : 68) * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
+                .frame(width: compact ? 32 : 60, height: compact ? 32 : 60)
+                .clipShape(.rect(cornerRadius: (compact ? 32 : 60) * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
                 .accessibilityHidden(true)
-            Text("Shield").font(compact ? .title3.bold() : .largeTitle.bold())
+            Text("Shield").font(compact ? .system(.title2, design: .serif) : ShieldTheme.Typography.display)
+                .foregroundStyle(ShieldTheme.ink)
         }
         .accessibilityElement(children: .combine)
     }
@@ -26,7 +27,7 @@ struct ScreenIntro: View {
                 .background(color.opacity(0.10), in: .rect(cornerRadius: 14))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 6) {
-                Text(title).font(.title3.bold()).accessibilityAddTraits(.isHeader)
+                Text(title).font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
                 Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -46,18 +47,20 @@ struct ActionRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
             if !typeSize.isAccessibilitySize {
-                Image(systemName: symbol).font(.title3).foregroundStyle(color)
-                    .frame(width: symbolWidth).accessibilityHidden(true)
+                Image(systemName: symbol).font(.body.weight(.medium)).foregroundStyle(color)
+                    .frame(width: symbolWidth, height: symbolWidth)
+                    .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.body).foregroundStyle(Color.primary)
+                Text(title).font(.body.weight(.medium)).foregroundStyle(ShieldTheme.ink)
                 if !detail.isEmpty {
                     Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
         .accessibilityElement(children: .combine)
     }
@@ -79,7 +82,7 @@ struct FlowProgress: View {
     }
 }
 
-/// Native section with an opaque supporting-text color on Shield’s warm surface.
+/// Native grouping with Shield's display heading and adaptive card surface.
 struct ShieldSection<Content: View>: View {
     let title: String
     let content: Content
@@ -87,6 +90,7 @@ struct ShieldSection<Content: View>: View {
         self.title = title; self.content = content()
     }
     var body: some View {
-        Section { content } header: { Text(title).font(.headline).foregroundStyle(ShieldTheme.secondaryText).textCase(nil).accessibilityAddTraits(.isHeader) }
+        Section { content } header: { Text(title).font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil).accessibilityAddTraits(.isHeader) }
+            .listRowBackground(ShieldTheme.card)
     }
 }

@@ -14,19 +14,23 @@ struct StoppedCallsCard: View {
                     Text("Calls stopped").font(.title3.bold())
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
-                    Image(systemName: "hand.raised.fill").font(.title3)
+                    Image(systemName: "hand.raised").font(.title3)
                         .accessibilityHidden(true)
                 }
                 if let count, count > 0 {
-                    Text(count, format: .number)
-                        .font(.largeTitle.scaled(by: 1.5).bold()).monospacedDigit()
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityIdentifier("stopped-call-count")
+                    if typeSize.isAccessibilitySize {
+                        total(count)
+                        Text("Total").font(.body)
+                    } else {
+                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                            total(count)
+                            Text("Total").font(.body)
+                        }
+                    }
                 } else {
                     Text(count == nil ? "Total unavailable" : "None so far").font(.body)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                if let count, count > 0 { Text("Total").font(.body) }
                 HStack(spacing: 8) {
                     Text("See calls").font(.headline)
                     Image(systemName: "arrow.right").font(.body.weight(.semibold))
@@ -46,5 +50,12 @@ struct StoppedCallsCard: View {
         .accessibilityHint("Shows recent stopped calls, including calls that need review.")
         .accessibilityIdentifier("home-stopped-calls")
         .listRowBackground((count ?? 0) > 0 ? ShieldTheme.action : ShieldTheme.card)
+    }
+
+    private func total(_ count: Int) -> some View {
+        Text(count, format: .number)
+            .font(ShieldTheme.Typography.display.scaled(by: 1.6)).monospacedDigit()
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityIdentifier("stopped-call-count")
     }
 }

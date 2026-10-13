@@ -114,6 +114,24 @@ final class SeniorDesignUITests: XCTestCase {
         capture(app, "senior-helper-choice-light")
     }
 
+    /// Rendering coverage for forms that normally require a configured account.
+    func testSecondaryScreenVisualsInBothAppearances() {
+        for dark in [false, true] {
+            for screen in ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "invitation", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"] {
+                let app = launch(["--uitesting-screen", screen, dark ? "--uitesting-dark" : "--uitesting-light"])
+                XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 5), screen)
+                XCTAssertTrue(app.collectionViews.firstMatch.waitForExistence(timeout: 5), screen)
+                capture(app, "visual-\(screen)-\(dark ? "dark" : "light")")
+            }
+            let app = launch([dark ? "--uitesting-dark" : "--uitesting-light"])
+            for tab in ["Home", "Calls", "Messages", "More"] {
+                app.tabBars.buttons[tab].tap()
+                XCTAssertTrue(app.navigationBars[tab].waitForExistence(timeout: 5))
+                capture(app, "visual-\(tab.lowercased())-\(dark ? "dark" : "light")")
+            }
+        }
+    }
+
     private func launch(_ args: [String] = [], sample: Bool = true) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = (sample ? ["--uitesting-preview"] : []) + args

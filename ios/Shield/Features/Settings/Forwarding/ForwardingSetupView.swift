@@ -18,7 +18,7 @@ struct ForwardingSetupView: View {
                         if model.step.progressIndex > 0 {
                             FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 10)
                         }
-                        Text(model.step.title).font(.title.bold()).id("forwarding-heading")
+                        Text(model.step.title).shieldPageHeading().id("forwarding-heading")
                             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
                         if model.step == .ring || model.step == .test {
                             ForwardingProbeView(model: model)
@@ -65,6 +65,7 @@ struct ForwardingSetupView: View {
         .id(model.step)
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
         .background(ShieldTheme.surface)
+        .shieldNavigationSurface()
         .safeAreaInset(edge: .bottom) {
             if model.status != nil { ForwardingActions(model: model, app: app) }
         }

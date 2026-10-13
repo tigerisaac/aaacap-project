@@ -1,342 +1,682 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T06:33:22+00:00",
+  "generatedAt": "2026-10-13T15:10:44.003439Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
       "action-light": {
         "role": "primary",
-        "displayName": "Action blue · Light",
+        "displayName": "Navy action / light",
         "tonalRamp": [
-          "oklch(15.00% 0.1943 264.89)",
-          "oklch(26.43% 0.1943 264.89)",
-          "oklch(37.86% 0.1943 264.89)",
-          "oklch(49.29% 0.1943 264.89)",
-          "oklch(60.71% 0.1943 264.89)",
-          "oklch(72.14% 0.1943 264.89)",
-          "oklch(83.57% 0.1943 264.89)",
-          "oklch(95.00% 0.1943 264.89)"
+          "oklch(15.00% 0.11730 259.84)",
+          "oklch(26.43% 0.11730 259.84)",
+          "oklch(37.86% 0.11730 259.84)",
+          "oklch(49.29% 0.11730 259.84)",
+          "oklch(60.71% 0.11730 259.84)",
+          "oklch(72.14% 0.11730 259.84)",
+          "oklch(83.57% 0.11730 259.84)",
+          "oklch(95.00% 0.11730 259.84)"
         ]
       },
       "action-dark": {
         "role": "primary",
-        "displayName": "Action blue · Dark",
+        "displayName": "Navy action / dark",
         "tonalRamp": [
-          "oklch(15.00% 0.1123 270.23)",
-          "oklch(26.43% 0.1123 270.23)",
-          "oklch(37.86% 0.1123 270.23)",
-          "oklch(49.29% 0.1123 270.23)",
-          "oklch(60.71% 0.1123 270.23)",
-          "oklch(72.14% 0.1123 270.23)",
-          "oklch(83.57% 0.1123 270.23)",
-          "oklch(95.00% 0.1123 270.23)"
+          "oklch(15.00% 0.05627 262.73)",
+          "oklch(26.43% 0.05627 262.73)",
+          "oklch(37.86% 0.05627 262.73)",
+          "oklch(49.29% 0.05627 262.73)",
+          "oklch(60.71% 0.05627 262.73)",
+          "oklch(72.14% 0.05627 262.73)",
+          "oklch(83.57% 0.05627 262.73)",
+          "oklch(95.00% 0.05627 262.73)"
         ]
       },
       "action-light-high": {
         "role": "primary",
-        "displayName": "Action blue · Light increased contrast",
+        "displayName": "Navy action / light / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.1739 264.91)",
-          "oklch(26.43% 0.1739 264.91)",
-          "oklch(37.86% 0.1739 264.91)",
-          "oklch(49.29% 0.1739 264.91)",
-          "oklch(60.71% 0.1739 264.91)",
-          "oklch(72.14% 0.1739 264.91)",
-          "oklch(83.57% 0.1739 264.91)",
-          "oklch(95.00% 0.1739 264.91)"
+          "oklch(15.00% 0.08786 258.66)",
+          "oklch(26.43% 0.08786 258.66)",
+          "oklch(37.86% 0.08786 258.66)",
+          "oklch(49.29% 0.08786 258.66)",
+          "oklch(60.71% 0.08786 258.66)",
+          "oklch(72.14% 0.08786 258.66)",
+          "oklch(83.57% 0.08786 258.66)",
+          "oklch(95.00% 0.08786 258.66)"
         ]
       },
       "action-dark-high": {
         "role": "primary",
-        "displayName": "Action blue · Dark increased contrast",
+        "displayName": "Navy action / dark / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0688 267.70)",
-          "oklch(26.43% 0.0688 267.70)",
-          "oklch(37.86% 0.0688 267.70)",
-          "oklch(49.29% 0.0688 267.70)",
-          "oklch(60.71% 0.0688 267.70)",
-          "oklch(72.14% 0.0688 267.70)",
-          "oklch(83.57% 0.0688 267.70)",
-          "oklch(95.00% 0.0688 267.70)"
+          "oklch(15.00% 0.03988 263.66)",
+          "oklch(26.43% 0.03988 263.66)",
+          "oklch(37.86% 0.03988 263.66)",
+          "oklch(49.29% 0.03988 263.66)",
+          "oklch(60.71% 0.03988 263.66)",
+          "oklch(72.14% 0.03988 263.66)",
+          "oklch(83.57% 0.03988 263.66)",
+          "oklch(95.00% 0.03988 263.66)"
         ]
       },
       "held-light": {
         "role": "secondary",
-        "displayName": "Stopped-call red · Light",
+        "displayName": "Stopped-call red / light",
         "tonalRamp": [
-          "oklch(15.00% 0.1616 19.90)",
-          "oklch(26.43% 0.1616 19.90)",
-          "oklch(37.86% 0.1616 19.90)",
-          "oklch(49.29% 0.1616 19.90)",
-          "oklch(60.71% 0.1616 19.90)",
-          "oklch(72.14% 0.1616 19.90)",
-          "oklch(83.57% 0.1616 19.90)",
-          "oklch(95.00% 0.1616 19.90)"
+          "oklch(15.00% 0.16160 19.90)",
+          "oklch(26.43% 0.16160 19.90)",
+          "oklch(37.86% 0.16160 19.90)",
+          "oklch(49.29% 0.16160 19.90)",
+          "oklch(60.71% 0.16160 19.90)",
+          "oklch(72.14% 0.16160 19.90)",
+          "oklch(83.57% 0.16160 19.90)",
+          "oklch(95.00% 0.16160 19.90)"
         ]
       },
       "held-dark": {
         "role": "secondary",
-        "displayName": "Stopped-call red · Dark",
+        "displayName": "Stopped-call red / dark",
         "tonalRamp": [
-          "oklch(15.00% 0.1199 19.46)",
-          "oklch(26.43% 0.1199 19.46)",
-          "oklch(37.86% 0.1199 19.46)",
-          "oklch(49.29% 0.1199 19.46)",
-          "oklch(60.71% 0.1199 19.46)",
-          "oklch(72.14% 0.1199 19.46)",
-          "oklch(83.57% 0.1199 19.46)",
-          "oklch(95.00% 0.1199 19.46)"
+          "oklch(15.00% 0.11993 19.46)",
+          "oklch(26.43% 0.11993 19.46)",
+          "oklch(37.86% 0.11993 19.46)",
+          "oklch(49.29% 0.11993 19.46)",
+          "oklch(60.71% 0.11993 19.46)",
+          "oklch(72.14% 0.11993 19.46)",
+          "oklch(83.57% 0.11993 19.46)",
+          "oklch(95.00% 0.11993 19.46)"
         ]
       },
       "held-light-high": {
         "role": "secondary",
-        "displayName": "Stopped-call red · Light increased contrast",
+        "displayName": "Stopped-call red / light / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.1437 18.80)",
-          "oklch(26.43% 0.1437 18.80)",
-          "oklch(37.86% 0.1437 18.80)",
-          "oklch(49.29% 0.1437 18.80)",
-          "oklch(60.71% 0.1437 18.80)",
-          "oklch(72.14% 0.1437 18.80)",
-          "oklch(83.57% 0.1437 18.80)",
-          "oklch(95.00% 0.1437 18.80)"
+          "oklch(15.00% 0.14370 18.80)",
+          "oklch(26.43% 0.14370 18.80)",
+          "oklch(37.86% 0.14370 18.80)",
+          "oklch(49.29% 0.14370 18.80)",
+          "oklch(60.71% 0.14370 18.80)",
+          "oklch(72.14% 0.14370 18.80)",
+          "oklch(83.57% 0.14370 18.80)",
+          "oklch(95.00% 0.14370 18.80)"
         ]
       },
       "held-dark-high": {
         "role": "secondary",
-        "displayName": "Stopped-call red · Dark increased contrast",
+        "displayName": "Stopped-call red / dark / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0777 13.85)",
-          "oklch(26.43% 0.0777 13.85)",
-          "oklch(37.86% 0.0777 13.85)",
-          "oklch(49.29% 0.0777 13.85)",
-          "oklch(60.71% 0.0777 13.85)",
-          "oklch(72.14% 0.0777 13.85)",
-          "oklch(83.57% 0.0777 13.85)",
-          "oklch(95.00% 0.0777 13.85)"
+          "oklch(15.00% 0.07770 13.85)",
+          "oklch(26.43% 0.07770 13.85)",
+          "oklch(37.86% 0.07770 13.85)",
+          "oklch(49.29% 0.07770 13.85)",
+          "oklch(60.71% 0.07770 13.85)",
+          "oklch(72.14% 0.07770 13.85)",
+          "oklch(83.57% 0.07770 13.85)",
+          "oklch(95.00% 0.07770 13.85)"
         ]
       },
       "connected-light": {
         "role": "secondary",
-        "displayName": "Answered-call teal · Light",
+        "displayName": "Answered-call teal / light",
         "tonalRamp": [
-          "oklch(15.00% 0.0861 177.51)",
-          "oklch(26.43% 0.0861 177.51)",
-          "oklch(37.86% 0.0861 177.51)",
-          "oklch(49.29% 0.0861 177.51)",
-          "oklch(60.71% 0.0861 177.51)",
-          "oklch(72.14% 0.0861 177.51)",
-          "oklch(83.57% 0.0861 177.51)",
-          "oklch(95.00% 0.0861 177.51)"
+          "oklch(15.00% 0.08611 177.51)",
+          "oklch(26.43% 0.08611 177.51)",
+          "oklch(37.86% 0.08611 177.51)",
+          "oklch(49.29% 0.08611 177.51)",
+          "oklch(60.71% 0.08611 177.51)",
+          "oklch(72.14% 0.08611 177.51)",
+          "oklch(83.57% 0.08611 177.51)",
+          "oklch(95.00% 0.08611 177.51)"
         ]
       },
       "connected-dark": {
         "role": "secondary",
-        "displayName": "Answered-call teal · Dark",
+        "displayName": "Answered-call teal / dark",
         "tonalRamp": [
-          "oklch(15.00% 0.1040 177.54)",
-          "oklch(26.43% 0.1040 177.54)",
-          "oklch(37.86% 0.1040 177.54)",
-          "oklch(49.29% 0.1040 177.54)",
-          "oklch(60.71% 0.1040 177.54)",
-          "oklch(72.14% 0.1040 177.54)",
-          "oklch(83.57% 0.1040 177.54)",
-          "oklch(95.00% 0.1040 177.54)"
+          "oklch(15.00% 0.10398 177.54)",
+          "oklch(26.43% 0.10398 177.54)",
+          "oklch(37.86% 0.10398 177.54)",
+          "oklch(49.29% 0.10398 177.54)",
+          "oklch(60.71% 0.10398 177.54)",
+          "oklch(72.14% 0.10398 177.54)",
+          "oklch(83.57% 0.10398 177.54)",
+          "oklch(95.00% 0.10398 177.54)"
         ]
       },
       "connected-light-high": {
         "role": "secondary",
-        "displayName": "Answered-call teal · Light increased contrast",
+        "displayName": "Answered-call teal / light / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0715 176.92)",
-          "oklch(26.43% 0.0715 176.92)",
-          "oklch(37.86% 0.0715 176.92)",
-          "oklch(49.29% 0.0715 176.92)",
-          "oklch(60.71% 0.0715 176.92)",
-          "oklch(72.14% 0.0715 176.92)",
-          "oklch(83.57% 0.0715 176.92)",
-          "oklch(95.00% 0.0715 176.92)"
+          "oklch(15.00% 0.07155 176.92)",
+          "oklch(26.43% 0.07155 176.92)",
+          "oklch(37.86% 0.07155 176.92)",
+          "oklch(49.29% 0.07155 176.92)",
+          "oklch(60.71% 0.07155 176.92)",
+          "oklch(72.14% 0.07155 176.92)",
+          "oklch(83.57% 0.07155 176.92)",
+          "oklch(95.00% 0.07155 176.92)"
         ]
       },
       "connected-dark-high": {
         "role": "secondary",
-        "displayName": "Answered-call teal · Dark increased contrast",
+        "displayName": "Answered-call teal / dark / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0841 177.05)",
-          "oklch(26.43% 0.0841 177.05)",
-          "oklch(37.86% 0.0841 177.05)",
-          "oklch(49.29% 0.0841 177.05)",
-          "oklch(60.71% 0.0841 177.05)",
-          "oklch(72.14% 0.0841 177.05)",
-          "oklch(83.57% 0.0841 177.05)",
-          "oklch(95.00% 0.0841 177.05)"
+          "oklch(15.00% 0.08412 177.05)",
+          "oklch(26.43% 0.08412 177.05)",
+          "oklch(37.86% 0.08412 177.05)",
+          "oklch(49.29% 0.08412 177.05)",
+          "oklch(60.71% 0.08412 177.05)",
+          "oklch(72.14% 0.08412 177.05)",
+          "oklch(83.57% 0.08412 177.05)",
+          "oklch(95.00% 0.08412 177.05)"
         ]
       },
       "message-light": {
         "role": "tertiary",
-        "displayName": "Voicemail violet · Light",
+        "displayName": "Voicemail violet / light",
         "tonalRamp": [
-          "oklch(15.00% 0.1764 297.79)",
-          "oklch(26.43% 0.1764 297.79)",
-          "oklch(37.86% 0.1764 297.79)",
-          "oklch(49.29% 0.1764 297.79)",
-          "oklch(60.71% 0.1764 297.79)",
-          "oklch(72.14% 0.1764 297.79)",
-          "oklch(83.57% 0.1764 297.79)",
-          "oklch(95.00% 0.1764 297.79)"
+          "oklch(15.00% 0.17644 297.79)",
+          "oklch(26.43% 0.17644 297.79)",
+          "oklch(37.86% 0.17644 297.79)",
+          "oklch(49.29% 0.17644 297.79)",
+          "oklch(60.71% 0.17644 297.79)",
+          "oklch(72.14% 0.17644 297.79)",
+          "oklch(83.57% 0.17644 297.79)",
+          "oklch(95.00% 0.17644 297.79)"
         ]
       },
       "message-dark": {
         "role": "tertiary",
-        "displayName": "Voicemail violet · Dark",
+        "displayName": "Voicemail violet / dark",
         "tonalRamp": [
-          "oklch(15.00% 0.1157 299.68)",
-          "oklch(26.43% 0.1157 299.68)",
-          "oklch(37.86% 0.1157 299.68)",
-          "oklch(49.29% 0.1157 299.68)",
-          "oklch(60.71% 0.1157 299.68)",
-          "oklch(72.14% 0.1157 299.68)",
-          "oklch(83.57% 0.1157 299.68)",
-          "oklch(95.00% 0.1157 299.68)"
+          "oklch(15.00% 0.11574 299.68)",
+          "oklch(26.43% 0.11574 299.68)",
+          "oklch(37.86% 0.11574 299.68)",
+          "oklch(49.29% 0.11574 299.68)",
+          "oklch(60.71% 0.11574 299.68)",
+          "oklch(72.14% 0.11574 299.68)",
+          "oklch(83.57% 0.11574 299.68)",
+          "oklch(95.00% 0.11574 299.68)"
         ]
       },
       "message-light-high": {
         "role": "tertiary",
-        "displayName": "Voicemail violet · Light increased contrast",
+        "displayName": "Voicemail violet / light / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.1500 299.01)",
-          "oklch(26.43% 0.1500 299.01)",
-          "oklch(37.86% 0.1500 299.01)",
-          "oklch(49.29% 0.1500 299.01)",
-          "oklch(60.71% 0.1500 299.01)",
-          "oklch(72.14% 0.1500 299.01)",
-          "oklch(83.57% 0.1500 299.01)",
-          "oklch(95.00% 0.1500 299.01)"
+          "oklch(15.00% 0.14996 299.01)",
+          "oklch(26.43% 0.14996 299.01)",
+          "oklch(37.86% 0.14996 299.01)",
+          "oklch(49.29% 0.14996 299.01)",
+          "oklch(60.71% 0.14996 299.01)",
+          "oklch(72.14% 0.14996 299.01)",
+          "oklch(83.57% 0.14996 299.01)",
+          "oklch(95.00% 0.14996 299.01)"
         ]
       },
       "message-dark-high": {
         "role": "tertiary",
-        "displayName": "Voicemail violet · Dark increased contrast",
+        "displayName": "Voicemail violet / dark / increased contrast",
         "tonalRamp": [
-          "oklch(15.00% 0.0751 302.09)",
-          "oklch(26.43% 0.0751 302.09)",
-          "oklch(37.86% 0.0751 302.09)",
-          "oklch(49.29% 0.0751 302.09)",
-          "oklch(60.71% 0.0751 302.09)",
-          "oklch(72.14% 0.0751 302.09)",
-          "oklch(83.57% 0.0751 302.09)",
-          "oklch(95.00% 0.0751 302.09)"
+          "oklch(15.00% 0.07513 302.09)",
+          "oklch(26.43% 0.07513 302.09)",
+          "oklch(37.86% 0.07513 302.09)",
+          "oklch(49.29% 0.07513 302.09)",
+          "oklch(60.71% 0.07513 302.09)",
+          "oklch(72.14% 0.07513 302.09)",
+          "oklch(83.57% 0.07513 302.09)",
+          "oklch(95.00% 0.07513 302.09)"
+        ]
+      },
+      "surface-light": {
+        "role": "neutral",
+        "displayName": "Neutral ground / light",
+        "tonalRamp": [
+          "oklch(15.00% 0.00172 247.84)",
+          "oklch(26.43% 0.00172 247.84)",
+          "oklch(37.86% 0.00172 247.84)",
+          "oklch(49.29% 0.00172 247.84)",
+          "oklch(60.71% 0.00172 247.84)",
+          "oklch(72.14% 0.00172 247.84)",
+          "oklch(83.57% 0.00172 247.84)",
+          "oklch(95.00% 0.00172 247.84)"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Neutral ground / dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.03538 257.68)",
+          "oklch(26.43% 0.03538 257.68)",
+          "oklch(37.86% 0.03538 257.68)",
+          "oklch(49.29% 0.03538 257.68)",
+          "oklch(60.71% 0.03538 257.68)",
+          "oklch(72.14% 0.03538 257.68)",
+          "oklch(83.57% 0.03538 257.68)",
+          "oklch(95.00% 0.03538 257.68)"
+        ]
+      },
+      "surface-light-high": {
+        "role": "neutral",
+        "displayName": "Neutral ground / light / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.00629 255.48)",
+          "oklch(26.43% 0.00629 255.48)",
+          "oklch(37.86% 0.00629 255.48)",
+          "oklch(49.29% 0.00629 255.48)",
+          "oklch(60.71% 0.00629 255.48)",
+          "oklch(72.14% 0.00629 255.48)",
+          "oklch(83.57% 0.00629 255.48)",
+          "oklch(95.00% 0.00629 255.48)"
+        ]
+      },
+      "surface-dark-high": {
+        "role": "neutral",
+        "displayName": "Neutral ground / dark / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.03250 256.89)",
+          "oklch(26.43% 0.03250 256.89)",
+          "oklch(37.86% 0.03250 256.89)",
+          "oklch(49.29% 0.03250 256.89)",
+          "oklch(60.71% 0.03250 256.89)",
+          "oklch(72.14% 0.03250 256.89)",
+          "oklch(83.57% 0.03250 256.89)",
+          "oklch(95.00% 0.03250 256.89)"
+        ]
+      },
+      "card-light": {
+        "role": "neutral",
+        "displayName": "Grouped reading surface / light",
+        "tonalRamp": [
+          "oklch(15.00% 0.00000 89.88)",
+          "oklch(26.43% 0.00000 89.88)",
+          "oklch(37.86% 0.00000 89.88)",
+          "oklch(49.29% 0.00000 89.88)",
+          "oklch(60.71% 0.00000 89.88)",
+          "oklch(72.14% 0.00000 89.88)",
+          "oklch(83.57% 0.00000 89.88)",
+          "oklch(95.00% 0.00000 89.88)"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Grouped reading surface / dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.03804 256.65)",
+          "oklch(26.43% 0.03804 256.65)",
+          "oklch(37.86% 0.03804 256.65)",
+          "oklch(49.29% 0.03804 256.65)",
+          "oklch(60.71% 0.03804 256.65)",
+          "oklch(72.14% 0.03804 256.65)",
+          "oklch(83.57% 0.03804 256.65)",
+          "oklch(95.00% 0.03804 256.65)"
+        ]
+      },
+      "card-light-high": {
+        "role": "neutral",
+        "displayName": "Grouped reading surface / light / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.00000 89.88)",
+          "oklch(26.43% 0.00000 89.88)",
+          "oklch(37.86% 0.00000 89.88)",
+          "oklch(49.29% 0.00000 89.88)",
+          "oklch(60.71% 0.00000 89.88)",
+          "oklch(72.14% 0.00000 89.88)",
+          "oklch(83.57% 0.00000 89.88)",
+          "oklch(95.00% 0.00000 89.88)"
+        ]
+      },
+      "card-dark-high": {
+        "role": "neutral",
+        "displayName": "Grouped reading surface / dark / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.04008 259.32)",
+          "oklch(26.43% 0.04008 259.32)",
+          "oklch(37.86% 0.04008 259.32)",
+          "oklch(49.29% 0.04008 259.32)",
+          "oklch(60.71% 0.04008 259.32)",
+          "oklch(72.14% 0.04008 259.32)",
+          "oklch(83.57% 0.04008 259.32)",
+          "oklch(95.00% 0.04008 259.32)"
+        ]
+      },
+      "ink-light": {
+        "role": "neutral",
+        "displayName": "Reading ink / light",
+        "tonalRamp": [
+          "oklch(15.00% 0.04353 257.37)",
+          "oklch(26.43% 0.04353 257.37)",
+          "oklch(37.86% 0.04353 257.37)",
+          "oklch(49.29% 0.04353 257.37)",
+          "oklch(60.71% 0.04353 257.37)",
+          "oklch(72.14% 0.04353 257.37)",
+          "oklch(83.57% 0.04353 257.37)",
+          "oklch(95.00% 0.04353 257.37)"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Reading ink / dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.00740 260.73)",
+          "oklch(26.43% 0.00740 260.73)",
+          "oklch(37.86% 0.00740 260.73)",
+          "oklch(49.29% 0.00740 260.73)",
+          "oklch(60.71% 0.00740 260.73)",
+          "oklch(72.14% 0.00740 260.73)",
+          "oklch(83.57% 0.00740 260.73)",
+          "oklch(95.00% 0.00740 260.73)"
+        ]
+      },
+      "ink-light-high": {
+        "role": "neutral",
+        "displayName": "Reading ink / light / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.04342 257.15)",
+          "oklch(26.43% 0.04342 257.15)",
+          "oklch(37.86% 0.04342 257.15)",
+          "oklch(49.29% 0.04342 257.15)",
+          "oklch(60.71% 0.04342 257.15)",
+          "oklch(72.14% 0.04342 257.15)",
+          "oklch(83.57% 0.04342 257.15)",
+          "oklch(95.00% 0.04342 257.15)"
+        ]
+      },
+      "ink-dark-high": {
+        "role": "neutral",
+        "displayName": "Reading ink / dark / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.00000 89.88)",
+          "oklch(26.43% 0.00000 89.88)",
+          "oklch(37.86% 0.00000 89.88)",
+          "oklch(49.29% 0.00000 89.88)",
+          "oklch(60.71% 0.00000 89.88)",
+          "oklch(72.14% 0.00000 89.88)",
+          "oklch(83.57% 0.00000 89.88)",
+          "oklch(95.00% 0.00000 89.88)"
+        ]
+      },
+      "quiet-surface-light": {
+        "role": "neutral",
+        "displayName": "Quiet symbol surface / light",
+        "tonalRamp": [
+          "oklch(15.00% 0.00917 258.34)",
+          "oklch(26.43% 0.00917 258.34)",
+          "oklch(37.86% 0.00917 258.34)",
+          "oklch(49.29% 0.00917 258.34)",
+          "oklch(60.71% 0.00917 258.34)",
+          "oklch(72.14% 0.00917 258.34)",
+          "oklch(83.57% 0.00917 258.34)",
+          "oklch(95.00% 0.00917 258.34)"
+        ]
+      },
+      "quiet-surface-dark": {
+        "role": "neutral",
+        "displayName": "Quiet symbol surface / dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.04030 257.29)",
+          "oklch(26.43% 0.04030 257.29)",
+          "oklch(37.86% 0.04030 257.29)",
+          "oklch(49.29% 0.04030 257.29)",
+          "oklch(60.71% 0.04030 257.29)",
+          "oklch(72.14% 0.04030 257.29)",
+          "oklch(83.57% 0.04030 257.29)",
+          "oklch(95.00% 0.04030 257.29)"
+        ]
+      },
+      "quiet-surface-light-high": {
+        "role": "neutral",
+        "displayName": "Quiet symbol surface / light / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.01268 255.51)",
+          "oklch(26.43% 0.01268 255.51)",
+          "oklch(37.86% 0.01268 255.51)",
+          "oklch(49.29% 0.01268 255.51)",
+          "oklch(60.71% 0.01268 255.51)",
+          "oklch(72.14% 0.01268 255.51)",
+          "oklch(83.57% 0.01268 255.51)",
+          "oklch(95.00% 0.01268 255.51)"
+        ]
+      },
+      "quiet-surface-dark-high": {
+        "role": "neutral",
+        "displayName": "Quiet symbol surface / dark / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.04858 256.70)",
+          "oklch(26.43% 0.04858 256.70)",
+          "oklch(37.86% 0.04858 256.70)",
+          "oklch(49.29% 0.04858 256.70)",
+          "oklch(60.71% 0.04858 256.70)",
+          "oklch(72.14% 0.04858 256.70)",
+          "oklch(83.57% 0.04858 256.70)",
+          "oklch(95.00% 0.04858 256.70)"
+        ]
+      },
+      "field-border-light": {
+        "role": "neutral",
+        "displayName": "Input boundary / light",
+        "tonalRamp": [
+          "oklch(15.00% 0.03356 254.40)",
+          "oklch(26.43% 0.03356 254.40)",
+          "oklch(37.86% 0.03356 254.40)",
+          "oklch(49.29% 0.03356 254.40)",
+          "oklch(60.71% 0.03356 254.40)",
+          "oklch(72.14% 0.03356 254.40)",
+          "oklch(83.57% 0.03356 254.40)",
+          "oklch(95.00% 0.03356 254.40)"
+        ]
+      },
+      "field-border-dark": {
+        "role": "neutral",
+        "displayName": "Input boundary / dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.04537 257.53)",
+          "oklch(26.43% 0.04537 257.53)",
+          "oklch(37.86% 0.04537 257.53)",
+          "oklch(49.29% 0.04537 257.53)",
+          "oklch(60.71% 0.04537 257.53)",
+          "oklch(72.14% 0.04537 257.53)",
+          "oklch(83.57% 0.04537 257.53)",
+          "oklch(95.00% 0.04537 257.53)"
+        ]
+      },
+      "field-border-light-high": {
+        "role": "neutral",
+        "displayName": "Input boundary / light / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.04149 256.04)",
+          "oklch(26.43% 0.04149 256.04)",
+          "oklch(37.86% 0.04149 256.04)",
+          "oklch(49.29% 0.04149 256.04)",
+          "oklch(60.71% 0.04149 256.04)",
+          "oklch(72.14% 0.04149 256.04)",
+          "oklch(83.57% 0.04149 256.04)",
+          "oklch(95.00% 0.04149 256.04)"
+        ]
+      },
+      "field-border-dark-high": {
+        "role": "neutral",
+        "displayName": "Input boundary / dark / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.03866 255.99)",
+          "oklch(26.43% 0.03866 255.99)",
+          "oklch(37.86% 0.03866 255.99)",
+          "oklch(49.29% 0.03866 255.99)",
+          "oklch(60.71% 0.03866 255.99)",
+          "oklch(72.14% 0.03866 255.99)",
+          "oklch(83.57% 0.03866 255.99)",
+          "oklch(95.00% 0.03866 255.99)"
+        ]
+      },
+      "paste-fill-light": {
+        "role": "primary",
+        "displayName": "Native Paste fill / light",
+        "tonalRamp": [
+          "oklch(15.00% 0.11730 259.84)",
+          "oklch(26.43% 0.11730 259.84)",
+          "oklch(37.86% 0.11730 259.84)",
+          "oklch(49.29% 0.11730 259.84)",
+          "oklch(60.71% 0.11730 259.84)",
+          "oklch(72.14% 0.11730 259.84)",
+          "oklch(83.57% 0.11730 259.84)",
+          "oklch(95.00% 0.11730 259.84)"
+        ]
+      },
+      "paste-fill-dark": {
+        "role": "primary",
+        "displayName": "Native Paste fill / dark",
+        "tonalRamp": [
+          "oklch(15.00% 0.10118 256.66)",
+          "oklch(26.43% 0.10118 256.66)",
+          "oklch(37.86% 0.10118 256.66)",
+          "oklch(49.29% 0.10118 256.66)",
+          "oklch(60.71% 0.10118 256.66)",
+          "oklch(72.14% 0.10118 256.66)",
+          "oklch(83.57% 0.10118 256.66)",
+          "oklch(95.00% 0.10118 256.66)"
+        ]
+      },
+      "paste-fill-light-high": {
+        "role": "primary",
+        "displayName": "Native Paste fill / light / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.08786 258.66)",
+          "oklch(26.43% 0.08786 258.66)",
+          "oklch(37.86% 0.08786 258.66)",
+          "oklch(49.29% 0.08786 258.66)",
+          "oklch(60.71% 0.08786 258.66)",
+          "oklch(72.14% 0.08786 258.66)",
+          "oklch(83.57% 0.08786 258.66)",
+          "oklch(95.00% 0.08786 258.66)"
+        ]
+      },
+      "paste-fill-dark-high": {
+        "role": "primary",
+        "displayName": "Native Paste fill / dark / increased contrast",
+        "tonalRamp": [
+          "oklch(15.00% 0.09274 257.58)",
+          "oklch(26.43% 0.09274 257.58)",
+          "oklch(37.86% 0.09274 257.58)",
+          "oklch(49.29% 0.09274 257.58)",
+          "oklch(60.71% 0.09274 257.58)",
+          "oklch(72.14% 0.09274 257.58)",
+          "oklch(83.57% 0.09274 257.58)",
+          "oklch(95.00% 0.09274 257.58)"
         ]
       },
       "secondary-light": {
         "role": "neutral",
-        "displayName": "Opaque supporting text · Light",
+        "displayName": "Supporting ink / light",
         "tonalRamp": [
-          "oklch(15.00% 0.0000 0.00)",
-          "oklch(26.43% 0.0000 0.00)",
-          "oklch(37.86% 0.0000 0.00)",
-          "oklch(49.29% 0.0000 0.00)",
-          "oklch(60.71% 0.0000 0.00)",
-          "oklch(72.14% 0.0000 0.00)",
-          "oklch(83.57% 0.0000 0.00)",
-          "oklch(95.00% 0.0000 0.00)"
+          "oklch(15.00% 0.03296 256.81)",
+          "oklch(26.43% 0.03296 256.81)",
+          "oklch(37.86% 0.03296 256.81)",
+          "oklch(49.29% 0.03296 256.81)",
+          "oklch(60.71% 0.03296 256.81)",
+          "oklch(72.14% 0.03296 256.81)",
+          "oklch(83.57% 0.03296 256.81)",
+          "oklch(95.00% 0.03296 256.81)"
         ]
       },
       "secondary-dark": {
         "role": "neutral",
-        "displayName": "Opaque supporting text · Dark",
+        "displayName": "Supporting ink / dark",
         "tonalRamp": [
-          "oklch(15.00% 0.0000 0.00)",
-          "oklch(26.43% 0.0000 0.00)",
-          "oklch(37.86% 0.0000 0.00)",
-          "oklch(49.29% 0.0000 0.00)",
-          "oklch(60.71% 0.0000 0.00)",
-          "oklch(72.14% 0.0000 0.00)",
-          "oklch(83.57% 0.0000 0.00)",
-          "oklch(95.00% 0.0000 0.00)"
+          "oklch(15.00% 0.02879 256.76)",
+          "oklch(26.43% 0.02879 256.76)",
+          "oklch(37.86% 0.02879 256.76)",
+          "oklch(49.29% 0.02879 256.76)",
+          "oklch(60.71% 0.02879 256.76)",
+          "oklch(72.14% 0.02879 256.76)",
+          "oklch(83.57% 0.02879 256.76)",
+          "oklch(95.00% 0.02879 256.76)"
         ]
       },
       "secondary-light-high": {
         "role": "neutral",
-        "displayName": "Opaque supporting text · Light increased contrast",
+        "displayName": "Supporting ink / light-high",
         "tonalRamp": [
-          "oklch(15.00% 0.0000 0.00)",
-          "oklch(26.43% 0.0000 0.00)",
-          "oklch(37.86% 0.0000 0.00)",
-          "oklch(49.29% 0.0000 0.00)",
-          "oklch(60.71% 0.0000 0.00)",
-          "oklch(72.14% 0.0000 0.00)",
-          "oklch(83.57% 0.0000 0.00)",
-          "oklch(95.00% 0.0000 0.00)"
+          "oklch(15.00% 0.03570 256.84)",
+          "oklch(26.43% 0.03570 256.84)",
+          "oklch(37.86% 0.03570 256.84)",
+          "oklch(49.29% 0.03570 256.84)",
+          "oklch(60.71% 0.03570 256.84)",
+          "oklch(72.14% 0.03570 256.84)",
+          "oklch(83.57% 0.03570 256.84)",
+          "oklch(95.00% 0.03570 256.84)"
         ]
       },
       "secondary-dark-high": {
         "role": "neutral",
-        "displayName": "Opaque supporting text · Dark increased contrast",
+        "displayName": "Supporting ink / dark-high",
         "tonalRamp": [
-          "oklch(15.00% 0.0000 0.00)",
-          "oklch(26.43% 0.0000 0.00)",
-          "oklch(37.86% 0.0000 0.00)",
-          "oklch(49.29% 0.0000 0.00)",
-          "oklch(60.71% 0.0000 0.00)",
-          "oklch(72.14% 0.0000 0.00)",
-          "oklch(83.57% 0.0000 0.00)",
-          "oklch(95.00% 0.0000 0.00)"
+          "oklch(15.00% 0.02496 252.92)",
+          "oklch(26.43% 0.02496 252.92)",
+          "oklch(37.86% 0.02496 252.92)",
+          "oklch(49.29% 0.02496 252.92)",
+          "oklch(60.71% 0.02496 252.92)",
+          "oklch(72.14% 0.02496 252.92)",
+          "oklch(83.57% 0.02496 252.92)",
+          "oklch(95.00% 0.02496 252.92)"
         ]
       },
       "action-ink-light": {
         "role": "neutral",
-        "displayName": "Action ink — Light Mode",
+        "displayName": "Action ink / ink-light",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(26% 0 0)",
-          "oklch(38% 0 0)",
-          "oklch(49% 0 0)",
-          "oklch(61% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15.00% 0.00000 89.88)",
+          "oklch(26.43% 0.00000 89.88)",
+          "oklch(37.86% 0.00000 89.88)",
+          "oklch(49.29% 0.00000 89.88)",
+          "oklch(60.71% 0.00000 89.88)",
+          "oklch(72.14% 0.00000 89.88)",
+          "oklch(83.57% 0.00000 89.88)",
+          "oklch(95.00% 0.00000 89.88)"
         ]
       },
       "action-ink-dark": {
         "role": "neutral",
-        "displayName": "Action ink — Dark Mode",
+        "displayName": "Action ink / ink-dark",
         "tonalRamp": [
-          "oklch(15% 0.025 265)",
-          "oklch(26% 0.025 265)",
-          "oklch(38% 0.025 265)",
-          "oklch(49% 0.025 265)",
-          "oklch(61% 0.025 265)",
-          "oklch(72% 0.025 265)",
-          "oklch(84% 0.025 265)",
-          "oklch(95% 0.025 265)"
+          "oklch(15.00% 0.05109 266.21)",
+          "oklch(26.43% 0.05109 266.21)",
+          "oklch(37.86% 0.05109 266.21)",
+          "oklch(49.29% 0.05109 266.21)",
+          "oklch(60.71% 0.05109 266.21)",
+          "oklch(72.14% 0.05109 266.21)",
+          "oklch(83.57% 0.05109 266.21)",
+          "oklch(95.00% 0.05109 266.21)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Native screen and brand title",
-        "purpose": "Native navigation titles and Shield largeTitle.bold(); Dynamic Type and OS metrics are authoritative."
+        "displayName": "Native serif display",
+        "purpose": "Semantic largeTitle for sign-in purpose; historical numeral scales locally by 1.6."
       },
       "title": {
-        "displayName": "Focused title",
-        "purpose": "SwiftUI title.bold(), title2.bold(), and title3.bold() for onboarding, setup, details, results, and introductions; message summaries use unbolded title3."
+        "displayName": "Native serif title",
+        "purpose": "Semantic title for content purpose, status and detail."
+      },
+      "section": {
+        "displayName": "Native serif section",
+        "purpose": "Semantic title3 for reusable section headings and introductions."
       },
       "headline": {
-        "displayName": "Primary row and action text",
-        "purpose": "SwiftUI headline for voicemail, section headings, and primary actions; call purpose uses body semibold."
+        "displayName": "Native sans headline",
+        "purpose": "Controls and actionable or call/message titles."
       },
       "body": {
-        "displayName": "Body and form text",
-        "purpose": "Default body for instructions, explanations, More choices, and input fields."
+        "displayName": "Native sans body",
+        "purpose": "Instructions, form content and ordinary choices."
       },
       "supporting": {
-        "displayName": "Readable supporting text",
-        "purpose": "SwiftUI subheadline for times, outcomes, numbers, sharing scope, and the sample marker."
+        "displayName": "Native sans supporting text",
+        "purpose": "Subheadline metadata and explanations."
       },
       "label": {
-        "displayName": "Outcome and sample label",
-        "purpose": "SwiftUI subheadline semibold for unboxed OutcomeBadge and persistent sample-data identity."
+        "displayName": "Native sans label",
+        "purpose": "Semibold subheadline outcome and sample identity."
       }
     },
     "shadows": [],
@@ -348,39 +688,39 @@
       "name": "Native primary action",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Schematic documentation preview, not the actual native implementation. Native large capsule borderedProminent action. Its wrapping ShieldActionLabel has a 52-point minimum, names working state, stacks the spinner at accessibility sizes, and returns to primary foreground when disabled. Add number uses its full-width bottom action as Done while editing, then Save number after editing; failed responses remain unconfirmed, with a successful iPhone Contacts save distinguished from a failed Shield update. Pause message remains usable during the separate mark-played update. Leaving, scene inactivity, person changes, and permission loss invalidate pending audio requests; stale results do not restart playback. Audio-session transitions are serialized and stale cleanup is ignored. The Forwarding Contacts step uses Save Shield. Source: Design/ShieldComponents.swift, Features/Settings/AddNumberView.swift, Features/Calls/CallDetailView.swift, Features/Calls/MessageAudioSession.swift, and Features/Settings/Forwarding/ForwardingActions.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Native large prominent capsule, wrapping headline, minimum 52-point label; adaptive navy/pale Action and Action ink. Source: Design/ShieldComponents.swift.",
       "html": "<button class=\"ds-primary\" type=\"button\">Listen to message</button>",
-      "css": ".ds-primary{width:100%;max-width:360px;min-height:52px;padding:12px 20px;border:0;border-radius:999px;background:#224CC5;color:white;font:600 1rem system-ui;white-space:normal;cursor:pointer}.ds-primary:hover{filter:brightness(.96)}.ds-primary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-primary:active{filter:brightness(.9)}.ds-primary:disabled{background:ButtonFace;color:CanvasText;cursor:default}@media(prefers-color-scheme:dark){.ds-primary{background:#9BB3FF;color:rgb(8% 12% 22%)}.ds-primary:focus-visible{outline-color:#9BB3FF}}"
+      "css": ".ds-primary{width:100%;max-width:360px;min-height:52px;padding:12px 20px;border:0;border-radius:999px;background:#002664;color:white;font:600 1rem system-ui;white-space:normal;cursor:pointer}.ds-primary:hover{filter:brightness(.96)}.ds-primary:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-primary:active{filter:brightness(.9)}.ds-primary:disabled{background:ButtonFace;color:#101E32;cursor:default}@media(prefers-color-scheme:dark){.ds-primary{background:#B9CDF2;color:rgb(8% 12% 22%)}.ds-primary:focus-visible{outline-color:#B9CDF2}}@media(prefers-contrast:more){.ds-primary{background:#001A45}.ds-primary:focus-visible{outline-color:#001A45}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-primary{background:#D6E4FF}.ds-primary:focus-visible{outline-color:#D6E4FF}}"
     },
     {
       "name": "Native secondary action",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Schematic documentation preview, not the actual native implementation. Shared native large bordered capsule treatment for visible secondary and recovery actions. Allow calls again uses a wrapping full-width word label without a hand symbol. Contacts Remove separately fills its row as a borderless action. Source: Design/ShieldComponents.swift, Features/Settings/BlockedNumbersView.swift, and Features/Settings/SharedContactsView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Native large bordered capsule and adaptive Action tint; native pressed/disabled states. Source: Design/ShieldComponents.swift.",
       "html": "<button class=\"ds-secondary\" type=\"button\">Allow calls again</button>",
-      "css": ".ds-secondary{width:100%;max-width:360px;white-space:normal;min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:rgb(34 76 197 / .1);color:#224CC5;font:600 1rem system-ui;cursor:pointer}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{background:ButtonFace;color:CanvasText;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:rgb(155 179 255 / .1);color:#9BB3FF}}"
+      "css": ".ds-secondary{width:100%;max-width:360px;white-space:normal;min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:#E7EBF1;color:#002664;font:600 1rem system-ui;cursor:pointer}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{background:ButtonFace;color:#101E32;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:#28364A;color:#B9CDF2}}@media(prefers-contrast:more){.ds-secondary{background:#DCE2EA;color:#001A45}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-secondary{background:#34465F;color:#D6E4FF}}"
     },
     {
       "name": "Email field",
       "kind": "input",
       "refersTo": "input-email",
-      "description": "Schematic documentation preview, not the actual native implementation. Card-colored email field with a persistent label, email keyboard/content type, wrapping vertical input, visible Clear while editing, and an Action focus border. Increased contrast strengthens the unfocused border. Source: Features/Auth/SignInView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<input class=\"ds-email\" type=\"email\" inputmode=\"email\" autocomplete=\"email\" autocapitalize=\"none\" spellcheck=\"false\" placeholder=\"Email address\" aria-label=\"Email address\">",
-      "css": ".ds-email{font:1rem system-ui;max-width:100%;width:260px;min-height:52px;padding:16px;color:CanvasText;background:Canvas;border:1px solid rgb(0 0 0 / .12);border-radius:14px}.ds-email::placeholder{color:rgb(34% 34% 34%)}.ds-email:hover{border-color:#224CC5}.ds-email:focus-visible{outline:2px solid #224CC5;outline-offset:0}.ds-email:disabled{background:ButtonFace;color:CanvasText}@media(prefers-color-scheme:dark){.ds-email{border-color:rgb(255 255 255 / .12)}.ds-email::placeholder{color:rgb(76% 76% 76%)}.ds-email:focus-visible{outline-color:#9BB3FF}}@media(prefers-contrast:more){.ds-email{border-width:2px;border-color:rgb(0 0 0 / .55)}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-email{border-color:rgb(255 255 255 / .55)}}"
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Labeled, vertically growing email field on Card, with FieldBorder at rest and thicker Action focus boundary. Native keyboard/content type and Clear action are in source. Source: Features/Auth/SignInView.swift.",
+      "html": "<label class=\"ds-email-label\">Your email<input class=\"ds-email\" type=\"email\" placeholder=\"you@example.com\" autocomplete=\"email\"></label>",
+      "css": ".ds-email-label{display:grid;gap:8px;max-width:100%;color:#101E32;font:600 .9375rem system-ui}.ds-email{font:1rem system-ui;max-width:100%;width:260px;min-height:52px;padding:16px;color:#101E32;background:#FFFFFF;border:1px solid #7C8B9E;border-radius:14px}.ds-email::placeholder{color:rgb(32% 37% 44%);opacity:1}.ds-email:hover{border-color:#002664}.ds-email:focus-visible{outline:2px solid #002664;outline-offset:-2px}.ds-email:disabled{opacity:.5}@media(prefers-color-scheme:dark){.ds-email-label,.ds-email{color:#F3F6FB}.ds-email{background:#1C293B;border-color:#6B7D97}.ds-email::placeholder{color:rgb(72% 77% 84%)}.ds-email:focus-visible{outline-color:#B9CDF2}}@media(prefers-contrast:more){.ds-email{border-width:2px;border-color:#607188}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-email{border-color:#95A6BD}}"
     },
     {
       "name": "Four native tabs",
       "kind": "nav",
       "refersTo": "navigation",
-      "description": "Schematic documentation preview, not the actual native implementation. Native TabView destinations Home, Calls, Messages, More. Messages combines Voicemail and Saved notice. Home explicitly uses a large native title, a grouped-color navigation background, and automatic visibility: continuous grouped canvas at rest, opaque matching background when collapsed. At accessibility sizes person context moves from the toolbar into a wrapping page section. Changing the person stops audio and dismisses the old call detail. Preview buttons show selection only and do not navigate. Source: App/RootView.swift, Features/Overview/OverviewView.swift, Design/PersonContextSection.swift, Features/Calls/CallDetailView.swift, and Navigation/NavigationShell.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Home, Calls, Messages and More native tabs use familiar sans labels. Navigation titles remain native sans; custom content headings use serif. Person context moves into content at accessibility sizes. Source: App/RootView.swift, Design/PersonContextSection.swift and Navigation/NavigationShell.swift.",
       "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10\"/></svg><span>Home</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 4h14l3 12v5H2v-5zM2 16h6l2 3h4l2-3h6\"/></svg><span>Messages</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg><span>More</span></button></nav>",
-      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:Canvas}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-height:52px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:rgb(34% 34% 34%);font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#224CC5}.ds-tabs button:hover{background:rgb(34 76 197 / .08)}.ds-tabs button:focus-visible{outline:2px solid #224CC5}.ds-tabs button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button{color:rgb(76% 76% 76%)}.ds-tabs button[aria-current]{color:#9BB3FF}}"
+      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:#F2F3F4}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-height:52px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:rgb(32% 37% 44%);font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#002664}.ds-tabs button:hover{background:rgb(0 38 100 / .08)}.ds-tabs button:focus-visible{outline:2px solid #002664}.ds-tabs button:active{background:rgb(0 38 100 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button{color:rgb(72% 77% 84%)}.ds-tabs button[aria-current]{color:#B9CDF2}}@media(prefers-color-scheme:dark){.ds-tabs{background:#101B2B}}"
     },
     {
       "name": "Unboxed message outcome",
       "kind": "chip",
       "refersTo": "outcome-label",
-      "description": "Schematic documentation preview, not the actual native implementation. Noninteractive symbol-and-word label with no capsule, tile, or count. Source: Design/OutcomeBadge.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Noninteractive symbol-and-word outcome without a capsule. This message example does not authenticate a caller. Source: Design/OutcomeBadge.swift.",
       "html": "<span class=\"ds-outcome\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4\"/></svg><span>Message</span></span>",
       "css": ".ds-outcome{display:inline-flex;align-items:center;gap:6px;color:#7244B9;font:600 .9375rem system-ui}.ds-outcome svg{width:18px;height:18px}@media(prefers-color-scheme:dark){.ds-outcome{color:#CAAEFF}}"
     },
@@ -388,121 +728,119 @@
       "name": "Call history row",
       "kind": "custom",
       "refersTo": "call-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Purpose and time lead, then outcome and optional number. From xxxLarge titles, times, outcomes, and numbers stack. Unheard messages use a violet dot ordinarily and New message words at accessibility sizes or with Differentiate Without Color. Home omits the number. Native accessibility combines the row and provides the full date. Source: Design/CallRow.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<button class=\"ds-call\" type=\"button\"><span class=\"ds-call-main\"><strong>Appointment reminder</strong><span>Yesterday</span></span><span class=\"ds-call-detail\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Answered</span></span></button>",
-      "css": ".ds-call{display:grid;gap:4px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-call-main{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.ds-call-main>span{color:rgb(34% 34% 34%);font-size:.9375rem}.ds-call-detail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:#076C5C;font-size:.9375rem}.ds-call-detail svg{width:18px;height:18px}.ds-call:hover{filter:brightness(.96)}.ds-call:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-call:active{filter:brightness(.9)}.ds-call:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-call-main>span{color:rgb(76% 76% 76%)}.ds-call-detail{color:#74DDC6}}"
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Purpose/time then outcome/number; metadata stacks from xxxLarge. QuietSurface symbol slot disappears at accessibility sizes. New message is always readable text; Home hides number. Synthetic preview. Source: Design/CallRow.swift.",
+      "html": "<button class=\"ds-call\" type=\"button\"><span class=\"ds-row-symbol\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg></span><span class=\"ds-call-content\"><span class=\"ds-call-main\"><strong>Appointment reminder</strong><span>Yesterday</span></span><span class=\"ds-call-detail\">Answered</span></span></button>",
+      "css": ".ds-call{display:flex;align-items:flex-start;gap:14px;min-height:60px;width:100%;max-width:360px;padding:10px 0;border:0;background:#FFFFFF;color:#101E32;font:1rem system-ui;text-align:left;cursor:pointer}.ds-call-main{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.ds-call-main>span{color:rgb(32% 37% 44%);font-size:.9375rem}.ds-call-detail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:#076C5C;font-size:.9375rem}.ds-call-detail svg{width:18px;height:18px}.ds-call:hover{filter:brightness(.96)}.ds-call:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-call:active{filter:brightness(.9)}.ds-call:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-call-main>span{color:rgb(72% 77% 84%)}.ds-call-detail{color:#74DDC6}}.ds-call-content{display:grid;gap:6px;flex:1}.ds-call .ds-row-symbol{display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;background:#E7EBF1;color:#076C5C;border-radius:10px}.ds-call .ds-row-symbol svg{width:20px;height:20px}@media(prefers-color-scheme:dark){.ds-call{background:#1C293B;color:#F3F6FB}.ds-call .ds-row-symbol{background:#28364A;color:#74DDC6}}"
     },
     {
       "name": "Message inbox row",
       "kind": "custom",
       "refersTo": "voicemail-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Voicemail and Saved notice share the Messages inbox. Purpose leads; authorized summaries use up to three lines ordinarily and two at accessibility sizes, with the full summary in detail. Kind, state, and date stack from xxxLarge. Helpers without canListen see no summary. Content here is synthetic. Source: Features/Calls/VoicemailRow.swift and Features/Calls/CallDetailView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Purpose then authorized excerpt and kind/state/date. Excerpt caps at three lines or two at accessibility sizes; full detail remains available. Leading symbol disappears at accessibility sizes. Synthetic preview. Source: Features/Calls/VoicemailRow.swift.",
       "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\"><span>Saved notice</span><span>New</span><span>Today</span></span></button>",
-      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(34% 34% 34%)}.ds-vm-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(76% 76% 76%)}}"
+      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:10px 0;border:0;background:#FFFFFF;color:#101E32;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(32% 37% 44%)}.ds-vm-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(72% 77% 84%)}}@media(prefers-color-scheme:dark){.ds-voicemail{background:#1C293B;color:#F3F6FB}}"
     },
     {
       "name": "Grouped card surface",
       "kind": "card",
       "refersTo": "card-container",
-      "description": "Schematic documentation preview, not the actual native implementation. Shared shieldCard helper; native secondarySystemGroupedBackground is authoritative. Browser Canvas is only a documentation substitute, not an extracted hex. Source: Design/ShieldComponents.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Shared shieldCard helper uses Card, 20-point corner and padding; native List/Form groups retain platform corners and separators. Source: Design/ShieldComponents.swift.",
       "html": "<div class=\"ds-card\"><strong>Your next step</strong><span>Use a number you already know.</span></div>",
-      "css": ".ds-card{display:grid;gap:8px;max-width:360px;padding:20px;border-radius:26px;background:Canvas;color:CanvasText;font:1rem system-ui}.ds-card span{color:rgb(34% 34% 34%)}@media(prefers-color-scheme:dark){.ds-card span{color:rgb(76% 76% 76%)}}"
+      "css": ".ds-card{display:grid;gap:8px;max-width:360px;padding:20px;border-radius:20px;background:#FFFFFF;color:#101E32;font:1rem system-ui}.ds-card span{color:rgb(32% 37% 44%)}@media(prefers-color-scheme:dark){.ds-card span{color:rgb(72% 77% 84%)}}@media(prefers-color-scheme:dark){.ds-card{background:#1C293B;color:#F3F6FB}}"
     },
     {
       "name": "Home calls stopped panel",
       "kind": "card",
       "refersTo": "home-stopped-calls",
-      "description": "Schematic documentation preview, not the actual native implementation. One positive historical Action panel shows Calls stopped, a large numeral, Total, and See calls. It uses the optional persistent stopped total, including review-needed calls; it is not proof of confirmed scams, current protection, or complete recovery of deleted history. It opens recent retained history, which can have fewer records. Zero uses None so far; missing data uses Total unavailable. Real status stays above it. Source: Features/Overview/StoppedCallsCard.swift and Models/Overview.swift. The numeral is synthetic. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Positive historical total uses an Action native row and serif numeral; zero/missing uses Card and explicit text. It is neither current protection nor proof of confirmed scams. Synthetic numeral. Source: Features/Overview/StoppedCallsCard.swift.",
       "html": "<button class=\"ds-stopped\" type=\"button\" aria-label=\"3 calls stopped in total. See calls.\"><span class=\"ds-stopped-heading\"><strong>Calls stopped</strong><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 12V7a1.5 1.5 0 0 1 3 0v4-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v7c0 4-3 6-6 6-3 0-5-2-7-5l-3-4a1.7 1.7 0 0 1 2-2l2 3\"/></svg></span><span class=\"ds-stopped-count\">3</span><span>Total</span><span class=\"ds-stopped-action\">See calls <svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16m-6-6 6 6-6 6\"/></svg></span></button>",
-      "css": ".ds-stopped{display:grid;gap:12px;min-height:52px;width:100%;max-width:360px;padding:20px;border:0;border-radius:16px;background:#224CC5;color:white;font:1rem system-ui;text-align:left;cursor:pointer;white-space:normal}.ds-stopped-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:1.25rem}.ds-stopped-heading svg{width:22px;height:22px;flex-shrink:0}.ds-stopped-count{font-size:3.1875rem;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ds-stopped-action{display:flex;align-items:center;gap:8px;font-weight:600}.ds-stopped-action svg{width:18px;height:18px}.ds-stopped:hover{filter:brightness(.96)}.ds-stopped:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-stopped:active{filter:brightness(.9)}@media(prefers-color-scheme:dark){.ds-stopped{background:#9BB3FF;color:rgb(8% 12% 22%)}.ds-stopped:focus-visible{outline-color:#9BB3FF}}@media(prefers-contrast:more){.ds-stopped{background:#173AA3}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-stopped{background:#BDD0FF}}"
+      "css": ".ds-stopped{display:grid;gap:12px;min-height:52px;width:100%;max-width:360px;padding:20px;border:0;border-radius:16px;background:#002664;color:white;font:1rem system-ui;text-align:left;cursor:pointer;white-space:normal}.ds-stopped-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:1.25rem}.ds-stopped-heading svg{width:22px;height:22px;flex-shrink:0}.ds-stopped-count{font-size:3.4rem;font-family:ui-serif,serif;font-weight:400;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ds-stopped-action{display:flex;align-items:center;gap:8px;font-weight:600}.ds-stopped-action svg{width:18px;height:18px}.ds-stopped:hover{filter:brightness(.96)}.ds-stopped:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-stopped:active{filter:brightness(.9)}@media(prefers-color-scheme:dark){.ds-stopped{background:#B9CDF2;color:rgb(8% 12% 22%)}.ds-stopped:focus-visible{outline-color:#B9CDF2}}@media(prefers-contrast:more){.ds-stopped{background:#001A45}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-stopped{background:#D6E4FF}}"
     },
     {
       "name": "Full-row native switch",
       "kind": "custom",
       "refersTo": "switch-row",
-      "description": "Schematic documentation preview, not the actual native implementation. The complete wrapping label and switch row is tappable with a 52-point minimum. Native source renders one accessibility Toggle representation while hiding the decorative switch. This preview illustrates the arrangement; it does not establish VoiceOver approval. Source: Design/ShieldSwitchStyle.swift and App/RootView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Full labeled 52-point minimum row is tappable; one native accessibility Toggle represents the control. Source behavior does not prove VoiceOver approval. Source: Design/ShieldSwitchStyle.swift.",
       "html": "<label class=\"ds-switch-row\"><span>Check calls while I talk</span><input class=\"ds-switch\" type=\"checkbox\" role=\"switch\" checked aria-label=\"Check calls while I talk\"></label>",
-      "css": ".ds-switch-row{display:flex;align-items:center;gap:16px;width:100%;max-width:360px;min-height:52px;color:CanvasText;font:600 1rem system-ui;cursor:pointer}.ds-switch-row>span{flex:1;white-space:normal}.ds-switch{appearance:none;position:relative;flex-shrink:0;width:51px;height:31px;margin:0;border:1px solid GrayText;border-radius:18px;background:ButtonFace;cursor:pointer}.ds-switch::after{content:\"\";position:absolute;top:2px;left:2px;width:25px;height:25px;border-radius:50%;background:Canvas}.ds-switch:checked{background:#224CC5;border-color:#224CC5}.ds-switch:checked::after{left:22px;background:#fff}.ds-switch-row:hover .ds-switch{filter:brightness(.96)}.ds-switch:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-switch:active{filter:brightness(.9)}.ds-switch:disabled{cursor:default;background:ButtonFace;border-color:GrayText}@media(prefers-color-scheme:dark){.ds-switch:checked{background:#9BB3FF;border-color:#9BB3FF}.ds-switch:checked::after{background:rgb(8% 12% 22%)}.ds-switch:focus-visible{outline-color:#9BB3FF}}"
+      "css": ".ds-switch-row{display:flex;align-items:center;gap:16px;width:100%;max-width:360px;min-height:52px;color:#101E32;font:600 1rem system-ui;cursor:pointer}.ds-switch-row>span{flex:1;white-space:normal}.ds-switch{appearance:none;position:relative;flex-shrink:0;width:51px;height:31px;margin:0;border:1px solid GrayText;border-radius:18px;background:ButtonFace;cursor:pointer}.ds-switch::after{content:\"\";position:absolute;top:2px;left:2px;width:25px;height:25px;border-radius:50%;background:#FFFFFF}.ds-switch:checked{background:#002664;border-color:#002664}.ds-switch:checked::after{left:22px;background:#fff}.ds-switch-row:hover .ds-switch{filter:brightness(.96)}.ds-switch:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-switch:active{filter:brightness(.9)}.ds-switch:disabled{cursor:default;background:ButtonFace;border-color:GrayText}@media(prefers-color-scheme:dark){.ds-switch:checked{background:#B9CDF2;border-color:#B9CDF2}.ds-switch:checked::after{background:rgb(8% 12% 22%)}.ds-switch:focus-visible{outline-color:#B9CDF2}}@media(prefers-color-scheme:dark){.ds-switch-row{color:#F3F6FB}}"
     }
   ],
   "narrative": {
-    "northStar": "Public-library wayfinding",
-    "overview": "Shield keeps a familiar native iPhone appearance: grouped lists, straightforward labels, system text, and recognizable controls. Quiet surfaces and four adaptive accents help people find a call, understand its result, and choose the next action. The library metaphor describes legible wayfinding; it does not introduce themed decoration.\n\nThe October 12 refinement makes an 80-year-old's understanding the bar. Ordinary screens use everyday words, fewer visible choices, and room for text to grow. Less common details open on request. Setup, disconnection, privacy, and sharing retain the information and explicit confirmations needed for a meaningful choice.",
+    "northStar": "Editorial phone companion",
+    "overview": "Shield translates the user's America.gov reference into a simple native iPhone companion: pale neutral ground, white reading groups, deep navy actions, serif content headings and familiar sans controls. The reference supplies composure and the relationship between display and interface text. SwiftUI supplies the navigation, controls and adaptive text; no licensed reference font, photograph or website-scale composition is copied.\n\nAn 80-year-old's comprehension is the design bar. Plain labels, generous controls and one clear next action carry the work. Daily calls and messages remain within four familiar tabs. Setup, sharing, privacy and uncertain results retain the information needed for explicit choices. The decorative vocabulary stays sparse so the words can grow.",
     "keyCharacteristics": [
-      "Native tabs, navigation stacks, grouped lists, forms, sheets, menus, and confirmation dialogs.",
-      "Action blue, stopped-call red, answered-call teal, and voicemail violet with Light, Dark, and increased-contrast variants.",
-      "Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.",
-      "Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.",
-      "Home's native large title shares the grouped canvas at rest; its collapsed navigation background matches that surface.",
-      "One choice per onboarding screen, progressive disclosure, and visible recovery when a task fails."
+      "Pale neutral ground and white grouped reading surfaces, with navy ground and pale actions in Dark Mode.",
+      "Native serif purpose and section headings; native sans body, controls, toolbars and navigation.",
+      "Native tabs, lists, forms, switches, sheets, dialogs and state feedback.",
+      "Semantic Dynamic Type, wrapping text, content-based stacking and generous app-owned actions.",
+      "Call outcomes, person context, sharing scope and sample-only state expressed in words as well as color.",
+      "Flat surfaces, restrained SF Symbols and explicit choices with retained state and visible recovery."
     ],
     "rules": [
       {
         "name": "The Outcome Truth Rule",
-        "body": "Pair color with a familiar outcome label or symbol; a call being checked, offered, or answered never implies an authenticated caller.",
+        "body": "Pair outcome color with plain words or a familiar symbol; a checked, offered or answered call never implies an authenticated caller.",
         "section": "colors"
       },
       {
         "name": "The Native Type Rule",
-        "body": "Preserve semantic text styles and allow wrapping or stacking before introducing a fixed text size.",
+        "body": "Use semantic text styles and allow wrapping or stacking before shrinking words or introducing a fixed text size.",
         "section": "typography"
       },
       {
         "name": "The Room for Words Rule",
-        "body": "Stack metadata and move person context into the page before shrinking text; at accessibility sizes remove decorative row icons when they compete with the label.",
+        "body": "Stack metadata, move person context into the page and remove decorative row symbols before reducing readable text.",
         "section": "layout"
       },
       {
         "name": "The Native Surface Rule",
-        "body": "Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.",
+        "body": "Use the shared adaptive surfaces with native grouping and state feedback before introducing custom elevation or motion.",
         "section": "elevation"
       },
       {
         "name": "The Historical Count Rule",
-        "body": "Use the persistent stopped total, include review-needed calls honestly, and keep it distinct from recent retained history and current protection status; unavailable data is never zero or a weekly fallback.",
+        "body": "Keep the persistent total distinct from current protection and retained recent history; unavailable data is never zero or a weekly fallback.",
         "section": "components"
       },
       {
         "name": "The Recoverable State Rule",
-        "body": "Name loading, unsaved, unavailable, and failed states in words; offer a visible recovery action and never turn a failed read into a claim that data is empty or protection is active.",
+        "body": "Name loading, unsaved, unavailable and failed states in words; offer visible recovery and never turn a failed read into an empty-state or active-protection claim.",
         "section": "components"
       },
       {
         "name": "The Visible Context Rule",
-        "body": "Show the viewed person and sharing scope in words, and keep participant ownership distinct from helper access.",
+        "body": "Show the person and sharing scope in words, and keep participant ownership distinct from helper access.",
         "section": "components"
       },
       {
         "name": "The Explicit Confirmation Rule",
-        "body": "Keep the action and the proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.",
+        "body": "Keep action and proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.",
         "section": "components"
       }
     ],
     "dos": [
-      "Do use ShieldTheme's adaptive role colors, opaque supporting text, and native grouped system surfaces.",
-      "Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.",
-      "Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.",
-      "Do give ordinary tasks one clear next action and reveal less common detail on request.",
-      "Do make switches tappable through their labeled row and keep one native accessibility toggle representation.",
-      "Do stack call and message metadata from `.xxxLarge` and keep person context in the scrollable page at accessibility sizes.",
-      "Do name unsaved changes and failed loads, and place a visible retry or save action beside the relevant task.",
-      "Do show playback progress with elapsed and total time, clear pause/resume labels, and a visible Start over action.",
-      "Do make person context, message permission, and sample-only state visible in words.",
-      "Do retain explicit privacy, sharing, setup, and disconnection confirmations.",
-      "Do label the Home count as the persistent historical total, keep real status above it, and distinguish zero, unavailable data, and recent retained history.",
-      "Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval."
+      "Do use the shared adaptive navy/neutral palette and preserve its Dark Mode and increased-contrast variants.",
+      "Do reserve native serif for content hierarchy and keep ordinary controls and navigation native sans.",
+      "Do pair call outcomes with plain words and familiar SF Symbols while preserving uncertainty.",
+      "Do keep semantic Dynamic Type, wrapping text, 52-point shared app action minima and 60-point native row defaults.",
+      "Do stack metadata from `.xxxLarge` and move person context into the scrolling page at accessibility sizes.",
+      "Do place accessibility-size onboarding completion after its explanation, switch and relevant disclosure.",
+      "Do name unsaved choices and failed loads, with a visible retry/save action for the affected task.",
+      "Do retain explicit privacy, sharing, setup and disconnection confirmations.",
+      "Do show historical totals, current phone status, sample state and message permission as separate readable facts.",
+      "Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval."
     ],
     "donts": [
-      "Don't describe a checked, offered, or answered caller as verified, authenticated, or safe.",
-      "Don't infer active call checks from stale, missing, paused, or expired status.",
-      "Don't promote old tab labels or fixed Surface asset colors from earlier designs into new screens.",
-      "Don't present Calls stopped as confirmed scams, complete recovery of already-deleted history, or evidence that current call checks are on.",
-      "Don't treat schematic sidecar HTML/CSS as a native pixel specification.",
+      "Don't restore the rejected bright-blue/public-library visual world or make all native navigation titles serif.",
+      "Don't describe a checked, offered or answered caller as verified, authenticated or safe.",
+      "Don't infer active call checks from stale, missing, paused or expired status.",
+      "Don't present Calls stopped as confirmed scams or complete recovery of already-deleted history.",
       "Don't treat helper access as ownership or extend message access implicitly.",
-      "Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.",
-      "Don't use a failed load as an empty-state, saved-choice, or active-protection claim.",
-      "Don't treat an app return, call-test completion, sign-out, or app deletion as confirmation that forwarding is disconnected.",
-      "Don't claim a clean native audit, real VoiceOver approval, older-person usability, deployment, or real-call evidence from source extraction or simulator captures."
+      "Don't present sample summaries, speech or keeping as real-message services.",
+      "Don't treat an app return, test completion, sign-out or deletion as proof that forwarding is disconnected.",
+      "Don't shrink text to preserve a fixed row or keep a completion action visually ahead of its accessibility-size choice.",
+      "Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.",
+      "Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures."
     ]
   }
 }

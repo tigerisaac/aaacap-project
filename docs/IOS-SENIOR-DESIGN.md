@@ -2,6 +2,8 @@
 
 Design work started October 12, 2026. The owner asked for an app an 80-year-old can understand, with less text, everyday language, and calls and voicemail first.
 
+This is a dated record of the usability work and its follow-ups. The October 13 visual replacement is recorded in [iPhone visual redesign](IOS-VISUAL-POLISH.md) and the current [design system](../DESIGN.md). The earlier “Still to build” message-summary descriptions below describe their October 12 verification point; current backend and deployment truth is in [Architecture](ARCHITECTURE.md) and [Status](STATUS.md).
+
 ## Everyday use
 
 - **Home:** a short, truthful phone status, recent voicemail, and recent calls. A healthy setup check adds no extra block. Problems can be opened when needed.

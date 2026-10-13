@@ -15,23 +15,27 @@ struct JoinInvitationView: View {
         NavigationStack {
             ScrollViewReader { proxy in
                 Form {
-                    Section {
+                    ShieldGroup {
                         Text("Paste the code from the person who invited you.")
-                        TextField("Invitation code", text: $code, axis: .vertical)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .focused($editing).accessibilityLabel("Invitation code")
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                            Text("Invitation code").font(.headline).foregroundStyle(ShieldTheme.ink)
+                            TextField("Invitation code", text: $code, prompt: Text("Paste code here").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                                .focused($editing).accessibilityLabel("Invitation code")
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        }
                         PasteButton(payloadType: String.self) { values in code = ShieldInvitation.pastedCode(values.joined(separator: "\n")) }
-                            .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule).controlSize(.large)
+                            .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule).controlSize(.extraLarge)
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }.disabled(joining)
                     if let error {
-                        Section {
+                        ShieldGroup {
                             ShieldNotice(title: "You couldn’t join yet", detail: error, symbol: "exclamationmark.circle")
                                 .id("invitation-error").accessibilityFocused($errorFocused)
                         }
                     }
-                    Section {
+                    ShieldGroup {
                         Text("You’ll see only what they choose to share with you.").foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }

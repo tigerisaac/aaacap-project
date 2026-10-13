@@ -1,14 +1,56 @@
 import SwiftUI
 
+/// A native Section with an adaptive surface. Grouping, separators and accessibility
+/// remain owned by List/Form; the wrapper only supplies Shield's background color.
+struct ShieldGroup<Content: View, Header: View, Footer: View>: View {
+    private let content: Content
+    private let header: Header
+    private let footer: Footer
+    private let background: Color
+
+    init(background: Color = ShieldTheme.card, @ViewBuilder content: () -> Content, @ViewBuilder header: () -> Header, @ViewBuilder footer: () -> Footer) {
+        self.background = background
+        self.content = content(); self.header = header(); self.footer = footer()
+    }
+
+    init(background: Color = ShieldTheme.card, @ViewBuilder content: () -> Content) where Header == EmptyView, Footer == EmptyView {
+        self.background = background
+        self.content = content(); header = EmptyView(); footer = EmptyView()
+    }
+
+    init(background: Color = ShieldTheme.card, @ViewBuilder content: () -> Content, @ViewBuilder header: () -> Header) where Footer == EmptyView {
+        self.background = background
+        self.content = content(); self.header = header(); footer = EmptyView()
+    }
+
+    init(background: Color = ShieldTheme.card, @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) where Header == EmptyView {
+        self.background = background
+        self.content = content(); header = EmptyView(); self.footer = footer()
+    }
+
+    var body: some View {
+        Section { content } header: { header } footer: { footer }
+            .listRowBackground(background)
+    }
+}
+
 extension View {
     /// Apply to a List, including pushed Settings screens, for one shared grouped surface.
     func shieldListStyle() -> some View {
         listStyle(.insetGrouped)
+            .listSectionSpacing(ShieldTheme.Spacing.section)
             .environment(\.defaultMinListRowHeight, ShieldTheme.Layout.rowHeight)
             .scrollContentBackground(.hidden)
             .scrollEdgeEffectStyle(.hard, for: .all)
             .background(ShieldTheme.surface)
             .safeAreaPadding(.bottom, ShieldTheme.Spacing.content)
+            .shieldNavigationSurface()
+    }
+
+    /// Use SwiftUI's native bar preferences so large titles retain their system layout.
+    func shieldNavigationSurface() -> some View {
+        toolbarBackground(ShieldTheme.surface, for: .navigationBar)
+            .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
     }
 
     /// Native button behavior and disabled feedback; labels remain free to wrap.
@@ -23,6 +65,12 @@ extension View {
         padding(ShieldTheme.Spacing.card)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+    }
+
+    func shieldPageHeading() -> some View {
+        font(ShieldTheme.Typography.title)
+            .foregroundStyle(ShieldTheme.ink)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     func shieldSecondaryButton() -> some View {

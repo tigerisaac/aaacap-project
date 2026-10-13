@@ -5,8 +5,8 @@ struct HelpView: View {
 
     var body: some View {
         List {
-            Section { Text("If a call worries you, hang up. You can check it later.").font(.title3) }
-            Section {
+            ShieldGroup { Text("If a call worries you, hang up. You can check it later.").font(ShieldTheme.Typography.title).foregroundStyle(ShieldTheme.ink).fixedSize(horizontal: false, vertical: true).padding(.vertical, 8) }
+            ShieldGroup {
                 DisclosureGroup("How can I check a caller?") {
                     Text("Call a number from your card, bill, or an app you already use. Don’t use a number the caller gave you.")
                     if model.isOwner { NavigationLink("Numbers you trust", value: AppRoute.savedNumbers) }
@@ -18,7 +18,7 @@ struct HelpView: View {
                     Link("Report a scam", destination: URL(string: "https://reportfraud.ftc.gov/")!)
                 }
             }
-            Section {
+            ShieldGroup {
                 if model.isOwner { NavigationLink("Help with my phone", value: AppRoute.setup) }
                 if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                     Link("Ask for help with Shield", destination: url)

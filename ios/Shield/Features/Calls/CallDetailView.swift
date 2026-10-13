@@ -28,12 +28,12 @@ struct CallDetailView: View {
     var body: some View {
         List {
             if let loadError {
-                Section { ShieldLoadFailure(title: "Call details couldn’t update", detail: loadError) { Task { await load() } } }
+                ShieldGroup { ShieldLoadFailure(title: "Call details couldn’t update", detail: loadError) { Task { await load() } } }
             }
-            Section {
+            ShieldGroup {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
-                        .font(call.voicemail == nil || messageRemoved ? .title2.bold() : .headline)
+                        .font(ShieldTheme.Typography.title).foregroundStyle(ShieldTheme.ink)
                         .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
                     if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
                         OutcomeBadge(outcome: call.outcome)
@@ -55,12 +55,12 @@ struct CallDetailView: View {
                             Text("This message is no longer available.").foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
-                }.padding(.vertical, 8).fixedSize(horizontal: false, vertical: true)
+                }.padding(.vertical, 12).fixedSize(horizontal: false, vertical: true)
             }
             if let message = call.voicemail, model.canListen, !messageRemoved {
                 if let summary = message.summary {
                     if model.isDemo { VoicemailPreviewCard(call: call) }
-                    else { Section {
+                    else { ShieldGroup {
                         Text(summary).font(.title3).fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("message-summary")
                     } footer: {
@@ -68,11 +68,11 @@ struct CallDetailView: View {
                     } }
                 }
                 if message.summary == nil, message.status == "ready" {
-                    Section { Text("A summary isn’t available for this message. You can still listen.")
+                    ShieldGroup { Text("A summary isn’t available for this message. You can still listen.")
                         .foregroundStyle(ShieldTheme.secondaryText) }
                 }
                 if message.isNotice {
-                    Section {
+                    ShieldGroup {
                         Text("For account alerts, check the organization’s app or use a number from your card, statement or saved contacts.")
                             .fixedSize(horizontal: false, vertical: true)
                         if model.isOwner { NavigationLink("Find a trusted number", value: AppRoute.savedNumbers) }
@@ -82,7 +82,7 @@ struct CallDetailView: View {
             if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
                 VoicemailPreviewCard(call: call)
             } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen || usesAudioFixture {
-                Section {
+                ShieldGroup {
                     if voicemail.status == "ready", model.canListen {
                         Text(voicemail.durationLabel).foregroundStyle(ShieldTheme.secondaryText)
                         if player.hasAudio {
@@ -131,10 +131,10 @@ struct CallDetailView: View {
                 }
             }
             if call.voicemail == nil {
-                Section { Text(CallPresentation.explanation(call)) }
+                ShieldGroup { Text(CallPresentation.explanation(call)) }
             }
             if !messageRemoved, call.outcome == .held || call.outcome == .verification {
-                Section {
+                ShieldGroup {
                     Text("Need to call back? Use a number you already know.")
                     if model.isOwner {
                         NavigationLink(value: AppRoute.savedNumbers) {
@@ -143,7 +143,7 @@ struct CallDetailView: View {
                     }
                 }
             }
-            Section {
+            ShieldGroup {
                 DisclosureGroup("More about this call") {
                     Text(PhoneDisplay.format(call.callerNumber)).textSelection(.enabled)
                     Text(call.detail).fixedSize(horizontal: false, vertical: true)

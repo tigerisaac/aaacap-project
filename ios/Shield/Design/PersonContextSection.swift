@@ -7,7 +7,7 @@ struct PersonContextSection: View {
 
     var body: some View {
         if typeSize.isAccessibilitySize, model.people.count > 1 || !model.isOwner {
-            Section {
+            ShieldGroup {
                 if model.people.count > 1 {
                     NavigationLink(value: AppRoute.people) {
                         Text("\(model.person?.name ?? "Your person")’s calls").font(.body)

@@ -1,0 +1,20 @@
+Shield accessibility: accessibility-home: Contrast failed; No associated element
+Shield accessibility: accessibility-home: Contrast failed; No associated element
+Shield accessibility: accessibility-home: Text clipped; No associated element
+Shield accessibility: accessibility-home: Text clipped; Attributes: StaticText, 0x112691e00, {{82.0, 515.0}, {254.0, 64.3}}, label: 'An automated caller reported unusual card activity. The sender hasn’t been verified.'
+Shield accessibility: accessibility-home-row-exposed: Text clipped; No associated element
+Shield accessibility: accessibility-home-row-exposed: Text clipped; Attributes: StaticText, 0x112691e00, {{82.0, 237.3}, {254.0, 64.3}}, label: 'An automated caller reported unusual card activity. The sender hasn’t been verified.'
+Shield accessibility: accessibility-calls: Contrast failed; No associated element
+Shield accessibility: accessibility-calls: Contrast failed; No associated element
+Shield accessibility: accessibility-calls: Contrast failed; No associated element
+Shield accessibility: accessibility-calls: Contrast failed; No associated element
+Shield accessibility: accessibility-calls: Text clipped; No associated element
+Shield accessibility: accessibility-calls-row-exposed: Text clipped; No associated element
+Shield accessibility: accessibility-messages: Contrast failed; Attributes: StaticText, 0x1126ad040, {{32.0, 794.8}, {152.7, 20.3}}, label: 'Removed messages'
+Shield accessibility: accessibility-messages: Text clipped; No associated element
+Shield accessibility: accessibility-add-number: Contrast failed; Attributes: Button, 0x11268dcc0, {{20.0, 95.0}, {76.7, 36.0}}, label: 'Cancel'
+Shield accessibility: accessibility-contacts: Hit area is too small; No associated element
+Shield accessibility: accessibility-contacts: Hit area is too small; No associated element
+Shield accessibility: accessibility-invitation: Contrast failed; Attributes: Button, 0x11268e1c0, {{20.0, 95.0}, {76.7, 36.0}}, label: 'Cancel'
+Shield accessibility: accessibility-phone-setup: Contrast failed; Attributes: Button, 0x11268d040, {{199.0, 51.0}, {67.0, 36.0}}, label: 'Close'
+Shield accessibility: accessibility-disconnection: Contrast failed; Attributes: Button, 0x11268c640, {{199.0, 51.0}, {67.0, 36.0}}, label: 'Close'

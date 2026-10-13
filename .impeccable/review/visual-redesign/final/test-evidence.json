@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-13",
+  "platform": "Synthetic iOS 27 simulators; iPhone 18 Pro and iPhone 17e",
+  "scope": "Visual redesign and reviewed onboarding reading-order correction",
+  "checks": {
+    "repository_check": {
+      "result": "passed",
+      "unit_tests": 191,
+      "log": "/tmp/shield-visual-redesign-check.log"
+    },
+    "first_full_ui": {
+      "result": "passed",
+      "tests": 59,
+      "log": "/tmp/shield-visual-redesign-ui.log"
+    },
+    "final_pro": {
+      "result": "passed",
+      "functional_tests": 13,
+      "log": "/tmp/shield-visual-redesign-pro-final.log"
+    },
+    "final_small": {
+      "result": "functional tests passed; native audit failed",
+      "functional_tests": 15,
+      "audit_cases": 5,
+      "audit_cases_with_diagnostics": 4,
+      "diagnostics": 20,
+      "log": "/tmp/shield-visual-redesign-small-final.log"
+    },
+    "review_correction_pro": {
+      "result": "passed",
+      "tests": 9,
+      "log": "/tmp/shield-visual-redesign-pro-verdict.log"
+    },
+    "review_correction_small": {
+      "result": "passed",
+      "tests": 9,
+      "log": "/tmp/shield-visual-redesign-small-verdict.log"
+    },
+    "release_after_correction": {
+      "result": "passed",
+      "log": "/tmp/shield-visual-redesign-release-verdict.log"
+    },
+    "firebase_runs": [
+      {
+        "result": "failed",
+        "passed": 153,
+        "total": 154,
+        "failure": "Shared-pilot ten-simultaneous-participants gRPC3 invalid/closed transaction",
+        "log": "/tmp/shield-visual-redesign-firebase.log"
+      },
+      {
+        "result": "failed",
+        "passed": 153,
+        "total": 154,
+        "failure": "Same transaction failure",
+        "log": "/tmp/shield-visual-redesign-firebase-isolated.log"
+      },
+      {
+        "result": "passed",
+        "passed": 154,
+        "total": 154,
+        "conditions": "Temporary isolated ports, stopped simulators, 2 GB JVM heap, 60-second test/hook limits; unchanged within-test concurrency and assertions",
+        "log": "/tmp/shield-visual-redesign-firebase-final.log"
+      }
+    ],
+    "final_repository_check": {
+      "result": "passed",
+      "unit_tests": 191,
+      "log": "/tmp/shield-visual-redesign-check-final.log"
+    }
+  },
+  "limits": [
+    "Native audit is not clean",
+    "No physical-device or VoiceOver session",
+    "No older-participant or real-call usability verification",
+    "No deployment or physical-phone install"
+  ],
+  "finish_verdict": {
+    "disposition": "ship",
+    "scope": "Two listed material fixes only",
+    "resolved": 2,
+    "report": ".impeccable/review/visual-redesign/verdict/finish-verdict.md"
+  }
+}

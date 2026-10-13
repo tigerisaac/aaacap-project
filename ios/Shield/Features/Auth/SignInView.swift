@@ -18,24 +18,24 @@ struct SignInView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
-                    VStack(spacing: 18) {
-                        Image("ShieldMark").resizable().scaledToFit()
-                            .frame(width: 80, height: 80).clipShape(.rect(cornerRadius: 80 * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
-                            .accessibilityHidden(true)
-                        Text("Shield").font(.largeTitle.weight(.bold))
+                    VStack(spacing: ShieldTheme.Spacing.section) {
+                        ShieldBrand(compact: true)
                         if !codeSent {
-                            Text("Help with unfamiliar calls")
-                                .font(.title2.bold()).multilineTextAlignment(.center)
-                            Text("Shield asks why someone is calling. You choose whether to answer.")
-                                .font(.body).multilineTextAlignment(.center)
-                                .foregroundStyle(ShieldTheme.secondaryText)
+                            VStack(spacing: ShieldTheme.Spacing.regular) {
+                                Text("Help with unfamiliar calls")
+                                    .font(ShieldTheme.Typography.display).foregroundStyle(ShieldTheme.ink)
+                                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                                Text("Shield asks why someone is calling. You choose whether to answer.")
+                                    .font(.body).multilineTextAlignment(.center)
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                            }
                         }
                     }
                     .frame(maxWidth: .infinity).padding(.top, 16)
 
                     VStack(alignment: .leading, spacing: 20) {
                         if waitingForLink {
-                            Text("Check your email").font(.title2.bold())
+                            Text("Check your email").shieldPageHeading()
                                 .accessibilityAddTraits(.isHeader).accessibilityFocused($statusFocused, equals: .emailSent)
                             Text(email).font(.headline).textSelection(.enabled)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -52,13 +52,13 @@ struct SignInView: View {
                         } else {
                             if codeSent {
                                 Text(usesEmailLink ? "Finish signing in" : "Enter your email code")
-                                    .font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                                    .shieldPageHeading().accessibilityAddTraits(.isHeader)
                                 Text(usesEmailLink ? "Use the same email address where you received the link." : "Type the code we sent to \(email).")
                                     .foregroundStyle(ShieldTheme.secondaryText)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             Text(codeSent && !usesEmailLink ? "Email code" : "Your email")
-                                .font(.headline)
+                                .font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
                             Group {
                                 if codeSent && !usesEmailLink {
                                     TextField("Email code", text: $code, prompt: Text("Email code").foregroundStyle(ShieldTheme.secondaryText))
@@ -88,7 +88,7 @@ struct SignInView: View {
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .padding(16)
                             .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? Color.primary.opacity(contrast == .increased ? 0.55 : 0.12) : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
+                            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? ShieldTheme.fieldBorder : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
                             .disabled(working).submitLabel(.continue)
                             .onSubmit { if canSubmit { Task { await submit() } } }
                             if !email.isEmpty && !validEmail && focusedField != .email && !(codeSent && !usesEmailLink) {

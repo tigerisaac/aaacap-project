@@ -9,7 +9,7 @@ struct TrialSetupView: View {
     @State private var confirmPause = false
 
     var body: some View {
-        Section {
+        ShieldGroup {
             NavigationLink {
                 ForwardingSetupView()
             } label: {
@@ -17,7 +17,7 @@ struct TrialSetupView: View {
             }
         }
         if ["active", "paused"].contains(setup.status) {
-        Section {
+        ShieldGroup {
             Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks",
                    systemImage: setup.status == "paused" ? "play.circle" : "pause.circle") { confirmPause = true }
                 .disabled(working || model.isDemo)
@@ -31,7 +31,7 @@ struct TrialSetupView: View {
             Text("The call test still ends at the same time.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
         }
         }
-        Section {
+        ShieldGroup {
             Button("Delete my information", role: .destructive) { confirmDeletion = true }
                 .disabled(working || model.isDemo)
                 .confirmationDialog("Delete your information?", isPresented: $confirmDeletion, titleVisibility: .visible) {

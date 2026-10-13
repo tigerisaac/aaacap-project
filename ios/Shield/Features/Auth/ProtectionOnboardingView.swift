@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProtectionOnboardingView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     /// nil when the connected-call protection choice is already recorded.
     let monitoring: ForwardingStatus.Monitoring?
     var asksHelperAlerts = false
@@ -26,14 +27,14 @@ struct ProtectionOnboardingView: View {
                         FlowProgress(title: "Your choices", current: onHelperStep ? 2 : 1, total: 2)
                     }
                     Text(showsProtection ? "Help while you talk" : "Let a helper know")
-                        .font(.title.bold()).accessibilityAddTraits(.isHeader)
+                        .shieldPageHeading().accessibilityAddTraits(.isHeader)
                         .id("choice-heading").accessibilityFocused($headingFocused)
                     if showsProtection {
                         CallProtectionExplanation()
                         Toggle("Check calls while I talk", isOn: $enabled)
                             .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .padding(ShieldTheme.Spacing.content)
-                            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
                             .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
                     }
                     if showsHelpers {
@@ -41,12 +42,15 @@ struct ProtectionOnboardingView: View {
                         Toggle("Let my helpers know", isOn: $alertHelpers)
                             .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .padding(ShieldTheme.Spacing.content)
-                            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
                             .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
                         DisclosureGroup("What does the alert say?") {
                             Text("It includes your name, but no caller’s words or number. Helpers can also be told when a blocked caller tries again.")
                                 .foregroundStyle(ShieldTheme.secondaryText)
                         }
+                    }
+                    if dynamicTypeSize.isAccessibilitySize {
+                        completionButton
                     }
                 }
                 .id("choice-top")
@@ -60,12 +64,12 @@ struct ProtectionOnboardingView: View {
             }
             }
             .background(ShieldTheme.surface)
+            .shieldNavigationSurface()
             .safeAreaInset(edge: .bottom) {
-                Button { if showsProtection && asksHelperAlerts { onHelperStep = true } else { Task { await save() } } } label: {
-                    ShieldActionLabel(title: working ? "Saving…" : showsProtection && asksHelperAlerts ? "Next" : "Save my choice", isWorking: working)
+                if !dynamicTypeSize.isAccessibilitySize {
+                    completionButton
+                        .padding(20).background(ShieldTheme.surface)
                 }
-                .shieldPrimaryButton().disabled(working).accessibilityIdentifier("onboarding-protection-continue")
-                .padding(20).background(ShieldTheme.surface)
             }
             .navigationTitle("Your choices").navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -76,6 +80,17 @@ struct ProtectionOnboardingView: View {
                 Button("Cancel", role: .cancel) {}
             } message: { Text(error ?? "Please try again.") }
         }
+    }
+
+    private var completionButton: some View {
+        Button {
+            if showsProtection && asksHelperAlerts { onHelperStep = true }
+            else { Task { await save() } }
+        } label: {
+            ShieldActionLabel(title: working ? "Saving…" : showsProtection && asksHelperAlerts ? "Next" : "Save my choice", isWorking: working)
+        }
+        .shieldPrimaryButton().disabled(working)
+        .accessibilityIdentifier("onboarding-protection-continue")
     }
 
     private func save() async {

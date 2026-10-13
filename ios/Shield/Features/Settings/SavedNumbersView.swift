@@ -21,21 +21,21 @@ struct SavedNumbersView: View {
     var body: some View {
         List {
             if let loadError {
-                Section {
+                ShieldGroup {
                     ShieldLoadFailure(title: "Numbers couldn’t load", detail: loadError) { Task { await load() } }
                 }
             }
             if loading && items.isEmpty {
-                Section { ShieldLoadingView(title: "Getting your numbers…") }
+                ShieldGroup { ShieldLoadingView(title: "Getting your numbers…") }
             } else if items.isEmpty && loadError == nil {
-                Section {
+                ShieldGroup {
                     ContentUnavailableView("No numbers yet", systemImage: "phone",
                         description: Text("Save a number from a card, bill, or official website."))
                     Button("Add a number", systemImage: "plus") { showingAdd = true }
                         .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
                 }
             }
-            Section {
+            ShieldGroup {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                         Text(item.label).font(.headline).fixedSize(horizontal: false, vertical: true)

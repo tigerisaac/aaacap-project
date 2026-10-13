@@ -19,7 +19,7 @@ struct SharingView: View {
     var body: some View {
         ScrollViewReader { proxy in
         Form {
-            Section {
+            ShieldGroup {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                     Text("Their name").font(.headline)
                     TextField("Their name", text: $label, prompt: Text("Name of your helper").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
@@ -33,7 +33,7 @@ struct SharingView: View {
                 Text("They can see your calls. You choose whether to share messages too.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             .disabled(creating)
-            Section {
+            ShieldGroup {
                 Button { editingName = false; confirmShare = true } label: {
                     ShieldActionLabel(title: creating ? "Creating…" : "Make invitation", isWorking: creating)
                 }
@@ -61,7 +61,7 @@ struct SharingView: View {
                 }
             }
             if model.isOwner, model.service?.notificationsAvailable == true, !model.isDemo {
-                Section {
+                ShieldGroup {
                     HelperAlertsToggle()
                     DisclosureGroup("When will they hear from Shield?") {
                         Text("When Shield ends a scam call, a blocked caller tries again, or call checks are paused. Alerts include your name, but no caller’s words or number.")

@@ -16,7 +16,7 @@ struct SharedContactsView: View {
 
     var body: some View {
         List {
-            Section {
+            ShieldGroup {
                 Button { Task { await model.share(app) } } label: {
                     Label(model.working ? "Updating contacts…" : model.hasShared(app.selectedPersonID) ? "Update my contacts" : "Use my iPhone contacts", systemImage: "person.2.badge.plus")
                         .font(.headline).padding(.vertical, 8)
@@ -29,11 +29,11 @@ struct SharedContactsView: View {
                 Text("Names and numbers go to Shield. Your saved contacts can ring you as usual.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             if let error = model.loadError {
-                Section { ShieldLoadFailure(title: "Contacts couldn’t load", detail: error) { Task { await model.load(app) } } }
+                ShieldGroup { ShieldLoadFailure(title: "Contacts couldn’t load", detail: error) { Task { await model.load(app) } } }
             } else if model.loading && model.items.isEmpty {
-                Section { ShieldLoadingView(title: "Getting your contacts…") }
+                ShieldGroup { ShieldLoadingView(title: "Getting your contacts…") }
             } else if filtered.isEmpty {
-                Section {
+                ShieldGroup {
                     if search.isEmpty {
                         ContentUnavailableView("Your calling list is empty", systemImage: "person.2",
                             description: Text("Use your iPhone contacts to let Shield know who you already know."))
@@ -42,7 +42,7 @@ struct SharedContactsView: View {
                     }
                 }
             }
-            Section {
+            ShieldGroup {
                 ForEach(filtered) { item in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.label).font(.headline)
@@ -66,7 +66,7 @@ struct SharedContactsView: View {
                 Text("Removing a number here also removes it from iPhone Contacts.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             if model.items.contains(where: { !$0.isEnabled }) {
-                Section {
+                ShieldGroup {
                     DisclosureGroup("Removed contacts") {
                         ForEach(model.items.filter { !$0.isEnabled }) { item in
                             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
@@ -81,7 +81,7 @@ struct SharedContactsView: View {
                     }
                 }
             }
-            Section {
+            ShieldGroup {
                 Button("Contacts settings", systemImage: "gearshape") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 }.frame(minHeight: ShieldTheme.Layout.minimumTarget)

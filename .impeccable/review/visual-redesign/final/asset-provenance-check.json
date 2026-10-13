@@ -1,0 +1,52 @@
+[
+  {
+    "file": "ios/Shield/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "rgba_sha256_before": "8decbb335118fd2722e5d6a4b8773d4ca48a6fa2edf36f8cabddf618241a8448",
+    "rgba_sha256_after": "8decbb335118fd2722e5d6a4b8773d4ca48a6fa2edf36f8cabddf618241a8448",
+    "pixels_unchanged": true
+  },
+  {
+    "file": "ios/Shield/Resources/Assets.xcassets/LaunchMark.imageset/LaunchMark.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "rgba_sha256_before": "e6d568324e04a42b6aad6d3072a2b4cc92ef97103a6c3717deddfa5eb4827937",
+    "rgba_sha256_after": "e6d568324e04a42b6aad6d3072a2b4cc92ef97103a6c3717deddfa5eb4827937",
+    "pixels_unchanged": true
+  },
+  {
+    "file": "ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "rgba_sha256_before": "8decbb335118fd2722e5d6a4b8773d4ca48a6fa2edf36f8cabddf618241a8448",
+    "rgba_sha256_after": "8decbb335118fd2722e5d6a4b8773d4ca48a6fa2edf36f8cabddf618241a8448",
+    "pixels_unchanged": true
+  },
+  {
+    "file": "docs/images/ios-polish-onboarding.jpg",
+    "size": [
+      1236,
+      902
+    ],
+    "rgba_sha256_before": "cc1a9b387b35a8a734bbcd0d8691a8777296924ec14ca9ab6c61a73cbb27ed46",
+    "rgba_sha256_after": "cc1a9b387b35a8a734bbcd0d8691a8777296924ec14ca9ab6c61a73cbb27ed46",
+    "pixels_unchanged": true
+  },
+  {
+    "file": "docs/images/ios-polish-large-text.jpg",
+    "size": [
+      1400,
+      772
+    ],
+    "rgba_sha256_before": "589979a871cc8815a8de04324bfda0e7a1cebb126ad1e24d32af46cde171d621",
+    "rgba_sha256_after": "589979a871cc8815a8de04324bfda0e7a1cebb126ad1e24d32af46cde171d621",
+    "pixels_unchanged": true
+  }
+]

@@ -18,9 +18,9 @@ struct SettingsView: View {
                     NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Numbers you trust", symbol: "phone.badge.checkmark") }
                 }
             } else {
-                Section { NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") } }
+                ShieldGroup { NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") } }
             }
-            Section {
+            ShieldGroup {
                 if model.service?.notificationsAvailable == true, !model.isDemo {
                     NavigationLink { MessageAlertsView() } label: { ActionRow(title: "Message alerts", symbol: "bell") }
                 }
@@ -29,7 +29,7 @@ struct SettingsView: View {
                     Link(destination: origin.appending(path: "privacy")) { ActionRow(title: "Privacy", symbol: "lock.shield") }
                 }
             }
-            Section {
+            ShieldGroup {
                 let leavesSample = model.isDemo && !model.isTestAccount
                 Button(leavesSample ? "Leave sample app" : "Sign out") { confirmSignOut = true }
                     .frame(minHeight: ShieldTheme.Layout.minimumTarget)

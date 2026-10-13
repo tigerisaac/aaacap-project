@@ -19,7 +19,7 @@ struct CheckView: View {
     var body: some View {
             ScrollViewReader { proxy in
                 List {
-                    Section {
+                    ShieldGroup {
                         TextEditor(text: $text).frame(minHeight: editorHeight).focused($editing)
                             .accessibilityLabel("Text to check").disabled(checking || readingPhoto)
                             .overlay(alignment: .topLeading) {
@@ -41,7 +41,7 @@ struct CheckView: View {
                         .foregroundStyle(ShieldTheme.secondaryText)
                         .font(.subheadline)
                     }
-                    Section {
+                    ShieldGroup {
                         Button { editing = false; showConsent = true } label: {
                             ShieldActionLabel(title: checking ? "Checking…" : "Check this text", isWorking: checking)
                         }
@@ -56,7 +56,7 @@ struct CheckView: View {
                         .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
                     }
                     if result == nil {
-                        Section {
+                        ShieldGroup {
                             DisclosureGroup("How do I copy a text?") {
                                 Text("In Messages, touch and hold the message and tap Copy. To copy just part, tap Select first and choose the words.")
                                 Text("Return to Shield and tap Paste.").foregroundStyle(ShieldTheme.secondaryText)
@@ -64,34 +64,34 @@ struct CheckView: View {
                         }
                     }
                     if let error {
-                        Section {
+                        ShieldGroup {
                             ShieldNotice(title: "Couldn’t check this text", detail: error, symbol: "exclamationmark.circle")
                                 .id("check-error").accessibilityFocused($errorFocused)
                         }
                     }
                     if let result {
-                        Section {
+                        ShieldGroup {
                             VStack(alignment: .leading, spacing: 16) {
                                 if result.isDemo { Text("Sample answer").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                                 Label {
-                                    Text(result.title).foregroundStyle(Color.primary)
+                                    Text(result.title).foregroundStyle(ShieldTheme.ink)
                                 } icon: {
                                     Image(systemName: result.decision == "refuse" ? "hand.raised.fill" : "info.circle.fill")
                                         .foregroundStyle(result.decision == "refuse" ? ShieldTheme.held : ShieldTheme.secondaryText)
                                 }
-                                .font(.title2.bold())
+                                .font(ShieldTheme.Typography.title)
                                 .accessibilityAddTraits(.isHeader)
                                 .accessibilityFocused($resultFocused)
                                 Text(result.detail)
                                 Divider()
-                                Text("What to do next").font(.headline)
+                                Text("What to do next").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink)
                                 Text(result.nextStep)
                             }.padding(.vertical, 12)
                                 .id("check-result")
                             Button("Check another text", systemImage: "plus.bubble") { text = ""; self.result = nil; editing = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         } footer: { Text("This check can be wrong. It can’t prove who sent the text.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                         if model.isOwner {
-                            Section { NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Find a trusted number", symbol: "phone") } }
+                            ShieldGroup { NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Find a trusted number", symbol: "phone") } }
                         }
                     }
                 }
@@ -116,13 +116,14 @@ struct CheckView: View {
     @ViewBuilder private var inputActions: some View {
         PasteButton(payloadType: String.self) { values in text = values.joined(separator: "\n") }
             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule)
-            .controlSize(.large)
+            .controlSize(.extraLarge)
+            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
             .disabled(checking || readingPhoto)
         PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto] in
             Label(readingPhoto ? "Reading picture…" : "Choose picture", systemImage: "photo")
-                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                .font(.body).frame(minHeight: 32)
         }
-        .shieldSecondaryButton()
+        .shieldSecondaryButton().controlSize(.extraLarge)
         .disabled(readingPhoto || checking)
     }
 

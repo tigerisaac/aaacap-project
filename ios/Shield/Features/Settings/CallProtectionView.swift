@@ -14,7 +14,7 @@ struct CallProtectionView: View {
 
     var body: some View {
         Form {
-            Section {
+            ShieldGroup {
                 if loadFailed {
                     Text("Couldn’t check this setting.")
                     Button("Try again") { Task { await load() } }
@@ -32,7 +32,7 @@ struct CallProtectionView: View {
             } footer: {
                 Text(footer).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
-            Section { CallProtectionExplanation() }
+            ShieldGroup { CallProtectionExplanation() }
         }
         .shieldListStyle()
         .navigationTitle("Checks while you talk")

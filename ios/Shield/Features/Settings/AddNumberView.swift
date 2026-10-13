@@ -27,7 +27,7 @@ struct AddNumberView: View {
         NavigationStack {
             ScrollViewReader { proxy in
                 Form {
-                    Section {
+                    ShieldGroup {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Name").font(.headline)
                             TextField("Name", text: $label, prompt: Text("For example, My clinic").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
@@ -55,7 +55,7 @@ struct AddNumberView: View {
                         Text("Include the area code. US and Canadian numbers only.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                     if kind == .destinations {
-                        Section {
+                        ShieldGroup {
                             Picker("Found on", selection: $provenance) {
                                 Text("A card").tag("card")
                                 Text("A bill or statement").tag("statement")
@@ -65,7 +65,7 @@ struct AddNumberView: View {
                         } footer: { Text("Don’t use a number from an unexpected call or text.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                     }
                     if let error {
-                        Section {
+                        ShieldGroup {
                             ShieldNotice(title: "Save not confirmed", detail: error, symbol: "exclamationmark.circle")
                                 .id("number-save-error").accessibilityFocused($errorFocused)
                             if let problemDetail {

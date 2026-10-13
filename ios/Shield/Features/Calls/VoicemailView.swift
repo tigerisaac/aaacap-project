@@ -16,27 +16,28 @@ struct VoicemailView: View {
             List {
                 PersonContextSection()
                 if app.isDemo, app.isOwner, app.canListen {
-                    Section {
+                    ShieldGroup(background: .clear) {
                         Picker("Messages", selection: $keptOnly) {
                             Text("All").tag(false)
                             Text("Kept").tag(true)
                         }.pickerStyle(.segmented).accessibilityIdentifier("sample-message-filter")
                     }
+                    .listRowInsets(EdgeInsets())
                 }
                 if let error = inbox.error {
-                    Section {
+                    ShieldGroup {
                         ShieldLoadFailure(title: "Messages couldn’t load", detail: error) { Task { await inbox.load(app) } }
                     }
                 }
                 if inbox.loading, inbox.calls.isEmpty {
-                    Section { ShieldLoadingView(title: "Getting your messages…") }
+                    ShieldGroup { ShieldLoadingView(title: "Getting your messages…") }
                 } else if messages.isEmpty, inbox.error == nil {
-                    Section {
+                    ShieldGroup {
                         ContentUnavailableView(keptOnly ? "No kept messages yet" : "No messages yet", systemImage: "tray",
                             description: Text(keptOnly ? "Open a sample message and tap Keep this message." : "Voicemail and saved notices will appear here."))
                     }
                 } else {
-                    Section {
+                    ShieldGroup {
                         ForEach(messages) { call in
                             NavigationLink(value: call) {
                                 VoicemailRow(call: call, showsPreview: app.canListen, kept: app.demoKeptMessages.contains(call.id))
@@ -45,7 +46,7 @@ struct VoicemailView: View {
                     }
                 }
                 if !removed.isEmpty, !keptOnly {
-                    Section {
+                    ShieldGroup {
                         DisclosureGroup("Removed messages") {
                             ForEach(removed) { call in
                                 NavigationLink(value: call) { VoicemailRow(call: call) }
@@ -54,7 +55,7 @@ struct VoicemailView: View {
                     }
                 }
                 if inbox.nextCursor != nil {
-                    Section {
+                    ShieldGroup {
                         Button(inbox.loading ? "Getting more…" : "Older messages") { Task { await inbox.load(app, more: true) } }
                             .disabled(inbox.loading)
                     }

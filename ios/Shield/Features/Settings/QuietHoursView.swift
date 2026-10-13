@@ -19,16 +19,16 @@ struct QuietHoursView: View {
         ScrollViewReader { proxy in
             Form {
                 if let loadError {
-                    Section {
+                    ShieldGroup {
                         ShieldLoadFailure(title: "Quiet hours couldn’t load", detail: loadError) { Task { await load() } }
                     }
                 } else if model.isDemo && !usesFixture {
-                    Section { Text("Quiet hours don’t change in the sample app.").foregroundStyle(ShieldTheme.secondaryText) }
+                    ShieldGroup { Text("Quiet hours don’t change in the sample app.").foregroundStyle(ShieldTheme.secondaryText) }
                 } else if loading {
-                    Section { ShieldLoadingView(title: "Getting your quiet hours…") }
+                    ShieldGroup { ShieldLoadingView(title: "Getting your quiet hours…") }
                 }
                 if loaded || (model.isDemo && !usesFixture) {
-                    Section {
+                    ShieldGroup {
                         Toggle("Quiet hours", isOn: $hours.enabled)
                         if hours.enabled {
                             Picker("From", selection: $hours.start) {
@@ -39,14 +39,14 @@ struct QuietHoursView: View {
                             }
                         }
                     }.disabled(working || (model.isDemo && !usesFixture) || !loaded)
-                    Section {
+                    ShieldGroup {
                         Text("Calls that reach Shield go to voicemail during these hours.")
                         Text("Times are Central time.").foregroundStyle(ShieldTheme.secondaryText)
                         if changed { Text("Save below to use these hours.").foregroundStyle(ShieldTheme.secondaryText) }
                     }
                 }
                 if let saveError {
-                    Section {
+                    ShieldGroup {
                         ShieldNotice(title: "Hours not confirmed", detail: saveError, symbol: "exclamationmark.circle")
                             .id("quiet-save-error").accessibilityFocused($errorFocused)
                     }

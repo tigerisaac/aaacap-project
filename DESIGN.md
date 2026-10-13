@@ -1,11 +1,11 @@
 ---
-name: Shield
-description: A familiar native call companion with clear words and roomy controls.
+name: "Shield"
+description: "An editorial phone companion with clear choices and familiar native controls."
 colors:
-  action-light: "#224CC5"
-  action-dark: "#9BB3FF"
-  action-light-high: "#173AA3"
-  action-dark-high: "#BDD0FF"
+  action-light: "#002664"
+  action-dark: "#B9CDF2"
+  action-light-high: "#001A45"
+  action-dark-high: "#D6E4FF"
   held-light: "#B53742"
   held-dark: "#FF9B9C"
   held-light-high: "#8F2230"
@@ -18,19 +18,46 @@ colors:
   message-dark: "#CAAEFF"
   message-light-high: "#58308F"
   message-dark-high: "#DECAFF"
-  secondary-light: "rgb(34% 34% 34%)"
-  secondary-dark: "rgb(76% 76% 76%)"
-  secondary-light-high: "rgb(20% 20% 20%)"
-  secondary-dark-high: "rgb(86% 86% 86%)"
+  surface-light: "#F2F3F4"
+  surface-dark: "#101B2B"
+  surface-light-high: "#E8EBEF"
+  surface-dark-high: "#091321"
+  card-light: "#FFFFFF"
+  card-dark: "#1C293B"
+  card-light-high: "#FFFFFF"
+  card-dark-high: "#162235"
+  ink-light: "#101E32"
+  ink-dark: "#F3F6FB"
+  ink-light-high: "#061326"
+  ink-dark-high: "#FFFFFF"
+  quiet-surface-light: "#E7EBF1"
+  quiet-surface-dark: "#28364A"
+  quiet-surface-light-high: "#DCE2EA"
+  quiet-surface-dark-high: "#34465F"
+  field-border-light: "#7C8B9E"
+  field-border-dark: "#6B7D97"
+  field-border-light-high: "#607188"
+  field-border-dark-high: "#95A6BD"
+  paste-fill-light: "#002664"
+  paste-fill-dark: "#244C82"
+  paste-fill-light-high: "#001A45"
+  paste-fill-dark-high: "#173969"
+  secondary-light: "rgb(32% 37% 44%)"
+  secondary-dark: "rgb(72% 77% 84%)"
+  secondary-light-high: "rgb(18% 23% 30%)"
+  secondary-dark-high: "rgb(85% 90% 96%)"
   action-ink-light: "#FFFFFF"
   action-ink-dark: "rgb(8% 12% 22%)"
 typography:
   display:
-    fontFamily: "system-ui"
-    fontWeight: 700
+    fontFamily: "ui-serif"
+    fontWeight: 400
   title:
-    fontFamily: "system-ui"
-    fontWeight: 700
+    fontFamily: "ui-serif"
+    fontWeight: 400
+  section:
+    fontFamily: "ui-serif"
+    fontWeight: 400
   headline:
     fontFamily: "system-ui"
     fontWeight: 600
@@ -42,8 +69,9 @@ typography:
     fontFamily: "system-ui"
     fontWeight: 600
 rounded:
-  card: "26pt"
+  card: "20pt"
   field-and-intro: "14pt"
+  symbol: "10pt"
 spacing:
   compact: "8pt"
   regular: "12pt"
@@ -66,6 +94,8 @@ components:
     textColor: "{colors.action-light}"
     typography: "{typography.headline}"
   input-email:
+    backgroundColor: "{colors.card-light}"
+    textColor: "{colors.ink-light}"
     typography: "{typography.body}"
     rounded: "{rounded.field-and-intro}"
     padding: "{spacing.content}"
@@ -74,18 +104,13 @@ components:
   outcome-label:
     typography: "{typography.label}"
   call-row:
-    padding: "8pt 0"
-  action-row:
     typography: "{typography.body}"
-    height: "52pt"
-    padding: "8pt 0"
+    padding: "10pt 0"
   voicemail-row:
-    typography: "{typography.headline}"
-    padding: "8pt 0"
-  sample-banner:
-    typography: "{typography.label}"
-    padding: "8pt 16pt"
+    typography: "{typography.body}"
+    padding: "10pt 0"
   card-container:
+    backgroundColor: "{colors.card-light}"
     rounded: "{rounded.card}"
     padding: "{spacing.card}"
   home-stopped-calls:
@@ -100,231 +125,214 @@ components:
 
 ## Overview
 
-**Creative North Star: "Public-library wayfinding"**
+**Creative North Star: "Editorial phone companion"**
 
-Shield keeps a familiar native iPhone appearance: grouped lists, straightforward labels, system text, and recognizable controls. Quiet surfaces and four adaptive accents help people find a call, understand its result, and choose the next action. The library metaphor describes legible wayfinding; it does not introduce themed decoration.
+Shield translates the user's America.gov reference into a simple native iPhone companion: pale neutral ground, white reading groups, deep navy actions, serif content headings and familiar sans controls. The reference supplies composure and the relationship between display and interface text. SwiftUI supplies the navigation, controls and adaptive text; no licensed reference font, photograph or website-scale composition is copied.
 
-The October 12 refinement makes an 80-year-old's understanding the bar. Ordinary screens use everyday words, fewer visible choices, and room for text to grow. Less common details open on request. Setup, disconnection, privacy, and sharing retain the information and explicit confirmations needed for a meaningful choice.
+An 80-year-old's comprehension is the design bar. Plain labels, generous controls and one clear next action carry the work. Daily calls and messages remain within four familiar tabs. Setup, sharing, privacy and uncertain results retain the information needed for explicit choices. The decorative vocabulary stays sparse so the words can grow.
 
 **Key Characteristics:**
 
-- Native tabs, navigation stacks, grouped lists, forms, sheets, menus, and confirmation dialogs.
-- Action blue, stopped-call red, answered-call teal, and voicemail violet with Light, Dark, and increased-contrast variants.
-- Semantic Dynamic Type, wrapping text, generous app controls, and content-based stacking.
-- Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.
-- Home's native large title shares the grouped canvas at rest; its collapsed navigation background matches that surface.
-- One choice per onboarding screen, progressive disclosure, and visible recovery when a task fails.
+- Pale neutral ground and white grouped reading surfaces, with navy ground and pale actions in Dark Mode.
+- Native serif purpose and section headings; native sans body, controls, toolbars and navigation.
+- Native tabs, lists, forms, switches, sheets, dialogs and state feedback.
+- Semantic Dynamic Type, wrapping text, content-based stacking and generous app-owned actions.
+- Call outcomes, person context, sharing scope and sample-only state expressed in words as well as color.
+- Flat surfaces, restrained SF Symbols and explicit choices with retained state and visible recovery.
 
-**Evidence boundary:** Refreshed from local SwiftUI source and the October 12 senior-polish simulator packet at `.impeccable/review/polish-final/pro`. The rules below record implemented patterns; the current review evidence and unresolved native diagnostics belong in [the polish audit](docs/IOS-POLISH-AUDIT.md). No clean overall native audit, real VoiceOver session, older-participant usability, physical-device approval, or real-call performance is claimed. Deployment evidence remains separate in [Status](docs/STATUS.md). No deployment, owner-phone change, carrier setting, or real call occurred in this documentation pass.
+**Evidence boundary (October 13, 2026):** This document records the current local SwiftUI source and the code-led direction in `.impeccable/surfaces/ios-shield-app-rootview-swift.md`. The [full finish review](.impeccable/review/visual-redesign/final/finish-review.md) returned **fix** for accessibility-size onboarding completion order and the stale design documentation. The same reviewer's [bounded final verdict](.impeccable/review/visual-redesign/verdict/finish-verdict.md) resolved both fixes with **disposition: ship**. That result covers the two scored fixes; it did not reopen or certify the complete surface. No regression was identified in the requested recaptures or inspected correction.
+
+The initial full-review evidence is `.impeccable/review/visual-redesign/final/pro` (18 contact sheets, 103 PNGs) and `.impeccable/review/visual-redesign/final/small` (30 sheets, 176 PNGs, including seven intentional audit crops). Corresponding onboarding device PNGs were replaced with matching corrected captures; the initial 48 contact sheets were not used to score the correction. Fresh corrected evidence is unambiguous in `.impeccable/review/visual-redesign/verdict/pro` and `.impeccable/review/visual-redesign/verdict/small`, each with fourteen device PNGs, a manifest and three contact sheets. Both phones passed all nine focused onboarding tests, including normal/accessibility reading order, Back/off-choice retention and repeated failed-save recovery; the corrected Release simulator build passed. Durable proof is in [everyday screens](docs/images/ios-visual-everyday.jpg), [onboarding](docs/images/ios-visual-onboarding.jpg) and [the visual polish record](docs/IOS-VISUAL-POLISH.md).
+
+The automated native audit remains failed: twenty diagnostics in four cases, including unlocalized Contacts hit-area reports. Pixel checks of the reported Cancel and Close controls measured approximately 16.55:1 and 20.06:1, but these measurements do not clear the overall audit. Source, synthetic fixtures and iOS simulators cannot establish real VoiceOver use, physical-device quality, older-participant comprehension, real-call performance or deployment. Deployed facts belong in [Status](docs/STATUS.md).
 
 ## Colors
 
-Color gives actions and call outcomes a consistent identity while opaque supporting text and native grouped surfaces carry the reading hierarchy.
+The palette places navy actions and dark reading ink on quiet neutral surfaces. Outcome hues preserve their existing meanings without competing with the reading hierarchy. The frontmatter records the asset catalog's actual Light, Dark and increased-contrast values; SwiftUI resolves the appropriate variant.
 
 ### Primary
 
-- **Action blue** (`Action`; `action-*`): application tint, selected navigation, primary actions, setup context, calls being checked or offered, and the positive Home Calls stopped panel. The historical panel does not represent current protection status.
+- **Navy action** (`Action`; `action-*`): primary buttons, selected navigation, ordinary actions and calls being checked or offered. Dark Mode uses the pale counterpart against navy surfaces.
+- **Native Paste fill** (`PasteFill`; `paste-fill-*`): stays deep in both appearances because the native Paste control draws a white label.
+- **Action ink** (`ShieldTheme.actionInk`; `action-ink-*`): white on deep Light Mode actions, deep ink on pale Dark Mode actions. Disabled primary labels use native primary foreground instead.
 
 ### Secondary
 
-- **Stopped-call red** (`Held`; `held-*`): Stopped and Check first outcomes, warning context, and text checks that need caution. It never authenticates a caller or independently proves wrongdoing.
-- **Answered-call teal** (`Connected`; `connected-*`): Answered outcomes. It describes a connected call, not a verified identity.
+- **Stopped-call red** (`Held`; `held-*`): Stopped, Check first and caution. It describes the result of screening, not proof that a caller is malicious.
+- **Answered-call teal** (`Connected`; `connected-*`): Answered calls. Connection never proves identity.
 
 ### Tertiary
 
-- **Voicemail violet** (`Message`; `message-*`): message outcomes, the unheard-message dot, and sharing context.
+- **Voicemail violet** (`Message`; `message-*`): message context, New message text and message-related symbols.
 
 ### Neutral
 
-- **Opaque supporting text** (`ShieldTheme.secondaryText`; `secondary-*`): key headings, footnotes, timestamps, placeholders, and supporting explanations. The increased-contrast variants strengthen foreground separation without lowering opacity.
-- **Native grouped surfaces:** `ShieldTheme.surface` is `systemGroupedBackground`; `ShieldTheme.card` is `secondarySystemGroupedBackground`. Lists and Forms retain native separator and selection behavior. These are adaptive system colors, not the earlier fixed Surface asset values.
-- **Native foregrounds:** `.primary` remains the ordinary reading color; a missed-call outcome can use `.secondary`. **Action ink** (`ShieldTheme.actionInk`; `action-ink-*`) supplies white text on deep Light Mode actions and deep ink on pale Dark Mode actions. Disabled primary labels return to the native primary foreground. Native Paste has its own deep `PasteFill` asset so its system white label stays readable in both appearances.
+- **Neutral ground** (`Surface`; `surface-*`): the shared page, navigation and safe-area canvas. It is now an adaptive asset, not `systemGroupedBackground`.
+- **Grouped reading surface** (`Card`; `card-*`): white Light Mode groups and distinct navy Dark Mode groups. Native List/Form grouping and separators remain authoritative.
+- **Reading ink** (`Ink`; `ink-*`): custom content headings, row titles and other emphasized reading text. Ordinary native controls may retain `.primary`.
+- **Supporting ink** (`ShieldTheme.secondaryText`; `secondary-*`): opaque supporting explanations, dates and placeholders. Increased contrast strengthens separation without lowering opacity.
+- **Quiet symbol surface** (`QuietSurface`; `quiet-surface-*`): restrained backings for repeated row symbols.
+- **Input boundary** (`FieldBorder`; `field-border-*`): sign-in's visible field boundary; focus uses Action. The focus and increased-contrast stroke is thicker than the resting standard stroke.
 
-Small symbol backgrounds may use a role tint at low opacity, such as ScreenIntro's 10% fill. Outcome labels themselves are unboxed. The sample marker sits on an opaque system surface.
+ScreenIntro may place a role symbol on a low-opacity tint. This small illustration does not set the opacity of readable text. Outcome labels remain unboxed. The positive Home historical-total row uses Action with Action ink; zero and unavailable totals return to Card.
 
-**The Outcome Truth Rule.** Pair color with a familiar outcome label or symbol; a call being checked, offered, or answered never implies an authenticated caller.
+**The Outcome Truth Rule.** Pair outcome color with plain words or a familiar symbol; a checked, offered or answered call never implies an authenticated caller.
 
-The sidecar's synthesized tonal strips only illustrate hue in the documentation panel. The app uses the asset and foreground variants above; intermediate ramp colors are not native tokens.
-
-Source: `ios/Shield/Design/ShieldTheme.swift`, `ios/Shield/Models/CallOutcome.swift`, and `ios/Shield/Resources/Assets.xcassets`.
+The sidecar's synthesized tonal strips are documentation illustrations. Intermediate ramp colors are not app tokens. Source: `ios/Shield/Design/ShieldTheme.swift` and `ios/Shield/Resources/Assets.xcassets`.
 
 ## Typography
 
-Native system fonts supply interface text and SF Symbols supply iconography. The frontmatter's `system-ui` is a portable family description; SwiftUI's semantic text styles and Dynamic Type are authoritative. There is no custom fixed-size type ramp or line-height scale.
+**Display Font:** Native SwiftUI system serif
+**Body Font:** Native SwiftUI system sans
 
-| Role | Implemented style | Use |
-| --- | --- | --- |
-| Display | Native navigation title; `.largeTitle.bold()` for Shield | Screen identity and sign-in brand |
-| Title | `.title.bold()`, `.title2.bold()`, or `.title3.bold()`; `.title3` for message summaries | Onboarding and setup headings, call-detail title, results, focused introductions, readable summaries |
-| Headline | `.headline`; `.body.weight(.semibold)` in call rows | Message titles, section headings, action labels, call purposes |
-| Body | `.body` or default Text | Instructions, form content, explanations, More choices |
-| Supporting | `.subheadline` | Call time, outcome, number, sharing scope, sample marker |
-| Label | `.subheadline.weight(.semibold)` | OutcomeBadge and sample-data identity |
+**Character:** Serif content headings add the reference's calm editorial emphasis. Familiar sans words and controls preserve ordinary iPhone reading and interaction. Semantic text styles and Dynamic Type are authoritative; there is no custom fixed-size type or line-height scale. Frontmatter uses the portable families `ui-serif` and `system-ui` for SwiftUI's native serif and default sans designs.
 
-Invitation and carrier codes use native monospaced text where appropriate. They are task-specific content, not a display face. Call timestamps expose full dates to accessibility even when visible text uses a local time, Yesterday, or a short date.
+### Hierarchy
 
-The user-requested Home count uses `.largeTitle.scaled(by: 1.5).bold()` with monospaced digits beneath a wrapping `.title3.bold()` heading. This emphasis belongs to the single historical count panel; it does not replace the native type ramp across other screens.
+- **Display** (`Font.system(.largeTitle, design: .serif)`): sign-in purpose and full Shield brand.
+- **Title** (`Font.system(.title, design: .serif)`): page purpose, status and call-detail headings.
+- **Section** (`Font.system(.title3, design: .serif)`): reusable section headings and focused introductions.
+- **Headline** (native `.headline` or `.body.weight(.semibold)`): buttons, call/message titles and actionable labels.
+- **Body** (native `.body` or default Text): instructions, form content and ordinary choices.
+- **Supporting** (native `.subheadline`): dates, outcomes, numbers, sharing scope and explanations.
+- **Label** (native `.subheadline.weight(.semibold)`): unboxed outcome and sample identity.
 
-**The Native Type Rule.** Preserve semantic text styles and allow wrapping or stacking before introducing a fixed text size.
+Navigation titles, tabs and toolbars retain the platform sans face. Some functional headings, including Calls stopped, remain native sans; serif is a content hierarchy, not a replacement for every label. Compact Shield identity uses native serif `.title2`. Invitation/carrier codes and time values use native monospaced treatment where useful.
+
+The historical stopped count alone uses the display style scaled by 1.6 with monospaced digits. This focused numeral is not a general display-size token. Call and message dates expose full dates to accessibility even when the visible label is shorter.
+
+**The Native Type Rule.** Use semantic text styles and allow wrapping or stacking before shrinking words or introducing a fixed text size.
 
 ## Layout
 
-The four native tabs are Home, Calls, Messages, and More. Messages keeps voicemail and saved prerecorded notices in one inbox. Each destination owns a NavigationStack. Lists use `.insetGrouped`, hide the scroll-content background in favor of the shared system surface, and set the default minimum row height to 60 points. Native hard scroll-edge effects remain the shared default, with Home's top edge deliberately hidden. Sheets and dialogs retain platform behavior.
+The app uses Home, Calls, Messages and More native tabs, each daily destination within a NavigationStack. Lists use inset grouping, a 60-point minimum row default, 28-point section spacing, the shared Surface background and a 16-point bottom safe-area padding. Native rows grow to fit their content. ShieldGroup supplies Card behind a native Section; ShieldSection additionally supplies a sentence-case serif section heading.
 
-Home explicitly uses the native large navigation title and hides its top scroll-edge effect. Its navigation-bar background uses `ShieldTheme.surface` with automatic visibility: the large title shares a continuous grouped canvas at rest, and the collapsed title gains an opaque matching background while content scrolls beneath it. NavigationShell supplies the same adaptive grouped surface behind the NavigationStack and safe areas. At ordinary text sizes the native person control stays in the toolbar; at accessibility sizes person context moves into the scrollable page. Other screens and scroll edges retain their hard effect. These are scoped native behaviors, not fixed surface-color or safe-area-offset tokens.
+The six shared spacing steps are in frontmatter. Sign-in and onboarding use page padding and a readable column capped at 560 points, centered in the available width. ScrollViews preserve room for text and the keyboard. There is no custom viewport breakpoint scale or app-specific iPad split layout.
 
-`ShieldTheme.Spacing` defines the six spacing tokens in frontmatter. Sign-in has a centered readable column capped at 560 points and page padding; it scrolls as content and the keyboard require. There is no custom viewport breakpoint system or app-specific iPad split layout.
+Shared app actions have a 52-point minimum target, not a fixed clipping height. Native platform controls retain native dimensions. The ordinary-size person Menu has a local 44-point minimum; it does not replace the shared action minimum. Source minima do not conclusively clear the audit's unlocalized Contacts reports.
 
-`ShieldTheme.Layout.minimumTarget` is 52 points for shared primary-action labels and many app-owned actions; this is a minimum, never a fixed clipping height. The frontmatter's component `height` values express this minimum. Grouped rows use the 60-point default and grow with their content. Platform-owned controls keep native sizing. PersonPicker currently has a separate explicit 44-point minimum; this local exception does not establish the general app target.
+From `.xxxLarge`, call titles and times stack, outcomes and numbers separate, message metadata stacks and Calls replaces its segmented filter with a full-width menu. At accessibility sizes, CallRow, VoicemailRow and ActionRow omit their decorative leading symbol slot; outside those sizes the symbol scales with semantic text. PersonContextSection moves the selected person's context into the scrolling page. Busy primary labels can stack their spinner above the words. ViewThatFits stacks short action groups when they cannot fit horizontally. The message-check editor scales its base height with body text.
 
-From `.xxxLarge`, Calls replaces its segmented filter with a full-width menu, call titles and times stack, and call outcomes and numbers occupy separate lines. Message kind, new/removed/kept state, and date stack at the same threshold. At accessibility sizes, busy primary-action labels can put the spinner above the words; ActionRow removes its decorative icon column so the label has more room. At other sizes that column scales relative to `.title3` through `ScaledMetric`. `ViewThatFits` stacks short action groups when their content does not fit horizontally. The text-check editor scales its 120-point base height relative to `.body`.
+Home's large native navigation title shares the Surface canvas at rest. Its top scroll-edge effect is hidden, and the collapsed navigation background matches Surface. Other edges retain the shared hard native effect; menus, sheets and dialogs retain platform geometry.
 
-`PersonContextSection` keeps the viewed person's name in the scrollable Home, Calls, and Messages lists at accessibility sizes. A multiple-person context offers a wrapping link to Family & friends; a single helper context shows the name in words. It replaces the toolbar person treatment at those sizes rather than adding a second cramped control.
+At standard text sizes onboarding keeps a bottom inset completion button. At accessibility sizes the same action is in the scrolling content after the explanation, full-row switch and any relevant disclosure. Back retains the unsaved selection; advancing returns to the page top and requests focus for the new heading. The corrected source, both phones' fresh verdict captures and focused tests support this order and state retention; real VoiceOver delivery remains unverified.
 
-**The Room for Words Rule.** Stack metadata and move person context into the page before shrinking text; at accessibility sizes remove decorative row icons when they compete with the label.
+**The Room for Words Rule.** Stack metadata, move person context into the page and remove decorative row symbols before reducing readable text.
 
 ## Elevation & Depth
 
-Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. The Home historical count uses one opaque Action-colored native list row when positive and a neutral card surface when zero or unavailable. Home's navigation background appears automatically in its collapsed state and matches the grouped canvas; its top scroll-edge effect is hidden, and other edges keep the shared hard effect. Menus, sheets, dialogs, control materials, and pressed feedback use operating-system behavior. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Message listening and legacy restoration controls use a bottom safe-area inset with an opaque system surface.
+Shield uses flat, opaque adaptive surfaces and native grouping rather than custom shadows or blur. Ground, reading groups and quiet symbol backings provide separation. Native menus, sheets, dialogs, control materials and pressed/disabled feedback provide interaction depth. Playback and standard-size onboarding actions use bottom safe-area insets with opaque Surface behind them. The sample marker has its own persistent region rather than floating over rows. No custom shadow, motion-duration or easing tokens are defined; operating-system motion and Reduce Motion behavior remain authoritative and require direct verification.
 
-**The Native Surface Rule.** Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.
+**The Native Surface Rule.** Use the shared adaptive surfaces with native grouping and state feedback before introducing custom elevation or motion.
 
 ## Shapes
 
-Primary buttons are native large `.borderedProminent` controls with capsule borders. Sign-in fields and introduction symbol tiles share the rounded field-and-intro geometry. The reusable `shieldCard` helper uses the card radius and card padding; ordinary list sections remain native grouped containers. No custom badge capsule surrounds outcome labels.
+Primary and reusable secondary buttons use native large capsule controls. The shared card helper uses the card radius and padding in frontmatter. Sign-in fields and introduction symbol tiles use the field-and-intro radius; repeated call, message and action symbol backings use the symbol radius. Native inset list groups keep their own platform corners and separators, rather than inheriting the custom card helper's geometry.
 
-The existing ShieldMark image retains its continuous app-icon enclosure. Its geometry is specific to the identity asset and does not establish a general-purpose container. In-app icons use SF Symbols, not character glyphs or a separate icon font.
+Outcome labels have no added badge capsule. Icons use SF Symbols, not character glyphs or a separate icon font. ShieldBrand clips the existing identity mark with continuous app-icon corners using a width ratio of 0.2237; this identity-specific shape does not establish a general container. The three existing identity rasters have repository-origin metadata; no image-generation prompt or licensed reference imagery is inferred.
 
 ## Components
 
 ### Buttons
 
-`shieldPrimaryButton` sets native prominent styling, large control size, capsule shape, and Action tint. `ShieldActionLabel` supplies a full-width, wrapping headline and the shared minimum target, with adaptive `actionInk` foreground. Loading states name the work and show ProgressView; disabled controls prevent duplicate or incomplete submissions. Secondary actions use native text or bordered controls. Destructive actions use native roles and explicit confirmation. Native focus, pressed, and disabled appearances remain authoritative.
+`shieldPrimaryButton` gives a native prominent capsule its Action tint. ShieldActionLabel supplies full-width wrapping headline text, adaptive Action ink and the minimum target. Loading names the work and uses ProgressView; disabled actions prevent incomplete or duplicate submissions. `shieldSecondaryButton` gives native large bordered capsule treatment. Native focus, pressed and disabled appearances remain authoritative.
 
-`shieldSecondaryButton` gives reusable secondary actions the native large bordered capsule treatment. Visible **Remove**, **Allow calls again**, **Call**, and recovery actions supplement swipe or context-menu shortcuts where present. **Allow calls again** uses words without a competing hand symbol. Contacts' **Remove** action fills its row with a rectangular touch area. Each action names its affected number or person for accessibility. A disabled or unavailable service action needs nearby state text; its appearance alone does not explain the reason.
+Visible Remove, Allow calls again, Call and recovery actions supplement swipe/menu shortcuts. Contacts Remove occupies a full-width rectangular target and names the affected person or number. Destructive actions retain native roles and explicit confirmations. Nearby text explains unavailable service actions.
 
 ### Switches
 
-`ShieldSwitchStyle` preserves the familiar iPhone switch while making the entire labeled row tappable with the shared minimum target. The wrapping label and visual switch remain together. The inner visual switch is hidden from accessibility and hit testing; an accessibility representation exposes one native Toggle with its label and value. RootView applies this treatment across app toggles. This is an implemented interaction pattern, not evidence that a real VoiceOver session has passed.
+ShieldSwitchStyle keeps the familiar native switch and makes the entire wrapping labeled row tappable. The visual switch is excluded from hit testing and accessibility; one native Toggle accessibility representation exposes the label and value. RootView applies the style throughout the app. Source semantics do not establish a real VoiceOver pass.
 
 ### Inputs / Fields
 
-Sign-in uses email and one-time-code fields with keyboard/content types, persistent visible labels, explicit accessibility labels, rounded card-colored containers, and a focus border. Long email addresses, helper names, saved-number names, phone numbers, and invitation codes use vertical fields that can grow. Email and phone entry expose a labeled **Clear** action while editing. Add number keeps **Done** in the full-width bottom action while a field is being edited; it ends editing and dismisses the keyboard. The same action becomes **Save number** after editing, with validation and working-state guards. Other entry screens retain keyboard **Done** controls where implemented. Sharing and entry sheets retain native Form fields, Picker, and Toggle. Check a text uses a labeled TextEditor with an accessibility-hidden placeholder, native Paste and Picture actions, and explicit agreement before sending text.
+Sign-in has a persistent visible label, explicit accessibility label, keyboard/content type and a rounded Card field. Its resting boundary is FieldBorder; focus uses Action, and focus/increased contrast use the stronger stroke. Email entry grows vertically, and a labeled Clear action appears during editing. Long names, numbers and invitation codes also grow rather than forcing a single line.
 
-Routine errors use ShieldNotice near the affected content; the root alert handles shared errors. Add number, Use an invitation, and Quiet hours scroll new save errors into view and request accessibility focus. Editing clears the stale error. Forwarding also scrolls and requests focus for step errors when setup data is present. These are source behaviors, with real assistive-technology delivery still unverified. There is no global custom error-border system.
-
-Add number reports **Save not confirmed** when a response fails rather than claiming that nothing was saved. If the iPhone Contacts save succeeded but the Shield update failed, it says **The number is in iPhone Contacts. Try saving again to update Shield.** The **Save number** action retries that update; underlying recovery detail sits behind **More about this problem**.
+Native Forms retain fields, Picker and Toggle. Add number's bottom action is Done while editing and Save number afterward; validation and working states gate submission. Check a text has a labeled editor, an accessibility-hidden placeholder, native Paste and Picture actions and explicit agreement before sending. Editing clears stale errors. Save failures in entry flows scroll the notice into view and request accessibility focus where implemented. These are source behaviors, with assistive-technology delivery still unverified.
 
 ### Sign-in and choices
 
-Sign-in begins with the Shield mark, one plain explanation, one email field, and **Continue**. The sent-link state names **Check your email**, shows the full wrapping address, and gives **Resend link** and **Change email** room to stack. The initial introduction and sample-app action leave that sent state so the next task stays clear. Source requests accessibility focus for the sent-state heading and sign-in errors. Working states name sending or signing in and prevent duplicate submission.
+Sign-in leads with a small Shield identity, one serif purpose heading, a brief explanation, bounded email field and Continue. The sent-link state names Check your email, shows the complete wrapping address and gives Resend link and Change email room to stack. Working states name sending/signing in and prevent duplicates. The sample action leaves the sent state so the next task stays clear.
 
-Protection onboarding asks one choice per screen: **Help while you talk**, then **Let a helper know** when both choices are required. **Next** advances the first choice; **Save my choice** saves the final choice. Each screen has a full-row switch and a stable bottom action on the grouped surface. Back returns to the first choice. Advancing resets scroll position and requests focus for the new heading. Optional alert details use a DisclosureGroup; a failed save uses a native retry/cancel alert. Explicit consent and the limitations of call checks remain readable.
+Protection onboarding asks one choice at a time: Help while you talk, then Let a helper know when both are required. Next advances and Save my choice commits. Standard-size completion stays at the bottom; accessibility-size completion follows the selected choice in scrolling order. Back retains the choice. Optional detail uses DisclosureGroup, and failed saving gives a native retry/cancel alert. Consent and the limits of call checks remain readable.
 
 ### Navigation
 
-The tabs are **Home**, **Calls**, **Messages**, and **More**, with `house.fill`, `phone.fill`, `tray.fill`, and `ellipsis` SF Symbols. The Messages destination contains both **Voicemail** and **Saved notice**, distinguished in row metadata and detail titles. More lists **Check a text**, **Family & friends**, **Get help**, and **Settings**. Its Check a text row has no explanatory subtitle. Focused tasks push through native NavigationLink rows; entry sheets retain Cancel and task-specific confirmation controls. Standard back navigation remains visible.
+Home, Calls, Messages and More use native TabView symbols and ordinary sans labels. Messages contains both Voicemail and Saved notice. More leads to Check a text, Family & friends, Get help and Settings. Native navigation rows push focused tasks. Sheets preserve Cancel and task-specific confirmation, and ordinary Back remains visible. Person context moves from a toolbar Menu into the page at accessibility sizes.
 
 ### Call and message rows
 
-CallRow follows Phone's Recents pattern: purpose or name and time, followed by outcome and optional number. The call symbol is paired with an outcome word unless the title already supplies it. An adaptive violet dot marks unheard voicemail at ordinary sizes; accessibility sizes or Differentiate Without Color replace that dot with the visible words **New message**. The row also exposes that state as an accessibility value. Home hides the number while Calls and detail retain it. The user-requested Home count is one focused historical action, rather than a grid of competing outcome totals.
+CallRow leads with purpose/name and time, then outcome and optional number. Its scaled outcome symbol sits on QuietSurface at ordinary sizes; accessibility sizes devote that space to words. Unheard messages always show New message text. Home omits the number; Calls/detail retain it. Metadata stacks from `.xxxLarge`, and combined accessibility describes the row with the full date.
 
-OutcomeBadge is an unboxed subheadline label with an SF Symbol. The labels are **Checking call**, **Phone rang**, **Answered**, **Stopped**, **Check first**, **Message**, and **Missed**. Call rows expand Missed to Missed call. Preserve these distinctions and the uncertainty behind Check first.
+OutcomeBadge is an unboxed symbol-and-word label. Keep Checking call, Phone rang, Answered, Stopped, Check first, Message and Missed distinct; CallRow expands Missed to Missed call and identifies voicemail kind where appropriate. Check first remains uncertain.
 
-VoicemailRow leads with the message purpose, then a summary of up to three lines at ordinary sizes and two at accessibility sizes when listening access permits. The supporting metadata names **Voicemail** or **Saved notice**, the date, and a **New**, sample-only **Kept**, or **Removed** state when applicable; from `.xxxLarge` these become separate lines. Opening the message provides the full summary. The Messages inbox offers native loading, retry, empty, pagination, and removed-message disclosure states.
+VoicemailRow leads with purpose. Authorized summaries are excerpts of up to three lines, or two at accessibility sizes; full detail remains available. Kind, New/Kept/Removed state and date stack at larger sizes. Helpers without listening permission receive neither summary nor audio. Message detail leads with a readable summary and keeps playback as its main action; the caller's claims remain explicitly unverified. Full transcripts are not saved, returned or displayed.
 
-Message detail leads with the summary and keeps playback as the main bottom action. Summaries use wrapping `.title3` text with a reminder that the caller's claims have not been verified. Full transcripts are not saved, returned or displayed. If readable text is unavailable, the detail explains that listening is still possible. Saved notices include advice to check the organization's app or a number from a card, statement, or saved contacts, plus **Find a trusted number** for the owner. **More about this call** opens additional detail. Helpers without `canListen` see **Message is private** and receive no summary or audio controls.
+Listen to message, Getting message…, Pause message and Resume message name playback state. Native progress provides elapsed/total time, with monospaced digits and a visible Start over action. Playback failure offers Try again. A failed played-status update preserves listening and offers Update played status. Leaving detail, backgrounding, changing person or losing permission stops playback and cancels pending work; stale results cannot restart it. Sample speech remains labeled Hear sample message / Stop sample.
 
-Real playback uses **Listen to message**, **Getting message…**, **Pause message**, and **Resume message** for the current state. After audio loads, MessagePlaybackProgress shows a native progress bar, elapsed and total time in ordinary words, and a visible **Start over** action. The time text uses monospaced digits; the bar exposes elapsed and total time as its accessibility value. A **Can’t hear the message?** disclosure gives volume guidance. Playback failures offer a native **Try again** alert. Sample speech remains a separate **Hear sample message** / **Stop sample** flow.
-
-**Pause message** stays usable while Shield updates the message's played status. A failed status update leaves listening available with **Shield couldn’t mark this message as played** and a visible **Update played status** action; it does not become a playback-failure alert. Authentication refusal or loss of listening permission stops audio.
-
-Leaving the detail, moving the app away from its active scene, changing the viewed person, or losing listening permission stops playback and invalidates the pending audio request. Stale download results, failures, and loading cleanup are ignored; returning to the app or regaining permission does not revive the cancelled request. Changing the viewed person also dismisses the old call detail. MessageAudioSession sequences audio-route activation and deactivation, uses asynchronous system operations on iOS 27 with the iOS 26 fallback, and ignores cleanup from an earlier playback session.
-
-Clear scam messages retain no audio or readable content and offer no restoration action. Legacy removed-message detail keeps one readable panel: **Message removed**, the tentative explanation **It seemed suspicious.**, and the restoration deadline when available. The heading, explanation, and deadline grow vertically with Dynamic Type. The timestamp and callback advice live inside **More about this call**. **Bring back message** remains a bottom primary action only for a legacy message when listening permission and restoration eligibility allow it; it retains the confirmation, expiry, working-state, and sample-disabled guards.
-
-Source: `ios/Shield/App/RootView.swift`, `ios/Shield/Features/Calls/VoicemailView.swift`, `ios/Shield/Features/Calls/VoicemailRow.swift`, `ios/Shield/Features/Calls/CallDetailView.swift`, and `ios/Shield/Models/Voicemail.swift`. These describe local implementation, not deployment or real-call verification.
+Clear scam messages offer no audio, readable content or restoration. Legacy removed-message detail uses a wrapping Message removed panel, tentative explanation and deadline. Bring back message appears only with permission and eligibility, preserving confirmation, expiry and sample-disabled guards.
 
 ### Home historical count
 
-`StoppedCallsCard` shows **Calls stopped**, a prominent positive numeral, **Total**, and **See calls** on one opaque Action-accent native row with adaptive `actionInk`. The entire panel opens the retained recent held-call filter. A zero total uses the quiet neutral card surface and **None so far**, without the enlarged numeral. A missing optional `counts.stoppedTotal` displays **Total unavailable** on the neutral surface; it never falls back to the weekly `held` count or invents a zero. Missing overview data or a context error never becomes a zero-count claim.
+Calls stopped, a positive serif numeral, Total and See calls share one opaque Action row. It opens recent retained held/review-needed history. Zero uses None so far on Card; missing optional total uses Total unavailable. Neither missing context nor a failed read becomes zero. Real phone status and actionable warnings precede the historical panel; pure sample Home relies on its persistent sample marker.
 
-The overview field is a persistent historical total, distinct from the existing seven-day aggregates. The live counter counts stopped and review-needed calls through the existing screening path and recoverable-history backfill. Repository source also contains counter hooks for blocked-caller-ended and voicemail-removed events, which remain tied to deployment of those pending features. Restoring a message does not undo its historical stop. The total can exceed the recent held/review-needed records shown by See calls, since retained history expires. Neither the label nor the number proves every caller was malicious or that checks are currently on. Real phone status and actionable warnings stay above the count. Pure sample Home begins with this total, then voicemail and recent calls, while the persistent sample marker establishes its context.
+The persistent stopped total includes review-needed calls and can exceed retained recent history. It cannot reconstruct already-deleted history, prove every caller was malicious or prove that current checks are on. Deployment and storage evidence belongs outside the visual system.
 
-The counter preserves recoverable and newly counted activity; already-deleted history cannot be reconstructed. Storage, deployment, and synthetic verification details belong in [the deployment record](docs/OPERATIONS.md#persistent-home-count-deployment--october-12), not in the visual token system.
+**The Historical Count Rule.** Keep the persistent total distinct from current protection and retained recent history; unavailable data is never zero or a weekly fallback.
 
-**The Historical Count Rule.** Use the persistent stopped total, include review-needed calls honestly, and keep it distinct from recent retained history and current protection status; unavailable data is never zero or a weekly fallback.
+### Status and recovery
 
-Source: `ios/Shield/Features/Overview/StoppedCallsCard.swift`, `ios/Shield/Features/Overview/OverviewView.swift`, `ios/Shield/Models/Overview.swift`, `backend/src/cloud/stopped-total.ts`, `backend/src/cloud/api.ts`, `backend/src/cloud/store.ts`, and `backend/src/cloud/forwarding-store.ts`.
+Home distinguishes current, stale, missing, expired, paused and disconnecting status. ShieldNotice pairs a readable headline and explanation; at accessibility sizes it removes the decorative symbol. ShieldLoadFailure gives a visible Try again action, and failed refreshes may keep existing rows visible while explaining the failure.
 
-### Status and notices
+Quiet hours names loading, unsaved, saving and saved states; Save only applies an edited loaded choice. Failed responses say Hours not confirmed or Save not confirmed, preserving uncertainty about server receipt. Contacts distinguishes a successful iPhone save from an unconfirmed Shield update. Sign out retains the forwarding reminder. Technical recovery detail is disclosed only when needed for the person's task.
 
-Home's real-phone status depends on current forwarding evidence. Loading, unavailable, stale, expired, paused, and disconnection states are handled explicitly. Missing or old status never becomes an active-protection claim. Retry and setup appear when actionable; a healthy ProtectionCheckCard stays out of the daily path. Pure sample Home relies on the persistent sample marker rather than another introductory status block.
-
-ShieldNotice combines a headline and supporting explanation, with a recognizable decorative symbol at ordinary text sizes. At accessibility sizes it omits the symbol to give the words more room. ShieldLoadingView combines a system spinner and a short description. Use ordinary words for the result and reveal technical context only when needed for the person's task.
-
-ShieldLoadFailure pairs a readable explanation with a visible bordered **Try again** action. A failed read does not become **No numbers yet**, **No blocked numbers**, or another empty-state claim. Existing rows may remain visible during a failed refresh, with the failure stated separately. The loaded Contacts empty state says **Your calling list is empty**, which remains accurate after all contacts have been removed.
-
-Settings groups owner controls under **Your phone** and **People you trust**. Quiet hours distinguishes loading, unsaved changes, **Saving…**, and **Saved**; its bottom action is enabled only after loading and when the choice differs from the saved value. **Save below to use these hours** explains that an edited choice is still pending. A failed response reports **Hours not confirmed**, preserving the difference between an unconfirmed response and a confirmed rejection. Message alerts reports current iPhone authorization, including **Quiet alerts are on**, and offers Settings when the system controls the change. Service availability gates alerts and other unavailable controls. Sign out retains the reminder that the phone may still forward calls to Shield.
-
-**The Recoverable State Rule.** Name loading, unsaved, unavailable, and failed states in words; offer a visible recovery action and never turn a failed read into a claim that data is empty or protection is active.
+**The Recoverable State Rule.** Name loading, unsaved, unavailable and failed states in words; offer visible recovery and never turn a failed read into an empty-state or active-protection claim.
 
 ### Person context and sharing
 
-PersonPicker appears as a native Menu when more than one person is available at ordinary text sizes; a single helper context can show the person's name without a menu. At accessibility sizes PersonContextSection supplies the wrapping page treatment described in Layout. The control names the viewed person for accessibility. Selecting someone resets the old context and call filter, stops audio, and dismisses the old call detail. Family & friends rows state who owns the phone and whether **Calls only** or **Calls and messages** are shared.
+Show the viewed person and whether Calls only or Calls and messages are shared. Owner actions remain conditional on ownership. Include messages, invitation and Stop sharing preserve explicit permission and confirmation. Changing the person stops audio, dismisses the old call detail and resets the old context.
 
-Owner-only actions remain conditional on ownership. **Include messages**, invitation, and revocation controls preserve explicit permission and confirmation; message access covers reading or hearing voicemail and saved notices. Setup and disconnection retain their setting confirmations and call checks; returning from Phone or Settings never confirms a change by itself.
+Sharing leads with the helper's name, message-access choice and Make invitation. Share invitation becomes the main action after creation; the code is behind See invitation code, while its single-use/two-day limit stays visible. Use an invitation accepts a copied message or code through native Paste/entry. Extracting a token never proves that it is valid or grants access.
 
-Sharing leads with the helper's name, the message-sharing choice, and **Make invitation**. Once created, **Share invitation** is the main action; the long monospaced code stays behind **See invitation code**. The single-use, two-day limit remains visible. Source scrolls the new invitation into view and requests focus for its share action. Accepted helper rows retain their access scope and a visible, confirmed **Stop sharing** action.
-
-ShieldInvitation supplies the shared invitation wording. **Use an invitation** accepts either a whole copied message or the code through native Paste or field entry. It extracts exactly one unique standalone token matching the service's 32-character base64url format anywhere in the text, including when an email signature follows it. Ambiguous or unmatched trimmed input remains available for server validation. Extracting a code never proves that an invitation is valid or grants access by itself.
-
-**The Visible Context Rule.** Show the viewed person and sharing scope in words, and keep participant ownership distinct from helper access.
-
-Onboarding returns to the complete page top when changing choices, keeping its step counter visible before the task heading. The heading still receives accessibility focus; unsaved selections survive Back. At large text sizes, explanations and the full switch remain scrollable above the persistent bottom action.
+**The Visible Context Rule.** Show the person and sharing scope in words, and keep participant ownership distinct from helper access.
 
 ### Phone setup and disconnection
 
-Forwarding setup uses a short task heading, **Step … of …** progress, readable numbered instructions, and one stable bottom action whose label names the next action or required confirmation. The Contacts step uses **Save Shield**. The numbered marker scales with semantic text and its explanation wraps. Changing steps resets the scrolling page and requests focus for the new heading. Previous-step navigation keeps visible **Back** text, and **Close** remains available outside working states.
+Assisted setup retains readable Step … of … progress, serif task headings, numbered native Phone instructions and one clearly named action. Steps reset scrolling and request heading focus; Back and Close remain available outside working states. Codes are copied for manual Phone handoff, with See copied code, Copy code again, Show Phone again and Need help? recovery.
 
-Codes are copied for a manual Phone handoff, with the code itself behind **See copied code**. **Copy code again**, **Show Phone again**, and **Need help?** remain visible recovery choices. Returning from Phone or Settings changes the instructions, never the verification result. Carrier confirmation, each Phone setting, an ordinary call, and ordinary voicemail require their explicit checks. **Done** dismisses completed setup; **Disconnect Shield** remains a separate confirmed option. Ordinary setup copy explains the choice first, with detailed privacy and provider context in **More before you agree**.
+Returning from Phone or Settings changes guidance, not verification. Carrier result, each Phone setting, ordinary call and voicemail require explicit checks. Done dismisses completed setup; Disconnect Shield is a separate confirmed option. Detailed privacy/provider context stays within More before you agree.
 
-**The Explicit Confirmation Rule.** Keep the action and the proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.
+**The Explicit Confirmation Rule.** Keep action and proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.
 
 ### Sample-only features
 
-The persistent marker says **Sample app** or **Test account · Sample data**. Ordinary sample exit lives in More as Leave sample app. The marker has an explicit sample-only accessibility label.
+The persistent Sample app or Test account · Sample data marker establishes fixture context. Sample summary identifies authored text; Hear sample message is on-device speech, not a caller recording. Sample Keep/filter actions only affect memory. Real messages retain service expiry/deletion and have no permanent Keep action. Permissions still gate listening and owner controls.
 
-**Sample summary** identifies authored demo text. **Hear sample message** reads an authored sample using on-device speech, not a caller recording. **Keep this message** and the **All/Kept** sample filter only change in-memory sample state; they do not change real-message expiry or service data. Permissions still gate listening and owner actions. Real Messages use service-generated summaries when available, with playback preserved when readable text is unavailable. Real messages follow the service's expiry and deletion rules and have no permanent Keep action.
-
-The sidecar's HTML/CSS is a schematic documentation preview. Browser type metrics, symbols, pixels, corners, and interaction styles do not specify the native implementation.
+The sidecar's self-contained HTML/CSS is a schematic browser preview of the native patterns, not a native pixel specification. Browser fonts, symbols, corner metrics, hover/focus feedback and sizing are illustrative; SwiftUI source is authoritative. No unresolved audit diagnostic is canonized as a design rule.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- Do use ShieldTheme's adaptive role colors, opaque supporting text, and native grouped system surfaces.
-- Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.
-- Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.
-- Do give ordinary tasks one clear next action and reveal less common detail on request.
-- Do make switches tappable through their labeled row and keep one native accessibility toggle representation.
-- Do stack call and message metadata from `.xxxLarge` and keep person context in the scrollable page at accessibility sizes.
-- Do name unsaved changes and failed loads, and place a visible retry or save action beside the relevant task.
-- Do show playback progress with elapsed and total time, clear pause/resume labels, and a visible Start over action.
-- Do make person context, message permission, and sample-only state visible in words.
-- Do retain explicit privacy, sharing, setup, and disconnection confirmations.
-- Do label the Home count as the persistent historical total, keep real status above it, and distinguish zero, unavailable data, and recent retained history.
-- Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval.
+- Do use the shared adaptive navy/neutral palette and preserve its Dark Mode and increased-contrast variants.
+- Do reserve native serif for content hierarchy and keep ordinary controls and navigation native sans.
+- Do pair call outcomes with plain words and familiar SF Symbols while preserving uncertainty.
+- Do keep semantic Dynamic Type, wrapping text, 52-point shared app action minima and 60-point native row defaults.
+- Do stack metadata from `.xxxLarge` and move person context into the scrolling page at accessibility sizes.
+- Do place accessibility-size onboarding completion after its explanation, switch and relevant disclosure.
+- Do name unsaved choices and failed loads, with a visible retry/save action for the affected task.
+- Do retain explicit privacy, sharing, setup and disconnection confirmations.
+- Do show historical totals, current phone status, sample state and message permission as separate readable facts.
+- Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval.
 
 ### Don't:
 
-- Don't describe a checked, offered, or answered caller as verified, authenticated, or safe.
-- Don't infer active call checks from stale, missing, paused, or expired status.
-- Don't promote old tab labels or fixed Surface asset colors from earlier designs into new screens.
-- Don't present Calls stopped as confirmed scams, complete recovery of already-deleted history, or evidence that current call checks are on.
-- Don't treat schematic sidecar HTML/CSS as a native pixel specification.
+- Don't restore the rejected bright-blue/public-library visual world or make all native navigation titles serif.
+- Don't describe a checked, offered or answered caller as verified, authenticated or safe.
+- Don't infer active call checks from stale, missing, paused or expired status.
+- Don't present Calls stopped as confirmed scams or complete recovery of already-deleted history.
 - Don't treat helper access as ownership or extend message access implicitly.
-- Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.
-- Don't use a failed load as an empty-state, saved-choice, or active-protection claim.
-- Don't treat an app return, call-test completion, sign-out, or app deletion as confirmation that forwarding is disconnected.
-- Don't claim a clean native audit, real VoiceOver approval, older-person usability, deployment, or real-call evidence from source extraction or simulator captures.
+- Don't present sample summaries, speech or keeping as real-message services.
+- Don't treat an app return, test completion, sign-out or deletion as proof that forwarding is disconnected.
+- Don't shrink text to preserve a fixed row or keep a completion action visually ahead of its accessibility-size choice.
+- Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.
+- Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.

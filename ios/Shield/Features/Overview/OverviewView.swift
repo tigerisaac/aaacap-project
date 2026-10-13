@@ -14,23 +14,23 @@ struct OverviewView: View {
             List {
                 PersonContextSection()
                 if !model.isDemo || isStatusFixture {
-                    Section {
+                    ShieldGroup {
                         TimelineView(.periodic(from: .now, by: 15)) { context in
                             statusCard(now: context.date)
                         }
                     }
                 }
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
-                    Section { ProtectionCheckCard(check: protectionCheck) }
+                    ShieldGroup { ProtectionCheckCard(check: protectionCheck) }
                 }
                 if let overview = model.overview {
                     if model.contextError == nil {
-                        Section {
+                        ShieldGroup {
                             StoppedCallsCard(count: overview.counts.stoppedTotal) { model.showCalls(.held) }
                         }
                     }
                     let messages = overview.recent.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }
-                    Section {
+                    ShieldGroup {
                         if messages.isEmpty {
                             Button { model.showCalls(.voicemail) } label: {
                                 ActionRow(title: "Messages", detail: "No recent messages", symbol: "tray")
@@ -44,8 +44,8 @@ struct OverviewView: View {
                             Button("All messages") { model.showCalls(.voicemail) }
                                 .accessibilityIdentifier("today-messages")
                         }
-                    } header: { Text("Messages").font(.headline).foregroundStyle(ShieldTheme.secondaryText) }
-                    Section {
+                    } header: { Text("Messages").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
+                    ShieldGroup {
                         if overview.recent.filter({ $0.voicemail == nil }).isEmpty {
                             Text("Your calls will appear here.").foregroundStyle(ShieldTheme.secondaryText)
                         } else {
@@ -54,18 +54,18 @@ struct OverviewView: View {
                             }
                         }
                         Button("All calls") { model.showCalls(.all) }
-                    } header: { Text("Recent calls").font(.headline).foregroundStyle(ShieldTheme.secondaryText) }
+                    } header: { Text("Recent calls").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                 } else if model.isLoading {
-                    Section { ShieldLoadingView(title: "Getting your calls…") }
+                    ShieldGroup { ShieldLoadingView(title: "Getting your calls…") }
                 } else {
-                    Section {
+                    ShieldGroup {
                         ShieldLoadFailure(title: "Your calls couldn’t load", detail: "Check your internet connection and try again.") {
                             Task { await refresh() }
                         }
                     }
                 }
                 if model.overview != nil, let error = model.contextError {
-                    Section {
+                    ShieldGroup {
                         ShieldLoadFailure(title: "These calls may be out of date", detail: error) { Task { await refresh() } }
                     }
                 }
@@ -78,8 +78,6 @@ struct OverviewView: View {
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
-            .toolbarBackground(ShieldTheme.surface, for: .navigationBar)
-            .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
             .refreshable { await refresh() }
             .task(id: model.selectedPersonID) {
                 await loadStatus()
