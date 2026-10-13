@@ -1,6 +1,6 @@
 # Status
 
-## October 12 — saved voicemail and notices (repository only)
+## October 12 — saved voicemail and notices (backend not deployed)
 
 Implemented capture from answer on the shared Call Control path. Incoming audio is temporarily recorded before the greeting, with a four-minute cap; capture must stop before press-1 bridging. Final-outcome checks discard answered/clear-blocked captures and retry deletion of provider copies. Useful and uncertain prerecorded notices are saved without a live offer, including speech spoken before screening starts or a caller hangs up. Kept messages have encrypted audio, transcripts and summaries; helpers require voicemail-listening permission to read either. Message/account deletion removes all content, and retained messages expire after 30 days.
 
@@ -10,7 +10,9 @@ Validation: `npm run check` passed 175 unit tests plus typecheck/build; `npm run
 
 The iOS simulator build passed. Notice summary, expandable transcript and independent-contact guidance passed at normal text in Light Mode and the largest accessibility text in Dark Mode on iPhone 18 Pro/iOS 27; the sample message flow and discarded-scam no-playback/no-restore checks also passed. A fresh native review checked six captures and source, and identified one sharing-scope label mismatch, corrected to **Calls and messages**. Its verdict pass scored that fix resolved with disposition **ship**, and checked six valid replacement captures. The real accepted-grant row was source-checked only; VoiceOver and hardware usability were not independently verified.
 
-No backend/bridge deployment, real phone installation, carrier change or phone call was performed. Production remains the October 12 release and screening v30 below. Record-from-answer audio, provider deletion and stop-before-bridge still need owner-approved deployment and supervised real-call verification. TeXML operator rollback retains its previous recording behavior.
+With owner authorization, the signed Debug app from source commit `895456c` was built and installed on the paired physical iPhone October 12 at approximately 19:54 Central. CoreDevice confirmed installation and successful launch after the owner unlocked the phone. No visual or real-call verification is claimed from that launch. The Messages interface is installed; new capture/transcription/summary processing still requires backend deployment.
+
+No backend/bridge deployment, carrier change or phone call was performed for this feature. Production backend remains the October 12 release and screening v30 below. Record-from-answer audio, provider deletion and stop-before-bridge still need owner-approved deployment and supervised real-call verification. TeXML operator rollback retains its previous recording behavior.
 
 ## October 12 — shared-number implementation
 
