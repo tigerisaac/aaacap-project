@@ -1,5 +1,11 @@
 # Status
 
+## October 13 — ordinary purpose and outside contact remain experimental
+
+The [v153 audit](SCREENING-SOCIAL-PURPOSE-AUDIT.md) completes seven subscription Luna medium runs / 1,580 trials. A 60-character description change repairs all three motivating development cases while retaining the same action mapper and safeguards. Development offers 141/142 ordinary live callers and completes 164/164 intended blocks; fresh v153 passes 46/48 versus v152's 45/48, with unnecessary ordinary questions retained. Separate role-attribution diagnostics still expose inferred identities. No candidate is promoted.
+
+MASC offers 79/80 ordinary calls, stops 157/160 harmful calls, questions three and approves none; ads stop 40/40. FTC stops 602/724, saves 115 unverified notices, questions three, approves three and retains one timeout. All three known unexpected-charge recordings stop. Labels, outcomes and failures remain unchanged, and public comparisons are historical regressions. Source/input/scoring audits and copying checks pass. Typecheck, 203 unit tests/build, 154 emulator tests and the local tool protocol pass. Runtime v134, post-call v10 and the deployed release remain unchanged. No voice or real-call check occurs.
+
 ## October 13 — caller-request guidance and failure reporting remain experimental
 
 The [v152 audit](SCREENING-CALLER-REQUEST-AUDIT.md) completes seven scored logical runs / 1,580 subscription Luna medium trials and two unscored inventories. V152 reuses the existing requested-action hint when a known caller lacks purpose, with no initial prompt growth. All forty primary fresh questions meet their information rubrics, and both versions pass 24/24 additional government-impersonation contrasts. Six provider failures remain scored; interrupted runs continue only identities that never ran. No candidate is promoted.
