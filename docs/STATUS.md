@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — direct-decision candidates rejected after ordinary-call regressions
+
+The [v141/v142 audit](SCREENING-DIRECT-DECISION-AUDIT.md) completes eight scored runs / 2,020 trials on subscription GPT-6 Luna medium, with no transport failures or final no-decisions. V141 reduces instruction/tool characters by 42.7% but fails charge/contact priority. V142 adds two independent observations and is still 31.4% shorter; it stops 164/164 intended development blocks but offers only 125/142 ordinary development calls and 63/80 ordinary MASC calls. Fresh results are 44/48 for v141 and 43/48 for v142 on separate sets, with v139 comparisons of 47/48 and 44/48. Current-call openings still receive premature blocks. Neither candidate is promoted.
+
+V142 MASC stops 155/160 harmful calls and questions five, with no harmful approvals or saves. FTC records 514 stops, 205 unverified saves, five questions and zero approvals. All three known charge recordings stop. Original labels, sequence expectations and every outcome remain intact; saved notices receive no stop credit. V141/v142 pass 26/28 and 25/28 caution checks: some work follow-ups are misread as prior phone calls.
+
+Typecheck, 198 unit tests/build, mapper assertions and the 12-request local adapter mock pass. Firestore passes 154/154 on a full repeat after one retained closed-transaction failure. Input/source/result audits pass, with no detected direct public-passage copy. Runtime remains v134, post-call v10, and the separate deployed release v31 / voicemail v4. No deployment, paid voice, phone or forwarding action occurred. The goal remains unfinished and both fresh sets are spent.
+
 ## October 13 — purpose-contract repair tested; lean candidates still fail contact and ordinary-call checks
 
 The [v139/v140 audit](SCREENING-PURPOSE-CONTRACT-AUDIT.md) completes 12 scored runs / 3,096 trials on subscription GPT-6 Luna medium. V139 repairs the offline observation mapper's approval/display-purpose mismatch without changing v138's request; v140 separately clarifies ordinary-purpose wording from known development misses. V139 preserves 142/142 intended ordinary development offers, 26/26 notices and 164/164 intended blocks. Both candidates score 110/112 across fresh validation, but terse empty-contact requests are sometimes mistaken for an established personal relationship. Neither is promoted.
