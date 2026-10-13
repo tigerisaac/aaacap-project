@@ -41,8 +41,9 @@ export function codexArgs(extra = {}) {
     ...Object.entries(config).flatMap(([k, v]) => ['-c', `${k}=${toml(v)}`])];
 }
 
-export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision, argumentSchema, argumentFeedback = false, callerFraming = 'legacy', approvalGuard } = {}) {
+export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision, argumentSchema, argumentFeedback = false, callerFraming = 'legacy', approvalGuard, clarificationFor } = {}) {
   if (approvalGuard !== undefined && typeof approvalGuard !== 'function') throw new Error('invalid_approval_guard');
+  if (clarificationFor !== undefined && typeof clarificationFor !== 'function') throw new Error('invalid_clarification_selector');
   if (typeof conversation !== 'boolean') throw new Error('invalid_conversation_mode');
   if (interpretDecision !== undefined && typeof interpretDecision !== 'function') throw new Error('invalid_decision_interpreter');
   if (argumentSchema !== undefined && (typeof argumentSchema?.safeParse !== 'function' || !argumentSchema.shape)) throw new Error('invalid_argument_schema');
@@ -117,12 +118,23 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
           } catch { if (active.get(params.threadId)!==a) return; guardFailure=true;interpreted=undefined;proposed=undefined; }
         }
         const needsAnswer = proposed && awaitingCallerAnswer(proposed, a.state.clarifiedSpoken, spokenLength(a.state.transcript));
+        let hintApplied=false,hintFailure=false;
+        // A trusted selector can name the missing fact only after a valid
+        // continuation on new evidence. It cannot change the screening action.
+        if (clarificationFor && !clarification && !needsAnswer && proposed?.action==='continue') {
+          hintApplied=true;
+          try {
+            clarification=clarificationFor(structuredClone(params.arguments),a.state.transcript,{questions:a.state.questions,caution:a.state.caution});
+            if (!['identity','purpose','requested_action'].includes(clarification)) throw new Error('invalid_clarification_kind');
+          } catch { hintFailure=true;interpreted=undefined;proposed=undefined; }
+        }
         const decision = needsAnswer ? undefined : proposed;
         // Content-free diagnostics distinguish policy misses from rejected tool arguments.
         const parsed = liveDecisionSchema.safeParse(interpreted);
         a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
           ...(argumentSchema ? { inputIssues } : {}),
           ...(guardApplied?{approvalGuard:{applied:true,failed:guardFailure}}:{}),
+          ...(hintApplied?{clarificationHint:hintFailure?{failed:true}:{kind:clarification}}:{}),
           ...(needsAnswer ? { awaitingCallerAnswer: true } : {}),
           evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,
           ...(parsed.success ? { action: parsed.data.action, reason: parsed.data.reason, purpose: parsed.data.purpose,
@@ -130,6 +142,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
             evidenceSupported: supportedEvidence(parsed.data.evidence, a.state.transcript) }
             : { issueCodes: parsed.error.issues.map(issue => issue.code) }) });
         if (guardFailure) { a.finish({kind:'failure',failure:'approval_guard_failed'}); return; }
+        if (hintFailure) { a.finish({kind:'failure',failure:'clarification_hint_failed'}); return; }
         if (decision && decision.action !== 'continue') { a.finish({ kind: 'decision', decision }); return; }
         if (needsAnswer) {
           a.asking = true; output = CALLER_ANSWER_PENDING;
@@ -184,6 +197,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       decisionProgressVersion: 1, clarificationBehavior: 'Matches the application guard: after clarification, unchanged caller evidence cannot accept another non-scam decision or consume another clarification. Explicit scam blocks remain immediate.',
       outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
       ...(approvalGuard?{approvalGuard:{version:1,scope:'Validated offers only; asynchronous results are revalidated before application; failure never offers.'}}:{}),
+      ...(clarificationFor?{clarificationGuidance:{version:1,scope:'Fixed missing-fact guidance after validated continuation on new caller evidence only; cannot change the action.'}}:{}),
       ...(callerFraming==='greeting' ? {callerFraming:{version:1,mode:'greeting',context:CALLER_GREETING_CONTEXT}} : {}),
       ...(argumentSchema ? { argumentValidation: { version: 1, feedback: !!argumentFeedback, ...(Number.isInteger(argumentFeedback)?{correctionVersion:argumentFeedback}:{}), diagnostics: 'Only fixed schema field names and issue codes; no input values or free-form messages.' } } : {}),
       research: 'unavailable', context: conversation ? 'frozen instructions plus cumulative caller snapshots and native assistant/tool history; verified with local mock' : 'frozen instructions and caller only; verified with local mock',

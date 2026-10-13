@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — clarification guidance improves questions but remains experimental
+
+The [v151 audit](SCREENING-CLARIFICATION-GUIDANCE-AUDIT.md) completes seven scored subscription Luna medium runs / 1,580 trials and one unscored diagnostic. Fixed guidance identifies the missing fact after a valid continuation without enlarging the initial prompt. V151 passes 48/48 primary fresh trials and 24/24 additional messaging contrasts, but direct question review finds only four of ten required action questions adequate. Known development retains five unnecessary ordinary-call questions. No candidate is promoted.
+
+MASC offers 79/80 ordinary calls, with one retained subscription timeout, and stops 157/160 harmful calls; two are questioned and one approved. FTC stops 586/724, saves 128 unverified notices, questions seven and approves three. All three known charge recordings stop. The separate caller-only diagnostic supports retaining the harmful MASC approval as a miss; no benchmark expectation is waived. All original results, labels and failures remain.
+
+Typecheck, 203 unit tests/build and local protocol checks pass. The full emulator run passes 153/154 tests, retaining a concurrent-admission transaction failure; the affected suite separately passes 31/31. This is not a clean full-suite pass. Input/source/result audits pass. Runtime screening v134, post-call v10 and the deployed release below remain unchanged. No deployment, voice test, call or forwarding change occurred.
+
 ## October 13 — caller framing and recording checks remain experimental
 
 The [v148–v150 audit](SCREENING-CALLER-FRAMING-AND-RECORDING-AUDIT.md) records thirteen subscription Luna medium runs / 3,536 trials, with no provider failures or final no-decisions. A bounded correction now rejects contradictory recording-mode/quote observations without increasing the initial prompt. The latest fresh charge alarms and empty-contact requests stop while ordinary callbacks and notices pass. MASC still offers only 77/80 ordinary calls despite stopping 160/160 harmful calls; FTC stops 579/724 and retains three approvals. No prompt is promoted.
