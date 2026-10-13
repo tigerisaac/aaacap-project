@@ -6,7 +6,7 @@ import {gunzipSync,zstdDecompressSync} from 'node:zlib';
 import {liveSessionConfig} from '../dist/live/policy.js';
 import {codexScreeningTarget} from './lib/codex-screening-target.mjs';
 const args=process.argv.slice(2);
-assert.ok(args.length<=1&&args.every(arg=>['--v152','--v153'].includes(arg)));
+assert.ok(args.length<=1&&args.every(arg=>['--v152','--v153','--v154'].includes(arg)));
 const policy=args[0]?.slice(2)??'v151';
 const {factsSchema,observedScreeningRequest,interpretFacts,argumentFeedback,clarificationFor}=await import(`./experiments/observed-screening-${policy}.mjs`);
 

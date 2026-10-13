@@ -1,5 +1,11 @@
 # Status
 
+## October 13 — self-identification remains experimental; continuation integrity improved
+
+The [v154 audit](SCREENING-SELF-IDENTIFICATION-AUDIT.md) completes five logical subscription Luna medium runs / 1,556 trials. The 47-character prompt addition does not repair its motivating development misses. Development preserves 170/170 intended blocks; fresh v154 passes 41/48 versus v153's 44/48, with skipped identity questions and a recorded notice offered. All fresh intended blocks pass. V154 is not promoted.
+
+MASC offers 77/80 ordinary callers, with three original provider errors, stops 159/160 harmful calls and blocks 39/40 ads. FTC records 618 stops, 98 unverified saves, four questions, two approvals and two original provider errors. All known charge recordings stop. Twelve HTTP 429 failures across the five runs remain scored; lower-concurrency continuation completes only missing identities. Exact-prefix, source/input/label/scoring audits pass. The final runners reject changed scoring/transport dependencies before continuation. Typecheck, 203 unit tests/build, 154 emulator tests, protocol and local integrity checks pass. Runtime v134, post-call v10 and deployment remain unchanged; no voice or real-call test occurs.
+
 ## October 13 — ordinary purpose and outside contact remain experimental
 
 The [v153 audit](SCREENING-SOCIAL-PURPOSE-AUDIT.md) completes seven subscription Luna medium runs / 1,580 trials. A 60-character description change repairs all three motivating development cases while retaining the same action mapper and safeguards. Development offers 141/142 ordinary live callers and completes 164/164 intended blocks; fresh v153 passes 46/48 versus v152's 45/48, with unnecessary ordinary questions retained. Separate role-attribution diagnostics still expose inferred identities. No candidate is promoted.
