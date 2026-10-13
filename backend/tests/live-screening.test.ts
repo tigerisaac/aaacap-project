@@ -20,6 +20,47 @@ function harness(research?: (topic: any) => Promise<any>) {
   return { s, io, ready, speech, delegate, tool, advance: (ms: number) => { now += ms; s.tick(); } };
 }
 describe('GPT Live screening controls', () => {
+  it.each(['approve', 'hold', 'message', 'continue'])('does not accept %s on unchanged speech after clarification', action => {
+    const h = harness(); h.ready(); h.speech('This is Anna about lunch tomorrow.');
+    h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
+    h.tool({ ...routine, action: 'continue', reason: 'unclear', evidence: '' }, 'ask');
+    h.speech(' ... '); // Transcript formatting is not a caller answer.
+    h.delegate();
+    h.tool({ ...routine, action, reason: ['hold', 'continue'].includes(action) ? 'unclear' : 'routine' }, 'unchanged');
+    expect(h.io.finish).not.toHaveBeenCalled();
+    const outputs = h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').map(([e]) => JSON.parse(e.item.output));
+    expect(outputs.filter(o => o.status === 'continue_screening')).toHaveLength(1);
+    expect(outputs.at(-1).status).toBe('awaiting_caller_answer');
+    h.speech(' I want to confirm the time.'); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
+    h.tool(routine, 'answered');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(routine);
+  });
+  it('still blocks an explicit scam after clarification even before new speech', () => {
+    const h = harness(); h.ready(); h.speech('Please send me your login code.');
+    h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
+    h.tool({ ...routine, action: 'continue', reason: 'unclear', evidence: '' }, 'ask');
+    h.tool(scam, 'scam-correction');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(scam);
+  });
+  it.each(['solicitation', 'robocall'])('does not replace an unanswered question with a %s block', reason => {
+    const h = harness(); h.ready(); h.speech('This is Anna about lunch tomorrow.');
+    h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
+    h.tool({ ...routine, action: 'continue', reason: 'unclear', evidence: '' }, 'ask');
+    h.tool({ ...routine, action: 'block', reason }, 'changed-verdict');
+    expect(h.io.finish).not.toHaveBeenCalled();
+    expect(JSON.parse(h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').at(-1)![0].item.output).status).toBe('awaiting_caller_answer');
+  });
+  it('does not spend the clarification budget on duplicate requests without an answer', () => {
+    const h = harness(); h.ready(); h.speech('This is Anna.'); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
+    const ask = { ...routine, action: 'continue', reason: 'unclear', evidence: '' };
+    h.tool(ask, 'first'); h.tool(ask, 'duplicate-1'); h.tool(ask, 'duplicate-2');
+    expect(h.io.finish).not.toHaveBeenCalled();
+    h.speech(' It is about an appointment.'); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate(); h.tool(ask, 'second');
+    const outputs = h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').map(([e]) => JSON.parse(e.item.output));
+    expect(outputs.filter(o => o.status === 'continue_screening')).toHaveLength(2);
+    h.speech(' I will not explain further.'); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate(); h.tool(ask, 'third');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith('screening_timeout');
+  });
   it('allows two clarification requests, then ends screening before a third or a late approval', () => {
     const h = harness(); h.ready();
     const ask = { ...routine, action: 'continue', reason: 'unclear', purpose: 'unknown', evidence: '', hasReason: false };

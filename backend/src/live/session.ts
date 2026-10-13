@@ -3,6 +3,7 @@ import { LIVE_LIMITS, callerText, liveSessionConfig, permittedDecision, type Liv
 import type { TimingSink, TimingPhase, TimingMetrics } from './timing.js';
 import { responseUsage } from './timing.js';
 import { WaitAcknowledgement } from './acknowledgement.js';
+import { awaitingCallerAnswer, CALLER_ANSWER_PENDING, spokenLength } from './decision-progress.js';
 
 type Event = Record<string, any>;
 export interface ScreeningIO {
@@ -53,6 +54,7 @@ export class ScreeningSession {
   private lastModelSoundAt?: number;
   private clarificationAt?: number;
   private clarifications = 0;
+  private clarifiedSpoken?: number;
   private responseNumber = 0;
   private acknowledgement?: WaitAcknowledgement;
   private responseTimings = new Map<string, { response: number; at: number; toolOutput?: boolean }>();
@@ -197,6 +199,7 @@ export class ScreeningSession {
           }
           const d = item.name === 'screen_call' ? permittedDecision(value, this.transcript) : undefined;
           if (d) {
+            if (this.rejectUnansweredDecision(d, item.call_id, event.delegation_id)) return;
             this.timing('decision_received', this.responseTiming(event.delegation_id));
             // An explicit scam request is decisive, so cut the caller off at once. Any other verdict, or a
             // question, can be overturned by the rest of a sentence ("call the number... on the back of your
@@ -238,13 +241,23 @@ export class ScreeningSession {
     this.io.openai({ type: 'response.item.create', item: { type: 'function_call_output', call_id: callId,
       output: JSON.stringify({ status: 'superseded', instruction: 'A newer screening check replaced this decision. Do not respond.' }) } });
   }
+  private rejectUnansweredDecision(d: LiveDecision, callId: string, delegationId: string) {
+    if (awaitingCallerAnswer(d, this.clarifiedSpoken, this.spoken)) {
+      this.timing('decision_rejected', this.responseTiming(delegationId));
+      this.toolOutput(callId, delegationId, CALLER_ANSWER_PENDING);
+      return true;
+    }
+    return false;
+  }
   private apply(d: LiveDecision, callId: string, delegationId: string) {
+    if (this.rejectUnansweredDecision(d, callId, delegationId)) return;
     this.timing('decision_applied', this.responseTiming(delegationId));
     if (d.action !== 'continue') { void this.finish(d); return; }
     // Enforce the question budget even when the model ignores the prompt. Exhausting
     // a screening budget uses the existing voicemail fallback, never an approval.
     if (this.clarifications >= LIVE_LIMITS.maxClarifications) { void this.stop('screening_timeout'); return; }
     this.clarifications++;
+    this.clarifiedSpoken = this.spoken;
     // This fresh decision has already assessed the current caller turn. Do not let the periodic
     // fallback assess it again while Live is wording/speaking the question and awaiting an answer.
     this.checkedLength = this.transcript.length;
@@ -346,8 +359,6 @@ export class ScreeningSession {
     }
   }
 }
-
-const spokenLength = (text: string) => text.replace(/[^\p{L}\p{N}]+/gu, '').length;
 
 /** Live emits a continuous stream, including silence; queued bytes do not mean speech. */
 export function audiblePCMU(frame: Buffer) {

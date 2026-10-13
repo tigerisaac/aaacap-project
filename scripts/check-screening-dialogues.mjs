@@ -50,7 +50,7 @@ async function main(){
  const fixture=await import(pathToFileURL(resolve(fixtureFile)).href),all=[...(fixture.cases??[]),...(fixture.stagedCases??[])];
  assert.ok(all.length);assert.equal(new Set(all.map(c=>c.name)).size,all.length);assert.ok(all.every(c=>c.turns.length&&c.accept.length));if(all.some(c=>c.caution))assert.ok(cautionFile);
  const requests={normal:JSON.parse(await readFile(requestFile,'utf8'))};if(cautionFile)requests.caution=JSON.parse(await readFile(cautionFile,'utf8'));
- const files=[fixtureFile,requestFile,...(cautionFile?[cautionFile]:[]),'scripts/check-screening-dialogues.mjs','scripts/lib/codex-screening-target.mjs','scripts/check-screening-subscription-dialogue.mjs','scripts/lib/screening-codex-models.json','backend/src/live/policy.ts','backend/src/live/evidence.ts','dist/live/policy.js','dist/live/evidence.js',...(fixture.sourceFiles??[])];
+ const files=[fixtureFile,requestFile,...(cautionFile?[cautionFile]:[]),'scripts/check-screening-dialogues.mjs','scripts/lib/codex-screening-target.mjs','scripts/check-screening-subscription-dialogue.mjs','scripts/lib/screening-codex-models.json','backend/src/live/policy.ts','backend/src/live/evidence.ts','backend/src/live/decision-progress.ts','dist/live/policy.js','dist/live/evidence.js','dist/live/decision-progress.js',...(fixture.sourceFiles??[])];
  const hashes=async()=>Object.fromEntries(await Promise.all(files.map(async p=>[p,digest(await readFile(p))]))),before=await hashes();
  const targets={},results=[];let cursor=0,stopped=false,writes=Promise.resolve();
  const jobs=Array.from({length:repeat},(_,i)=>all.map(c=>({c,run:i+1}))).flat();

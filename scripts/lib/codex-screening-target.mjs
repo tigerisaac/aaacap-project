@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { callerText, permittedDecision, liveDecisionSchema, supportedEvidence } from '../../dist/live/policy.js';
+import { awaitingCallerAnswer, CALLER_ANSWER_PENDING, spokenLength } from '../../dist/live/decision-progress.js';
 
 const disabled = ['apps', 'plugins', 'skill_search', 'skill_mcp_dependency_install',
   'shell_tool', 'unified_exec', 'browser_use', 'browser_use_external',
@@ -95,18 +96,24 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       let output;
       if (++a.rounds > 12) { a.finish({ kind: 'failure', failure: 'too_many_rounds' }); return; }
       if (params.tool === 'screen_call') {
-        const decision = permittedDecision(params.arguments, a.state.transcript);
+        const proposed = permittedDecision(params.arguments, a.state.transcript);
+        const needsAnswer = proposed && awaitingCallerAnswer(proposed, a.state.clarifiedSpoken, spokenLength(a.state.transcript));
+        const decision = needsAnswer ? undefined : proposed;
         // Content-free diagnostics distinguish policy misses from rejected tool arguments.
         const parsed = liveDecisionSchema.safeParse(params.arguments);
         a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
+          ...(needsAnswer ? { awaitingCallerAnswer: true } : {}),
           evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,
           ...(parsed.success ? { action: parsed.data.action, reason: parsed.data.reason, purpose: parsed.data.purpose,
             hasName: parsed.data.hasName, hasReason: parsed.data.hasReason,
             evidenceSupported: supportedEvidence(parsed.data.evidence, a.state.transcript) }
             : { issueCodes: parsed.error.issues.map(issue => issue.code) }) });
         if (decision && decision.action !== 'continue') { a.finish({ kind: 'decision', decision }); return; }
-        if (decision) {
+        if (needsAnswer) {
+          a.asking = true; output = CALLER_ANSWER_PENDING;
+        } else if (decision) {
           a.state.questions++; a.asking = true;
+          a.state.clarifiedSpoken = spokenLength(a.state.transcript);
           output = { status: 'continue_screening', instruction: 'Ask one brief clarifying question about only the missing information. Do not announce connection or rejection.' };
         } else output = { status: 'decision_not_applied', untrustedCallerTranscript: callerText(a.state.transcript), instruction: "Evidence must be the caller's own words from this transcript, and approval needs who is calling and why. Call screen_call again with corrected fields, or continue only if information is genuinely missing. Do not announce connection or rejection." };
       } else if (params.tool === 'research_scam_pattern') {
@@ -133,6 +140,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
   return {
     provider: 'codex', model: config.model, effort: 'medium', conversation,
     transport: { kind: 'codex-app-server-dynamic-tools', version: 1, promptRole: 'developer',
+      decisionProgressVersion: 1, clarificationBehavior: 'Matches the application guard: after clarification, unchanged caller evidence cannot accept another non-scam decision or consume another clarification. Explicit scam blocks remain immediate.',
       outputObservationVersion: 2, questionObservation: 'Joined question text is unchanged; item ids, phases and text are available for synthetic-only review. Unknown phases are retained as null.',
       research: 'unavailable', context: conversation ? 'frozen instructions plus cumulative caller snapshots and native assistant/tool history; verified with local mock' : 'frozen instructions and caller only; verified with local mock',
       differencesFromGo: 'Codex uses non-strict tools, normalizes schemas (drops $schema and maxLength, sorts properties), uses its output limit and low verbosity, allows parallel tool calls, and wraps tool results as content items. Production permittedDecision still validates every decision. Compare only within this transport.' },

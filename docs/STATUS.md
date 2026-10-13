@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — preserve unanswered screening clarification (not deployed)
+
+Repository screening version `2026-10-13-general-v99` keeps v31's initial decision request unchanged and adds a shared runtime/subscription-adapter guard. Once a clarification is accepted, the model cannot approve, hold, save a notice, apply an ordinary block or spend another clarification on unchanged caller speech. It must ask/wait for the answer. New caller words allow re-evaluation; punctuation does not. An explicit scam block remains immediate. Existing timers, tool limits, fixed recipients and press-1 connection remain unchanged.
+
+The defect was observed in a fresh subscription run: an accepted continue was followed by a hold before any question or caller answer. Eight new runtime tests and a ten-request local protocol mock cover the guard. Typecheck, 191 unit tests and build passed; the native-history and isolation mocks also passed. A new 16-case subscription comparison, three passes each, scored 48/48 with the guard and 47/48 before it. Neither model run naturally triggered the guard, so the small score difference is not evidence of improved classification accuracy. The first full emulator run passed 153/154 with the known stopped-total closed-transaction error; one full repeat passed 154/154. Both results are retained.
+
+The accompanying v95–v98 prompt experiments remain offline. V97 passed 192/192 fresh trials and stopped 417/724 FTC recordings with no live approvals, but offered 68/80 ordinary MASC callers versus the historical v31's 71/80 and saved an unsolicited recorded upgrade in development. V98 did not resolve that tradeoff. Post-call v8 also remains offline after a fresh ordinary-callback false positive; repository post-call v7 is unchanged. No voice checks, deployment, phone calls or forwarding changes occurred. See the [complete comparison and evidence](SCREENING-PAYMENT-CONTEXT-AUDIT.md).
+
 ## October 13 — empty-contact message filtering (not deployed)
 
 Repository post-call policy `2026-10-13-voicemail-v7` treats contact-only invitations as junk when no personal relationship or ordinary task/service context is stated. Normal callbacks and useful uncertain notices remain eligible for saving. The combined decision/summary request is 232 instruction characters longer; it adds no model call or output field. Live screening remains v31 in code and v30 in the deployed bridge.
