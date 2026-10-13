@@ -16,7 +16,11 @@ The [post-call empty-contact report](SCREENING-MESSAGE-CONTACT-RELEASE.md) recor
 
 The [payment and action audit](SCREENING-PAYMENT-CONTEXT-AUDIT.md) tests lean v95–v98 experiments, recent scam patterns, fresh callers and both public benchmarks on subscription Luna. No lean replacement was selected: improved contact/payment blocking still came with ordinary-offer and recorded-sales regressions. Repository v99 instead fixes a separate protocol defect: after accepted clarification, unchanged caller speech cannot produce another routine terminal decision or spend another clarification. Explicit scam blocks remain immediate. Its initial request matches v31 exactly; the new corrective tool response and state guard are versioned separately from the earlier benchmark runs. Post-call v7 remains unchanged.
 
+The [purpose, context and evidence audit](SCREENING-PURPOSE-ROUTING-AUDIT.md) continues with v100–v104. The structured-observation experiments keep model interpretation separate from deterministic action priority, then apply the existing evidence and clarification guards. They are offline only. Fresh ordinary-call results improve, but empty-contact, promotion and recording-classification misses remain; none replaces the repository prompt.
+
 ## How a decision is made
+
+This section describes the repository's five-action policy and runtime. The deployed v30 bridge still uses the earlier four-action policy.
 
 **The voice agent** (`gpt-live-1`) talks to the caller. It never decides anything itself. It:
 - learns who is calling and why
@@ -33,10 +37,11 @@ The [payment and action audit](SCREENING-PAYMENT-CONTEXT-AUDIT.md) tests lean v9
    - keep the call secret
 
    Unsolicited investment or crypto pitches from strangers are also blocked. One such request is enough, and later reassurance doesn't undo it.
-2. **Block as a robocall** for recorded messages that ask her to press a key or call a number back.
+2. **Block as a robocall** for recorded unsolicited sales, marketing, surveys, polls, political or fundraising messages. A keypress or callback alone is not a block under the saved-notice policy.
 3. **Block as a solicitation** for live sales, surveys, polls, political and fundraising calls. Shield can't verify which businesses she uses, so claiming to be her current provider doesn't exempt a call made to pitch an offer: a discount, upgrade, lower rate, bill or premium, or a switch of plan or supplier (v19–v20). A call about service she already has (an order, appointment or meeting, repair, outage, billing question or renewal reminder) is still approved, even if it also mentions an offer.
 4. **Approve** when the caller has given a name or role and a concrete ordinary reason, with any applicable sensitive claim resolved. A caller claiming a personal family relationship and wanting to talk is also offered, including a borrowed phone, distress, a private matter or trouble. Approval only offers the call; she still decides. It does not verify the relationship.
-5. **Ask (continue)** when something is missing. **Hold** when a sensitive claim stays unresolved. Sensitive claims include unexplained financial transactions or account-security problems from any organization, bank security, government, police or court, a third party reporting trouble involving a relative, and money owed to her. An informational or automated label does not exempt an unresolved financial alarm; ordinary service updates and billing discussions are not alarms by themselves. An alleged relative calling personally follows the family rule.
+5. **Save a message** for potentially useful prerecorded notices, including unresolved account/security alerts, after the block checks. These remain unverified and never ring the recipient. Do not ask a recording to answer or repeat.
+6. **Ask (continue)** when a live caller's purpose or required action is missing. **Hold** when a sensitive claim stays unresolved after clarification. Sensitive claims include unexplained financial transactions or account-security problems from any organization, bank security, government, police or court, a third party reporting trouble involving a relative, and money owed to her. Calling a live financial alarm informational does not resolve it; ordinary service updates and billing discussions are not alarms by themselves. An alleged relative calling personally follows the family rule.
 
 **Family callers (v16).** The owner chose to accept family-only openers and rely on connected-call protection for harmful requests made after acceptance. An explicit payment, code, remote-access or secrecy request is still blocked during screening. Asking to discuss a private personal matter is not an instruction to hide the call from family or police. Connected-call protection requires its server flag and the recipient's current consent; this policy change does not turn it on or verify that it ran. The existing recent-scam callback caution still applies, including to family callbacks, for 24 hours after a stopped scam.
 
@@ -55,6 +60,7 @@ Before reaching the model, caller text is stripped of braces, brackets, quotes a
 | `approve`, window open | "Please hold while Shield offers your call" | Rings; private summary; press 1 to connect | `offered`, then connected or missed (`routine`) |
 | `approve`, can't be offered | Voicemail | Nothing | `voicemail` (`message_only`) |
 | `block` | Call ends | Nothing | `held` (`scam`, `robocall` or `solicitation`) |
+| `message` (repository only) | Notice is captured without clarification | No live offer; unverified saved notice if kept by post-call checking | Saved-message path |
 | `hold` | Voicemail | Nothing | `voicemail` (`uncertain`) |
 | Caller silent for 8 s | Call ends | Nothing | `held` (`silent_caller`) |
 | Timeout or GPT Live failure | Voicemail | Nothing | `voicemail` (`screening_timeout` or `screening_unavailable`) |
@@ -70,7 +76,7 @@ These are in `LIVE_LIMITS` in `policy.ts`:
 | GPT Live startup | 10 s |
 | Each backend decision | 20 s |
 | Pause before applying a non-scam decision | 800 ms |
-| A recording that never pauses is treated as a robocall after | 6 s |
+| A pending block decision can end continuous speech after | 6 s |
 | Decision tool calls per call | 12 |
 | Accepted clarification requests per call (October 12 code, not deployed) | 2; a third uses the screening-timeout voicemail fallback |
 | Transcript | 12,000 characters |

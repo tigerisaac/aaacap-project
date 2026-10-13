@@ -38,8 +38,9 @@ export function codexArgs(extra = {}) {
     ...Object.entries(config).flatMap(([k, v]) => ['-c', `${k}=${toml(v)}`])];
 }
 
-export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false } = {}) {
+export async function codexScreeningTarget(config, { extraConfig = {}, conversation = false, interpretDecision } = {}) {
   if (typeof conversation !== 'boolean') throw new Error('invalid_conversation_mode');
+  if (interpretDecision !== undefined && typeof interpretDecision !== 'function') throw new Error('invalid_decision_interpreter');
   if (config.model !== 'gpt-6-luna' || config.reasoning?.effort !== 'medium') throw new Error('fallback_requires_luna_medium');
   if (config.tools.length !== 2 || config.tools.some(t => !['screen_call', 'research_scam_pattern'].includes(t.name))) throw new Error('unexpected_screening_tools');
   if (!Object.keys(extraConfig).length) {
@@ -96,11 +97,16 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
       let output;
       if (++a.rounds > 12) { a.finish({ kind: 'failure', failure: 'too_many_rounds' }); return; }
       if (params.tool === 'screen_call') {
-        const proposed = permittedDecision(params.arguments, a.state.transcript);
+        // Offline experiments may record structured observations and map them to
+        // an action. The normal application validator still checks every result.
+        let interpreted;
+        try { interpreted = interpretDecision ? interpretDecision(params.arguments, a.state.transcript, a.state) : params.arguments; }
+        catch { interpreted = undefined; } // A failed mapper cannot bypass validation or connect.
+        const proposed = permittedDecision(interpreted, a.state.transcript);
         const needsAnswer = proposed && awaitingCallerAnswer(proposed, a.state.clarifiedSpoken, spokenLength(a.state.transcript));
         const decision = needsAnswer ? undefined : proposed;
         // Content-free diagnostics distinguish policy misses from rejected tool arguments.
-        const parsed = liveDecisionSchema.safeParse(params.arguments);
+        const parsed = liveDecisionSchema.safeParse(interpreted);
         a.state.validationAttempts.push({ accepted: !!decision, schemaValid: parsed.success,
           ...(needsAnswer ? { awaitingCallerAnswer: true } : {}),
           evidenceChars: typeof params.arguments?.evidence === 'string' ? params.arguments.evidence.length : null,

@@ -1,5 +1,13 @@
 # Status
 
+## October 13 — lean context and evidence experiments (not promoted)
+
+The v100–v104 subscription GPT-6 Luna medium round keeps the repository runtime at v99 and post-call policy at v7. V104 is the strongest balance in this round, but remains an offline structured-observation experiment: Luna reports caller facts, a deterministic mapper chooses an existing action, and the current evidence/clarification guards still validate it. Its instructions plus tool definitions are 36.4% shorter than v99; this is not a measured token or cost saving.
+
+Fresh paired validation scored 95/96 versus v99's 69/96, preserving all 36 normal-context ordinary live offers and all 15 notices. V104 blocked 14/15 empty invitations and questioned one. MASC offered 79/80 ordinary callers, saved one, stopped 158/160 harmful callers, questioned two and blocked 39/40 advertisements. FTC stopped 342/724, saved 369 unverified, questioned ten, approved two family-style openings and retained one failed subscription turn. Saved notices never count as scam stops. There were no `no_decision` results; the failed subscription turn remains separate. One MASC evidence rejection was corrected within its existing evaluation. The original FTC failed prefix was preserved byte-for-byte, with only 600 unrun identities completed afterward.
+
+The existing main spoken suite passed 23/23 and recent-caution suite 9/9. Typecheck, 191 unit tests, build, 154 Firebase emulator tests and the new local interpreter/resumption checks passed; the initial sandbox port failure remains recorded. The broader round also retains rejected v100/v101/v103 outcomes. No new backend decision prompt was adopted, and no voice check, deployment, real call or forwarding change occurred. The [full report](SCREENING-PURPOSE-ROUTING-AUDIT.md) records source/request/result audits, current scam sources, general development changes and the remaining limitations. Public sets remain repeated regression material, not unseen validation.
+
 ## October 13 — preserve unanswered screening clarification (not deployed)
 
 Repository screening version `2026-10-13-general-v99` keeps v31's initial decision request unchanged and adds a shared runtime/subscription-adapter guard. Once a clarification is accepted, the model cannot approve, hold, save a notice, apply an ordinary block or spend another clarification on unchanged caller speech. It must ask/wait for the answer. New caller words allow re-evaluation; punctuation does not. An explicit scam block remains immediate. Existing timers, tool limits, fixed recipients and press-1 connection remain unchanged.

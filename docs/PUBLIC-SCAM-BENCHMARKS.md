@@ -1084,3 +1084,11 @@ V84 is a stronger observed empty-contact candidate, not an unqualified overall b
 ### October 13 post-call empty-contact candidate
 
 The [v7 message-filter report](SCREENING-MESSAGE-CONTACT-RELEASE.md) records a selected post-call regression: all 80 ordinary MASC messages kept and 98/543 previously saved FTC openings removed, versus 52/543 in the unchanged historical v4 results. These are message outcomes, not a new full screening benchmark. Twenty prior removals became keeps, including two potential payment misses identified by an unscored diagnostic; all remain recorded. Saved unverified notices are not credited as scam stops.
+
+### October 13 purpose, context and evidence comparison
+
+The [v100–v104 report](SCREENING-PURPOSE-ROUTING-AUDIT.md) retains the matched current-policy controls, fresh validation, structured-observation diagnostics and complete MASC/FTC runs. These use the newer five-action saved-notice requirement, so their stop counts are not interchangeable with the older four-action v79 comparison.
+
+V104 offered 79/80 ordinary MASC callers versus v99's 72/80, stopped 158/160 harmful callers versus 154/160, and blocked 39/40 advertisements versus 40/40. FTC outcomes were 342 stops, 369 saved unverified, ten questions, two approvals and one failed subscription turn across all 724 identities. The two approvals retain their harmful source labels despite family-style openings. The failure is preserved in the original 124-row prefix; only the 600 missing recordings were evaluated in the completion archive. There were no final no-decision outcomes. One unsupported MASC quote was corrected within the same bounded evaluation.
+
+V104 passed 95/96 new synthetic trials, including all ordinary offers and notice saves, but questioned one empty invitation. Its combined instruction/tool size is 36.4% below v99. The remaining empty-contact, sales and recording-classification misses prevent an unqualified reliability claim, and no candidate replaces the repository prompt. Source/request/result hashes, labels, call weights, exact prefixes and scoring were audited; overlap scans found no copied public passages. This does not establish freedom from conceptual overfitting or pretraining exposure. All inference was subscription Luna medium; no voice, deployment or real-call claim is made.
