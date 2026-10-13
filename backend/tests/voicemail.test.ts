@@ -30,8 +30,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
   const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': id });
   const model = (verdict: 'keep' | 'scam' | 'junk' | 'fail'): VoicemailModel & { transcribe: ReturnType<typeof vi.fn> } => ({
     transcribe: vi.fn(async () => verdict === 'fail' ? undefined : 'A synthetic message.'),
-    decide: vi.fn(async () => ({ verdict: verdict === 'fail' ? 'keep' : verdict, clear: verdict !== 'keep' && verdict !== 'fail', evidence: 'A synthetic message.' })),
-    summarize: vi.fn(async () => 'The caller left a synthetic account notice.')
+    decide: vi.fn(async () => ({ verdict: verdict === 'fail' ? 'keep' : verdict, clear: verdict !== 'keep' && verdict !== 'fail', evidence: 'A synthetic message.',
+      summary: verdict === 'keep' ? 'The caller left a synthetic account notice.' : null }))
   });
   /** A forwarded call whose voicemail audio is stored and waiting for its check. */
   const seed = async (from = caller) => {
@@ -81,7 +81,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, recordingSid: recording, provider: 'telnyx',
       parentSid: randomUUID(), duration: 12, status: 'pending', expiresAt: now + RETENTION_MS, createdAt: now });
     await ingestForwardingRecording(off, recording, { fetch: async () => new Response(Buffer.from('mp3'), { headers: { 'content-type': 'audio/mpeg' } }), remove: async () => {} });
-    expect((await call(callId)).voicemail).toMatchObject({ status: 'pending', textStatus: 'pending' });
+    expect((await call(callId)).voicemail).toMatchObject({ status: 'pending', summaryStatus: 'pending' });
     expect((await check.jobRef(callId).get()).exists).toBe(true); expect(await alerts()).toEqual([]);
   });
   it('shows and alerts a kept message', async () => {
@@ -129,7 +129,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
   it('leaves a message alone if it was deleted during the check', async () => {
     const callId = await seed();
     await check.check(callId, { transcribe: async () => { await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() }); return 'words'; },
-      decide: async () => ({ verdict: 'scam', clear: true, evidence: 'words' }) });
+      decide: async () => ({ verdict: 'scam', clear: true, evidence: 'words', summary: null }) });
     expect((await call(callId)).voicemail).toBeUndefined(); expect(await alerts()).toEqual([]);
   });
   it('purges capture content if a clear screening block arrives during processing', async () => {
@@ -162,12 +162,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     now += 3600_001; await check.releaseStale();
     expect((await call(callId)).voicemail.status).toBe('ready');
   });
-  it('encrypts readable content and shares it only with people allowed to hear messages', async () => {
+  it('saves an encrypted summary and decision but never a transcript or quoted evidence', async () => {
     const callId = await seed(); await check.check(callId, model('keep'));
     const stored = (await call(callId)).voicemail;
-    expect(stored.transcriptEnc).not.toContain('A synthetic message');
+    expect(stored.transcriptEnc).toBeUndefined(); expect(stored.evidence).toBeUndefined();
     expect(stored.summaryEnc).not.toContain('synthetic account notice');
-    expect((await listed(callId)).voicemail).toMatchObject({ transcript: 'A synthetic message.', summary: 'The caller left a synthetic account notice.' });
+    expect((await listed(callId)).voicemail).toMatchObject({ decision: 'keep', summary: 'The caller left a synthetic account notice.' });
+    expect((await listed(callId)).voicemail.transcript).toBeUndefined();
     for (const url of ['/api/overview', '/api/calls', `/api/calls/${callId}`]) {
       const response = await app.inject({ url, headers: headers('helper') });
       expect(response.statusCode).toBe(200); expect(response.body).not.toContain('A synthetic message'); expect(response.body).not.toContain('synthetic account notice');
@@ -175,6 +176,16 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     expect((await app.inject({ url: `/api/calls/${callId}`, headers: headers('stranger') })).statusCode).toBe(403);
     await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() });
     expect((await call(callId)).voicemail).toBeUndefined(); expect((await db.collection('forwardingAudio').doc(callId).get()).exists).toBe(false);
+  });
+  it('never returns a previously stored transcript and removes it on message processing', async () => {
+    const callId = await seed();
+    await s.callRef(callId).update({ 'voicemail.status': 'ready', 'voicemail.transcriptEnc': 'obsolete-unreadable-ciphertext' });
+    const response = await app.inject({ url: `/api/calls/${callId}`, headers: headers() });
+    expect(response.statusCode).toBe(200); expect(response.json().call.voicemail.transcript).toBeUndefined();
+    await s.callRef(callId).update({ 'voicemail.status': 'pending' });
+    const combined = model('keep'); await check.check(callId, combined);
+    expect((await call(callId)).voicemail.transcriptEnc).toBeUndefined();
+    expect(combined.transcribe).toHaveBeenCalledOnce(); expect(combined.decide).toHaveBeenCalledOnce();
   });
   it('preserves a one-shot notice from the initial capture and reassembles encrypted chunks', async () => {
     const callId = await seed(), recording = randomUUID(), bytes = Buffer.alloc(600_000, 42);

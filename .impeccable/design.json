@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T00:47:35+00:00",
+  "generatedAt": "2026-10-13T01:20:05+00:00",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -376,7 +376,7 @@
       "name": "Message inbox row",
       "kind": "custom",
       "refersTo": "voicemail-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Voicemail and Saved notice share the Messages inbox. Purpose leads, an authorized summary occupies up to three lines, and supporting metadata names kind, state when applicable, and date. Real summaries are service-generated; this preview uses synthetic content. Helpers without canListen see no summary or transcript. Sample Keep remains in-memory and does not extend real retention. Source: Features/Calls/VoicemailRow.swift, Features/Calls/VoicemailView.swift, and Features/Calls/CallDetailView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "description": "Schematic documentation preview, not the actual native implementation. Voicemail and Saved notice share the Messages inbox. Purpose leads, an authorized summary occupies up to three lines, and supporting metadata names kind, state when applicable, and date. Real summaries are service-generated; this preview uses synthetic content. Helpers without canListen see no summary. Full transcripts are not saved or displayed. Sample Keep remains in-memory and does not extend real retention. Source: Features/Calls/VoicemailRow.swift, Features/Calls/VoicemailView.swift, and Features/Calls/CallDetailView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
       "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\">Saved notice · New · Today</span></button>",
       "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(34% 34% 34%)}.ds-vm-meta{font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(76% 76% 76%)}}"
     },

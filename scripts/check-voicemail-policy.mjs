@@ -22,7 +22,8 @@ for (let run = 0; run < repeat; run++) for (const c of cases) {
   // Same rule as production, for an unsaved caller and a message long enough not to count as silence.
   const verdict = voicemailVerdict({ transcript: c.transcript, duration: 30, assessment });
   const actual = verdict === 'keep' ? 'keep' : 'remove', passed = !!assessment && actual === c.expected;
-  console.log(JSON.stringify({ case: c.name, policyVersion: VOICEMAIL_POLICY_VERSION, expected: c.expected, actual, verdict, assessment, provider,
+  console.log(JSON.stringify({ case: c.name, policyVersion: VOICEMAIL_POLICY_VERSION, expected: c.expected, actual, verdict,
+    assessed: !!assessment, summarized: !!assessment?.summary, provider,
     failure: assessment ? undefined : 'no_answer', passed, elapsedMs: Date.now() - start }));
   const t = tally.get(c.name) ?? { expected: c.expected, passed: 0, runs: 0, outcomes: {} };
   t.runs++; if (passed) t.passed++; t.outcomes[verdict] = (t.outcomes[verdict] ?? 0) + 1; tally.set(c.name, t);

@@ -66,10 +66,8 @@ export const dailySetupChecks = onSchedule({ ...options, maxInstances: 1, schedu
 export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 120,
   document: 'voicemailChecks/{callId}', retry: true, concurrency: 2 }, async event => {
   const { VoicemailCheck, transcribeVoicemail, decideVoicemail } = await import('./voicemail-check.js');
-  const { summarizeMessage } = await import('./message-summary.js');
   const key = openaiKey.value();
-  await new VoicemailCheck(getStore()).check(event.params.callId, { transcribe: audio => transcribeVoicemail(audio, key), decide: text => decideVoicemail(text, key),
-    summarize: text => summarizeMessage(text, key) });
+  await new VoicemailCheck(getStore()).check(event.params.callId, { transcribe: audio => transcribeVoicemail(audio, key), decide: text => decideVoicemail(text, key) });
 });
 
 // Push alerts: one queued, contentless job per event. Nothing is queued unless APNs is configured.

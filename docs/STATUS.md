@@ -1,6 +1,14 @@
 # Status
 
-## October 12 — saved voicemail and notices (backend not deployed)
+## October 12 — audio, summary and decision (backend not deployed)
+
+The owner removed full transcripts from saved-message output and chose temporary processing text for lower cost. Eligible messages now use GPT Transcribe once and one combined, storage-disabled GPT-6 Luna Responses request for both the keep/discard decision and summary. Temporary transcript text and supporting evidence quotes stay in memory and are discarded after processing. Neither is saved or returned by the API. Kept messages retain encrypted audio, an optional summary, the final decision and policy versions. Existing transcript fields are never exposed and are removed if a pending message is processed. The iPhone transcript section is removed, including sample data. Audio stays playable when text processing fails.
+
+Post-call policy is `2026-10-12-voicemail-v4`, summary policy `2026-10-12-message-v2`. Live screening stays on candidate v31; its prompt did not change. Validation: `npm run check` passed 176 unit tests plus typecheck/build; `npm run test:firebase` passed all 142 emulator tests. The nine development notice cases passed (6/6 useful/uncertain kept, 3/3 scam/junk removed). Three generated MP3 cases passed the production APIs with exactly two OpenAI requests each: account callback and outage notices kept/summarized, an authentication-code demand removed without a summary. No held-out cases were read or tuned for this revision, and generated voice is not real-call evidence.
+
+Simulator checks passed the normal/light notice, largest-text/dark notice and discarded-scam no-playback/no-restore paths. The signed physical-device build passed and the updated app was installed on the paired iPhone October 12 at approximately 20:19 Central. CoreDevice confirmed installation and launch; no physical visual or real-call verification is claimed. No backend/bridge deployment, carrier change or phone call was performed for this revision. The earlier three-request candidate and its installation evidence below are historical.
+
+## October 12 — earlier transcript candidate (superseded; backend not deployed)
 
 Implemented capture from answer on the shared Call Control path. Incoming audio is temporarily recorded before the greeting, with a four-minute cap; capture must stop before press-1 bridging. Final-outcome checks discard answered/clear-blocked captures and retry deletion of provider copies. Useful and uncertain prerecorded notices are saved without a live offer, including speech spoken before screening starts or a caller hangs up. Kept messages have encrypted audio, transcripts and summaries; helpers require voicemail-listening permission to read either. Message/account deletion removes all content, and retained messages expire after 30 days.
 

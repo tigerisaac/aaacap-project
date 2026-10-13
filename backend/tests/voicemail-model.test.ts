@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { decideVoicemail, decisionRequest, transcribeVoicemail, voicemailVerdict, VOICEMAIL_LIMITS } from '../src/cloud/voicemail-check.js';
 
 const reply = (body: unknown, status = 200) => vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } }));
-const answer = (verdict: string, clear = true, evidence = 'synthetic words') => ({ id: 'resp_test', status: 'completed',
-  output: [{ type: 'message', id: 'msg_test', status: 'completed', role: 'assistant', content: [{ type: 'output_text', annotations: [], text: JSON.stringify({ verdict, clear, evidence }) }] }] });
+const answer = (verdict: string, clear = true, evidence = 'synthetic words', summary: string | null = null) => ({ id: 'resp_test', status: 'completed',
+  output: [{ type: 'message', id: 'msg_test', status: 'completed', role: 'assistant', content: [{ type: 'output_text', annotations: [], text: JSON.stringify({ verdict, clear, evidence, summary }) }] }] });
 
 describe('saved message content check', () => {
   it('uses a structured, storage-disabled Responses request with untrusted input', () => {
@@ -14,8 +14,14 @@ describe('saved message content check', () => {
   });
   it('reads an evidence-grounded assessment without requiring Decisions API access', async () => {
     const fetcher = reply(answer('scam'));
-    expect(await decideVoicemail('synthetic words', 'key', fetcher)).toEqual({ verdict: 'scam', clear: true, evidence: 'synthetic words' });
+    expect(await decideVoicemail('synthetic words', 'key', fetcher)).toEqual({ verdict: 'scam', clear: true, evidence: 'synthetic words', summary: null });
     expect(fetcher.mock.calls[0]![0]).toBe('https://api.openai.com/v1/responses');
+  });
+  it('gets the decision and attributed summary in one response, rejecting supplied contact details', async () => {
+    const fetcher = reply(answer('keep', false, '', 'The caller reported an appointment on 2026-10-15.'));
+    expect((await decideVoicemail('synthetic words', 'key', fetcher))?.summary).toBe('The caller reported an appointment on 2026-10-15.');
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect((await decideVoicemail('synthetic words', 'key', reply(answer('keep', false, '', 'Call 202-555-0199.'))))?.summary).toBeNull();
   });
   it.each([
     ['a refusal', reply({ id: 'resp_test', status: 'completed', output: [] })],
@@ -37,10 +43,10 @@ describe('saved message content check', () => {
     const base = { transcript: 'synthetic words', duration: 20 };
     expect(voicemailVerdict({ ...base, transcript: undefined })).toBe('keep');
     expect(voicemailVerdict(base)).toBe('keep');
-    expect(voicemailVerdict({ ...base, assessment: { verdict: 'scam', clear: false, evidence: 'synthetic words' } })).toBe('keep');
-    expect(voicemailVerdict({ ...base, assessment: { verdict: 'scam', clear: true, evidence: 'invented evidence' } })).toBe('keep');
-    expect(voicemailVerdict({ ...base, assessment: { verdict: 'scam', clear: true, evidence: 'synthetic words' } })).toBe('scam');
-    expect(voicemailVerdict({ ...base, assessment: { verdict: 'junk', clear: true, evidence: 'synthetic words' } })).toBe('junk');
+    expect(voicemailVerdict({ ...base, assessment: { verdict: 'scam', clear: false, evidence: 'synthetic words', summary: null } })).toBe('keep');
+    expect(voicemailVerdict({ ...base, assessment: { verdict: 'scam', clear: true, evidence: 'invented evidence', summary: null } })).toBe('keep');
+    expect(voicemailVerdict({ ...base, assessment: { verdict: 'scam', clear: true, evidence: 'synthetic words', summary: null } })).toBe('scam');
+    expect(voicemailVerdict({ ...base, assessment: { verdict: 'junk', clear: true, evidence: 'synthetic words', summary: null } })).toBe('junk');
     expect(voicemailVerdict({ ...base, transcript: ' ', duration: VOICEMAIL_LIMITS.silentMaxSeconds })).toBe('junk');
     expect(voicemailVerdict({ ...base, transcript: '', duration: VOICEMAIL_LIMITS.silentMaxSeconds + 1 })).toBe('keep');
   });

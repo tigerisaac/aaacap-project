@@ -12,7 +12,6 @@ struct CallDetailView: View {
     @State private var confirmRestore = false
     @State private var restoring = false
     @State private var isVisible = false
-    @State private var transcriptExpanded = false
     private var call: CallRecord { updatedCall ?? initialCall }
     private var messageRemoved: Bool { call.voicemail?.status == "removed" }
 
@@ -55,17 +54,8 @@ struct CallDetailView: View {
                         Text("Generated from the message. The caller’s claims haven’t been verified.")
                     } }
                 }
-                if let transcript = message.transcript {
-                    Section {
-                        DisclosureGroup("Transcript", isExpanded: $transcriptExpanded) {
-                            Text(transcript).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
-                                .accessibilityIdentifier("message-transcript")
-                            Text("Automatic transcripts can contain mistakes. Listen to the message if anything is unclear.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
-                        }
-                    }
-                } else if message.status == "ready" {
-                    Section { Text("Readable text isn’t available for this message. You can still listen.")
+                if message.summary == nil, message.status == "ready" {
+                    Section { Text("A summary isn’t available for this message. You can still listen.")
                         .foregroundStyle(ShieldTheme.secondaryText) }
                 }
                 if message.isNotice {

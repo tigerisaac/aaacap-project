@@ -32,8 +32,8 @@ export async function ingestForwardingRecording(store: CloudStore, sid: string, 
       if (current && !discardCapture(current) && current.expiresAt > store.now() && personDoc!.exists && personDoc!.data()!.status !== 'offboarded') {
         writeMessageAudio(store, tx, job.callId, job.participantId, current.expiresAt, bytes);
         const kind = job.capture && !current.events.some((e: { kind: string }) => e.kind === 'voicemail_offered') ? 'notice' : 'voicemail';
-        // Transcription/summary runs for every message, independently of the old removal switch.
-        tx.update(callRef, { voicemail: { id: job.callId, duration, kind, status: 'pending', textStatus: 'pending', heardAt: null },
+        // Combined assessment/summary runs for every message, independently of the old removal switch.
+        tx.update(callRef, { voicemail: { id: job.callId, duration, kind, status: 'pending', summaryStatus: 'pending', heardAt: null },
           outcome: 'voicemail', events: [...current.events, { kind: kind === 'notice' ? 'notice_received' : 'voicemail_received', at: store.now() }] });
         if (!checkDoc!.exists) tx.create(checkRef, { callId: job.callId, participantId: job.participantId, createdAt: store.now(), expiresAt: current.expiresAt });
       }

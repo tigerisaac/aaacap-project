@@ -31,9 +31,9 @@ export function cloudCallDTO(store: CloudStore, call: Call, canListen = false) {
     detail: reason === 'routine' ? (forwarding ? 'The introduction looked routine. Connection requires you to answer and press 1.' : 'The introduction looked routine. No call was connected.') : copy.detail,
     nextStep: reason === 'routine' ? 'This result does not verify the caller’s identity.' : copy.action,
     monitored: !!call.monitoringStartedAt, acceptedAt: at(call.acceptedAt), endedAt: at(call.completedAt ?? (abandoned ? call.createdAt + (forwarding ? 450_000 : 120_000) : null)), voicemail: call.voicemail ? { id: call.voicemail.id, duration: call.voicemail.duration, status: call.voicemail.status, heardAt: at(call.voicemail.heardAt),
-      kind: call.voicemail.kind ?? 'voicemail', textStatus: call.voicemail.textStatus ?? 'unavailable',
+      kind: call.voicemail.kind ?? 'voicemail', decision: call.voicemail.decision ?? null,
+      summaryStatus: call.voicemail.summaryStatus ?? (call.voicemail.summaryEnc ? 'ready' : 'unavailable'),
       ...(canListen && !removed && call.voicemail.status === 'ready' && !call.acceptedAt ? {
-        transcript: call.voicemail.transcriptEnc ? store.vault.open(call.voicemail.transcriptEnc, `message:${call.id}:transcript`) : null,
         summary: call.voicemail.summaryEnc ? store.vault.open(call.voicemail.summaryEnc, `message:${call.id}:summary`) : null } : {}),
       ...(removed ? { removedAt: at(call.voicemail.removedAt), restorableUntil: call.voicemail.purgedAt ? null : at(call.voicemail.removedAt + VOICEMAIL_LIMITS.purgeMs) } : {}) } : null };
 }

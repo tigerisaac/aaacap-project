@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { providerKey } from './lib/screening-target.mjs';
 import { voicemailCases } from './fixtures/redteam/saved-notices-development.mjs';
 import { transcribeVoicemail, decideVoicemail, voicemailVerdict, VOICEMAIL_POLICY_VERSION } from '../dist/cloud/voicemail-check.js';
-import { summarizeMessage, MESSAGE_SUMMARY_VERSION } from '../dist/cloud/message-summary.js';
+import { safeMessageSummary, MESSAGE_SUMMARY_VERSION } from '../dist/cloud/message-summary.js';
 
 const key = await providerKey('openai');
 const folder = await mkdtemp(join(tmpdir(), 'shield-synthetic-message-'));
@@ -19,13 +19,15 @@ try {
     const aiff = join(folder, `${scenario.name}.aiff`), mp3 = join(folder, `${scenario.name}.mp3`);
     execFileSync('say', ['-v', 'Samantha', '-o', aiff, scenario.transcript]);
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', aiff, '-ar', '8000', '-ac', '1', '-b:a', '32k', mp3]);
-    const transcript = await transcribeVoicemail(await readFile(mp3), key);
-    const assessment = transcript?.trim() ? await decideVoicemail(transcript, key) : undefined;
+    let openAIRequests = 0;
+    const fetcher = (url, init) => { openAIRequests++; return fetch(url, init); };
+    const transcript = await transcribeVoicemail(await readFile(mp3), key, fetcher);
+    const assessment = transcript?.trim() ? await decideVoicemail(transcript, key, fetcher) : undefined;
     const verdict = voicemailVerdict({ transcript, assessment, duration: 30 });
-    const summary = verdict === 'keep' && transcript?.trim() ? await summarizeMessage(transcript, key) : undefined;
-    const passed = !!transcript?.trim() && !!assessment && (scenario.expected === 'keep' ? verdict === 'keep' && !!summary : verdict !== 'keep' && !summary);
+    const summary = verdict === 'keep' ? safeMessageSummary(assessment?.summary) : undefined;
+    const passed = !!transcript?.trim() && !!assessment && openAIRequests === 2 && (scenario.expected === 'keep' ? verdict === 'keep' && !!summary : verdict !== 'keep' && !summary);
     const result = { case: scenario.name, expected: scenario.expected, transcribed: !!transcript?.trim(), assessed: !!assessment,
-      verdict, summarized: !!summary, passed };
+      verdict, summarized: !!summary, openAIRequests, passed };
     results.push(result); console.log(JSON.stringify(result));
   }
 } finally { await rm(folder, { recursive: true, force: true }); }
