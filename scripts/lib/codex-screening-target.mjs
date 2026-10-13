@@ -46,7 +46,7 @@ export async function codexScreeningTarget(config, { extraConfig = {}, conversat
   if (typeof conversation !== 'boolean') throw new Error('invalid_conversation_mode');
   if (interpretDecision !== undefined && typeof interpretDecision !== 'function') throw new Error('invalid_decision_interpreter');
   if (argumentSchema !== undefined && (typeof argumentSchema?.safeParse !== 'function' || !argumentSchema.shape)) throw new Error('invalid_argument_schema');
-  if (![false,true,2,3].includes(argumentFeedback) || (argumentFeedback && !argumentSchema)) throw new Error('invalid_argument_feedback');
+  if (![false,true,2,3,4].includes(argumentFeedback) || (argumentFeedback && !argumentSchema)) throw new Error('invalid_argument_feedback');
   if (!['legacy','greeting'].includes(callerFraming)) throw new Error('invalid_caller_framing');
   if (config.model !== 'gpt-6-luna' || config.reasoning?.effort !== 'medium') throw new Error('fallback_requires_luna_medium');
   if (config.tools.length !== 2 || config.tools.some(t => !['screen_call', 'research_scam_pattern'].includes(t.name))) throw new Error('unexpected_screening_tools');

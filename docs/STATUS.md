@@ -1,5 +1,11 @@
 # Status
 
+## October 13 — caller framing and recording checks remain experimental
+
+The [v148–v150 audit](SCREENING-CALLER-FRAMING-AND-RECORDING-AUDIT.md) records thirteen subscription Luna medium runs / 3,536 trials, with no provider failures or final no-decisions. A bounded correction now rejects contradictory recording-mode/quote observations without increasing the initial prompt. The latest fresh charge alarms and empty-contact requests stop while ordinary callbacks and notices pass. MASC still offers only 77/80 ordinary calls despite stopping 160/160 harmful calls; FTC stops 579/724 and retains three approvals. No prompt is promoted.
+
+Typecheck, 203 unit tests/build, 154 emulator tests and local protocol/compatibility checks pass. All source labels, earlier misses and an initial sandbox-only test failure remain recorded. No copied public passage was found in the requests or correction feedback; this cannot rule out conceptual overfitting. Runtime screening v134, post-call v10 and the separate deployed release below remain unchanged. No deployment, voice test, real call or forwarding change occurred.
+
 ## October 13 — identity and billing repairs remain experimental
 
 The [v146/v147 audit](SCREENING-IDENTITY-AND-FINANCIAL-PURPOSE-AUDIT.md) completes ten scored runs / 3,048 trials on subscription Luna medium, with no timeouts or no-decisions. V146 restores unnamed business/service-role identity and adds joint correction of inconsistent facts. V147 lets an ordinary financial update supply otherwise-missing purpose. Their identical 9,932-character initial request is 17.7% below runtime. Local replay verifies the billing repair, but the new model runs do not exercise an action change from it.

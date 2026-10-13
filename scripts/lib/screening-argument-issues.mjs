@@ -31,6 +31,18 @@ export function argumentConstraints(schema,issues){
 }
 
 export function observationCorrection(issues,schema,version=1){
+  if(version===4){
+    const pair=(...fields)=>fields.every(field=>issues.some(i=>i.field===field&&i.code==='custom'));
+    if(!pair('recordingMode','recordingCue'))return observationCorrection(issues,schema,3);
+    const jointConstraints=[
+      ...(pair('identity','context')?[{fields:['identity','context'],rule:'Personal context requires this caller’s stated personal relationship. A name or role alone is not a personal relationship.'}]:[]),
+      ...(pair('recordingMode','recordingCue')?[{fields:['recordingMode','recordingCue'],rule:'Current automation requires its supported quote in recordingCue. For other modes recordingCue must be empty. A report about another recording is not current automation.'}]:[]),
+    ];
+    if(jointConstraints.length)return {
+      invalidFields:argumentConstraints(schema,issues),jointConstraints,
+      instruction:'Recheck each listed pair against the same caller evidence; correct whichever observation is unsupported. Preserve correct facts. A rejected call adds no caller evidence. Do not announce a decision.',
+    };
+  }
   const joint=version===3&&['identity','context'].every(field=>issues.some(i=>i.field===field&&i.code==='custom'));
   return {
     ...(issues.length?{invalidFields:version>=2?argumentConstraints(schema,issues):issues}:{}),
