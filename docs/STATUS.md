@@ -1,5 +1,11 @@
 # Status
 
+## October 13 — context grounding, input framing and contact definitions (not promoted)
+
+The v118–v121 subscription Luna medium round completed 23 scored runs and 4,204 trials, retaining all failures. V118's extra context quote worsened ordinary-call results. V119 adds the existing opening context only in an opt-in evaluation wrapper; legacy inputs remain unchanged. V120 changes only the separate-contact field description, adding 120 characters and remaining 34.2% below v99 in combined instruction/tool size. It passed 80/80 fresh trials and 32/32 main/caution checks, but still approved a named empty contact and made ordinary-call mistakes in development. V121's clearer relationship enum improved broad development to 129/130, while worsening the focused set and approving a new empty contact twice. None is promoted.
+
+V119 and v120 each offered 80/80 ordinary MASC calls and blocked 40/40 ads, with 155 harmful blocks, five harmful questions and no harmful approvals or final evaluation failures. Their full FTC runs produced 349/355/15/5 and 344/365/9/6 blocks/saved notices/questions/approvals respectively, versus 357/351/11/5 for the new v111 control. Saved notices are not scam stops. Runtime v99, post-call v7 and deployed v30 remain unchanged. Typecheck, 191 unit tests, build, 154 emulator tests and the local transport/validation mocks passed. The [full audit](SCREENING-CONTEXT-FRAMING-AUDIT.md) records fresh validation, verified snapshots and retained limitations. No voice test, deployment, call or forwarding change occurred.
+
 ## October 13 — schema correction and contact scope (not promoted)
 
 The v111–v117 subscription Luna medium round completed 24 scored runs and 3,624 trials. The offline adapter now rejects malformed observation input independently of its mapper, records only trusted schema fields/issue codes, and optionally returns versioned correction feedback with trusted constraints. A 52-request local mock verifies correction, privacy, evidence checks and bounds. V111's unchanged initial v110 request completed MASC with 80/80 ordinary offers, 156/160 harmful stops, four harmful questions and no final no-decisions; three invalid context values were corrected within their original trials.

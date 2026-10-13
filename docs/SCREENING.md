@@ -22,6 +22,8 @@ The [caller-attribution audit](SCREENING-ATTRIBUTION-AUDIT.md) tests v105–v110
 
 The [schema and contact-scope audit](SCREENING-SCHEMA-CONTRACT-AUDIT.md) adds safe, versioned correction feedback for invalid observation fields and tests v111–v117. V111's MASC run recovers three malformed context values within their original trials, with no final no-decisions. V117 retains 80/80 ordinary MASC offers but is rejected after empty-contact and payment approvals and a weaker FTC run. The runtime remains v99; the new feedback is an opt-in offline evaluation feature.
 
+The [context, framing and contact audit](SCREENING-CONTEXT-FRAMING-AUDIT.md) tests v118–v121. V120 changes only the contact field description and passes 80/80 fresh trials, but still approves a named empty request and loses ordinary callers in development. V119 and v120 both retain all 80 ordinary MASC offers. The quote, input-framing and category-name alternatives do not resolve the tradeoff. They remain offline; the default subscription wrapper and application prompt are unchanged.
+
 ## How a decision is made
 
 This section describes the repository's five-action policy and runtime. The deployed v30 bridge still uses the earlier four-action policy.
