@@ -10,7 +10,7 @@ The 24-case main benchmark remains under 25. Its two legitimate automated alerts
 
 See [saved message storage and access](ARCHITECTURE.md#saved-messages-october-12-implementation-not-deployed). Deployment remains on v30 until owner approval. Validation evidence is recorded in STATUS.md after checks complete.
 
-The [current-policy hardening report](SCREENING-CURRENT-HARDENING.md) compares v31 with lean five-action experiments on subscription Luna, including fresh callers, MASC, FTC and the post-call filtering stage. Saved notices are not credited as scam stops. The experiments retain ordinary-call and clarification misses and are not selected for deployment.
+The [current-policy hardening report](SCREENING-CURRENT-HARDENING.md) compares v31 with lean five-action experiments on subscription Luna, including fresh callers, MASC, FTC and the post-call filtering stage. Saved notices are not credited as scam stops. The experiments retain ordinary-call and clarification misses and are not selected for deployment. The [subsequent ordering and message-filter audit](SCREENING-ORDER-AND-MESSAGE-AUDIT.md) rejects v94 for ordinary-call regressions and tests empty contact after an early hangup.
 
 ## How a decision is made
 

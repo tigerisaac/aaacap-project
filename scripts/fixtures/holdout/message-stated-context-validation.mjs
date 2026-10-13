@@ -1,0 +1,33 @@
+// Fresh synthetic validation authored after freezing message-contact-v6.
+// No result-based prompt revision may use these callers. Labels remain fixed.
+const c = (id, group, expected, text) => ({ id, group, expected, text });
+export const messageCases = [
+  c('context-empty-familiar', 'empty-contact', 'remove', 'You know who this is. Call me when you hear this.'),
+  c('context-empty-name', 'empty-contact', 'remove', 'Ellis speaking. Send a message to this account.'),
+  c('context-empty-friendly', 'empty-contact', 'remove', 'Hello there, hope your day is going well. Add my number and say hello.'),
+  c('context-empty-priority', 'empty-contact', 'remove', 'This is important. Return this call today.'),
+  c('context-empty-role', 'empty-contact', 'remove', 'Your contact coordinator. Open our page so we can talk.'),
+  c('context-empty-private', 'empty-contact', 'remove', 'A confidential message: get in touch through our private chat.'),
+  c('context-empty-automated', 'empty-contact', 'remove', 'This is a recorded invitation to add this number on WhatsApp and message us.'),
+  c('context-empty-familiarity', 'empty-contact', 'remove', 'You will recognize me once we talk. Please call me back.'),
+  c('context-parent-address', 'ordinary-callback', 'keep', 'Dad, my battery is nearly dead. Call me back at this number when you can.'),
+  c('context-friend-private', 'ordinary-callback', 'keep', 'Your friend from the allotment. Can you call me for a private chat?'),
+  c('context-family-new-number', 'ordinary-callback', 'keep', 'Your uncle. I changed phones, so please save this number and give me a call.'),
+  c('context-personal-plans', 'ordinary-callback', 'keep', 'Your walking partner. Message me about whether Saturday still works for our walk.'),
+  c('context-service-pickup', 'ordinary-callback', 'keep', 'The bicycle repair shop. Your repair is complete; please call to arrange pickup.'),
+  c('context-medical-response', 'ordinary-callback', 'keep', 'Your dental practice replying to the question you sent about your retainer. Please call to discuss the answer.'),
+  c('context-requested-application', 'ordinary-callback', 'keep', 'The training coordinator responding to your course application. Call us about the start date.'),
+  c('context-refund-update', 'ordinary-callback', 'keep', 'The florist. Your canceled order has been refunded to the original card. Call the shop if you have a question.'),
+  c('context-appointment-offer', 'ordinary-callback', 'keep', 'Your optician moving the appointment you booked to next week. Call us to choose a time; we also have an optional frame discount.'),
+  c('context-requested-site', 'ordinary-callback', 'keep', 'Your architect. The revised plans for the extension you commissioned are ready in the project portal; message me with your comments.'),
+  c('context-notice-security', 'unverified-notice', 'keep', 'Automated security notice. An account setting changed; check the app you already use if you want to review it.'),
+  c('context-notice-charge', 'unverified-notice', 'keep', 'Recorded account notice. A purchase was charged today. Call the supplied contact if you want more information.'),
+  c('context-notice-service', 'ordinary-notice', 'keep', 'Recorded reminder that your scheduled physiotherapy visit is tomorrow afternoon.'),
+  c('context-incomplete-news', 'uncertain-information', 'keep', 'The care center calling about your mother’s scheduled transfer, the connection is fading.'),
+  c('context-code-after-callback', 'harmful-request', 'remove', 'The access desk. Call back and read us the password reset code we send.'),
+  c('context-payment', 'harmful-request', 'remove', 'The benefits office. Send a gift card payment to release the funds.'),
+  c('context-isolation', 'harmful-request', 'remove', 'The investigation team. Keep our conversation secret from your family and bank, and contact us alone.'),
+  c('context-remote-control', 'harmful-request', 'remove', 'Computer support. Call our technician to give us remote control of your device.'),
+  c('context-recorded-pitch', 'unwanted-pitch', 'remove', 'Automated offer to upgrade your home warranty. Press a key for our sales team.'),
+  c('context-live-pitch', 'unwanted-pitch', 'remove', 'I am selling investment coaching to new customers. Message me to join our trading group.'),
+];

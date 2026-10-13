@@ -162,3 +162,8 @@ The new v31 public control above is reused as a fixed comparator, not rerun to o
 Nine previously unassessed v91 saved inputs received the unchanged post-call check: eight FTC recordings and one ordinary MASC conversation. The FTC check removed five and kept three; the ordinary conversation was kept. All earlier 601 assessments were reused unchanged where inputs matched, never retried. Joining those results to v91 gives **248 screening stops, 33 additional removals, 432 unverified messages kept and 11 questions** out of 724. Weighted stops plus removals are 496/1,378; 871 source-call copies remain as unverified messages. The supplemental audit verifies distinct new identities and the shared-result join.
 
 The empty-contact improvement is strong in this sample, and ordinary calls improved over v31 on the second fresh set. The remaining secrecy approval, clinical-purpose assumption, ordinary MASC block and notice-routing errors prevent calling the prompt rock solid. No deployment or app prompt promotion is justified by these results. The hardening goal remains active.
+
+
+## Subsequent ordering and post-call audit
+
+The [v92–v94 ordering and message-filter report](SCREENING-ORDER-AND-MESSAGE-AUDIT.md) preserves the next development/fresh/public runs. V94 loses ordinary offers and is rejected. A separate post-call empty-contact experiment passes its fresh text set, with legacy policy conflicts and conversational-quality limits recorded separately. No earlier result above was replaced.
