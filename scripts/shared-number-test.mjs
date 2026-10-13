@@ -69,7 +69,7 @@ async function run() {
   let latestSummary = '';
   const probe = new SharedNumberProbe(config, async (id, action, body) => {
     // This command surface cannot dial, transfer, bridge, record or stream a call.
-    if (!['answer', 'gather_using_speak', 'speak', 'hangup'].includes(action)) throw new Error('action_not_allowed');
+    if (!['answer', 'gather_using_audio', 'playback_start', 'hangup'].includes(action)) throw new Error('action_not_allowed');
     const response = await fetch(`https://api.telnyx.com/v2/calls/${encodeURIComponent(id)}/actions/${action}`, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(4000),
       headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify(body),

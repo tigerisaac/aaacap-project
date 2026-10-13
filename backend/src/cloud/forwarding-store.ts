@@ -15,6 +15,7 @@ export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx';
   liveConnectedAt?: number; liveFinishedAt?: number; screeningModel?: string; screeningCaution?: boolean;
   childSid?: string; acceptedAt?: number; voicemail?: { id: string; duration: number; status: string; heardAt: number | null };
   captureFromAnswer?: boolean;
+  announcementFallbacks?: Record<string, boolean>;
   monitoringStartedAt?: number; monitorPolicyVersion?: string; monitorIntervenedAt?: number; monitorConcern?: string;
   monitorEvidenceAt?: number; monitorRedirectedAt?: number;
   /** How a screened call got in: a supervised test window, or the person's always-on screening. */

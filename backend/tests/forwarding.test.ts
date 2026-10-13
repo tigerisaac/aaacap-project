@@ -40,12 +40,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
       : {}) }, payload });
   };
   it('serves only approved generic audio from the packaged fallback route', async () => {
-    const response = await app.inject({ url: '/public/speech/soniox-grace-2026-10-10/01-greeting.wav' });
+    const response = await app.inject({ url: '/public/speech/soniox-grace-2026-10-12/01-greeting.wav' });
     expect(response.statusCode).toBe(200);
     expect(response.headers['content-type']).toContain('audio/wav');
     expect(response.rawPayload.toString('ascii', 0, 4)).toBe('RIFF');
-    expect((await app.inject({ url: '/public/speech/soniox-grace-2026-10-10/unknown.wav' })).statusCode).toBe(404);
-    expect((await post('fallback')).body).toContain('<Say>Shield is temporarily unavailable.');
+    expect((await app.inject({ url: '/public/speech/soniox-grace-2026-10-12/unknown.wav' })).statusCode).toBe(404);
+    const fallback = (await post('fallback')).body;
+    expect(fallback).toContain('<Say voice="AWS.Polly.Joanna">Shield is temporarily unavailable.');
   });
   const offer = async (bind = true) => {
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);

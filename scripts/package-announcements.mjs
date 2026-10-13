@@ -2,7 +2,7 @@ import { mkdir, readFile, copyFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
 const source = 'backend/src/cloud/announcement-audio';
-const version = 'soniox-grace-2026-10-10';
+const version = 'soniox-grace-2026-10-12';
 const recordings = JSON.parse(await readFile(`${source}/manifest.json`, 'utf8'));
 const destinations = ['dist/cloud/announcement-audio', `deploy/firebase/public/speech/${version}`];
 for (const destination of destinations) await mkdir(destination, { recursive: true });

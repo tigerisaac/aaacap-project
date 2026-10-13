@@ -21,10 +21,10 @@ class Element {
     const body = (this.text === undefined ? '' : escapeText(this.text)) + this.children.map(child => child.render()).join('');
     return body ? `<${this.name}${attributes}>${body}</${this.name}>` : `<${this.name}${attributes}/>`;
   }
-  say(text: string) {
+  say(text: string, attributes: Attributes = {}) {
     const audio = this.speech?.(text);
     // Never continue past a failed disclosure or keypad instruction.
-    return audio ? this.add('Play', { failoverUrl: audio.failoverUrl }, audio.url) : this.add('Say', {}, text);
+    return audio ? this.add('Play', { failoverUrl: audio.failoverUrl }, audio.url) : this.add('Say', attributes, text);
   }
   play(value: Attributes | string) { return typeof value === 'string' ? this.add('Play', {}, value) : this.add('Play', value); }
   stream(attributes: Attributes) { return this.add('Stream', attributes); }

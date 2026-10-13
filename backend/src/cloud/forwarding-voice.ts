@@ -9,8 +9,8 @@ import { callerNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx 
 import { assignedTo, isShieldNumber, knownShieldNumber, numberRef } from './numbers.js';
 import { SETUP_CHECK_MESSAGE, SetupChecks } from './setup-check.js';
 import { CallMonitor, warningText } from './monitoring.js';
+import { ANNOUNCEMENT_BACKUP_VOICE, announcementResponse } from './announcements.js';
 import { VoiceResponse } from './texml.js';
-import { announcementResponse } from './announcements.js';
 
 export type ForwardingVoiceDependencies = { lookupForwardingChild?: (sid: string) => Promise<{ to: string; from: string; status: string }>; lookupForwardingInbound?: (sid: string) => Promise<{ from: string; to: string; direction: string; status: string }>;
   callMonitor?: CallMonitor; warmLiveBridge?: () => void };
@@ -228,9 +228,9 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       }
       return xml().toString();
     });
-    // Keep the provider's error fallback independent of prerecorded audio.
+    // The normal path plays Grace. Its provider error route is independent of both audio origins.
     voice.post('/forwarding/:secret/fallback', async () => {
-      const r = new VoiceResponse(); r.say('Shield is temporarily unavailable. Please try again later.'); r.hangup(); return r.toString();
+      const r = new VoiceResponse(); r.say('Shield is temporarily unavailable. Please try again later.', { voice: ANNOUNCEMENT_BACKUP_VOICE }); r.hangup(); return r.toString();
     });
   });
 }

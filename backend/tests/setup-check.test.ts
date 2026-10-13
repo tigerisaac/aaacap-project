@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { CloudStore } from '../src/cloud/store.js';
 import { ForwardingStore } from '../src/cloud/forwarding-store.js';
-import { SETUP_CHECK_LIMITS, SETUP_CHECK_MESSAGE, SetupChecks } from '../src/cloud/setup-check.js';
+import { SETUP_CHECK_LIMITS, SetupChecks } from '../src/cloud/setup-check.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import type { AuthProvider } from '../src/auth.js';
@@ -91,7 +91,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Daily setup check (Firest
     expect((await post(`setup-check/${id}`, { CallSid: sid(9), From: CHECK, To: '+12025550188' })).body).not.toContain('Shield check');
     expect(await result(id)).toBe('calling');
     const xml = (await post(`setup-check/${id}`, { CallSid: sid(9), From: CHECK, To: A.phone })).body;
-    expect(xml).toContain(SETUP_CHECK_MESSAGE); expect(xml).toContain('<Hangup');
+    expect(xml).toContain('/14-setup-check.wav</Play>'); expect(xml).not.toContain('<Say'); expect(xml).toContain('<Hangup');
     expect(await result(id)).toBe('answered'); expect(await alerts()).toEqual(['setup_check_failed']);
   });
   it('stays quiet when the forwarded copy arrived before the answer was reported', async () => {

@@ -17,7 +17,7 @@ if (command === 'build') {
   await mkdir(`${stage}/lib/live`, { recursive: true }); await mkdir(`${stage}/lib/cloud`, { recursive: true });
   for (const file of ['auth', 'crypto', 'firebase-auth']) await copyFile(`dist/${file}.js`, `${stage}/lib/${file}.js`);
   for (const dir of ['cloud','live']) for (const file of await readdir(`dist/${dir}`)) if (file.endsWith('.js')) await copyFile(`dist/${dir}/${file}`, `${stage}/lib/${dir}/${file}`);
-  // Monitoring imports the approved announcement catalog even when shared calls use Call Control speech.
+  // Shared call playback and monitoring resolve prerecorded Grace URLs from the approved catalog.
   await mkdir(`${stage}/lib/cloud/announcement-audio`, { recursive: true });
   await copyFile('dist/cloud/announcement-audio/manifest.json', `${stage}/lib/cloud/announcement-audio/manifest.json`);
   await mkdir(`${stage}/lib/live/ack-audio`, {recursive:true});

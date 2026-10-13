@@ -6,7 +6,7 @@ import { ForwardingStore, forwardingConsent } from './forwarding-store.js';
 
 export type ProbeKind = 'ring' | 'forwarding';
 export type SetupProbe = { id: string; kind: ProbeKind; state: 'waiting' | 'passed' | 'failed'; expiresAt: number;
-  nonce: string; outboundSid?: string; inboundSid?: string; passedAt?: number; participantId?: string; routeVersion?: string };
+  nonce: string; outboundSid?: string; inboundSid?: string; passedAt?: number; participantId?: string; routeVersion?: string; audioFallbackAt?: number };
 /** Places the probe call from the person's Shield number to their verified phone. */
 export type ProbeDependencies = { startForwardingProbe?: (id: string, from: string, to: string) => Promise<void>;
   /** Places the daily setup check call; returns the provider's call id if it gives one. */
@@ -83,6 +83,9 @@ export class ForwardingProbes {
   async ended(id: string, sid: string, status: string) {
     return this.change(id, p => p.outboundSid === sid && (['busy', 'failed', 'no-answer', 'canceled'].includes(status)
       || (status === 'completed' && p.kind === 'ring')) ? { state: 'failed' } : undefined);
+  }
+  async audioFallback(id: string, sid: string) {
+    return this.change(id, p => p.kind === 'ring' && p.outboundSid === sid ? { audioFallbackAt: p.audioFallbackAt ?? this.store.now() } : undefined);
   }
   private async change(id: string, update: (p: SetupProbe) => Partial<SetupProbe> | undefined) {
     const s = this.store, participantId = (await this.indexRef(id).get()).data()?.participantId as string | undefined;

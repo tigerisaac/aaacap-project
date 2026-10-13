@@ -76,7 +76,7 @@ describe('isolated concurrent diagnostic', () => {
     await probe.drain();
     expect(probe.report().rows.map(r => r.result)).toEqual(['MATCH', 'MATCH']);
     expect(probe.report().confirmedMatchedOverlapAB).toBe(true);
-    expect(command.mock.calls.map(c => c[1])).toEqual(['answer', 'answer', 'gather_using_speak', 'gather_using_speak', 'speak', 'speak']);
+    expect(command.mock.calls.map(c => c[1])).toEqual(['answer', 'answer', 'gather_using_audio', 'gather_using_audio', 'playback_start', 'playback_start']);
     const report = JSON.stringify(probe.report());
     for (const privateData of [config.lineA, config.lineB, config.destination, '2025550199', 'carrier.example', 'leg-a', 'call_control_id']) expect(report).not.toContain(privateData);
   });
@@ -114,7 +114,7 @@ describe('isolated concurrent diagnostic', () => {
     expect(probe.report().calls).toBe(1);
     expect(probe.report().rows[0]?.observation.candidate).toBe('A');
     expect(command.mock.calls.filter(c => c[1] === 'answer')).toHaveLength(1);
-    expect(command.mock.calls.filter(c => c[1] === 'gather_using_speak')).toHaveLength(1);
+    expect(command.mock.calls.filter(c => c[1] === 'gather_using_audio')).toHaveLength(1);
   });
   it('rejects wrong destinations, applications, directions and cross-leg callbacks', async () => {
     const { probe } = setup();
@@ -158,8 +158,8 @@ describe('isolated concurrent diagnostic', () => {
     probe.accept(event('call.gather.ended', 'call-a', { digits: '1' }));
     probe.accept(event('call.gather.ended', 'call-a', { digits: '1' }));
     await probe.drain();
-    expect(command.mock.calls.filter(c => c[1] === 'speak')).toHaveLength(1);
-    expect(command.mock.calls.find(c => c[1] === 'speak')?.[2]).toMatchObject({ loop: 20, payload_type: 'ssml' });
+    expect(command.mock.calls.filter(c => c[1] === 'playback_start')).toHaveLength(1);
+    expect(command.mock.calls.find(c => c[1] === 'playback_start')?.[2]).toMatchObject({ loop: 20, audio_type: 'wav', audio_url: expect.stringContaining('/16-routing-hold.wav') });
     await vi.advanceTimersByTimeAsync(119_000);
     expect(command.mock.calls.filter(c => c[1] === 'hangup')).toHaveLength(0);
     await vi.advanceTimersByTimeAsync(1000);
@@ -171,7 +171,7 @@ describe('isolated concurrent diagnostic', () => {
     probe.accept(event()); probe.accept(event('call.answered')); await probe.drain();
     command.mockRejectedValueOnce(new Error('speech failed'));
     probe.accept(event('call.gather.ended', 'call-a', { digits: '1' })); await probe.drain();
-    expect(probe.report().rows[0]).toMatchObject({ errors: ['speak_failed'], terminationRequested: true });
+    expect(probe.report().rows[0]).toMatchObject({ errors: ['playback_start_failed'], terminationRequested: true });
     expect(command.mock.calls.at(-1)?.[1]).toBe('hangup');
   });
   it('terminates after a provider answer error and stops active calls on shutdown', async () => {

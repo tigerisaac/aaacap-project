@@ -1,13 +1,15 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import recordings from '../src/cloud/announcement-audio/manifest.json' with { type: 'json' };
-import { announcementAudio, announcementResponse, readAnnouncement } from '../src/cloud/announcements.js';
+import { announcementAudio, announcementResponse, CAPTURE_GREETING, CAPTURE_VOICEMAIL, readAnnouncement, requiredAnnouncementAudio, ROUTING_TEST_HOLD, ROUTING_TEST_MESSAGE, SOUND_CHECK_MESSAGE } from '../src/cloud/announcements.js';
+import { SETUP_CHECK_MESSAGE } from '../src/cloud/setup-check.js';
 import { purposes } from '../src/cloud/copy.js';
 import { warningText } from '../src/cloud/monitoring.js';
 
 describe('Prerecorded Soniox announcements', () => {
   it('has intact, nonempty 24 kHz mono PCM recordings with correct WAV lengths', async () => {
     for (const recording of recordings) {
+      expect(recording.voice).toBe('Grace'); expect(recording.model).toBe('tts-rt-v2');
       const audio = (await readAnnouncement(recording.file))!;
       expect(createHash('sha256').update(audio).digest('hex')).toBe(recording.sha256);
       expect(audio.toString('ascii', 0, 4)).toBe('RIFF');
@@ -21,6 +23,9 @@ describe('Prerecorded Soniox announcements', () => {
     }
   });
   it('covers every recipient purpose and monitoring warning with the current exact wording', () => {
+    for (const text of [CAPTURE_GREETING, CAPTURE_VOICEMAIL, SOUND_CHECK_MESSAGE, SETUP_CHECK_MESSAGE, ROUTING_TEST_MESSAGE, ROUTING_TEST_HOLD]) {
+      expect(requiredAnnouncementAudio(text).url).toContain('/speech/soniox-grace-2026-10-12/');
+    }
     for (const label of [...Object.values(purposes), 'a routine matter']) {
       expect(announcementAudio(`Shield screened a call about ${label}. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.`)).toBeDefined();
     }
@@ -38,8 +43,8 @@ describe('Prerecorded Soniox announcements', () => {
     expect(r.toString()).not.toContain('continueOnError');
   });
   it('keeps unrecognized or personalized wording out of the public catalog', async () => {
-    const r = announcementResponse(); r.say('A new message for Tom & Jerry');
-    expect(r.toString()).toContain('<Say>A new message for Tom &amp; Jerry</Say>');
+    const r = announcementResponse();
+    expect(() => r.say('A new message for Tom & Jerry')).toThrow('announcement_missing');
     expect(announcementAudio('A new message for Tom & Jerry')).toBeUndefined();
     expect(await readAnnouncement('../.env.speech')).toBeUndefined();
     expect(await readAnnouncement('unknown.wav')).toBeUndefined();

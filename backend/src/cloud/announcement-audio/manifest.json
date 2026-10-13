@@ -223,5 +223,50 @@
     "seconds": 13.06,
     "sample_rate": 24000,
     "sha256": "4f47ad7f4a5ab766efc64bb2e4fe9b95e3326b75452749a835d8f3ecd4ccaf4f"
+  },
+  {
+    "file": "12-capture-greeting.wav",
+    "text": "I'm Shield, an AI call assistant. I may save your message if this call isn't connected. Who's calling, and what is the call about?",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 7.68,
+    "sample_rate": 24000,
+    "sha256": "d24cde5fb17665fd978329ec7fa45f73cf87021df4794fb019f99683873e46f1"
+  },
+  {
+    "file": "13-capture-voicemail.wav",
+    "text": "You have reached Shield voicemail. Please leave a message. Press pound when finished.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 5.46,
+    "sample_rate": 24000,
+    "sha256": "30a8f4276f5938e2e260e1f203b1dcf99ced4357b36d77a6c4efcecb226f2bb6"
+  },
+  {
+    "file": "14-setup-check.wav",
+    "text": "This is a Shield check. Unknown callers are ringing your phone. Open Shield to fix it.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 5.21,
+    "sample_rate": 24000,
+    "sha256": "55eb212b81846b65f7c0d5e7f330c1eb15c9abfe8ce6c31a2b5cbceca6113ef4"
+  },
+  {
+    "file": "15-routing-test.wav",
+    "text": "Shield routing test. Press 1 if you called test line A, 2 for test line B, or 0 if you dialed this test service directly. Then stay on the line. The test can last two minutes. Nothing is recorded.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 13.82,
+    "sample_rate": 24000,
+    "sha256": "ef8ea7640fcfc9af5bf722328670ab32ea90a1a383f3434602eb3e71dbb9c2d3"
+  },
+  {
+    "file": "16-routing-hold.wav",
+    "text": "The routing test is still running. Please keep this call connected.",
+    "voice": "Grace",
+    "model": "tts-rt-v2",
+    "seconds": 8.67,
+    "sample_rate": 24000,
+    "sha256": "1f004c5156b3dbbbad4dadc4b64c7c2e44bf41a00c1a531340a9aacfe30dac9f"
   }
 ]

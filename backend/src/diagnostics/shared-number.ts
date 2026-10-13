@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import Fastify from 'fastify';
 import { z } from 'zod';
 import { verifyTelnyx } from '../cloud/forwarding-provider.js';
+import { requiredAnnouncementAudio, ROUTING_TEST_HOLD, ROUTING_TEST_MESSAGE } from '../cloud/announcements.js';
 
 // Standalone operator diagnostic. No production routes import this module.
 export const probeConfig = z.object({
@@ -75,7 +76,7 @@ const eventSchema = z.object({ data: z.object({
   }),
 }) });
 type Event = z.infer<typeof eventSchema>['data'];
-type Action = 'answer' | 'gather_using_speak' | 'speak' | 'hangup';
+type Action = 'answer' | 'gather_using_audio' | 'playback_start' | 'hangup';
 export type Command = (callId: string, action: Action, body: Record<string, unknown>) => Promise<void>;
 type Row = {
   probeId: string; observation: Observation; expected?: Label | 'direct';
@@ -181,9 +182,8 @@ export class SharedNumberProbe {
       s.row.answeredAt ??= at;
       if (!s.prompted) {
         s.prompted = true;
-        if (!(await this.send(s, 'gather_using_speak', {
-          payload: 'Shield routing test. Press 1 if you called test line A, 2 for test line B, or 0 if you dialed this test service directly. Then stay on the line. The test can last two minutes. Nothing is recorded.',
-          voice: 'AWS.Polly.Joanna', payload_type: 'text', minimum_digits: 1, maximum_digits: 1,
+        if (!(await this.send(s, 'gather_using_audio', {
+          audio_url: requiredAnnouncementAudio(ROUTING_TEST_MESSAGE).url, minimum_digits: 1, maximum_digits: 1,
           maximum_tries: 1, valid_digits: '012', timeout_millis: 10000,
         }))) await this.stop(s);
       }
@@ -197,9 +197,8 @@ export class SharedNumberProbe {
         : o.kind.toUpperCase();
       // Keep media flowing while the operator establishes the second call. A
       // single idempotent command repeats finite generic audio; no audio is captured.
-      if (!(await this.send(s, 'speak', {
-        payload: '<speak>The routing test is still running. Please keep this call connected.<break time="5s"/></speak>',
-        voice: 'AWS.Polly.Joanna', payload_type: 'ssml', loop: 20,
+      if (!(await this.send(s, 'playback_start', {
+        audio_url: requiredAnnouncementAudio(ROUTING_TEST_HOLD).url, audio_type: 'wav', cache_audio: true, loop: 20,
       }))) await this.stop(s);
     }
     this.changed();

@@ -1,4 +1,5 @@
 import { CallControlProvider } from './call-control-provider.js';
+import { ANNOUNCEMENT_BACKUP_VOICE, rejectedAudioCommand, requiredAnnouncementAudio } from './announcements.js';
 import { z } from 'zod';
 import type { DocumentData, Transaction } from 'firebase-admin/firestore';
 import { callerText, supportedEvidence } from '../live/evidence.js';
@@ -206,7 +207,15 @@ export class CallMonitor {
         const cc = new CallControlProvider(c);
         await s.db.collection('callControlDeadlines').doc(id).set({ callId: id, dueAt: now + 30_000, expiresAt: now + 2 * 3600_000 });
         await cc.action(call.parentSid, 'hangup', { command_id: s.vault.hash(`${id}:intervene`) });
-        await cc.action(call.childSid, 'speak', { payload: warningText(concern), voice: 'AWS.Polly.Joanna', client_state: cc.state(id, 'warning'), command_id: s.vault.hash(`${id}:warning`) });
+        try {
+          await cc.action(call.childSid, 'playback_start', { audio_url: requiredAnnouncementAudio(warningText(concern)).url,
+            audio_type: 'wav', cache_audio: true, client_state: cc.state(id, 'warning'), command_id: s.vault.hash(`${id}:warning`) });
+        } catch (error) {
+          if (!rejectedAudioCommand(error)) throw error;
+          await s.callRef(id).update({ 'announcementFallbacks.warning': true });
+          await cc.action(call.childSid, 'speak', { payload: warningText(concern), voice: ANNOUNCEMENT_BACKUP_VOICE,
+            client_state: cc.state(id, 'warning-backup'), command_id: s.vault.hash(`${call.childSid}:warning-backup`) });
+        }
       } else await this.telnyx.update(call.childSid, { Url: `${c.PUBLIC_BASE_URL}/forwarding/${c.TRIAL_PROXY_SECRET}/monitor-warning/${id}`, Method: 'POST' });
       redirected = true;
     } catch {

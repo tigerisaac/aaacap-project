@@ -4,7 +4,7 @@
 
 The shared Call Control path is deployed for a supervised ten-person pilot on the existing DID. It uses strict Diversion routing, immutable per-call recipients, per-person controls, durable command receipts, a distributed ten-call cap and independent live sessions. Telnyx's shared application is active at 10 inbound/10 outbound channels; the profile and account outbound limit are 10. One verified participant is enrolled and awaits a fresh forwarding check. Capacity is configured, not yet measured with ten real audio sessions. Policy v30 is unchanged. TeXML remains available for operator rollback. See [current rollout evidence and tests](SHARED-NUMBER-ROLLOUT.md).
 
-The detailed descriptions below retain the October 10 TeXML baseline where explicitly named. The shared path uses Call Control speech, streaming, dialing, gathering and bridging throughout a call; its current admission, qualification and cleanup rules are in the rollout document.
+The detailed descriptions below retain the October 10 TeXML baseline where explicitly named. The deployed shared path uses Call Control speech, streaming, dialing, gathering and bridging throughout a call; its current admission, qualification and cleanup rules are in the rollout document. The October 12 source revision below replaces default Call Control speech with prerecorded Grace playback; that revision is not deployed.
 
 Current as of October 10, 2026. Shield answers unfamiliar calls that a person's phone forwards to it, screens them with a GPT Live voice agent, and only rings the person if the call looks ordinary. The person then decides privately whether to take it. Screening never verifies who is calling.
 
@@ -60,19 +60,22 @@ If the caller clearly asks for a code, password, identity number, payment, remot
 
 ## Voice and speech
 
-There are three voice paths today:
+The October 12 source revision uses these voice paths (not deployed):
 
 | What the caller or recipient hears | How it's produced |
 |---|---|
-| Greeting, hold, recipient summary and "press 1", voicemail prompt, warnings | Prerecorded Soniox Grace WAV files, played with Telnyx TeXML `<Play>` |
+| Greeting, hold, recipient summary and "press 1", voicemail prompt, warnings | Prerecorded Soniox Grace WAV files: Call Control `playback_start` / `gather_using_audio`, or TeXML `<Play>` |
+| Confirmed announcement playback failure | Amazon Polly Joanna, with the same generic script and a bounded, signed fallback phase |
 | Screening conversation (questions and acknowledgements) | GPT Live, voice `marin` |
-| Keypad and probe tones | TeXML `<Play digits>` |
+| Keypad and probe tones | Call Control DTMF or TeXML `<Play digits>` |
 
-The approved recordings and exact scripts are in `backend/src/cloud/announcement-audio/`. All 25 files are generic: purpose categories and warning categories contain no caller or recipient details. These announcements use Soniox to generate assets; connected-call transcription uses Soniox through Telnyx. The call runtime needs no separate Soniox key. Originals are 24 kHz mono PCM WAV, not the 8 kHz listening previews.
+The approved recordings and exact scripts are in `backend/src/cloud/announcement-audio/`. All 30 files are generic: purpose categories and warning categories contain no caller or recipient details. Five October 12 additions cover capture disclosure, voicemail without a tone, the daily setup check, and routing diagnostics. These announcements use Soniox Grace (`tts-rt-v2`) once to generate reusable assets; connected-call transcription uses Soniox through Telnyx. The call runtime needs no separate Soniox key or per-call Soniox generation request. Originals are 24 kHz mono PCM WAV, not the 8 kHz listening previews. The local "One moment, please" acknowledgement is also prerecorded Grace.
 
-Build verifies each recording's SHA-256 and copies it to versioned Firebase Hosting URLs plus the Functions package. `<Play failoverUrl>` retries a missing static asset using `/public/speech/<version>/<file>` served from that package. Playback does not continue on error: if both sources fail, the call cannot advance silently past a disclosure or acceptance instruction. The application's provider-error fallback remains ordinary Telnyx `<Say>` followed by hangup; provider fallback behavior on a playback error still needs a real-call check. Unrecognized or newly changed text uses `<Say>` until an approved recording is added. Never generate personalized audio into the public catalog.
+Build verifies each recording's SHA-256 and copies it to versioned Firebase Hosting URLs plus the Functions package. TeXML `<Play failoverUrl>` retries a missing static asset using `/public/speech/<version>/<file>` served from that package; its provider-error route explicitly uses Joanna for the unavailable message, followed by hangup. Provider fallback behavior on a playback error still needs a real-call check. Unrecognized or changed text fails catalog lookup until an approved recording is added. Never generate personalized audio into the public catalog.
 
-Deploy Hosting assets and Functions together after approval, and check all primary and backup audio URLs before opening a test window. Deployed October 10 to Hosting and `shieldApi` revision `shieldapi-00012-heq`. All 25 primary and 25 backup audio URLs returned HTTP 200 with the original SHA-256 and WAV content type; public health was ready. Not yet verified on a real call. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
+Shared calls default to Grace. An explicit media failure (`failed`, `file_not_found`, `unknown`) or a definite HTTP 400/422 rejection of an audio command selects Joanna once, with durable receipts and a signed `-backup` phase. Network timeouts retry the original command rather than start a possibly overlapping voice. A completed primary or fallback greeting gates streaming; a completed hold disclosure gates dialing. Late primary callbacks after fallback cannot advance the call or accept a recipient. Gather cancellation for a keypad press stays valid; only the fixed recipient's press 1 on the active gather can bridge, after capture stops. Canceled/unsuccessful prompts and expired deadlines fail closed. Sound checks use the same Grace-default/Joanna-backup rule. Routing diagnostics play Grace with a recorded pause and retain their bounded lifetime.
+
+Deploy the versioned Hosting assets and Functions together, plus the bridge's updated call outcome/monitoring code, after owner approval. Check every primary and backup audio URL before opening a test window. Historical asset deployment: October 10 Hosting and `shieldApi` revision `shieldapi-00012-heq`; all 25 primary and 25 backup audio URLs returned HTTP 200 with the original SHA-256 and WAV content type. The October 12 shared-path Grace integration and new assets remain undeployed and unverified on real calls. The listening-test plan is in section 5 of the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md#5-improve-the-entire-voice-experience).
 
 ## Data
 

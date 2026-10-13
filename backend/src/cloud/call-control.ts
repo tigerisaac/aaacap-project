@@ -9,19 +9,20 @@ import { CallControlProvider, validControlId } from './call-control-provider.js'
 import { callerNumber, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { forwardingIdentity, normalizeForwardedNumber } from './shared-routing.js';
 import { streamTicket } from './forwarding-live.js';
-import { CallMonitor } from './monitoring.js';
+import { CallMonitor, warningText } from './monitoring.js';
 import { purposes } from './copy.js';
 import { MESSAGE_CAPTURE_SECONDS } from './message-audio.js';
+import { ANNOUNCEMENT_BACKUP_VOICE, CAPTURE_GREETING, CAPTURE_VOICEMAIL, failedPlayback, rejectedAudioCommand, requiredAnnouncementAudio } from './announcements.js';
 
 const eventSchema = z.object({ data: z.object({ id: z.string().min(1).max(200), event_type: z.string().max(100),
   occurred_at: z.string().datetime({ offset: true }), payload: z.object({ call_control_id: z.string().refine(validControlId),
     call_leg_id: z.string().min(1).max(200), connection_id: z.string(), from: z.string().optional(), to: z.string().optional(),
     direction: z.string().optional(), client_state: z.string().max(400).nullable().optional(), sip_headers: z.unknown().optional(),
     digits: z.string().max(128).optional(), digit: z.string().max(1).optional(), recording_id: z.string().optional(), recording_started_at: z.string().optional(), recording_ended_at: z.string().optional(),
+    status: z.string().max(100).optional(),
     transcription_data: z.object({ is_final: z.boolean().optional(), transcript: z.string().max(8000).optional(), transcription_track: z.string().optional() }).optional()
   }) }) });
 type Event = z.infer<typeof eventSchema>['data'];
-const VOICE = 'AWS.Polly.Joanna';
 const TTL = 2 * 3600_000;
 /** Durable call state and command receipts survive webhook retries and multiple API/bridge instances. */
 export class SharedCallControl {
@@ -70,8 +71,41 @@ export class SharedCallControl {
     await this.f.ended(c.parentSid);
     await new CallMonitor(this.f).end(c.id);
   }
-  async speak(c: ForwardingCall, phase: string, payload: string) {
-    return this.command(c.parentSid, 'speak', { payload, voice: VOICE, client_state: this.provider.state(c.id, phase) }, phase);
+  prompt(c: ForwardingCall, phase: string): string {
+    if (phase === 'greeting') return CAPTURE_GREETING;
+    if (phase === 'voicemail') return c.captureFromAnswer ? CAPTURE_VOICEMAIL
+      : 'You have reached Shield voicemail. Please leave a message after the tone. Press pound when finished.';
+    if (phase === 'offer') return c.monitoringStartedAt
+      ? 'Please hold while Shield offers your call. If it connects, an AI assistant will transcribe the call to help protect against fraud.'
+      : 'Please hold while Shield offers your call.';
+    if (phase === 'accept') return `Shield screened a call about ${purposes[c.purpose as keyof typeof purposes] ?? 'a routine matter'}. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.`;
+    if (phase === 'warning') return warningText(c.monitorConcern ?? '');
+    throw new Error('announcement_phase_invalid');
+  }
+  /** One durable backup command; late primary callbacks cannot skip the replacement prompt. */
+  async fallback(c: ForwardingCall, phase: string) {
+    const payload = this.prompt(c, phase); requiredAnnouncementAudio(payload);
+    if (!c.announcementFallbacks?.[phase]) {
+      await this.store.callRef(c.id).update({ [`announcementFallbacks.${phase}`]: true });
+      if (phase === 'warning') await this.deadline(c, 30);
+    }
+    const sid = ['accept', 'warning'].includes(phase) ? c.childSid : c.parentSid;
+    if (!sid) return this.stop(c);
+    return this.command(sid, phase === 'accept' ? 'gather_using_speak' : 'speak', {
+      payload, voice: ANNOUNCEMENT_BACKUP_VOICE, client_state: this.provider.state(c.id, `${phase}-backup`),
+      ...(phase === 'accept' ? { minimum_digits: 1, maximum_digits: 1, maximum_tries: 1, timeout_millis: 7000 } : {})
+    }, `${phase}-backup`);
+  }
+  async play(c: ForwardingCall, phase: string) {
+    if (c.announcementFallbacks?.[phase]) return this.fallback(c, phase);
+    try {
+      return await this.command(c.parentSid, 'playback_start', { audio_url: requiredAnnouncementAudio(this.prompt(c, phase)).url,
+        audio_type: 'wav', cache_audio: true, client_state: this.provider.state(c.id, phase) }, phase);
+    } catch (error) {
+      // A network timeout may have played the audio already. Retry its original command, never switch blindly.
+      if (rejectedAudioCommand(error)) return this.fallback(c, phase);
+      throw error;
+    }
   }
   async answer(c: ForwardingCall) {
     // This provider operation captures even speech overlapping the greeting/model startup.
@@ -85,9 +119,7 @@ export class SharedCallControl {
   async voicemail(c: ForwardingCall) {
     if (c.acceptedAt || c.state !== 'voicemail') return;
     await this.deadline(c, 80);
-    await this.speak(c, 'voicemail', c.captureFromAnswer
-      ? 'You have reached Shield voicemail. Please leave a message. Press pound when finished.'
-      : 'You have reached Shield voicemail. Please leave a message after the tone. Press pound when finished.');
+    await this.play(c, 'voicemail');
   }
   async outcome(id: string) {
     return this.exclusive(id, async () => {
@@ -96,11 +128,9 @@ export class SharedCallControl {
       if (c.state === 'voicemail') return this.voicemail(c);
       if (c.state !== 'offering') return this.stop(c);
       await this.deadline(c, 45);
-      const monitored = await new CallMonitor(this.f).begin(c.id);
+      await new CallMonitor(this.f).begin(c.id);
       // Finish the disclosure before placing the recipient call, so acceptance cannot race past it.
-      await this.speak(c, 'offer', monitored
-        ? 'Please hold while Shield offers your call. If it connects, an AI assistant will transcribe the call to help protect against fraud.'
-        : 'Please hold while Shield offers your call.');
+      await this.play((await this.call(c.id))!, 'offer');
     });
   }
   async handle(e: Event) {
@@ -147,7 +177,7 @@ export class SharedCallControl {
       }
       if (e.event_type === 'call.hangup') { await s.keyRef(sid).set({ ended: true, expiresAt: s.now() + TTL }); return; }
       // A callback can precede initiation or a dial response. Ask for retry rather than discard it.
-      if (['call.answered', 'call.gather.ended', 'call.speak.ended'].includes(e.event_type)) throw new HttpError(503, 'call_not_bound');
+      if (['call.answered', 'call.gather.ended', 'call.playback.ended', 'call.speak.ended'].includes(e.event_type)) throw new HttpError(503, 'call_not_bound');
       return;
     }
     if (c.transport !== 'call-control') return;
@@ -178,25 +208,49 @@ export class SharedCallControl {
       if (!c.acceptedAt && c.state === 'voicemail') await this.hangup(c.parentSid);
       return;
     }
-    if (e.event_type === 'call.speak.ended' && !inbound && phase?.phase === 'warning' && c.monitorIntervenedAt) { await this.hangup(sid); return; }
+    const backup = phase?.phase.endsWith('-backup') ?? false;
+    const promptPhase = backup ? phase!.phase.slice(0, -7) : phase?.phase;
+    const promptEnded = (!backup && e.event_type === 'call.playback.ended') || (backup && e.event_type === 'call.speak.ended');
+    const currentVoice = !!promptPhase && (!!c.announcementFallbacks?.[promptPhase] === backup);
+    if (promptEnded && !inbound && c.state !== 'ended' && phase?.id === c.id && promptPhase === 'warning' && c.monitorIntervenedAt) {
+      if (!backup && failedPlayback(p.status)) return this.fallback(c, 'warning');
+      if (currentVoice) await this.hangup(sid);
+      return;
+    }
     if (c.state === 'ended') return;
+    // Gather can cancel its audio when a key is pressed. Only actual media failures terminate it.
+    if (e.event_type === 'call.playback.ended' && !inbound && c.state === 'accepting' && phase?.id === c.id && phase.phase === 'accept'
+      && failedPlayback(p.status)) return this.fallback(c, 'accept');
     if (e.event_type === 'call.answered') {
       if (inbound) {
         if (c.state === 'voicemail') return this.voicemail(c);
-        if (c.state === 'screening') await this.speak(c, 'greeting', "I'm Shield, an AI call assistant. I may save your message if this call isn't connected. Who's calling, and what is the call about?");
+        if (c.state === 'screening') await this.play(c, 'greeting');
       } else {
         const whisper = await this.f.whisper(c.id, sid, c.parentSid); if (!whisper) return;
-        await this.command(sid, 'gather_using_speak', { payload: `Shield screened a call about ${purposes[c.purpose as keyof typeof purposes] ?? 'a routine matter'}. This does not verify who is calling. Press 1 to connect, or 2 for voicemail.`,
-          voice: VOICE, minimum_digits: 1, maximum_digits: 1, maximum_tries: 1, timeout_millis: 7000,
-          client_state: this.provider.state(c.id, 'accept') }, 'private-summary');
+        if (c.announcementFallbacks?.accept) return this.fallback(c, 'accept');
+        try {
+          await this.command(sid, 'gather_using_audio', { audio_url: requiredAnnouncementAudio(this.prompt(c, 'accept')).url,
+            minimum_digits: 1, maximum_digits: 1, maximum_tries: 1, timeout_millis: 7000,
+            client_state: this.provider.state(c.id, 'accept') }, 'private-summary');
+        } catch (error) {
+          if (rejectedAudioCommand(error)) return this.fallback(c, 'accept');
+          throw error;
+        }
       }
-    } else if (e.event_type === 'call.speak.ended' && inbound && phase?.id === c.id) {
-      if (phase.phase === 'greeting' && c.state === 'screening') {
+    } else if (promptEnded && inbound && phase?.id === c.id) {
+      const currentPrompt = (promptPhase === 'greeting' && c.state === 'screening')
+        || (promptPhase === 'offer' && c.state === 'offering') || (promptPhase === 'voicemail' && c.state === 'voicemail' && !c.acceptedAt);
+      if (!currentPrompt) return;
+      if (!backup && failedPlayback(p.status)) return this.fallback(c, promptPhase!);
+      if (!currentVoice) return;
+      // Completion, not command acceptance or cancellation, gates screening/dialing/recording.
+      if (p.status !== 'completed') return this.stop(c);
+      if (promptPhase === 'greeting' && c.state === 'screening') {
         const expiry = s.now() + 60_000;
         if (!s.config.LIVE_BRIDGE_URL) return this.stop(c);
         await this.command(sid, 'streaming_start', { stream_url: `${s.config.LIVE_BRIDGE_URL.replace('https:', 'wss:')}/media/${c.id}/${expiry}/${streamTicket(s.config, c.id, expiry)}`,
           stream_track: 'inbound_track', stream_codec: 'PCMU', stream_bidirectional_codec: 'PCMU', stream_bidirectional_mode: 'rtp', stream_bidirectional_sampling_rate: 8000 }, 'stream');
-      } else if (phase.phase === 'offer' && c.state === 'offering') {
+      } else if (promptPhase === 'offer' && c.state === 'offering') {
         const permitted = await this.f.transition(c.id, (current, control, person) => current.state === 'offering' && control.activeCallId === current.id
           && screeningOpen(control, person, s.now()) && person.status === 'setup' ? { state: 'offering' } : undefined);
         if (!permitted) return this.stop(c);
@@ -211,13 +265,14 @@ export class SharedCallControl {
             events: [...current.events, { kind: 'voicemail_offered', at: s.now() }] } : undefined);
           if (next) await this.voicemail(next);
         }
-      } else if (phase.phase === 'voicemail' && c.state === 'voicemail' && !c.acceptedAt) {
+      } else if (promptPhase === 'voicemail' && c.state === 'voicemail' && !c.acceptedAt) {
         await this.deadline(c, 65);
         if (!c.captureFromAnswer) await this.command(sid, 'record_start', { format: 'mp3', channels: 'single', recording_track: 'inbound', max_length: 60, timeout_secs: 0,
           play_beep: true, transcription: false }, 'voicemail-recording');
       }
-    } else if (e.event_type === 'call.gather.ended' && !inbound && phase?.id === c.id && phase.phase === 'accept') {
-      const accepted = await this.f.accept(c.id, sid, p.digits ?? ''); if (!accepted) return;
+    } else if (e.event_type === 'call.gather.ended' && !inbound && phase?.id === c.id && promptPhase === 'accept' && currentVoice) {
+      if (['cancelled', 'cancelled_amd', 'call_hangup'].includes(p.status ?? '')) return;
+      const accepted = await this.f.accept(c.id, sid, p.status && p.status !== 'valid' ? '' : p.digits ?? ''); if (!accepted) return;
       if (!accepted.acceptedAt) { await this.hangup(sid).catch(() => undefined); return this.voicemail(accepted); }
       // No connected audio can enter a saved message. Failure to stop recording fails closed.
       if (c.captureFromAnswer) await this.command(c.parentSid, 'record_stop', {}, 'stop-capture-before-connect');
