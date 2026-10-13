@@ -1060,3 +1060,8 @@ Repository validation passed `npm run check` (typecheck, **168 unit tests**, bui
 ### Empty-contact rule and recent-report red team, October 12
 
 A separate [contact-rule evaluation report](SCREENING-CONTACT-EVALUATION.md) records v59–v74 development, online source provenance, fresh paired subscription-Luna comparisons with v57, native-history checks, source-isolation audits and retained failures. MASC and FTC were not rerun for this request. The report distinguishes useful clarification from unnecessary questions on empty contact requests, and records ordinary-call regressions rather than treating better harmful-stop counts as sufficient.
+
+
+### V74 callback repair, October 12–13
+
+The [v74 repair report](SCREENING-V74-REPAIR.md) records five subscription-Luna revisions, fresh red teams, native-history checks and complete MASC/FTC comparisons. V79 adds 154 instruction characters and improves final fresh ordinary offers from 49/57 to 56/57, but still approves empty contact requests. MASC ordinary offers were 79/80 for both v74 and v79; harmful completed stops were 158/160 and 157/160. FTC completed stops were 704/724 and 711/724, with zero versus one approval and one versus zero retained timeouts. No candidate meets the full requested boundary, so none is promoted. All outcomes, frozen labels and interrupted-run prefixes are retained; no further prompt revision used the final v79 validation results.
