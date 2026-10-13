@@ -62,12 +62,14 @@ export const dailySetupChecks = onSchedule({ ...options, maxInstances: 1, schedu
   await new SetupChecks(s).runDaily((id, from, to) => telnyx.startSetupCheck(id, from, to));
 });
 
-// Keep or remove each forwarded voicemail once its audio is stored; any failure keeps it.
-export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
-  document: 'voicemailChecks/{callId}', retry: false, concurrency: 2 }, async event => {
+// Check, transcribe and summarize every stored voicemail/notice; uncertain content remains playable.
+export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 120,
+  document: 'voicemailChecks/{callId}', retry: true, concurrency: 2 }, async event => {
   const { VoicemailCheck, transcribeVoicemail, decideVoicemail } = await import('./voicemail-check.js');
+  const { summarizeMessage } = await import('./message-summary.js');
   const key = openaiKey.value();
-  await new VoicemailCheck(getStore()).check(event.params.callId, { transcribe: audio => transcribeVoicemail(audio, key), decide: text => decideVoicemail(text, key) });
+  await new VoicemailCheck(getStore()).check(event.params.callId, { transcribe: audio => transcribeVoicemail(audio, key), decide: text => decideVoicemail(text, key),
+    summarize: text => summarizeMessage(text, key) });
 });
 
 // Push alerts: one queued, contentless job per event. Nothing is queued unless APNs is configured.

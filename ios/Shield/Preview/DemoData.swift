@@ -6,6 +6,9 @@ enum DemoData {
     static let people = [participant, sharedPerson]
 
     static let calls: [CallRecord] = [
+        make(minutes: 12, title: "Saved account notice", outcome: .voicemail, reason: "automated_notice",
+             detail: "Shield saved an automated notice without connecting the call. The sender is unverified.",
+             next: "Check your bank’s app or use the number on your card.", suffix: "0130", message: true),
         make(minutes: 24, title: "Call held for review", outcome: .held, reason: "prohibited_request",
              detail: "The caller asked for a secret code. Shield didn’t connect the call.",
              next: "Use a number from your card or bill to check.", suffix: "0123"),
@@ -19,8 +22,8 @@ enum DemoData {
              detail: "The caller said there was an account problem. Shield stopped the call so you could check.",
              next: "Use a number from your card or bill.", suffix: "0126"),
         make(minutes: 640, title: "Scam voicemail removed", outcome: .held, reason: "voicemail_removed_scam",
-             detail: "Shield removed a suspicious message. It will be deleted after seven days.",
-             next: "If it was a useful message, you can bring it back.", suffix: "0129", removedMessage: true),
+             detail: "Shield discarded a message with a clear scam request. Its audio and text weren’t kept.",
+             next: "Use a trusted number if you need to check with the organization.", suffix: "0129", removedMessage: true),
         make(minutes: 1520, title: "Appointment reminder", outcome: .connected, reason: "routine",
              detail: "You chose to answer. Shield can’t prove who called.",
              next: "Check with your usual clinic if anything seems unusual.", suffix: "0127"),
@@ -49,7 +52,15 @@ enum DemoData {
                           acceptedAt: outcome == .connected ? time.addingTimeInterval(30) : nil,
                           endedAt: time.addingTimeInterval(80),
                           voicemail: removedMessage ? Voicemail(id: UUID(), duration: 31, status: "removed", heardAt: nil,
-                                                                removedAt: time.addingTimeInterval(120), restorableUntil: time.addingTimeInterval(7 * 86400))
-                            : message ? Voicemail(id: UUID(), duration: 28, status: "sample", heardAt: nil) : nil)
+                                                                removedAt: time.addingTimeInterval(120))
+                            : message ? Voicemail(id: UUID(), duration: 28, status: "sample", heardAt: nil,
+                                kind: reason == "automated_notice" ? "notice" : "voicemail",
+                                transcript: reason == "automated_notice"
+                                    ? "This is an automated account alert. We noticed unusual activity on your card. Please check your banking app or contact us using the number on the back of your card."
+                                    : reason == "known_missed" ? "Hello Pat. This is a reminder about your appointment on Thursday at ten in the morning. Please bring your usual paperwork. Thank you."
+                                    : "Hello. I’m calling for Pat. Please get in touch when you have a moment. Thank you.",
+                                summary: reason == "automated_notice" ? "An automated caller reported unusual card activity. The sender hasn’t been verified."
+                                    : reason == "known_missed" ? "The caller left an appointment reminder for Thursday at 10 a.m." : "The caller asked Pat to get in touch.",
+                                textStatus: "ready") : nil)
     }
 }

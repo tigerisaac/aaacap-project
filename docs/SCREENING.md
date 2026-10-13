@@ -2,6 +2,14 @@
 
 How Shield decides what to do with a caller, and how to test changes. The deployed policy and code are `2026-10-11-general-v30` (`SCREENING_POLICY_VERSION` in `backend/src/live/policy.ts`), deployed October 11 at 22:20 Central with owner approval. v15 adds recent-scam caution; v16 offers personal family callers as requested by the owner on October 11; v17 makes manipulation blocks explicitly take precedence over a family claim or a later benign explanation; v18 clarifies ordinary demographic confirmation by an existing healthcare office; v19 stops a claimed existing relationship from exempting a sales offer, and v20 keeps genuine service calls that also mention an offer. v26 adopts the validated v24 wording unchanged, conservatively shortening supporting explanations while retaining the core v20 decision paragraphs; the more aggressive v23 cut was rejected after public regression checks. v30 resolves the automated-notice exception for unexplained financial alarms while preserving ordinary informative calls. The full history of earlier changes is in the [screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md).
 
+## October 12 candidate: v31 saved notices (not deployed)
+
+`2026-10-12-general-v31` adds an evidence-checked `message` decision for potentially useful prerecorded notices, including unresolved account/security alerts. Such a decision saves information for independent review and never offers or connects a live call. The agent listens without asking a recording to answer or repeat. A keypress, callback number, urgent claim or automated voice alone is insufficient to block as a scam. Explicit harmful requests and unsolicited pitches still block. Notice decisions wait eight quiet seconds, with changed speech rechecked and the existing 75-second overall deadline retained. The shared path captures from answer, so speech during the greeting and a caller's early hangup are available for post-call processing.
+
+The 24-case main benchmark remains under 25. Its two legitimate automated alerts now expect saved messages. Two known-source fraudulent recordings containing an alarm/keypress without an explicit prohibited request also expect **unverified saved notices** under this conservative notice policy; their original harmful-source categories remain, and `harmfulSaved` is reported separately, never credited as stopped. `legitimateOffered` and `legitimateSaved` remain separate. No held-out fixture was changed or used to tune this policy. Voicemail policy `2026-10-12-voicemail-v3` keeps uncertain notices and requires a clear scam/junk judgment with a supporting continuous quote from the transcript before discarding audio/text. It uses storage-disabled structured Responses; the prior Decisions API returned HTTP 403 with the current key. The clarity judgment is not a calibrated real-call accuracy score.
+
+See [saved message storage and access](ARCHITECTURE.md#saved-messages-october-12-implementation-not-deployed). Deployment remains on v30 until owner approval. Validation evidence is recorded in STATUS.md after checks complete.
+
 ## How a decision is made
 
 **The voice agent** (`gpt-live-1`) talks to the caller. It never decides anything itself. It:
@@ -89,7 +97,7 @@ Build first (`npm run build`). The scripts import the compiled policy from `dist
 | `scripts/fixtures/monitor-cases.mjs` | 24 | Connected-call protection checks (monitor-v2) |
 | `scripts/fixtures/monitor-extra.mjs` | 7 | Connected-call cases retired from the main set; a development set, not held out |
 | `scripts/fixtures/holdout/monitor.mjs` | 12 | Held-out connected-call probes for the v2 request kinds |
-| `scripts/fixtures/voicemail-cases.mjs`, `holdout/voicemail.mjs` | 22, 10 | Voicemail keep-or-remove, with `check-voicemail-policy.mjs` (needs `api.decisions.write` on the OpenAI key) |
+| `scripts/fixtures/voicemail-cases.mjs`, `holdout/voicemail.mjs` | 22, 10 | Voicemail keep-or-remove, with `check-voicemail-policy.mjs --provider go` (v3 uses structured Responses; no Decisions API scope needed) |
 | `scripts/fixtures/caution-cases.mjs` | 9 | Recent-scam caution, run with `--caution`: 7 callers who refer to an earlier call, 2 who mention earlier contact that isn't a call |
 
 ```bash

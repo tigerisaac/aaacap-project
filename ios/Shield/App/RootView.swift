@@ -93,7 +93,7 @@ struct RootView: View {
                             Tab("Calls", systemImage: "phone.fill", value: 1) {
                                 CallsView().id(model.selectedPersonID)
                             }
-                            Tab("Voicemail", systemImage: "recordingtape", value: 2) {
+                            Tab("Messages", systemImage: "tray.fill", value: 2) {
                                 VoicemailView().id(model.selectedPersonID)
                             }
                             Tab("More", systemImage: "ellipsis", value: 3) {

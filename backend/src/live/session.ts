@@ -203,7 +203,8 @@ export class ScreeningSession {
             // pause, then act if nothing new was said, or re-decide once on the full transcript.
             this.supersedeDeferred();
             const heardLength = this.delegationTranscript.get(event.delegation_id);
-            const speaking = this.lastSpeechAt !== undefined && this.now() - this.lastSpeechAt < LIVE_LIMITS.speechPauseMs;
+            const settleMs = d.action === 'message' ? LIVE_LIMITS.idleMs : LIVE_LIMITS.speechPauseMs;
+            const speaking = this.lastSpeechAt !== undefined && this.now() - this.lastSpeechAt < settleMs;
             if (!(d.action === 'block' && d.reason === 'scam') && (heardLength !== this.spoken || speaking)) {
               this.deferred = { callId: item.call_id, delegationId: event.delegation_id, decision: d, heardLength, since: this.now() };
               this.timing('decision_deferred', { ...this.responseTiming(event.delegation_id), transcriptChanged: heardLength !== this.spoken });
@@ -279,7 +280,8 @@ export class ScreeningSession {
       return;
     }
     if (this.deferred) {
-      const paused = this.lastSpeechAt === undefined || now - this.lastSpeechAt >= LIVE_LIMITS.speechPauseMs;
+      const settleMs = this.deferred.decision.action === 'message' ? LIVE_LIMITS.idleMs : LIVE_LIMITS.speechPauseMs;
+      const paused = this.lastSpeechAt === undefined || now - this.lastSpeechAt >= settleMs;
       // A recording that never pauses is not a person waiting to be heard; stop it rather than wait forever.
       const overdue = this.deferred.decision.action === 'block' && now - this.deferred.since >= LIVE_LIMITS.robocallPatienceMs;
       if (paused || overdue) {

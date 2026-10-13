@@ -12,6 +12,7 @@ struct CallDetailView: View {
     @State private var confirmRestore = false
     @State private var restoring = false
     @State private var isVisible = false
+    @State private var transcriptExpanded = false
     private var call: CallRecord { updatedCall ?? initialCall }
     private var messageRemoved: Bool { call.voicemail?.status == "removed" }
 
@@ -44,9 +45,40 @@ struct CallDetailView: View {
                     }
                 }.padding(.vertical, 8).fixedSize(horizontal: false, vertical: true)
             }
-            if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.status != "removed" {
+            if let message = call.voicemail, model.canListen, !messageRemoved {
+                if let summary = message.summary {
+                    if model.isDemo { VoicemailPreviewCard(call: call) }
+                    else { Section {
+                        Text(summary).font(.title3).fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("message-summary")
+                    } header: { Text(model.isDemo ? "Sample summary" : "Summary") } footer: {
+                        Text("Generated from the message. The caller’s claims haven’t been verified.")
+                    } }
+                }
+                if let transcript = message.transcript {
+                    Section {
+                        DisclosureGroup("Transcript", isExpanded: $transcriptExpanded) {
+                            Text(transcript).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                                .accessibilityIdentifier("message-transcript")
+                            Text("Automatic transcripts can contain mistakes. Listen to the message if anything is unclear.")
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                        }
+                    }
+                } else if message.status == "ready" {
+                    Section { Text("Readable text isn’t available for this message. You can still listen.")
+                        .foregroundStyle(ShieldTheme.secondaryText) }
+                }
+                if message.isNotice {
+                    Section {
+                        Text("For account alerts, check the organization’s app or use a number from your card, statement or saved contacts.")
+                            .fixedSize(horizontal: false, vertical: true)
+                        if model.isOwner { NavigationLink("Find a trusted number", value: AppRoute.savedNumbers) }
+                    }
+                }
+            }
+            if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
                 VoicemailPreviewCard(call: call)
-            } else if let voicemail = call.voicemail, !messageRemoved {
+            } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen {
                 Section {
                     if voicemail.status == "ready", model.canListen {
                         Text(voicemail.durationLabel).foregroundStyle(ShieldTheme.secondaryText)
@@ -59,7 +91,7 @@ struct CallDetailView: View {
                                 } message: { Text("You won’t be able to listen to it again.") }
                         }
                     } else if !model.canListen {
-                        Label("Voicemail is private", systemImage: "lock")
+                        Label("Message is private", systemImage: "lock")
                         Text("This person hasn’t shared their messages with you.")
                             .foregroundStyle(ShieldTheme.secondaryText)
                     } else {
@@ -134,7 +166,7 @@ struct CallDetailView: View {
                 }
             }
         }
-        .navigationTitle(call.voicemail == nil ? "Call" : "Voicemail")
+        .navigationTitle(call.voicemail?.kindLabel ?? "Call")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
         .onAppear { isVisible = true }

@@ -25,7 +25,7 @@ struct VoicemailView: View {
                 }
                 if let error = inbox.error {
                     Section {
-                        ShieldNotice(title: "Voicemail couldn’t load", detail: error, symbol: "wifi.exclamationmark")
+                        ShieldNotice(title: "Messages couldn’t load", detail: error, symbol: "wifi.exclamationmark")
                         Button("Try again") { Task { await inbox.load(app) } }
                     }
                 }
@@ -33,14 +33,14 @@ struct VoicemailView: View {
                     Section { ShieldLoadingView(title: "Getting your messages…") }
                 } else if messages.isEmpty, inbox.error == nil {
                     Section {
-                        ContentUnavailableView(keptOnly ? "No kept messages yet" : "No voicemail yet", systemImage: "recordingtape",
-                            description: Text(keptOnly ? "Open a sample message and tap Keep this message." : "Messages left with Shield will appear here."))
+                        ContentUnavailableView(keptOnly ? "No kept messages yet" : "No messages yet", systemImage: "tray",
+                            description: Text(keptOnly ? "Open a sample message and tap Keep this message." : "Voicemail and saved notices will appear here."))
                     }
                 } else {
                     Section {
                         ForEach(messages) { call in
                             NavigationLink(value: call) {
-                                VoicemailRow(call: call, showsPreview: app.isDemo && app.canListen, kept: app.demoKeptMessages.contains(call.id))
+                                VoicemailRow(call: call, showsPreview: app.canListen, kept: app.demoKeptMessages.contains(call.id))
                             }
                         }
                     }
@@ -62,7 +62,7 @@ struct VoicemailView: View {
                 }
             }
             .shieldListStyle()
-            .navigationTitle("Voicemail")
+            .navigationTitle("Messages")
             .toolbar { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
             .task { await inbox.load(app) }
             .refreshable { await inbox.load(app) }

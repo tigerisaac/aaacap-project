@@ -107,7 +107,7 @@ final class RedesignUITests: XCTestCase {
     func testMainJourneysAndMessageFilters() {
         let app = launch(["--uitesting-preview"])
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
-        app.tabBars.buttons["Voicemail"].tap()
+        app.tabBars.buttons["Messages"].tap()
         XCTAssertTrue(app.staticTexts["Appointment message"].waitForExistence(timeout: 5))
         app.tabBars.buttons["Calls"].tap()
         let filters = app.segmentedControls["callFilter"]
@@ -207,7 +207,7 @@ final class RedesignUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
         let audit: XCUIAccessibilityAuditType = [.contrast, .textClipped, .hitRegion, .sufficientElementDescription]
         try auditScreen(app, types: audit)
-        for tab in ["Calls", "Voicemail", "More"] {
+        for tab in ["Calls", "Messages", "More"] {
             app.tabBars.buttons[tab].tap()
             XCTAssertTrue(app.navigationBars[tab].waitForExistence(timeout: 5))
             try auditScreen(app, types: audit)
@@ -237,7 +237,7 @@ final class RedesignUITests: XCTestCase {
         for _ in 0..<4 { if sharing.isHittable { break }; app.swipeUp() }
         sharing.tap()
         XCTAssertTrue(app.navigationBars["Share with a helper"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.switches["Include voicemail"].value as? String, "0")
+        XCTAssertEqual(app.switches["Include messages"].value as? String, "0")
         XCTAssertFalse(app.buttons["Make invitation"].isEnabled)
         capture(app, "Redesign Sharing")
         try auditScreen(app, types: types)
@@ -277,7 +277,7 @@ final class RedesignUITests: XCTestCase {
         for _ in 0..<10 { if sharing.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(sharing.isHittable); sharing.tap()
         XCTAssertTrue(app.navigationBars["Share with a helper"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.switches["Include voicemail"].value as? String, "0")
+        XCTAssertEqual(app.switches["Include messages"].value as? String, "0")
         let sharedPerson = app.staticTexts["Sign in to manage sharing."]
         for _ in 0..<10 { if sharedPerson.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(sharedPerson.isHittable)

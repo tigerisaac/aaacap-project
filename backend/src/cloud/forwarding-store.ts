@@ -14,6 +14,7 @@ export const forwardingConsent = `${FORWARDING_CONSENT}-telnyx-v1`;
 export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx'; parentSid: string; eligible: boolean;
   liveConnectedAt?: number; liveFinishedAt?: number; screeningModel?: string; screeningCaution?: boolean;
   childSid?: string; acceptedAt?: number; voicemail?: { id: string; duration: number; status: string; heardAt: number | null };
+  captureFromAnswer?: boolean;
   monitoringStartedAt?: number; monitorPolicyVersion?: string; monitorIntervenedAt?: number; monitorConcern?: string;
   monitorEvidenceAt?: number; monitorRedirectedAt?: number;
   /** How a screened call got in: a supervised test window, or the person's always-on screening. */
@@ -232,14 +233,25 @@ export class ForwardingStore {
   }
   async recording(sid: string, recordingSid: string, duration: number) {
     const call = await this.find(sid);
-    if (!call || call.acceptedAt || !call.events.some(e => e.kind === 'voicemail_offered') || !Number.isFinite(duration) || duration < 0 || duration > 65) return;
+    const capture = call?.captureFromAnswer === true;
+    if (!call || (!capture && (call.acceptedAt || !call.events.some(e => e.kind === 'voicemail_offered')))
+      || !Number.isFinite(duration) || duration < 0 || duration > (capture ? 245 : 65)) return;
     const ref = this.store.db.collection('forwardingRecordings').doc(recordingSid);
     await this.store.db.runTransaction(async tx => {
       const [job, current] = await tx.getAll(ref, this.store.callRef(call.id));
       const c = current!.data() as ForwardingCall | undefined;
-      if (job!.exists || !c || c.acceptedAt || c.voicemailDeletedAt || c.expiresAt <= this.store.now()) return;
+      if (job!.exists) {
+        if (capture && job!.data()!.status !== 'done' && duration > 0) tx.update(ref, { duration: Math.ceil(duration) });
+        return;
+      }
+      if (!c || (!capture && c.acceptedAt)) return;
       tx.create(ref, { callId: c.id, participantId: c.participantId, recordingSid, provider: 'telnyx', parentSid: sid, duration: Math.ceil(duration),
-        ...(c.transport ? { transport: c.transport } : {}), status: 'pending', expiresAt: c.expiresAt, createdAt: this.store.now() });
+        ...(c.transport ? { transport: c.transport } : {}), ...(capture ? { capture: true } : {}), status: 'pending', expiresAt: c.expiresAt, createdAt: this.store.now() });
+      if (capture) {
+        // Even rejected/answered captures get a job, so the provider copy is deleted.
+        return;
+      }
+      if (c.voicemailDeletedAt || c.expiresAt <= this.store.now()) return;
       tx.update(current!.ref, { voicemail: { id: c.id, duration: Math.ceil(duration), status: 'pending', heardAt: null },
         outcome: 'voicemail', events: [...c.events, { kind: 'voicemail_received', at: this.store.now() }] });
     });

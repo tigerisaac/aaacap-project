@@ -10,7 +10,7 @@ enum CallOutcome: String, Codable, Sendable {
         case .connected: "Answered"
         case .held: "Stopped"
         case .verification: "Check first"
-        case .voicemail: "Voicemail"
+        case .voicemail: "Message"
         case .missed: "Missed"
         }
     }

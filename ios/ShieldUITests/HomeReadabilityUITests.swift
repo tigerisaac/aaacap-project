@@ -21,7 +21,7 @@ final class HomeReadabilityUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["It seemed suspicious."].exists)
         XCTAssertFalse(app.staticTexts["Shield removed this message"].exists)
         XCTAssertFalse(app.staticTexts["Need to call back? Use a number you already know."].exists)
-        XCTAssertTrue(app.buttons["restore-voicemail"].isHittable)
+        XCTAssertFalse(app.buttons["restore-voicemail"].exists)
         XCTAssertFalse(app.buttons["Hear sample message"].exists)
         capture("readable-removed-message-light")
         app.buttons["More about this call"].tap()
@@ -47,7 +47,7 @@ final class HomeReadabilityUITests: XCTestCase {
         XCTAssertFalse(app.buttons["home-stopped-calls"].exists)
     }
 
-    func testLargestTextDarkModeKeepsCountAndRestoreReachable() {
+    func testLargestTextDarkModeKeepsDiscardedMessageReadable() {
         let app = launch(["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         let stopped = app.buttons["home-stopped-calls"]
         reveal(stopped, in: app)
@@ -58,11 +58,11 @@ final class HomeReadabilityUITests: XCTestCase {
         reveal(removed, in: app)
         revealFully(removed, above: app.tabBars.firstMatch, in: app); removed.tap()
         XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["restore-voicemail"].isHittable)
+        XCTAssertFalse(app.buttons["restore-voicemail"].exists)
         capture("readable-removed-large-dark")
         let reason = app.staticTexts["It seemed suspicious."]
-        let deadline = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Bring it back by'")).firstMatch
-        let restore = app.buttons["restore-voicemail"]
+        let deadline = app.staticTexts["This message is no longer available."]
+        let restore = app.tabBars.firstMatch
         revealFully(reason, above: restore, in: app)
         capture("readable-removed-large-dark-reason")
         revealFully(deadline, above: restore, in: app)

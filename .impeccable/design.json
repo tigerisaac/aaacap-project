@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-12T22:57:17+00:00",
+  "generatedAt": "2026-10-13T00:47:35+00:00",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -344,16 +344,16 @@
       "name": "Four native tabs",
       "kind": "nav",
       "refersTo": "navigation",
-      "description": "Schematic documentation preview, not the actual native implementation. Native TabView destinations Home, Calls, Voicemail, More. Home keeps its large title and native person capsule while hiding the top scroll-edge effect and navigation-bar background; NavigationShell supplies the adaptive grouped page surface behind the stack. Other screens and edges retain the shared hard scroll effect. Preview buttons show tab labels and selection only; they do not render the native header or navigate. Source: App/RootView.swift, Features/Overview/OverviewView.swift, and Navigation/NavigationShell.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10\"/></svg><span>Home</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"7\" cy=\"12\" r=\"4\"/><circle cx=\"17\" cy=\"12\" r=\"4\"/><path d=\"M7 16h10\"/></svg><span>Voicemail</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg><span>More</span></button></nav>",
+      "description": "Schematic documentation preview, not the actual native implementation. Native TabView destinations Home, Calls, Messages, More; Messages uses tray.fill and holds both Voicemail and Saved notice in one inbox. Home keeps its large title and native person capsule while hiding the top scroll-edge effect and navigation-bar background; NavigationShell supplies the adaptive grouped page surface behind the stack. Other screens and edges retain the shared hard scroll effect. Preview buttons show tab labels and selection only; they do not render the native header or navigate. Source: App/RootView.swift, Features/Overview/OverviewView.swift, and Navigation/NavigationShell.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10\"/></svg><span>Home</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 4h14l3 12v5H2v-5zM2 16h6l2 3h4l2-3h6\"/></svg><span>Messages</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg><span>More</span></button></nav>",
       "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:Canvas}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-height:52px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:rgb(34% 34% 34%);font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#224CC5}.ds-tabs button:hover{background:rgb(34 76 197 / .08)}.ds-tabs button:focus-visible{outline:2px solid #224CC5}.ds-tabs button:active{background:rgb(34 76 197 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button{color:rgb(76% 76% 76%)}.ds-tabs button[aria-current]{color:#9BB3FF}}"
     },
     {
-      "name": "Unboxed voicemail outcome",
+      "name": "Unboxed message outcome",
       "kind": "chip",
       "refersTo": "outcome-label",
       "description": "Schematic documentation preview, not the actual native implementation. Noninteractive symbol-and-word label with no capsule, tile, or count. Source: Design/OutcomeBadge.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<span class=\"ds-outcome\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4\"/></svg><span>Voicemail</span></span>",
+      "html": "<span class=\"ds-outcome\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4\"/></svg><span>Message</span></span>",
       "css": ".ds-outcome{display:inline-flex;align-items:center;gap:6px;color:#7244B9;font:600 .9375rem system-ui}.ds-outcome svg{width:18px;height:18px}@media(prefers-color-scheme:dark){.ds-outcome{color:#CAAEFF}}"
     },
     {
@@ -373,11 +373,11 @@
       "css": ".ds-action{display:flex;align-items:center;gap:14px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-action>svg{width:36px;height:22px;color:#224CC5;flex-shrink:0}.ds-action>span:first-of-type{flex:1;white-space:normal}.ds-chevron svg{width:14px;height:14px;color:GrayText}.ds-action:hover{filter:brightness(.96)}.ds-action:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-action:active{filter:brightness(.9)}.ds-action:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-action>svg{color:#9BB3FF}}"
     },
     {
-      "name": "Sample voicemail row",
+      "name": "Message inbox row",
       "kind": "custom",
       "refersTo": "voicemail-row",
-      "description": "Schematic documentation preview, not the actual native implementation. Authored sample summary only. Real rows have no generated summary; sample keeping is in-memory and does not extend retention. Source: Features/Calls/VoicemailRow.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
-      "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\">New · Today</span></button>",
+      "description": "Schematic documentation preview, not the actual native implementation. Voicemail and Saved notice share the Messages inbox. Purpose leads, an authorized summary occupies up to three lines, and supporting metadata names kind, state when applicable, and date. Real summaries are service-generated; this preview uses synthetic content. Helpers without canListen see no summary or transcript. Sample Keep remains in-memory and does not extend real retention. Source: Features/Calls/VoicemailRow.swift, Features/Calls/VoicemailView.swift, and Features/Calls/CallDetailView.swift. Browser pixels, symbols, and interaction states are illustrative; SwiftUI remains authoritative.",
+      "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\">Saved notice · New · Today</span></button>",
       "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:8px 0;border:0;background:Canvas;color:CanvasText;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(34% 34% 34%)}.ds-vm-meta{font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #224CC5;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(76% 76% 76%)}}"
     },
     {
@@ -447,7 +447,7 @@
       "Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.",
       "Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.",
       "Do give ordinary tasks one clear next action and reveal less common detail on request.",
-      "Do make person context, voicemail permission, and sample-only state visible in words.",
+      "Do make person context, message permission, and sample-only state visible in words.",
       "Do retain explicit privacy, sharing, setup, and disconnection confirmations.",
       "Do label the Home count as the persistent historical total, keep real status above it, and distinguish zero, unavailable data, and recent retained history.",
       "Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval."
@@ -458,7 +458,7 @@
       "Don't promote old tab labels or fixed Surface asset colors from earlier designs into new screens.",
       "Don't present Calls stopped as confirmed scams, complete recovery of already-deleted history, or evidence that current call checks are on.",
       "Don't treat schematic sidecar HTML/CSS as a native pixel specification.",
-      "Don't treat helper access as ownership or extend voicemail access implicitly.",
+      "Don't treat helper access as ownership or extend message access implicitly.",
       "Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.",
       "Don't claim final visual approval, deployment, or real-call evidence from this source extraction."
     ]

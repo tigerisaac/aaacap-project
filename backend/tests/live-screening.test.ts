@@ -20,6 +20,24 @@ function harness(research?: (topic: any) => Promise<any>) {
   return { s, io, ready, speech, delegate, tool, advance: (ms: number) => { now += ms; s.tick(); } };
 }
 describe('GPT Live screening controls', () => {
+  it('lets a saved notice continue through pauses and checks its final words before saving', () => {
+    const message = { ...routine, action: 'message', reason: 'unclear', evidence: 'account notice' };
+    const h = harness(); h.ready(); h.speech('An automated account notice'); h.delegate(); h.tool(message);
+    h.advance(1000); expect(h.io.finish).not.toHaveBeenCalled();
+    h.speech(' Please check your banking app.');
+    h.advance(LIVE_LIMITS.idleMs);
+    expect(h.io.finish).not.toHaveBeenCalled();
+    expect(h.io.openai).toHaveBeenCalledWith(expect.objectContaining({ type: 'response.item.create' }));
+    h.s.event({ type: 'response.event', delegation_id: 'd', event: { type: 'response.created' } });
+    h.tool(message, 'complete-notice'); expect(h.io.finish).toHaveBeenCalledWith(message);
+    expect(permittedDecision({ ...message, evidence: 'invented' }, 'account notice')).toBeUndefined();
+  });
+  it('discards an earlier notice decision when its tail makes a clear harmful demand', () => {
+    const h = harness(); h.ready(); h.speech('An automated account notice'); h.delegate();
+    h.tool({ ...routine, action: 'message', reason: 'unclear', evidence: 'account notice' });
+    h.advance(1500); h.speech(' Please send me your login code'); h.tool(scam, 'harmful-tail');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(scam);
+  });
   it('uses the exact Live model, telephone codec, and no session recording', () => {
     expect(liveSessionConfig()).toMatchObject({ model: 'gpt-live-1', store: false, audio: { format: { type: 'audio/pcmu', rate: 8000 } } });
   });

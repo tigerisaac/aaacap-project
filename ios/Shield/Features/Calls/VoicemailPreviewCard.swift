@@ -8,6 +8,7 @@ struct VoicemailPreviewCard: View {
     var body: some View {
         Section {
             Text(VoicemailPreview.summary(for: call)).font(.title3)
+                .accessibilityIdentifier("message-summary")
                 .fixedSize(horizontal: false, vertical: true)
             if app.isOwner {
             Button {

@@ -3,6 +3,8 @@ import { announcementResponse } from './announcements.js';
 import { CAUTION_MS, ForwardingStore, inQuietHours, screeningOpen, type ForwardingCall } from './forwarding-store.js';
 import type { LiveDecision, StopReason } from '../live/policy.js';
 import type { CloudConfig } from './config.js';
+import { FieldValue } from 'firebase-admin/firestore';
+import { deleteMessageAudio, discardCapture } from './message-audio.js';
 
 export function streamTicket(config: CloudConfig, id: string, expiry: number) {
   return createHmac('sha256', config.TRIAL_PROXY_SECRET).update(`shield-live-v1:${id}:${expiry}`).digest('hex');
@@ -38,10 +40,14 @@ export class ForwardingLive {
     const f = this.forwarding, now = f.store.now();
     return f.transition(id, (c, ctrl, person) => {
       const approve = typeof decision !== 'string' && decision.action === 'approve';
+      const message = typeof decision !== 'string' && decision.action === 'message';
       // The carrier may report completion before our concurrent outcome write.
       // Preserve the terminal screening decision without reviving an ended call.
-      const carrierEndedFirst = !approve && c.state === 'ended' && c.outcome === 'missed' && !c.liveFinishedAt;
+      const carrierEndedFirst = !approve && c.state === 'ended' && !c.liveFinishedAt
+        && (c.outcome === 'missed' || (c.captureFromAnswer && c.outcome === 'voicemail'));
       if ((c.state !== 'screening' && !carrierEndedFirst) || !c.liveConnectedAt) return;
+      if (message) return { state: 'ended', outcome: 'voicemail', purpose: decision.purpose, reason: 'automated_notice',
+        completedAt: now, liveFinishedAt: now, events: [...c.events, { kind: 'notice_saved', at: now }] };
       // Overnight, always-on screening sends a caller it would offer to voicemail; a supervised test window still rings.
       const quiet = approve && c.admittedBy === 'always' && inQuietHours(person, now);
       const offer = approve && !quiet && c.eligible && ctrl.activeCallId === id && screeningOpen(ctrl, person, now) && person.status === 'setup';
@@ -60,7 +66,15 @@ export class ForwardingLive {
         reason, completedAt: offer ? null : now, liveFinishedAt: now,
         events: [...c.events, { kind: offer ? 'callback_offered' : 'call_stopped', at: now }] };
     // Robocall and solicitation numbers are usually spoofed and change constantly, so only scams are remembered.
-    }, (tx, next, personExists) => { if (next.outcome === 'held' && next.reason === 'scam') f.rememberScam(tx, next, 'scam', personExists); });
+    }, (tx, next, personExists) => {
+      if (next.outcome === 'held' && next.reason === 'scam') f.rememberScam(tx, next, 'scam', personExists);
+      // A delayed terminal decision can arrive after the carrier capture was processed.
+      if (discardCapture(next)) {
+        deleteMessageAudio(f.store, tx, next.id);
+        tx.update(f.store.callRef(next.id), { voicemail: FieldValue.delete() });
+        tx.delete(f.store.db.collection('voicemailChecks').doc(next.id));
+      }
+    });
   }
   /** The bridge had no room for this call: never connect it, offer voicemail instead. */
   async unavailable(id: string) {

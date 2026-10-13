@@ -89,7 +89,32 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     await cc.handle(accept); await cc.handle(accept);
     expect(action.mock.calls.filter(x => x[1] === 'bridge')).toHaveLength(1);
     expect(action).toHaveBeenCalledWith(child, 'bridge', expect.objectContaining({ call_control_id: c.parentSid, prevent_double_bridge: true }));
+    const stopIndex = action.mock.calls.findIndex(x => x[0] === c.parentSid && x[1] === 'record_stop');
+    expect(stopIndex).toBeGreaterThan(-1); expect(stopIndex).toBeLessThan(action.mock.calls.findIndex(x => x[1] === 'bridge'));
     expect(request).toHaveBeenCalledWith('/calls', expect.objectContaining({ to: people[0]!.phone, from: config.TELNYX_NUMBER }));
+  });
+  it('records from answer before the greeting, and a saved callback cannot hang up a connected call', async () => {
+    const c = await offer();
+    expect(action).toHaveBeenCalledWith(c.parentSid, 'answer', expect.objectContaining({ record: 'record-from-answer', record_track: 'inbound', record_max_length: 240 }));
+    await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    const before = action.mock.calls.filter(x => x[1] === 'hangup').length;
+    await cc.handle(event(c.parentSid, 'call.recording.saved', { recording_id: randomUUID(), recording_started_at: new Date(now).toISOString(), recording_ended_at: new Date(now + 100_000).toISOString() }));
+    expect(action.mock.calls.filter(x => x[1] === 'hangup')).toHaveLength(before);
+    expect((await s.db.collection('forwardingRecordings').get()).docs[0]!.data()).toMatchObject({ capture: true, duration: 100 });
+  });
+  it('never bridges if stopping the temporary capture fails', async () => {
+    const c = await offer(); await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    action.mockImplementation(async (_sid, name) => { if (name === 'record_stop') throw new Error('capture_stop_failed'); return {}; });
+    await expect(cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }))).rejects.toThrow('capture_stop_failed');
+    expect(action.mock.calls.filter(x => x[1] === 'bridge')).toHaveLength(0);
+  });
+  it('saves a notice outcome even when the recording hangs up first, without offering a live call', async () => {
+    const c = await arrive(), live = new ForwardingLive(f); await live.claim(c.id);
+    await cc.handle(event(c.parentSid, 'call.hangup'));
+    await live.finish(c.id, { ...approve, action: 'message', reason: 'unclear' });
+    expect((await cc.call(c.id))!).toMatchObject({ state: 'ended', outcome: 'voicemail', reason: 'automated_notice' });
+    expect(action.mock.calls.some(x => x[1] === 'dial' || x[1] === 'bridge')).toBe(false);
   });
   it('never bridges rejection, silence, the inbound caller’s digit, or another person’s child leg', async () => {
     const a = await offer(0), b = await offer(1);

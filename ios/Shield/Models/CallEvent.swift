@@ -18,6 +18,7 @@ struct CallEvent: Codable, Identifiable, Hashable, Sendable {
         case "not_connected": "The call didn’t connect"
         case "voicemail_offered": "The caller could leave a message"
         case "message_received", "voicemail_received": "Message received"
+        case "notice_received", "notice_saved": "Notice saved for you"
         case "ended", "call_ended": "Call ended"
         case "blocked_caller_ended": "A blocked call was stopped"
         case "monitoring_disclosed": "The caller was told about word checks"

@@ -23,7 +23,7 @@ export const cloudSchema = z.object({
   MONITOR_TRANSCRIPTION_ENGINE: z.enum(['Parakeet', 'Soniox', 'Deepgram']).default('Soniox'),
   // A second Telnyx number, never in anyone's contacts, that places the daily setup check. Unset: no checks.
   SETUP_CHECK_NUMBER: z.string().regex(/^\+1[2-9]\d{9}$/).optional(),
-  // Keep-or-remove checks on forwarded voicemail (GPT Transcribe + Decisions API). Off: every message is shown.
+  // Legacy runtime compatibility. Every saved message is now transcribed, checked and summarized.
   VOICEMAIL_SCREENING_ENABLED: z.boolean().default(false),
   // Push alerts are offered only when an APNs auth key (.p8) from the Apple Developer account is configured.
   APNS: z.object({ keyId: z.string().regex(/^[A-Z0-9]{10}$/), teamId: z.string().regex(/^[A-Z0-9]{10}$/),

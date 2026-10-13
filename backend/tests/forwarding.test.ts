@@ -251,6 +251,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await db.collection('forwardingRecordings').get()).size).toBe(1);
     await db.collection('forwardingAudio').doc(c.id).set({ participantId: c.participantId, expiresAt: now + 10000,
       audioEnc: s.vault.seal(Buffer.from('test audio').toString('base64'), `voicemail:${c.id}`) });
+    await s.callRef(c.id).update({ 'voicemail.status': 'ready' });
     expect((await app.inject({ url: `/api/voicemails/${c.id}/audio`, headers: headers('stranger') })).statusCode).toBe(403);
     expect((await app.inject({ url: `/api/voicemails/${c.id}/audio`, headers: headers() })).body).toBe('test audio');
     expect((await app.inject({ method: 'DELETE', url: `/api/voicemails/${c.id}`, headers: headers() })).statusCode).toBe(200);

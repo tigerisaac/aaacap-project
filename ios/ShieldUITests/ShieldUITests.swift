@@ -249,7 +249,7 @@ final class ShieldUITests: XCTestCase {
         capture(app, name: "Protection all good large text")
     }
 
-    func testRemovedVoicemailCannotPlayAndOffersRestore() {
+    func testDiscardedScamHasNoPlaybackOrRestore() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview"]
         app.launch()
@@ -261,9 +261,59 @@ final class ShieldUITests: XCTestCase {
         let label = app.staticTexts["Message removed"]
         for _ in 0..<4 where !label.isHittable { app.swipeUp() }
         XCTAssertTrue(label.exists)
-        XCTAssertTrue(app.buttons["restore-voicemail"].exists)
+        XCTAssertFalse(app.buttons["restore-voicemail"].exists)
         XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Play message'")).firstMatch.exists)
         capture(app, name: "Removed voicemail")
+    }
+    func testSavedNoticeHasSummaryTranscriptAndIndependentContact() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview"]
+        app.launch()
+        app.tabBars.buttons["Messages"].tap()
+        XCTAssertTrue(app.navigationBars["Messages"].waitForExistence(timeout: 5))
+        capture(app, name: "Messages inbox")
+        app.staticTexts["Saved account notice"].firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["Saved notice"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["message-summary"].exists)
+        capture(app, name: "Saved notice summary")
+        let transcript = app.buttons["Transcript"]
+        for _ in 0..<4 where !transcript.isHittable { app.swipeUp() }
+        transcript.tap()
+        XCTAssertTrue(app.staticTexts["message-transcript"].exists)
+        let trusted = app.buttons["Find a trusted number"].firstMatch
+        for _ in 0..<5 where !trusted.isHittable { app.swipeUp() }
+        XCTAssertTrue(trusted.exists)
+        capture(app, name: "Saved notice and transcript")
+    }
+    func testSavedNoticeAtLargestTextInDarkMode() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        app.tabBars.buttons["Messages"].tap()
+        let notice = app.staticTexts["Saved account notice"].firstMatch
+        XCTAssertTrue(notice.waitForExistence(timeout: 5))
+        capture(app, name: "Messages inbox large dark")
+        notice.tap()
+        XCTAssertTrue(app.navigationBars["Saved notice"].waitForExistence(timeout: 5))
+        capture(app, name: "Saved notice large dark")
+        let transcript = app.buttons["Transcript"]
+        let list = app.collectionViews.firstMatch
+        let top = app.navigationBars.firstMatch.frame.maxY
+        let bottom = app.buttons["Hear sample message"].frame.minY
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: list.frame.midX, dy: top + (bottom - top) * 0.8))
+        let end = origin.withOffset(CGVector(dx: list.frame.midX, dy: top + (bottom - top) * 0.3))
+        for _ in 0..<24 {
+            if transcript.exists, transcript.isHittable, transcript.frame.minY >= top + 8, transcript.frame.maxY <= bottom - 8 { break }
+            start.press(forDuration: 0.1, thenDragTo: end)
+        }
+        XCTAssertTrue(transcript.exists)
+        transcript.tap()
+        let words = app.descendants(matching: .any)["message-transcript"].firstMatch
+        for _ in 0..<8 where !words.exists { start.press(forDuration: 0.1, thenDragTo: end) }
+        XCTAssertTrue(words.exists)
+        XCTAssertTrue(app.buttons["Hear sample message"].isHittable)
+        capture(app, name: "Saved notice transcript large dark")
     }
 
     func testHelperCannotUnblockOrChooseHelperAlerts() {

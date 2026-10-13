@@ -15,7 +15,7 @@ struct SharingView: View {
             Section {
                 TextField("Their name", text: $label, prompt: Text("Their name").foregroundStyle(ShieldTheme.secondaryText))
                     .textContentType(.givenName)
-                Toggle("Include voicemail", isOn: $canListen)
+                Toggle("Include messages", isOn: $canListen)
                 Button { confirmShare = true } label: {
                     Text(creating ? "Creating…" : "Make invitation")
                         .foregroundStyle(creating || model.isDemo || label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? ShieldTheme.secondaryText : ShieldTheme.action)
@@ -24,7 +24,7 @@ struct SharingView: View {
                     .confirmationDialog("Share your call history?", isPresented: $confirmShare, titleVisibility: .visible) {
                         Button("Make invitation") { Task { await createInvite() } }
                     } message: {
-                        Text(canListen ? "They can see your calls and hear your voicemail. Send this only to the person you want to help." : "They can see your calls. Your voicemail stays private. Send this only to the person you want to help.")
+                        Text(canListen ? "They can see your calls and read or hear voicemail and saved notices. Send this only to the person you want to help." : "They can see your calls. Your messages stay private. Send this only to the person you want to help.")
                     }
             } header: { Text("Invite someone to help").foregroundStyle(ShieldTheme.secondaryText) } footer: {
                 Text("This invitation works for two days.").foregroundStyle(ShieldTheme.secondaryText)
@@ -55,7 +55,7 @@ struct SharingView: View {
                 ForEach(grants) { grant in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(grant.label).font(.headline)
-                        Text(grant.accepted ? grant.canListen ? "Calls and voicemail" : "Calls only" : "Waiting for them to join")
+                        Text(grant.accepted ? grant.canListen ? "Calls and messages" : "Calls only" : "Waiting for them to join")
                             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         Button("Stop sharing", role: .destructive) { revokeID = grant.id }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)

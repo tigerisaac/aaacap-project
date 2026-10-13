@@ -14,6 +14,7 @@ import { SETUP_CHECK_LIMITS, SetupChecks, type SetupCheckDialer } from './setup-
 import { CallMonitor, MONITORING_CONSENT, monitoringEnabledFor } from './monitoring.js';
 import { queueAlert } from './alerts.js';
 import { VoicemailCheck } from './voicemail-check.js';
+import { deleteMessageAudio, readMessageAudio } from './message-audio.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
@@ -150,8 +151,11 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     const ctx = await store.access(uid, audio.participantId);
     if (!ctx.canListen) throw new HttpError(403, 'access_denied');
     // A message Shield removed as a scam isn't played until someone restores it.
-    if ((await store.callRef(id).get()).data()?.voicemail?.status === 'removed') throw new HttpError(409, 'voicemail_removed');
-    const bytes = Buffer.from(store.vault.open(audio.audioEnc, `voicemail:${id}`), 'base64');
+    const call = (await store.callRef(id).get()).data();
+    if (!call?.voicemail || call.acceptedAt || call.voicemailDeletedAt || call.expiresAt <= store.now()) throw new HttpError(404, 'voicemail_not_found');
+    if (call.voicemail.status === 'removed') throw new HttpError(409, 'voicemail_removed');
+    if (call.voicemail.status !== 'ready') throw new HttpError(409, 'recording_unavailable');
+    const bytes = await readMessageAudio(store, id, audio);
     return reply.type('audio/mpeg').send(bytes);
   });
   app.post('/api/voicemails/:id/heard', async request => {
@@ -177,7 +181,8 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       const c = (await tx.get(ref)).data();
       if (!c || c.participantId !== ctx.participant.id) throw new HttpError(404, 'voicemail_not_found');
       tx.update(ref, { voicemail: FieldValue.delete(), voicemailDeletedAt: store.now() });
-      tx.delete(store.db.collection('forwardingAudio').doc(id));
+      deleteMessageAudio(store, tx, id);
+      tx.delete(store.db.collection('voicemailChecks').doc(id));
     }); return { deleted: true };
   });
 }

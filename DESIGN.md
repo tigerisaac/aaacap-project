@@ -107,7 +107,7 @@ The October 12 refinement makes an 80-year-old's understanding the bar. Ordinary
 - Explicit person context, sharing scope, truthful service state, and a persistent sample-data marker.
 - Home's native large title and person control share an uninterrupted grouped page background.
 
-**Evidence boundary:** Updated from current local source on October 12, 2026, including the persistent Home total, removed-message simplification, and matching Home header. This documentation pass checks format and consistency only. Source extraction and simulator captures do not establish physical-device accessibility, older-participant usability, or real-call performance; current implementation and visual results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). Approved counter-only deployment and isolated synthetic live-API checks are recorded separately in [Status](docs/STATUS.md) and [Operations](docs/OPERATIONS.md#persistent-home-count-deployment--october-12). They do not establish release of pending blocked-number or voicemail-removal features. No deployment, owner-phone change, carrier setting, or real call occurred in this documentation pass.
+**Evidence boundary:** Updated from current local source on October 12, 2026, including the persistent Home total, matching Home header, and Messages inbox with summaries and transcripts. This documentation pass checks format and consistency only. Source extraction and simulator captures do not establish physical-device accessibility, older-participant usability, or real-call performance; current implementation and visual results belong in [the senior-design record](docs/IOS-SENIOR-DESIGN.md). Approved counter-only deployment and isolated synthetic live-API checks are recorded separately in [Status](docs/STATUS.md) and [Operations](docs/OPERATIONS.md#persistent-home-count-deployment--october-12). They do not establish release of pending blocked-number or saved-message features. No deployment, owner-phone change, carrier setting, or real call occurred in this documentation pass.
 
 ## Colors
 
@@ -124,7 +124,7 @@ Color gives actions and call outcomes a consistent identity while opaque support
 
 ### Tertiary
 
-- **Voicemail violet** (`Message`; `message-*`): voicemail outcomes, the unheard-message dot, and sharing context.
+- **Voicemail violet** (`Message`; `message-*`): message outcomes, the unheard-message dot, and sharing context.
 
 ### Neutral
 
@@ -147,8 +147,8 @@ Native system fonts supply interface text and SF Symbols supply iconography. The
 | Role | Implemented style | Use |
 | --- | --- | --- |
 | Display | Native navigation title; `.largeTitle.bold()` for Shield | Screen identity and sign-in brand |
-| Title | `.title2.bold()` or `.title3.bold()` | Call-detail title, results, focused introductions |
-| Headline | `.headline`; `.body.weight(.semibold)` in call rows | Voicemail titles, section headings, action labels, call purposes |
+| Title | `.title2.bold()` or `.title3.bold()`; `.title3` for message summaries | Call-detail title, results, focused introductions, readable summaries |
+| Headline | `.headline`; `.body.weight(.semibold)` in call rows | Message titles, section headings, action labels, call purposes |
 | Body | `.body` or default Text | Instructions, form content, explanations, More choices |
 | Supporting | `.subheadline` | Call time, outcome, number, sharing scope, sample marker |
 | Label | `.subheadline.weight(.semibold)` | OutcomeBadge and sample-data identity |
@@ -161,7 +161,7 @@ The user-requested Home count uses `.largeTitle.scaled(by: 1.5).bold()` with mon
 
 ## Layout
 
-The four native tabs are Home, Calls, Voicemail, and More. Each destination owns a NavigationStack. Lists use `.insetGrouped`, hide the scroll-content background in favor of the shared system surface, and set the default minimum row height to 60 points. Native hard scroll-edge effects remain the shared default, with Home's top edge deliberately hidden. Sheets and dialogs retain platform behavior.
+The four native tabs are Home, Calls, Messages, and More. Messages keeps voicemail and saved prerecorded notices in one inbox. Each destination owns a NavigationStack. Lists use `.insetGrouped`, hide the scroll-content background in favor of the shared system surface, and set the default minimum row height to 60 points. Native hard scroll-edge effects remain the shared default, with Home's top edge deliberately hidden. Sheets and dialogs retain platform behavior.
 
 Home hides its top scroll-edge effect and navigation-bar background so the header matches the page's `ShieldTheme.surface`. NavigationShell supplies that same adaptive grouped surface behind the NavigationStack and safe areas. The large Home title and native person capsule remain intact; only the white header strip is removed. Other screens and scroll edges retain their hard effect. The final Light header capture has matching header/page RGB (242, 242, 247), an observed screenshot value rather than a new fixed color token. The Light and large-text Dark captures are `.impeccable/review/header/readable-home-light.png` and `.impeccable/review/header/readable-home-large-dark.png`.
 
@@ -173,7 +173,7 @@ At accessibility text sizes, call titles and times stack, and busy primary-actio
 
 ## Elevation & Depth
 
-Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. The Home historical count uses one opaque Action-colored native list row when positive and a neutral card surface when zero or unavailable. Home's navigation-bar background and top scroll-edge effect are hidden to preserve a continuous grouped canvas; other edges keep the shared hard effect. Menus, sheets, dialogs, control materials, and pressed feedback use operating-system behavior. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Voicemail's listening or restoration control uses a bottom safe-area inset with an opaque system surface.
+Shield defines no custom shadow, blur, motion-duration, or easing tokens. Native grouped rows and system surface layering provide depth. The Home historical count uses one opaque Action-colored native list row when positive and a neutral card surface when zero or unavailable. Home's navigation-bar background and top scroll-edge effect are hidden to preserve a continuous grouped canvas; other edges keep the shared hard effect. Menus, sheets, dialogs, control materials, and pressed feedback use operating-system behavior. The sample-data marker occupies its own opaque area above the TabView content; it does not float over scrolling rows. Message listening and legacy restoration controls use a bottom safe-area inset with an opaque system surface.
 
 **The Native Surface Rule.** Use grouped system surfaces and native control feedback before introducing custom elevation or viewport geometry.
 
@@ -195,17 +195,21 @@ Sign-in uses email and one-time-code fields with keyboard/content types, explici
 
 ### Navigation
 
-The tabs are **Home**, **Calls**, **Voicemail**, and **More**, with house, phone, recording-tape, and ellipsis SF Symbols. More lists **Check a text**, **Family & friends**, **Get help**, and **Settings**. Its Check a text row has no explanatory subtitle. Focused tasks push through native NavigationLink rows; entry sheets retain Cancel and task-specific confirmation controls. Standard back navigation remains visible.
+The tabs are **Home**, **Calls**, **Messages**, and **More**, with `house.fill`, `phone.fill`, `tray.fill`, and `ellipsis` SF Symbols. The Messages destination contains both **Voicemail** and **Saved notice**, distinguished in row metadata and detail titles. More lists **Check a text**, **Family & friends**, **Get help**, and **Settings**. Its Check a text row has no explanatory subtitle. Focused tasks push through native NavigationLink rows; entry sheets retain Cancel and task-specific confirmation controls. Standard back navigation remains visible.
 
-### Call and voicemail rows
+### Call and message rows
 
 CallRow follows Phone's Recents pattern: purpose or name and time, followed by outcome and optional number. The call symbol is paired with an outcome word unless the title already supplies it. An adaptive violet dot marks unheard voicemail. Home hides the number while Calls and detail retain it. The user-requested Home count is one focused historical action, rather than a grid of competing outcome totals.
 
-OutcomeBadge is an unboxed subheadline label with an SF Symbol. The labels are **Checking call**, **Phone rang**, **Answered**, **Stopped**, **Check first**, **Voicemail**, and **Missed**. Call rows expand Missed to Missed call. Preserve these distinctions and the uncertainty behind Check first.
+OutcomeBadge is an unboxed subheadline label with an SF Symbol. The labels are **Checking call**, **Phone rang**, **Answered**, **Stopped**, **Check first**, **Message**, and **Missed**. Call rows expand Missed to Missed call. Preserve these distinctions and the uncertainty behind Check first.
 
-VoicemailRow leads with the message purpose, then an optional sample summary and a short New, Kept, or Removed state with a date. The dedicated inbox offers native loading, retry, empty, pagination, and removed-message disclosure states. Listening is the main bottom action on a playable message. More about this call opens additional detail rather than placing it all in the first view.
+VoicemailRow leads with the message purpose, then a summary of up to three lines when listening access permits. The supporting line names **Voicemail** or **Saved notice**, the date, and a **New**, sample-only **Kept**, or **Removed** state when applicable. The Messages inbox offers native loading, retry, empty, pagination, and removed-message disclosure states.
 
-Removed-message detail uses one readable panel: **Message removed**, the tentative explanation **It seemed suspicious.**, and the available restoration deadline. The heading, explanation, and deadline grow vertically with Dynamic Type. The timestamp and callback advice live inside More about this call. **Bring back message** is a sticky bottom primary action only when listening permission and restoration eligibility allow it; it retains the confirmation, expiry, working-state, and sample-disabled guards. Simplified presentation does not change the real restore API.
+Message detail places the summary before an expandable **Transcript**. Summaries use wrapping `.title3` text with a reminder that the caller's claims have not been verified; transcript text supports selection and warns that automatic transcription can contain mistakes. If readable text is unavailable, the detail explains that listening is still possible. Saved notices include advice to check the organization's app or a number from a card, statement, or saved contacts, plus **Find a trusted number** for the owner. Listening is the main bottom action on a playable message, with native loading and stop states. **More about this call** opens additional detail. Helpers without `canListen` see **Message is private** and receive no summary, transcript, or audio controls.
+
+Clear scam messages retain no audio or readable content and offer no restoration action. Legacy removed-message detail keeps one readable panel: **Message removed**, the tentative explanation **It seemed suspicious.**, and the restoration deadline when available. The heading, explanation, and deadline grow vertically with Dynamic Type. The timestamp and callback advice live inside **More about this call**. **Bring back message** remains a bottom primary action only for a legacy message when listening permission and restoration eligibility allow it; it retains the confirmation, expiry, working-state, and sample-disabled guards.
+
+Source: `ios/Shield/App/RootView.swift`, `ios/Shield/Features/Calls/VoicemailView.swift`, `ios/Shield/Features/Calls/VoicemailRow.swift`, `ios/Shield/Features/Calls/CallDetailView.swift`, and `ios/Shield/Models/Voicemail.swift`. These describe local implementation, not deployment or real-call verification.
 
 ### Home historical count
 
@@ -229,9 +233,9 @@ ShieldNotice combines a headline, supporting explanation, and recognizable symbo
 
 ### Person context and sharing
 
-PersonPicker appears as a native Menu when more than one person is available; a single helper context can show the person's name without a menu. It names the viewed person for accessibility. Selecting someone resets the old context and call filter. Family & friends rows state who owns the phone and whether call history or voicemail is shared.
+PersonPicker appears as a native Menu when more than one person is available; a single helper context can show the person's name without a menu. It names the viewed person for accessibility. Selecting someone resets the old context and call filter. Family & friends rows state who owns the phone and whether **Calls only** or **Calls and messages** are shared.
 
-Owner-only actions remain conditional on ownership. Include voicemail, invitation, and revocation controls preserve explicit permission and confirmation. Setup and disconnection retain their setting confirmations and call checks; returning from Phone or Settings never confirms a change by itself.
+Owner-only actions remain conditional on ownership. **Include messages**, invitation, and revocation controls preserve explicit permission and confirmation; message access covers reading or hearing voicemail and saved notices. Setup and disconnection retain their setting confirmations and call checks; returning from Phone or Settings never confirms a change by itself.
 
 **The Visible Context Rule.** Show the viewed person and sharing scope in words, and keep participant ownership distinct from helper access.
 
@@ -239,7 +243,7 @@ Owner-only actions remain conditional on ownership. Include voicemail, invitatio
 
 The persistent marker says **Sample app** or **Test account · Sample data**. Ordinary sample exit lives in More as Leave sample app. The marker has an explicit sample-only accessibility label.
 
-Sample voicemail summaries are authored text. Hear sample message reads an authored sample using on-device speech, not a caller recording. Keep this message and the All/Kept sample filter only change in-memory sample state; they do not change real-message expiry or service data. Permissions still gate listening and owner actions. Real summaries need a service, API fields, consent, processing/error states, and accuracy checks; real keeping needs persistent owner state and explicit retention/deletion rules. See [the senior-design record](docs/IOS-SENIOR-DESIGN.md) for those future requirements.
+**Sample summary** identifies authored demo text. **Hear sample message** reads an authored sample using on-device speech, not a caller recording. **Keep this message** and the **All/Kept** sample filter only change in-memory sample state; they do not change real-message expiry or service data. Permissions still gate listening and owner actions. Real Messages use service-generated summaries and automatic transcripts when available, with playback preserved when readable text is unavailable. Real messages follow the service's expiry and deletion rules and have no permanent Keep action.
 
 The sidecar's HTML/CSS is a schematic documentation preview. Browser type metrics, symbols, pixels, corners, and interaction styles do not specify the native implementation.
 
@@ -251,7 +255,7 @@ The sidecar's HTML/CSS is a schematic documentation preview. Browser type metric
 - Do pair outcome color with familiar words and SF Symbols while preserving uncertainty.
 - Do keep semantic Dynamic Type, wrapping text, content-based stacking, 52-point shared app action minima, and 60-point grouped-row defaults.
 - Do give ordinary tasks one clear next action and reveal less common detail on request.
-- Do make person context, voicemail permission, and sample-only state visible in words.
+- Do make person context, message permission, and sample-only state visible in words.
 - Do retain explicit privacy, sharing, setup, and disconnection confirmations.
 - Do label the Home count as the persistent historical total, keep real status above it, and distinguish zero, unavailable data, and recent retained history.
 - Do verify the running native app in Light and Dark Mode, increased contrast, large Dynamic Type, VoiceOver, and Reduced Motion before claiming accessibility approval.
@@ -263,6 +267,6 @@ The sidecar's HTML/CSS is a schematic documentation preview. Browser type metric
 - Don't promote old tab labels or fixed Surface asset colors from earlier designs into new screens.
 - Don't present Calls stopped as confirmed scams, complete recovery of already-deleted history, or evidence that current call checks are on.
 - Don't treat schematic sidecar HTML/CSS as a native pixel specification.
-- Don't treat helper access as ownership or extend voicemail access implicitly.
+- Don't treat helper access as ownership or extend message access implicitly.
 - Don't present sample summaries, synthetic speech, or temporary keeping as real-message services.
 - Don't claim final visual approval, deployment, or real-call evidence from this source extraction.

@@ -8,7 +8,7 @@ enum CallFilter: String, CaseIterable, Identifiable, Sendable {
         case .all: "All"
         case .held: "Stopped"
         case .connected: "Answered"
-        case .voicemail: "Voicemail"
+        case .voicemail: "Messages"
         }
     }
     func includes(_ call: CallRecord) -> Bool {

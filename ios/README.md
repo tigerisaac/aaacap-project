@@ -62,6 +62,10 @@ APNs alerts contain no caller/message details. Registration is refreshed for aut
 
 October 12 simulator validation: Andrew's native iOS redesign was integrated with account-loading recovery and call-refresh recovery fixes. A failed initial account load shows an error and Try Again instead of invitation onboarding; a successful activity refresh clears the previous Calls error. The screenshot-picker label's Swift concurrency warning was also fixed. Both new recovery UI tests passed, as did the three selected redesign tests for call navigation/filtering, message-check consent, and screening-status states. `npm run check` passed (143 unit tests, typecheck and build), and `npm run test:firebase` passed all 86 emulator tests. The updated Debug app was built and launched with sample data in the iPhone 18 Pro simulator. No physical-phone installation, backend deployment, carrier change, or real call was performed.
 
+## Saved messages (October 12 repository implementation)
+
+The Messages tab combines voicemail and saved notices. Authorized users see a short summary and an expandable transcript, with the usual bottom audio action. Saved notices carry independent-contact guidance rather than an actionable caller-provided callback. Helpers without message-sharing permission see no transcript/summary/playback. Text-generation failures keep audio playable. Clear scam/junk content is discarded; legacy restoration is available only when older retained audio remains. Keep this message is still a sample-only feature. Backend capture from answer uses the shared Call Control transport; see Architecture for retention and provider deletion. This change is not deployed or installed on a real phone.
+
 ## Call Directory extension
 
 `CallDirectory/` blocks every number on the person's Shield blocklist at the phone level. That includes numbers she has since saved or called back, which would otherwise ring her directly and never reach Shield.

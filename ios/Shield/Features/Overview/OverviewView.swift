@@ -31,18 +31,18 @@ struct OverviewView: View {
                     Section {
                         if messages.isEmpty {
                             Button { model.showCalls(.voicemail) } label: {
-                                ActionRow(title: "Voicemail", detail: "No recent messages", symbol: "recordingtape")
+                                ActionRow(title: "Messages", detail: "No recent messages", symbol: "tray")
                             }.buttonStyle(.plain)
                         } else {
                             ForEach(messages.prefix(1)) { call in
                                 NavigationLink(value: call) {
-                                    VoicemailRow(call: call, showsPreview: model.isDemo && model.canListen, kept: model.demoKeptMessages.contains(call.id))
+                                    VoicemailRow(call: call, showsPreview: model.canListen, kept: model.demoKeptMessages.contains(call.id))
                                 }
                             }
-                            Button("All voicemail") { model.showCalls(.voicemail) }
+                            Button("All messages") { model.showCalls(.voicemail) }
                                 .accessibilityIdentifier("today-messages")
                         }
-                    } header: { Text("Voicemail").font(.headline).foregroundStyle(ShieldTheme.secondaryText) }
+                    } header: { Text("Messages").font(.headline).foregroundStyle(ShieldTheme.secondaryText) }
                     Section {
                         if overview.recent.isEmpty {
                             Text("Your calls will appear here.").foregroundStyle(ShieldTheme.secondaryText)

@@ -57,7 +57,8 @@ if (repeat > 1 || scenarios.length > 1) {
   const sum = (list, k) => list.reduce((n, r) => n + r[k], 0);
   const outcomes = (list, ...actions) => list.reduce((n, r) => n + actions.reduce((m, a) => m + (r.outcomes[a] ?? 0), 0), 0);
   console.log(JSON.stringify({ summary: { policyVersion: SCREENING_POLICY_VERSION, caution, provider, effort: target.effort, repeat,
-    legitimateOffered: `${outcomes(legit, 'approve')}/${sum(legit, 'runs')}`, harmfulStopped: `${outcomes(harmful, 'block', 'hold')}/${sum(harmful, 'runs')}`,
+    legitimateOffered: `${outcomes(legit, 'approve')}/${sum(legit, 'runs')}`, legitimateSaved: outcomes(legit, 'message'), harmfulStopped: `${outcomes(harmful, 'block', 'hold')}/${sum(harmful, 'runs')}`,
+    harmfulSaved: outcomes(harmful, 'message'),
     harmfulApproved: outcomes(harmful, 'approve'), harmfulClarifications: outcomes(harmful, 'continue'),
     regressionPasses: `${sum(rows, 'passed')}/${sum(rows, 'runs')}`,
     ...(rows.some(r => r.category === 'deferred') ? { familyOpenersOffered: `${sum(rows.filter(r => r.category === 'deferred'), 'passed')}/${sum(rows.filter(r => r.category === 'deferred'), 'runs')}` } : {}),

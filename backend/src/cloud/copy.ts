@@ -7,6 +7,7 @@ export const purposes: Record<Extraction['purpose'], string> = {
 };
 
 export const reasonCopy: Record<string, { title: string; detail: string; action: string }> = {
+  automated_notice: { title: 'Saved notice', detail: 'Shield preserved an incoming notice without connecting the call. The caller and their claims remain unverified.', action: 'Check independently using an app, card, statement or contact you already trust.' },
   scam: { title: 'Scam call stopped', detail: 'Shield detected a risky request and ended the call silently.', action: 'No action is needed.' },
   robocall: { title: 'Unwanted robocall stopped', detail: 'Shield detected an unwanted automated call and ended it silently.', action: 'No action is needed.' },
   voicemail_removed_scam: { title: 'Scam voicemail removed', detail: 'Shield judged this message to be a scam and removed it from your messages. It will be deleted after 7 days.', action: 'If you think this was a real message, restore it from this call.' },

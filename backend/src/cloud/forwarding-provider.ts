@@ -90,10 +90,13 @@ export function recordingProvider(c: CloudConfig, transport?: string) {
     return { fetch: async (sid: string, parent: string) => {
       if (!validRecordingId(sid)) throw new Error('invalid_recording_id');
       const r = await cc.request(`/recordings/${sid}`);
-      if (r?.id !== sid || r.call_control_id !== parent || r.connection_id !== c.TELNYX_SHARED_APPLICATION_ID || !Number.isFinite(r.duration_millis) || r.status !== 'completed' || r.duration_millis > 65000 || r.duration_millis < 0) throw new Error('recording_mismatch');
+      if (r?.id !== sid || r.call_control_id !== parent || r.connection_id !== c.TELNYX_SHARED_APPLICATION_ID || !Number.isFinite(r.duration_millis) || r.status !== 'completed' || r.duration_millis > 245000 || r.duration_millis < 0) throw new Error('recording_mismatch');
       const url = new URL(r.download_urls?.mp3 ?? '');
       if (url.protocol !== 'https:' || url.username || url.password || url.port || !c.TELNYX_RECORDING_HOSTS.includes(url.hostname)) throw new Error('unapproved_recording_origin');
-      return fetch(url, { redirect: 'error', signal: AbortSignal.timeout(10000) });
+      const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(10000) });
+      const headers = new Headers(response.headers);
+      headers.set('x-shield-recording-duration', String(Math.ceil(r.duration_millis / 1000)));
+      return new Response(response.body, { status: response.status, headers });
     }, remove: async (sid: string) => { if (!validRecordingId(sid)) throw new Error('invalid_recording_id'); await cc.request(`/recordings/${sid}`, undefined, 'DELETE'); } };
   }
   const client = new TelnyxVoice(c);

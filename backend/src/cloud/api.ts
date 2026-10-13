@@ -18,7 +18,7 @@ const uuid = z.string().uuid().transform(value => value.toLowerCase());
 const at = (value: number | null | undefined) => value ? new Date(value).toISOString() : null;
 const contactSchema = z.object({ label: z.string().trim().min(1).max(60), phone: z.string().min(8).max(25) });
 
-export function cloudCallDTO(store: CloudStore, call: Call) {
+export function cloudCallDTO(store: CloudStore, call: Call, canListen = false) {
   const forwarding = call.source === 'forwarding';
   const abandoned = call.state !== 'ended' && store.now() - call.createdAt > (forwarding ? 450_000 : 120_000);
   const removed = call.voicemail?.status === 'removed';
@@ -31,7 +31,11 @@ export function cloudCallDTO(store: CloudStore, call: Call) {
     detail: reason === 'routine' ? (forwarding ? 'The introduction looked routine. Connection requires you to answer and press 1.' : 'The introduction looked routine. No call was connected.') : copy.detail,
     nextStep: reason === 'routine' ? 'This result does not verify the caller’s identity.' : copy.action,
     monitored: !!call.monitoringStartedAt, acceptedAt: at(call.acceptedAt), endedAt: at(call.completedAt ?? (abandoned ? call.createdAt + (forwarding ? 450_000 : 120_000) : null)), voicemail: call.voicemail ? { id: call.voicemail.id, duration: call.voicemail.duration, status: call.voicemail.status, heardAt: at(call.voicemail.heardAt),
-      ...(removed ? { removedAt: at(call.voicemail.removedAt), restorableUntil: at(call.voicemail.removedAt + VOICEMAIL_LIMITS.purgeMs) } : {}) } : null };
+      kind: call.voicemail.kind ?? 'voicemail', textStatus: call.voicemail.textStatus ?? 'unavailable',
+      ...(canListen && !removed && call.voicemail.status === 'ready' && !call.acceptedAt ? {
+        transcript: call.voicemail.transcriptEnc ? store.vault.open(call.voicemail.transcriptEnc, `message:${call.id}:transcript`) : null,
+        summary: call.voicemail.summaryEnc ? store.vault.open(call.voicemail.summaryEnc, `message:${call.id}:summary`) : null } : {}),
+      ...(removed ? { removedAt: at(call.voicemail.removedAt), restorableUntil: call.voicemail.purgedAt ? null : at(call.voicemail.removedAt + VOICEMAIL_LIMITS.purgeMs) } : {}) } : null };
 }
 
 export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, checker: MessageChecker) {
@@ -96,7 +100,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     return { name: store.name(ctx.participant), status: ctx.participant.status, lastTestAt: null, isTrial: true,
       isDemo: false, isOwner: ctx.isOwner, canListen: ctx.canListen,
       counts: { total: total.data().count, held: held.data().count, connected: connected.data().count, messages: messages.data().count, stoppedTotal: stopped },
-      recent: recent.docs.map(doc => cloudCallDTO(store, doc.data() as Call)) };
+      recent: recent.docs.map(doc => cloudCallDTO(store, doc.data() as Call, ctx.canListen)) };
   });
   app.get('/api/calls', async request => {
     const ctx = await access(request);
@@ -113,13 +117,13 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
       } catch { throw new HttpError(400, 'invalid_cursor'); }
     }
     const docs = (await query.limit(31).get()).docs; const page = docs.slice(0, 30); const last = page.at(-1)?.data();
-    return { calls: page.map(doc => cloudCallDTO(store, doc.data() as Call)), nextCursor: docs.length > 30 && last
+    return { calls: page.map(doc => cloudCallDTO(store, doc.data() as Call, ctx.canListen)), nextCursor: docs.length > 30 && last
       ? Buffer.from(JSON.stringify({ at: at(last.createdAt), id: last.id })).toString('base64url') : null };
   });
   app.get('/api/calls/:id', async request => {
     const ctx = await access(request); const call = (await store.callRef(getId(request)).get()).data() as Call | undefined;
     if (!call || call.participantId !== ctx.participant.id || call.expiresAt <= store.now()) throw new HttpError(404, 'call_not_found');
-    return { call: cloudCallDTO(store, call), events: call.events.map(event => ({ kind: event.kind, at: at(event.at) })) };
+    return { call: cloudCallDTO(store, call, ctx.canListen), events: call.events.map(event => ({ kind: event.kind, at: at(event.at) })) };
   });
   app.get('/api/setup', async request => {
     const ctx = await access(request, true); const p = ctx.participant;
@@ -147,10 +151,14 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     const ctx = await access(request, true);
     if (ctx.participant.forwardingConsent) throw new HttpError(409, 'restore_forwarding_before_deletion');
     await store.personRef(ctx.participant.id).update({ status: 'offboarded' });
-    for (const collection of ['callSessions', 'grants', 'memberships']) {
+    for (const collection of ['callSessions', 'grants', 'memberships', 'forwardingAudio', 'forwardingAudioChunks', 'voicemailChecks']) {
       const docs = await store.db.collection(collection).where('participantId', '==', ctx.participant.id).get();
       if (!docs.empty) {
-        const writer = store.db.bulkWriter(); docs.docs.forEach(doc => writer.delete(doc.ref)); await writer.close();
+        const writer = store.db.bulkWriter(); docs.docs.forEach(doc => {
+          writer.delete(doc.ref);
+          // Older check jobs did not carry participantId.
+          if (collection === 'callSessions') writer.delete(store.db.collection('voicemailChecks').doc(doc.id));
+        }); await writer.close();
       }
     }
     await store.db.recursiveDelete(store.personRef(ctx.participant.id));

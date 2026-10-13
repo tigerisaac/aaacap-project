@@ -13,7 +13,7 @@ final class SeniorDesignUITests: XCTestCase {
         app.staticTexts["Call stopped"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Call"].waitForExistence(timeout: 5))
         capture(app, "senior-call-detail-light")
-        app.tabBars.buttons["Voicemail"].tap()
+        app.tabBars.buttons["Messages"].tap()
         XCTAssertTrue(app.staticTexts["Appointment message"].waitForExistence(timeout: 5))
         capture(app, "senior-voicemail-light")
         app.staticTexts["Appointment message"].firstMatch.tap()
@@ -87,7 +87,7 @@ final class SeniorDesignUITests: XCTestCase {
         app.tabBars.buttons["Calls"].tap()
         XCTAssertTrue(app.buttons["callFilter"].waitForExistence(timeout: 5))
         capture(app, "senior-calls-large-dark")
-        app.tabBars.buttons["Voicemail"].tap()
+        app.tabBars.buttons["Messages"].tap()
         tap(app.staticTexts["Appointment message"].firstMatch, in: app)
         let keep = app.buttons["keep-sample-message"]
         tap(keep, in: app)

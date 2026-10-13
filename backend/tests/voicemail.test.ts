@@ -8,6 +8,9 @@ import { buildCloudApp } from '../src/cloud/app.js';
 import { ingestForwardingRecording } from '../src/cloud/forwarding-recordings.js';
 import { VoicemailCheck, VOICEMAIL_LIMITS, type VoicemailModel } from '../src/cloud/voicemail-check.js';
 import { HttpError, type AuthProvider } from '../src/auth.js';
+import { readMessageAudio } from '../src/cloud/message-audio.js';
+import { ForwardingLive } from '../src/cloud/forwarding-live.js';
+import { ForwardingStore } from '../src/cloud/forwarding-store.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove (Firestore emulator)', () => {
   const project = 'demo-shield-voicemail';
@@ -27,7 +30,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
   const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': id });
   const model = (verdict: 'keep' | 'scam' | 'junk' | 'fail'): VoicemailModel & { transcribe: ReturnType<typeof vi.fn> } => ({
     transcribe: vi.fn(async () => verdict === 'fail' ? undefined : 'A synthetic message.'),
-    decide: vi.fn(async () => ({ keep: verdict === 'keep' ? 0.95 : 0.02, scam: verdict === 'scam' ? 0.96 : 0.01, junk: verdict === 'junk' ? 0.97 : 0.02 }))
+    decide: vi.fn(async () => ({ verdict: verdict === 'fail' ? 'keep' : verdict, clear: verdict !== 'keep' && verdict !== 'fail', evidence: 'A synthetic message.' })),
+    summarize: vi.fn(async () => 'The caller left a synthetic account notice.')
   });
   /** A forwarded call whose voicemail audio is stored and waiting for its check. */
   const seed = async (from = caller) => {
@@ -70,36 +74,34 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     expect((await check.jobRef(callId).get()).exists).toBe(true);
     expect(await alerts()).toEqual([]); expect(provider.remove).toHaveBeenCalledOnce();
   });
-  it('shows and alerts a new message at once while voicemail screening is off', async () => {
+  it('processes readable messages even when the legacy voicemail switch is off', async () => {
     const off = new CloudStore(db, cloudSchema.parse({ ...base, VOICEMAIL_SCREENING_ENABLED: false }), () => now);
     const callId = randomUUID(), recording = 'ab123456-1234-4321-1234-000000000002';
     await s.callRef(callId).set({ id: callId, participantId: id, source: 'forwarding', createdAt: now, expiresAt: now + RETENTION_MS, events: [] });
     await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, recordingSid: recording, provider: 'telnyx',
       parentSid: randomUUID(), duration: 12, status: 'pending', expiresAt: now + RETENTION_MS, createdAt: now });
     await ingestForwardingRecording(off, recording, { fetch: async () => new Response(Buffer.from('mp3'), { headers: { 'content-type': 'audio/mpeg' } }), remove: async () => {} });
-    expect((await call(callId)).voicemail).toMatchObject({ status: 'ready' });
-    expect((await check.jobRef(callId).get()).exists).toBe(false); expect(await alerts()).toEqual(['voicemail']);
+    expect((await call(callId)).voicemail).toMatchObject({ status: 'pending', textStatus: 'pending' });
+    expect((await check.jobRef(callId).get()).exists).toBe(true); expect(await alerts()).toEqual([]);
   });
   it('shows and alerts a kept message', async () => {
     const callId = await seed(); await check.check(callId, model('keep'));
     expect((await call(callId)).voicemail.status).toBe('ready');
     expect(await alerts()).toEqual(['voicemail']); expect((await check.jobRef(callId).get()).exists).toBe(false);
   });
-  it('removes a confident scam at once, blocks playback, and lets someone who can listen restore it within 7 days', async () => {
+  it('discards a clear scam without keeping playable audio or readable text', async () => {
     const callId = await seed(); await check.check(callId, model('scam'));
     expect(await call(callId)).toMatchObject({ outcome: 'held', voicemail: { status: 'removed', removedAs: 'scam', removedAt: now } });
     expect(await alerts()).toEqual(['voicemail_removed']);
-    expect((await db.collection('forwardingAudio').doc(callId).get()).data()!.expiresAt).toBe(now + VOICEMAIL_LIMITS.purgeMs);
+    expect((await db.collection('forwardingAudio').doc(callId).get()).exists).toBe(false);
     expect(await listed(callId)).toMatchObject({ title: 'Scam voicemail removed', outcome: 'held',
-      voicemail: { status: 'removed', restorableUntil: new Date(now + VOICEMAIL_LIMITS.purgeMs).toISOString() } });
+      voicemail: { status: 'removed', restorableUntil: null } });
     expect((await app.inject({ url: '/api/calls?filter=voicemail', headers: headers() })).json().calls).toHaveLength(0);
-    expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers() })).statusCode).toBe(409);
+    expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers() })).statusCode).toBe(404);
     expect((await app.inject({ method: 'POST', url: `/api/voicemails/${callId}/restore`, headers: headers('helper') })).statusCode).toBe(403);
-    now += VOICEMAIL_LIMITS.purgeMs - 1;
-    expect((await app.inject({ method: 'POST', url: `/api/voicemails/${callId}/restore`, headers: headers() })).json()).toEqual({ restored: true });
-    expect(await call(callId)).toMatchObject({ outcome: 'voicemail', voicemail: { status: 'ready' } });
-    expect((await db.collection('forwardingAudio').doc(callId).get()).data()!.expiresAt).toBe((await call(callId)).expiresAt);
-    expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers() })).body).toBe('mp3 bytes');
+    expect((await app.inject({ method: 'POST', url: `/api/voicemails/${callId}/restore`, headers: headers() })).statusCode).toBe(409);
+    expect((await call(callId)).voicemail.transcriptEnc).toBeUndefined();
+    expect((await call(callId)).voicemail.summaryEnc).toBeUndefined();
     expect((await app.inject({ url: '/api/overview', headers: headers() })).json().counts.stoppedTotal).toBe(1);
     await s.callRef(callId).update({ 'voicemail.status': 'pending' });
     await Promise.all([check.apply(callId, 'scam'), check.apply(callId, 'scam')]);
@@ -113,10 +115,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     expect((await db.collection('forwardingAudio').doc(callId).get()).exists).toBe(false);
     expect((await app.inject({ method: 'POST', url: `/api/voicemails/${callId}/restore`, headers: headers() })).statusCode).toBe(409);
   });
-  it('keeps a saved contact\'s message without sending it to a model', async () => {
+  it('does not use a saved caller ID to exempt a clear harmful message', async () => {
     await s.personRef(id).collection('trusted-numbers').add({ phoneHash: s.vault.hash(caller), enabled: true });
     const callId = await seed(), scam = model('scam'); await check.check(callId, scam);
-    expect(scam.transcribe).not.toHaveBeenCalled(); expect((await call(callId)).voicemail.status).toBe('ready');
+    expect(scam.transcribe).toHaveBeenCalledOnce(); expect((await call(callId)).voicemail.status).toBe('removed');
   });
   it('keeps the message when transcription fails or the model throws', async () => {
     const failed = await seed(); await check.check(failed, model('fail'));
@@ -127,13 +129,102 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
   it('leaves a message alone if it was deleted during the check', async () => {
     const callId = await seed();
     await check.check(callId, { transcribe: async () => { await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() }); return 'words'; },
-      decide: async () => ({ keep: 0, scam: 1, junk: 0 }) });
+      decide: async () => ({ verdict: 'scam', clear: true, evidence: 'words' }) });
     expect((await call(callId)).voicemail).toBeUndefined(); expect(await alerts()).toEqual([]);
+  });
+  it('purges capture content if a clear screening block arrives during processing', async () => {
+    const callId = await seed();
+    await check.check(callId, { transcribe: async () => {
+      await s.callRef(callId).update({ reason: 'scam', outcome: 'held' }); return 'A synthetic message.';
+    }, decide: async () => undefined });
+    expect((await call(callId)).voicemail).toBeUndefined();
+    expect((await check.audioRef(callId).get()).exists).toBe(false); expect(await alerts()).toEqual([]);
+  });
+  it('honors a delayed screening block after a capture has already been summarized', async () => {
+    const callId = await seed();
+    await s.callRef(callId).update({ captureFromAnswer: true, liveConnectedAt: now, eligible: true });
+    await check.check(callId, model('keep'));
+    expect((await call(callId)).voicemail.summaryEnc).toBeTruthy();
+    await new ForwardingLive(new ForwardingStore(s)).finish(callId, { action: 'block', reason: 'scam', purpose: 'other',
+      evidence: 'A synthetic message.', hasName: false, hasReason: true });
+    expect(await call(callId)).toMatchObject({ outcome: 'held', reason: 'scam', liveFinishedAt: now });
+    expect((await call(callId)).voicemail).toBeUndefined(); expect((await check.audioRef(callId).get()).exists).toBe(false);
+  });
+  it('removes message content and legacy check jobs on account deletion', async () => {
+    const callId = await seed();
+    expect((await app.inject({ method: 'POST', url: '/api/account/delete', headers: headers() })).statusCode).toBe(200);
+    expect((await s.callRef(callId).get()).exists).toBe(false); expect((await check.audioRef(callId).get()).exists).toBe(false);
+    expect((await check.jobRef(callId).get()).exists).toBe(false);
   });
   it('keeps a message whose check never ran, once it is an hour old', async () => {
     const callId = await seed(); await check.releaseStale();
     expect((await call(callId)).voicemail.status).toBe('pending');
     now += 3600_001; await check.releaseStale();
     expect((await call(callId)).voicemail.status).toBe('ready');
+  });
+  it('encrypts readable content and shares it only with people allowed to hear messages', async () => {
+    const callId = await seed(); await check.check(callId, model('keep'));
+    const stored = (await call(callId)).voicemail;
+    expect(stored.transcriptEnc).not.toContain('A synthetic message');
+    expect(stored.summaryEnc).not.toContain('synthetic account notice');
+    expect((await listed(callId)).voicemail).toMatchObject({ transcript: 'A synthetic message.', summary: 'The caller left a synthetic account notice.' });
+    for (const url of ['/api/overview', '/api/calls', `/api/calls/${callId}`]) {
+      const response = await app.inject({ url, headers: headers('helper') });
+      expect(response.statusCode).toBe(200); expect(response.body).not.toContain('A synthetic message'); expect(response.body).not.toContain('synthetic account notice');
+    }
+    expect((await app.inject({ url: `/api/calls/${callId}`, headers: headers('stranger') })).statusCode).toBe(403);
+    await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() });
+    expect((await call(callId)).voicemail).toBeUndefined(); expect((await db.collection('forwardingAudio').doc(callId).get()).exists).toBe(false);
+  });
+  it('preserves a one-shot notice from the initial capture and reassembles encrypted chunks', async () => {
+    const callId = await seed(), recording = randomUUID(), bytes = Buffer.alloc(600_000, 42);
+    await s.callRef(callId).update({ captureFromAnswer: true, eligible: true, liveFinishedAt: now, reason: 'automated_notice', events: [] });
+    await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, provider: 'telnyx', parentSid: randomUUID(), capture: true,
+      duration: 100, status: 'pending', expiresAt: now + RETENTION_MS, createdAt: now });
+    const provider = { fetch: vi.fn(async () => new Response(bytes, { headers: { 'content-type': 'audio/mpeg' } })), remove: vi.fn(async () => {}) };
+    await ingestForwardingRecording(s, recording, provider);
+    const audio = (await db.collection('forwardingAudio').doc(callId).get()).data()!;
+    expect(audio.audioEnc).toBeUndefined(); expect(audio.chunks).toBe(2); expect(await readMessageAudio(s, callId, audio)).toEqual(bytes);
+    expect((await call(callId)).voicemail).toMatchObject({ kind: 'notice', duration: 100 });
+    await check.check(callId, model('keep'));
+    expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers() })).rawPayload).toEqual(bytes);
+    await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() });
+    expect((await db.collection('forwardingAudioChunks').where('participantId', '==', id).get()).empty).toBe(true);
+    expect(provider.remove).toHaveBeenCalledOnce();
+  });
+  it.each(['answered', 'scam', 'deleted'])('deletes the provider capture for %s without downloading or creating a message', async outcome => {
+    const callId = await seed(), recording = randomUUID();
+    await s.callRef(callId).update({ voicemail: (await import('firebase-admin/firestore')).FieldValue.delete(),
+      ...(outcome === 'answered' ? { acceptedAt: now } : outcome === 'scam' ? { reason: 'scam' } : { voicemailDeletedAt: now }) });
+    await db.collection('forwardingAudio').doc(callId).delete(); await check.jobRef(callId).delete();
+    await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, provider: 'telnyx', parentSid: randomUUID(), capture: true,
+      duration: 30, status: 'pending', createdAt: now, expiresAt: now + RETENTION_MS });
+    const provider = { fetch: vi.fn(), remove: vi.fn(async () => {}) };
+    await ingestForwardingRecording(s, recording, provider);
+    expect(provider.fetch).not.toHaveBeenCalled(); expect(provider.remove).toHaveBeenCalledOnce(); expect((await call(callId)).voicemail).toBeUndefined();
+    expect((await check.jobRef(callId).get()).exists).toBe(false);
+  });
+  it('waits for the final call outcome, and retries provider deletion without resurrecting deleted content', async () => {
+    const callId = await seed(), recording = randomUUID();
+    await s.callRef(callId).update({ state: 'screening' });
+    await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, provider: 'telnyx', parentSid: randomUUID(), capture: true,
+      duration: 30, status: 'pending', createdAt: now, expiresAt: now + RETENTION_MS });
+    const provider = { fetch: vi.fn(async () => new Response('mp3', { headers: { 'content-type': 'audio/mpeg' } })), remove: vi.fn(async () => {}) };
+    await expect(ingestForwardingRecording(s, recording, provider)).rejects.toThrow('capture_outcome_pending'); expect(provider.fetch).not.toHaveBeenCalled();
+    await s.callRef(callId).update({ state: 'ended' });
+    provider.remove.mockRejectedValueOnce(new Error('provider down'));
+    await expect(ingestForwardingRecording(s, recording, provider)).rejects.toThrow('provider down');
+    await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() });
+    await ingestForwardingRecording(s, recording, provider);
+    expect(provider.fetch).toHaveBeenCalledOnce(); expect((await call(callId)).voicemail).toBeUndefined();
+  });
+  it('allows terminal screening time after hangup even when capture began earlier', async () => {
+    const callId = await seed(), recording = randomUUID();
+    await s.callRef(callId).update({ captureFromAnswer: true, eligible: true });
+    await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, provider: 'telnyx', parentSid: randomUUID(), capture: true,
+      duration: 60, status: 'pending', createdAt: now - 60_000, expiresAt: now + RETENTION_MS });
+    const provider = { fetch: vi.fn(), remove: vi.fn(async () => {}) };
+    await expect(ingestForwardingRecording(s, recording, provider)).rejects.toThrow('capture_outcome_pending');
+    expect(provider.fetch).not.toHaveBeenCalled(); expect(provider.remove).not.toHaveBeenCalled();
   });
 });

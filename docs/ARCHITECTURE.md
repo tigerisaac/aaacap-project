@@ -8,6 +8,18 @@ The detailed descriptions below retain the October 10 TeXML baseline where expli
 
 Current as of October 10, 2026. Shield answers unfamiliar calls that a person's phone forwards to it, screens them with a GPT Live voice agent, and only rings the person if the call looks ordinary. The person then decides privately whether to take it. Screening never verifies who is calling.
 
+## Saved messages (October 12 implementation, not deployed)
+
+The shared Call Control path captures the inbound track with Telnyx `record-from-answer`, before greeting/model startup, bounded to 240 seconds. The greeting says an unconnected message may be saved. A durable recording job is created from the answer response when available and correlated recording callbacks update it. Ingestion waits for the final outcome; a callback arriving after acceptance cannot hang up the connected call or create a saved message. Recording must stop successfully before a press-1 bridge. Every provider copy is deleted, including answered, blocked, expired, deleted-account and orphaned captures; provider deletion failures retry.
+
+Useful or uncertain automated notices use the new `message` screening decision: no live offer, no questions or replay request. Shield waits eight quiet seconds and rechecks changed speech before ending a notice; the existing overall screening deadline still applies. A caller hanging up before screening finishes still has the original provider capture available for post-call checking. This protects speech spoken during the greeting and one-shot messages that do not repeat at a voicemail prompt. The TeXML operator rollback retains its prior post-prompt recording behavior; use the shared path for capture from answer.
+
+Ingestion stores pending, encrypted audio in a `forwardingAudio` manifest and bounded `forwardingAudioChunks` documents (up to 2 MB overall, 400 KB raw bytes per chunk). All messages are transcribed, checked and summarized irrespective of the legacy `VOICEMAIL_SCREENING_ENABLED` switch. An automated voice, keypress or supplied callback alone does not establish fraud. Clear harmful requests and junk are discarded with their audio and readable text; ambiguous information is kept as unverified. A displayed number matching a contact does not bypass content checking. Previously removed legacy messages retain their existing restoration behavior until expiry.
+
+Kept transcripts and summaries are encrypted within the call's `voicemail` object. API responses decrypt them only for the owner or a helper with `canListen`; history-only helpers receive neither. All content shares the call's 30-day expiry, and message/account deletion removes audio chunks and readable text together. Text/summary failures keep audio playable. Summaries attribute claims, omit caller-supplied contact details and are generated with OpenAI response storage disabled. The iPhone app uses a single **Messages** tab for **Voicemail** and **Saved notice**, with a summary and an expandable automatic transcript. Notices direct users to contact organizations independently.
+
+This section describes repository code, not deployment or real-call verification. Shared record-from-answer audio, stop-before-bridge behavior, provider deletion and one-shot notices still need a supervised real-call check after owner-approved deployment.
+
 ## Components
 
 | Component | Where it runs | Code |
