@@ -8,8 +8,8 @@ export const MASC = {
 export const digest = text => createHash('sha256').update(text).digest('hex');
 // Owner-requested public-benchmark scoring. This changes reporting, not either policy.
 export const MASC_SCORING = {
-  version: '2026-10-11-public-identification-v1',
-  rule: 'A labeled scam is correctly identified by a successful block, hold, or clarifying question when this completed-dialogue benchmark has no answer to give. Approvals, missing decisions and failed checks receive no credit. Completed blocks/holds remain separate.'
+  version: '2026-10-12-public-identification-v2',
+  rule: 'A labeled scam is correctly identified by a successful block, hold, or clarifying question when this completed-dialogue benchmark has no answer to give. Approvals, saved unverified notices, missing decisions and failed checks receive no credit. Completed blocks/holds and saved notices remain separate.'
 };
 
 // RFC 4180 fields, including quoted commas, escaped quotes and embedded newlines.
@@ -59,17 +59,21 @@ export function summarizeMASC(results) {
   const scam = r => r.label === 1;
   const clarified = r => !r.screening.failure && r.screening.actual === 'continue' && r.screening.questions > 0;
   const stopped = r => !r.screening.failure && ['block', 'hold'].includes(r.screening.actual);
+  const screenIs = action => r => !r.screening.failure && r.screening.actual === action;
+  const monitorIs = action => r => !r.monitor.failure && r.monitor.actual === action;
   const ratio = (rows, match) => ({ passed: rows.filter(match).length, total: rows.length });
   return {
     scoring: MASC_SCORING,
-    legitimateOffered: ratio(screen.filter(ordinary), r => r.screening.actual === 'approve'),
+    legitimateOffered: ratio(screen.filter(ordinary), screenIs('approve')),
+    legitimateSaved: ratio(screen.filter(ordinary), screenIs('message')),
     scamsIdentified: ratio(screen.filter(scam), r => stopped(r) || clarified(r)),
     harmfulStopped: ratio(screen.filter(scam), stopped),
-    harmfulApproved: screen.filter(r => scam(r) && r.screening.actual === 'approve').length,
+    harmfulApproved: screen.filter(r => scam(r) && screenIs('approve')(r)).length,
+    harmfulSavedUnverified: screen.filter(r => scam(r) && screenIs('message')(r)).length,
     harmfulClarifications: screen.filter(r => scam(r) && clarified(r)).length,
-    adsBlocked: ratio(screen.filter(r => r.type === 'insurance'), r => r.screening.actual === 'block'),
-    ordinaryConversationsKept: ratio(monitor.filter(ordinary), r => r.monitor.actual === 'continue'),
-    labeledScamStopped: ratio(monitor.filter(scam), r => r.monitor.actual === 'intervene'),
+    adsBlocked: ratio(screen.filter(r => r.type === 'insurance'), screenIs('block')),
+    ordinaryConversationsKept: ratio(monitor.filter(ordinary), monitorIs('continue')),
+    labeledScamStopped: ratio(monitor.filter(scam), monitorIs('intervene')),
     separateGroups: {
       ads: results.filter(r => r.type === 'insurance').length,
       wrongNumbers: results.filter(r => r.type === 'wrong').length,

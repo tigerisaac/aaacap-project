@@ -40,6 +40,16 @@ describe('robocall dataset adapter', () => {
       r('continue'), r('approve', { reason: 'routine' }, 'letter-b', 2), r('no_decision'), { campaign: 'letter-b', copies: 1, screening: { actual: 'failure', failure: 'http_503' } }]);
     expect(summary).toMatchObject({ total: 7, stopped: 3, blocked: 2, held: 1, clarified: 1, identified: 4, approved: 1, otherOutcomes: 1, failures: 1,
       byReason: { robocall: 1, scam: 1, unclear: 1 }, callWeighted: { calls: 10, stopped: 5, approved: 2 } });
-    expect(summary.byCampaign).toEqual({ 'letter-a': { total: 5, stopped: 3, approved: 0 }, 'letter-b': { total: 2, stopped: 0, approved: 1 } });
+    expect(summary.byCampaign).toEqual({ 'letter-a': { total: 5, stopped: 3, approved: 0, savedUnverified: 0 }, 'letter-b': { total: 2, stopped: 0, approved: 1, savedUnverified: 0 } });
+  });
+  it('reports saved notices separately without stop or identification credit', () => {
+    const summary = summarizeRobocalls([
+      { campaign: 'a', copies: 4, screening: { actual: 'message' } },
+      { campaign: 'a', copies: 2, screening: { actual: 'message', failure: 'mock_failure' } },
+      { campaign: 'a', copies: 1, screening: { actual: 'no_decision' } },
+    ]);
+    expect(summary).toMatchObject({ total: 3, stopped: 0, identified: 0, approved: 0, savedUnverified: 1,
+      failures: 1, otherOutcomes: 1, callWeighted: { calls: 7, stopped: 0, approved: 0, savedUnverified: 4 },
+      byCampaign: { a: { total: 3, stopped: 0, approved: 0, savedUnverified: 1 } } });
   });
 });

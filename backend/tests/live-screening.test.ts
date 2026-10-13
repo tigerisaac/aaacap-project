@@ -20,6 +20,34 @@ function harness(research?: (topic: any) => Promise<any>) {
   return { s, io, ready, speech, delegate, tool, advance: (ms: number) => { now += ms; s.tick(); } };
 }
 describe('GPT Live screening controls', () => {
+  it('allows two clarification requests, then ends screening before a third or a late approval', () => {
+    const h = harness(); h.ready();
+    const ask = { ...routine, action: 'continue', reason: 'unclear', purpose: 'unknown', evidence: '', hasReason: false };
+    for (let i = 0; i < 3; i++) {
+      h.speech(` Caller reply ${i}.`); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate(); h.tool(ask, `ask-${i}`);
+      if (i < 2) expect(h.io.finish).not.toHaveBeenCalled();
+    }
+    const outputs = h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output')
+      .map(([e]) => JSON.parse(e.item.output));
+    expect(outputs.filter(o => o.status === 'continue_screening')).toHaveLength(2);
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith('screening_timeout');
+    h.speech(' This is Anna about lunch tomorrow.'); h.delegate(); h.tool(routine, 'late-approval');
+    h.advance(LIVE_LIMITS.maximumMs);
+    expect(h.io.finish).toHaveBeenCalledTimes(1);
+  });
+  it.each(['approve', 'block', 'message'])('still permits a supported %s after two clarification requests', action => {
+    const h = harness(); h.ready();
+    const ask = { ...routine, action: 'continue', reason: 'unclear', evidence: '' };
+    for (let i = 0; i < 2; i++) {
+      h.speech(` Caller reply ${i}.`); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate(); h.tool(ask, `ask-${i}`);
+    }
+    h.speech(action === 'block' ? ' Please send me your login code.' : ' This is Anna about lunch tomorrow.');
+    h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
+    const decision = action === 'block' ? scam : { ...routine, action };
+    h.tool(decision, 'resolved');
+    if (action === 'message') h.advance(LIVE_LIMITS.idleMs);
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(decision);
+  });
   it('lets a saved notice continue through pauses and checks its final words before saving', () => {
     const message = { ...routine, action: 'message', reason: 'unclear', evidence: 'account notice' };
     const h = harness(); h.ready(); h.speech('An automated account notice'); h.delegate(); h.tool(message);
@@ -187,7 +215,7 @@ describe('GPT Live screening controls', () => {
     expect(h.io.finish).toHaveBeenCalledWith(routine);
   });
   it('bounds decision calls so a looping backend cannot hold a caller indefinitely', () => {
-    const ask = { ...routine, action: 'continue', reason: 'unclear', purpose: 'unknown', evidence: '', hasReason: false };
+    const ask = { ...routine, evidence: 'unsupported invented words' };
     const h = harness(); h.ready(); h.speech('Hello there'); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();
     for (let i = 1; i <= LIVE_LIMITS.maxToolCalls; i++) h.tool(ask, `call${i}`);
     expect(h.io.finish).not.toHaveBeenCalled();

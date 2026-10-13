@@ -3,6 +3,21 @@ import { describe, expect, it } from 'vitest';
 import { parseCSV, mascCase, summarizeMASC } from '../../scripts/lib/public-scam-benchmark.mjs';
 
 describe('public synthetic benchmark import', () => {
+  it('separates saved notices and never credits failed screening or monitoring outcomes', () => {
+    const rows = [
+      { label: 0, type: 'appointment', screening: { actual: 'message' } },
+      { label: 1, type: 'refund', screening: { actual: 'message' } },
+      { label: 0, type: 'delivery', screening: { actual: 'approve', failure: 'mock_failure' }, monitor: { actual: 'continue', failure: 'mock_failure' } },
+      { label: 0, type: 'insurance', screening: { actual: 'block', failure: 'mock_failure' } },
+      { label: 1, type: 'support', screening: { actual: 'approve', failure: 'mock_failure' }, monitor: { actual: 'intervene', failure: 'mock_failure' } },
+    ];
+    expect(summarizeMASC(rows)).toMatchObject({
+      legitimateOffered: { passed: 0, total: 2 }, legitimateSaved: { passed: 1, total: 2 },
+      harmfulSavedUnverified: 1, harmfulApproved: 0, harmfulStopped: { passed: 0, total: 2 }, scamsIdentified: { passed: 0, total: 2 },
+      adsBlocked: { passed: 0, total: 1 }, ordinaryConversationsKept: { passed: 0, total: 1 },
+      labeledScamStopped: { passed: 0, total: 1 }, evaluationFailures: 3,
+    });
+  });
   it('preserves multiline dialogues and escaped quotes without shifting labels', () => {
     const csv = '\uFEFFdialogue,type,labels\r\n"Suspect: Hi, I said ""hello"".\nInnocent: Hi.",appointment,0\r\n';
     expect(parseCSV(csv)).toEqual([{ dialogue: 'Suspect: Hi, I said "hello".\nInnocent: Hi.', type: 'appointment', labels: '0' }]);

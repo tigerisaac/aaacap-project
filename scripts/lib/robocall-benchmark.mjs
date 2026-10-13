@@ -50,20 +50,22 @@ export function summarizeRobocalls(results) {
   const weighted = rows => rows.reduce((sum, r) => sum + (r.copies ?? 1), 0);
   const byCampaign = {};
   for (const r of results) {
-    const entry = byCampaign[r.campaign] ??= { total: 0, stopped: 0, approved: 0 };
+    const entry = byCampaign[r.campaign] ??= { total: 0, stopped: 0, approved: 0, savedUnverified: 0 };
     entry.total++;
     if (stopped.includes(r)) entry.stopped++;
     if (!r.screening.failure && r.screening.actual === 'approve') entry.approved++;
+    if (!r.screening.failure && r.screening.actual === 'message') entry.savedUnverified++;
   }
   return {
     total: results.length, stopped: stopped.length, blocked: is('block').length, held: is('hold').length,
     clarified: clarified.length, identified: stopped.length + clarified.length, approved: is('approve').length,
+    savedUnverified: is('message').length,
     // A response with no applicable decision or question: neither a stop nor an approval.
-    otherOutcomes: ok.length - stopped.length - clarified.length - is('approve').length,
+    otherOutcomes: ok.length - stopped.length - clarified.length - is('approve').length - is('message').length,
     failures: results.length - ok.length,
     byReason: stopped.reduce((counts, r) => ({ ...counts, [r.screening.reason]: (counts[r.screening.reason] ?? 0) + 1 }), {}),
     // Each distinct recording's outcome applied to every original call that replayed it.
-    callWeighted: { calls: weighted(results), stopped: weighted(stopped), approved: weighted(is('approve')) },
+    callWeighted: { calls: weighted(results), stopped: weighted(stopped), approved: weighted(is('approve')), savedUnverified: weighted(is('message')) },
     byCampaign,
   };
 }

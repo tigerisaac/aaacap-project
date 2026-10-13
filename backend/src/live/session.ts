@@ -52,6 +52,7 @@ export class ScreeningSession {
   private callerAudioActive = false;
   private lastModelSoundAt?: number;
   private clarificationAt?: number;
+  private clarifications = 0;
   private responseNumber = 0;
   private acknowledgement?: WaitAcknowledgement;
   private responseTimings = new Map<string, { response: number; at: number; toolOutput?: boolean }>();
@@ -240,6 +241,10 @@ export class ScreeningSession {
   private apply(d: LiveDecision, callId: string, delegationId: string) {
     this.timing('decision_applied', this.responseTiming(delegationId));
     if (d.action !== 'continue') { void this.finish(d); return; }
+    // Enforce the question budget even when the model ignores the prompt. Exhausting
+    // a screening budget uses the existing voicemail fallback, never an approval.
+    if (this.clarifications >= LIVE_LIMITS.maxClarifications) { void this.stop('screening_timeout'); return; }
+    this.clarifications++;
     // This fresh decision has already assessed the current caller turn. Do not let the periodic
     // fallback assess it again while Live is wording/speaking the question and awaiting an answer.
     this.checkedLength = this.transcript.length;

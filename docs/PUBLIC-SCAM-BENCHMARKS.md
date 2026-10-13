@@ -4,6 +4,8 @@ Reviewed October 11, 2026. The first public diagnostic used frozen screening v16
 
 ## Sources and suitability
 
+**October 12–13 update:** the [current-policy hardening report](SCREENING-CURRENT-HARDENING.md) adds five-action v31/v88 comparisons and a separate post-call message check. Scoring version `2026-10-12-public-identification-v2` reports saved unverified notices separately, never as identified scams or completed stops. Failed action-shaped results receive no success credit. Earlier four-action results and source labels are unchanged; do not pool the two policies.
+
 | Source | What it provides | Fit for Shield |
 |---|---|---|
 | [MASC / BothBosu multi-agent-scam-conversation](https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation) | 1,600 synthetic English phone dialogues; 320 published test cases, 40 per type; Apache-2.0. Fraud types: SSN, refund, support, reward. Non-fraud types: appointment, delivery, insurance sales, wrong number. | Best immediate public starting point. Our adapter evaluates the published test split only. Varying recipient personalities help exercise context. Family scams and many newer scam mechanisms are absent. |

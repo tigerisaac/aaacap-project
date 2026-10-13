@@ -10,6 +10,8 @@ The 24-case main benchmark remains under 25. Its two legitimate automated alerts
 
 See [saved message storage and access](ARCHITECTURE.md#saved-messages-october-12-implementation-not-deployed). Deployment remains on v30 until owner approval. Validation evidence is recorded in STATUS.md after checks complete.
 
+The [current-policy hardening report](SCREENING-CURRENT-HARDENING.md) compares v31 with lean five-action experiments on subscription Luna, including fresh callers, MASC, FTC and the post-call filtering stage. Saved notices are not credited as scam stops. The experiments retain ordinary-call and clarification misses and are not selected for deployment.
+
 ## How a decision is made
 
 **The voice agent** (`gpt-live-1`) talks to the caller. It never decides anything itself. It:
@@ -66,7 +68,10 @@ These are in `LIVE_LIMITS` in `policy.ts`:
 | Pause before applying a non-scam decision | 800 ms |
 | A recording that never pauses is treated as a robocall after | 6 s |
 | Decision tool calls per call | 12 |
+| Accepted clarification requests per call (October 12 code, not deployed) | 2; a third uses the screening-timeout voicemail fallback |
 | Transcript | 12,000 characters |
+
+The clarification limit is enforced in `ScreeningSession`, independently of the prompt and the 12-tool-call limit. A supported terminal decision remains possible after the second clarification. This bounds accepted backend requests, not unmeasured spontaneous voice questions.
 
 ## Changing the policy
 
