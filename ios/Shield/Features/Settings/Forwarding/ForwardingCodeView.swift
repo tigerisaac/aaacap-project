@@ -14,18 +14,19 @@ struct ForwardingCodeView: View {
                 }
                 if model.codePreparedStep == model.step {
                     PhoneCodeGuide(returned: model.codeReturnedStep == model.step, carrier: model.carrier)
-                    Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
-                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
-                        .accessibilityIdentifier("forwarding-copy-code")
+                    // The two recovery actions read as one short list, not two separate sections.
+                    VStack(alignment: .leading, spacing: 0) {
+                        Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+                            .accessibilityIdentifier("forwarding-copy-code")
+                        Button("Show Phone again", systemImage: "phone") { model.copyCode() }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+                            .accessibilityIdentifier("forwarding-phone-reopen")
+                    }
                 } else {
                     Text("Copy your code, then open Phone and paste it into Keypad.")
                 }
-                if model.codePreparedStep == model.step {
-                    Button("Show Phone again", systemImage: "phone") { model.copyCode() }
-                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
-                        .accessibilityIdentifier("forwarding-phone-reopen")
-                }
-                DisclosureGroup("See copied code") {
+                ShieldDisclosure("See copied code") {
                     Text(code).font(.body.monospaced()).textSelection(.enabled)
                         .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")
                 }

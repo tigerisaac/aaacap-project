@@ -39,7 +39,7 @@ struct ForwardingRestoreView: View {
                 }
                 if codes.indices.contains(index) {
                     VStack(alignment: .leading, spacing: 6) {
-                        DisclosureGroup("See copied code", isExpanded: $showingCopiedCode) {
+                        ShieldDisclosure("See copied code", isExpanded: $showingCopiedCode) {
                             Text(codes[index]).font(.body.monospaced()).accessibilityIdentifier("forwarding-reset-code")
                         }
                         if codeReady {

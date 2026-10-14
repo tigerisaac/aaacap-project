@@ -68,7 +68,7 @@ struct BlockedNumbersView: View {
                 }
             }
             ShieldGroup {
-                DisclosureGroup("About blocked numbers") {
+                ShieldDisclosure("About blocked numbers") {
                     Text("Shield stops calls from these numbers. Blocks end after 180 days.")
                     Text(model.isOwner ? "Scammers can use someone else’s number. Allow calls again only if you know who it belongs to." : "Only the person using Shield can allow calls again.")
                 }

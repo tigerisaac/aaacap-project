@@ -56,17 +56,6 @@ extension View {
             .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
     }
 
-    /// A readable, full-size native toolbar action without a translucent button fill.
-    func shieldToolbarAction() -> some View {
-        buttonStyle(.plain)
-            .foregroundStyle(ShieldTheme.action)
-            .padding(.horizontal, ShieldTheme.Spacing.compact)
-            .fixedSize()
-            .frame(minWidth: 52, minHeight: 44)
-            .background(ShieldTheme.card, in: .capsule)
-            .contentShape(.rect)
-    }
-
     /// Native button behavior and disabled feedback; labels remain free to wrap.
     func shieldPrimaryButton() -> some View {
         buttonStyle(.borderedProminent)
@@ -116,10 +105,13 @@ extension View {
 }
 
 enum ShieldHeadingLevel {
+    /// The first screen's headline only: display, a step larger.
+    case hero
     case display, title, section
 
     var font: Font {
         switch self {
+        case .hero: ShieldTheme.Typography.display.scaled(by: 1.2)
         case .display: ShieldTheme.Typography.display
         case .title: ShieldTheme.Typography.title
         case .section: ShieldTheme.Typography.section
@@ -127,7 +119,7 @@ enum ShieldHeadingLevel {
     }
     fileprivate var textStyle: Font.TextStyle {
         switch self {
-        case .display: .largeTitle
+        case .hero, .display: .largeTitle
         case .title: .title
         case .section: .title3
         }
@@ -135,6 +127,7 @@ enum ShieldHeadingLevel {
     /// About 2% tighter than the font's own tracking at the default size.
     fileprivate var tracking: CGFloat {
         switch self {
+        case .hero: -1.0
         case .display: -0.7
         case .title: -0.5
         case .section: -0.25
@@ -165,6 +158,31 @@ struct ShieldPageHeader<Content: View>: View {
         Section { content }
             .listRowBackground(Color.clear)
             .listRowSeparator(.hidden)
+    }
+}
+
+/// A disclosure whose wrapped label keeps its left edge. Outside a List the native label
+/// centers each wrapped line, which reads as two separate phrases at large text sizes.
+struct ShieldDisclosure<Content: View>: View {
+    private let title: String
+    private let isExpanded: Binding<Bool>?
+    private let content: Content
+
+    init(_ title: String, isExpanded: Binding<Bool>? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title; self.isExpanded = isExpanded; self.content = content()
+    }
+
+    var body: some View {
+        if let isExpanded {
+            DisclosureGroup(isExpanded: isExpanded) { content } label: { label }
+        } else {
+            DisclosureGroup { content } label: { label }
+        }
+    }
+
+    private var label: some View {
+        Text(title).multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

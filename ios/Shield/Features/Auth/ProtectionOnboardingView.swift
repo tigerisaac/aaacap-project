@@ -24,36 +24,33 @@ struct ProtectionOnboardingView: View {
         NavigationStack {
             ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
                     if monitoring != nil && asksHelperAlerts {
                         FlowProgress(title: "Your choices", current: onHelperStep ? 2 : 1, total: 2)
                     }
-                    Text(showsProtection ? "Help while you talk" : "Let a helper know")
-                        .shieldPageHeading().accessibilityAddTraits(.isHeader)
-                        .id("choice-heading").accessibilityFocused($focusedChoice, equals: choice)
-                        .task(id: choice) { focusedChoice = choice }
-                    if showsProtection {
-                        CallProtectionExplanation()
-                        Toggle("Check calls while I talk", isOn: $enabled)
-                            .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            .padding(ShieldTheme.Spacing.content)
-                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
-                            .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
-                    }
-                    if showsHelpers {
-                        Text("Shield can alert family or friends you invite when it stops a scam call or call checks are paused.")
-                        Toggle("Let my helpers know", isOn: $alertHelpers)
-                            .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            .padding(ShieldTheme.Spacing.content)
-                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
-                            .accessibilityIdentifier("onboarding-helper-alerts-toggle").disabled(working)
-                        DisclosureGroup("What does the alert say?") {
-                            Text("It includes your name, but no caller’s words or number. Helpers can also be told when a blocked caller tries again.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
+                    // Both choices read the same way: heading, explanation, more detail, then the switch.
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
+                        Text(showsProtection ? "Help while you talk" : "Let a helper know")
+                            .shieldPageHeading().accessibilityAddTraits(.isHeader)
+                            .id("choice-heading").accessibilityFocused($focusedChoice, equals: choice)
+                            .task(id: choice) { focusedChoice = choice }
+                        if showsProtection {
+                            CallProtectionExplanation()
+                            choiceToggle("Check calls while I talk", isOn: $enabled, identifier: "onboarding-protection-toggle")
                         }
-                    }
-                    if dynamicTypeSize.isAccessibilitySize {
-                        completionButton
+                        if showsHelpers {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Shield can alert family or friends you invite when it stops a scam call or call checks are paused.")
+                                ShieldDisclosure("What does the alert say?") {
+                                    Text("It includes your name, but no caller’s words or number. Helpers can also be told when a blocked caller tries again.")
+                                        .foregroundStyle(ShieldTheme.secondaryText).padding(.vertical, 8)
+                                }
+                            }.fixedSize(horizontal: false, vertical: true)
+                            choiceToggle("Let my helpers know", isOn: $alertHelpers, identifier: "onboarding-helper-alerts-toggle")
+                        }
+                        if dynamicTypeSize.isAccessibilitySize {
+                            completionButton
+                        }
                     }
                 }
                 .id("choice-top")
@@ -71,7 +68,8 @@ struct ProtectionOnboardingView: View {
                 if !dynamicTypeSize.isAccessibilitySize {
                     completionButton
                         .id(choice)
-                        .padding(20).background(ShieldTheme.surface)
+                        .padding(.horizontal, ShieldTheme.Spacing.page).padding(.vertical, 20)
+                        .background(ShieldTheme.surface)
                 }
             }
             .navigationTitle("Your choices").navigationBarTitleDisplayMode(.inline)
@@ -83,6 +81,14 @@ struct ProtectionOnboardingView: View {
                 Button("Cancel", role: .cancel) {}
             } message: { Text(error ?? "Please try again.") }
         }
+    }
+
+    private func choiceToggle(_ title: String, isOn: Binding<Bool>, identifier: String) -> some View {
+        Toggle(title, isOn: isOn)
+            .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+            .padding(ShieldTheme.Spacing.content)
+            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+            .accessibilityIdentifier(identifier).disabled(working)
     }
 
     private var completionButton: some View {

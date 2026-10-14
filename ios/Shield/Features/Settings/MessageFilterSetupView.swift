@@ -18,7 +18,7 @@ struct MessageFilterSetupView: View {
                 }
             }
             ShieldGroup {
-                DisclosureGroup("What will Shield see?") {
+                ShieldDisclosure("What will Shield see?") {
                     Text("Some texts from unknown senders go to Shield and OpenAI for a scam check. Shield can’t see your whole inbox or iMessage conversations.")
                     Text("Checks can be wrong. Look in Messages for anything that was moved. Turn Shield off in the same settings any time.")
                     Link("Apple’s instructions", destination: URL(string: "https://support.apple.com/guide/iphone/iph203ab0be4/ios")!)

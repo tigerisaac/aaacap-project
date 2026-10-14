@@ -21,22 +21,23 @@ struct SignInView: View {
         NavigationStack {
             ScrollViewReader { proxy in
             ScrollView {
+                // One left edge for every state: brand, headline, form and links read down a single line.
                 VStack(alignment: .leading, spacing: 28) {
-                    VStack(spacing: ShieldTheme.Spacing.section) {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
                         ShieldBrand(compact: true)
                         if !codeSent {
-                            VStack(spacing: ShieldTheme.Spacing.regular) {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
                                 Text("Help with unfamiliar calls")
-                                    .shieldHeading(.display).foregroundStyle(ShieldTheme.ink)
-                                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                                    .shieldHeading(.hero).foregroundStyle(ShieldTheme.ink)
+                                    .fixedSize(horizontal: false, vertical: true)
                                     .accessibilityAddTraits(.isHeader)
                                 Text("Shield asks why someone is calling. You choose whether to answer.")
-                                    .font(.body).multilineTextAlignment(.center)
-                                    .foregroundStyle(ShieldTheme.secondaryText)
+                                    .font(.title3).foregroundStyle(ShieldTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity).padding(.top, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading).padding(.top, ShieldTheme.Spacing.card)
 
                     VStack(alignment: .leading, spacing: 20) {
                         if waitingForLink {
@@ -62,39 +63,42 @@ struct SignInView: View {
                                     .foregroundStyle(ShieldTheme.secondaryText)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
-                            Text(codeSent && !usesEmailLink ? "Email code" : "Your email")
-                                .font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
-                            Group {
-                                if codeSent && !usesEmailLink {
-                                    TextField("Email code", text: $code, prompt: Text("Email code").foregroundStyle(ShieldTheme.secondaryText))
-                                        .textContentType(.oneTimeCode).keyboardType(.numberPad)
-                                        .focused($focusedField, equals: .code)
-                                        .accessibilityLabel("Email code")
-                                } else {
-                                    HStack(spacing: ShieldTheme.Spacing.regular) {
-                                    TextField("Email address", text: $email, prompt: Text(verbatim: "name@example.com").foregroundStyle(ShieldTheme.secondaryText))
-                                        .textContentType(.emailAddress).keyboardType(.emailAddress)
-                                        .textInputAutocapitalization(.never).autocorrectionDisabled()
-                                        .focused($focusedField, equals: .email).accessibilityLabel("Email address")
-                                        #if DEBUG && targetEnvironment(simulator)
-                                        .onChange(of: email) { _, value in
-                                            if value == AppState.testAccountSequence { focusedField = nil; model.exploreTestAccount() }
-                                        }
-                                        #endif
-                                        if !email.isEmpty && focusedField == .email {
-                                            Button("Clear") { email = ""; error = nil }
-                                                .font(.subheadline).frame(minWidth: 52, minHeight: ShieldTheme.Layout.minimumTarget)
-                                                .accessibilityLabel("Clear email address").accessibilityInputLabels(["Clear", "Clear email address"])
+                            // The label sits with its field, closer than the field sits to the button.
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                                Text(codeSent && !usesEmailLink ? "Email code" : "Your email")
+                                    .font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
+                                Group {
+                                    if codeSent && !usesEmailLink {
+                                        TextField("Email code", text: $code, prompt: Text("Email code").foregroundStyle(ShieldTheme.secondaryText))
+                                            .textContentType(.oneTimeCode).keyboardType(.numberPad)
+                                            .focused($focusedField, equals: .code)
+                                            .accessibilityLabel("Email code")
+                                    } else {
+                                        HStack(spacing: ShieldTheme.Spacing.regular) {
+                                        TextField("Email address", text: $email, prompt: Text("Email").foregroundStyle(ShieldTheme.secondaryText))
+                                            .textContentType(.emailAddress).keyboardType(.emailAddress)
+                                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                                            .focused($focusedField, equals: .email).accessibilityLabel("Email address")
+                                            #if DEBUG && targetEnvironment(simulator)
+                                            .onChange(of: email) { _, value in
+                                                if value == AppState.testAccountSequence { focusedField = nil; model.exploreTestAccount() }
+                                            }
+                                            #endif
+                                            if !email.isEmpty && focusedField == .email {
+                                                Button("Clear") { email = ""; error = nil }
+                                                    .font(.subheadline).frame(minWidth: 52, minHeight: ShieldTheme.Layout.minimumTarget)
+                                                    .accessibilityLabel("Clear email address").accessibilityInputLabels(["Clear", "Clear email address"])
+                                            }
                                         }
                                     }
                                 }
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                .padding(16)
+                                .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? ShieldTheme.fieldBorder : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
+                                .disabled(working).submitLabel(codeSent ? .go : .send)
+                                .onSubmit { if canSubmit { Task { await submit() } } }
                             }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            .padding(16)
-                            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? ShieldTheme.fieldBorder : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
-                            .disabled(working).submitLabel(codeSent ? .go : .send)
-                            .onSubmit { if canSubmit { Task { await submit() } } }
                             if typeSize.isAccessibilitySize, focusedField != .email, !email.isEmpty, !(codeSent && !usesEmailLink) {
                                 Text(email).foregroundStyle(ShieldTheme.secondaryText)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -124,17 +128,23 @@ struct SignInView: View {
                         }
                     }
 
-                    if !codeSent {
-                        Button("Try sample app") { model.exploreDemo() }
-                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
-                    }
-                    if let origin = model.configuration.baseURL {
-                        Link(destination: origin.appending(path: "privacy")) {
-                            Text("Privacy").foregroundStyle(ShieldTheme.action)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
-                                .contentShape(.rect)
-                        }.buttonStyle(.plain)
+                    VStack(alignment: .leading, spacing: 0) {
+                        if !codeSent {
+                            Button { model.exploreDemo() } label: {
+                                Text("Try sample app").font(.body.weight(.medium))
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                    .contentShape(.rect)
+                            }
+                            .disabled(working)
+                        }
+                        if let origin = model.configuration.baseURL {
+                            Link(destination: origin.appending(path: "privacy")) {
+                                Text("Privacy").foregroundStyle(ShieldTheme.action)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                    .contentShape(.rect)
+                            }.buttonStyle(.plain)
+                        }
                     }
                 }
                 .padding(24)

@@ -59,7 +59,7 @@ struct CheckView: View {
                     }
                     if result == nil {
                         ShieldGroup {
-                            DisclosureGroup("How do I copy a text?") {
+                            ShieldDisclosure("How do I copy a text?") {
                                 Text("In Messages, touch and hold the message and tap Copy. To copy just part, tap Select first and choose the words.")
                                 Text("Return to Shield and tap Paste.").foregroundStyle(ShieldTheme.secondaryText)
                             }

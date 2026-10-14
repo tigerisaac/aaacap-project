@@ -30,7 +30,7 @@ struct RestorationSettingsGuide: View {
                 Task { await openSettings() }
             }
             .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working).accessibilityIdentifier("restoration-settings-open")
-            DisclosureGroup("Can’t find it?") {
+            ShieldDisclosure("Can’t find it?") {
                 Text(destination.directions)
                 Text("Open Settings, then Apps, then Phone. When done, return to Shield.")
             }

@@ -50,7 +50,10 @@ struct JoinInvitationView: View {
                         PasteButton(payloadType: String.self) { values in code = ShieldInvitation.pastedCode(values.joined(separator: "\n")) }
                             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule).controlSize(.extraLarge)
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                    }.disabled(joining)
+                    } footer: {
+                        Text("You’ll see only what they choose to share with you.").foregroundStyle(ShieldTheme.secondaryText)
+                    }
+                    .disabled(joining)
                     if let error {
                         ShieldGroup {
                             ShieldNotice(title: "You couldn’t join yet", detail: error, symbol: "exclamationmark.circle")
@@ -66,9 +69,6 @@ struct JoinInvitationView: View {
                                     .contentShape(.rect)
                             }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
                         }
-                    }
-                    ShieldGroup {
-                        Text("You’ll see only what they choose to share with you.").foregroundStyle(ShieldTheme.secondaryText)
                     }
                     if inlineAction {
                         acceptButton.listRowInsets(EdgeInsets()).listRowBackground(ShieldTheme.surface)
@@ -93,8 +93,7 @@ struct JoinInvitationView: View {
                 .navigationTitle("Use an invitation")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.shieldToolbarAction().disabled(joining) }
-                    .sharedBackgroundVisibility(.hidden)
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(joining) }
                     ToolbarItemGroup(placement: .keyboard) {
                         Spacer()
                         Button("Done") { editing = false; finishedEditingCode = true }

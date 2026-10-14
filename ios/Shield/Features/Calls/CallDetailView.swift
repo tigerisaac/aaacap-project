@@ -138,7 +138,7 @@ struct CallDetailView: View {
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .disabled(updatingPlayedStatus)
                         }
-                        DisclosureGroup("Can’t hear the message?") {
+                        ShieldDisclosure("Can’t hear the message?") {
                             Text("Turn up the volume with the buttons on the side of your iPhone.")
                                 .foregroundStyle(ShieldTheme.secondaryText)
                         }
@@ -176,7 +176,7 @@ struct CallDetailView: View {
                 }
             }
             ShieldGroup {
-                DisclosureGroup("More about this call") {
+                ShieldDisclosure("More about this call") {
                     Text(call.detail).fixedSize(horizontal: false, vertical: true)
                     Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
                     if call.monitored == true { Text("Shield checked the words while you talked.") }

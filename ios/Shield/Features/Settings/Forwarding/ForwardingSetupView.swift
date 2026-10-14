@@ -47,7 +47,7 @@ struct ForwardingSetupView: View {
                             .id("forwarding-step-error")
                         }
                         if typeSize.isAccessibilitySize && model.step == .consent {
-                            ForwardingActions(model: model, app: app)
+                            ForwardingActions(model: model, app: app, inline: true)
                         }
                     } else if let error = model.error {
                         ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
@@ -97,10 +97,8 @@ struct ForwardingSetupView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Close") { dismiss() }
-                    .shieldToolbarAction().disabled(model.working)
+                Button("Close") { dismiss() }.disabled(model.working)
             }
-            .sharedBackgroundVisibility(.hidden)
             ToolbarItem(placement: .topBarTrailing) {
                 Menu("Options", systemImage: "ellipsis.circle") {
                     Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }

@@ -148,6 +148,12 @@ An 80-year-old's comprehension is the design bar. Plain labels, generous control
 - Call outcomes, person context, sharing scope and sample-only state expressed in words as well as color.
 - Flat surfaces, restrained SF Symbols and explicit choices with retained state and visible recovery.
 
+**Onboarding refinement (October 14, 2026):** Sign-in reads down one left edge, under a larger hero headline, with the email label kept close to its field. Both choice steps share one order. Every wrapped disclosure label keeps its left edge. Pinned actions align with the 24-point text column, the invitation note is a footer, and Cancel/Close use the native toolbar glass. Short field placeholders ("Email", "Code") were restored because longer ones were reported as clipped at the largest text size. Simulator evidence (iPhone 18 Pro, iOS 27):
+- The app builds, and the screens were checked visually in Light, Dark, small and accessibility sizes.
+- A full UI run was stopped partway at the owner's request.
+- Before the stop, SeniorAccessibility audits reported placeholder clipping (since fixed) alongside the recorded native diagnostics. A ContactSync storage check failed in an unchanged harness.
+- No complete UI-suite result exists for this pass.
+
 **Calls and Home refinement (October 14, 2026):** Calls is grouped under serif day headings, with calm two-line rows: the colored symbol tile carries the outcome, and "New voicemail" is the one accent. Call detail opens with headline, outcome, explanation and number · date. Home now aligns to two measured inner edges, and the status card, rows and More rows share one symbol tile. See the [before/after sheet](docs/images/ios-calls-home-refinement.jpg). Simulator evidence (iPhone 18 Pro, iOS 27):
 - `npm run check` passed.
 - 68 of 70 UI tests passed across HomeReadability, Redesign, SeniorDesign, SeniorPolish and ShieldUITests.
@@ -222,7 +228,8 @@ Like the America.gov reference, serif headings are set slightly tight: `shieldHe
 
 ### Hierarchy
 
-- **Display** (`Font.system(.largeTitle, design: .serif)`): sign-in purpose and full Shield brand.
+- **Hero** (display scaled by 1.2, about -1 point tracking): the first screen's headline only, Help with unfamiliar calls, with a `.title3` supporting explanation beneath it.
+- **Display** (`Font.system(.largeTitle, design: .serif)`): tab-root large titles and full Shield brand.
 - **Title** (`Font.system(.title, design: .serif)`): page purpose, status and call-detail headings.
 - **Section** (`Font.system(.title3, design: .serif).weight(.medium)`): reusable section headings and focused introductions. Medium weight keeps 20-point serif headings from reading lighter than the semibold row titles beneath them.
 - **Headline** (native `.headline` or `.body.weight(.semibold)`): buttons, call/message titles and actionable labels.
@@ -248,19 +255,19 @@ Home reads on two inner left edges. Section headings, the stopped-calls panel an
 
 The six shared spacing steps are in frontmatter. Sign-in and onboarding use page padding and a readable column capped at 560 points, centered in the available width. ScrollViews preserve room for text and the keyboard. There is no custom viewport breakpoint scale or app-specific iPad split layout.
 
-Shared app actions have a 52-point minimum target, not a fixed clipping height. Cancel and Close toolbar actions use a 44-point minimum height and 52-point minimum width with an opaque Card capsule; their ToolbarItem hides its shared translucent background. Native platform controls retain native dimensions. The ordinary-size person Menu has a local 44-point minimum; these toolbar exceptions do not replace the shared action minimum. Contacts removal has a full-width 52-point app-owned target.
+Shared app actions have a 52-point minimum target, not a fixed clipping height. Cancel and Close are native toolbar buttons on the system glass, matching neighboring toolbar items such as Options. Native platform controls retain native dimensions. The ordinary-size person Menu has a local 44-point minimum; these toolbar exceptions do not replace the shared action minimum. Contacts removal has a full-width 52-point app-owned target.
 
 From `.xxxLarge`, call titles and times stack and Calls and sample Messages replace their large segmented filters with full-width menus. Middot metadata keeps wrapping as a sentence until accessibility sizes, where outcome, number, state and date each take their own line. At accessibility sizes, CallRow, VoicemailRow and ActionRow omit their decorative leading symbol slot; outside those sizes the symbol scales with semantic text. PersonContextSection moves the selected person's context into the scrolling page. Busy primary labels can stack their spinner above the words. ViewThatFits stacks short action groups when they cannot fit horizontally. The message-check editor scales its base height with body text.
 
 Home's large native navigation title shares the Surface canvas at rest. Shared lists hide native scroll-edge fading, retain native scroll clipping and extend Surface through the vertical safe areas; the collapsed navigation background matches Surface. Menus, sheets and alerts retain platform geometry. The remaining edge diagnostics are evidence limits, not permission to fade reading text.
 
-At standard text sizes onboarding keeps a bottom inset completion button. At accessibility sizes the same action is in the scrolling content after the explanation, full-row switch and any relevant disclosure. Forwarding consent also places Agree and continue after its full content and disclosure at accessibility sizes; other forwarding steps retain their existing bottom actions. Back retains the unsaved selection. New rendered headings request focus, and completion controls have per-step identities. Disconnection focuses numbered progress and then the completion heading. Device Hub reading gestures verified these transitions in the documented simulator scope.
+At standard text sizes onboarding keeps a bottom inset completion button whose edges line up with the page's 24-point text column; when that action moves into the content at accessibility sizes it drops the pinned padding and spans the same column. At accessibility sizes the same action is in the scrolling content after the explanation, full-row switch and any relevant disclosure. Forwarding consent also places Agree and continue after its full content and disclosure at accessibility sizes; other forwarding steps retain their existing bottom actions. Back retains the unsaved selection. New rendered headings request focus, and completion controls have per-step identities. Disconnection focuses numbered progress and then the completion heading. Device Hub reading gestures verified these transitions in the documented simulator scope.
 
 **The Room for Words Rule.** Stack metadata, move person context into the page and remove decorative row symbols before reducing readable text.
 
 ## Elevation & Depth
 
-Shield uses flat, opaque adaptive surfaces and native grouping rather than custom shadows or blur. Ground, reading groups and quiet symbol backings provide separation. Native menus, sheets, alerts, control materials and pressed/disabled feedback provide interaction depth. Cancel/Close use an opaque control surface with the native shared translucent background hidden. Playback and standard-size onboarding actions use bottom safe-area insets with opaque Surface behind them. The sample marker has its own persistent region rather than floating over rows. It is a quiet QuietSurface tag in medium-weight supporting text, so it never reads as the screen title beneath it; it grows with Dynamic Type up to the first accessibility size, then holds. No custom shadow, motion-duration or easing tokens are defined; operating-system motion and Reduce Motion behavior remain authoritative and require direct verification.
+Shield uses flat, opaque adaptive surfaces and native grouping rather than custom shadows or blur. Ground, reading groups and quiet symbol backings provide separation. Native menus, sheets, alerts, control materials and pressed/disabled feedback provide interaction depth. Cancel/Close use the native toolbar glass. Playback and standard-size onboarding actions use bottom safe-area insets with opaque Surface behind them. The sample marker has its own persistent region rather than floating over rows. It is a quiet QuietSurface tag in medium-weight supporting text, so it never reads as the screen title beneath it; it grows with Dynamic Type up to the first accessibility size, then holds. No custom shadow, motion-duration or easing tokens are defined; operating-system motion and Reduce Motion behavior remain authoritative and require direct verification.
 
 **The Native Surface Rule.** Use the shared adaptive surfaces with native grouping and state feedback before introducing custom elevation or motion.
 
@@ -278,7 +285,7 @@ Outcome labels have no added badge capsule. Icons use SF Symbols, not character 
 
 Visible Remove, Allow calls again, Call and recovery actions supplement swipe/menu shortcuts. Contacts uses Remove from iPhone on a full-width target; its redundant swipe shortcut is removed. Native alerts name the selected contact, helper or saved number where relevant, explain consequential scope and visibly offer Keep contact, Keep sharing, Keep number, Keep message, Keep blocking, Not now or Cancel as appropriate. Destructive actions retain native roles. Nearby text explains unavailable service actions.
 
-Cancel and Close use `shieldToolbarAction`: a plain button with adaptive Action text on an opaque Card capsule, horizontal compact padding, a 52-point minimum width and 44-point minimum height. Its ToolbarItem hides the shared native background so Dark Mode does not place another translucent layer over the label.
+Cancel and Close are plain native toolbar buttons on the system glass, matching Options beside them. The earlier opaque Card capsule (`shieldToolbarAction`) was removed on October 14, 2026 because it never matched its glass neighbors. Its Dark Mode contrast has not been re-measured since.
 
 **The Named Safe Choice Rule.** Name the selected person or item when an action affects one, and keep a visible safe choice in consequential alerts before the action runs.
 
@@ -294,11 +301,11 @@ Native Forms retain fields, Picker and Toggle. Add number's bottom action is Don
 
 ### Sign-in and choices
 
-Sign-in leads with a small Shield identity, one serif purpose heading, a brief explanation, bounded email field and Send sign-in link or Send email code. The sent-link state names Check your email, shows the complete wrapping address and gives Resend link and Change email room to stack. Working states name sending/signing in and prevent duplicates. Privacy has a full-width 52-point target. The sample action leaves the sent state so the next task stays clear.
+Sign-in reads down one left edge in every state: the compact Shield identity, the hero heading and its explanation, the email label sitting 8 points above its field, the primary action, then Try sample app and Privacy as left-aligned full-width targets. Nothing in the flow is centered, so Check your email and Finish signing in keep the identity on the same edge as their headings. The sent-link state names Check your email, shows the complete wrapping address and gives Resend link and Change email room to stack. Working states name sending/signing in and prevent duplicates. Privacy has a full-width 52-point target. The sample action leaves the sent state so the next task stays clear.
 
 The email field remains single-line so the native Send key submits. Sending dismisses the keyboard; a failed send brings its complete notice into view after dismissal and retains the email. At accessibility sizes, an unfocused long email also wraps below the field for visual review; that duplicate is hidden from VoiceOver because the native field reads the full value.
 
-Protection onboarding asks one choice at a time: Help while you talk, then Let a helper know when both are required. Next advances and Save my choice commits. Standard-size completion stays at the bottom; accessibility-size completion follows the selected choice in scrolling order. Back retains the choice. Optional detail uses DisclosureGroup, and failed saving gives a native retry/cancel alert. Consent and the limits of call checks remain readable.
+Protection onboarding asks one choice at a time: Help while you talk, then Let a helper know when both are required. Next advances and Save my choice commits. Standard-size completion stays at the bottom; accessibility-size completion follows the selected choice in scrolling order. Back retains the choice. Both choices read in the same order: heading, explanation, the optional-detail disclosure, then the full-row switch. Failed saving gives a native retry/cancel alert. Every string-titled disclosure in the app uses `ShieldDisclosure`, whose label keeps one left edge when it wraps. The native label centers each wrapped line outside a List. Consent and the limits of call checks remain readable.
 
 ### Navigation
 

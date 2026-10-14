@@ -62,7 +62,7 @@ struct VoicemailView: View {
                 }
                 if !removed.isEmpty, !keptOnly {
                     ShieldGroup {
-                        DisclosureGroup("Removed messages") {
+                        ShieldDisclosure("Removed messages") {
                             ForEach(removed) { call in
                                 MessageNavigationRow(call: call)
                             }

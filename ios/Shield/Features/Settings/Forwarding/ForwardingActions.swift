@@ -3,6 +3,8 @@ import SwiftUI
 struct ForwardingActions: View {
     @Bindable var model: ForwardingSetupModel
     let app: AppState
+    /// In the scrolling content (accessibility sizes) the page already supplies the margins.
+    var inline = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -24,7 +26,9 @@ struct ForwardingActions: View {
 
         }
         .tint(ShieldTheme.action)
-        .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
+        // Pinned, the button's edges line up with the page's text column.
+        .padding(.horizontal, inline ? 0 : ShieldTheme.Spacing.page)
+        .padding(.top, inline ? 0 : 12).padding(.bottom, inline ? 0 : 8)
         .background(ShieldTheme.surface)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("forwarding-action-area")

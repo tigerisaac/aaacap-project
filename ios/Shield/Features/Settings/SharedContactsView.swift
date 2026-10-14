@@ -73,7 +73,7 @@ struct SharedContactsView: View {
             }
             if model.items.contains(where: { !$0.isEnabled }) {
                 ShieldGroup {
-                    DisclosureGroup("Removed contacts") {
+                    ShieldDisclosure("Removed contacts") {
                         ForEach(model.items.filter { !$0.isEnabled }) { item in
                             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                                 Text(item.label).font(.headline)

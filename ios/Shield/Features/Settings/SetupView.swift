@@ -60,7 +60,7 @@ struct SetupView: View {
                             }
                     }
                     if let profile = setup.carrierProfile {
-                        DisclosureGroup("Phone setup instructions") {
+                        ShieldDisclosure("Phone setup instructions") {
                             Text(profile.configuration)
                             ForEach(Array(profile.activationSteps.enumerated()), id: \.offset) { index, step in
                                 Text("\(index + 1). \(step)").textSelection(.enabled)
@@ -91,7 +91,7 @@ struct SetupView: View {
                             Button("Cancel", role: .cancel) {}
                         } message: { Text("Shield stops ringing you. Ask your helper to finish restoring ordinary calls and voicemail. Keep the app until both work.") }
                     if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Ask for setup help", destination: url) }
-                    DisclosureGroup("Delete my account") {
+                    ShieldDisclosure("Delete my account") {
                         Button("Delete my account", role: .destructive) { confirmDeletion = true }
                             .disabled(model.isDemo || working)
                             .alert("Delete your account?", isPresented: $confirmDeletion) {

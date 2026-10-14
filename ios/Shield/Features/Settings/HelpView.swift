@@ -10,12 +10,12 @@ struct HelpView: View {
                     .shieldPageHeading().accessibilityAddTraits(.isHeader).padding(.vertical, 4)
             }
             ShieldGroup {
-                DisclosureGroup("How can I check a caller?") {
+                ShieldDisclosure("How can I check a caller?") {
                     Text("Call a number from your card, bill, or an app you already use. Don’t use a number the caller gave you.")
                     if model.isOwner { NavigationLink("Numbers you trust", value: AppRoute.savedNumbers) }
                     Text("A familiar voice or number can be faked.").foregroundStyle(ShieldTheme.secondaryText)
                 }
-                DisclosureGroup("I sent money or private information") {
+                ShieldDisclosure("I sent money or private information") {
                     Text("Call your bank or the company involved using a number you already know.")
                     Link("What to do next", destination: URL(string: "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed")!)
                     Link("Report a scam", destination: URL(string: "https://reportfraud.ftc.gov/")!)
@@ -26,7 +26,7 @@ struct HelpView: View {
                 if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                     Link("Ask for help with Shield", destination: url)
                 } else { Text("Need a hand? Ask the person who helped set up your phone.") }
-                DisclosureGroup("In an emergency") {
+                ShieldDisclosure("In an emergency") {
                     Text("Use your usual emergency number. Shield and helper alerts aren’t watched all the time.")
                 }
             }

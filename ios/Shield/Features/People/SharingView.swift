@@ -75,7 +75,7 @@ struct SharingView: View {
                     .shieldPrimaryButton()
                     .id("new-invitation").accessibilityFocused($invitationFocused)
                     Text("It works once, within two days.").foregroundStyle(ShieldTheme.secondaryText)
-                    DisclosureGroup("See invitation code") {
+                    ShieldDisclosure("See invitation code") {
                         Text(inviteCode).font(.body.monospaced()).textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -84,7 +84,7 @@ struct SharingView: View {
             if model.isOwner, model.service?.notificationsAvailable == true, !model.isDemo {
                 ShieldGroup {
                     HelperAlertsToggle()
-                    DisclosureGroup("When will they hear from Shield?") {
+                    ShieldDisclosure("When will they hear from Shield?") {
                         Text("When Shield ends a scam call, a blocked caller tries again, or call checks are paused. Alerts include your name, but no caller’s words or number.")
                     }
                 }

@@ -21,7 +21,7 @@ struct ForwardingPhoneSettingsView: View {
                 Text(model.settingsDestination.directions).foregroundStyle(ForwardingStyle.secondaryText)
                 Text("When done, return to Shield.").foregroundStyle(ForwardingStyle.secondaryText)
             }
-            DisclosureGroup("Can’t find it?") {
+            ShieldDisclosure("Can’t find it?") {
                 Text("Open Settings, then Apps, then Phone. Find \(silence ? "Screen Unknown Callers and choose Silence" : "Live Voicemail and turn it off").")
                 if !model.settingsReturned {
                     Button("I already changed it") { model.acknowledgeManualSettingsVisit() }

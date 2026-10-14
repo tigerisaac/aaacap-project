@@ -69,7 +69,7 @@ struct AddNumberView: View {
                             ShieldNotice(title: "Save not confirmed", detail: error, symbol: "exclamationmark.circle")
                                 .id("number-save-error").accessibilityFocused($errorFocused)
                             if let problemDetail {
-                                DisclosureGroup("More about this problem") {
+                                ShieldDisclosure("More about this problem") {
                                     Text(problemDetail).foregroundStyle(ShieldTheme.secondaryText)
                                 }
                             }
@@ -102,8 +102,7 @@ struct AddNumberView: View {
                 .navigationTitle("Add number")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.shieldToolbarAction().disabled(saving) }
-                        .sharedBackgroundVisibility(.hidden)
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(saving) }
                 }
             }
         }
