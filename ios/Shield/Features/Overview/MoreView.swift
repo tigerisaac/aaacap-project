@@ -30,7 +30,7 @@ struct MoreView: View {
                 }
             }
             .shieldListStyle()
-            .navigationTitle("More")
+            .shieldLargeTitle("More")
         }
     }
 }

@@ -10,7 +10,7 @@ struct ForwardingCodeView: View {
                     Label("Code copied", systemImage: "checkmark.circle.fill").font(.headline)
                         .accessibilityIdentifier("forwarding-code-copied")
                 } else {
-                    Text("Your personal \(model.carrier) code").font(ShieldTheme.Typography.title)
+                    Text("Your personal \(model.carrier) code").shieldHeading(.title)
                 }
                 if model.codePreparedStep == model.step {
                     PhoneCodeGuide(returned: model.codeReturnedStep == model.step, carrier: model.carrier)
@@ -36,7 +36,7 @@ struct ForwardingCodeView: View {
                         .foregroundStyle(ForwardingStyle.secondaryText)
                 }
             } else {
-                Text("The call test ended.").font(ShieldTheme.Typography.title)
+                Text("The call test ended.").shieldHeading(.title)
                 Text("Start the test again to get your code. Your place is saved. Your phone is still connected to Shield.")
             }
         }

@@ -69,7 +69,7 @@ struct PeopleView: View {
                     }
                 }
             }
-            .navigationTitle("Family & friends")
+            .shieldLargeTitle("Family & friends")
             .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }
             .shieldListStyle()

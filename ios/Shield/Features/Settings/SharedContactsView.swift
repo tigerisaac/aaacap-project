@@ -53,8 +53,9 @@ struct SharedContactsView: View {
                 ForEach(filtered) { item in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.label).font(.headline)
-                        Text(PhoneDisplay.format(item.phone)).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        Text(PhoneDisplay.format(item.phone)).font(.subheadline).monospacedDigit().foregroundStyle(ShieldTheme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
+                            .padding(.bottom, 8)
                         Button(role: .destructive) { pendingRemoval = item } label: {
                             Label("Remove from iPhone", systemImage: "minus.circle")
                                 .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)

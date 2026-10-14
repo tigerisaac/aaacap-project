@@ -45,7 +45,7 @@ struct OverviewView: View {
                                 .accessibilityLabel("All messages")
                                 .accessibilityIdentifier("today-messages")
                         }
-                    } header: { Text("Messages").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
+                    } header: { Text("Messages").shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                     ShieldGroup {
                         if overview.recent.filter({ $0.voicemail == nil }).isEmpty {
                             Text("Your calls will appear here.").foregroundStyle(ShieldTheme.secondaryText)
@@ -59,7 +59,7 @@ struct OverviewView: View {
                         }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
                             .accessibilityLabel("All calls")
                             .accessibilityIdentifier("home-all-calls")
-                    } header: { Text("Recent calls").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
+                    } header: { Text("Recent calls").shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                 } else if model.isLoading {
                     ShieldGroup { ShieldLoadingView(title: "Getting your calls…") }
                 } else {
@@ -80,8 +80,7 @@ struct OverviewView: View {
             .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.overview?.status ?? "")-\(model.isTestAccount)") {
                 if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
             }
-            .navigationTitle("Home")
-            .navigationBarTitleDisplayMode(.large)
+            .shieldLargeTitle("Home")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .refreshable { await refresh() }
             .task(id: model.selectedPersonID) {

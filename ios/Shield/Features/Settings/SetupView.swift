@@ -36,7 +36,19 @@ struct SetupView: View {
                     }.disabled(working || contactSaved || model.isDemo)
                 }
                 ShieldSection("Phone check") {
-                    Label(setup.phoneVerified ? "Your phone has been checked" : "Your phone needs a check", systemImage: setup.phoneVerified ? "checkmark.circle" : "phone")
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(setup.phoneVerified ? "Your phone has been checked" : "Your phone needs a check")
+                            if let date = setup.lastTestAt {
+                                Text("Last checked \(date.formatted(date: .abbreviated, time: .omitted))")
+                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                    } icon: {
+                        Image(systemName: setup.phoneVerified ? "checkmark.circle" : "phone")
+                    }
+                    .accessibilityElement(children: .combine)
                     if !setup.consented {
                         Button("Agree to use Shield") { confirmConsent = true }
                             .disabled(working || model.isDemo)
@@ -47,7 +59,6 @@ struct SetupView: View {
                                 Text("Your phone sends some calls to Shield. The caller’s words go to our phone and AI providers for a scam check. Shield captures messages from the start and saves voicemail and potentially useful notices with playable audio and a short summary. Full transcripts aren’t saved. Answered calls and clear scams aren’t saved. Calls and messages expire within 30 days. See Privacy for details.")
                             }
                     }
-                    if let date = setup.lastTestAt { Text("Last checked \(date.formatted(date: .abbreviated, time: .omitted))") }
                     if let profile = setup.carrierProfile {
                         DisclosureGroup("Phone setup instructions") {
                             Text(profile.configuration)

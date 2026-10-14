@@ -13,11 +13,11 @@ struct RestorationSettingsGuide: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text(unknownCallers ? "Let ordinary calls ring" : "Restore iPhone voicemail")
-                .font(ShieldTheme.Typography.title).accessibilityAddTraits(.isHeader)
+                .shieldHeading(.title).accessibilityAddTraits(.isHeader)
             VStack(alignment: .leading, spacing: 12) {
                 Text(unknownCallers ? "Screen Unknown Callers" : "Live Voicemail").font(.headline)
                 Label(unknownCallers ? "Choose Never" : "Turn On", systemImage: "hand.tap")
-                    .font(ShieldTheme.Typography.title).foregroundStyle(ShieldTheme.action)
+                    .shieldHeading(.title).foregroundStyle(ShieldTheme.action)
                 if unknownCallers {
                     Text("Turn Live Voicemail on too. We’ll check that next.")
                 }

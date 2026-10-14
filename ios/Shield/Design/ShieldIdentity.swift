@@ -27,7 +27,7 @@ struct ScreenIntro: View {
                 .background(color.opacity(0.10), in: .rect(cornerRadius: 14))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 6) {
-                Text(title).font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
+                Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
                 Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -90,7 +90,7 @@ struct ShieldSection<Content: View>: View {
         self.title = title; self.content = content()
     }
     var body: some View {
-        Section { content } header: { Text(title).font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil).accessibilityAddTraits(.isHeader) }
+        Section { content } header: { Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil).accessibilityAddTraits(.isHeader) }
             .listRowBackground(ShieldTheme.card)
     }
 }

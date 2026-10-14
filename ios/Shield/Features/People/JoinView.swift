@@ -18,12 +18,12 @@ struct JoinView: View {
                         }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }
                 } else {
-                    ShieldGroup {
-                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                    ShieldPageHeader {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
                             Text("Ask your helper to set up your phone, or use an invitation someone sent you.")
                                 .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
-                        }.padding(.vertical, ShieldTheme.Spacing.regular)
+                        }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }
                     ShieldGroup {
                         Button("Use an invitation", systemImage: "envelope.open") { joining = true }
@@ -43,6 +43,7 @@ struct JoinView: View {
                 }
             }
             .navigationTitle(model.isLoading || model.contextError != nil ? "Your account" : "Get started")
+            .navigationBarTitleDisplayMode(.inline)
             .shieldListStyle()
             .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }

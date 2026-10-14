@@ -37,10 +37,13 @@ struct SavedNumbersView: View {
             }
             ShieldGroup {
                 ForEach(items) { item in
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
-                        Text(item.label).font(.headline).fixedSize(horizontal: false, vertical: true)
-                        Text(PhoneDisplay.format(item.phone)).foregroundStyle(ShieldTheme.secondaryText)
-                            .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.label).font(.headline).fixedSize(horizontal: false, vertical: true)
+                            Text(PhoneDisplay.format(item.phone)).font(.subheadline).monospacedDigit()
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                                .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                        }
                         if typeSize.isAccessibilitySize {
                             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) { numberActions(item) }
                         } else {

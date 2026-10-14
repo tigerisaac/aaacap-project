@@ -24,7 +24,9 @@ struct CheckView: View {
                             .accessibilityLabel("Text to check").disabled(checking || readingPhoto)
                             .overlay(alignment: .topLeading) {
                                 if text.isEmpty {
-                                    Text("Paste the message here…").fixedSize(horizontal: false, vertical: true).foregroundStyle(ShieldTheme.secondaryText).padding(.top, 8)
+                                    Text("Paste the message here…").fixedSize(horizontal: false, vertical: true).foregroundStyle(ShieldTheme.secondaryText)
+                                        // Match TextEditor's own text inset so typing starts where the prompt was.
+                                        .padding(.top, 8).padding(.leading, 5)
                                         .allowsHitTesting(false).accessibilityHidden(true)
                                 }
                             }
@@ -78,12 +80,12 @@ struct CheckView: View {
                                     Image(systemName: result.decision == "refuse" ? "hand.raised.fill" : "info.circle.fill")
                                         .foregroundStyle(result.decision == "refuse" ? ShieldTheme.held : ShieldTheme.secondaryText)
                                 }
-                                .font(ShieldTheme.Typography.title)
+                                .shieldHeading(.title)
                                 .accessibilityAddTraits(.isHeader)
                                 .accessibilityFocused($resultFocused)
                                 Text(result.detail)
                                 Divider()
-                                Text("What to do next").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink)
+                                Text("What to do next").shieldHeading(.section).foregroundStyle(ShieldTheme.ink)
                                 Text(result.nextStep)
                             }.padding(.vertical, 12)
                                 .id("check-result")
@@ -94,7 +96,7 @@ struct CheckView: View {
                         }
                     }
                 }
-                .navigationTitle("Check a text")
+                .shieldLargeTitle("Check a text")
                 .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } } }
                 .task(id: selectedPhoto) { await readPhoto() }
                 .onChange(of: text) { _, _ in result = nil; error = nil }

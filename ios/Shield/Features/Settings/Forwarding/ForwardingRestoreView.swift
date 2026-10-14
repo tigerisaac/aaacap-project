@@ -26,7 +26,7 @@ struct ForwardingRestoreView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             if !guidedCarrier {
-                Text("Restore your saved carrier settings").font(ShieldTheme.Typography.title)
+                Text("Restore your saved carrier settings").shieldHeading(.title)
                 Text("Ask your helper to follow the settings saved before you connected Shield. Keep Shield installed until ordinary calls and voicemail both work.")
                 ForEach(status.restorationSteps, id: \.self) { Text($0) }
             } else {
@@ -70,7 +70,7 @@ struct ForwardingRestoreView: View {
                     RestorationCallCheck(index: $index)
                 } else {
                     Label("Your phone checks are done", systemImage: "checkmark.circle")
-                        .font(ShieldTheme.Typography.title).accessibilityIdentifier("restoration-complete")
+                        .shieldHeading(.title).accessibilityIdentifier("restoration-complete")
                         .accessibilityAddTraits(.isHeader)
                         .accessibilityFocused($focusedStage, equals: index)
                         .task(id: index) { focusedStage = index }

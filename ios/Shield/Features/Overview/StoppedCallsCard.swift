@@ -11,20 +11,20 @@ struct StoppedCallsCard: View {
         Button(action: openCalls) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Text("Calls stopped").font(.title3.bold())
+                    Text("Calls stopped").font(.headline)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
-                    Image(systemName: "hand.raised").font(.title3)
+                    Image(systemName: "hand.raised").font(.body.weight(.medium))
                         .accessibilityHidden(true)
                 }
                 if let count, count > 0 {
                     if typeSize.isAccessibilitySize {
                         total(count)
-                        Text("Total").font(.body)
+                        Text("in total").font(.body)
                     } else {
-                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
                             total(count)
-                            Text("Total").font(.body)
+                            Text("in total").font(.body)
                         }
                     }
                 } else {
@@ -53,7 +53,7 @@ struct StoppedCallsCard: View {
 
     private func total(_ count: Int) -> some View {
         Text(count, format: .number)
-            .font(ShieldTheme.Typography.display.scaled(by: 1.6)).monospacedDigit()
+            .font(ShieldTheme.Typography.display.scaled(by: 1.6)).monospacedDigit().tracking(-1)
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityIdentifier("stopped-call-count")
     }

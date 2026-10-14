@@ -19,17 +19,20 @@ struct ForwardingSetupView: View {
                         if model.step.progressIndex > 0 {
                             FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 10)
                         }
-                        Text(model.step.title).shieldPageHeading().id("forwarding-heading")
-                            .accessibilityAddTraits(.isHeader).accessibilityFocused($focusedStep, equals: model.step)
-                            .task(id: model.step) { focusedStep = model.step }
-                        if model.step == .ring || model.step == .test {
-                            ForwardingProbeView(model: model)
-                        } else if model.isPhoneSettingsStep {
-                            ForwardingPhoneSettingsView(model: model)
-                        } else if model.step.codeIndex != nil {
-                            ForwardingCodeView(model: model)
-                        } else {
-                            ForwardingStepContent(step: model.step, status: status, model: model, onRestorationStageChange: { proxy.scrollTo("forwarding-heading", anchor: .top) })
+                        // The heading sits closer to its own content than to the progress above it.
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
+                            Text(model.step.title).shieldPageHeading().id("forwarding-heading")
+                                .accessibilityAddTraits(.isHeader).accessibilityFocused($focusedStep, equals: model.step)
+                                .task(id: model.step) { focusedStep = model.step }
+                            if model.step == .ring || model.step == .test {
+                                ForwardingProbeView(model: model)
+                            } else if model.isPhoneSettingsStep {
+                                ForwardingPhoneSettingsView(model: model)
+                            } else if model.step.codeIndex != nil {
+                                ForwardingCodeView(model: model)
+                            } else {
+                                ForwardingStepContent(step: model.step, status: status, model: model, onRestorationStageChange: { proxy.scrollTo("forwarding-heading", anchor: .top) })
+                            }
                         }
                         if let error = model.error {
                             VStack(alignment: .leading, spacing: 8) {

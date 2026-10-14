@@ -21,7 +21,7 @@ enum ShieldTheme {
     enum Typography {
         static let display = Font.system(.largeTitle, design: .serif)
         static let title = Font.system(.title, design: .serif)
-        static let section = Font.system(.title3, design: .serif)
+        static let section = Font.system(.title3, design: .serif).weight(.medium)
     }
     static let secondaryText = Color(uiColor: UIColor { traits in
         let highContrast = traits.accessibilityContrast == .high

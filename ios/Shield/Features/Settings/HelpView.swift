@@ -5,7 +5,10 @@ struct HelpView: View {
 
     var body: some View {
         List {
-            ShieldGroup { Text("If a call worries you, hang up. You can check it later.").font(ShieldTheme.Typography.title).foregroundStyle(ShieldTheme.ink).fixedSize(horizontal: false, vertical: true).padding(.vertical, 8) }
+            ShieldPageHeader {
+                Text("If a call worries you, hang up.\nYou can check it later.")
+                    .shieldPageHeading().accessibilityAddTraits(.isHeader).padding(.vertical, 4)
+            }
             ShieldGroup {
                 DisclosureGroup("How can I check a caller?") {
                     Text("Call a number from your card, bill, or an app you already use. Don’t use a number the caller gave you.")

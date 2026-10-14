@@ -35,21 +35,23 @@ struct CallDetailView: View {
             if let loadError {
                 ShieldGroup { ShieldLoadFailure(title: "Call details couldn’t update", detail: loadError) { Task { await load() } } }
             }
-            ShieldGroup {
+            ShieldPageHeader {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
-                        .font(ShieldTheme.Typography.title).foregroundStyle(ShieldTheme.ink)
+                        .shieldHeading(.title).foregroundStyle(ShieldTheme.ink)
                         .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
                     if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
                         OutcomeBadge(outcome: call.outcome)
                     }
-                    if call.voicemail == nil {
-                        Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
-                            .foregroundStyle(ShieldTheme.secondaryText)
-                    }
-                    if messageRemoved {
+                    Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                }.padding(.vertical, 4).fixedSize(horizontal: false, vertical: true)
+            }
+            if messageRemoved {
+                ShieldGroup {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("It seemed suspicious.")
-                            .fixedSize(horizontal: false, vertical: true).padding(.top, 8)
+                            .fixedSize(horizontal: false, vertical: true)
                         if let voicemail = call.voicemail, voicemail.isRestorable {
                             if model.canListen, let until = voicemail.restorableUntil {
                                 Text("Bring it back by \(until.formatted(.dateTime.month(.wide).day())).")
@@ -59,8 +61,8 @@ struct CallDetailView: View {
                         } else {
                             Text("This message is no longer available.").foregroundStyle(ShieldTheme.secondaryText)
                         }
-                    }
-                }.padding(.vertical, 12).fixedSize(horizontal: false, vertical: true)
+                    }.padding(.vertical, 8)
+                }
             }
             if inlineMessageActions, hasMessageAction, !playbackActionsInProgress {
                 messageActions().listRowInsets(EdgeInsets()).listRowBackground(ShieldTheme.surface)
@@ -169,10 +171,6 @@ struct CallDetailView: View {
                     Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
                     if call.monitored == true { Text("Shield checked the words while you talked.") }
                     Text("Shield can’t prove who called.").foregroundStyle(ShieldTheme.secondaryText)
-                    if call.voicemail != nil {
-                        Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
-                            .foregroundStyle(ShieldTheme.secondaryText)
-                    }
                     if messageRemoved {
                         Text("If you call back, use a number you already know.")
                         if model.isOwner {

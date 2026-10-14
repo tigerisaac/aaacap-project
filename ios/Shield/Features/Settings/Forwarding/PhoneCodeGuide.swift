@@ -9,7 +9,7 @@ struct PhoneCodeGuide: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             if returned {
-                Text("Did \(carrier) say it worked?").font(ShieldTheme.Typography.title)
+                Text("Did \(carrier) say it worked?").shieldHeading(.title)
                     .accessibilityIdentifier("forwarding-carrier-result")
                     .accessibilityAddTraits(.isHeader).accessibilityFocused($resultFocused)
                 Text(restoring

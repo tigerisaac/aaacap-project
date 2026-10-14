@@ -29,7 +29,8 @@ struct ShieldGroup<Content: View, Header: View, Footer: View>: View {
     }
 
     var body: some View {
-        Section { content } header: { header } footer: { footer }
+        // Footers default to the same supporting size used inside groups, not the smaller native footnote.
+        Section { content } header: { header } footer: { footer.font(.subheadline) }
             .listRowBackground(background)
     }
 }
@@ -81,9 +82,29 @@ extension View {
     }
 
     func shieldPageHeading() -> some View {
-        font(ShieldTheme.Typography.title)
+        shieldHeading(.title)
             .foregroundStyle(ShieldTheme.ink)
             .fixedSize(horizontal: false, vertical: true)
+    }
+
+    /// Tab roots keep the native collapsing large title, drawn in the serif page voice.
+    /// The bar keeps the plain title for its inline state, Back and accessibility.
+    func shieldLargeTitle(_ title: String) -> some View {
+        navigationTitle(title)
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .largeTitle) {
+                    Text(title).shieldHeading(.display).foregroundStyle(ShieldTheme.ink)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 4)
+                        .accessibilityAddTraits(.isHeader)
+                }
+            }
+    }
+
+    /// Serif heading type with slightly tight tracking, scaled with Dynamic Type.
+    func shieldHeading(_ level: ShieldHeadingLevel) -> some View {
+        modifier(ShieldHeadingType(level: level))
     }
 
     func shieldSecondaryButton() -> some View {
@@ -91,6 +112,59 @@ extension View {
             .controlSize(.large)
             .buttonBorderShape(.capsule)
             .tint(ShieldTheme.action)
+    }
+}
+
+enum ShieldHeadingLevel {
+    case display, title, section
+
+    var font: Font {
+        switch self {
+        case .display: ShieldTheme.Typography.display
+        case .title: ShieldTheme.Typography.title
+        case .section: ShieldTheme.Typography.section
+        }
+    }
+    fileprivate var textStyle: Font.TextStyle {
+        switch self {
+        case .display: .largeTitle
+        case .title: .title
+        case .section: .title3
+        }
+    }
+    /// About 2% tighter than the font's own tracking at the default size.
+    fileprivate var tracking: CGFloat {
+        switch self {
+        case .display: -0.7
+        case .title: -0.5
+        case .section: -0.25
+        }
+    }
+}
+
+private struct ShieldHeadingType: ViewModifier {
+    let level: ShieldHeadingLevel
+    @ScaledMetric private var tracking: CGFloat
+
+    init(level: ShieldHeadingLevel) {
+        self.level = level
+        _tracking = ScaledMetric(wrappedValue: level.tracking, relativeTo: level.textStyle)
+    }
+
+    func body(content: Content) -> some View {
+        content.font(level.font).tracking(tracking)
+    }
+}
+
+/// A heading on the page ground above grouped content, aligned with the text inside the groups.
+struct ShieldPageHeader<Content: View>: View {
+    private let content: Content
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
+
+    var body: some View {
+        Section { content }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
     }
 }
 

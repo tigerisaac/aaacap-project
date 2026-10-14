@@ -27,7 +27,7 @@ struct SignInView: View {
                         if !codeSent {
                             VStack(spacing: ShieldTheme.Spacing.regular) {
                                 Text("Help with unfamiliar calls")
-                                    .font(ShieldTheme.Typography.display).foregroundStyle(ShieldTheme.ink)
+                                    .shieldHeading(.display).foregroundStyle(ShieldTheme.ink)
                                     .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
                                     .accessibilityAddTraits(.isHeader)
                                 Text("Shield asks why someone is calling. You choose whether to answer.")
@@ -72,7 +72,7 @@ struct SignInView: View {
                                         .accessibilityLabel("Email code")
                                 } else {
                                     HStack(spacing: ShieldTheme.Spacing.regular) {
-                                    TextField("Email address", text: $email, prompt: Text("Email").foregroundStyle(ShieldTheme.secondaryText))
+                                    TextField("Email address", text: $email, prompt: Text(verbatim: "name@example.com").foregroundStyle(ShieldTheme.secondaryText))
                                         .textContentType(.emailAddress).keyboardType(.emailAddress)
                                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                                         .focused($focusedField, equals: .email).accessibilityLabel("Email address")

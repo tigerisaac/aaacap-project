@@ -81,13 +81,13 @@ struct RootView: View {
                         .accessibilityIdentifier("forwarding-preview-home")
                         .navigationDestination(isPresented: $previewSetupPresented) {
                             ForwardingSetupView()
-                                .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.caption).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
+                                .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.subheadline.weight(.medium)).foregroundStyle(ShieldTheme.secondaryText).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
                         }
                 }
             } else if isForwardingPreview {
                 NavigationStack {
                     ForwardingSetupView()
-                        .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.caption).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
+                        .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.subheadline.weight(.medium)).foregroundStyle(ShieldTheme.secondaryText).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
                 }
             } else if model.signedIn, model.protectionOnboarding != nil || model.helperAlertsOnboarding, let participantID = model.protectionParticipantID {
                 ProtectionOnboardingView(monitoring: model.protectionOnboarding, asksHelperAlerts: model.helperAlertsOnboarding, participantID: participantID)

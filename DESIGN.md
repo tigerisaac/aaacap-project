@@ -52,12 +52,15 @@ typography:
   display:
     fontFamily: "ui-serif"
     fontWeight: 400
+    letterSpacing: "-0.7pt"
   title:
     fontFamily: "ui-serif"
     fontWeight: 400
+    letterSpacing: "-0.5pt"
   section:
     fontFamily: "ui-serif"
-    fontWeight: 400
+    fontWeight: 500
+    letterSpacing: "-0.25pt"
   headline:
     fontFamily: "system-ui"
     fontWeight: 600
@@ -145,7 +148,14 @@ An 80-year-old's comprehension is the design bar. Plain labels, generous control
 - Call outcomes, person context, sharing scope and sample-only state expressed in words as well as color.
 - Flat surfaces, restrained SF Symbols and explicit choices with retained state and visible recovery.
 
-**Latest evidence (October 14, 2026):** The [gesture and recovery review](docs/IOS-SENIOR-GESTURE-REVIEW.md) and its [test ledger](.impeccable/review/gesture-continuation/test-evidence.json) record additional email keyboard recovery, large-text Messages filtering and step-focus corrections. Device Hub pointer gestures exercised the app-owned journeys with VoiceOver continuously enabled, including ten setup steps and seven disconnection steps with synthetic confirmations. A standalone native SwiftUI footer also reproduces a named iOS 26.5 clipping report; the separate unnamed Shield report remains unexplained. The [earlier finish report](docs/IOS-SENIOR-FINISH.md) retains the broad screen matrix and twelve corrected XCTest spoken-focus methods. Physical iPhone gestures, older-person usability and real phone handoffs remain outside this simulator evidence.
+**Typography pass (October 14, 2026):** Serif large titles on tab roots, tighter serif tracking, middot-joined row metadata, page-ground detail headings, a quiet sample tag and consistent footers and name/number pairs. See the before/after sheets for [daily screens](docs/images/ios-typography-daily.jpg) and [settings](docs/images/ios-typography-settings.jpg). Simulator evidence (iPhone 18 Pro, iOS 27):
+- `npm run check` passed.
+- HomeReadability (4/4) and SeniorDesign (5/5) UI tests passed.
+- RedesignUITests passed 17 of 19. The two failures, `testCoreScreensAccessibilityAudit` (edge contrast on the Calls row half-hidden under the tab bar) and `testWelcomeAccessibilityAudit` (no navigation bar for its capture name), fail the same way on the unchanged previous commit. The Calls audit now names three elements of that edge row instead of two because the row sits about 3 points higher.
+
+No physical-phone, VoiceOver or older-participant check was made.
+
+**Earlier evidence (October 14, 2026):** The [gesture and recovery review](docs/IOS-SENIOR-GESTURE-REVIEW.md) and its [test ledger](.impeccable/review/gesture-continuation/test-evidence.json) record additional email keyboard recovery, large-text Messages filtering and step-focus corrections. Device Hub pointer gestures exercised the app-owned journeys with VoiceOver continuously enabled, including ten setup steps and seven disconnection steps with synthetic confirmations. A standalone native SwiftUI footer also reproduces a named iOS 26.5 clipping report; the separate unnamed Shield report remains unexplained. The [earlier finish report](docs/IOS-SENIOR-FINISH.md) retains the broad screen matrix and twelve corrected XCTest spoken-focus methods. Physical iPhone gestures, older-person usability and real phone handoffs remain outside this simulator evidence.
 
 **Historical evidence boundary (October 13, 2026):** This document records the current local SwiftUI source and the code-led direction in `.impeccable/surfaces/ios-shield-app-rootview-swift.md`. In the earlier visual-redesign pass, the [full finish review](.impeccable/review/visual-redesign/final/finish-review.md) returned **fix** for accessibility-size onboarding completion order and the stale design documentation. The same reviewer's [bounded final verdict](.impeccable/review/visual-redesign/verdict/finish-verdict.md) resolved both fixes with **disposition: ship**. That result covers the two scored fixes; it did not reopen or certify the complete surface. No regression was identified in the requested recaptures or inspected correction.
 
@@ -202,17 +212,21 @@ The sidecar's synthesized tonal strips are documentation illustrations. Intermed
 
 **Character:** Serif content headings add the reference's calm editorial emphasis. Familiar sans words and controls preserve ordinary iPhone reading and interaction. Semantic text styles and Dynamic Type are authoritative; there is no custom fixed-size type or line-height scale. Frontmatter uses the portable families `ui-serif` and `system-ui` for SwiftUI's native serif and default sans designs.
 
+Like the America.gov reference, serif headings are set slightly tight: `shieldHeading(_:)` applies the serif style with about 2% negative tracking, scaled with Dynamic Type through `@ScaledMetric`. Always use it (or `shieldPageHeading()`) for serif headings rather than `.font(ShieldTheme.Typography.…)` alone.
+
 ### Hierarchy
 
 - **Display** (`Font.system(.largeTitle, design: .serif)`): sign-in purpose and full Shield brand.
 - **Title** (`Font.system(.title, design: .serif)`): page purpose, status and call-detail headings.
-- **Section** (`Font.system(.title3, design: .serif)`): reusable section headings and focused introductions.
+- **Section** (`Font.system(.title3, design: .serif).weight(.medium)`): reusable section headings and focused introductions. Medium weight keeps 20-point serif headings from reading lighter than the semibold row titles beneath them.
 - **Headline** (native `.headline` or `.body.weight(.semibold)`): buttons, call/message titles and actionable labels.
 - **Body** (native `.body` or default Text): instructions, form content and ordinary choices.
-- **Supporting** (native `.subheadline`): dates, outcomes, numbers, sharing scope and explanations.
+- **Supporting** (native `.subheadline`): dates, outcomes, numbers, sharing scope, explanations and section footers. ShieldGroup sets footers to `.subheadline`, so they match supporting text inside groups instead of the smaller native footnote.
 - **Label** (native `.subheadline.weight(.semibold)`): unboxed outcome and sample identity.
 
-Navigation titles, tabs and toolbars retain the platform sans face. Some functional headings, including Calls stopped, remain native sans; serif is a content hierarchy, not a replacement for every label. Compact Shield identity uses native serif `.title2`. Invitation/carrier codes and time values use native monospaced treatment where useful.
+Tab roots (Home, Calls, Messages, More) and the Check a text and Family & friends destinations use `shieldLargeTitle(_:)`: the native collapsing large title, drawn in serif display through iOS 26's `ToolbarItem(placement: .largeTitle)`. The bar keeps the plain `navigationTitle` for its inline scrolled state, Back and accessibility, and the large-title slot caps its size the way the native title does. Inline titles, tabs and toolbars retain the platform sans face. Some functional headings, including Calls stopped, remain native sans; serif is a content hierarchy, not a replacement for every label. Compact Shield identity uses native serif `.title2`. Invitation/carrier codes and listed phone numbers use monospaced digits. Row times keep proportional digits so a long title does not wrap early beside them.
+
+Short metadata reads as one line joined by middots (`MetadataLine.joined`): "Saved notice · New · Today", "Answered · (512) 555-0124". A no-break space holds each separator to the word before it, and `PhoneDisplay.unbroken` keeps a number on one line, so a long line wraps like a sentence rather than splitting a number. Visible copy uses sentence case, curly apostrophes and a real ellipsis.
 
 The historical stopped count alone uses the display style scaled by 1.6 with monospaced digits. This focused numeral is not a general display-size token. Call and message dates expose full dates to accessibility even when the visible label is shorter.
 
@@ -220,7 +234,7 @@ The historical stopped count alone uses the display style scaled by 1.6 with mon
 
 ## Layout
 
-The app uses Home, Calls, Messages and More native tabs, each daily destination within a NavigationStack. Lists use inset grouping, a 60-point minimum row default, 28-point section spacing, the shared Surface background and a 16-point bottom safe-area padding. Native rows grow to fit their content. ShieldGroup supplies Card behind a native Section; ShieldSection additionally supplies a sentence-case serif section heading.
+The app uses Home, Calls, Messages and More native tabs, each daily destination within a NavigationStack. Lists use inset grouping, a 60-point minimum row default, 28-point section spacing, the shared Surface background and a 16-point bottom safe-area padding. Native rows grow to fit their content. ShieldGroup supplies Card behind a native Section; ShieldSection additionally supplies a sentence-case serif section heading. ShieldPageHeader places a page heading on the Surface ground, aligned with the text inside the groups below it: call and message detail titles with their date, the Get help statement and Welcome to Shield. A heading is never boxed alone in a card. Guided setup keeps each step heading closer to its own content (20 points) than to the progress above it (28 points).
 
 The six shared spacing steps are in frontmatter. Sign-in and onboarding use page padding and a readable column capped at 560 points, centered in the available width. ScrollViews preserve room for text and the keyboard. There is no custom viewport breakpoint scale or app-specific iPad split layout.
 
@@ -236,7 +250,7 @@ At standard text sizes onboarding keeps a bottom inset completion button. At acc
 
 ## Elevation & Depth
 
-Shield uses flat, opaque adaptive surfaces and native grouping rather than custom shadows or blur. Ground, reading groups and quiet symbol backings provide separation. Native menus, sheets, alerts, control materials and pressed/disabled feedback provide interaction depth. Cancel/Close use an opaque control surface with the native shared translucent background hidden. Playback and standard-size onboarding actions use bottom safe-area insets with opaque Surface behind them. The sample marker has its own persistent region rather than floating over rows. No custom shadow, motion-duration or easing tokens are defined; operating-system motion and Reduce Motion behavior remain authoritative and require direct verification.
+Shield uses flat, opaque adaptive surfaces and native grouping rather than custom shadows or blur. Ground, reading groups and quiet symbol backings provide separation. Native menus, sheets, alerts, control materials and pressed/disabled feedback provide interaction depth. Cancel/Close use an opaque control surface with the native shared translucent background hidden. Playback and standard-size onboarding actions use bottom safe-area insets with opaque Surface behind them. The sample marker has its own persistent region rather than floating over rows. It is a quiet QuietSurface tag in medium-weight supporting text, so it never reads as the screen title beneath it; it grows with Dynamic Type up to the first accessibility size, then holds. No custom shadow, motion-duration or easing tokens are defined; operating-system motion and Reduce Motion behavior remain authoritative and require direct verification.
 
 **The Native Surface Rule.** Use the shared adaptive surfaces with native grouping and state feedback before introducing custom elevation or motion.
 
@@ -294,7 +308,7 @@ Clear scam messages offer no audio, readable content or restoration. Legacy remo
 
 ### Home historical count
 
-Calls stopped, a positive serif numeral, Total and See calls share one opaque Action row. It opens recent retained held/review-needed history. Zero uses None so far on Card; missing optional total uses Total unavailable. Neither missing context nor a failed read becomes zero. Real phone status and actionable warnings precede the historical panel; pure sample Home relies on its persistent sample marker.
+Calls stopped, a positive serif numeral, "in total" and See calls share one opaque Action row. It opens recent retained held/review-needed history. Zero uses None so far on Card; missing optional total uses Total unavailable. Neither missing context nor a failed read becomes zero. Real phone status and actionable warnings precede the historical panel; pure sample Home relies on its persistent sample marker.
 
 The persistent stopped total includes review-needed calls and can exceed retained recent history. It cannot reconstruct already-deleted history, prove every caller was malicious or prove that current checks are on. Deployment and storage evidence belongs outside the visual system.
 

@@ -77,7 +77,7 @@ struct VoicemailView: View {
                 }
             }
             .shieldListStyle()
-            .navigationTitle("Messages")
+            .shieldLargeTitle("Messages")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task { await inbox.load(app) }
             .refreshable { await inbox.load(app) }

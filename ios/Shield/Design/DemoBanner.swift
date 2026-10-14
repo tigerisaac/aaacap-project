@@ -5,12 +5,19 @@ struct DemoBanner: View {
     @Environment(AppState.self) private var model
 
     var body: some View {
+        // A quiet tag, so it never reads as the screen's title just below it.
         Text(model.isTestAccount ? "Test account · Sample data" : "Sample app")
-            .font(.subheadline.weight(.semibold))
+            .font(.subheadline.weight(.medium))
             .fixedSize(horizontal: false, vertical: true)
+            .multilineTextAlignment(.center)
+            .foregroundStyle(ShieldTheme.secondaryText)
+            .padding(.horizontal, ShieldTheme.Spacing.regular)
+            .padding(.vertical, 4)
+            .background(ShieldTheme.quietSurface, in: .capsule)
+            // A status marker, not reading content: it grows into the first accessibility size, then holds.
+            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)
-            .foregroundStyle(ShieldTheme.secondaryText)
             .accessibilityLabel(model.isTestAccount ? "Test account, sample activity" : "Sample app, no real calls")
             .accessibilityIdentifier("demoBanner")
     }

@@ -38,9 +38,9 @@ struct BlockedNumbersView: View {
             ShieldGroup {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: 10) {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(PhoneDisplay.format(item.phone)).font(.headline)
-                            Text(item.reasonText).foregroundStyle(ShieldTheme.secondaryText)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(PhoneDisplay.format(item.phone)).font(.headline).monospacedDigit()
+                            Text(item.reasonText).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             Text(detail(for: item)).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
                         .accessibilityElement(children: .combine)

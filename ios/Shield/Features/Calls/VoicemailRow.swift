@@ -15,14 +15,10 @@ struct VoicemailRow: View {
                     .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
                     .accessibilityHidden(true)
             }
-            VStack(alignment: .leading, spacing: 8) {
-            Text(CallPresentation.title(call)).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-            if typeSize >= .xxxLarge {
-                VStack(alignment: .leading, spacing: 6) { messageInfo }
-            } else {
-                HStack(spacing: 8) { messageInfo }
-            }
+            VStack(alignment: .leading, spacing: 6) {
+                Text(CallPresentation.title(call)).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                messageInfo
             }
         }
         .padding(.vertical, 10)
@@ -38,14 +34,35 @@ struct VoicemailRow: View {
         return parts.joined(separator: ". ")
     }
 
+    private var dateLabel: String {
+        Calendar.current.isDateInToday(call.occurredAt) ? "Today" : Calendar.current.isDateInYesterday(call.occurredAt) ? "Yesterday" : call.occurredAt.formatted(.dateTime.month(.abbreviated).day())
+    }
+
+    private var stateText: Text? {
+        if kept { return Text("\(Image(systemName: "bookmark.fill")) Kept") }
+        if call.voicemail?.status == "removed" { return Text("\(Image(systemName: "trash")) Removed") }
+        if call.voicemail?.heardAt == nil { return Text("New").fontWeight(.semibold).foregroundStyle(ShieldTheme.message) }
+        return nil
+    }
+
+    private var kindText: Text? {
+        guard let message = call.voicemail, message.status != "removed" else { return nil }
+        return Text(message.kindLabel)
+    }
+
     @ViewBuilder private var messageInfo: some View {
-            Group {
-                if let message = call.voicemail, message.status != "removed" { Text(message.kindLabel) }
-                if kept { Label("Kept", systemImage: "bookmark.fill") }
-                else if call.voicemail?.status == "removed" { Label("Removed", systemImage: "trash") }
-                else if call.voicemail?.heardAt == nil { Text("New").fontWeight(.medium).foregroundStyle(ShieldTheme.message) }
-                Text(Calendar.current.isDateInToday(call.occurredAt) ? "Today" : Calendar.current.isDateInYesterday(call.occurredAt) ? "Yesterday" : call.occurredAt.formatted(.dateTime.month(.abbreviated).day()))
+        Group {
+            if typeSize >= .xxxLarge {
+                VStack(alignment: .leading, spacing: 6) {
+                    if let kindText { kindText }
+                    if let stateText { stateText }
+                    Text(dateLabel)
+                }
+            } else {
+                MetadataLine.joined([kindText, stateText, Text(dateLabel)])
             }
-            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+        }
+        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }

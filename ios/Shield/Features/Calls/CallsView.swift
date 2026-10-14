@@ -22,7 +22,7 @@ struct CallsView: View {
                             ShieldLoadingView(title: "Getting your calls…")
                         } else {
                             ContentUnavailableView(model.filter == .all ? "No calls yet" : "No \(model.filter.label.lowercased()) calls", systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
-                            if model.filter != .all { Button("Show All Calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
+                            if model.filter != .all { Button("Show all calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
                         }
                     }
                 } else if !model.calls.isEmpty {
@@ -35,7 +35,7 @@ struct CallsView: View {
                     }
                 }
             }
-            .navigationTitle("Calls")
+            .shieldLargeTitle("Calls")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task(id: model.filter) { await model.loadCalls() }
             .sensoryFeedback(.selection, trigger: model.filter)

@@ -97,19 +97,24 @@ struct CallRow: View {
                     numberText
                 }
             } else {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    outcomeText
-                    numberText
-                }
+                MetadataLine.joined([
+                    showsOutcomeWord ? outcomeWord : nil,
+                    showsNumber && title != number ? Text(PhoneDisplay.unbroken(number)) : nil
+                ])
+                .foregroundStyle(ShieldTheme.secondaryText)
             }
         }
         .font(.subheadline)
         .fixedSize(horizontal: false, vertical: true)
     }
 
+    private var outcomeWord: Text {
+        Text(outcomeLabel).foregroundStyle(ShieldTheme.color(for: call.outcome)).fontWeight(.medium)
+    }
+
     private var outcomeText: some View {
         Group {
-            if showsOutcomeWord { Text(outcomeLabel).foregroundStyle(ShieldTheme.color(for: call.outcome)).fontWeight(.medium) }
+            if showsOutcomeWord { outcomeWord }
         }
     }
 
