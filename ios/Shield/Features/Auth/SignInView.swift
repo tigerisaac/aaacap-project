@@ -3,12 +3,15 @@ import SwiftUI
 struct SignInView: View {
     @Environment(AppState.self) private var model
     @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var email = ""
     @State private var code = ""
     @State private var codeSent = false
     @State private var usesEmailLink = true
     @State private var working = false
     @State private var error: String?
+    @State private var feedbackRevision = 0
+    @State private var keyboardVisible = false
     @FocusState private var focusedField: Field?
     @AccessibilityFocusState private var statusFocused: Status?
     private enum Field { case email, code }
@@ -16,6 +19,7 @@ struct SignInView: View {
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     VStack(spacing: ShieldTheme.Spacing.section) {
@@ -25,6 +29,7 @@ struct SignInView: View {
                                 Text("Help with unfamiliar calls")
                                     .font(ShieldTheme.Typography.display).foregroundStyle(ShieldTheme.ink)
                                     .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityAddTraits(.isHeader)
                                 Text("Shield asks why someone is calling. You choose whether to answer.")
                                     .font(.body).multilineTextAlignment(.center)
                                     .foregroundStyle(ShieldTheme.secondaryText)
@@ -67,8 +72,7 @@ struct SignInView: View {
                                         .accessibilityLabel("Email code")
                                 } else {
                                     HStack(spacing: ShieldTheme.Spacing.regular) {
-                                    TextField("Email address", text: $email, prompt: Text("you@example.com").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
-                                        .lineLimit(1...3)
+                                    TextField("Email address", text: $email, prompt: Text("Email").foregroundStyle(ShieldTheme.secondaryText))
                                         .textContentType(.emailAddress).keyboardType(.emailAddress)
                                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                                         .focused($focusedField, equals: .email).accessibilityLabel("Email address")
@@ -89,8 +93,13 @@ struct SignInView: View {
                             .padding(16)
                             .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
                             .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? ShieldTheme.fieldBorder : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
-                            .disabled(working).submitLabel(.continue)
+                            .disabled(working).submitLabel(codeSent ? .go : .send)
                             .onSubmit { if canSubmit { Task { await submit() } } }
+                            if typeSize.isAccessibilitySize, focusedField != .email, !email.isEmpty, !(codeSent && !usesEmailLink) {
+                                Text(email).foregroundStyle(ShieldTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityHidden(true)
+                            }
                             if !email.isEmpty && !validEmail && focusedField != .email && !(codeSent && !usesEmailLink) {
                                 Text("Check the email address, including the part after @.")
                                     .foregroundStyle(ShieldTheme.secondaryText)
@@ -106,6 +115,7 @@ struct SignInView: View {
                         if let error {
                             ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle")
                                 .accessibilityIdentifier("sign-in-error")
+                                .id("sign-in-feedback")
                                 .accessibilityFocused($statusFocused, equals: .error)
                         }
                         if model.configuration.baseURL == nil {
@@ -138,12 +148,26 @@ struct SignInView: View {
             }
             .scrollDismissesKeyboard(.interactively)
             .background(ShieldTheme.surface)
+            .onChange(of: feedbackRevision) { _, _ in
+                if !keyboardVisible { revealFeedback(using: proxy) }
+            }
+            .onChange(of: focusedField) { _, field in
+                if field != nil { error = nil; statusFocused = nil }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+                keyboardVisible = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { _ in
+                keyboardVisible = false
+                revealFeedback(using: proxy)
+            }
             .toolbar(.hidden, for: .navigationBar)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") { focusedField = nil }
                 }
+            }
             }
         }
         .task {
@@ -166,6 +190,7 @@ struct SignInView: View {
                 usesEmailLink = true
                 return
             }
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-auth-error") { return }
             #endif
             guard model.configuration.baseURL != nil else { return }
             if let service: ServiceConfiguration = try? await model.api.send("/public/config", authenticated: false) {
@@ -236,13 +261,14 @@ struct SignInView: View {
     }
 
     private func submit() async {
+        focusedField = nil
+        statusFocused = nil
         working = true
         error = nil
         defer { working = false }
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--uitesting-auth-error") {
-            error = "Your connection was interrupted. Please try again."
-            statusFocused = .error
+            showError("Your connection was interrupted. Please try again.")
             return
         }
         #endif
@@ -257,6 +283,17 @@ struct SignInView: View {
                 focusedField = usesEmailLink ? nil : .code
                 statusFocused = usesEmailLink ? .emailSent : nil
             }
-        } catch { self.error = error.localizedDescription; statusFocused = .error }
+        } catch { showError(error.localizedDescription) }
+    }
+
+    private func showError(_ message: String) {
+        error = message
+        feedbackRevision += 1
+    }
+
+    private func revealFeedback(using proxy: ScrollViewProxy) {
+        guard error != nil else { return }
+        proxy.scrollTo("sign-in-feedback", anchor: .center)
+        statusFocused = .error
     }
 }

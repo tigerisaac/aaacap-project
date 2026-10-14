@@ -3,10 +3,11 @@ import SwiftUI
 struct ForwardingRestoreView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
-    @AccessibilityFocusState private var stageFocused: Bool
+    @AccessibilityFocusState private var focusedStage: Int?
     @State private var leftForPhone = false
     @State private var returnedFromPhone = false
     @State private var showingHelp = false
+    @State private var showingCopiedCode = false
     let status: ForwardingStatus
     let onStageChange: () -> Void
     @AppStorage private var index: Int
@@ -31,12 +32,14 @@ struct ForwardingRestoreView: View {
             } else {
                 if index < 7 {
                     FlowProgress(title: index < 3 ? "Disconnect \(status.carrier)" : index < 5 ? "Restore settings" : "Check ordinary service", current: index + 1, total: 7)
+                        .accessibilityFocused($focusedStage, equals: index)
+                        .task(id: index) { focusedStage = index }
                     Text(index < 3 ? "Do each reset, one at a time." : "Now check Phone settings and ordinary calls.")
-                        .font(.title3).accessibilityFocused($stageFocused)
+                        .font(.title3)
                 }
                 if codes.indices.contains(index) {
                     VStack(alignment: .leading, spacing: 6) {
-                        DisclosureGroup("See copied code") {
+                        DisclosureGroup("See copied code", isExpanded: $showingCopiedCode) {
                             Text(codes[index]).font(.body.monospaced()).accessibilityIdentifier("forwarding-reset-code")
                         }
                         if codeReady {
@@ -51,6 +54,7 @@ struct ForwardingRestoreView: View {
                     } label: { ShieldActionLabel(title: codeReady ? "\(status.carrier) confirmed this reset" : "Copy \(status.carrier) reset code") }
                     .shieldPrimaryButton()
                     .accessibilityIdentifier("forwarding-reset-continue")
+                    .id(index)
                     if codeReady {
                         Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }.frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("forwarding-reset-copy")
                         Button("Show Phone again", systemImage: "phone") { copyCode() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
@@ -67,6 +71,9 @@ struct ForwardingRestoreView: View {
                 } else {
                     Label("Your phone checks are done", systemImage: "checkmark.circle")
                         .font(ShieldTheme.Typography.title).accessibilityIdentifier("restoration-complete")
+                        .accessibilityAddTraits(.isHeader)
+                        .accessibilityFocused($focusedStage, equals: index)
+                        .task(id: index) { focusedStage = index }
                     Text("You’ve confirmed ordinary calls and voicemail work.")
                     Text("Shield won’t ring you. These checks are saved from what you told us.")
                         .foregroundStyle(ForwardingStyle.secondaryText)
@@ -76,12 +83,12 @@ struct ForwardingRestoreView: View {
                 }
             }
         }
+        .id(index)
         .sensoryFeedback(.success, trigger: index) { old, new in new > old }
         .onChange(of: index) { _, _ in
             codeReady = false
             returnedFromPhone = false
             showingHelp = false
-            stageFocused = true
             onStageChange()
         }
         .onChange(of: scenePhase) { _, phase in

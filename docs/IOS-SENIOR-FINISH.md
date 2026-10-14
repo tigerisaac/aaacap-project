@@ -2,6 +2,8 @@
 
 October 14, 2026. This continues the [visual polish](IOS-VISUAL-POLISH.md) and [senior walkthrough](IOS-SENIOR-WALKTHROUGH.md). It records local app changes and synthetic simulator verification. Deployment and real-call evidence remain in [Status](STATUS.md).
 
+**Later follow-up:** [The gesture and recovery review](IOS-SENIOR-GESTURE-REVIEW.md) records additional keyboard, large-text filter and step-focus fixes, a continuous-VoiceOver Device Hub walkthrough, and a standalone native clipping reproduction. It supersedes the gesture-availability limitation below; earlier test results remain historical evidence.
+
 ## Barriers addressed
 
 The review used the questions “What is this telling me?”, “What should I do next?”, “Can I reach it?”, and “Did my choice disappear?” across the app's light, dark, large-text and failure states.

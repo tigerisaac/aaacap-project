@@ -89,7 +89,9 @@ final class VoiceOverWalkthrough {
             target = app.textViews[label]
         } else if current.localizedCaseInsensitiveContains("switch") {
             target = app.switches[label]
-        } else if current.localizedCaseInsensitiveContains("link") {
+        } else if current.localizedCaseInsensitiveContains(" button") {
+            target = app.buttons[label]
+        } else if current.localizedCaseInsensitiveContains(" link") {
             target = app.links[label]
         } else {
             target = app.buttons[label]

@@ -26,6 +26,7 @@ final class VoiceOverUITests: XCTestCase {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "sign-in", arguments: ["--uitesting-auth-error"])
         defer { walk.finish() }
+        try walk.find("Help with unfamiliar calls", where: { $0.localizedCaseInsensitiveContains("Heading") })
         try walk.enter("Email address", text: "synthetic@example.com")
         try walk.activate("Done")
         try walk.activate("Send sign-in link")

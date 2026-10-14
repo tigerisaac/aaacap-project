@@ -1,0 +1,568 @@
+{
+  "date": "2026-10-14",
+  "baseCommit": "3370ec1854b2518242ec37f30cc9a4f9a497a463",
+  "scope": "Synthetic local simulator fixtures and source changes; no deployment, real carrier handoff, owner phone or real-call verification.",
+  "sourceHashes": {
+    "current": {
+      "ios/Shield/Features/Auth/ProtectionOnboardingView.swift": "4daad6b4c202486a01ec01f4434b90ead5faa034ab016ae9d2568a918dca4173",
+      "ios/Shield/Features/Auth/SignInView.swift": "e3b002f624037388d73fef2cac1311a5319e2e43f0855b6bab44a8ee6f4bb49b",
+      "ios/Shield/Features/Calls/VoicemailView.swift": "ddacb9e663c5877a2ae0ad8644c42cf3e97b6b41eb6167b527b6ab7b0c28e20f",
+      "ios/Shield/Features/People/JoinInvitationView.swift": "1b44f1f5a8731649e174b6305e04883b829e22103e9d66f30cd6be3850a9276b",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift": "60e9a5a0bd42ac37dd1f7c0095626763e5bcc533f1c09e5d3880adaf53d25dbb",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingRestoreView.swift": "5c6a78964777028fce20638be5e6b0b805ba6325af78a61fba66ad9c3b659491",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift": "11c541a95a2ebdd01ae88c0e231569023a8dbe2ac5a9f6072b943f9098064dfd",
+      "ios/ShieldUITests/RedesignUITests.swift": "67bd3ad5c7a52268d9b6a7e081d23f527e3fa8866c0edf57b4d43b88f2d46c75",
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift": "222a0ab4905028a7919ba0b27ed57b1846d1a3b9ef537293483c0205c444a774",
+      "ios/ShieldUITests/VoiceOverUITests.swift": "70130edd4f0a0060ff9fced2459483929d6f225e8203ad3450b28435ee52eb87",
+      "ios/ShieldUITests/VoiceOverWalkthrough.swift": "ec21e5fdcddd735349f791ce2cbf4639fc4c6e03de2dbb35b260d20b7a583247",
+      "ios/Diagnostics/NativeBoundary.swift": "077ccfb2547aa654cf9f6a54f0c686ac50f3225e91cb1ef37e55d68ece4bd751"
+    },
+    "finalValidationBeforeInvitationPrompt": {
+      "ios/Shield/Features/Auth/ProtectionOnboardingView.swift": "4daad6b4c202486a01ec01f4434b90ead5faa034ab016ae9d2568a918dca4173",
+      "ios/Shield/Features/Auth/SignInView.swift": "e3b002f624037388d73fef2cac1311a5319e2e43f0855b6bab44a8ee6f4bb49b",
+      "ios/Shield/Features/Calls/VoicemailView.swift": "ddacb9e663c5877a2ae0ad8644c42cf3e97b6b41eb6167b527b6ab7b0c28e20f",
+      "ios/Shield/Features/People/JoinInvitationView.swift": "7bb56138aa78ca90e7cacf95f4ea382b01e5a93d408a50f6fa3ac14967d2c5a4",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift": "60e9a5a0bd42ac37dd1f7c0095626763e5bcc533f1c09e5d3880adaf53d25dbb",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingRestoreView.swift": "5c6a78964777028fce20638be5e6b0b805ba6325af78a61fba66ad9c3b659491",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift": "11c541a95a2ebdd01ae88c0e231569023a8dbe2ac5a9f6072b943f9098064dfd",
+      "ios/ShieldUITests/RedesignUITests.swift": "4965cf5c46192ecc2bca73f594dc1d766b9f54916a9cb8e5b080f42822dd57d0",
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift": "3103e5c6534961fa4468b8f576aac843fd1b52dc089b6565a5cf10a7cc71d6b7",
+      "ios/ShieldUITests/VoiceOverUITests.swift": "70130edd4f0a0060ff9fced2459483929d6f225e8203ad3450b28435ee52eb87",
+      "ios/ShieldUITests/VoiceOverWalkthrough.swift": "ec21e5fdcddd735349f791ce2cbf4639fc4c6e03de2dbb35b260d20b7a583247",
+      "ios/Diagnostics/NativeBoundary.swift": "077ccfb2547aa654cf9f6a54f0c686ac50f3225e91cb1ef37e55d68ece4bd751"
+    },
+    "beforeNativeSubmitTestDriver": {
+      "ios/Shield/Features/Auth/ProtectionOnboardingView.swift": "4daad6b4c202486a01ec01f4434b90ead5faa034ab016ae9d2568a918dca4173",
+      "ios/Shield/Features/Auth/SignInView.swift": "e3b002f624037388d73fef2cac1311a5319e2e43f0855b6bab44a8ee6f4bb49b",
+      "ios/Shield/Features/Calls/VoicemailView.swift": "ddacb9e663c5877a2ae0ad8644c42cf3e97b6b41eb6167b527b6ab7b0c28e20f",
+      "ios/Shield/Features/People/JoinInvitationView.swift": "1b44f1f5a8731649e174b6305e04883b829e22103e9d66f30cd6be3850a9276b",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift": "60e9a5a0bd42ac37dd1f7c0095626763e5bcc533f1c09e5d3880adaf53d25dbb",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingRestoreView.swift": "5c6a78964777028fce20638be5e6b0b805ba6325af78a61fba66ad9c3b659491",
+      "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift": "11c541a95a2ebdd01ae88c0e231569023a8dbe2ac5a9f6072b943f9098064dfd",
+      "ios/ShieldUITests/RedesignUITests.swift": "4965cf5c46192ecc2bca73f594dc1d766b9f54916a9cb8e5b080f42822dd57d0",
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift": "222a0ab4905028a7919ba0b27ed57b1846d1a3b9ef537293483c0205c444a774",
+      "ios/ShieldUITests/VoiceOverUITests.swift": "70130edd4f0a0060ff9fced2459483929d6f225e8203ad3450b28435ee52eb87",
+      "ios/ShieldUITests/VoiceOverWalkthrough.swift": "ec21e5fdcddd735349f791ce2cbf4639fc4c6e03de2dbb35b260d20b7a583247",
+      "ios/Diagnostics/NativeBoundary.swift": "077ccfb2547aa654cf9f6a54f0c686ac50f3225e91cb1ef37e55d68ece4bd751"
+    }
+  },
+  "repositoryChecks": [
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "testsPassed": 232,
+      "testsSkipped": 158,
+      "log": "/tmp/shield-gesture-final-check-authorized.log",
+      "logSha256": "e6613f6a2fe42cb1ac2366f7c8834fbbe92a97c03bbda3574d98e0d8cd4680d4"
+    },
+    {
+      "command": "npm run test:firebase",
+      "status": "passed on sequential retry",
+      "testsPassed": 159,
+      "log": "/tmp/shield-gesture-final-firebase-retry.log",
+      "logSha256": "47336a54444bdb366ea8c3f2e2b72c1be35f5121c55ec6149c9b7b4ae869c5fd"
+    },
+    {
+      "command": "npm run check (sandbox attempt)",
+      "status": "failed: local socket EPERM",
+      "log": "/tmp/shield-gesture-final-check.log",
+      "logSha256": "9ef103c5d0d70f368a98b8184a664c432eb7bc050f9d4e05cba8de46c3d08739"
+    },
+    {
+      "command": "npm run test:firebase (sandbox attempt)",
+      "status": "failed: emulator port EPERM before emulator startup",
+      "log": "/tmp/shield-gesture-final-firebase.log",
+      "logSha256": "ddb22677c3bf6d8d492b40c9e465ed6fa8d12d8b86138b767e00103ab6d48c79"
+    },
+    {
+      "command": "npm run test:firebase (first authorized attempt)",
+      "status": "failed: one closed/invalid transaction in stopped-total test; 158 passed, 1 failed; no backend source change before retry",
+      "log": "/tmp/shield-gesture-final-firebase-authorized.log",
+      "logSha256": "f9e0e3a0e8ad941fde51c360ba95b44200368126c27993400ffc6ca34120e995"
+    }
+  ],
+  "iosRuns": [
+    {
+      "log": "/tmp/shield-signin-keyboard-lifecycle-final.log",
+      "logSha256": "0071f1cb05492816a794a573b92b940dcdf8a140145b03cb3b0d0cdf0ebc1016",
+      "sourcePhase": "email keyboard correction, before Messages/focus corrections",
+      "note": "Four passing methods. No claim of one combined clean historical suite.",
+      "methods": [
+        {
+          "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+          "status": "passed",
+          "seconds": 23.566
+        },
+        {
+          "method": "RedesignUITests/testSignInReturnAndLoadingStayInContext",
+          "status": "passed",
+          "seconds": 16.145
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testWelcomeAndSentEmailAudit",
+          "status": "passed",
+          "seconds": 17.705
+        },
+        {
+          "method": "VoiceOverUITests/testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend",
+          "status": "passed",
+          "seconds": 75.565
+        }
+      ],
+      "diagnostics": [],
+      "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -project ios/Shield.xcodeproj -scheme Shield -destination \"platform=iOS Simulator,id=AFC89353-FF15-4B77-ACB9-5B79C9B061DF\" -derivedDataPath /tmp/shield-voiceover-derived -clonedSourcePackagesDirPath /tmp/shield-senior-polish-derived/SourcePackages -disableAutomaticPackageResolution \"-only-testing:ShieldUITests/RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail\" \"-only-testing:ShieldUITests/RedesignUITests/testSignInReturnAndLoadingStayInContext\" \"-only-testing:ShieldUITests/VoiceOverUITests/testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testWelcomeAndSentEmailAudit\" -collect-test-diagnostics never -parallel-testing-enabled NO -resultBundlePath /tmp/shield-signin-keyboard-lifecycle-final.xcresult CODE_SIGNING_ALLOWED=NO"
+    },
+    {
+      "log": "/tmp/shield-message-filter-followup.log",
+      "logSha256": "00cbc731ce08581d3fea5d6b1c29066d6d99ac7cb4104b68cc6a11f4978af4df",
+      "sourcePhase": "Messages menu correction, before new heading focus",
+      "note": "Two passing methods.",
+      "methods": [
+        {
+          "method": "RedesignUITests/testLargestTextMessageFilterPreservesKeptState",
+          "status": "passed",
+          "seconds": 38.719
+        },
+        {
+          "method": "SeniorDesignUITests/testEverydayScreensAndKeepingSampleVoicemail",
+          "status": "passed",
+          "seconds": 76.196
+        }
+      ],
+      "diagnostics": [],
+      "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -project ios/Shield.xcodeproj -scheme Shield -destination \"platform=iOS Simulator,id=AFC89353-FF15-4B77-ACB9-5B79C9B061DF\" -derivedDataPath /tmp/shield-voiceover-derived -clonedSourcePackagesDirPath /tmp/shield-senior-polish-derived/SourcePackages -disableAutomaticPackageResolution \"-only-testing:ShieldUITests/RedesignUITests/testLargestTextMessageFilterPreservesKeptState\" \"-only-testing:ShieldUITests/SeniorDesignUITests/testEverydayScreensAndKeepingSampleVoicemail\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-message-filter-followup.xcresult CODE_SIGNING_ALLOWED=NO"
+    },
+    {
+      "log": "/tmp/shield-gesture-final-validation.log",
+      "logSha256": "a4ef15f78021b4b1b1a2cee33e1c1f0b1e5e8c26411db1e267eaf09b0d91d1b9",
+      "sourcePhase": "finalValidationBeforeInvitationPrompt",
+      "note": "Eight functional/spoken-focus methods passed. Three of six raw audit methods failed, retaining twelve reports. Invitation placeholder then corrected; historical failures remain.",
+      "methods": [
+        {
+          "method": "ForwardingUITests/testGuidedFlowRequiresRealCheckResultsAndPreparesEachCarrierCode",
+          "status": "passed",
+          "seconds": 58.876
+        },
+        {
+          "method": "ForwardingUITests/testRestorationGuidesAlreadyDoneSettingsAndPersistsChecks",
+          "status": "passed",
+          "seconds": 29.378
+        },
+        {
+          "method": "ForwardingUITests/testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed",
+          "status": "passed",
+          "seconds": 10.2
+        },
+        {
+          "method": "ForwardingUITests/testRestorationSettingsAtLargestTextInDarkMode",
+          "status": "passed",
+          "seconds": 8.878
+        },
+        {
+          "method": "RedesignUITests/testLargestTextMessageFilterPreservesKeptState",
+          "status": "passed",
+          "seconds": 36.106
+        },
+        {
+          "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+          "status": "passed",
+          "seconds": 23.18
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testEverydayScreensAudit",
+          "status": "failed",
+          "seconds": 39.394
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testNativeControlReferenceAudit",
+          "status": "failed",
+          "seconds": 9.272
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testOnboardingChoicesAudit",
+          "status": "passed",
+          "seconds": 17.489
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testOwnerSettingsScreensAudit",
+          "status": "failed",
+          "seconds": 80.491
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+          "status": "passed",
+          "seconds": 18.7
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testWelcomeAndSentEmailAudit",
+          "status": "passed",
+          "seconds": 17.843
+        },
+        {
+          "method": "VoiceOverUITests/testVoiceOverOnboardingChoicesAndSafeSaveRecovery",
+          "status": "passed",
+          "seconds": 128.259
+        },
+        {
+          "method": "VoiceOverUITests/testVoiceOverSetupAndDisconnectionInstructions",
+          "status": "passed",
+          "seconds": 142.894
+        }
+      ],
+      "diagnostics": [
+        {
+          "capture": "accessibility-home-row-exposed",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 679.7}, {338.0, 52.3}}, label: 'All calls'"
+        },
+        {
+          "capture": "accessibility-calls",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{82.0, 784.7}, {76.7, 18.0}}, label: 'Check first'"
+        },
+        {
+          "capture": "accessibility-calls",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{164.7, 784.7}, {107.7, 18.0}}, label: '[synthetic number]'"
+        },
+        {
+          "capture": "accessibility-calls-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{291.3, 180.3}, {56.7, 18.0}}, identifier: 'call-time-9AAA2789-29DD-4B28-8A0E-7FE3A49C0AB8', label: '9:45 AM'"
+        },
+        {
+          "capture": "accessibility-calls-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{82.0, 206.7}, {70.0, 18.0}}, label: 'Answered'"
+        },
+        {
+          "capture": "accessibility-calls-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{158.0, 206.7}, {107.7, 18.0}}, label: '[synthetic number]'"
+        },
+        {
+          "capture": "accessibility-calls-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{158.0, 652.0}, {106.7, 18.0}}, label: '[synthetic number]'"
+        },
+        {
+          "capture": "accessibility-calls-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{82.0, 770.3}, {98.3, 18.0}}, label: 'New message'"
+        },
+        {
+          "capture": "accessibility-native-control-reference",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 819.0}, {102.7, 20.3}}, label: 'Native row 10'"
+        },
+        {
+          "capture": "accessibility-native-control-reference",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 841.7}, {106.3, 18.0}}, label: 'Supporting text'"
+        },
+        {
+          "capture": "accessibility-contacts",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.7, 807.3}, {173.7, 22.7}}, label: 'Contacts settings'"
+        },
+        {
+          "capture": "accessibility-invitation",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: TextField, [runtime address], {{32.0, 333.7}, {338.0, 22.0}}, label: 'Invitation code', placeholderValue: 'Paste code here'"
+        }
+      ],
+      "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-voiceover-derived/Build/Products/Shield_iphonesimulator27.0-arm64-x86_64.xctestrun -destination \"platform=iOS Simulator,id=AFC89353-FF15-4B77-ACB9-5B79C9B061DF\" -parallel-testing-enabled NO -resultBundlePath /tmp/shield-gesture-final-validation.xcresult \"-only-testing:ShieldUITests/ForwardingUITests/testGuidedFlowRequiresRealCheckResultsAndPreparesEachCarrierCode\" \"-only-testing:ShieldUITests/ForwardingUITests/testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed\" \"-only-testing:ShieldUITests/ForwardingUITests/testRestorationGuidesAlreadyDoneSettingsAndPersistsChecks\" \"-only-testing:ShieldUITests/ForwardingUITests/testRestorationSettingsAtLargestTextInDarkMode\" \"-only-testing:ShieldUITests/RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail\" \"-only-testing:ShieldUITests/RedesignUITests/testLargestTextMessageFilterPreservesKeptState\" \"-only-testing:ShieldUITests/VoiceOverUITests/testVoiceOverOnboardingChoicesAndSafeSaveRecovery\" \"-only-testing:ShieldUITests/VoiceOverUITests/testVoiceOverSetupAndDisconnectionInstructions\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testWelcomeAndSentEmailAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testEverydayScreensAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testOwnerSettingsScreensAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testOnboardingChoicesAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testNativeControlReferenceAudit\"",
+      "processExitCode": 143,
+      "resultBundleStatus": "Incomplete: Info.plist missing; xcresulttool could not read summary. Full individual method results and audit findings are retained in the log.",
+      "processLimit": "All fourteen methods completed and suites printed results. Xcode remained saving diagnostics more than four minutes afterward, did not exit on SIGINT, and was terminated with SIGTERM. Not a clean command completion.",
+      "partialResultBundle": "/tmp/shield-gesture-final-validation.xcresult"
+    },
+    {
+      "log": "/tmp/shield-native-boundary/reference.log",
+      "logSha256": "5df1dd8bd27c126a9b2b0d56eaab7f66745fd89ac133b94e170c4df919f442f4",
+      "sourcePhase": "standalone initial native counter",
+      "note": "All four initial clipping audits passed; four scrolled named All calls reports retained; all four destination actions passed. Method fails because audits are unfiltered.",
+      "methods": [
+        {
+          "method": "SeniorAccessibilityUITests/testExternalNativeBoundaryClippingReference",
+          "status": "failed",
+          "seconds": 58.255
+        }
+      ],
+      "diagnostics": [
+        {
+          "capture": "external-native-plain-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: Button, [runtime address], {{16.0, 458.0}, {343.0, 82.0}}, identifier: 'native-all-calls', label: 'All calls'"
+        },
+        {
+          "capture": "external-native-stack-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        },
+        {
+          "capture": "external-native-no-fixed-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        },
+        {
+          "capture": "external-native-combined-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        }
+      ],
+      "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-voiceover-derived/Build/Products/Shield_native_boundary.xctestrun -destination \"platform=iOS Simulator,id=4CD3A28C-0ACF-4F5C-904F-6713242BAF3D\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testExternalNativeBoundaryClippingReference\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-native-boundary/reference.xcresult"
+    },
+    {
+      "log": "/tmp/shield-native-boundary/scaled-card.log",
+      "logSha256": "6e56914769c9779f097a2cd2864d2e5bbc46cf80c9b6ce1c55a7708efeca097c",
+      "sourcePhase": "standalone scaled native counter",
+      "note": "Same four named scrolled reports; all four destination actions passed; no unnamed report. Unfiltered method failed.",
+      "methods": [
+        {
+          "method": "SeniorAccessibilityUITests/testExternalNativeBoundaryClippingReference",
+          "status": "failed",
+          "seconds": 49.252
+        }
+      ],
+      "diagnostics": [
+        {
+          "capture": "external-native-plain-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: Button, [runtime address], {{16.0, 458.0}, {343.0, 82.0}}, identifier: 'native-all-calls', label: 'All calls'"
+        },
+        {
+          "capture": "external-native-stack-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        },
+        {
+          "capture": "external-native-no-fixed-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        },
+        {
+          "capture": "external-native-combined-scrolled",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        }
+      ],
+      "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-voiceover-derived/Build/Products/Shield_native_boundary.xctestrun -destination \"platform=iOS Simulator,id=4CD3A28C-0ACF-4F5C-904F-6713242BAF3D\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testExternalNativeBoundaryClippingReference\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-native-boundary/scaled-card.xcresult"
+    },
+    {
+      "log": "/tmp/shield-invitation-clipping-final.log",
+      "logSha256": "375b8659a798e6c3ad426862a20e43e0b08efa5300029017d6247645a32514ea",
+      "sourcePhase": "current",
+      "note": "Final shortened Code placeholder: light/dark and ordinary/maximum-text clipping audits passed with no filtered findings. Extra Xcode diagnostic collection disabled; explicit audit captures and findings retained.",
+      "methods": [
+        {
+          "method": "SeniorAccessibilityUITests/testInvitationFieldClippingInBothAppearancesAndLargestText",
+          "status": "passed",
+          "seconds": 37.759
+        }
+      ],
+      "diagnostics": [],
+      "resultBundle": "/tmp/shield-invitation-clipping-final.xcresult",
+      "processExitCode": 0
+    },
+    {
+      "log": "/tmp/shield-small-phone-gesture-final.log",
+      "logSha256": "78d2b1932fb00979ce77fb9e5c710e43d27840c25f91219efd94a25d988f7eb9",
+      "sourcePhase": "beforeNativeSubmitTestDriver",
+      "note": "iOS 26.5 SE: message filtering and largest-text dark disconnection passed. Email test failed after tapping an app button whose center was covered by the keyboard. Raw everyday audit retained five contrast and two clipping reports, including one with no associated element. Requested invitation method was not selected in this run; do not claim it passed.",
+      "processExitCode": 65,
+      "methods": [
+        {
+          "method": "ForwardingUITests/testRestorationSettingsAtLargestTextInDarkMode",
+          "status": "passed",
+          "seconds": 7.329
+        },
+        {
+          "method": "RedesignUITests/testLargestTextMessageFilterPreservesKeptState",
+          "status": "passed",
+          "seconds": 34.283
+        },
+        {
+          "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+          "status": "failed",
+          "seconds": 15.975
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testEverydayScreensAudit",
+          "status": "failed",
+          "seconds": 32.353
+        }
+      ],
+      "diagnostics": [
+        {
+          "capture": "accessibility-home",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 554.5}, {311.0, 52.5}}, label: 'All messages'"
+        },
+        {
+          "capture": "accessibility-home-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 115.5}, {311.0, 52.5}}, label: 'All messages'"
+        },
+        {
+          "capture": "accessibility-home-row-exposed",
+          "type": "Text clipped",
+          "associatedElement": "No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes."
+        },
+        {
+          "capture": "accessibility-home-row-exposed",
+          "type": "Text clipped",
+          "associatedElement": "Attributes: StaticText, [runtime address], {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'"
+        },
+        {
+          "capture": "accessibility-calls",
+          "type": "Contrast failed",
+          "associatedElement": "No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+        },
+        {
+          "capture": "accessibility-calls",
+          "type": "Contrast failed",
+          "associatedElement": "No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+        },
+        {
+          "capture": "accessibility-calls-row-exposed",
+          "type": "Contrast failed",
+          "associatedElement": "No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+        }
+      ],
+      "resultBundle": "/tmp/shield-small-phone-gesture-final.xcresult"
+    },
+    {
+      "log": "/tmp/shield-small-phone-email-invitation-final.log",
+      "logSha256": "0dc8d398ba224cf813ddbd066f2d1ba1e087ee15f529a7e8086ed892bd60577f",
+      "sourcePhase": "current",
+      "note": "After rebuilding specifically for the SE and correcting native Send test selection: email recovery at ordinary/maximum text passed, with keyboard dismissed, full feedback visible and exact address retained. Four invitation clipping captures passed, both themes and text sizes.",
+      "processExitCode": 0,
+      "methods": [
+        {
+          "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+          "status": "passed",
+          "seconds": 18.78
+        },
+        {
+          "method": "SeniorAccessibilityUITests/testInvitationFieldClippingInBothAppearancesAndLargestText",
+          "status": "passed",
+          "seconds": 28.857
+        }
+      ],
+      "diagnostics": [],
+      "resultBundle": "/tmp/shield-small-phone-email-invitation-final.xcresult"
+    },
+    {
+      "log": "/tmp/shield-pro-native-send-final.log",
+      "logSha256": "09567abf5bcd2b0f3547095d646236e305d66c992de2da58e622dc072b16492c",
+      "sourcePhase": "native Send driver with visibility assertion",
+      "processExitCode": 65,
+      "methods": [
+        {
+          "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+          "status": "failed",
+          "seconds": 26.172
+        }
+      ],
+      "diagnostics": [],
+      "note": "Both size iterations submitted and passed keyboard-dismissal, complete error-frame and exact email retention assertions. Only the native Send key isHittable assertion failed twice; SDK tap retried before completing the expected recovery. The final driver waits for native-key existence and retains all recovery assertions. No app source changed."
+    },
+    {
+      "log": "/tmp/shield-pro-native-send-confirmed.log",
+      "logSha256": "b19de2ef826128518ab8d905eb3cb53bbbd18ce4e0b7f4e27c59549f0985d6ad",
+      "sourcePhase": "current",
+      "processExitCode": 0,
+      "resultBundle": "/tmp/shield-pro-native-send-confirmed.xcresult",
+      "methods": [
+        {
+          "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+          "status": "passed",
+          "seconds": 24.169
+        }
+      ],
+      "diagnostics": [],
+      "note": "Final driver: native Send key exists and submits at ordinary/maximum text. Keyboard dismissed, complete error inside viewport, exact address retained. Explicit key-visibility assertion replaced; recovery outcome assertions unchanged."
+    }
+  ],
+  "nativeFixture": {
+    "firstSource": "/tmp/shield-native-boundary/NativeBoundary.swift",
+    "firstSourceSha256": "bacc7d1e2d968691b7fc3cafaefcb5ca55fbc59aab7a7bce9cf2b9768ac83f28",
+    "currentSource": "ios/Diagnostics/NativeBoundary.swift",
+    "currentSourceSha256": "077ccfb2547aa654cf9f6a54f0c686ac50f3225e91cb1ef37e55d68ece4bd751",
+    "bundle": "org.shield.NativeBoundaryReference",
+    "runtime": "iOS 26.5, iPhone SE third generation",
+    "meaning": "A named native-only clipping reproduction does not establish the cause of the Shield finding or explain its unnamed report."
+  },
+  "gestureWalkthrough": {
+    "method": "Device Hub pointer focus taps, double taps at the actual focused control, one-finger reading swipes, captured keyboard input for synthetic fields. VoiceOver remained on during these documented interactions.",
+    "report": "docs/IOS-SENIOR-GESTURE-REVIEW.md",
+    "captures": ".impeccable/review/gesture-continuation/capture-evidence.json",
+    "limits": [
+      "No physical iPhone or older participant",
+      "No three-finger scroll or hardware-keyboard certification",
+      "External Phone/Settings/carrier results simulated",
+      "Rapid pointer sequences sometimes required another double tap after fresh focus",
+      "XCTest speech helper still records temporary VoiceOver interruptions for direct taps"
+    ],
+    "restoredSettings": {
+      "VoiceOver": "off",
+      "CaptureKeyboard": "off"
+    }
+  },
+  "resultPolicy": "Never suppress audit findings or present corrected reruns as one clean suite.",
+  "builds": [
+    {
+      "configuration": "Release",
+      "status": "passed",
+      "log": "/tmp/shield-invitation-release-final.log",
+      "logSha256": "2d289ef2adfdc94b198f29455cdf149c195a9ffad91f01be24fa7b2baf63b2de"
+    },
+    {
+      "configuration": "build-for-testing",
+      "status": "passed",
+      "log": "/tmp/shield-final-clipping-test-build.log",
+      "logSha256": "220dd29647d4efa96882ae06e3a42aeedf9ddcdfe4be53b2389e35255c38d5f7"
+    },
+    {
+      "configuration": "Final test-driver build",
+      "status": "passed",
+      "log": "/tmp/shield-final-native-key-presence-build.log",
+      "logSha256": "c6fa9b30a8df26b988e31e2590ed657217ea2d5c04296137eb9a3449eb2fefe5"
+    }
+  ],
+  "testDriverCorrections": [
+    {
+      "method": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+      "evidence": "/tmp/shield-small-phone-gesture-final-attachments/562C6933-3B12-4063-8101-05AA42AED2C5.txt",
+      "finding": "At ordinary text on the SE, the app Send button frame was y427.5...509.5 while the keyboard started at y451. The test tapped the covered button rather than the visible native Send key. The corrected test submits via native keyboard Send at both text sizes. Earlier Pro ordinary app-button activation remains a separate passing observation.",
+      "verification": "Native Send recovery passed at both text sizes on iOS 26.5 SE and in the final iOS 27 Pro run. Failed earlier attempts remain separate.",
+      "nativeKeyCheck": "The final driver waits for Send key existence. The earlier explicit native-key isHittable assertion failed on iOS 27 despite both completed submission/recovery paths; that failed attempt remains recorded."
+    }
+  ],
+  "remainingDiagnostics": {
+    "broadIOS27BeforeInvitationCorrection": {
+      "contrast": 10,
+      "textClipped": 2,
+      "hitRegion": 0,
+      "sufficientElementDescription": 0,
+      "methodsFailed": 3,
+      "methodsAudited": 6
+    },
+    "invitationCorrection": "Focused clipping audit now passes in both appearances and both text sizes on iOS 27 Pro and iOS 26.5 SE; the initial broad run remains recorded as failed. No fresh all-screens clean audit is claimed.",
+    "smallPhoneEveryday": {
+      "contrast": 5,
+      "textClipped": 2,
+      "hitRegion": 0,
+      "sufficientElementDescription": 0,
+      "methodStatus": "failed",
+      "unnamedClipping": "Unresolved; native-only reference does not reproduce it."
+    },
+    "interpretation": "Named native-only footer reproduction and edge-associated contrast do not clear the raw audit or establish a framework cause."
+  },
+  "cleanup": {
+    "temporarySimulatorRemoved": "4CD3A28C-0ACF-4F5C-904F-6713242BAF3D",
+    "existingSimulatorsPreserved": true,
+    "runtimeNotDeleted": true
+  }
+}

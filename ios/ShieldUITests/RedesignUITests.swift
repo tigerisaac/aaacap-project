@@ -42,6 +42,32 @@ final class RedesignUITests: XCTestCase {
         capture(app, "Redesign Sign in error")
     }
 
+    func testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail() {
+        for largest in [false, true] {
+            let size = largest ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []
+            let app = launch(["--uitesting-auth-error", "--uitesting-light"] + size)
+            let email = app.textFields["Email address"]
+            XCTAssertTrue(email.waitForExistence(timeout: 5))
+            email.tap(); email.typeText("synthetic@example.com")
+            XCTAssertTrue(app.keyboards.firstMatch.exists)
+            let send = app.keyboards.buttons["Send"]
+            XCTAssertTrue(send.waitForExistence(timeout: 5))
+            send.tap()
+            let feedback = app.staticTexts["sign-in-error"]
+            XCTAssertTrue(feedback.waitForExistence(timeout: 5))
+            XCTAssertFalse(app.keyboards.firstMatch.exists)
+            XCTAssertTrue(feedback.isHittable)
+            XCTAssertGreaterThanOrEqual(feedback.frame.minY, app.frame.minY)
+            XCTAssertLessThanOrEqual(feedback.frame.maxY, app.frame.maxY)
+            capture(app, "Sign-in open-keyboard recovery \(largest ? "largest" : "standard")")
+            for _ in 0..<8 {
+                if email.exists && email.isHittable { break }
+                app.swipeDown()
+            }
+            XCTAssertEqual(email.value as? String, "synthetic@example.com")
+        }
+    }
+
     func testSignInReturnAndLoadingStayInContext() {
         var app = launch(["--uitesting-auth-return", "--uitesting-auth-error"])
         XCTAssertTrue(app.staticTexts["Finish signing in"].waitForExistence(timeout: 5))
@@ -121,6 +147,32 @@ final class RedesignUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Call"].waitForExistence(timeout: 5))
         app.buttons["More about this call"].tap()
         XCTAssertTrue(app.staticTexts["The caller asked for a secret code. Shield didn’t connect the call."].exists)
+    }
+
+    func testLargestTextMessageFilterPreservesKeptState() {
+        let app = launch(["--uitesting-preview", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        app.tabBars.buttons["Messages"].tap()
+        let filter = app.buttons["sample-message-filter"]
+        XCTAssertTrue(filter.waitForExistence(timeout: 5))
+        filter.tap()
+        app.buttons["Kept"].tap()
+        XCTAssertTrue(app.staticTexts["No kept messages yet"].waitForExistence(timeout: 5))
+        filter.tap()
+        app.buttons["All"].tap()
+        let message = app.historyRow("Appointment message")
+        for _ in 0..<8 { if message.isHittable { break }; app.swipeUp() }
+        message.tap()
+        let keep = app.buttons["keep-sample-message"]
+        for _ in 0..<8 { if keep.isHittable { break }; app.swipeUp() }
+        keep.tap()
+        XCTAssertEqual(keep.label, "Message kept")
+        app.navigationBars.buttons.firstMatch.tap()
+        for _ in 0..<8 { if filter.isHittable { break }; app.swipeDown() }
+        filter.tap()
+        app.buttons["Kept"].tap()
+        XCTAssertTrue(app.historyRow("Appointment message").exists)
+        XCTAssertFalse(app.historyRow("Saved account notice").exists)
+        capture(app, "Largest text Kept message filter")
     }
 
     func testCheckUsesConsentAndClearlyLabelsSampleResult() {

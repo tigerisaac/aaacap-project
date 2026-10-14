@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-14",
+  "device": "iPhone18 Pro iOS27 simulator",
+  "baseCommit": "3370ec1",
+  "method": "Native Device Hub pointer tap/double-tap/swipe and captured keyboard input. VoiceOver remained enabled during each documented gesture. Screenshots captured by the simulator after interaction.",
+  "captures": [
+    {
+      "file": "native-switch-doubletap.png",
+      "purpose": "Plain native switch activated with VoiceOver continuously on through Device Hub; one tap focused, double tap changed value from 0 to 1.",
+      "sourceCaptureSha256": "1e3068fdfc8684f246e4fe216b9f782a9cb19add6d29e938629b1a6943c2c430",
+      "fileSha256": "06aacf1816f2d2eada33766896d67d04ce2fa354dbe082c1e1151ef489a7fca5"
+    },
+    {
+      "file": "email-send-newline-before.png",
+      "purpose": "Largest-text multiline email input: native Send gesture inserted a newline instead of submitting, with the input partially covered by the keyboard.",
+      "sourceCaptureSha256": "ed82697a1f0f76ae0dea0bbe49031df8fdb6c9d1f999c6c223b32a149261980e",
+      "fileSha256": "499f0155cecf4d917968813df6158f1477e539b92f41d9476ba8776808fea476"
+    },
+    {
+      "file": "email-send-recovery-after.png",
+      "purpose": "Maximum-text native Send recovery: complete interrupted-send notice visible after keyboard dismissal; synthetic email retained.",
+      "sourcePhase": "Final SignInView correction",
+      "sourceCaptureSha256": "dc1cc35ffd8bc7c4b8d59e63132291736017af1f32b0bea1bcd4fb34619916bc",
+      "fileSha256": "4b066df7edc88520523bcf0dc9ea569bcd7504912060a4889f239a3611c8f406"
+    },
+    {
+      "file": "playback-recovery.png",
+      "purpose": "Continuous VoiceOver playback recovery using local synthetic audio: warning and playback control remain available.",
+      "sourcePhase": "Existing playback source at base 3370ec1",
+      "sourceCaptureSha256": "f3fcb70b9baa396c3f4dd531ddfd70ef61c668819dd56b6c065d33af8ab1fc64",
+      "fileSha256": "4b952a69952c6440b6865dde1d5c158d10d1ec0e0358376861130d7fc5d27a2b"
+    },
+    {
+      "file": "setup-completion-focus.png",
+      "purpose": "Synthetic guided setup reached step ten; completion heading focused.",
+      "sourcePhase": "Per-step heading task, before footer identity correction",
+      "sourceCaptureSha256": "1e5403daa60a5c420257c47b71bbc7e7f4ab87aa17db6780a1c6b12a056caf8c",
+      "fileSha256": "869dcca70ba1fa3d3a92cf0b8df1ad7ad4d94ec94d3e2d829709a2d0a35f6a94"
+    },
+    {
+      "file": "setup-new-step-focus.png",
+      "purpose": "Guided setup code-to-check transition after footer identity correction; new step-nine heading focused.",
+      "sourcePhase": "Final ForwardingSetupView correction",
+      "sourceCaptureSha256": "d8eabc338a023b87feba48e91a768d90d1e5daa8c681b919b82d697582f5a779",
+      "fileSha256": "30703a6947d17b3004da32ae5feb1c59ecc297311d57cb0a54e0e5cbc7917d86"
+    },
+    {
+      "file": "reset-completion.png",
+      "purpose": "Seven synthetic disconnection confirmations reached qualified completion with VoiceOver on; no carrier setting or real call verified.",
+      "sourcePhase": "Final restoration stage identity and focus correction",
+      "sourceCaptureSha256": "a002d9b289d9b7b7fb964c4b3e5f6f39c4dd820942f682f06c7b1fb7e3455e99",
+      "fileSha256": "5ce50c29485dfe0731287c453d69b7d742c93a2d80ff5768a960b0e5d0004c63"
+    },
+    {
+      "file": "messages-largest-empty-guidance.png",
+      "purpose": "Dark Mode maximum-text Messages menu selected Kept; reading swipes scrolled complete empty-state guidance into view.",
+      "sourcePhase": "Final VoicemailView correction",
+      "sourceCaptureSha256": "ee18dfe2c39ceea4de52cf4c2ddf9309e977d4779c44ea014a63820a46680fab",
+      "fileSha256": "5701a4895317bd13f403035e8770dd55500b20c150feb77acfc054808605859e"
+    },
+    {
+      "file": "native-footer-report.png",
+      "purpose": "Standalone native SwiftUI plain footer on iOS 26.5 SE after scrolling: audit reports All calls clipping while text and native target remain fully onscreen; the footer activated its destination.",
+      "sourcePhase": "First native-only reference, ordinary largeTitle counter before scaled-counter reference",
+      "attachmentSource": "/tmp/shield-native-boundary/attachments/FBD9B411-2B8F-48FB-8060-764DC1AA7400.png",
+      "sourceCaptureSha256": "c044638a81e6ecb7815f4d9b7d2e9c8f71f0a3618da5c763a37b512fe8cedbfc",
+      "fileSha256": "c4cf389321c84b28d84c1ae839c1b9179759463657ffb205e3e9771f4e25585a"
+    }
+  ],
+  "scope": "Continuous-VoiceOver Device Hub checkpoints across app-owned synthetic journeys, including ten setup steps, seven disconnection steps, maximum-text email and Messages, and recovery/cancellation flows. Not physical-phone, three-finger or carrier-handoff certification. Exact code source fingerprints at each capture were not recorded; phase labels distinguish the preliminary and final focus fixes."
+}

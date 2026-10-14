@@ -24,7 +24,7 @@ struct JoinInvitationView: View {
                         Text("Paste the code from the person who invited you.")
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Invitation code").font(.headline).foregroundStyle(ShieldTheme.ink)
-                            TextField("Invitation code", text: $code, prompt: Text("Paste code here").foregroundStyle(ShieldTheme.secondaryText))
+                            TextField("Invitation code", text: $code, prompt: Text("Code").foregroundStyle(ShieldTheme.secondaryText))
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
                                 .focused($editing).accessibilityLabel("Invitation code")

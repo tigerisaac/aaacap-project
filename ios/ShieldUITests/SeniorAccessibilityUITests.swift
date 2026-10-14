@@ -35,6 +35,17 @@ final class SeniorAccessibilityUITests: XCTestCase {
         }
     }
 
+    func testInvitationFieldClippingInBothAppearancesAndLargestText() throws {
+        for dark in [false, true] {
+            for largest in [false, true] {
+                let size = largest ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []
+                let app = launch(["--uitesting-screen", "invitation"] + size, dark: dark)
+                XCTAssertTrue(app.textFields["Invitation code"].waitForExistence(timeout: 5))
+                try audit(app, "invitation-field-\(dark ? "dark" : "light")-\(largest ? "largest" : "standard")", types: .textClipped)
+            }
+        }
+    }
+
     func testOnboardingChoicesAudit() throws {
         var app = launch(["--uitesting-protection-onboarding"])
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].waitForExistence(timeout: 5))
@@ -102,6 +113,27 @@ final class SeniorAccessibilityUITests: XCTestCase {
         for _ in 0..<3 { app.swipeUp() }
         XCTAssertTrue(app.buttons["native-footer-button"].isHittable)
         try audit(app, "clipping-native-footer", types: .textClipped)
+    }
+
+    // Optional standalone SwiftUI app: no Shield views, colors or application state.
+    // Install the diagnostic fixture and set its bundle ID in the test runner environment.
+    func testExternalNativeBoundaryClippingReference() throws {
+        guard let bundleID = ProcessInfo.processInfo.environment["SHIELD_NATIVE_BOUNDARY_BUNDLE"] else {
+            throw XCTSkip("Standalone native boundary fixture is not installed for this run.")
+        }
+        for variant in ["plain", "stack", "no-fixed", "combined"] {
+            let app = XCUIApplication(bundleIdentifier: bundleID)
+            app.launchArguments = ["--variant", variant]
+            app.launch()
+            try audit(app, "external-native-\(variant)-initial", types: .textClipped)
+            app.swipeUp()
+            try audit(app, "external-native-\(variant)-scrolled", types: .textClipped)
+            let footer = app.buttons["native-all-calls"]
+            XCTAssertTrue(footer.isHittable)
+            footer.tap()
+            XCTAssertTrue(app.staticTexts["Native footer action ran"].waitForExistence(timeout: 5))
+            app.terminate()
+        }
     }
 
     private func launch(_ arguments: [String], dark: Bool = false) -> XCUIApplication {

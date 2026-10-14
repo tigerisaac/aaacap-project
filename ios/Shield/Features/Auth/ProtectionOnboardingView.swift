@@ -16,7 +16,9 @@ struct ProtectionOnboardingView: View {
     @State private var working = false
     @State private var error: String?
     @State private var showingSaveError = false
-    @AccessibilityFocusState private var headingFocused: Bool
+    @AccessibilityFocusState private var focusedChoice: Choice?
+    private enum Choice { case protection, helpers }
+    private var choice: Choice { showsProtection ? .protection : .helpers }
 
     var body: some View {
         NavigationStack {
@@ -28,7 +30,8 @@ struct ProtectionOnboardingView: View {
                     }
                     Text(showsProtection ? "Help while you talk" : "Let a helper know")
                         .shieldPageHeading().accessibilityAddTraits(.isHeader)
-                        .id("choice-heading").accessibilityFocused($headingFocused)
+                        .id("choice-heading").accessibilityFocused($focusedChoice, equals: choice)
+                        .task(id: choice) { focusedChoice = choice }
                     if showsProtection {
                         CallProtectionExplanation()
                         Toggle("Check calls while I talk", isOn: $enabled)
@@ -60,7 +63,6 @@ struct ProtectionOnboardingView: View {
             .id(onHelperStep)
             .onChange(of: onHelperStep) { _, _ in
                 proxy.scrollTo("choice-top", anchor: .top)
-                headingFocused = true
             }
             }
             .background(ShieldTheme.surface)
@@ -68,6 +70,7 @@ struct ProtectionOnboardingView: View {
             .safeAreaInset(edge: .bottom) {
                 if !dynamicTypeSize.isAccessibilitySize {
                     completionButton
+                        .id(choice)
                         .padding(20).background(ShieldTheme.surface)
                 }
             }

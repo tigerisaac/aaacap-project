@@ -63,6 +63,7 @@ private struct RestorationConfirmationAction: View {
             Button { index += 1 } label: { ShieldActionLabel(title: title) }
                 .shieldPrimaryButton()
                 .accessibilityIdentifier(index < 5 ? "restoration-settings-confirm" : "restoration-call-confirm")
+                .id(index)
         }
     }
     private var title: String {

@@ -17,10 +17,27 @@ struct VoicemailView: View {
                 PersonContextSection()
                 if app.isDemo, app.isOwner, app.canListen {
                     ShieldGroup(background: .clear) {
-                        Picker("Messages", selection: $keptOnly) {
-                            Text("All").tag(false)
-                            Text("Kept").tag(true)
-                        }.pickerStyle(.segmented).accessibilityIdentifier("sample-message-filter")
+                        if typeSize >= .xxxLarge {
+                            Menu {
+                                messagePicker
+                            } label: {
+                                HStack(alignment: .firstTextBaseline) {
+                                    Text(keptOnly ? "Kept messages" : "All messages")
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    Spacer(minLength: ShieldTheme.Spacing.compact)
+                                    Image(systemName: "chevron.down").accessibilityHidden(true)
+                                }
+                                .padding(ShieldTheme.Spacing.content)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                            }
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+                            .accessibilityLabel("Messages, \(keptOnly ? "Kept" : "All")")
+                            .accessibilityHint("Choose which messages to show")
+                            .accessibilityIdentifier("sample-message-filter")
+                        } else {
+                            messagePicker.pickerStyle(.segmented)
+                                .accessibilityIdentifier("sample-message-filter")
+                        }
                     }
                     .listRowInsets(EdgeInsets())
                 }
@@ -64,6 +81,13 @@ struct VoicemailView: View {
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task { await inbox.load(app) }
             .refreshable { await inbox.load(app) }
+        }
+    }
+
+    private var messagePicker: some View {
+        Picker("Messages", selection: $keptOnly) {
+            Text("All").tag(false)
+            Text("Kept").tag(true)
         }
     }
 }

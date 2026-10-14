@@ -8,7 +8,7 @@ struct ForwardingSetupView: View {
     @State private var model = ForwardingSetupModel()
     @State private var confirmRestore = false
     @State private var leftForPhone = false
-    @AccessibilityFocusState private var headingFocused: Bool
+    @AccessibilityFocusState private var focusedStep: ForwardingStep?
     @AccessibilityFocusState private var errorFocused: Bool
 
     var body: some View {
@@ -20,7 +20,8 @@ struct ForwardingSetupView: View {
                             FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 10)
                         }
                         Text(model.step.title).shieldPageHeading().id("forwarding-heading")
-                            .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
+                            .accessibilityAddTraits(.isHeader).accessibilityFocused($focusedStep, equals: model.step)
+                            .task(id: model.step) { focusedStep = model.step }
                         if model.step == .ring || model.step == .test {
                             ForwardingProbeView(model: model)
                         } else if model.isPhoneSettingsStep {
@@ -73,6 +74,7 @@ struct ForwardingSetupView: View {
         .safeAreaInset(edge: .bottom) {
             if model.status != nil && !(typeSize.isAccessibilitySize && model.step == .consent) {
                 ForwardingActions(model: model, app: app)
+                    .id(model.step)
             }
         }
         .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
@@ -114,7 +116,6 @@ struct ForwardingSetupView: View {
                 await model.load(app)
             }
         }
-        .onChange(of: model.step) { _, _ in headingFocused = true }
         .onChange(of: scenePhase) { _, phase in
             model.settingsSceneChanged(isActive: phase == .active)
             model.codeSceneChanged(isActive: phase == .active, isBackground: phase == .background)
