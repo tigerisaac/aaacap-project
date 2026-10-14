@@ -1,5 +1,15 @@
 # Status
 
+## October 13 — v158 live screening deployed with owner approval
+
+After the [online-report check](SCREENING-ONLINE-REPORTS.md), the owner explicitly requested production deployment. Revision **`shield-live-00013-zgf`** serves **100%** of the existing pilot's screening traffic and was verified at **19:58 Central** (`2026-10-14T00:58:43.631Z`). `/ready` reports `2026-10-13-general-v158`, GPT Live, GPT-6 Luna, the local acknowledgement and the existing ten-session capacity. No new revision ERROR or missing-acknowledgement logs appeared at verification.
+
+The release changes only the live policy, session and decision-progress modules, including the already-tested unanswered-clarification and stale-decision guards. It inherits the exact prior production image and dependencies; 45 other packaged files remain unchanged. The new image was verified at zero traffic before promotion. Active-call reservations were empty at staging and promotion. Service settings, secret references, IAM and all eight Firebase function revisions were read back unchanged. Production post-call filtering remains **v4**; repository v10 was not part of this release. No forwarding, phone settings, consent, test-window or participant-capacity changes occurred.
+
+The unchanged source matches the frozen text evaluation; the latest `npm run check` passed 203 unit tests/typecheck/build and `npm run test:firebase` passed 154 tests. The exact release package passed local startup; Cloud Build verified all packaged module hashes inside the actual inherited image. The owner's instruction to set aside voice readiness remains explicit: no v158 voice benchmark, paid-model smoke session or real phone call was performed. Known ordinary-routing, questioning and concealed-intent limitations remain; deployment does not convert text evidence into real-call verification.
+
+Cloud Build `1e7a934c-9f85-4859-acfb-6b48f393dc5b` produced digest `sha256:cec81049b2da373d73c837410dfb8d9c81f76fcdb0d72d3a5367b7afa50762fc` from source `da2c50e`. Rollback revision `shield-live-00012-vrw` is retained. [Operations](OPERATIONS.md#v158-screening-release--october-13) records the release procedure; private manifests and readbacks are in `artifacts/private/v158-release/`.
+
 ## October 13 — lean v158 production candidate; rollout remains limited
 
 The [production candidate report](SCREENING-PRODUCTION-CANDIDATE.md) selects one direct, runtime-compatible v158 prompt, **10.8% shorter** than v134's instructions. It stops unexpected-charge alarms and empty contact invitations, preserves contextual callbacks and useful clarification, and requires evidence before routing a caller as recorded. Existing v134 runtime guards and post-call v10 remain; no experimental observation mapper is adopted. Nothing is deployed.

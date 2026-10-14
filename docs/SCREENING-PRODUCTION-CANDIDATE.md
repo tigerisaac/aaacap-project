@@ -1,6 +1,6 @@
 # Production screening candidate
 
-October 13, 2026. The owner requested one lean generalist policy using the existing runtime, fresh complete conversations, recent online scam patterns and both public benchmarks, all on subscription GPT-6 Luna at medium reasoning. **The single selected candidate is v158. Text validation is complete; it is a controlled-pilot candidate, not an unqualified production release. Nothing has been deployed.**
+October 13, 2026. The owner requested one lean generalist policy using the existing runtime, fresh complete conversations, recent online scam patterns and both public benchmarks, all on subscription GPT-6 Luna at medium reasoning. **The single selected candidate is v158. Text validation is complete. It was subsequently deployed to the existing pilot with owner approval at 19:58 Central; see [STATUS.md](STATUS.md). This does not establish broad real-call reliability.**
 
 ## What changed
 
@@ -97,7 +97,7 @@ The audit checks frozen requests, unchanged tool schemas/limits, source hashes, 
 
 `npm run check` passes typecheck, 203 unit tests and build. The first v158 sandbox attempt could not bind a local test server (`EPERM`); the unchanged full suite passed outside that restriction. The earlier full Firebase emulator run passed 153/154 with one invalid/closed forwarding transaction; a complete rerun passed 154/154. Only prompt text changed afterward; both emulator outcomes are retained.
 
-Production remains the October 13 release `62b2ada`, screening v31 and post-call v4. Repository v158 and post-call v10 are not deployed. Voice readiness is set aside at the owner's request, not claimed as passed. Synthetic text is not real-call verification.
+At validation, production remained the October 13 release `62b2ada`, screening v31 and post-call v4. After the separate online-report check, the owner approved v158's deployment to the existing pilot at 19:58 Central; [STATUS.md](STATUS.md) records the exact release. Production post-call filtering remains v4; repository v10 was not released. Voice readiness is set aside at the owner's request, not claimed as passed. Synthetic text is not real-call verification.
 
 ## Reproduction
 
