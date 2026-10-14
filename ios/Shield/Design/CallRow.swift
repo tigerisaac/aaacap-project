@@ -67,15 +67,10 @@ struct CallRow: View {
             }
         }
         .padding(.vertical, 10)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityDescription)
-        .accessibilityInputLabels([title, "Open \(title)"])
-        .accessibilityHint("Open call details")
-        .accessibilityIdentifier("call-row-\(call.id)")
     }
 
-    private var accessibilityDescription: String {
-        var parts = [title]
+    var accessibilityDetails: String {
+        var parts = [String]()
         if showsOutcomeWord { parts.append(outcomeLabel) }
         if showsNumber && title != number { parts.append(number) }
         if unheard { parts.append("New message") }

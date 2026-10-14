@@ -1,0 +1,1054 @@
+{
+  "date": "2026-10-14",
+  "baseCommit": "7ef0876108eae355498442ee8b8abe2284a8cae2",
+  "scope": "Senior reading, navigation, invitation and playback recovery; local iOS code and synthetic simulator evidence.",
+  "simulators": [
+    "iPhone18 Pro, iOS27",
+    "iPhone17e, iOS27",
+    "temporary iPhoneSE3, iOS26.5 (375x667 points)"
+  ],
+  "voiceOver": {
+    "passedMethods": 12,
+    "coverage": {
+      "testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 62.207
+      },
+      "testVoiceOverContactRemovalHasReachableSafeChoice": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 42.37
+      },
+      "testVoiceOverEmailReturnHasResendAndChangeEmail": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 30.217
+      },
+      "testVoiceOverOnboardingChoicesAndSafeSaveRecovery": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 118.228
+      },
+      "testVoiceOverQuietHoursExplainsUnsavedState": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 52.385
+      },
+      "testVoiceOverReadsAndOpensAMessage": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 33.041
+      },
+      "testVoiceOverSetupAndDisconnectionInstructions": {
+        "result": "passed",
+        "run": "shield-voiceover-complete-focus-pass",
+        "seconds": 120.964
+      },
+      "testVoiceOverNativeFocusAndDirectToggleActions": {
+        "result": "passed",
+        "run": "shield-voiceover-corrected-five",
+        "seconds": 41.267
+      },
+      "testVoiceOverDailyNavigationAndSampleMessage": {
+        "result": "passed",
+        "run": "shield-voiceover-confirmed-four",
+        "seconds": 143.316
+      },
+      "testVoiceOverSharingRetainsNameAndSafeCancellation": {
+        "result": "passed",
+        "run": "shield-voiceover-confirmed-four",
+        "seconds": 113.679
+      },
+      "testVoiceOverPlaybackAndFeedbackAreInReadingFlow": {
+        "result": "passed",
+        "run": "shield-voiceover-final-two",
+        "seconds": 102.534
+      },
+      "testVoiceOverInvitationErrorIsCorrectable": {
+        "result": "passed",
+        "run": "shield-senior-single-line-pro",
+        "seconds": 79.8
+      }
+    },
+    "cleanAggregateSuite": false,
+    "boundary": "Actual spoken focus with VoiceOver enabled; ordinary actions and page scrolling temporarily use VoiceOver disabled. No physical gesture, older participant or complete external Phone/Settings handoff certification. Speech API excerpts are limited."
+  },
+  "auditTypes": [
+    "contrast",
+    "textClipped",
+    "hitRegion",
+    "sufficientElementDescription"
+  ],
+  "diagnosticExemptions": 0,
+  "latestAudit27": {
+    "run": "shield-senior-single-line-audit27",
+    "result": "failed",
+    "contrast": 6,
+    "textClipped": 0,
+    "hitRegion": 0,
+    "sufficientElementDescription": 0,
+    "classification": "Associated labels sit at native list boundaries. Fully exposed Home/Calls captures pass; no certified framework cause."
+  },
+  "latestAudit26": {
+    "run": "shield-senior-history-padding-confirm",
+    "result": "failed",
+    "contrast": 5,
+    "textClipped": 2,
+    "hitRegion": 0,
+    "sufficientElementDescription": 0,
+    "classification": "One clipping report names All calls; one has no element. Actual ordinary/maximum-text right-edge activation passes. Cause of unlocalized report remains uncertified."
+  },
+  "keyboardAutomation": "iOS27 invitation keyboard Done reported frame (310,798,71,36), inconsistent with its visible toolbar location. Final recovery test submits through the keyboard return action. App retains explicit Finish editing code for spoken navigation.",
+  "runs": [
+    {
+      "name": "shield-senior-last-check",
+      "result": "passed",
+      "localLog": "/tmp/shield-senior-last-check.log",
+      "logSha256": "f15966e2ebe3748561a30845ab038f1fae15d42729c3dce90761afa3486599ad",
+      "methods": [],
+      "aggregate": {
+        "tests": 231,
+        "failures": 0
+      }
+    },
+    {
+      "name": "shield-senior-last-firebase",
+      "result": "passed",
+      "localLog": "/tmp/shield-senior-last-firebase.log",
+      "logSha256": "996046c289eccd6d32e54dd5db8cbb4f2571f0df3e8640c6e3113574be151ecd",
+      "methods": [],
+      "aggregate": {
+        "tests": 159,
+        "failures": 0
+      }
+    },
+    {
+      "name": "shield-senior-final-visual-regression",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-final-visual-regression.log",
+      "logSha256": "43dcdc89e8650f7329751142e00288940c8da1ce3a8289ee575512a17245603b",
+      "methods": [
+        {
+          "suite": "ForwardingUITests",
+          "method": "testGuidedFlowRequiresRealCheckResultsAndPreparesEachCarrierCode",
+          "result": "passed",
+          "seconds": 59.015
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testAllCallsRespondsAcrossTheRowAtStandardAndLargestText",
+          "result": "passed",
+          "seconds": 23.002
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "passed",
+          "seconds": 17.801
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testStoppedCountOpensTheMatchingCalls",
+          "result": "passed",
+          "seconds": 12.924
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testZeroCountIsExplicitAndUnavailableCountIsNotZero",
+          "result": "passed",
+          "seconds": 15.396
+        },
+        {
+          "suite": "RedesignUITests",
+          "method": "testTodayStatesNeverTreatMissingOrExpiredDataAsOpen",
+          "result": "passed",
+          "seconds": 74.687
+        },
+        {
+          "suite": "SeniorDesignUITests",
+          "method": "testEverydayScreensAndKeepingSampleVoicemail",
+          "result": "passed",
+          "seconds": 31.563
+        },
+        {
+          "suite": "SeniorDesignUITests",
+          "method": "testLargestTextDarkModeKeepsEverydayActionsReachable",
+          "result": "passed",
+          "seconds": 58.417
+        },
+        {
+          "suite": "SeniorDesignUITests",
+          "method": "testSecondaryScreensAndPlainTextCheck",
+          "result": "passed",
+          "seconds": 70.964
+        },
+        {
+          "suite": "SeniorDesignUITests",
+          "method": "testSecondaryScreenVisualsInBothAppearances",
+          "result": "passed",
+          "seconds": 360.789
+        },
+        {
+          "suite": "SeniorDesignUITests",
+          "method": "testWelcomeAndChoicesStayBrief",
+          "result": "passed",
+          "seconds": 19.69
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testExpiredInvitationRetainsTheCodeAndExplainsRecovery",
+          "result": "passed",
+          "seconds": 12.638
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 33.756
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testPlayedStatusFailureKeepsPlaybackControlsUsable",
+          "result": "passed",
+          "seconds": 12.738
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testSecondaryScreensAtLargestTextKeepAllActionsReachable",
+          "result": "passed",
+          "seconds": 121.878
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testSharingConfirmationsHaveVisibleSafeChoices",
+          "result": "passed",
+          "seconds": 66.177
+        }
+      ],
+      "aggregate": {
+        "tests": 16,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-raw-final",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-raw-final.log",
+      "logSha256": "2e1a9d4cb16ab9974665c250b17770616ac05cd03e6faa250f3b892cafe50b23",
+      "methods": [
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testDarkToolbarActionsAudit",
+          "result": "passed",
+          "seconds": 45.251
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testEverydayScreensAudit",
+          "result": "failed",
+          "seconds": 39.237
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testOnboardingChoicesAudit",
+          "result": "passed",
+          "seconds": 23.365
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testOwnerSettingsScreensAudit",
+          "result": "passed",
+          "seconds": 77.675
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testPhoneSetupAndDisconnectionAudit",
+          "result": "passed",
+          "seconds": 17.759
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testWelcomeAndSentEmailAudit",
+          "result": "passed",
+          "seconds": 17.316
+        }
+      ],
+      "aggregate": {
+        "tests": 6,
+        "failures": 6
+      },
+      "rawDiagnostics": [
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x10f7f6940, {{82.0, 745.0}, {100.0, 20.3}}, label: 'Call stopped'",
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x10e4f7d40, {{274.3, 747.0}, {61.7, 18.0}}, identifier: 'call-time-4C175B58-23DC-49ED-BD96-365E8B8ABD40', label: '12:27 AM'",
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x10f7f4c80, {{82.0, 831.0}, {101.0, 42.3}}, label: 'Prescription reminder'",
+        "accessibility-calls: Contrast failed; Attributes: StaticText, 0x10f7f7980, {{82.0, 741.3}, {98.3, 18.0}}, label: 'New message'",
+        "accessibility-calls: Contrast failed; Attributes: StaticText, 0x10e4fd400, {{82.0, 809.3}, {115.7, 20.3}}, label: 'Check this call'",
+        "accessibility-calls: Contrast failed; Attributes: StaticText, 0x10f7f5540, {{268.3, 811.3}, {67.7, 18.0}}, identifier: 'call-time-8C9B6F32-2023-4F96-8486-B0737B52D92C', label: 'Yesterday'"
+      ]
+    },
+    {
+      "name": "shield-voiceover-complete-focus-pass",
+      "result": "failed",
+      "localLog": "/tmp/shield-voiceover-complete-focus-pass.log",
+      "logSha256": "5d7fbfb3f5b56eb879cc38e906e2e68ceff904a7d7b28a1e47820264c1f412d4",
+      "methods": [
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend",
+          "result": "passed",
+          "seconds": 62.207
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverContactRemovalHasReachableSafeChoice",
+          "result": "passed",
+          "seconds": 42.37
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverDailyNavigationAndSampleMessage",
+          "result": "failed",
+          "seconds": 87.177
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverEmailReturnHasResendAndChangeEmail",
+          "result": "passed",
+          "seconds": 30.217
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "failed",
+          "seconds": 44.626
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverNativeFocusAndDirectToggleActions",
+          "result": "failed",
+          "seconds": 23.187
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverOnboardingChoicesAndSafeSaveRecovery",
+          "result": "passed",
+          "seconds": 118.228
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverPlaybackAndFeedbackAreInReadingFlow",
+          "result": "failed",
+          "seconds": 27.279
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverQuietHoursExplainsUnsavedState",
+          "result": "passed",
+          "seconds": 52.385
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverReadsAndOpensAMessage",
+          "result": "passed",
+          "seconds": 33.041
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverSetupAndDisconnectionInstructions",
+          "result": "passed",
+          "seconds": 120.964
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverSharingRetainsNameAndSafeCancellation",
+          "result": "failed",
+          "seconds": 59.906
+        }
+      ],
+      "aggregate": {
+        "tests": 12,
+        "failures": 5
+      }
+    },
+    {
+      "name": "shield-voiceover-corrected-five",
+      "result": "failed",
+      "localLog": "/tmp/shield-voiceover-corrected-five.log",
+      "logSha256": "e403b283b9247ea0671a1d47356910d4bc99fdc2494239c0a6689a77dc39e30d",
+      "methods": [
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverDailyNavigationAndSampleMessage",
+          "result": "failed",
+          "seconds": 144.636
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "failed",
+          "seconds": 35.081
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverNativeFocusAndDirectToggleActions",
+          "result": "passed",
+          "seconds": 41.267
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverPlaybackAndFeedbackAreInReadingFlow",
+          "result": "failed",
+          "seconds": 27.106
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverSharingRetainsNameAndSafeCancellation",
+          "result": "failed",
+          "seconds": 27.467
+        }
+      ],
+      "aggregate": {
+        "tests": 5,
+        "failures": 4
+      }
+    },
+    {
+      "name": "shield-voiceover-confirmed-four",
+      "result": "failed",
+      "localLog": "/tmp/shield-voiceover-confirmed-four.log",
+      "logSha256": "b086d6d08afb2f7cfc963520082fbe580621639f86cfe33e7267651080056805",
+      "methods": [
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverDailyNavigationAndSampleMessage",
+          "result": "passed",
+          "seconds": 143.316
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "failed",
+          "seconds": 44.061
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverPlaybackAndFeedbackAreInReadingFlow",
+          "result": "failed",
+          "seconds": 27.164
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverSharingRetainsNameAndSafeCancellation",
+          "result": "passed",
+          "seconds": 113.679
+        }
+      ],
+      "aggregate": {
+        "tests": 4,
+        "failures": 2
+      }
+    },
+    {
+      "name": "shield-voiceover-final-two",
+      "result": "failed",
+      "localLog": "/tmp/shield-voiceover-final-two.log",
+      "logSha256": "5100dfe28784569f8eacfb8c287682da9c6b37098bbebed11da46f8f0feabafd",
+      "methods": [
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "failed",
+          "seconds": 253.122
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverPlaybackAndFeedbackAreInReadingFlow",
+          "result": "passed",
+          "seconds": 102.534
+        }
+      ],
+      "aggregate": {
+        "tests": 2,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-invitation-stable-query",
+      "result": "passed",
+      "localLog": "/tmp/shield-invitation-stable-query.log",
+      "logSha256": "8b161fda61bf5ef0b97253bab2261af5de117141909290b88ec9920023128e30",
+      "methods": [
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "passed",
+          "seconds": 78.165
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 0
+      }
+    },
+    {
+      "name": "shield-senior-se26-final",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-se26-final.log",
+      "logSha256": "2097b2615825129a27993178b1d04a6aa24dcccf46486777073f1b713930a9ca",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testAllCallsRespondsAcrossTheRowAtStandardAndLargestText",
+          "result": "passed",
+          "seconds": 20.814
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "failed",
+          "seconds": 22.601
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testStoppedCountOpensTheMatchingCalls",
+          "result": "passed",
+          "seconds": 11.999
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testZeroCountIsExplicitAndUnavailableCountIsNotZero",
+          "result": "passed",
+          "seconds": 11.444
+        },
+        {
+          "suite": "RedesignUITests",
+          "method": "testTodayStatesNeverTreatMissingOrExpiredDataAsOpen",
+          "result": "passed",
+          "seconds": 60.805
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testExpiredInvitationRetainsTheCodeAndExplainsRecovery",
+          "result": "failed",
+          "seconds": 6.532
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 29.177
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testPlayedStatusFailureKeepsPlaybackControlsUsable",
+          "result": "passed",
+          "seconds": 11.097
+        }
+      ],
+      "aggregate": {
+        "tests": 8,
+        "failures": 3
+      }
+    },
+    {
+      "name": "shield-senior-se26-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-se26-confirm.log",
+      "logSha256": "7525417de66b09dfa4780376f97b4b4b3e701b9ab8de457c482e737c18bbb796",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "failed",
+          "seconds": 25.26
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testExpiredInvitationRetainsTheCodeAndExplainsRecovery",
+          "result": "failed",
+          "seconds": 10.929
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 31.661
+        }
+      ],
+      "aggregate": {
+        "tests": 3,
+        "failures": 3
+      }
+    },
+    {
+      "name": "shield-senior-se26-verified",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-se26-verified.log",
+      "logSha256": "63391b47d75b38464cc782b14b7eaf68623588bcb3bf620e9574f706daef61ba",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "failed",
+          "seconds": 22.409
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testExpiredInvitationRetainsTheCodeAndExplainsRecovery",
+          "result": "failed",
+          "seconds": 6.379
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 29.012
+        }
+      ],
+      "aggregate": {
+        "tests": 3,
+        "failures": 3
+      }
+    },
+    {
+      "name": "shield-senior-large-invitation-verified",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-large-invitation-verified.log",
+      "logSha256": "c00fbc5037fc3e662a6f96d8412612c809a309a7f3628afe095ca4a1d9b4f943",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 9.75
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-se26-fresh",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-se26-fresh.log",
+      "logSha256": "335ead338dd0973f118a1fd6c315b72f0743313b993efd8a848c1f747731bb58",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testAllCallsRespondsAcrossTheRowAtStandardAndLargestText",
+          "result": "passed",
+          "seconds": 19.328
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "failed",
+          "seconds": 33.918
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testStoppedCountOpensTheMatchingCalls",
+          "result": "passed",
+          "seconds": 12.112
+        },
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testZeroCountIsExplicitAndUnavailableCountIsNotZero",
+          "result": "passed",
+          "seconds": 11.556
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testExpiredInvitationRetainsTheCodeAndExplainsRecovery",
+          "result": "passed",
+          "seconds": 52.664
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 58.945
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testPlayedStatusFailureKeepsPlaybackControlsUsable",
+          "result": "passed",
+          "seconds": 11.18
+        }
+      ],
+      "aggregate": {
+        "tests": 7,
+        "failures": 2
+      }
+    },
+    {
+      "name": "shield-senior-pro-fresh",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-pro-fresh.log",
+      "logSha256": "38109e03930b5c100ac3557ded907c3d17071455031b5b36ec6ed53d9582ff6f",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 64.771
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-se26-last-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-se26-last-confirm.log",
+      "logSha256": "45b402733c18ae1541ae8822a52ac33fb6d281be6737b3d34a6c85870e42f9d6",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "failed",
+          "seconds": 13.362
+        },
+        {
+          "suite": "RedesignUITests",
+          "method": "testTodayStatesNeverTreatMissingOrExpiredDataAsOpen",
+          "result": "passed",
+          "seconds": 62.561
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testEverydayScreensAudit",
+          "result": "failed",
+          "seconds": 35.675
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testNativeFooterClippingDiagnostic",
+          "result": "passed",
+          "seconds": 9.603
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testNativeHistoryRowDiagnosticIsolation",
+          "result": "passed",
+          "seconds": 12.021
+        },
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "passed",
+          "seconds": 93.575
+        }
+      ],
+      "aggregate": {
+        "tests": 6,
+        "failures": 8
+      },
+      "rawDiagnostics": [
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x11709aa80, {{32.0, 554.5}, {311.0, 52.0}}, label: 'All messages'",
+        "accessibility-home-row-exposed: Contrast failed; Attributes: StaticText, 0x115997d40, {{32.0, 116.5}, {311.0, 52.0}}, label: 'All messages'",
+        "accessibility-home-row-exposed: Text clipped; Attributes: StaticText, 0x1170a0a00, {{32.0, 473.0}, {311.0, 52.0}}, label: 'All calls'",
+        "accessibility-home-row-exposed: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "accessibility-calls: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "accessibility-calls: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "accessibility-calls-row-exposed: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+      ]
+    },
+    {
+      "name": "shield-senior-pro-last-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-pro-last-confirm.log",
+      "logSha256": "014044035e419897c26962783118605843275ccff5ebca4185a1f31a531c8d99",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 65.644
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "passed",
+          "seconds": 77.293
+        }
+      ],
+      "aggregate": {
+        "tests": 2,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-pro-keyboard-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-pro-keyboard-confirm.log",
+      "logSha256": "1946a9d9078b3fec0c431e7af07018cc31b9e8d373a993917cf56f24775aac95",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 63.96
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-se26-button-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-se26-button-confirm.log",
+      "logSha256": "5fda01abbc72e45768e95f5cf452075c72083c3297037371aff6aefbaf19c4c7",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testLargestTextDarkModeKeepsDiscardedMessageReadable",
+          "result": "passed",
+          "seconds": 14.428
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testEverydayScreensAudit",
+          "result": "failed",
+          "seconds": 35.942
+        }
+      ],
+      "aggregate": {
+        "tests": 2,
+        "failures": 7
+      },
+      "rawDiagnostics": [
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x111e6ebc0, {{32.0, 554.5}, {311.0, 52.0}}, label: 'All messages'",
+        "accessibility-home-row-exposed: Contrast failed; Attributes: StaticText, 0x103273840, {{32.0, 116.5}, {311.0, 52.0}}, label: 'All messages'",
+        "accessibility-home-row-exposed: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "accessibility-home-row-exposed: Text clipped; Attributes: StaticText, 0x11218de00, {{32.0, 473.0}, {311.0, 52.0}}, label: 'All calls'",
+        "accessibility-calls: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "accessibility-calls: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "accessibility-calls-row-exposed: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+      ]
+    },
+    {
+      "name": "shield-senior-invitation-return-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-invitation-return-confirm.log",
+      "logSha256": "073c41f52d0c1bae6ca6917b5ad6bcf9e82569310aa5f94fe25dcd7728f521c8",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 64.467
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-history-padding-confirm",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-history-padding-confirm.log",
+      "logSha256": "bd632f625c8378ca00b4254f489c72e127a9ddb980f0543b4ff88cdeb32c0d6a",
+      "methods": [
+        {
+          "suite": "HomeReadabilityUITests",
+          "method": "testAllCallsRespondsAcrossTheRowAtStandardAndLargestText",
+          "result": "passed",
+          "seconds": 20.074
+        },
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testEverydayScreensAudit",
+          "result": "failed",
+          "seconds": 35.531
+        }
+      ],
+      "aggregate": {
+        "tests": 2,
+        "failures": 7
+      },
+      "rawDiagnostics": [
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x1143b6d00, {{32.0, 554.5}, {311.0, 52.5}}, label: 'All messages'",
+        "accessibility-home-row-exposed: Contrast failed; Attributes: StaticText, 0x108ff21c0, {{32.0, 115.5}, {311.0, 52.5}}, label: 'All messages'",
+        "accessibility-home-row-exposed: Text clipped; Attributes: StaticText, 0x1145c4dc0, {{32.0, 472.5}, {311.0, 52.5}}, label: 'All calls'",
+        "accessibility-home-row-exposed: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "accessibility-calls: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "accessibility-calls: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "accessibility-calls-row-exposed: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+      ]
+    },
+    {
+      "name": "shield-senior-single-line-pro",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-single-line-pro.log",
+      "logSha256": "9c5baf84966bcd28a815d370f2cc5bece4c5d2a7c0c333b12ff748c75d36b12a",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 85.857
+        },
+        {
+          "suite": "VoiceOverUITests",
+          "method": "testVoiceOverInvitationErrorIsCorrectable",
+          "result": "passed",
+          "seconds": 79.8
+        }
+      ],
+      "aggregate": {
+        "tests": 2,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-single-line-se26",
+      "result": "passed",
+      "localLog": "/tmp/shield-senior-single-line-se26.log",
+      "logSha256": "d88b93d254b283c2a810261e48a1287016b2bbb06f78a9414df9887ea0239041",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "passed",
+          "seconds": 114.279
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 0
+      }
+    },
+    {
+      "name": "shield-senior-single-line-audit27",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-single-line-audit27.log",
+      "logSha256": "31f086952efa907d70544d0fc4229286c656f2396718d72ebf6ffa5989704233",
+      "methods": [
+        {
+          "suite": "SeniorAccessibilityUITests",
+          "method": "testEverydayScreensAudit",
+          "result": "failed",
+          "seconds": 46.458
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 6
+      },
+      "rawDiagnostics": [
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x1118a9e00, {{82.0, 745.3}, {100.0, 20.3}}, label: 'Call stopped'",
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x1118af200, {{285.3, 747.3}, {50.7, 18.0}}, identifier: 'call-time-8BA4591B-E245-478B-A83E-97C9FE74F371', label: '1:17 AM'",
+        "accessibility-home: Contrast failed; Attributes: StaticText, 0x1118a8140, {{82.0, 831.3}, {101.0, 42.3}}, label: 'Prescription reminder'",
+        "accessibility-calls: Contrast failed; Attributes: StaticText, 0x1084cfd40, {{82.0, 787.3}, {115.7, 20.3}}, label: 'Check this call'",
+        "accessibility-calls: Contrast failed; Attributes: StaticText, 0x111940c80, {{82.0, 813.7}, {76.7, 18.0}}, label: 'Check first'",
+        "accessibility-calls: Contrast failed; Attributes: StaticText, 0x1084ccdc0, {{164.7, 813.7}, {107.7, 18.0}}, label: '(512) 555-0126'"
+      ]
+    },
+    {
+      "name": "shield-senior-pro-isolated-final",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-pro-isolated-final.log",
+      "logSha256": "80f752d1f777770877257b42d730eccf001f928c7b510db2ddc4ed26216c1a2a",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 64.758
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-pro-keyboard-visible-target",
+      "result": "failed",
+      "localLog": "/tmp/shield-senior-pro-keyboard-visible-target.log",
+      "logSha256": "7e956ef59a48c15cbfa1029ac3b58e8f4d60e015d1c6439d0a2232a20329aa36",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "failed",
+          "seconds": 63.411
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 1
+      }
+    },
+    {
+      "name": "shield-senior-final-source-release",
+      "result": "passed",
+      "localLog": "/tmp/shield-senior-final-source-release.log",
+      "logSha256": "cb7d1b4b89ed67552d695e42d844aacbd23ea4af7f4e9198eda2d696817c74b6",
+      "methods": []
+    },
+    {
+      "name": "shield-senior-pro-native-submit-final",
+      "result": "passed",
+      "localLog": "/tmp/shield-senior-pro-native-submit-final.log",
+      "logSha256": "c0ea6c3426b518cc935eb533d7462a2369997d9f0a2fb972ea2ff1134289f66d",
+      "methods": [
+        {
+          "suite": "SeniorPolishUITests",
+          "method": "testLargestTextBringsSaveAndInvitationErrorsIntoView",
+          "result": "passed",
+          "seconds": 97.154
+        }
+      ],
+      "aggregate": {
+        "tests": 1,
+        "failures": 0
+      }
+    }
+  ],
+  "sourceSha256": {
+    "ios/Shield.xcodeproj/project.pbxproj": "519a75d1dbf3548e7370a08883ef8f9e2bcc240baf014e48db6b3b935c6b83ac",
+    "ios/Shield/Design/CallNavigationRow.swift": "610cac972f64119408f51e79747a230a0608f2a9890ba16de33b9e53acc0a884",
+    "ios/Shield/Design/CallRow.swift": "db56286cb5671ee0a1f247ae4f21c56596d56362e23d5e37de393b34f215378b",
+    "ios/Shield/Design/HistoryBrowseLabel.swift": "7ff751b4f7311d5813f542cf1337dc9f6a5b6a0639cd9684ae88f4722d702977",
+    "ios/Shield/Design/ShieldComponents.swift": "82fc4bd3e9f4b60cb57d0f16b3619b057f44e7bf567cfa1acf992281d8facb0d",
+    "ios/Shield/Features/Auth/SignInView.swift": "8f8d35eebab33f61221bff69f4f20691419d38d827d3c0317a447a12213f75ce",
+    "ios/Shield/Features/Calls/CallDetailView.swift": "f575f25076ebdea8ebaa0f0bac01cdee9e95e5bd8b88d1f37e0fe4edc0d36ccf",
+    "ios/Shield/Features/Calls/CallsView.swift": "7a9f3056bca47b3d5352a262858b6815f7ba3e8ddc5cf3c9e85c0334a620d131",
+    "ios/Shield/Features/Calls/MessageNavigationRow.swift": "3893f192c9dea919487e33990de39bd2748c681ee833f685a64dc1a007f1b000",
+    "ios/Shield/Features/Calls/VoicemailRow.swift": "2171731eb5a95827e6989e622afb7c96ccb66ef73a14079d641f7097194e4c1d",
+    "ios/Shield/Features/Calls/VoicemailView.swift": "bc31f85629933f095a36dff7fae34a0310f7ffd4cfeeae388c084fe1395b7404",
+    "ios/Shield/Features/Overview/OverviewView.swift": "47a728d8f15021b86c5ae92f63c8cda6976942668495ea6611c0834bc7e97ec8",
+    "ios/Shield/Features/Overview/StoppedCallsCard.swift": "18ed74926668b85249ff7215b73a606975c87b08da9521ef656632a421e258e4",
+    "ios/Shield/Features/People/JoinInvitationView.swift": "7bb56138aa78ca90e7cacf95f4ea382b01e5a93d408a50f6fa3ac14967d2c5a4",
+    "ios/Shield/Features/People/SharingView.swift": "e9186452e3c9645db46bc978537430d563f947271fd84ed2c331ad3494eecd78",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingFixture.swift": "07a6b606f3fb0cc307603877e6b8a14bf0acfc8a0434e5dbde184be5580ea551",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingStatus.swift": "78d0ea0931e64c4b7259cd7d3319b784162fdbe1a2384c677b70514ff92ea420",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingStepContent.swift": "b6890efba75a42f7fd9fb5e7d844293cd22d85f92e300e1eca29b85b89e6ca72",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingTestView.swift": "9e89578b8187ac129af2e95acb58aa51918cacbfa1c5de27a592f4d84fb078e0",
+    "ios/Shield/Preview/NativeAccessibilityReference.swift": "5b0502682e9b228bca7084a7facb4fb52e4d7f91dfc59354224d6e80821ec505",
+    "ios/Shield/Preview/PreviewAudio.swift": "ae92f02a578cfcc92df8c6d412f25f57ea869c5bb08e58557e9ec83feec54b07",
+    "ios/ShieldUITests/HomeReadabilityUITests.swift": "5e28cbca5818dee59b268d80d595834a4fc07ec678203ff58f3af792c92356b9",
+    "ios/ShieldUITests/RedesignUITests.swift": "ad9e18602de0532dfbc06beab489eadabd32913cb6dae0101bd1c55d10ed6a11",
+    "ios/ShieldUITests/SeniorAccessibilityUITests.swift": "ed4fafd0bb89b66cfd4176802d013813ba0d4e3be9002b079acb484ec4a6fe79",
+    "ios/ShieldUITests/SeniorPolishUITests.swift": "bac6c170cd2e154394c195daaf19e48f0785ab0446ff8831476159b04ddfcae9",
+    "ios/ShieldUITests/VoiceOverUITests.swift": "4557e13f76b041439adc1f2e40e23ce6cdf71281be90041021418f10ff85a3ec",
+    "ios/ShieldUITests/VoiceOverWalkthrough.swift": "ca9013a98101971eb33df145ccec896689d048a2544fd25460ef3c66bd10520b"
+  },
+  "privacy": "Only synthetic accounts, entries and local generated tone. No real caller data, owner phones, carrier changes or production deployment.",
+  "interpretation": "Individual corrected passes are not a clean aggregate suite. Failed runs and raw reports remain visible. Local logs and xcresult bundles are transient; hashes, method results, diagnostic text and curated capture hashes are retained here.",
+  "finalRecovery": {
+    "Pro_iOS27": "shield-senior-pro-native-submit-final",
+    "SE_iOS26_5": "shield-senior-single-line-se26",
+    "result": "passed",
+    "scope": "Retained number save error, invitation acceptance/error/editing, quiet-hours unsaved error at maximum accessibility text."
+  }
+}

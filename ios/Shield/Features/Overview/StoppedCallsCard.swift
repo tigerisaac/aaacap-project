@@ -44,9 +44,8 @@ struct StoppedCallsCard: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel(count.map { "\($0) calls stopped in total. See calls." } ?? "Calls stopped. Total unavailable. See calls.")
+        .accessibilityLabel("Calls stopped")
+        .accessibilityValue(count.map { "\($0) in total" } ?? "Total unavailable")
         .accessibilityHint("Shows recent stopped calls, including calls that need review.")
         .accessibilityIdentifier("home-stopped-calls")
         .listRowBackground((count ?? 0) > 0 ? ShieldTheme.action : ShieldTheme.card)

@@ -45,7 +45,6 @@ extension View {
             .background(ShieldTheme.surface)
             .safeAreaPadding(.bottom, ShieldTheme.Spacing.content)
             .padding(.vertical, ShieldTheme.Spacing.compact)
-            .clipped()
             .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .vertical))
             .shieldNavigationSurface()
     }

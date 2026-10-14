@@ -28,8 +28,10 @@ struct ForwardingStepContent: View {
                     Text("Try it for 30 minutes").font(.headline)
                     Text("Up to 10 calls can be checked. Your usual \(status.carrier) charges apply.")
                 }
-                Text("To leave Shield, use Disconnect Shield in Setup options. Deleting the app won’t disconnect it.")
-                    .foregroundStyle(ForwardingStyle.secondaryText)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("To leave Shield, use Disconnect Shield in Setup options.")
+                    Text("Deleting the app won’t disconnect it.")
+                }.foregroundStyle(ForwardingStyle.secondaryText)
                 DisclosureGroup("More before you agree") {
                     Text("Telnyx provides the phone service. OpenAI checks the caller’s speech. Shield may stop suspicious or silent calls and can make mistakes.")
                     Text("Messages may be captured from the start of the call. Answered calls and clear scam messages aren’t saved. Full transcripts aren’t kept.")

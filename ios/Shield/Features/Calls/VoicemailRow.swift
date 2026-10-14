@@ -26,15 +26,10 @@ struct VoicemailRow: View {
             }
         }
         .padding(.vertical, 10)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityDescription)
-        .accessibilityInputLabels([CallPresentation.title(call), "Open \(CallPresentation.title(call))"])
-        .accessibilityIdentifier("voicemail-row-\(call.id)")
-        .accessibilityHint("Open the message to read or listen")
     }
 
-    private var accessibilityDescription: String {
-        var parts = [CallPresentation.title(call)]
+    var accessibilityDetails: String {
+        var parts = [String]()
         if let message = call.voicemail, message.status != "removed" { parts.append(message.kindLabel) }
         if kept { parts.append("Kept") }
         else if call.voicemail?.status == "removed" { parts.append("Removed") }

@@ -2,14 +2,19 @@
 import Foundation
 
 enum PreviewAudio {
+    private static var duration: Int {
+        ProcessInfo.processInfo.arguments.contains("--uitesting-long-audio") ? 180 : 20
+    }
+
     static let call = CallRecord(id: UUID(), occurredAt: .now, callerNumber: "+12025550100", title: "Sample audio message",
         outcome: .voicemail, reasonCode: "sample", detail: "Synthetic audio for checking playback controls.", nextStep: "No action is needed.",
-        acceptedAt: nil, endedAt: .now, voicemail: Voicemail(id: UUID(), duration: 20, status: "ready", heardAt: nil,
+        acceptedAt: nil, endedAt: .now, voicemail: Voicemail(id: UUID(), duration: duration, status: "ready", heardAt: nil,
             summary: "Synthetic audio for checking pause and resume.", summaryStatus: "ready", decision: "keep"))
 
-    /// A twenty-second quiet test tone, generated locally; no recording or external service.
+    /// A quiet test tone. A longer fixture leaves time for slow spoken-focus automation.
+    /// Generated locally; no recording or external service.
     static var data: Data {
-        let frames = 160_000
+        let frames = duration * 8_000
         var output = Data("RIFF".utf8)
         append(UInt32(36 + frames * 2), to: &output)
         output.append(contentsOf: "WAVEfmt ".utf8)

@@ -1,0 +1,74 @@
+[
+  {
+    "sheet": "docs/images/ios-senior-finish-daily.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/visual-world/visual-home-light.png",
+    "captureSha256": "eb533dc6a8ce5759f3789f3057b52a718488b627dbe80a94c429c58c5f8f11e0",
+    "label": "Home \u00b7 Light"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-daily.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/visual-world/visual-home-dark.png",
+    "captureSha256": "b38f780fc47a95f6b0b4320cfa6dfd28f1bbc23b4026fc00b1407c1093c2a59b",
+    "label": "Home \u00b7 Dark"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-daily.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/visual-world/visual-calls-light.png",
+    "captureSha256": "9b1c08530763027173c1dce1e39fa1b786a7c7b0a7738298727b9779e56b2680",
+    "label": "Calls"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-daily.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/visual-world/visual-messages-dark.png",
+    "captureSha256": "53ab2b3b881c4686db9571a9b81fd3f993e9c116e2bc0e587d1ae16952c34aa8",
+    "label": "Messages"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-daily.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/visual-world/visual-more-light.png",
+    "captureSha256": "7ebd4f23b5aee5f57921808eb8ff7a94596c82887563bd1548319d6461013275",
+    "label": "More"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-daily.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/visual-world/visual-help-dark.png",
+    "captureSha256": "23243e7d2cb06ea570e583411c0a9629fe8f1d58bbed98799264468b5be583b0",
+    "label": "Get help"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-setup.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/final-visual/Guided welcome.png",
+    "captureSha256": "3c574c2163a1c94b6e6517f212d8332500f0d30b08b2e84e02a3605b8a310f2d",
+    "label": "Start setup"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-setup.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/final-visual/Guided consent light.png",
+    "captureSha256": "b981312b075d7b35dee9475fd4b65d4c74ffa165595789e9f8e607d58d4ad2cd",
+    "label": "Agreement"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-setup.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/final-visual/Guided contact light.png",
+    "captureSha256": "afe1e1a2ab5b9c7fa5619ad80e92c75cb3a8a3e3302d3ccd85b13a5ab1a2100c",
+    "label": "Save Shield"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-setup.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/final-visual/Guided phone settings light.png",
+    "captureSha256": "49746299bb651de3d94ac8b0b080e7bbf755177b2c3bf9666f8985c11c91fbcb",
+    "label": "iPhone settings"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-setup.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/final-visual/Guided When you don\u2019t answer light.png",
+    "captureSha256": "741d2a44228c45d495a43d0568d3eb47486405762f142852786d1f8c5b49f325",
+    "label": "Carrier instructions"
+  },
+  {
+    "sheet": "docs/images/ios-senior-finish-setup.jpg",
+    "capture": ".impeccable/review/voiceover-continuation/final-visual/Guided forwarding check light.png",
+    "captureSha256": "318083c6e2b5426167e77840880014b3182894dc3b933bbd4c2c8e951182d12b",
+    "label": "Check setup"
+  }
+]

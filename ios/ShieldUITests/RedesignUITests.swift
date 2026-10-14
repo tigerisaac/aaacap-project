@@ -66,6 +66,7 @@ final class RedesignUITests: XCTestCase {
 
     func testTodayStatesNeverTreatMissingOrExpiredDataAsOpen() {
         let cases = [("window", "Call checks are on"), ("expired", "Call checks are off"),
+                     ("always-on", "Call checks are on"), ("always-on-disabled", "Call checks are off"),
                      ("paused", "Call checks are paused"), ("restoring", "Disconnecting Shield"),
                      ("setup", "Your phone needs setup"), ("unavailable", "Couldn’t check your phone"), ("stale", "Couldn’t check your phone")]
         for (state, title) in cases {

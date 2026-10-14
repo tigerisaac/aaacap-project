@@ -37,14 +37,13 @@ struct OverviewView: View {
                             }.buttonStyle(.plain)
                         } else {
                             ForEach(messages.prefix(1)) { call in
-                                NavigationLink(value: call) {
-                                    VoicemailRow(call: call, kept: model.demoKeptMessages.contains(call.id))
-                                }
+                                MessageNavigationRow(call: call, kept: model.demoKeptMessages.contains(call.id))
                             }
                             Button { model.showCalls(.voicemail) } label: {
-                                Text("All messages").fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
-                            }.accessibilityIdentifier("today-messages")
+                                HistoryBrowseLabel(title: "All messages")
+                            }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
+                                .accessibilityLabel("All messages")
+                                .accessibilityIdentifier("today-messages")
                         }
                     } header: { Text("Messages").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                     ShieldGroup {
@@ -52,13 +51,14 @@ struct OverviewView: View {
                             Text("Your calls will appear here.").foregroundStyle(ShieldTheme.secondaryText)
                         } else {
                             ForEach(overview.recent.filter { $0.voicemail == nil }.prefix(2)) { call in
-                                NavigationLink(value: call) { CallRow(call: call, showsNumber: false) }
+                                CallNavigationRow(call: call, showsNumber: false)
                             }
                         }
                         Button { model.showCalls(.all) } label: {
-                            Text("All calls").fixedSize(horizontal: false, vertical: true)
-                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
-                        }
+                            HistoryBrowseLabel(title: "All calls")
+                        }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
+                            .accessibilityLabel("All calls")
+                            .accessibilityIdentifier("home-all-calls")
                     } header: { Text("Recent calls").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                 } else if model.isLoading {
                     ShieldGroup { ShieldLoadingView(title: "Getting your calls…") }
@@ -146,6 +146,9 @@ struct OverviewView: View {
         if status.restorationRequested || model.overview?.status == "restoring" { return .init(title: "Disconnecting Shield", detail: "Finish the steps to bring back ordinary calls.", symbol: "arrow.uturn.backward.circle", needsSetup: true, actionTitle: "Finish disconnecting") }
         if model.overview?.status == "paused" { return .init(title: "Call checks are paused", detail: "Your phone may still send calls to Shield.", symbol: "pause.circle", needsSetup: true, actionTitle: "Resume call checks", useSetupMenu: true) }
         if !status.consented || !status.prepared || !status.phoneVerified { return .init(title: "Your phone needs setup", detail: "We’ll help you one step at a time.", symbol: "phone.badge.checkmark", needsSetup: true) }
+        if status.alwaysOn == true, status.liveScreening == true {
+            return .init(title: "Call checks are on", detail: "Shield checks calls that reach it. During quiet hours or when the daily limit is reached, callers can leave a message.", symbol: "phone.badge.waveform")
+        }
         if status.active, status.liveScreening == true, let expiry = status.expiresAt, expiry > now, status.remainingCalls > 0 {
             return .init(title: "Call checks are on", detail: "Calls that reach Shield are checked until \(expiry.formatted(date: .omitted, time: .shortened)).", symbol: "phone.badge.waveform")
         }

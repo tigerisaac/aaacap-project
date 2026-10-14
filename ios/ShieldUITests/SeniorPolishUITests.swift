@@ -11,11 +11,11 @@ final class SeniorPolishUITests: XCTestCase {
         let email = app.textFields["Email address"]
         XCTAssertTrue(email.waitForExistence(timeout: 5))
         email.tap(); email.typeText("synthetic@")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         XCTAssertFalse(app.buttons["sign-in-submit"].isEnabled)
         XCTAssertTrue(app.staticTexts["Check the email address, including the part after @."].exists)
         email.tap(); app.buttons["Clear email address"].tap(); email.typeText("synthetic@example.com")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         XCTAssertTrue(app.buttons["sign-in-submit"].isEnabled)
         app.buttons["sign-in-submit"].tap()
         XCTAssertTrue(app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
@@ -50,10 +50,10 @@ final class SeniorPolishUITests: XCTestCase {
         name.tap(); name.typeText("My clinic")
         let phone = app.textFields["Phone number"]
         phone.tap(); phone.typeText("5550100")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         XCTAssertFalse(app.buttons["Save number"].isEnabled)
         phone.tap(); app.buttons["Clear phone number"].tap(); phone.typeText("3125550100")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Save number"].isEnabled)
         XCTAssertTrue(app.staticTexts["Name"].exists)
         XCTAssertTrue(app.staticTexts["Phone number"].exists)
@@ -74,12 +74,13 @@ final class SeniorPolishUITests: XCTestCase {
         let code = app.textFields["Invitation code"]
         XCTAssertTrue(code.waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Paste"].exists)
-        XCTAssertFalse(app.buttons["Join them"].isEnabled)
+        XCTAssertFalse(app.buttons["Accept invitation"].isEnabled)
         code.tap(); code.typeText("SyntheticExpiredInvitationCode")
-        app.buttons["Done"].tap()
-        app.buttons["Join them"].tap()
+        finishInvitationEntry(app)
+        reveal(app.buttons["Accept invitation"], in: app); app.buttons["Accept invitation"].tap()
         XCTAssertTrue(app.staticTexts["You couldn’t join yet"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["This invitation expired or was used. Ask for a new code."].exists)
+        app.buttons["Edit code"].tap()
         XCTAssertEqual(code.value as? String, "SyntheticExpiredInvitationCode")
         XCTAssertTrue(app.buttons["Cancel"].isEnabled)
         capture(app, "polish-invitation-error")
@@ -90,10 +91,10 @@ final class SeniorPolishUITests: XCTestCase {
         let name = app.textFields["Name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap(); name.typeText("My clinic")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         let phone = app.textFields["Phone number"]
         reveal(phone, in: app); phone.tap(); phone.typeText("3125550100")
-        app.buttons["Done"].tap(); app.buttons["Save number"].tap()
+        app.buttons["Done"].firstMatch.tap(); app.buttons["Save number"].tap()
         XCTAssertTrue(app.staticTexts["Save not confirmed"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["The number is in iPhone Contacts. Try saving again to update Shield."].exists)
         XCTAssertEqual(phone.value as? String, "3125550100")
@@ -125,8 +126,8 @@ final class SeniorPolishUITests: XCTestCase {
             XCTAssertTrue(code.waitForExistence(timeout: 5))
             app.buttons["Paste"].tap()
             XCTAssertEqual(code.value as? String, "0123456789abcdefghijklmnopqrstuv")
-            XCTAssertTrue(app.buttons["Join them"].isEnabled)
-            app.buttons["Join them"].tap()
+            XCTAssertTrue(app.buttons["Accept invitation"].isEnabled)
+            reveal(app.buttons["Accept invitation"], in: app); app.buttons["Accept invitation"].tap()
             XCTAssertTrue(app.staticTexts["You couldn’t join yet"].waitForExistence(timeout: 5))
             capture(app, "polish-copied-invitation\(signature ? "-email-signature" : "")")
         }
@@ -140,11 +141,11 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertTrue(pause.waitForExistence(timeout: 5))
         XCTAssertTrue(pause.isEnabled); pause.tap()
         XCTAssertTrue(app.buttons["Resume message"].exists)
-        XCTAssertTrue(app.staticTexts["You can listen. Shield couldn’t mark this message as played."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["You can listen. It may still show as new."].waitForExistence(timeout: 5))
         XCTAssertFalse(app.alerts["Message couldn’t play"].exists)
         app.buttons["Resume message"].tap()
         XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
-        let recovery = app.buttons["Update played status"]
+        let recovery = app.buttons["Mark as listened"]
         reveal(recovery, in: app)
         XCTAssertTrue(recovery.isHittable)
         capture(app, "polish-audio-status-recovery")
@@ -201,11 +202,11 @@ final class SeniorPolishUITests: XCTestCase {
         var app = launch("add-number", extra: options)
         let name = app.textFields["Name"]
         reveal(name, in: app); name.tap(); name.typeText("My clinic")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         XCTAssertFalse(app.keyboards.firstMatch.exists)
         let phone = app.textFields["Phone number"]
         reveal(phone, in: app); phone.tap(); phone.typeText("3125550100")
-        app.buttons["Done"].tap()
+        app.buttons["Done"].firstMatch.tap()
         app.buttons["Save number"].tap()
         expectVisible(app.staticTexts["Save not confirmed"], in: app)
         capture(app, "polish-number-save-error-large-dark")
@@ -218,10 +219,10 @@ final class SeniorPolishUITests: XCTestCase {
         app = launch("invitation", extra: options)
         let code = app.textFields["Invitation code"]
         reveal(code, in: app); code.tap(); code.typeText("SyntheticExpiredInvitationCode")
-        app.buttons["Done"].tap(); app.buttons["Join them"].tap()
+        finishInvitationEntry(app); reveal(app.buttons["Accept invitation"], in: app); app.buttons["Accept invitation"].tap()
         expectVisible(app.staticTexts["You couldn’t join yet"], in: app)
         capture(app, "polish-invitation-error-large-dark")
-        reveal(code, in: app, towardTop: true); code.tap(); code.typeText("Corrected")
+        app.buttons["Edit code"].tap(); code.typeText("Corrected")
         XCTAssertFalse(app.staticTexts["You couldn’t join yet"].exists)
 
         app = launch("quiet", extra: options)
@@ -325,7 +326,7 @@ final class SeniorPolishUITests: XCTestCase {
             case "contacts": reveal(app.buttons["Contacts settings"], in: app)
             case "quiet": reveal(app.switches["Quiet hours"], in: app)
             case "blocked": reveal(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'unblock-'")).firstMatch, in: app)
-            case "invitation": XCTAssertTrue(app.buttons["Join them"].isHittable)
+            case "invitation": reveal(app.buttons["Accept invitation"], in: app)
             case "help": reveal(app.buttons["In an emergency"], in: app)
             case "automatic-texts": reveal(app.buttons["What will Shield see?"], in: app)
             default: break
@@ -475,6 +476,21 @@ final class SeniorPolishUITests: XCTestCase {
         }
     }
 
+    private func finishInvitationEntry(_ app: XCUIApplication) {
+        if app.keyboards.firstMatch.exists {
+            // The iOS 27 toolbar's accessibility frame can point below its visible button.
+            // Submit through the native keyboard return action instead of that stale frame.
+            app.typeText("\n")
+            return
+        }
+        let inline = app.buttons["Finish editing code"]
+        if inline.exists {
+            reveal(inline, in: app); inline.tap()
+        } else {
+            app.buttons["invitation-keyboard-done"].tap()
+        }
+    }
+
     private func launch(_ screen: String, extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-screen", screen, "--uitesting-light"] + extra
@@ -488,7 +504,7 @@ final class SeniorPolishUITests: XCTestCase {
             let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
             var bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
             if app.keyboards.firstMatch.exists { bottom = min(bottom, app.keyboards.firstMatch.frame.minY) }
-            for title in ["Save number", "Join them", "Save quiet hours", "Saved"] {
+            for title in ["Save number", "Accept invitation", "Save quiet hours", "Saved"] {
                 let button = app.buttons[title]
                 if button.exists && button.frame.height > 0 { bottom = min(bottom, button.frame.minY) }
             }

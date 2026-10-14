@@ -27,7 +27,7 @@ struct CallsView: View {
                     }
                 } else if !model.calls.isEmpty {
                     ShieldGroup {
-                        ForEach(model.calls) { call in NavigationLink(value: call) { CallRow(call: call) } }
+                        ForEach(model.calls) { call in CallNavigationRow(call: call) }
                         if model.nextCursor != nil {
                             Button(model.isLoadingCalls ? "Getting more…" : "Older calls") { Task { await model.loadCalls(more: true) } }
                                 .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isLoadingCalls)

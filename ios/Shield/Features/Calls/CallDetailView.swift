@@ -4,6 +4,8 @@ struct CallDetailView: View {
     let initialCall: CallRecord
     @Environment(AppState.self) private var model
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.dismiss) private var dismiss
     @State private var updatedCall: CallRecord?
     @State private var events: [CallEvent] = []
@@ -19,6 +21,7 @@ struct CallDetailView: View {
     @State private var showingPlaybackError = false
     @State private var loadingDetails = false
     @State private var playedStatusFailed = false
+    @State private var playbackActionsInProgress = false
     @AccessibilityFocusState private var playedStatusFocused: Bool
     @State private var updatingPlayedStatus = false
     @State private var playbackRequest = UUID()
@@ -59,6 +62,9 @@ struct CallDetailView: View {
                     }
                 }.padding(.vertical, 12).fixedSize(horizontal: false, vertical: true)
             }
+            if inlineMessageActions, hasMessageAction, !playbackActionsInProgress {
+                messageActions().listRowInsets(EdgeInsets()).listRowBackground(ShieldTheme.surface)
+            }
             if let message = call.voicemail, model.canListen, !messageRemoved {
                 if let summary = message.summary {
                     if model.isDemo { VoicemailPreviewCard(call: call) }
@@ -96,13 +102,21 @@ struct CallDetailView: View {
                                 }
                             }
                         }
+                        if playedStatusFailed || playbackActionsInProgress {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                                if playedStatusFailed {
+                                    Text("You can listen. It may still show as new.")
+                                        .foregroundStyle(ShieldTheme.secondaryText)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .accessibilityFocused($playedStatusFocused)
+                                }
+                                if inlineMessageActions, playbackActionsInProgress {
+                                    messageActions(on: ShieldTheme.card)
+                                }
+                            }.id("played-status-feedback")
+                        }
                         if playedStatusFailed {
-                            Text("You can listen. Shield couldn’t mark this message as played.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .id("played-status-feedback")
-                                .accessibilityFocused($playedStatusFocused)
-                            Button(updatingPlayedStatus ? "Updating…" : "Update played status") {
+                            Button(updatingPlayedStatus ? "Saving…" : "Mark as listened") {
                                 Task { await markPlayed(voicemail) }
                             }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
@@ -177,36 +191,9 @@ struct CallDetailView: View {
                 NavigationLink(value: AppRoute.help) { ActionRow(title: "Get help", symbol: "questionmark.circle") }
             }
         }
+        .shieldListStyle()
         .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 0) {
-            if let voicemail = call.voicemail, messageRemoved, voicemail.isRestorable, model.canListen {
-                Button { confirmRestore = true } label: {
-                    ShieldActionLabel(title: restoring ? "Bringing it back…" : "Bring back message", isWorking: restoring)
-                }
-                .shieldPrimaryButton().disabled(restoring || model.isDemo)
-                .accessibilityIdentifier("restore-voicemail")
-                .padding(16).background(ShieldTheme.surface)
-                .alert("Bring back this message?", isPresented: $confirmRestore) {
-                    Button("Bring back message") { Task { await restore(voicemail) } }
-                    Button("Cancel", role: .cancel) {}
-                } message: { Text("Don’t call a number from the message. Use one you already know.") }
-            }
-            if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
-                if model.isDemo && !usesAudioFixture {
-                    Button { toggleSample() } label: {
-                        ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
-                    }
-                    .shieldPrimaryButton().padding(16).background(ShieldTheme.surface)
-                } else if voicemail.status == "ready" {
-                    Button { Task { await togglePlayback(voicemail) } } label: {
-                        ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Pause message" : player.paused ? "Resume message" : "Listen to message", isWorking: player.loading)
-                    }
-                    .shieldPrimaryButton().disabled(player.loading).padding(16).background(ShieldTheme.surface)
-                }
-            }
-            }
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("message-action-area")
+            if !inlineMessageActions { messageActions() }
         }
         .navigationTitle(call.voicemail?.kindLabel ?? "Call")
         .navigationBarTitleDisplayMode(.inline)
@@ -227,14 +214,52 @@ struct CallDetailView: View {
         .onChange(of: model.canListen) { _, canListen in
             if !canListen { stopPlayback() }
         }
-        .shieldListStyle()
         .onChange(of: playedStatusFailed) { _, failed in
             if failed {
-                proxy.scrollTo("played-status-feedback", anchor: .center)
+                proxy.scrollTo("played-status-feedback", anchor: .bottom)
                 playedStatusFocused = true
             }
         }
         }
+    }
+
+    private var inlineMessageActions: Bool { typeSize.isAccessibilitySize || voiceOverEnabled }
+
+    private var hasMessageAction: Bool {
+        guard let voicemail = call.voicemail, model.canListen else { return false }
+        if messageRemoved { return voicemail.isRestorable }
+        return (model.isDemo && !usesAudioFixture) || voicemail.status == "ready"
+    }
+
+    private func messageActions(on background: Color = ShieldTheme.surface) -> some View {
+        VStack(spacing: 0) {
+            if let voicemail = call.voicemail, messageRemoved, voicemail.isRestorable, model.canListen {
+                Button { confirmRestore = true } label: {
+                    ShieldActionLabel(title: restoring ? "Bringing it back…" : "Bring back message", isWorking: restoring)
+                }
+                .shieldPrimaryButton().disabled(restoring || model.isDemo)
+                .accessibilityIdentifier("restore-voicemail")
+                .padding(16).background(background)
+                .alert("Bring back this message?", isPresented: $confirmRestore) {
+                    Button("Bring back message") { Task { await restore(voicemail) } }
+                    Button("Cancel", role: .cancel) {}
+                } message: { Text("Don’t call a number from the message. Use one you already know.") }
+            }
+            if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
+                if model.isDemo && !usesAudioFixture {
+                    Button { toggleSample() } label: {
+                        ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
+                    }
+                    .shieldPrimaryButton().padding(16).background(background)
+                } else if voicemail.status == "ready" {
+                    Button { Task { await togglePlayback(voicemail) } } label: {
+                        ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Pause message" : player.paused ? "Resume message" : "Listen to message", isWorking: player.loading)
+                    }
+                    .shieldPrimaryButton().disabled(player.loading).padding(16).background(background)
+                }
+            }
+        }
+        .accessibilityIdentifier(inlineMessageActions ? "message-inline-action-area" : "message-action-area")
     }
 
     private func toggleSample() {
@@ -331,7 +356,9 @@ struct CallDetailView: View {
                 playedStatusFailed = false
                 return
             }
-            playedStatusFailed = model.signedIn && model.canListen
+            let failed = model.signedIn && model.canListen
+            if failed && inlineMessageActions { playbackActionsInProgress = true }
+            playedStatusFailed = failed
         }
     }
 

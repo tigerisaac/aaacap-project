@@ -7,7 +7,7 @@ struct ForwardingTestView: View {
             Label(status.ringTestAt == nil ? "Sound check still needed" : "You heard Shield", systemImage: status.ringTestAt == nil ? "circle" : "checkmark.circle.fill")
             Label(status.forwardingTestAt == nil ? "Call check still needed" : "A call reached Shield", systemImage: status.forwardingTestAt == nil ? "circle" : "checkmark.circle.fill")
             Text("Your phone stays connected to Shield when you tap Done.")
-            Text(status.active ? "Call checks are on for this short test." : "Call checks are off. Calls that reach Shield may go to voicemail.")
+            Text(status.alwaysOn == true && status.liveScreening == true ? "Call checks stay on after this test. Quiet hours and daily limits still apply." : status.active && status.liveScreening == true ? "Call checks are on for this short test." : "Call checks are off. Calls that reach Shield may go to voicemail.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
             if status.active, let until = status.expiresAt {
                 Text("This test ends at \(until.formatted(date: .omitted, time: .shortened)).")

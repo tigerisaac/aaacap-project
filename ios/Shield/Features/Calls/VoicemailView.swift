@@ -39,9 +39,7 @@ struct VoicemailView: View {
                 } else {
                     ShieldGroup {
                         ForEach(messages) { call in
-                            NavigationLink(value: call) {
-                                VoicemailRow(call: call, kept: app.demoKeptMessages.contains(call.id))
-                            }
+                            MessageNavigationRow(call: call, kept: app.demoKeptMessages.contains(call.id))
                         }
                     }
                 }
@@ -49,7 +47,7 @@ struct VoicemailView: View {
                     ShieldGroup {
                         DisclosureGroup("Removed messages") {
                             ForEach(removed) { call in
-                                NavigationLink(value: call) { VoicemailRow(call: call) }
+                                MessageNavigationRow(call: call)
                             }
                         }
                     }

@@ -78,3 +78,8 @@ The final unsigned iOS Release build passed. `npm run check` passed the typechec
 The [fresh independent finish review](../.impeccable/review/senior-followup/independent-finish-review.md) records `disposition: ship` for the reviewed source and simulator viewports, with no remaining material barrier established in those captures. It explicitly retains the twelve raw failures and unresolved Home-report cause. This is approval of the reviewed corrections, not a clean-audit or all-users certification.
 
 Only the installed iOS 27 simulator runtime was available, while the app's minimum deployment is iOS 26. No real senior participant, physical VoiceOver session, carrier setting, owner-phone installation, live service deployment or call is part of this follow-up. This walkthrough addresses the observed comprehension and interaction barriers; it cannot establish that every possible senior-user barrier is absent.
+
+
+## October 14 continuation
+
+The [final senior continuation](IOS-SENIOR-FINISH.md) supersedes this report’s runtime availability and remaining-diagnostic counts. It adds an iOS 26.5 minimum-version pass, twelve actual VoiceOver spoken-focus task methods across corrected runs, native control-owned descriptions, clearer invitation correction and playback recovery, and continuous-screening status. The [new ledger](../.impeccable/review/voiceover-continuation/test-evidence.json) preserves failed attempts and remaining raw diagnostics. It does not certify hardware VoiceOver gestures or older-participant usability.

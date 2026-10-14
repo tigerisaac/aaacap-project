@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SharingView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @State private var grants: [SharingGrant] = []
     @State private var label = ""
     @State private var canListen = false
@@ -14,6 +16,7 @@ struct SharingView: View {
     @State private var loadAttempts = 0
     @FocusState private var editingName: Bool
     @AccessibilityFocusState private var invitationFocused: Bool
+    @AccessibilityFocusState private var accessChoiceFocused: Bool
     private var usesAccessFixture: Bool { PreviewScenario.requested("sharing-access", preview: model.isPreview) }
     private var usesConfirmationFixture: Bool {
         #if DEBUG && targetEnvironment(simulator)
@@ -35,7 +38,16 @@ struct SharingView: View {
                         .accessibilityLabel("Your helper’s name")
                         .onSubmit { editingName = false }
                 }.padding(.vertical, ShieldTheme.Spacing.compact)
+                if editingName && (typeSize.isAccessibilitySize || voiceOverEnabled) {
+                    Button { editingName = false; accessChoiceFocused = voiceOverEnabled } label: {
+                        Text("Finish editing name")
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                            .contentShape(.rect)
+                    }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
+                }
                 Toggle("Include messages", isOn: $canListen)
+                    .accessibilityFocused($accessChoiceFocused)
             } footer: {
                 Text(canListen ? "They can see your calls and read or listen to messages." : "They can see your call history, without messages.")
                     .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)

@@ -4,11 +4,25 @@ import XCTest
 final class HomeReadabilityUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
 
+    func testAllCallsRespondsAcrossTheRowAtStandardAndLargestText() {
+        for extra in [[], ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]] {
+            let app = launch(extra)
+            let action = app.buttons["home-all-calls"]
+            reveal(action, in: app)
+            revealFully(action, above: app.tabBars.firstMatch, in: app)
+            XCTAssertGreaterThanOrEqual(action.frame.height, 52)
+            capture(extra.isEmpty ? "readable-all-calls-standard" : "readable-all-calls-largest")
+            action.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            XCTAssertTrue(app.navigationBars["Calls"].waitForExistence(timeout: 5))
+        }
+    }
+
     func testStoppedCountOpensTheMatchingCalls() {
         let app = launch()
         let stopped = app.buttons["home-stopped-calls"]
         XCTAssertTrue(stopped.waitForExistence(timeout: 5))
-        XCTAssertEqual(stopped.label, "3 calls stopped in total. See calls.")
+        XCTAssertEqual(stopped.label, "Calls stopped")
+        XCTAssertEqual(stopped.value as? String, "3 in total")
         capture("readable-home-light")
         stopped.tap()
         XCTAssertTrue(app.navigationBars["Calls"].waitForExistence(timeout: 5))
@@ -35,10 +49,12 @@ final class HomeReadabilityUITests: XCTestCase {
         var app = launch(["--redesign-state", "empty"])
         let stopped = app.buttons["home-stopped-calls"]
         reveal(stopped, in: app)
-        XCTAssertEqual(stopped.label, "0 calls stopped in total. See calls.")
+        XCTAssertEqual(stopped.label, "Calls stopped")
+        XCTAssertEqual(stopped.value as? String, "0 in total")
         capture("readable-home-zero-light")
         app = launch(["--redesign-state", "legacy"])
-        XCTAssertEqual(app.buttons["home-stopped-calls"].label, "Calls stopped. Total unavailable. See calls.")
+        XCTAssertEqual(app.buttons["home-stopped-calls"].label, "Calls stopped")
+        XCTAssertEqual(app.buttons["home-stopped-calls"].value as? String, "Total unavailable")
         XCTAssertTrue(app.buttons["home-stopped-calls"].isHittable)
         app = XCUIApplication()
         app.launchArguments = ["--uitesting-account-error"]
@@ -56,7 +72,29 @@ final class HomeReadabilityUITests: XCTestCase {
         stopped.tap()
         let removed = app.historyRow("Suspicious message removed")
         reveal(removed, in: app)
-        revealFully(removed, above: app.tabBars.firstMatch, in: app); removed.tap()
+        let visibleTop = app.navigationBars.firstMatch.frame.maxY
+        let visibleBottom = app.tabBars.firstMatch.frame.minY
+        if removed.frame.height > visibleBottom - visibleTop - 32 {
+            // At the maximum font on a 667-point phone a complete row can exceed the viewport.
+            // It must scroll without shrinking text, and its visible portion must still open it.
+            var visible = CGRect.zero
+            for _ in 0..<8 {
+                let list = app.collectionViews.firstMatch
+                let viewport = CGRect(x: 0, y: max(list.frame.minY, app.navigationBars.firstMatch.frame.maxY),
+                                      width: app.frame.width, height: 0)
+                let bottom = min(list.frame.maxY, app.tabBars.firstMatch.frame.minY)
+                visible = removed.frame.intersection(CGRect(x: viewport.minX, y: viewport.minY,
+                    width: viewport.width, height: bottom - viewport.minY))
+                if !visible.isNull && visible.height >= 52 { break }
+                list.swipeUp()
+            }
+            XCTAssertGreaterThanOrEqual(visible.height, 52)
+            capture("readable-oversized-row-large-dark")
+            app.coordinate(withNormalizedOffset: .zero)
+                .withOffset(CGVector(dx: visible.midX, dy: visible.midY)).tap()
+        } else {
+            revealFully(removed, above: app.tabBars.firstMatch, in: app); removed.tap()
+        }
         XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["restore-voicemail"].exists)
         capture("readable-removed-large-dark")
@@ -84,15 +122,15 @@ final class HomeReadabilityUITests: XCTestCase {
 
     private func revealFully(_ element: XCUIElement, above action: XCUIElement, in app: XCUIApplication) {
         let list = app.collectionViews.firstMatch
-        let top = app.navigationBars.firstMatch.frame.maxY
-        for _ in 0..<20 {
+        for _ in 0..<30 {
+            let top = app.navigationBars.firstMatch.frame.maxY
             if element.exists && element.frame.minY >= top && element.frame.maxY <= action.frame.minY { break }
-            let endY: CGFloat = element.frame.minY < top ? 0.59 : 0.51
+            let endY: CGFloat = element.frame.minY < top ? 0.67 : 0.43
             list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
                 .press(forDuration: 0.1, thenDragTo: list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: endY)))
         }
         XCTAssertTrue(element.exists)
-        XCTAssertGreaterThanOrEqual(element.frame.minY, top)
+        XCTAssertGreaterThanOrEqual(element.frame.minY, app.navigationBars.firstMatch.frame.maxY)
         XCTAssertLessThanOrEqual(element.frame.maxY, action.frame.minY)
     }
 

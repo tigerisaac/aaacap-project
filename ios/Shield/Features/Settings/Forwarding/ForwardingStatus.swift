@@ -26,6 +26,7 @@ struct ForwardingStatus: Decodable, Sendable {
     let phone: String
     let shieldNumber: String
     var liveScreening: Bool? = nil
+    var alwaysOn: Bool? = nil
     var voiceProvider: String? = nil
     let prepared: Bool
     let active: Bool

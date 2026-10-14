@@ -4,19 +4,30 @@ import SwiftUI
 /// A minimal native-control reproduction for distinguishing SDK diagnostics from Shield's layout.
 struct NativeAccessibilityReference: View {
     private var arguments: [String] { ProcessInfo.processInfo.arguments }
+    @State private var sampleAlerts = false
+    @State private var voiceOverRunning = UIAccessibility.isVoiceOverRunning
 
     var body: some View {
         TabView {
             Tab("Home", systemImage: "house") {
                 NavigationStack {
                     List {
-                        if arguments.contains("--native-stopped-card") {
+                        if arguments.contains("--native-voiceover-interaction") {
+                            Text(voiceOverRunning ? "VoiceOver is running" : "VoiceOver is off")
+                            Toggle("Allow sample alerts", isOn: $sampleAlerts).toggleStyle(.switch)
+                        } else if arguments.contains("--native-footer-button") {
+                            ForEach(1...10, id: \.self) { row($0) }
+                            Button("All calls") {}
+                                .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+                                .buttonStyle(.plain)
+                                .accessibilityIdentifier("native-footer-button")
+                        } else if arguments.contains("--native-stopped-card") {
                             StoppedCallsCard(count: 3) {}
                             ForEach(1...30, id: \.self) { row($0) }
                         } else if arguments.contains("--native-call-row") {
-                            NavigationLink { Text("Native detail") } label: { CallRow(call: PreviewAudio.call) }
+                            CallNavigationRow(call: PreviewAudio.call)
                         } else if arguments.contains("--native-message-row") {
-                            NavigationLink { Text("Native detail") } label: { VoicemailRow(call: PreviewAudio.call) }
+                            MessageNavigationRow(call: PreviewAudio.call)
                         } else {
                             ForEach(1...30, id: \.self) { index in
                                 if arguments.contains("--native-links") || arguments.contains("--native-labeled-links") {
@@ -27,6 +38,7 @@ struct NativeAccessibilityReference: View {
                     }
                     .modifier(ReferenceListStyle(enabled: arguments.contains("--native-shield-style")))
                     .navigationTitle("Native reference")
+                    .navigationDestination(for: CallRecord.self) { _ in Text("Native detail") }
                     .toolbar {
                         if arguments.contains("--native-person-picker") {
                             ToolbarItem(placement: .topBarTrailing) { PersonPicker() }
@@ -40,6 +52,9 @@ struct NativeAccessibilityReference: View {
         }
         .tint(.blue)
         .demoAccessory(arguments.contains("--native-sample-marker"))
+        .onReceive(NotificationCenter.default.publisher(for: UIAccessibility.voiceOverStatusDidChangeNotification)) { _ in
+            voiceOverRunning = UIAccessibility.isVoiceOverRunning
+        }
     }
 
     private func row(_ index: Int) -> some View {

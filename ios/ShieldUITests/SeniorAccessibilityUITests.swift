@@ -97,6 +97,13 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try audit(app, "accessibility-disconnection-dark")
     }
 
+    func testNativeFooterClippingDiagnostic() throws {
+        let app = launch(["--uitesting-native-reference", "--native-footer-button"])
+        for _ in 0..<3 { app.swipeUp() }
+        XCTAssertTrue(app.buttons["native-footer-button"].isHittable)
+        try audit(app, "clipping-native-footer", types: .textClipped)
+    }
+
     private func launch(_ arguments: [String], dark: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [dark ? "--uitesting-dark" : "--uitesting-light"] + arguments
@@ -104,7 +111,8 @@ final class SeniorAccessibilityUITests: XCTestCase {
         return app
     }
 
-    private func audit(_ app: XCUIApplication, _ name: String) throws {
+    private func audit(_ app: XCUIApplication, _ name: String,
+                       types: XCUIAccessibilityAuditType = [.contrast, .textClipped, .hitRegion, .sufficientElementDescription]) throws {
         Thread.sleep(forTimeInterval: 0.8)
         let capture = XCTAttachment(screenshot: app.screenshot())
         capture.name = name; capture.lifetime = .keepAlways; add(capture)
@@ -114,7 +122,7 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         try app.screenshot().pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
         // Keep every diagnostic. Review native scroll-edge/disabled-control reports against the capture.
-        try app.performAccessibilityAudit(for: [.contrast, .textClipped, .hitRegion, .sufficientElementDescription]) { issue in
+        try app.performAccessibilityAudit(for: types) { issue in
             print("Shield accessibility: \(name): \(issue.compactDescription); \(issue.element?.debugDescription ?? "No associated element"); Details: \(issue.detailedDescription)")
             let evidence = XCTAttachment(string: "\(issue.compactDescription)\n\(issue.detailedDescription)\n\(app.debugDescription)")
             evidence.name = "\(name)-audit-details"; evidence.lifetime = .keepAlways; self.add(evidence)

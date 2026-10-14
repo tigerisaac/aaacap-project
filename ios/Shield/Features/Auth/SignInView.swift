@@ -242,6 +242,7 @@ struct SignInView: View {
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--uitesting-auth-error") {
             error = "Your connection was interrupted. Please try again."
+            statusFocused = .error
             return
         }
         #endif
