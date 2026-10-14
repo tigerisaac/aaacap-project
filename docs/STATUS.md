@@ -1,5 +1,11 @@
 # Status
 
+## October 13 — local Soniox/Luna → GPT Live prototype; production unchanged
+
+The [hybrid voice prototype](HYBRID-SCREENING-PROTOTYPE.md) records five local synthetic calls using unchanged v158 and real provider audio. Three intended sequences complete: two ordinary offers and one harmful stop. A delivery call fails before handoff; a permit caller gets an irrelevant question and the scripted conversation stops. All five recordings and original failures are retained. First Live speech follows the opening by 3.86–8.04 seconds in the four escalated calls; connection startup is 0.65–1.08 seconds. This selected sample neither establishes general accuracy nor measures cost savings.
+
+The prototype remains isolated in scripts and ignored artifacts. The empty-audio preparation failure is documented, and preparation now rejects silent or empty sources. Focused gate checks, typecheck, 203 unit tests/build and 154 emulator tests pass. No backend policy change, deployment, phone call or forwarding action occurs; the existing v158 production release below is unchanged. The hybrid is not ready for rollout.
+
 ## October 13 — v158 live screening deployed with owner approval
 
 After the [online-report check](SCREENING-ONLINE-REPORTS.md), the owner explicitly requested production deployment. Revision **`shield-live-00013-zgf`** serves **100%** of the existing pilot's screening traffic and was verified at **19:58 Central** (`2026-10-14T00:58:43.631Z`). `/ready` reports `2026-10-13-general-v158`, GPT Live, GPT-6 Luna, the local acknowledgement and the existing ten-session capacity. No new revision ERROR or missing-acknowledgement logs appeared at verification.
