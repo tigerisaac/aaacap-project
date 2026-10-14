@@ -4,7 +4,7 @@ import { secureEqual } from '../crypto.js';
 import { purposes } from './copy.js';
 import { CloudStore } from './store.js';
 import { ForwardingProbes } from './forwarding-probes.js';
-import { ForwardingStore, type ForwardingCall } from './forwarding-store.js';
+import { CONNECTED_CALL_SECONDS, ForwardingStore, type ForwardingCall } from './forwarding-store.js';
 import { callerNumber, TelnyxVoice, validCallId, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { assignedTo, isShieldNumber, knownShieldNumber, numberRef } from './numbers.js';
 import { SETUP_CHECK_MESSAGE, SetupChecks } from './setup-check.js';
@@ -138,7 +138,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       const ends = await f.endpointsFor(call.participantId);
       if (call.state !== 'offering' || !ends) return hangup('This person cannot take this call. Please contact them through a number or service they already know.');
       const r = xml();
-      if (call.screeningModel === 'gpt-live-1') r.stop().stream({ name: 'shield-live' });
+      if (call.liveConnectedAt) r.stop().stream({ name: 'shield-live' });
       const monitored = await monitor.begin(call.id);
       // The caller hears the disclosure before transcription starts; only the accepted conversation is checked.
       r.say(monitored ? 'Please hold while Shield offers your call. If it connects, an AI assistant will transcribe the call to help protect against fraud.'
@@ -146,7 +146,7 @@ export async function registerForwardingVoice(app: FastifyInstance, store: Cloud
       if (monitored) r.start().transcription({ transcriptionEngine: config.MONITOR_TRANSCRIPTION_ENGINE,
         ...(config.MONITOR_TRANSCRIPTION_ENGINE === 'Soniox' ? { model: 'soniox/stt-rt-v4' } : {}), transcriptionTracks: 'both',
         transcriptionCallback: callback('monitor', call.id), transcriptionCallbackMethod: 'POST' });
-      const dial = r.dial({ callerId: ends.shieldNumber, answerOnBridge: true, timeout: 20, timeLimit: 300,
+      const dial = r.dial({ callerId: ends.shieldNumber, answerOnBridge: true, timeout: 20, timeLimit: CONNECTED_CALL_SECONDS,
         action: callback('dial-ended', call.id), method: 'POST' });
       dial.number({ url: callback('whisper', call.id), method: 'POST',
         statusCallback: callback('child', call.id), statusCallbackMethod: 'POST', statusCallbackEvent: ['initiated', 'ringing', 'answered'] }, ends.phone);

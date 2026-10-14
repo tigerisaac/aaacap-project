@@ -68,6 +68,6 @@ async function main() {
   if (!control.provisioned || !control.dataPlanConfirmed || !control.restorationGuide?.length || control.activeCallId
     || person.status !== 'setup' || person.forwardingConsent !== consent) throw new Error('setup_prerequisites_incomplete');
   await patch(controlPath, { enabled: true, allowAnyCaller: true, used: 0, startedAt: Date.now(), expiresAt: Date.now() + 1800_000 });
-  console.log('Opened one 30-minute test window: any caller, ten screened calls, one callback at a time, five minutes per connection.');
+  console.log('Opened one 30-minute test window: any caller, ten screened calls, one callback at a time, 60 minutes per connection.');
 }
 main().catch(e => { console.error('Forwarding operation failed:', /^[a-z_]+$/.test(e.message ?? '') ? e.message : e.code ?? e.status ?? e.name); process.exitCode = 1; });

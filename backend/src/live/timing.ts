@@ -1,5 +1,6 @@
 /** Timing only: no event bodies, model arguments, transcript, audio, URLs or provider IDs. */
 export const TIMING_PHASES = [
+  'hybrid_stt_started', 'hybrid_stt_ready', 'hybrid_transcript', 'hybrid_check_started', 'hybrid_check_rejected', 'hybrid_handoff',
   'bridge_claimed', 'provider_started', 'model_socket_open', 'session_start_sent', 'model_ready',
   'first_audio_received', 'caller_speech_started', 'caller_speech_paused', 'first_transcript',
   'delegation_created', 'response_started', 'response_completed', 'response_usage', 'first_tool_output', 'decision_received',
@@ -16,10 +17,11 @@ export type TimingMetrics = Partial<Record<
   'sinceCallerAudioMs' | 'sinceCallerTranscriptMs' | 'sinceAssistantAudioMs' | 'bufferedAudioMs' |
   'sinceClarificationMs' | 'researchMs' | 'deferredMs' | 'saveMs' | 'redirectMs' | 'handoffMs' |
   'attempt' | 'successful' | 'transcriptChanged' | 'backendBusy' | 'inputTokens' | 'cachedInputTokens' |
-  'cacheWriteTokens' | 'outputTokens' | 'reasoningTokens' | 'priorityTier', number | boolean>>;
+  'cacheWriteTokens' | 'outputTokens' | 'reasoningTokens' | 'priorityTier' | 'initialAssessment' | 'hybridChecks', number | boolean>>;
 export type TimingSink = (phase: TimingPhase, metrics: TimingMetrics) => void;
 
 export const TIMING_METRICS = [
+  'initialAssessment', 'hybridChecks',
   'sessionMs', 'processAgeMs', 'firstCallInProcess', 'claimMs', 'response', 'responseMs',
   'sinceCallerAudioMs', 'sinceCallerTranscriptMs', 'sinceAssistantAudioMs', 'bufferedAudioMs',
   'sinceClarificationMs', 'researchMs', 'deferredMs', 'saveMs', 'redirectMs', 'handoffMs',

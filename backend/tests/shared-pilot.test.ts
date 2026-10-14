@@ -95,7 +95,21 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     expect(action).toHaveBeenCalledWith(child, 'bridge', expect.objectContaining({ call_control_id: c.parentSid, prevent_double_bridge: true }));
     const stopIndex = action.mock.calls.findIndex(x => x[0] === c.parentSid && x[1] === 'record_stop');
     expect(stopIndex).toBeGreaterThan(-1); expect(stopIndex).toBeLessThan(action.mock.calls.findIndex(x => x[1] === 'bridge'));
-    expect(request).toHaveBeenCalledWith('/calls', expect.objectContaining({ to: people[0]!.phone, from: config.TELNYX_NUMBER }));
+    expect(request).toHaveBeenCalledWith('/calls', expect.objectContaining({ to: people[0]!.phone, from: config.TELNYX_NUMBER, time_limit_secs: 3600 }));
+  });
+  it('keeps an accepted call and its capacity beyond five minutes, then ends it at the hour', async () => {
+    const c = await offer(), child = c.childSid!;
+    await cc.handle(event(child, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(child, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    const acceptedAt = now;
+    const deadline = db.doc(`callControlDeadlines/${c.id}`);
+    expect((await deadline.get()).data()?.dueAt).toBe(acceptedAt + 3600_000);
+    now += 8 * 60_000; await cc.sweep();
+    expect((await cc.call(c.id))?.state).toBe('accepted');
+    expect(await f.begin(randomUUID(), config.TELNYX_NUMBER, undefined, { diverted: people[0]!.phone, legId: 'during-long-call' })).toBeUndefined();
+    now = acceptedAt + 3600_000; await cc.sweep();
+    expect((await cc.call(c.id))?.state).toBe('ended');
+    expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeUndefined();
   });
   it('plays Grace before starting screening, and ignores old TTS completion callbacks', async () => {
     const c = await arrive();

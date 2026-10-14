@@ -29,6 +29,10 @@ export const CAUTION_MS = 24 * 3600_000;
 /** Blocked callers' attempts kept in history per day; past this they are still ended, without a record. */
 export const BLOCKED_RECORDS_PER_DAY = 20;
 export type BlockReason = 'scam' | 'monitor_intervened';
+/** Maximum recipient-leg duration after answer; the private summary uses the first few seconds. */
+export const CONNECTED_CALL_SECONDS = 3600;
+// Reserve room for screening and the recipient offer before the connected leg begins.
+const CALL_RESERVATION_MS = (CONNECTED_CALL_SECONDS + 120) * 1000;
 /**
  * Per Central-time day: screened calls per person and across Shield, which bound model spend, then voicemail; and
  * all forwarded calls, past which Shield answers nothing so a flood can't run up carrier and storage costs.
@@ -145,8 +149,8 @@ export class ForwardingStore {
       tx.create(s.callRef(id), call); tx.create(s.keyRef(sid), { callId: id, expiresAt: now + RETENTION_MS });
       tx.set(totalDoc.ref, { calls: (total?.calls ?? 0) + 1, screened: (total?.screened ?? 0) + (eligible ? 1 : 0), blocked: total?.blocked ?? 0, expiresAt });
       tx.set(mineDoc.ref, { participantId, screened: (mine?.screened ?? 0) + (eligible ? 1 : 0), expiresAt });
-      if (shared) tx.set(capacityRef, { leases: { ...leases, [id]: now + 420_000 } });
-      if (eligible || shared) tx.update(controlDoc.ref, { ...(window && eligible ? { used: c.used + 1 } : {}), activeCallId: id, activeUntil: now + 420_000 });
+      if (shared) tx.set(capacityRef, { leases: { ...leases, [id]: now + CALL_RESERVATION_MS } });
+      if (eligible || shared) tx.update(controlDoc.ref, { ...(window && eligible ? { used: c.used + 1 } : {}), activeCallId: id, activeUntil: now + CALL_RESERVATION_MS });
       return call;
     });
   }

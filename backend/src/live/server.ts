@@ -11,6 +11,7 @@ import { ForwardingStore } from '../cloud/forwarding-store.js';
 import { afterScreening, ForwardingLive, validStreamTicket } from '../cloud/forwarding-live.js';
 import { TelnyxVoice } from '../cloud/forwarding-provider.js';
 import { ScreeningSession } from './session.js';
+import { HybridScreeningSession, HYBRID_SCREENING_VERSION } from './hybrid.js';
 import { SCREENING_POLICY_VERSION } from './policy.js';
 import { DECISION_MODEL, researchScamPattern } from './research.js';
 import { callTiming } from './timing.js';
@@ -29,6 +30,10 @@ try {
 const config = cloudSchema.parse(JSON.parse(process.env.SHIELD_RUNTIME ?? '{}'));
 const apiKey = process.env.OPENAI_API_KEY;
 if (!apiKey) throw new Error('openai_key_required');
+const screeningMode = process.env.SHIELD_SCREENING_MODE ?? 'live';
+if (!['live', 'hybrid'].includes(screeningMode)) throw new Error('invalid_screening_mode');
+const sonioxKey = process.env.SONIOX_API_KEY;
+if (screeningMode === 'hybrid' && !sonioxKey) throw new Error('soniox_key_required');
 const store = new CloudStore(getFirestore(getApps()[0] ?? initializeApp()), config);
 const forwarding = new ForwardingStore(store), live = new ForwardingLive(forwarding), telnyx = new TelnyxVoice(config);
 const server = createServer((request, response) => {
@@ -36,7 +41,8 @@ const server = createServer((request, response) => {
   if (request.url !== '/ready') { response.writeHead(404).end(); return; }
   response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify({ status: 'ready', model: 'gpt-live-1', decisionModel: DECISION_MODEL, policyVersion: SCREENING_POLICY_VERSION,
-      timingLogs: true, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1' }));
+      timingLogs: true, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1',
+      screeningMode, ...(screeningMode === 'hybrid' ? { hybridVersion: HYBRID_SCREENING_VERSION, transcriptionModel: 'stt-rt-v5' } : {}) }));
 });
 const sockets = new WebSocketServer({ noServer: true, maxPayload: 32_768, perMessageDeflate: false });
 // Each session only relays 8 kHz audio, so one instance can carry several people's screenings at once.
@@ -60,7 +66,7 @@ server.on('upgrade', async (request, socket, head) => {
   const release = () => { if (!released) { released = true; sessions--; } };
   const claimStartedAt = Date.now();
   try {
-    const call = await live.claim(match[1]!);
+    const call = await live.claim(match[1]!, screeningMode === 'hybrid' ? HYBRID_SCREENING_VERSION : 'gpt-live-1');
     if (!call) { release(); socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
     const timing = callTiming(call.id, call.createdAt);
     timing('bridge_claimed', { claimMs: Date.now() - claimStartedAt, processAgeMs: Date.now() - processStartedAt,
@@ -114,8 +120,12 @@ server.on('upgrade', async (request, socket, head) => {
         console.info(JSON.stringify({ event: 'live_screening_finished', callId: call.id, decision: typeof decision === 'string' ? decision : decision.action,
           elapsedMs: Date.now() - call.createdAt }));
       };
-      const session = new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event), research: topic => researchScamPattern(topic, apiKey), finish, close, timing, acknowledgementAudio },
-        Date.now, { recentScamStopped: call.screeningCaution === true });
+      const context = { recentScamStopped: call.screeningCaution === true };
+      const session = screeningMode === 'hybrid'
+        ? new HybridScreeningSession({ telnyx: event => send(provider, event), finish, close, timing, acknowledgementAudio },
+          { openai: apiKey, soniox: sonioxKey! }, context)
+        : new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event),
+          research: topic => researchScamPattern(topic, apiKey), finish, close, timing, acknowledgementAudio }, Date.now, context);
       const ticker = setInterval(() => session.tick(), 20);
       const startTimer = setTimeout(() => { void session.stop('screening_unavailable'); }, 5000);
       provider.on('message', raw => {
@@ -126,6 +136,7 @@ server.on('upgrade', async (request, socket, head) => {
           }
           streamStarted = true; clearTimeout(startTimer);
           timing('provider_started', {});
+          if (session instanceof HybridScreeningSession) { session.start(); return; }
           openai = new WebSocket('wss://api.openai.com/v1/live/sessions', { headers: { Authorization: `Bearer ${apiKey}` },
             handshakeTimeout: 5000, maxPayload: 1_000_000, perMessageDeflate: false, followRedirects: false });
           openai.on('open', () => { timing('model_socket_open', {}); session.start(); });

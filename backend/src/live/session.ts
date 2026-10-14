@@ -76,7 +76,7 @@ export class ScreeningSession {
     if (io.acknowledgementAudio?.length) this.acknowledgement = new WaitAcknowledgement(io.acknowledgementAudio, phase => this.timing(phase));
   }
   get ended() { return this.terminal; }
-  /** Optional local-prototype handoff. The default production path never calls this. */
+  /** Resume the hybrid's pending question without resetting its clarification budget. */
   resumeClarification(transcript: string, decision: LiveDecision) {
     if (this.terminal || this.readyAt !== undefined || this.firstInput || this.hadTranscript
       || !transcript.trim() || transcript.length > LIVE_LIMITS.maxTranscript

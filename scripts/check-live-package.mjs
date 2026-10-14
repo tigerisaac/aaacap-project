@@ -15,7 +15,7 @@ const runtime = { FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield
   TELNYX_PUBLIC_KEY: Buffer.alloc(32).toString('base64'), TELNYX_ACCOUNT_ID: randomUUID(), TELNYX_APPLICATION_ID: '123456789',
   TELNYX_SHARED_APPLICATION_ID: '987654321', SHARED_NUMBER_ENABLED: true, TELNYX_NUMBER: '+12025550999' };
 const child = spawn(process.execPath, [`${stage}/lib/live/server.js`], { env: { ...process.env, PORT: String(port),
-  GCLOUD_PROJECT: 'demo-shield-package', SHIELD_RUNTIME: JSON.stringify(runtime), OPENAI_API_KEY: 'test' }, stdio: 'ignore' });
+  GCLOUD_PROJECT: 'demo-shield-package', SHIELD_RUNTIME: JSON.stringify(runtime), OPENAI_API_KEY: 'test', SONIOX_API_KEY: 'test', SHIELD_SCREENING_MODE: process.argv.includes('--hybrid') ? 'hybrid' : 'live' }, stdio: 'ignore' });
 let spawnFailed = false;
 child.on('error', () => { spawnFailed = true; });
 try {
@@ -29,6 +29,8 @@ try {
   assert.equal(health?.status, 'ready', 'packaged bridge failed to start');
   assert.equal(health.sharedTransport, 'call-control-v1');
   assert.equal(health.maxSessions, 10);
+  assert.equal(health.screeningMode, process.argv.includes('--hybrid') ? 'hybrid' : 'live');
+  if (process.argv.includes('--hybrid')) assert.equal(health.transcriptionModel, 'stt-rt-v5');
   assert.equal(health.waitAcknowledgement, true);
   console.log(JSON.stringify({ packagedBridgeStartup: 'passed', policyVersion: health.policyVersion, maxSessions: health.maxSessions }));
 } finally { child.kill(); }

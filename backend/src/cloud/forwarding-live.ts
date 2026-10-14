@@ -29,11 +29,11 @@ export function liveStreamXML(config: CloudConfig, call: ForwardingCall, now: nu
 export class ForwardingLive {
   constructor(readonly forwarding: ForwardingStore) {}
   /** Claims the call for one screening session. `screeningCaution` is set when a scam was stopped for this person in the last 24 hours. */
-  async claim(id: string): Promise<ForwardingCall | undefined> {
+  async claim(id: string, screeningModel = 'gpt-live-1'): Promise<ForwardingCall | undefined> {
     const f = this.forwarding, now = f.store.now();
     return f.transition(id, (c, ctrl, person) => c.state === 'screening' && c.eligible && c.provider === 'telnyx' && !c.liveConnectedAt
       && ctrl.activeCallId === id && screeningOpen(ctrl, person, now) && person.status === 'setup' && now - c.createdAt < 85_000
-      ? { liveConnectedAt: now, screeningModel: 'gpt-live-1', ...(person.scamStoppedAt > now - CAUTION_MS ? { screeningCaution: true } : {}),
+      ? { liveConnectedAt: now, screeningModel, ...(person.scamStoppedAt > now - CAUTION_MS ? { screeningCaution: true } : {}),
         events: [...c.events, { kind: 'live_screening_started', at: now }] } : undefined);
   }
   async finish(id: string, decision: LiveDecision | StopReason) {

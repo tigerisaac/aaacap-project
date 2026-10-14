@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { FastifyInstance } from 'fastify';
 import { HttpError } from '../auth.js';
 import type { CloudStore } from './store.js';
-import { ForwardingStore, screeningOpen, type ForwardingCall } from './forwarding-store.js';
+import { CONNECTED_CALL_SECONDS, ForwardingStore, screeningOpen, type ForwardingCall } from './forwarding-store.js';
 import { CallControlProvider, validControlId } from './call-control-provider.js';
 import { callerNumber, validRecordingId, verifyTelnyx } from './forwarding-provider.js';
 import { forwardingIdentity, normalizeForwardedNumber } from './shared-routing.js';
@@ -257,7 +257,7 @@ export class SharedCallControl {
         const ends = this.f.callEndpoints(c); if (!ends) return this.stop(c);
         try {
           const result = await this.command(sid, 'dial', { connection_id: s.config.TELNYX_SHARED_APPLICATION_ID, from: ends.shieldNumber, to: ends.phone,
-            client_state: this.provider.state(c.id, 'recipient'), timeout_secs: 20, time_limit_secs: 300 }, 'recipient');
+            client_state: this.provider.state(c.id, 'recipient'), timeout_secs: 20, time_limit_secs: CONNECTED_CALL_SECONDS }, 'recipient');
           if (validControlId(result?.call_control_id)) await this.f.bindChild(c.id, result.call_control_id, c.parentSid);
         } catch {
           // An uncertain Dial is never repeated. Any late child is refused; the caller can still leave a message.
@@ -279,7 +279,7 @@ export class SharedCallControl {
       // Only the immutable recipient's bound leg pressing 1 can reach the bridge command.
       if (accepted.monitoringStartedAt) await this.command(c.parentSid, 'transcription_start', { transcription_engine: s.config.MONITOR_TRANSCRIPTION_ENGINE,
         ...(s.config.MONITOR_TRANSCRIPTION_ENGINE === 'Soniox' ? { transcription_engine_config: { transcription_engine: 'Soniox', transcription_model: 'soniox/stt-rt-v4' } } : {}), transcription_tracks: 'both' }, 'monitor');
-      await this.deadline(c, 300);
+      await this.deadline(c, CONNECTED_CALL_SECONDS);
       await this.command(sid, 'bridge', { call_control_id: c.parentSid, prevent_double_bridge: true, park_after_unbridge: 'self' }, 'accepted-bridge');
     } else if (e.event_type === 'call.dtmf.received' && inbound && p.digit === '#' && c.state === 'voicemail') {
       await this.command(sid, 'record_stop', {}, 'stop-voicemail');
