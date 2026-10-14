@@ -7,6 +7,7 @@ import { resolve, relative, join } from 'node:path';
 import { WebSocket } from 'ws';
 import { hybridPrototypeCases as cases } from './fixtures/hybrid-prototype-cases.mjs';
 import { HybridScreeningGate, handoffInput } from './lib/hybrid-screening-gate.mjs';
+import { HybridWaitAcknowledgement } from './lib/hybrid-wait-acknowledgement.mjs';
 import { liveSessionConfig, SCREENING_POLICY_VERSION, permittedDecision, LIVE_LIMITS } from '../dist/live/policy.js';
 import { ScreeningSession, audiblePCMU } from '../dist/live/session.js';
 import { responseUsage } from '../dist/live/timing.js';
@@ -24,6 +25,8 @@ assert.equal(SCREENING_POLICY_VERSION, '2026-10-13-general-v158');
 assert.equal(request.model, 'gpt-6-luna'); assert.equal(request.reasoning.effort, 'medium');
 const hash = b => createHash('sha256').update(b).digest('hex');
 const sources = ['scripts/prototype-hybrid-screening.mjs', 'scripts/lib/hybrid-screening-gate.mjs',
+  'scripts/lib/hybrid-wait-acknowledgement.mjs', 'dist/live/acknowledgement.js',
+  'backend/src/live/ack-audio/one-moment.pcmu', 'backend/src/live/ack-audio/manifest.json',
   'scripts/fixtures/hybrid-prototype-cases.mjs', 'scripts/lib/screening-target.mjs',
   'backend/src/live/policy.ts', 'dist/live/policy.js', 'dist/live/session.js', 'dist/live/timing.js',
   'dist/live/evidence.js', 'dist/live/decision-progress.js', 'dist/live/research.js'];
@@ -51,7 +54,8 @@ if (prepare) {
   }
   convert('backend/src/cloud/announcement-audio/01-greeting.wav', join(out, 'greeting.pcmu'));
   convert('backend/src/cloud/announcement-audio/02-hold.wav', join(out, 'offer.pcmu'));
-  const audioNames = ['greeting.pcmu', 'offer.pcmu', ...cases.flatMap(c => [`${c.id}-opening.pcmu`, `${c.id}-answer.pcmu`])];
+  await writeFile(join(out, 'acknowledgement.pcmu'), await readFile('backend/src/live/ack-audio/one-moment.pcmu'), { flag: 'wx' });
+  const audioNames = ['greeting.pcmu', 'offer.pcmu', 'acknowledgement.pcmu', ...cases.flatMap(c => [`${c.id}-opening.pcmu`, `${c.id}-answer.pcmu`])];
   plan.audioHashes = Object.fromEntries(await Promise.all(audioNames.map(async f => [f, hash(await readFile(join(out, f)))])));
   await writeFile(join(out, 'plan.json'), JSON.stringify(plan, null, 2), { flag: 'wx' });
   console.log(JSON.stringify({ prepared: true, out, calls: cases.length, policy: SCREENING_POLICY_VERSION, paidInference: false }));
@@ -69,6 +73,7 @@ process.loadEnvFile('.env.speech');
 const sonioxKey = process.env.SONIOX_API_KEY; assert.ok(sonioxKey, 'soniox_key_missing');
 const openaiKey = await providerKey('openai');
 const greeting = await readFile(join(out, 'greeting.pcmu')), offer = await readFile(join(out, 'offer.pcmu'));
+const acknowledgement = await readFile(join(out, 'acknowledgement.pcmu'));
 const results = [];
 
 // PCM recordings represent playback, including network/decision gaps, rather than concatenated utterances.
@@ -96,6 +101,8 @@ async function simulate(c) {
   const opening = await readFile(join(out, `${c.id}-opening.pcmu`)), answer = await readFile(join(out, `${c.id}-answer.pcmu`));
   const startedAt = Date.now(), clock = () => Date.now() - startedAt, events = [], audio = [], usage = [], dialogue = [];
   const stamp = (type, fields = {}) => events.push({ type, ms: clock(), ...fields });
+  const waitAudio = new HybridWaitAcknowledgement(acknowledgement, type => stamp(type));
+  let livePlayback;
   let phase = 'triage', finished = false, final, error, timer, ticker, session, liveSocket, liveStartedAt, liveClosedAt;
   let sonioxOpenedAt, sonioxClosedAt, finalText = '', provisional = '', inputFrame = 1, allToolCalls = 0;
   let openingEndMs, answerStartMs, answerEndMs, liveReadyMs, firstLiveSpeechMs, handoffMs, initialDecision;
@@ -119,6 +126,7 @@ async function simulate(c) {
     setTimeout(() => { liveSocket?.terminate(); liveClosedAt ??= clock(); resolveDone(); }, 1200);
   };
   const assess = async transcript => {
+    waitAudio.startWaiting(clock());
     stamp('initial_decision_started', { transcriptCharacters: transcript.length });
     const r = await fetch('https://api.openai.com/v1/responses', { method: 'POST', redirect: 'error',
       signal: AbortSignal.timeout(LIVE_LIMITS.backendMs), headers: { Authorization: `Bearer ${openaiKey}`, 'Content-Type': 'application/json' },
@@ -148,7 +156,7 @@ async function simulate(c) {
       },
       telnyx: event => {
         if (event.event !== 'media' || finished) return;
-        const bytes = Buffer.from(event.media.payload, 'base64'); writeAudio('shield', bytes);
+        const bytes = Buffer.from(event.media.payload, 'base64'); livePlayback = bytes;
         if (audiblePCMU(bytes)) {
           lastAssistantSound = clock();
           if (openingEndMs !== undefined) { assistantAfterOpening = true; firstLiveSpeechMs ??= clock(); }
@@ -223,7 +231,10 @@ async function simulate(c) {
       if (audiblePCMU(caller)) gate.speech();
       if (stt.readyState === 1) stt.send(caller);
       if (session) session.input(inputFrame++, caller.toString('base64'));
+      livePlayback = undefined;
       gate.tick(); session?.tick();
+      const playback = waitAudio.frame(clock(), caller, livePlayback, finished);
+      if (playback) writeAudio('shield', playback.audio);
     }, 20);
   });
   stt.on('message', raw => {
@@ -279,6 +290,7 @@ await writeFile(join(out, 'listen.html'), `<!doctype html><html lang="en"><meta 
 <title>Shield hybrid — five synthetic calls</title><style>body{font:17px/1.5 system-ui;max-width:850px;margin:40px auto;padding:0 20px;color:#202523;background:#f5f6f4}article{background:white;border:1px solid #dce0da;border-radius:16px;padding:22px;margin:22px 0}audio{width:100%}.meta{color:#526055;font-size:15px}h1{font-size:30px}h2{font-size:20px}a{color:#145e49}summary{cursor:pointer}pre{white-space:pre-wrap;font:inherit}</style>
 <h1>Shield hybrid: five synthetic calls</h1><p>Soniox listens first. Unchanged v158 Luna decides whether clarification is needed. GPT Live then joins with the conversation history.</p>
 <p class="meta">Local prototype • No phone calls or production changes • Real pauses retained • Caller voices are synthesized locally; questions are actual GPT Live audio. The final “offers your call” recording simulates the existing handoff; nobody was dialed.</p>
+<p class="meta">The existing prerecorded “One moment, please” can play once during initial assessment and Live startup. Caller speech or Live speech interrupts it. It does not count as a question or as first Live speech.</p>
 <p>${summary.passed}/5 complete intended sequences. Ordinary offers: ${summary.ordinaryOffered.count}/4. Harmful stops: ${summary.harmfulStopped.count}/1. These five selected cases do not establish general accuracy or cost savings.</p>
 ${results.map(r => `<article><h2>${esc(r.title)}</h2><p>${esc(r.actual)} · ${r.passed ? 'intended sequence completed' : 'review needed'}${r.failure ? ` · ${esc(r.failure)}` : ''}</p>
 <audio controls preload="metadata" src="${esc(r.recording)}"></audio><p class="meta">Opening end → first Live speech: ${sec(r.firstLiveSpeechAfterOpeningMs)} · Live startup: ${sec(r.liveStartupMs)} · Initial Luna checks: ${r.initialChecks}</p>

@@ -6,6 +6,8 @@ The [hybrid voice prototype](HYBRID-SCREENING-PROTOTYPE.md) records five local s
 
 The prototype remains isolated in scripts and ignored artifacts. The empty-audio preparation failure is documented, and preparation now rejects silent or empty sources. Focused gate checks, typecheck, 203 unit tests/build and 154 emulator tests pass. No backend policy change, deployment, phone call or forwarding action occurs; the existing v158 production release below is unchanged. The hybrid is not ready for rollout.
 
+The owner's acknowledgement follow-up adds the existing prerecorded “One moment, please” to future local runs, once across initial assessment and Live startup, yielding to speech or termination. Five separately labeled offline listening previews add that clip to the original recordings while retaining every original pause, outcome and caller sample. No models are rerun, and these previews add no end-to-end voice evidence or production changes.
+
 ## October 13 — v158 live screening deployed with owner approval
 
 After the [online-report check](SCREENING-ONLINE-REPORTS.md), the owner explicitly requested production deployment. Revision **`shield-live-00013-zgf`** serves **100%** of the existing pilot's screening traffic and was verified at **19:58 Central** (`2026-10-14T00:58:43.631Z`). `/ready` reports `2026-10-13-general-v158`, GPT Live, GPT-6 Luna, the local acknowledgement and the existing ten-session capacity. No new revision ERROR or missing-acknowledgement logs appeared at verification.

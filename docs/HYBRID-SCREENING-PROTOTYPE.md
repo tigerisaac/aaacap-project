@@ -6,6 +6,7 @@ This prototype keeps screening policy `2026-10-13-general-v158`, GPT-6 Luna with
 
 1. Play the existing cached greeting. Stream 8 kHz PCMU caller audio to Soniox `stt-rt-v5` in 20 ms frames.
 2. Ask Luna to assess the stable transcript using the unchanged policy and tools. Coalesce updates, permit one request at a time, and leave at least 2.5 seconds between requests. Discard decisions whose transcript revision is superseded. Wait for a pause before ordinary routing; a validated scam stop can end immediately. Each call permits at most eight initial checks and twelve total tool calls.
+   The local harness now reuses the existing prerecorded Grace “One moment, please” once during the initial assessment/Live startup wait. It uses the production acknowledgement controller's one-second quiet/wait thresholds, yields to caller or Live speech, and stops at a terminal decision. It is playback only: no model input, question count or decision timer changes. First Live speech metrics exclude this local clip.
 3. If Luna returns `continue`, open GPT Live and seed its conversation with the Soniox transcript as untrusted user content. A separate developer message identifies the handoff and requests the missing question; it does not embed caller text or alter policy instructions. Buffer audio while the connection starts, then close Soniox.
 4. A local actor plays its fixed reply only after an audible, relevant question. The existing screening session evaluates the reply. The entire prototype call remains bounded by 75 seconds, including the initial phase. Approval only records a simulated offer; there is no recipient call or connection operation.
 
@@ -28,7 +29,7 @@ Each output directory contains `listen.html`, five mixed WAVs, five stereo WAVs 
 
 - Cold-start latency includes the initial model decision, Live connection and first speech. “First Live speech” can include an acknowledgement; it does not necessarily mean the useful question has finished.
 - The local network, artificial voices and fixed actor replies do not test carrier latency, echo, interruptions, noise, accents or real callers. This is not production voice certification.
-- The optional cached wait acknowledgement is not wired into this local harness. Its recordings expose the silent waits; they do not reproduce production's acknowledgement behavior.
+- The original provider run below omitted the cached wait acknowledgement. Its original recordings retain that omission. The later offline previews add the clip without another model run; they are not fresh end-to-end voice results.
 - The prototype uses the existing session with separately seeded history. It rejects approval before a new caller answer; a production handoff would also need a first-class transfer of pending clarification and question-budget state.
 - Initial research requests are retained as unsupported prototype outcomes. Live retains the existing research path. Repeated identical transcripts are not rechecked.
 - The initial local gate's transcript freshness and pause controls are orchestration experiments, not changes to the deployed screening policy. Production remains on the existing GPT Live path.
@@ -54,6 +55,21 @@ The initial model used seven requests across five calls; the permit opening trig
 An earlier preparation silently produced zero-length caller audio inside the macOS sandbox. Its first session timed out without a transcript or Luna request; a second was interrupted when the empty files were found. The original plan, first failed recording and abort note remain in `artifacts/hybrid-prototype-v158-2026-10-13/`. Preparation and execution now reject empty/silent source audio before paid inference. Regeneration outside the sandbox produced audible files; the completed run uses the same five caller texts.
 
 Validation: the focused gate check passes (coalescing, stale-response rejection, pauses, provisional corrections, closure and trust separation). `npm run check` passes typecheck, 203 unit tests and build; `npm run test:firebase` passes all 154 emulator tests. The initial sandbox-only check failed because the APNs test could not bind localhost; its unchanged permitted rerun passed. No deployment, real phone call or carrier change occurred.
+
+## Acknowledgement listening preview
+
+At the owner's request, the local harness now plays the existing **1,102.5 ms Grace clip**, using one acknowledgement controller across initial assessment and handoff so it cannot repeat when Live starts. A focused check covers one-shot playback across that boundary, interruption by caller/Live speech or a terminal decision, and silence when Live responds quickly or no caller has spoken.
+
+The five existing synthetic recordings also have separately labeled **offline previews** in `artifacts/hybrid-prototype-v158-2026-10-13-audiofix/ack-preview/`. Reproduce with:
+
+```sh
+node scripts/check-hybrid-wait-acknowledgement.mjs
+node scripts/preview-hybrid-acknowledgement.mjs artifacts/hybrid-prototype-v158-2026-10-13-audiofix
+```
+
+The preview replays the recorded audio and initial-assessment timestamp through the same updated playback controller at 20 ms intervals. It adds the clip to the Shield channel, preserves the caller track sample-for-sample, and verifies unchanged duration and unchanged audio outside the acknowledgement intervals. Original recordings, hashes and outcomes remain untouched. All five previews play the clip once; onset follows at least one second of detected caller quiet and initial waiting. Trailing silence in a source utterance can make onset less than one second after its file ends. Both unsuccessful conversations remain unsuccessful, and the delay before Live speech is unchanged. No paid inference, new phone call or deployment is involved.
+
+The acknowledgement/gate checks and `npm run check` pass, including 203 unit tests and the build. All six preview audio players load without media errors. The first Firebase run passes 153/154 with the existing stopped-total emulator transaction-closed error; the full unchanged rerun passes 154/154. No backend code was changed to obtain that pass.
 
 ## What this establishes
 
