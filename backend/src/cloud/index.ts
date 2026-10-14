@@ -4,6 +4,7 @@ import { defineSecret } from 'firebase-functions/params';
 import { onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { onTaskDispatched } from 'firebase-functions/v2/tasks';
 import { cloudSchema } from './config.js';
 import { CloudStore } from './store.js';
 import type { buildCloudApp } from './app.js';
@@ -77,12 +78,28 @@ export const sendShieldAlert = onDocumentCreated({ ...options, document: 'alerts
   await new AlertDelivery(s, new APNsSender(s.config.APNS, s.config.IOS_BUNDLE_ID)).deliver(event.params.alertId);
 });
 
-// Connected-call protection: one Luna check per queued job, only for calls the owner opted in to monitor.
-export const monitorConnectedCall = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
-  document: 'monitorChecks/{jobId}', retry: false, concurrency: 8 }, async event => {
+// Durable outbox: enqueue the timer without holding an instance open until its due time.
+export const monitorConnectedCall = onDocumentCreated({ ...options, secrets: [runtime, openaiKey], document: 'monitorChecks/{jobId}', retry: true, concurrency: 8,
+  timeoutSeconds: 60 }, async event => {
+  // Keep calls made by an older API revision protected during a rolling release/rollback.
+  if (event.data?.data().dueAt === undefined) {
+    const [{ CallMonitor, assessCall }, { ForwardingStore }] = await Promise.all([import('./monitoring.js'), import('./forwarding-store.js')]);
+    await new CallMonitor(new ForwardingStore(getStore())).checkLegacy(event.params.jobId, text => assessCall(text, openaiKey.value()));
+    return;
+  }
+  const { dispatchMonitorCheck } = await import('./monitor-queue.js');
+  await dispatchMonitorCheck(getStore(), event.params.jobId);
+});
+
+export const monitorScheduledCall = onTaskDispatched({ ...options, secrets: [runtime, openaiKey], timeoutSeconds: 60,
+  invoker: ['shield-runtime@shield-calls-isaac.iam.gserviceaccount.com'], concurrency: 8,
+  retryConfig: { maxAttempts: 20, minBackoffSeconds: 5, maxBackoffSeconds: 30, maxRetrySeconds: 300 },
+  rateLimits: { maxConcurrentDispatches: 16, maxDispatchesPerSecond: 10 } }, async request => {
+  const jobId = request.data?.jobId;
+  if (typeof jobId !== 'string' || !/^[a-zA-Z0-9-]{1,180}$/.test(jobId)) return;
   const [{ CallMonitor, assessCall }, { ForwardingStore }] = await Promise.all([import('./monitoring.js'), import('./forwarding-store.js')]);
   const key = openaiKey.value();
-  await new CallMonitor(new ForwardingStore(getStore())).check(event.params.jobId, transcript => assessCall(transcript, key));
+  await new CallMonitor(new ForwardingStore(getStore())).check(jobId, transcript => assessCall(transcript, key));
 });
 
 export const expireSharedCalls = onSchedule({ ...options, maxInstances: 1, schedule: 'every 1 minutes', retryCount: 1, timeoutSeconds: 120 }, async () => {

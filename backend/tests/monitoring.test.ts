@@ -10,6 +10,7 @@ import { CallMonitor, MONITOR_POLICY_VERSION, MONITORING_CONSENT, type Assessmen
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import type { AuthProvider } from '../src/auth.js';
+import { dispatchMonitorCheck } from '../src/cloud/monitor-queue.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection (Firestore emulator)', () => {
   const project = 'demo-shield-monitoring';
@@ -104,7 +105,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     await heard(id, 'Hello? Is anyone there?');
     expect((await db.collection('monitoredCalls').doc(id).get()).exists).toBe(false);
   });
-  it('keeps only final, signed, same-call speech, encrypted, and runs at most two checks at once', async () => {
+  it('keeps only final, signed, same-call speech encrypted, coalescing updates before spending a check', async () => {
     await optIn(); const { id } = await connect();
     expect((await post(`monitor/${id}`, { Transcript: 'unsigned words', IsFinal: 'true' }, false)).statusCode).toBe(403);
     await heard(id, 'partial words', { IsFinal: 'false' });
@@ -117,9 +118,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     expect(s.vault.open(stored.transcriptEnc, `monitor:${id}`)).toBe('Caller: Hi, it is Dan from the bank.\nRecipient: Oh, hello Dan.');
     expect(stored.heardAt).toEqual([now, now]);
     await heard(id, 'How can I help?', { Track: 'outbound' });
-    expect(await jobs()).toHaveLength(2);
+    expect(await jobs()).toHaveLength(1);
+    expect(stored.checks).toBe(0);
   });
-  it('starts a check for new speech while another runs, and queues the rest once one finishes', async () => {
+  it('schedules speech arriving during a check and checks its latest words even if the speakers then go quiet', async () => {
     await optIn(); const { id } = await connect();
     await heard(id, 'Hi Grandma, it is Emma.');
     await monitor.check(`${id}-1`, async () => {
@@ -128,14 +130,32 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
       expect((await jobs()).map(d => d.id).sort()).toEqual([`${id}-1`, `${id}-2`]);
       return { action: 'continue', concern: 'none', evidence: '' };
     });
-    expect((await jobs()).map(d => d.id).sort()).toEqual([`${id}-2`, `${id}-3`]);
+    expect((await jobs()).map(d => d.id)).toEqual([`${id}-2`]);
+    const assess = vi.fn(async (): Promise<Assessment> => ({ action: 'continue', concern: 'none', evidence: '' }));
+    await expect(monitor.check(`${id}-2`, assess)).rejects.toThrow('monitor_check_not_due');
+    expect(assess).not.toHaveBeenCalled();
+    now += 5000;
+    // Simulate a cold task worker, not an in-memory timer or another transcript callback.
+    await new CallMonitor(f, { update }).check(`${id}-2`, assess);
+    expect(assess.mock.calls[0]![0]).toContain('practice at five');
+    expect(await jobs()).toHaveLength(0);
   });
-  it('lets a lapsed check be replaced instead of blocking new speech', async () => {
+  it('recovers a crashed worker without another transcript, charging its abandoned attempt to the old window', async () => {
     await optIn(); const { id } = await connect();
-    await heard(id, 'Hi, it is Dan.'); await heard(id, 'From the bank.');
-    expect(await jobs()).toHaveLength(2);
-    now += 45_001; await heard(id, 'Read me the code.');
-    expect((await jobs()).map(d => d.id)).toContain(`${id}-3`);
+    await heard(id, 'Hi, it is Dan.');
+    const ref = db.collection('monitoredCalls').doc(id), m = (await ref.get()).data()!;
+    delete m.pending;
+    await ref.set({ ...m, checks: 1, lastSlot: 0, lastCheckAt: now,
+      running: { [`${id}-1`]: { until: now + 45000, chars: m.chars, token: 'crashed' } } });
+    const assess = vi.fn(async (): Promise<Assessment> => ({ action: 'continue', concern: 'none', evidence: '' }));
+    await expect(monitor.check(`${id}-1`, assess)).rejects.toThrow('monitor_check_busy');
+    now += 45_001;
+    await monitor.check(`${id}-1`, assess);
+    expect(assess).not.toHaveBeenCalled();
+    expect((await jobs()).map(d => d.id)).toEqual([`${id}-2`]);
+    await monitor.check(`${id}-2`, assess);
+    expect(assess).toHaveBeenCalledOnce();
+    expect((await ref.get()).data()!.checks).toBe(2);
   });
   it('records when the quoted request arrived and when the warning started, without its words', async () => {
     await optIn(); const { id } = await connect();
@@ -167,7 +187,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     expect(assess).toHaveBeenCalledOnce(); expect(update).not.toHaveBeenCalled();
     const next = await jobs();
     expect(next.map(d => d.id)).toEqual([`${id}-2`]);
+    now += 5000;
     await monitor.check(`${id}-2`, async () => undefined);
+    // A provider failure isn't a successful review. Retry in the next reserved window, not immediately.
+    expect((await jobs()).map(d => d.id)).toEqual([`${id}-3`]);
+    now += 5000;
+    await monitor.check(`${id}-3`, async () => ({ action: 'continue', concern: 'none', evidence: '' }));
     expect(await jobs()).toHaveLength(0);
     expect((await s.callRef(id).get()).data()!.monitorIntervenedAt).toBeUndefined();
   });
@@ -220,5 +245,80 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
     expect((await db.collection('monitoredCalls').doc(id).get()).exists).toBe(true);
     await post(`dial-ended/${id}`, { DialCallSid: sid(2), DialCallStatus: 'completed' });
     expect((await db.collection('monitoredCalls').doc(id).get()).exists).toBe(false);
+    const assess = vi.fn();
+    await monitor.check(`${id}-1`, assess);
+    expect(assess).not.toHaveBeenCalled(); expect(await jobs()).toHaveLength(0);
+  });
+
+  it('never pays twice for duplicate task delivery, including concurrent delivery', async () => {
+    await optIn(); const { id } = await connect(); await heard(id, 'Can you give me a ride home?');
+    let finish!: (a: Assessment) => void, entered!: () => void;
+    const started = new Promise<void>(resolve => { entered = resolve; });
+    const assess = vi.fn(() => new Promise<Assessment>(resolve => { finish = resolve; entered(); }));
+    const first = monitor.check(`${id}-1`, assess); await started;
+    await expect(monitor.check(`${id}-1`, assess)).rejects.toThrow('monitor_check_busy');
+    finish({ action: 'continue', concern: 'none', evidence: '' }); await first;
+    await monitor.check(`${id}-1`, assess);
+    expect(assess).toHaveBeenCalledOnce();
+    expect((await monitor.monitorRef(id).get()).data()!.checks).toBe(1);
+  });
+
+  it('keeps old API jobs working during promotion and switches their follow-up to the new cadence', async () => {
+    await optIn(); const { id } = await connect(); await heard(id, 'This is Lee, your neighbor.');
+    const ref = monitor.monitorRef(id), doc = (await ref.get()).data()!;
+    for (const key of ['pending', 'cadenceVersion', 'startedAt', 'queued']) delete doc[key];
+    await ref.set({ ...doc, checks: 1, running: { [`${id}-1`]: { until: now + 45000, chars: doc.chars } } });
+    await monitor.jobRef(`${id}-1`).set({ callId: id, createdAt: now, expiresAt: now + 7200000 });
+    await monitor.checkLegacy(`${id}-1`, async () => {
+      now += 1000;
+      await heard(id, 'I can bring the ladder round tomorrow.'); // New API revision handles this callback.
+      return { action: 'continue', concern: 'none', evidence: '' };
+    });
+    const [next] = await jobs(); expect(next!.data().dueAt).toBe(now);
+    await monitor.check(next!.id, async () => ({ action: 'continue', concern: 'none', evidence: '' }));
+    expect((await ref.get()).data()!.checks).toBe(2);
+    expect(await jobs()).toHaveLength(0);
+  });
+
+  it('has 240 reserved windows across a busy full hour, with a real check in the last minute', async () => {
+    await optIn(); const { id } = await connect(); const start = now, times: number[] = [];
+    const assess = vi.fn(async (): Promise<Assessment> => { times.push(now - start); return { action: 'continue', concern: 'none', evidence: '' }; });
+    for (let i = 0; i < 240; i++) {
+      await heard(id, 'We are discussing the community garden.');
+      await heard(id, 'The flowers need more water.');
+      const pending = await jobs(); expect(pending).toHaveLength(1);
+      now = Math.max(now, pending[0]!.data().dueAt);
+      await monitor.check(pending[0]!.id, assess);
+      now++;
+    }
+    expect(times.filter(t => t < 300000)).toHaveLength(60);
+    expect(times.filter(t => t >= 300000 && t < 1200000)).toHaveLength(60);
+    expect(times.filter(t => t >= 1200000)).toHaveLength(120);
+    expect(times.at(-1)).toBe(3580000);
+    await heard(id, 'I will see you later.');
+    expect(await jobs()).toHaveLength(0);
+    now = start + 3600000;
+    await heard(id, 'This arrives after the connected deadline.');
+    expect(assess).toHaveBeenCalledTimes(240);
+  }, 120000);
+
+  it('skips silence, keeps late-call protection, and dispatches only a contentless delayed task', async () => {
+    await optIn(); const { id } = await connect(); const start = now;
+    await heard(id, 'Hi, it is your neighbor.');
+    await monitor.check(`${id}-1`, async () => ({ action: 'continue', concern: 'none', evidence: '' }));
+    now = start + 59 * 60000;
+    expect(await jobs()).toHaveLength(0);
+    await heard(id, 'How was your afternoon?');
+    await monitor.check(`${id}-2`, async () => ({ action: 'continue', concern: 'none', evidence: '' }));
+    now++;
+    await heard(id, 'Read me the verification code we sent.');
+    const enqueue = vi.fn().mockResolvedValue(undefined);
+    await dispatchMonitorCheck(s, `${id}-3`, { enqueue });
+    expect(enqueue.mock.calls[0]![0]).toEqual({ jobId: `${id}-3` });
+    expect(enqueue.mock.calls[0]![1].scheduleTime.getTime()).toBe(start + 59 * 60000 + 20000);
+    now = enqueue.mock.calls[0]![1].scheduleTime.getTime();
+    await monitor.check(`${id}-3`, async () => ({ action: 'intervene', concern: 'code_or_password', evidence: 'Read me the verification code' }));
+    expect((await s.callRef(id).get()).data()!.monitorConcern).toBe('code_or_password');
+    expect(update).toHaveBeenCalledOnce(); expect(await jobs()).toHaveLength(0);
   });
 });

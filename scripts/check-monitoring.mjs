@@ -13,7 +13,9 @@ try {
     let transcript = null;
     try {
       const doc = (await firestore().get(`${documentRoot}/monitoredCalls/${call.id}`)).body.fields;
-      transcript = { held: true, chars: Number(doc.chars?.integerValue ?? 0), checks: Number(doc.checks?.integerValue ?? 0) };
+      transcript = { held: true, chars: Number(doc.chars?.integerValue ?? 0), checks: Number(doc.checks?.integerValue ?? 0),
+        cadenceVersion: doc.cadenceVersion?.stringValue ?? 'legacy', pending: !!doc.pending,
+        lastCheckAt: Number(doc.lastCheckAt?.integerValue ?? 0) || null, lastSlot: Number(doc.lastSlot?.integerValue ?? -1) };
     } catch { transcript = { held: false }; }
     const at = n => n ? new Date(n).toISOString() : null;
     console.log(JSON.stringify({ call: call.id, state: call.state, outcome: call.outcome, reason: call.reason, created: at(call.createdAt),
@@ -24,6 +26,6 @@ try {
   const logging = new Client({ urlPrefix: 'https://logging.googleapis.com', apiVersion: 'v2' });
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const errors = (await logging.post('/entries:list', { resourceNames: [`projects/${project}`], pageSize: 50,
-    filter: `resource.type="cloud_run_revision" AND resource.labels.service_name=("monitorconnectedcall" OR "shieldapi") AND severity>=ERROR AND timestamp>="${since}"` })).body.entries ?? [];
+    filter: `resource.type="cloud_run_revision" AND resource.labels.service_name=("monitorconnectedcall" OR "monitorscheduledcall" OR "shieldapi") AND severity>=ERROR AND timestamp>="${since}"` })).body.entries ?? [];
   console.log(JSON.stringify({ pendingChecks: pending, errorsLastHour: errors.length, errorServices: [...new Set(errors.map(e => e.resource?.labels?.service_name))] }));
 } catch (error) { console.error('Monitoring check failed:', error.status ?? error.code ?? error.name); process.exitCode = 1; }
