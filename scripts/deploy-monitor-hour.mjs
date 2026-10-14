@@ -41,6 +41,7 @@ async function download(source) {
   assert.ok(r.status < 400, 'source_download_failed'); const chunks = [];
   for await (const chunk of r.body) chunks.push(chunk); return Buffer.concat(chunks);
 }
+let phase = 'initialization';
 try {
   await connect(); await mkdir(dir, { recursive: true });
   const command = process.argv[2];
@@ -129,10 +130,13 @@ try {
     const [action, kind] = command.split('-'), before = await read('before.json');
     const base = before.functions.find(f => f.name.endsWith('/' + targets[kind])), path = '/' + base.name;
     if (action === 'deploy') {
+      phase = 'active_call_guard';
       await noActiveCalls();
+      phase = 'dependency_guard';
       if (kind === 'api') assert.ok((await read('dispatcher-verified.json')).verifiedAt);
       else assert.ok((await read('worker.json')).function.state === 'ACTIVE');
       const current = (await cf.get(path)).body;
+      phase = 'configuration_guard';
       // A verified revision may be repaired before the producer is activated; retain the original baseline.
       let previous; try { previous = await read(`${kind}-verified.json`); } catch (error) { if (error.code !== 'ENOENT') throw error; }
       assert.equal(current.serviceConfig.revision, previous?.revision ?? base.serviceConfig.revision);
@@ -140,15 +144,19 @@ try {
       if (kind === 'dispatcher' && previous) expectedConfig.event.retryPolicy = 'RETRY_POLICY_RETRY';
       assert.deepEqual(configuration(current), expectedConfig);
       const expected = (await read('manifest.json')).manifests[kind].candidate;
+      phase = 'package_guard';
       assert.deepEqual(await manifest(`${dir}/${kind}-package`), expected);
+      phase = 'upload_url_guard';
       const upload = (await cf.post(`${parent}/functions:generateUploadUrl`, {})).body;
       const url = new URL(upload.uploadUrl); assert.equal(url.hostname, 'storage.googleapis.com');
       const bytes = await readFile(`${dir}/${kind}-candidate.zip`);
+      phase = 'source_upload';
       const response = await fetch(url, { method: 'PUT', redirect: 'error', headers: { 'Content-Type': 'application/zip' }, body: bytes, signal: AbortSignal.timeout(120000) });
       assert.ok(response.ok, 'source_upload_failed');
       const payload = { name: base.name, buildConfig: { source: { storageSource: upload.storageSource } } };
       const mask = ['buildConfig.source'];
       if (kind === 'dispatcher') { payload.eventTrigger = { retryPolicy: 'RETRY_POLICY_RETRY' }; mask.push('eventTrigger.retryPolicy'); }
+      phase = 'function_update';
       const op = (await cf.patch(path, payload, { queryParams: { updateMask: mask.join(',') } })).body;
       await save(`${kind}-state.json`, { operation: op.name, archiveHash: hash(bytes), at: new Date().toISOString() });
       console.log(JSON.stringify({ submitted: kind, operation: op.name }));
@@ -157,17 +165,38 @@ try {
       if (op.error) await save(`${kind}-error.json`, op);
       if (action === 'status') console.log(JSON.stringify({ target: kind, done: !!op.done, errorCode: op.error?.code }));
       else {
+        phase = 'operation_completion';
         assert.ok(op.done && !op.error); const current = (await cf.get(path)).body;
+        phase = 'active_revision';
         assert.equal(current.state, 'ACTIVE'); assert.notEqual(current.serviceConfig.revision, base.serviceConfig.revision);
         const expected = configuration(base); if (kind === 'dispatcher') expected.event.retryPolicy = 'RETRY_POLICY_RETRY';
+        phase = 'configuration_verification';
         assert.deepEqual(configuration(current), expected);
+        phase = 'source_verification';
         assert.equal(hash(await download(current.buildConfig.source.storageSource)), state.archiveHash, 'deployed_archive_mismatch');
+        phase = 'iam_verification';
         assert.deepEqual((await run.get('/' + current.serviceConfig.service + ':getIamPolicy')).body, before.iam[targets[kind]]);
         await save(`${kind}-after.json`, current);
         const report = { verifiedAt: new Date().toISOString(), revision: current.serviceConfig.revision, sourceVerified: true, iamPreserved: true };
         await save(`${kind}-verified.json`, report); console.log(JSON.stringify(report));
       }
     }
+  } else if (command === 'verify-worker') {
+    const worker = await read('worker.json'), f = worker.function;
+    assert.equal(f.state, 'ACTIVE'); assert.equal(f.serviceConfig.availableMemory, '512Mi');
+    assert.equal(f.serviceConfig.timeoutSeconds, 60); assert.equal(f.serviceConfig.maxInstanceCount, 2);
+    assert.equal(f.serviceConfig.maxInstanceRequestConcurrency, 8);
+    const bytes = await download(f.buildConfig.source.storageSource);
+    await writeFile(`${dir}/worker-deployed.zip`, bytes, { mode: 0o600 });
+    const entries = execFileSync('/usr/bin/unzip', ['-Z1', `${dir}/worker-deployed.zip`], { encoding: 'utf8' }).trim().split('\n');
+    assert.ok(entries.every(p => !p.startsWith('/') && !p.split('/').includes('..')));
+    await mkdir(`${dir}/worker-deployed`, { recursive: true });
+    execFileSync('/usr/bin/unzip', ['-oq', `${dir}/worker-deployed.zip`, '-d', `${dir}/worker-deployed`]);
+    const expected = (await read('manifest.json')).manifests.dispatcher.candidate;
+    assert.deepEqual(await manifest(`${dir}/worker-deployed`), expected);
+    const report = { verifiedAt: new Date().toISOString(), revision: f.serviceConfig.revision, sourceVerified: true,
+      files: Object.keys(expected).length, limitsVerified: true, secretVersions: f.serviceConfig.secretEnvironmentVariables.map(s => ({ key: s.key, version: s.version })) };
+    await save('worker-source-verified.json', report); console.log(JSON.stringify(report));
   } else if (command === 'smoke') {
     const id = `cadence-smoke-${Date.now()}`, now = Date.now();
     // No call document or transcript: verifies dispatch/timing/deletion without model or carrier activity.
@@ -186,6 +215,7 @@ try {
     const api = await read('api-after.json');
     assert.equal((await fetch(api.serviceConfig.uri + '/public/ready', { signal: AbortSignal.timeout(20000) })).status, 200);
     const worker = await read('worker.json');
+    assert.equal((await read('worker-source-verified.json')).revision, worker.function.serviceConfig.revision);
     assert.equal((await fetch(worker.function.serviceConfig.uri, { signal: AbortSignal.timeout(20000) })).status, 403);
     const report = { verifiedAt: new Date().toISOString(), api: api.serviceConfig.revision,
       dispatcher: (await read('dispatcher-verified.json')).revision, worker: worker.function.serviceConfig.revision,
@@ -193,6 +223,6 @@ try {
     await save('verified.json', report); console.log(JSON.stringify(report));
   } else throw new Error('unknown_command');
 } catch (error) {
-  console.error(JSON.stringify({ failed: true, kind: error.status ?? error.code ?? error.name,
+  console.error(JSON.stringify({ failed: true, phase, kind: error.status ?? error.code ?? error.name,
     reason: /^[a-z_]+$/.test(error.message ?? '') ? error.message : 'release_step_failed' })); process.exitCode = 1;
 }

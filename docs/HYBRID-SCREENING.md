@@ -19,7 +19,7 @@ Always-on is an existing per-person admission setting. It removes the repeated 3
 
 The recipient leg now has a 3,600-second carrier limit from answer, including the short private summary. A durable cleanup deadline also ends an accepted call after an hour. The carrier may therefore end it a few seconds before a full hour of conversation. Reservation timing allows for screening and offering, and shared capacity is released only after a confirmed end. See [Telnyx's duration semantics](https://developers.telnyx.com/api-reference/call-commands/dial).
 
-Connected-call monitoring is unchanged: it uses the owner's existing opt-in and a maximum of 240 decision checks per call. Raising the call-duration limit does **not** establish uninterrupted fraud monitoring for the entire hour; that budget may be exhausted earlier on a talkative call. Its transcript retention bound remains two hours. Shared-mode automatic setup calls remain disabled.
+The subsequent October 13 [monitoring cadence release](MONITORING-CADENCE.md) spreads the existing 240-check ceiling across the connected hour: 5-second windows for five minutes, 15-second windows through minute 20, then 20-second windows. Reviewed silence consumes no model requests, and durable delayed jobs review pending speech even if a caller goes quiet. Later requests may wait up to 20 seconds plus transcription, queue and model latency; this is periodic monitoring, not guaranteed immediate intervention. Existing opt-in, policy and two-hour transcript retention remain. Shared-mode automatic setup calls remain disabled.
 
 ## Validation on October 13
 
