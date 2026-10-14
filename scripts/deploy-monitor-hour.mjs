@@ -86,7 +86,13 @@ try {
   } else if (command === 'permissions') {
     const f = (await cf.get(`${parent}/functions/monitorScheduledCall`)).body;
     assert.equal(f.state, 'ACTIVE'); assert.equal(f.serviceConfig.serviceAccountEmail, identity);
-    const q = (await tasks.get(queue)).body;
+    let q;
+    try { q = (await tasks.get(queue)).body; } catch (error) {
+      if (error.status !== 404) throw error;
+      q = (await tasks.post(`${parent}/queues`, { name: queue.slice(1),
+        rateLimits: { maxConcurrentDispatches: 16, maxDispatchesPerSecond: 10 },
+        retryConfig: { maxAttempts: 20, minBackoff: '5s', maxBackoff: '30s', maxRetryDuration: '300s', maxDoublings: 3 } })).body;
+    }
     assert.equal(q.rateLimits.maxConcurrentDispatches, 16); assert.equal(q.retryConfig.maxAttempts, 20);
     const policy = (await tasks.post(`${queue}:getIamPolicy`, {})).body;
     policy.bindings ??= [];
@@ -98,12 +104,23 @@ try {
     const iam = new Client({ urlPrefix: 'https://iam.googleapis.com', apiVersion: 'v1' });
     const account = `/projects/${project}/serviceAccounts/${identity}`;
     const accountPolicy = (await iam.post(`${account}:getIamPolicy`, {})).body;
-    await save('runtime-iam-before.json', accountPolicy); accountPolicy.bindings ??= [];
+    try { await writeFile(`${dir}/runtime-iam-before.json`, JSON.stringify(accountPolicy, null, 2), { flag: 'wx', mode: 0o600 }); }
+    catch (error) { if (error.code !== 'EEXIST') throw error; }
+    accountPolicy.bindings ??= [];
     if (!accountPolicy.bindings.some(b => b.role === 'roles/iam.serviceAccountUser' && b.members.includes(member))) {
       accountPolicy.bindings.push({ role: 'roles/iam.serviceAccountUser', members: [member] });
       await iam.post(`${account}:setIamPolicy`, { policy: accountPolicy });
     }
-    const invokers = (await run.get('/' + f.serviceConfig.service + ':getIamPolicy')).body;
+    const servicePath = '/' + f.serviceConfig.service;
+    let invokers = (await run.get(servicePath + ':getIamPolicy')).body;
+    // firebase-tools 15.10.1 dereferences absent bindings on a fresh private service.
+    // Keep the same intended single-service-account grant without changing installed CLI code.
+    invokers.bindings ??= [];
+    if (!invokers.bindings.some(b => b.role === 'roles/run.invoker' && b.members.includes(member))) {
+      invokers.bindings.push({ role: 'roles/run.invoker', members: [member] });
+      await run.post(servicePath + ':setIamPolicy', { policy: invokers });
+      invokers = (await run.get(servicePath + ':getIamPolicy')).body;
+    }
     assert.ok(invokers.bindings?.some(b => b.role === 'roles/run.invoker' && b.members.includes(member)));
     assert.ok(!invokers.bindings?.some(b => b.members.some(m => ['allUsers','allAuthenticatedUsers'].includes(m))));
     await save('worker.json', { function: f, queue: q, invokers });
@@ -115,8 +132,13 @@ try {
       await noActiveCalls();
       if (kind === 'api') assert.ok((await read('dispatcher-verified.json')).verifiedAt);
       else assert.ok((await read('worker.json')).function.state === 'ACTIVE');
-      const current = (await cf.get(path)).body; assert.equal(current.serviceConfig.revision, base.serviceConfig.revision);
-      assert.deepEqual(configuration(current), configuration(base));
+      const current = (await cf.get(path)).body;
+      // A verified revision may be repaired before the producer is activated; retain the original baseline.
+      let previous; try { previous = await read(`${kind}-verified.json`); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      assert.equal(current.serviceConfig.revision, previous?.revision ?? base.serviceConfig.revision);
+      const expectedConfig = configuration(base);
+      if (kind === 'dispatcher' && previous) expectedConfig.event.retryPolicy = 'RETRY_POLICY_RETRY';
+      assert.deepEqual(configuration(current), expectedConfig);
       const expected = (await read('manifest.json')).manifests[kind].candidate;
       assert.deepEqual(await manifest(`${dir}/${kind}-package`), expected);
       const upload = (await cf.post(`${parent}/functions:generateUploadUrl`, {})).body;

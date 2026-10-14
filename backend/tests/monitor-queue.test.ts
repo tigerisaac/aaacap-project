@@ -1,10 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
 import { dispatchMonitorCheck } from '../src/cloud/monitor-queue.js';
 import type { CloudStore } from '../src/cloud/store.js';
+import { initializeApp, deleteApp } from 'firebase-admin/app';
+import { getFunctions, type Functions } from 'firebase-admin/functions';
+
+vi.mock('firebase-admin/functions', () => ({ getFunctions: vi.fn() }));
 
 const store = (job?: Record<string, unknown>) => ({ now: () => 100,
   db: { collection: () => ({ doc: () => ({ get: async () => ({ data: () => job }) }) }) } }) as unknown as CloudStore;
 describe('durable monitoring timer outbox', () => {
+  it('uses the already initialized named Firebase app when there is no default app', async () => {
+    const app = initializeApp({ projectId: 'demo-monitor-queue' }, 'named-monitor-queue');
+    const enqueue = vi.fn().mockResolvedValue(undefined), taskQueue = vi.fn(() => ({ enqueue }));
+    vi.mocked(getFunctions).mockReturnValue({ taskQueue } as unknown as Functions);
+    try {
+      await dispatchMonitorCheck(store({ dueAt: 5000, expiresAt: 10000 }), 'synthetic-named-app');
+      expect(getFunctions).toHaveBeenCalledWith(app); expect(enqueue).toHaveBeenCalledOnce();
+    } finally { await deleteApp(app); }
+  });
   it('uses the same contentless task ID on duplicate outbox delivery', async () => {
     const s = store({ callId: 'synthetic', dueAt: 5000, expiresAt: 10000 });
     const enqueue = vi.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce({ code: 'functions/task-already-exists' });
