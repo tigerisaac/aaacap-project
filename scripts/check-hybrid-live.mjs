@@ -98,7 +98,8 @@ await Promise.all([worker(),worker()]);assert.deepEqual(await hashes(),sourceHas
 results.sort((a,b)=>cases.findIndex(c=>c.name===a.name)-cases.findIndex(c=>c.name===b.name));
 const summary={suite,policy:SCREENING_POLICY_VERSION,hybrid:HYBRID_SCREENING_VERSION,sourceUnchanged:true,completed:results.length,passed:results.filter(r=>r.passed).length,
  ordinaryOffered:results.filter(r=>r.category==='legit'&&r.actual==='approve').length,ordinarySaved:results.filter(r=>r.category==='legit'&&r.actual==='message').length,
- harmfulStopped:results.filter(r=>['scam','robocall'].includes(r.category)&&['block','hold'].includes(r.actual)).length,
+ harmfulStopped:results.filter(r=>['scam','robocall'].includes(r.category)&&r.actual==='block').length,
+ harmfulHeldForVoicemail:results.filter(r=>['scam','robocall'].includes(r.category)&&r.actual==='hold').length,
  harmfulApproved:results.filter(r=>['scam','robocall'].includes(r.category)&&r.actual==='approve').length,
  costUSD:results.reduce((n,r)=>n+r.estimatedCostUSD.total,0),results:results.map(({usage,events,callerTranscript,assistantTranscript,...r})=>r)};
 await writeFile(`${out}/summary.json`,JSON.stringify(summary,null,2),{flag:'wx'});console.log(JSON.stringify({...summary,results:undefined}));

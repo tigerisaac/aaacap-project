@@ -1,4 +1,6 @@
-# Local hybrid voice prototype
+# Local hybrid voice prototype (historical)
+
+The October 13 production integration is now documented in [Hybrid screening](HYBRID-SCREENING.md). The results and production-unchanged statements below describe the earlier local experiments.
 
 This prototype keeps screening policy `2026-10-13-general-v158`, GPT-6 Luna with medium reasoning, and the existing GPT Live voice/codec settings. The revised run requests Fast service for Luna; this changes latency and pricing, not reasoning effort or policy. It runs five invented callers locally through real Soniox, Luna and GPT Live APIs. It never calls Telnyx, dials a phone, writes to Firestore, changes forwarding or deploys anything.
 

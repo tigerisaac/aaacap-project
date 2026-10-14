@@ -1,5 +1,7 @@
 # Screening
 
+**Current voice orchestration:** the October 13 [hybrid release](HYBRID-SCREENING.md) preserves v158 but starts with Soniox transcription and Luna assessment; GPT Live starts only for clarification. The limits, ordinary-call misses and production evidence are documented there. Earlier Live-only descriptions below remain historical unless they describe the shared policy/decision guards.
+
 The [production candidate report](SCREENING-PRODUCTION-CANDIDATE.md) records the current v158 runtime-compatible prompt, its narrower v134-derived design, subscription validation and explicit service-policy departures. **V158 was deployed with owner approval on October 13 at 19:58 Central**, as recorded in [STATUS.md](STATUS.md). Production post-call filtering remains v4; repository v10 is unchanged and was not released.
 
 The [online-report check](SCREENING-ONLINE-REPORTS.md) tests unchanged v158 on 48 fresh synthetic scenarios twice through subscription Luna medium. It records 47 scam/contact blocks and one hold, eight ad blocks, all 24 ordinary live offers and eight ordinary notice saves. Eight concealed-intent trials with ordinary-sounding openings are offered, exposing the limit of screening before a harmful request is spoken. Redundant questions and two pronoun reversals remain. The prompt stayed unchanged; the subsequent owner-approved release is recorded in [STATUS.md](STATUS.md).
