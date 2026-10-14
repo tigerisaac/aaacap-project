@@ -7,7 +7,7 @@ final class ShieldUITests: XCTestCase {
         app.launch()
         let email = app.textFields["Email address"]
         XCTAssertTrue(email.waitForExistence(timeout: 5))
-        let continueButton = app.buttons["Continue"]
+        let continueButton = app.buttons["sign-in-submit"]
         XCTAssertFalse(continueButton.isEnabled)
         capture(app, name: "Welcome")
         email.tap()
@@ -60,7 +60,7 @@ final class ShieldUITests: XCTestCase {
         app.buttons["Change email"].tap()
         XCTAssertTrue(app.textFields["Email address"].exists)
         XCTAssertEqual(app.textFields["Email address"].value as? String, "beta@example.com")
-        XCTAssertTrue(app.buttons["Continue"].exists)
+        XCTAssertTrue(app.buttons["sign-in-submit"].exists)
     }
 
     func testWelcomeAtLargestTextSize() {
@@ -198,7 +198,7 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Calls"].exists)
         XCTAssertTrue(app.segmentedControls["callFilter"].exists || app.buttons["callFilter"].exists)
         capture(app, name: "Calls")
-        app.staticTexts["Call stopped"].firstMatch.tap()
+        app.historyRow("Call stopped").tap()
         XCTAssertTrue(app.navigationBars["Call"].waitForExistence(timeout: 3))
         app.buttons["More about this call"].tap()
         XCTAssertTrue(app.staticTexts["The caller asked for a secret code. Shield didn’t connect the call."].exists)
@@ -257,7 +257,7 @@ final class ShieldUITests: XCTestCase {
         app.launchArguments = ["--uitesting-preview"]
         app.launch()
         app.tabBars.buttons["Calls"].tap()
-        let removed = app.staticTexts["Suspicious message removed"].firstMatch
+        let removed = app.historyRow("Suspicious message removed")
         for _ in 0..<4 where !removed.isHittable { app.swipeUp() }
         removed.tap()
         XCTAssertTrue(app.navigationBars["Voicemail"].waitForExistence(timeout: 3))
@@ -275,7 +275,7 @@ final class ShieldUITests: XCTestCase {
         app.tabBars.buttons["Messages"].tap()
         XCTAssertTrue(app.navigationBars["Messages"].waitForExistence(timeout: 5))
         capture(app, name: "Messages inbox")
-        app.staticTexts["Saved account notice"].firstMatch.tap()
+        app.historyRow("Saved account notice").tap()
         XCTAssertTrue(app.navigationBars["Saved notice"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["message-summary"].exists)
         capture(app, name: "Saved notice summary")
@@ -292,7 +292,7 @@ final class ShieldUITests: XCTestCase {
         app.launchArguments = ["--uitesting-preview", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
         app.tabBars.buttons["Messages"].tap()
-        let notice = app.staticTexts["Saved account notice"].firstMatch
+        let notice = app.historyRow("Saved account notice")
         XCTAssertTrue(notice.waitForExistence(timeout: 5))
         capture(app, name: "Messages inbox large dark")
         notice.tap()

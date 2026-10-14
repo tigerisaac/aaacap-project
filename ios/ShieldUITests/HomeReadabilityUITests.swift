@@ -12,10 +12,10 @@ final class HomeReadabilityUITests: XCTestCase {
         capture("readable-home-light")
         stopped.tap()
         XCTAssertTrue(app.navigationBars["Calls"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Call stopped"].exists)
-        XCTAssertFalse(app.staticTexts["Prescription reminder"].exists)
+        XCTAssertTrue(app.historyRow("Call stopped").exists)
+        XCTAssertFalse(app.historyRow("Prescription reminder").exists)
         capture("readable-stopped-calls-light")
-        let removed = app.staticTexts["Suspicious message removed"].firstMatch
+        let removed = app.historyRow("Suspicious message removed")
         reveal(removed, in: app); removed.tap()
         XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["It seemed suspicious."].exists)
@@ -54,7 +54,7 @@ final class HomeReadabilityUITests: XCTestCase {
         XCTAssertTrue(stopped.isHittable)
         capture("readable-home-large-dark")
         stopped.tap()
-        let removed = app.staticTexts["Suspicious message removed"].firstMatch
+        let removed = app.historyRow("Suspicious message removed")
         reveal(removed, in: app)
         revealFully(removed, above: app.tabBars.firstMatch, in: app); removed.tap()
         XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))

@@ -1,0 +1,124 @@
+[
+  {
+    "report": 1,
+    "log": "Shield accessibility: accessibility-home: Contrast failed; Attributes: StaticText, 0x112b7f840, {{82.0, 745.0}, {100.0, 20.3}}, label: 'Call stopped'",
+    "crop": "contrast-01.png",
+    "source": "79B2D6DE-42A2-4475-B5B2-6FDF73AB9DD7.png",
+    "timestamp": 1791938762.511,
+    "classification": "partly exposed at opaque scroll boundary",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-01.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 2,
+    "log": "Shield accessibility: accessibility-home: Contrast failed; Attributes: StaticText, 0x112b82bc0, {{283.7, 747.0}, {52.3, 18.0}}, identifier: 'call-time-6CF1B8EF-13AA-4E53-8379-FD0F5F1E3AA3', label: '7:21\u202fPM'",
+    "crop": "contrast-02.png",
+    "source": "06D66267-B681-4E34-ACCF-90581C9895BA.png",
+    "timestamp": 1791938766.534,
+    "classification": "partly exposed at opaque scroll boundary",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-02.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 3,
+    "log": "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x10a531cc0, {{82.0, 765.3}, {115.7, 20.3}}, label: 'Check this call'",
+    "crop": "contrast-03.png",
+    "source": "404CB040-543A-4A54-AAAB-CEDD47277A59.png",
+    "timestamp": 1791938781.467,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-03.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 4,
+    "log": "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x112bfb340, {{283.0, 767.3}, {53.0, 18.0}}, identifier: 'call-time-CDF9E2BB-882B-4D24-A163-00273928C46D', label: '1:25\u202fPM'",
+    "crop": "contrast-04.png",
+    "source": "9210D062-9461-4A5C-AFC8-A62C423717B6.png",
+    "timestamp": 1791938782.852,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-04.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 5,
+    "log": "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x113801b80, {{82.0, 791.7}, {76.7, 18.0}}, label: 'Check first'",
+    "crop": "contrast-05.png",
+    "source": "60C022B3-2B93-4074-880E-4ED9531B7E6B.png",
+    "timestamp": 1791938784.476,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-05.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 6,
+    "log": "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x10a52b5c0, {{164.7, 791.7}, {107.7, 18.0}}, label: '(512) 555-0126'",
+    "crop": "contrast-06.png",
+    "source": "D371A08B-77FD-40C7-9045-B42089F25AA9.png",
+    "timestamp": 1791938786.209,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-06.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 7,
+    "log": "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x10a547c00, {{82.0, 287.0}, {107.7, 42.3}}, label: 'Appointment message'",
+    "crop": "contrast-07.png",
+    "source": "89ED7776-9354-40B9-9DE7-74559CFB5777.png",
+    "timestamp": 1791938793.964,
+    "classification": "fully exposed; measured ink (6,19,38) on white (255,255,255), 18.60:1; candidate false positive",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-07.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg",
+    "committedExactCrop": ".impeccable/review/senior-followup/verdict/diagnostic-exposed-target.png"
+  },
+  {
+    "report": 8,
+    "log": "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x10a52a440, {{82.0, 754.3}, {125.7, 20.3}}, label: '(512) 555-0128'",
+    "crop": "contrast-08.png",
+    "source": "200B9084-9200-431A-B3D0-3D0172C7EB61.png",
+    "timestamp": 1791938794.844,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-08.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 9,
+    "log": "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x112bfa580, {{268.3, 756.3}, {67.7, 18.0}}, identifier: 'call-time-D24C2ACE-A42D-43FE-831A-800222D39059', label: 'Yesterday'",
+    "crop": "contrast-09.png",
+    "source": "97110A00-E1A0-4747-B350-969C5DF6AB13.png",
+    "timestamp": 1791938795.7,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-09.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 10,
+    "log": "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x112b7e6c0, {{82.0, 780.7}, {67.7, 18.0}}, label: 'Voicemail'",
+    "crop": "contrast-10.png",
+    "source": "8B362D57-3A29-4D3E-BEE6-2BED995617F0.png",
+    "timestamp": 1791938796.963,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-10.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  },
+  {
+    "report": 11,
+    "log": "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x112bf8c80, {{82.0, 804.7}, {98.3, 18.0}}, label: 'New message'",
+    "crop": "contrast-11.png",
+    "source": "60EAC1B0-A697-4E88-8B57-58898F225E8E.png",
+    "timestamp": 1791938798.175,
+    "classification": "target lettering fully occluded in diagnostic crop",
+    "diagnosticCropLocalPath": "../corrected/diagnostic-proof/contrast-11.png",
+    "rawResult": "Contrast failed",
+    "committedDocumentationPanel": "docs/images/ios-senior-retained-diagnostics.jpg"
+  }
+]

@@ -7,6 +7,7 @@ struct DemoBanner: View {
     var body: some View {
         Text(model.isTestAccount ? "Test account · Sample data" : "Sample app")
             .font(.subheadline.weight(.semibold))
+            .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)
             .foregroundStyle(ShieldTheme.secondaryText)

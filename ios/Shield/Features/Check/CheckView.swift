@@ -72,7 +72,6 @@ struct CheckView: View {
                     if let result {
                         ShieldGroup {
                             VStack(alignment: .leading, spacing: 16) {
-                                if result.isDemo { Text("Sample answer").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                                 Label {
                                     Text(result.title).foregroundStyle(ShieldTheme.ink)
                                 } icon: {

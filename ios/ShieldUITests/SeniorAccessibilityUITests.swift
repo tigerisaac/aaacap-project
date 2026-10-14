@@ -16,11 +16,11 @@ final class SeniorAccessibilityUITests: XCTestCase {
     func testEverydayScreensAudit() throws {
         let app = launch(["--uitesting-preview"])
         try audit(app, "accessibility-home")
-        moveFullyIntoView(app.staticTexts["Call stopped"].firstMatch, in: app)
+        moveFullyIntoView(app.historyRow("Call stopped"), in: app)
         try audit(app, "accessibility-home-row-exposed")
         app.tabBars.buttons["Calls"].tap()
         try audit(app, "accessibility-calls")
-        moveFullyIntoView(app.staticTexts["Suspicious message removed"].firstMatch, in: app)
+        moveFullyIntoView(app.historyRow("Suspicious message removed"), in: app)
         try audit(app, "accessibility-calls-row-exposed")
         app.tabBars.buttons["Messages"].tap()
         try audit(app, "accessibility-messages")
@@ -53,22 +53,71 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try audit(app, "accessibility-disconnection")
     }
 
-    private func launch(_ arguments: [String]) -> XCUIApplication {
+    func testNativeControlReferenceAudit() throws {
+        let app = launch(["--uitesting-native-reference"])
+        try audit(app, "accessibility-native-control-reference")
+    }
+
+    func testNativeControlDiagnosticIsolation() throws {
+        for (name, argument) in [("person", "--native-person-picker"), ("marker", "--native-sample-marker"), ("style", "--native-shield-style")] {
+            let app = launch(["--uitesting-native-reference", "--uitesting-preview", argument])
+            try audit(app, "accessibility-native-\(name)-reference")
+        }
+    }
+
+    func testNativeNavigationLinkDiagnosticIsolation() throws {
+        for (name, argument) in [("links", "--native-links"), ("labeled-links", "--native-labeled-links")] {
+            let app = launch(["--uitesting-native-reference", argument])
+            try audit(app, "accessibility-native-\(name)-reference")
+        }
+    }
+
+    func testNativeHistoryRowDiagnosticIsolation() throws {
+        for (name, argument) in [("call-row", "--native-call-row"), ("message-row", "--native-message-row")] {
+            let app = launch(["--uitesting-native-reference", argument])
+            try audit(app, "accessibility-native-\(name)-reference")
+        }
+    }
+
+    func testNativeStoppedCardDiagnosticIsolation() throws {
+        let app = launch(["--uitesting-native-reference", "--native-stopped-card"])
+        try audit(app, "accessibility-native-stopped-card-reference")
+        app.swipeUp()
+        try audit(app, "accessibility-native-stopped-card-scrolled-reference")
+    }
+
+    func testDarkToolbarActionsAudit() throws {
+        for screen in ["add-number", "add-contact", "invitation"] {
+            let app = launch(["--uitesting-screen", screen], dark: true)
+            try audit(app, "accessibility-\(screen)-dark")
+        }
+        var app = launch(["--uitesting-forwarding"], dark: true)
+        try audit(app, "accessibility-phone-setup-dark")
+        app = launch(["--uitesting-forwarding", "--forwarding-start-restore"], dark: true)
+        try audit(app, "accessibility-disconnection-dark")
+    }
+
+    private func launch(_ arguments: [String], dark: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-light"] + arguments
+        app.launchArguments = [dark ? "--uitesting-dark" : "--uitesting-light"] + arguments
         app.launch()
         return app
     }
 
     private func audit(_ app: XCUIApplication, _ name: String) throws {
+        Thread.sleep(forTimeInterval: 0.8)
         let capture = XCTAttachment(screenshot: app.screenshot())
         capture.name = name; capture.lifetime = .keepAlways; add(capture)
+        let tree = XCTAttachment(string: app.debugDescription)
+        tree.name = "\(name)-accessibility-tree"; tree.lifetime = .keepAlways; add(tree)
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("AccessibilityScreens")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         try app.screenshot().pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
         // Keep every diagnostic. Review native scroll-edge/disabled-control reports against the capture.
         try app.performAccessibilityAudit(for: [.contrast, .textClipped, .hitRegion, .sufficientElementDescription]) { issue in
-            print("Shield accessibility: \(name): \(issue.compactDescription); \(issue.element?.debugDescription ?? "No associated element")")
+            print("Shield accessibility: \(name): \(issue.compactDescription); \(issue.element?.debugDescription ?? "No associated element"); Details: \(issue.detailedDescription)")
+            let evidence = XCTAttachment(string: "\(issue.compactDescription)\n\(issue.detailedDescription)\n\(app.debugDescription)")
+            evidence.name = "\(name)-audit-details"; evidence.lifetime = .keepAlways; self.add(evidence)
             return false
         }
     }

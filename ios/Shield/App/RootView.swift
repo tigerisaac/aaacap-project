@@ -61,7 +61,9 @@ struct RootView: View {
 
     @ViewBuilder private var content: some View {
             #if DEBUG && targetEnvironment(simulator)
-            if let screen = ScreenPreview.requested {
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-native-reference") {
+                NativeAccessibilityReference()
+            } else if let screen = ScreenPreview.requested {
                 ScreenPreview(screen: screen)
             } else {
                 appContent
@@ -113,6 +115,9 @@ struct RootView: View {
                                 MoreView()
                             }
                         }
+                        .tabBarMinimizeBehavior(.never)
+                        .toolbarBackground(ShieldTheme.surface, for: .tabBar)
+                        .toolbarBackgroundVisibility(.visible, for: .tabBar)
                         .demoAccessory(model.isDemo)
                     }
                 }

@@ -40,7 +40,7 @@ struct VoicemailView: View {
                     ShieldGroup {
                         ForEach(messages) { call in
                             NavigationLink(value: call) {
-                                VoicemailRow(call: call, showsPreview: app.canListen, kept: app.demoKeptMessages.contains(call.id))
+                                VoicemailRow(call: call, kept: app.demoKeptMessages.contains(call.id))
                             }
                         }
                     }

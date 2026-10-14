@@ -38,11 +38,13 @@ struct OverviewView: View {
                         } else {
                             ForEach(messages.prefix(1)) { call in
                                 NavigationLink(value: call) {
-                                    VoicemailRow(call: call, showsPreview: model.canListen, kept: model.demoKeptMessages.contains(call.id))
+                                    VoicemailRow(call: call, kept: model.demoKeptMessages.contains(call.id))
                                 }
                             }
-                            Button("All messages") { model.showCalls(.voicemail) }
-                                .accessibilityIdentifier("today-messages")
+                            Button { model.showCalls(.voicemail) } label: {
+                                Text("All messages").fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                            }.accessibilityIdentifier("today-messages")
                         }
                     } header: { Text("Messages").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                     ShieldGroup {
@@ -53,7 +55,10 @@ struct OverviewView: View {
                                 NavigationLink(value: call) { CallRow(call: call, showsNumber: false) }
                             }
                         }
-                        Button("All calls") { model.showCalls(.all) }
+                        Button { model.showCalls(.all) } label: {
+                            Text("All calls").fixedSize(horizontal: false, vertical: true)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                        }
                     } header: { Text("Recent calls").font(ShieldTheme.Typography.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                 } else if model.isLoading {
                     ShieldGroup { ShieldLoadingView(title: "Getting your calls…") }

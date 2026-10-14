@@ -2,7 +2,6 @@ import SwiftUI
 
 struct VoicemailRow: View {
     let call: CallRecord
-    var showsPreview = false
     var kept = false
     @Environment(\.dynamicTypeSize) private var typeSize
     @ScaledMetric(relativeTo: .body) private var symbolSize = 36.0
@@ -19,10 +18,6 @@ struct VoicemailRow: View {
             VStack(alignment: .leading, spacing: 8) {
             Text(CallPresentation.title(call)).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
-            if showsPreview, call.voicemail?.status != "removed", let summary = call.voicemail?.summary {
-                Text(summary).foregroundStyle(ShieldTheme.secondaryText).lineLimit(typeSize.isAccessibilitySize ? 2 : 3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
             if typeSize >= .xxxLarge {
                 VStack(alignment: .leading, spacing: 6) { messageInfo }
             } else {
@@ -31,8 +26,21 @@ struct VoicemailRow: View {
             }
         }
         .padding(.vertical, 10)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityInputLabels([CallPresentation.title(call), "Open \(CallPresentation.title(call))"])
         .accessibilityIdentifier("voicemail-row-\(call.id)")
+        .accessibilityHint("Open the message to read or listen")
+    }
+
+    private var accessibilityDescription: String {
+        var parts = [CallPresentation.title(call)]
+        if let message = call.voicemail, message.status != "removed" { parts.append(message.kindLabel) }
+        if kept { parts.append("Kept") }
+        else if call.voicemail?.status == "removed" { parts.append("Removed") }
+        else if call.voicemail?.heardAt == nil { parts.append("New message") }
+        parts.append(call.occurredAt.formatted(date: .complete, time: .shortened))
+        return parts.joined(separator: ". ")
     }
 
     @ViewBuilder private var messageInfo: some View {
@@ -42,7 +50,6 @@ struct VoicemailRow: View {
                 else if call.voicemail?.status == "removed" { Label("Removed", systemImage: "trash") }
                 else if call.voicemail?.heardAt == nil { Text("New").fontWeight(.medium).foregroundStyle(ShieldTheme.message) }
                 Text(Calendar.current.isDateInToday(call.occurredAt) ? "Today" : Calendar.current.isDateInYesterday(call.occurredAt) ? "Yesterday" : call.occurredAt.formatted(.dateTime.month(.abbreviated).day()))
-                    .accessibilityLabel(call.occurredAt.formatted(date: .complete, time: .shortened))
             }
             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
     }

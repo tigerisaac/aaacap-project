@@ -8,15 +8,15 @@ final class SeniorDesignUITests: XCTestCase {
         let app = launch()
         capture(app, "senior-home-light")
         app.tabBars.buttons["Calls"].tap()
-        XCTAssertTrue(app.staticTexts["Call stopped"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.historyRow("Call stopped").waitForExistence(timeout: 5))
         capture(app, "senior-calls-light")
-        app.staticTexts["Call stopped"].firstMatch.tap()
+        app.historyRow("Call stopped").tap()
         XCTAssertTrue(app.navigationBars["Call"].waitForExistence(timeout: 5))
         capture(app, "senior-call-detail-light")
         app.tabBars.buttons["Messages"].tap()
-        XCTAssertTrue(app.staticTexts["Appointment message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.historyRow("Appointment message").waitForExistence(timeout: 5))
         capture(app, "senior-voicemail-light")
-        app.staticTexts["Appointment message"].firstMatch.tap()
+        app.historyRow("Appointment message").tap()
         let keep = app.buttons["keep-sample-message"]
         XCTAssertTrue(keep.waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["message-summary"].exists)
@@ -31,8 +31,8 @@ final class SeniorDesignUITests: XCTestCase {
         app.navigationBars.buttons.firstMatch.tap()
         let kept = app.segmentedControls["sample-message-filter"].buttons["Kept"]
         XCTAssertTrue(kept.waitForExistence(timeout: 5)); kept.tap()
-        XCTAssertTrue(app.staticTexts["Appointment message"].exists)
-        XCTAssertFalse(app.staticTexts["(512) 555-0128"].exists)
+        XCTAssertTrue(app.historyRow("Appointment message").exists)
+        XCTAssertFalse(app.historyRow("(512) 555-0128").exists)
         capture(app, "senior-kept-message-light")
         app.tabBars.buttons["More"].tap()
         XCTAssertTrue(app.staticTexts["Check a text"].waitForExistence(timeout: 5))
@@ -50,7 +50,7 @@ final class SeniorDesignUITests: XCTestCase {
         app.buttons["Check this text"].tap()
         XCTAssertTrue(app.alerts["Check this text?"].waitForExistence(timeout: 5))
         app.buttons["Show sample answer"].tap()
-        XCTAssertTrue(app.staticTexts["Sample answer"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["This is an example. Your text hasn’t been checked."].waitForExistence(timeout: 5))
         capture(app, "senior-check-answer-light")
         openMore(app, "Family & friends")
         XCTAssertTrue(app.buttons["person-Pat"].waitForExistence(timeout: 5))
@@ -88,7 +88,7 @@ final class SeniorDesignUITests: XCTestCase {
         XCTAssertTrue(app.buttons["callFilter"].waitForExistence(timeout: 5))
         capture(app, "senior-calls-large-dark")
         app.tabBars.buttons["Messages"].tap()
-        tap(app.staticTexts["Appointment message"].firstMatch, in: app)
+        tap(app.historyRow("Appointment message"), in: app)
         let keep = app.buttons["keep-sample-message"]
         tap(keep, in: app)
         XCTAssertEqual(keep.label, "Message kept")
@@ -174,6 +174,7 @@ final class SeniorDesignUITests: XCTestCase {
     }
 
     private func capture(_ app: XCUIApplication, _ name: String) {
+        Thread.sleep(forTimeInterval: 0.8)
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.name = name; shot.lifetime = .keepAlways; add(shot)
         do {

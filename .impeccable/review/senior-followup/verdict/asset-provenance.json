@@ -1,0 +1,31 @@
+[
+  {
+    "file": "docs/images/ios-senior-task-clarity.jpg",
+    "origin": "Synthetic native XCTest screenshots; composited without UI alteration",
+    "sources": [
+      ".impeccable/review/senior-followup/verdict/pro/senior-sign-in-light.png",
+      ".impeccable/review/senior-followup/verdict/pro/senior-helper-choice-light.png",
+      ".impeccable/review/senior-followup/verdict/pro/senior-home-light.png",
+      ".impeccable/review/senior-followup/verdict/pro/senior-check-answer-light.png",
+      ".impeccable/review/senior-followup/verdict/pro/visual-sharing-access-light.png",
+      ".impeccable/review/senior-followup/verdict/compact-recovery/polish-audio-status-recovery.png"
+    ]
+  },
+  {
+    "file": "docs/images/ios-senior-safe-actions.jpg",
+    "origin": "Synthetic native XCTest screenshots; composited without UI alteration",
+    "sources": [
+      ".impeccable/review/senior-followup/verdict/compact/walkthrough-contact-removal-scope.png",
+      ".impeccable/review/senior-followup/verdict/compact/walkthrough-contact-removal-confirmation.png",
+      ".impeccable/review/senior-followup/verdict/compact/walkthrough-keep-sharing-confirmation-large.png",
+      ".impeccable/review/senior-followup/verdict/dark/accessibility-add-number-dark.png",
+      ".impeccable/review/senior-followup/verdict/pro/Consent large text before reading.png",
+      ".impeccable/review/senior-followup/verdict/pro/Consent large text after reading.png"
+    ]
+  },
+  {
+    "file": "docs/images/ios-senior-retained-diagnostics.jpg",
+    "origin": "Eleven native XCTest diagnostic element crops, not a clean audit",
+    "source": ".impeccable/review/senior-followup/corrected/diagnostic-proof/contrast-evidence.json"
+  }
+]

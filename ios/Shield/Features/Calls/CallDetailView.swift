@@ -19,6 +19,7 @@ struct CallDetailView: View {
     @State private var showingPlaybackError = false
     @State private var loadingDetails = false
     @State private var playedStatusFailed = false
+    @AccessibilityFocusState private var playedStatusFocused: Bool
     @State private var updatingPlayedStatus = false
     @State private var playbackRequest = UUID()
     private var call: CallRecord { updatedCall ?? initialCall }
@@ -26,6 +27,7 @@ struct CallDetailView: View {
     private var usesAudioFixture: Bool { PreviewScenario.requested("audio", preview: model.isPreview) }
 
     var body: some View {
+        ScrollViewReader { proxy in
         List {
             if let loadError {
                 ShieldGroup { ShieldLoadFailure(title: "Call details couldn’t update", detail: loadError) { Task { await load() } } }
@@ -97,6 +99,9 @@ struct CallDetailView: View {
                         if playedStatusFailed {
                             Text("You can listen. Shield couldn’t mark this message as played.")
                                 .foregroundStyle(ShieldTheme.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .id("played-status-feedback")
+                                .accessibilityFocused($playedStatusFocused)
                             Button(updatingPlayedStatus ? "Updating…" : "Update played status") {
                                 Task { await markPlayed(voicemail) }
                             }
@@ -111,7 +116,7 @@ struct CallDetailView: View {
                             Button(deleting ? "Deleting…" : "Delete message", role: .destructive) { confirmDelete = true }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                                 .disabled(deleting || model.isDemo)
-                                .confirmationDialog("Delete this message?", isPresented: $confirmDelete, titleVisibility: .visible) {
+                                .alert("Delete this message?", isPresented: $confirmDelete) {
                                     Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
                                     Button("Keep message", role: .cancel) {}
                                 } message: { Text("You won’t be able to listen to it again.") }
@@ -181,8 +186,9 @@ struct CallDetailView: View {
                 .shieldPrimaryButton().disabled(restoring || model.isDemo)
                 .accessibilityIdentifier("restore-voicemail")
                 .padding(16).background(ShieldTheme.surface)
-                .confirmationDialog("Bring back this message?", isPresented: $confirmRestore, titleVisibility: .visible) {
+                .alert("Bring back this message?", isPresented: $confirmRestore) {
                     Button("Bring back message") { Task { await restore(voicemail) } }
+                    Button("Cancel", role: .cancel) {}
                 } message: { Text("Don’t call a number from the message. Use one you already know.") }
             }
             if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
@@ -222,6 +228,13 @@ struct CallDetailView: View {
             if !canListen { stopPlayback() }
         }
         .shieldListStyle()
+        .onChange(of: playedStatusFailed) { _, failed in
+            if failed {
+                proxy.scrollTo("played-status-feedback", anchor: .center)
+                playedStatusFocused = true
+            }
+        }
+        }
     }
 
     private func toggleSample() {

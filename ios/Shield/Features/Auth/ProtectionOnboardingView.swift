@@ -38,7 +38,7 @@ struct ProtectionOnboardingView: View {
                             .accessibilityIdentifier("onboarding-protection-toggle").disabled(working)
                     }
                     if showsHelpers {
-                        Text("People you invite can get an alert when Shield stops a scam call or call checks are paused.")
+                        Text("Shield can alert family or friends you invite when it stops a scam call or call checks are paused.")
                         Toggle("Let my helpers know", isOn: $alertHelpers)
                             .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .padding(ShieldTheme.Spacing.content)

@@ -102,7 +102,8 @@ struct AddNumberView: View {
                 .navigationTitle("Add number")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(saving) }
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.shieldToolbarAction().disabled(saving) }
+                        .sharedBackgroundVisibility(.hidden)
                 }
             }
         }

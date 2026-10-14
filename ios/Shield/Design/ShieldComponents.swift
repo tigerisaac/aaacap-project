@@ -41,9 +41,12 @@ extension View {
             .listSectionSpacing(ShieldTheme.Spacing.section)
             .environment(\.defaultMinListRowHeight, ShieldTheme.Layout.rowHeight)
             .scrollContentBackground(.hidden)
-            .scrollEdgeEffectStyle(.hard, for: .all)
+            .scrollEdgeEffectHidden(for: .all)
             .background(ShieldTheme.surface)
             .safeAreaPadding(.bottom, ShieldTheme.Spacing.content)
+            .padding(.vertical, ShieldTheme.Spacing.compact)
+            .clipped()
+            .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .vertical))
             .shieldNavigationSurface()
     }
 
@@ -51,6 +54,17 @@ extension View {
     func shieldNavigationSurface() -> some View {
         toolbarBackground(ShieldTheme.surface, for: .navigationBar)
             .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
+    }
+
+    /// A readable, full-size native toolbar action without a translucent button fill.
+    func shieldToolbarAction() -> some View {
+        buttonStyle(.plain)
+            .foregroundStyle(ShieldTheme.action)
+            .padding(.horizontal, ShieldTheme.Spacing.compact)
+            .fixedSize()
+            .frame(minWidth: 52, minHeight: 44)
+            .background(ShieldTheme.card, in: .capsule)
+            .contentShape(.rect)
     }
 
     /// Native button behavior and disabled feedback; labels remain free to wrap.

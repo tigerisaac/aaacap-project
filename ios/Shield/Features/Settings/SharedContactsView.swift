@@ -10,6 +10,13 @@ struct SharedContactsView: View {
     @State private var search = ""
     @State private var showingAdd = false
     @State private var pendingRemoval: SavedNumber?
+    private var usesRemovalFixture: Bool {
+        #if DEBUG && targetEnvironment(simulator)
+        PreviewScenario.requested("contacts", preview: app.isPreview) && ProcessInfo.processInfo.arguments.contains("--uitesting-contact-removal")
+        #else
+        false
+        #endif
+    }
     private var filtered: [SavedNumber] {
         search.isEmpty ? model.items.filter(\.isEnabled) : model.items.filter(\.isEnabled).filter { $0.label.localizedStandardContains(search) || $0.phone.localizedStandardContains(search) }
     }
@@ -49,18 +56,16 @@ struct SharedContactsView: View {
                         Text(PhoneDisplay.format(item.phone)).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
                         Button(role: .destructive) { pendingRemoval = item } label: {
-                            Label("Remove", systemImage: "minus.circle")
+                            Label("Remove from iPhone", systemImage: "minus.circle")
                                 .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
                                 .contentShape(.rect)
                         }
-                        .buttonStyle(.borderless).disabled(model.working || app.isDemo)
+                        .shieldSecondaryButton().tint(ShieldTheme.held)
+                        .contentShape(.rect).disabled(model.working || (app.isDemo && !usesRemovalFixture))
                         .accessibilityLabel("Remove \(item.label) from Contacts")
+                        .accessibilityInputLabels(["Remove from iPhone", "Remove \(item.label)"])
                     }
                     .padding(.vertical, 4)
-                    .swipeActions {
-                        Button("Remove", role: .destructive) { pendingRemoval = item }
-                            .disabled(model.working || app.isDemo)
-                    }
                 }
             } footer: {
                 Text("Removing a number here also removes it from iPhone Contacts.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
@@ -87,7 +92,7 @@ struct SharedContactsView: View {
                 }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
             }
         }
-        .confirmationDialog("Remove from iPhone Contacts?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } }), titleVisibility: .visible) {
+        .alert("Remove \(pendingRemoval?.label ?? "this contact") from iPhone Contacts?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } })) {
             Button("Remove contact", role: .destructive) {
                 if let item = pendingRemoval { Task { _ = await model.change(false, item: item, app: app); pendingRemoval = nil } }
             }

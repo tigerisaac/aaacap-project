@@ -100,12 +100,8 @@ struct SignInView: View {
                                 ShieldActionLabel(title: buttonTitle, isWorking: working)
                             }
                             .shieldPrimaryButton().disabled(!canSubmit)
+                            .accessibilityIdentifier("sign-in-submit")
                             if codeSent { changeEmailButton }
-                            else {
-                                Text(usesEmailLink ? "We’ll email you a sign-in link." : "We’ll email you a code.")
-                                    .font(.body).foregroundStyle(ShieldTheme.secondaryText)
-                                    .frame(maxWidth: .infinity)
-                            }
                         }
                         if let error {
                             ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle")
@@ -123,8 +119,12 @@ struct SignInView: View {
                             .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
                     }
                     if let origin = model.configuration.baseURL {
-                        Link("Privacy", destination: origin.appending(path: "privacy"))
-                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                        Link(destination: origin.appending(path: "privacy")) {
+                            Text("Privacy").foregroundStyle(ShieldTheme.action)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                .contentShape(.rect)
+                        }.buttonStyle(.plain)
                     }
                 }
                 .padding(24)
@@ -218,9 +218,9 @@ struct SignInView: View {
         if working { return codeSent && (!usesEmailLink || !code.isEmpty) ? "Signing in…" : "Sending email…" }
         if usesEmailLink {
             if !code.isEmpty { return "Sign in" }
-            return codeSent ? "Resend link" : "Continue"
+            return codeSent ? "Resend link" : "Send sign-in link"
         }
-        return codeSent ? "Sign in" : "Continue"
+        return codeSent ? "Sign in" : "Send email code"
     }
 
     private func receiveLink(_ url: URL) async {

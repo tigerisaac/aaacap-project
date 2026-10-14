@@ -1,0 +1,443 @@
+[
+  {
+    "file": "polish-add-number-error.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-add-number-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        15,
+        255
+      ],
+      [
+        24,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-add-number-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        15,
+        255
+      ],
+      [
+        24,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-audio-status-recovery.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-automatic-texts-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-automatic-texts-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-blocked-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-blocked-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-contacts-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        5,
+        255
+      ],
+      [
+        8,
+        255
+      ],
+      [
+        14,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-contacts-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        5,
+        255
+      ],
+      [
+        8,
+        255
+      ],
+      [
+        14,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-help-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-help-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-invitation-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        15,
+        255
+      ],
+      [
+        24,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-invitation-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        15,
+        255
+      ],
+      [
+        24,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-numbers-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        5,
+        255
+      ],
+      [
+        8,
+        255
+      ],
+      [
+        14,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-numbers-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        5,
+        255
+      ],
+      [
+        8,
+        255
+      ],
+      [
+        14,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-quiet-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-quiet-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-quiet-unsaved.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-sharing-large-dark-actions.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "polish-sharing-large-dark-top.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  }
+]

@@ -58,14 +58,29 @@ struct CallRow: View {
                         timeText
                     }
                 }
-                detailLine
+                if showsOutcomeWord || (showsNumber && title != number) {
+                    detailLine
+                }
                 if unheard {
                     Text("New message").font(.subheadline.weight(.medium)).foregroundStyle(ShieldTheme.message)
                 }
             }
         }
         .padding(.vertical, 10)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityInputLabels([title, "Open \(title)"])
+        .accessibilityHint("Open call details")
+        .accessibilityIdentifier("call-row-\(call.id)")
+    }
+
+    private var accessibilityDescription: String {
+        var parts = [title]
+        if showsOutcomeWord { parts.append(outcomeLabel) }
+        if showsNumber && title != number { parts.append(number) }
+        if unheard { parts.append("New message") }
+        parts.append(call.occurredAt.formatted(date: .complete, time: .shortened))
+        return parts.joined(separator: ". ")
     }
 
     private var titleText: some View {
@@ -76,7 +91,6 @@ struct CallRow: View {
     private var timeText: some View {
         Text(callTime)
             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-            .accessibilityLabel(call.occurredAt.formatted(date: .complete, time: .shortened))
             .accessibilityIdentifier("call-time-\(call.id)")
     }
 

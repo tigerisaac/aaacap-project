@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T15:10:44.003439Z",
+  "generatedAt": "2026-10-14T01:51:07Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -728,17 +728,17 @@
       "name": "Call history row",
       "kind": "custom",
       "refersTo": "call-row",
-      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Purpose/time then outcome/number; metadata stacks from xxxLarge. QuietSurface symbol slot disappears at accessibility sizes. New message is always readable text; Home hides number. Synthetic preview. Source: Design/CallRow.swift.",
-      "html": "<button class=\"ds-call\" type=\"button\"><span class=\"ds-row-symbol\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg></span><span class=\"ds-call-content\"><span class=\"ds-call-main\"><strong>Appointment reminder</strong><span>Yesterday</span></span><span class=\"ds-call-detail\">Answered</span></span></button>",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Purpose/time then outcome/number; metadata stacks from xxxLarge. QuietSurface symbol slot disappears at accessibility sizes. One actionable spoken description includes purpose, state, shown number and complete date, without redundant full-date child labels. New message stays in words; Home hides number. Synthetic preview. Source: Design/CallRow.swift.",
+      "html": "<button class=\"ds-call\" type=\"button\" aria-label=\"Appointment reminder. Answered. Monday, October 12, 2026 at 9:30 AM.\"><span class=\"ds-row-symbol\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg></span><span class=\"ds-call-content\"><span class=\"ds-call-main\"><strong>Appointment reminder</strong><span>Yesterday</span></span><span class=\"ds-call-detail\">Answered</span></span></button>",
       "css": ".ds-call{display:flex;align-items:flex-start;gap:14px;min-height:60px;width:100%;max-width:360px;padding:10px 0;border:0;background:#FFFFFF;color:#101E32;font:1rem system-ui;text-align:left;cursor:pointer}.ds-call-main{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.ds-call-main>span{color:rgb(32% 37% 44%);font-size:.9375rem}.ds-call-detail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:#076C5C;font-size:.9375rem}.ds-call-detail svg{width:18px;height:18px}.ds-call:hover{filter:brightness(.96)}.ds-call:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-call:active{filter:brightness(.9)}.ds-call:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-call-main>span{color:rgb(72% 77% 84%)}.ds-call-detail{color:#74DDC6}}.ds-call-content{display:grid;gap:6px;flex:1}.ds-call .ds-row-symbol{display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;background:#E7EBF1;color:#076C5C;border-radius:10px}.ds-call .ds-row-symbol svg{width:20px;height:20px}@media(prefers-color-scheme:dark){.ds-call{background:#1C293B;color:#F3F6FB}.ds-call .ds-row-symbol{background:#28364A;color:#74DDC6}}"
     },
     {
       "name": "Message inbox row",
       "kind": "custom",
       "refersTo": "voicemail-row",
-      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Purpose then authorized excerpt and kind/state/date. Excerpt caps at three lines or two at accessibility sizes; full detail remains available. Leading symbol disappears at accessibility sizes. Synthetic preview. Source: Features/Calls/VoicemailRow.swift.",
-      "html": "<button class=\"ds-voicemail\" type=\"button\"><strong>Appointment reminder</strong><span>A reminder about an appointment on Thursday at 10 a.m.</span><span class=\"ds-vm-meta\"><span>Saved notice</span><span>New</span><span>Today</span></span></button>",
-      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:10px 0;border:0;background:#FFFFFF;color:#101E32;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(32% 37% 44%)}.ds-vm-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(72% 77% 84%)}}@media(prefers-color-scheme:dark){.ds-voicemail{background:#1C293B;color:#F3F6FB}}"
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Purpose then kind/state/date, with no paragraph excerpt. Metadata stacks from xxxLarge; the leading symbol disappears at accessibility sizes. One actionable spoken description includes the complete date without redundant child labels. Full authorized summary remains in detail. Synthetic preview. Source: Features/Calls/VoicemailRow.swift.",
+      "html": "<button class=\"ds-voicemail\" type=\"button\" aria-label=\"Appointment reminder. Saved notice. New message. Tuesday, October 13, 2026 at 10:00 AM.\"><strong>Appointment reminder</strong><span class=\"ds-vm-meta\"><span>Saved notice</span><span class=\"ds-vm-new\">New</span><span>Today</span></span></button>",
+      "css": ".ds-voicemail{display:grid;gap:8px;min-height:60px;width:100%;max-width:360px;padding:10px 0;border:0;background:#FFFFFF;color:#101E32;font:1rem system-ui;text-align:left;cursor:pointer}.ds-voicemail>span{color:rgb(32% 37% 44%)}.ds-voicemail .ds-vm-new{color:#7244B9;font-weight:500}.ds-vm-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.9375rem}.ds-voicemail:hover{filter:brightness(.96)}.ds-voicemail:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-voicemail:active{filter:brightness(.9)}.ds-voicemail:disabled{opacity:.5;cursor:default}@media(prefers-color-scheme:dark){.ds-voicemail>span{color:rgb(72% 77% 84%)}}@media(prefers-color-scheme:dark){.ds-voicemail{background:#1C293B;color:#F3F6FB}}@media(prefers-color-scheme:dark){.ds-voicemail .ds-vm-new{color:#CAAEFF}}"
     },
     {
       "name": "Grouped card surface",
@@ -771,7 +771,7 @@
     "keyCharacteristics": [
       "Pale neutral ground and white grouped reading surfaces, with navy ground and pale actions in Dark Mode.",
       "Native serif purpose and section headings; native sans body, controls, toolbars and navigation.",
-      "Native tabs, lists, forms, switches, sheets, dialogs and state feedback.",
+      "Native tabs, lists, forms, switches, sheets, alerts and state feedback.",
       "Semantic Dynamic Type, wrapping text, content-based stacking and generous app-owned actions.",
       "Call outcomes, person context, sharing scope and sample-only state expressed in words as well as color.",
       "Flat surfaces, restrained SF Symbols and explicit choices with retained state and visible recovery."
@@ -796,6 +796,11 @@
         "name": "The Native Surface Rule",
         "body": "Use the shared adaptive surfaces with native grouping and state feedback before introducing custom elevation or motion.",
         "section": "elevation"
+      },
+      {
+        "name": "The Named Safe Choice Rule",
+        "body": "Name the selected person or item when an action affects one, and keep a visible safe choice in consequential alerts before the action runs.",
+        "section": "components"
       },
       {
         "name": "The Historical Count Rule",
@@ -824,9 +829,9 @@
       "Do pair call outcomes with plain words and familiar SF Symbols while preserving uncertainty.",
       "Do keep semantic Dynamic Type, wrapping text, 52-point shared app action minima and 60-point native row defaults.",
       "Do stack metadata from `.xxxLarge` and move person context into the scrolling page at accessibility sizes.",
-      "Do place accessibility-size onboarding completion after its explanation, switch and relevant disclosure.",
+      "Do place accessibility-size onboarding and forwarding-consent completion after the explanation, choice and relevant disclosure.",
       "Do name unsaved choices and failed loads, with a visible retry/save action for the affected task.",
-      "Do retain explicit privacy, sharing, setup and disconnection confirmations.",
+      "Do retain explicit privacy, sharing, setup and disconnection confirmations, naming the affected entry and showing a safe choice.",
       "Do show historical totals, current phone status, sample state and message permission as separate readable facts.",
       "Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval."
     ],
@@ -838,7 +843,8 @@
       "Don't treat helper access as ownership or extend message access implicitly.",
       "Don't present sample summaries, speech or keeping as real-message services.",
       "Don't treat an app return, test completion, sign-out or deletion as proof that forwarding is disconnected.",
-      "Don't shrink text to preserve a fixed row or keep a completion action visually ahead of its accessibility-size choice.",
+      "Don't shrink text to preserve a fixed row or keep a consent-completion action visually ahead of its accessibility-size choice.",
+      "Don't reintroduce paragraph excerpts into the daily inbox or repeated decorative headings above an existing purpose.",
       "Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.",
       "Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures."
     ]

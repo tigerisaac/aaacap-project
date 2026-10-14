@@ -24,7 +24,7 @@ final class RedesignUITests: XCTestCase {
         let disappeared = NSPredicate(format: "exists == false")
         expectation(for: disappeared, evaluatedWith: error)
         waitForExpectations(timeout: 5)
-        XCTAssertTrue(app.staticTexts["Prescription reminder"].exists)
+        XCTAssertTrue(app.historyRow("Prescription reminder").exists)
     }
 
     func testWelcomeAndRecoverableSignInError() {
@@ -35,7 +35,7 @@ final class RedesignUITests: XCTestCase {
         app.textFields["Email address"].tap()
         app.textFields["Email address"].typeText("synthetic@example.com")
         let keyboardDone = app.keyboards.buttons["Continue"]
-        if keyboardDone.exists { keyboardDone.tap() } else { app.buttons["Continue"].tap() }
+        if keyboardDone.exists { keyboardDone.tap() } else { app.buttons["sign-in-submit"].tap() }
         XCTAssertTrue(app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.textFields["Email address"].exists)
         XCTAssertFalse(app.alerts.firstMatch.exists)
@@ -108,15 +108,15 @@ final class RedesignUITests: XCTestCase {
         let app = launch(["--uitesting-preview"])
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
         app.tabBars.buttons["Messages"].tap()
-        XCTAssertTrue(app.staticTexts["Appointment message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.historyRow("Appointment message").waitForExistence(timeout: 5))
         app.tabBars.buttons["Calls"].tap()
         let filters = app.segmentedControls["callFilter"]
         XCTAssertTrue(filters.exists)
         filters.buttons["Answered"].tap()
-        XCTAssertTrue(app.staticTexts["Prescription reminder"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts["Call stopped"].exists)
+        XCTAssertTrue(app.historyRow("Prescription reminder").waitForExistence(timeout: 5))
+        XCTAssertFalse(app.historyRow("Call stopped").exists)
         filters.buttons["All"].tap()
-        app.staticTexts["Call stopped"].firstMatch.tap()
+        app.historyRow("Call stopped").tap()
         XCTAssertTrue(app.navigationBars["Call"].waitForExistence(timeout: 5))
         app.buttons["More about this call"].tap()
         XCTAssertTrue(app.staticTexts["The caller asked for a secret code. Shield didn’t connect the call."].exists)
@@ -136,7 +136,7 @@ final class RedesignUITests: XCTestCase {
         check.tap()
         XCTAssertTrue(app.buttons["Show sample answer"].waitForExistence(timeout: 5))
         app.buttons["Show sample answer"].tap()
-        let result = app.staticTexts["Sample answer"]
+        let result = app.staticTexts["This is an example. Your text hasn’t been checked."]
         XCTAssertTrue(result.waitForExistence(timeout: 5))
         XCTAssertTrue(result.isHittable)
         XCTAssertTrue(app.staticTexts["Check with the sender"].isHittable)
@@ -159,12 +159,12 @@ final class RedesignUITests: XCTestCase {
         capture(app, "Color review Paste enabled dark")
         paste.tap()
         XCTAssertEqual(app.textViews.firstMatch.value as? String, "A synthetic message to paste.")
-        XCTAssertFalse(app.staticTexts["Sample answer"].exists)
+        XCTAssertFalse(app.staticTexts["This is an example. Your text hasn’t been checked."].exists)
         XCTAssertFalse(app.alerts.firstMatch.exists)
         app.buttons["Check this text"].tap()
         XCTAssertTrue(app.buttons["Show sample answer"].waitForExistence(timeout: 5))
         app.buttons["Cancel"].tap()
-        XCTAssertFalse(app.staticTexts["Sample answer"].exists)
+        XCTAssertFalse(app.staticTexts["This is an example. Your text hasn’t been checked."].exists)
         capture(app, "Color review Paste consent cancelled dark")
     }
 
@@ -225,7 +225,7 @@ final class RedesignUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
         let types: XCUIAccessibilityAuditType = [.contrast, .textClipped, .hitRegion, .sufficientElementDescription]
         app.tabBars.buttons["Calls"].tap()
-        app.staticTexts["Call stopped"].firstMatch.tap()
+        app.historyRow("Call stopped").tap()
         XCTAssertTrue(app.navigationBars["Call"].waitForExistence(timeout: 5))
         try auditScreen(app, types: types)
         app.tabBars.buttons["Home"].tap()
@@ -268,7 +268,7 @@ final class RedesignUITests: XCTestCase {
         // This fixture cannot submit to the service.
         let keyboardContinue = app.keyboards.buttons["Continue"]
         if keyboardContinue.exists { keyboardContinue.tap() }
-        else { app.buttons["Continue"].tap() }
+        else { app.buttons["sign-in-submit"].tap() }
         XCTAssertTrue(app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
 
         app = launch(large + ["--uitesting-preview"])

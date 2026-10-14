@@ -92,9 +92,13 @@ final class ForwardingUITests: XCTestCase {
         let app = launch(["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         capture(app, "Guided welcome large text")
         tapPrimary(app)
-        XCTAssertTrue(app.buttons["forwarding-continue"].isHittable)
-        app.swipeUp(); app.swipeUp()
-        capture(app, "Consent large text")
+        expect(app, "Choose Shield for calls")
+        XCTAssertFalse(app.buttons["forwarding-continue"].isHittable)
+        capture(app, "Consent large text before reading")
+        for _ in 0..<12 where !app.buttons["forwarding-continue"].isHittable {
+            app.scrollViews.firstMatch.swipeUp()
+        }
+        capture(app, "Consent large text after reading")
         XCTAssertTrue(app.buttons["forwarding-continue"].isHittable)
     }
     func testDarkAppearance() {
@@ -238,9 +242,12 @@ final class ForwardingUITests: XCTestCase {
     }
     private func tapPrimary(_ app: XCUIApplication) {
         let button = app.buttons["forwarding-continue"]
-        XCTAssertTrue(button.waitForExistence(timeout: 5)); XCTAssertTrue(button.isHittable); button.tap()
+        XCTAssertTrue(button.waitForExistence(timeout: 5))
+        for _ in 0..<12 where !button.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        XCTAssertTrue(button.isHittable); button.tap()
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
+        Thread.sleep(forTimeInterval: 0.8)
         let shot = XCTAttachment(screenshot: app.screenshot()); shot.name = name; shot.lifetime = .keepAlways; add(shot)
         do {
             let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("SeniorScreens")

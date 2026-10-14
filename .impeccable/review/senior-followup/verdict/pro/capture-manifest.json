@@ -1,0 +1,2291 @@
+[
+  {
+    "file": "Automatic forwarding result.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Call check recovery.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Carrier code largest text dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Consent large text after reading.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Consent large text before reading.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Contact dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Contact save error large dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided When there\u2019s no signal light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided When you don\u2019t answer light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided When you\u2019re on a call light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided consent light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided contact light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided forwarding check light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided phone settings light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided sound check light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided voicemail setting light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided welcome dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided welcome large text.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Guided welcome.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Phone return and retry.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Phone setting return.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Phone setting shortcut.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Restoration checklist complete.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Restoration settings largest text dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "Setup completion.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-home-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-home-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-home-zero-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-removed-details-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-removed-large-dark-reason.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-removed-large-dark-scrolled.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-removed-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-removed-message-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "readable-stopped-calls-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-auto-text-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-blocked-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-call-checks-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-call-detail-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-calls-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-calls-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-check-answer-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-check-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-check-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-contacts-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-family-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-help-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-helper-choice-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-home-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-home-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-kept-message-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-message-detail-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-message-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-more-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-more-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-protection-choice-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-settings-large-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-settings-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-sharing-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-sign-in-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-trusted-numbers-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "senior-voicemail-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-add-contact-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-add-contact-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-add-number-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-add-number-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-alerts-off-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-alerts-off-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-alerts-on-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-alerts-on-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-audio-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-audio-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-automatic-texts-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-automatic-texts-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-blocked-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-blocked-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-calls-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-calls-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-contacts-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-contacts-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-help-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-help-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-home-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-home-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-invitation-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-invitation-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-join-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-join-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-messages-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-messages-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-more-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-more-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-numbers-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        2,
+        255
+      ],
+      [
+        4,
+        255
+      ],
+      [
+        9,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-numbers-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-protection-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-protection-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-quiet-alerts-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-quiet-alerts-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-quiet-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-quiet-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-setup-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-setup-details-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-setup-details-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-setup-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-sharing-access-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-sharing-access-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-sharing-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-sharing-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-trial-options-dark.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        16,
+        255
+      ],
+      [
+        27,
+        255
+      ],
+      [
+        43,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "visual-trial-options-light.png",
+    "size": [
+      1206,
+      2622
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  }
+]

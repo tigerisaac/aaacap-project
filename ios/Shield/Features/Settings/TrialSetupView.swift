@@ -21,7 +21,7 @@ struct TrialSetupView: View {
             Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks",
                    systemImage: setup.status == "paused" ? "play.circle" : "pause.circle") { confirmPause = true }
                 .disabled(working || model.isDemo)
-                .confirmationDialog(setup.status == "paused" ? "Resume call checks?" : "Pause call checks?", isPresented: $confirmPause, titleVisibility: .visible) {
+                .alert(setup.status == "paused" ? "Resume call checks?" : "Pause call checks?", isPresented: $confirmPause) {
                     Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks", action: togglePause)
                     Button("Cancel", role: .cancel) {}
                 } message: {
@@ -34,8 +34,9 @@ struct TrialSetupView: View {
         ShieldGroup {
             Button("Delete my information", role: .destructive) { confirmDeletion = true }
                 .disabled(working || model.isDemo)
-                .confirmationDialog("Delete your information?", isPresented: $confirmDeletion, titleVisibility: .visible) {
+                .alert("Delete your information?", isPresented: $confirmDeletion) {
                     Button("Delete my information", role: .destructive, action: deleteData)
+                    Button("Keep my information", role: .cancel) {}
                 } message: {
                     Text("Your calls, saved numbers, and sharing will be deleted. You’ll be signed out.")
                 }

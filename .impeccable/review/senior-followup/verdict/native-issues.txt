@@ -1,0 +1,17 @@
+Current retained native accessibility audit reports — October 13, 2026
+Device: iPhone 17e simulator, iOS 27, Increase Contrast enabled
+Audit types unchanged: contrast, textClipped, hitRegion, sufficientElementDescription. Handler returns false for every report.
+Raw daily case FAILED with 12 reports (11 contrast, 1 unlocalized post-scroll Home text clipping).
+
+Shield accessibility: accessibility-home: Contrast failed; Attributes: StaticText, 0x112b7f840, {{82.0, 745.0}, {100.0, 20.3}}, label: 'Call stopped'
+Shield accessibility: accessibility-home: Contrast failed; Attributes: StaticText, 0x112b82bc0, {{283.7, 747.0}, {52.3, 18.0}}, identifier: 'call-time-6CF1B8EF-13AA-4E53-8379-FD0F5F1E3AA3', label: '7:21 PM'
+Shield accessibility: accessibility-home-row-exposed: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.
+Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x10a531cc0, {{82.0, 765.3}, {115.7, 20.3}}, label: 'Check this call'
+Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x112bfb340, {{283.0, 767.3}, {53.0, 18.0}}, identifier: 'call-time-CDF9E2BB-882B-4D24-A163-00273928C46D', label: '1:25 PM'
+Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x113801b80, {{82.0, 791.7}, {76.7, 18.0}}, label: 'Check first'
+Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, 0x10a52b5c0, {{164.7, 791.7}, {107.7, 18.0}}, label: '(512) 555-0126'
+Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x10a547c00, {{82.0, 287.0}, {107.7, 42.3}}, label: 'Appointment message'
+Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x10a52a440, {{82.0, 754.3}, {125.7, 20.3}}, label: '(512) 555-0128'
+Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x112bfa580, {{268.3, 756.3}, {67.7, 18.0}}, identifier: 'call-time-D24C2ACE-A42D-43FE-831A-800222D39059', label: 'Yesterday'
+Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x112b7e6c0, {{82.0, 780.7}, {67.7, 18.0}}, label: 'Voicemail'
+Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, 0x112bf8c80, {{82.0, 804.7}, {98.3, 18.0}}, label: 'New message'

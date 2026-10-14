@@ -1,0 +1,317 @@
+[
+  {
+    "file": "accessibility-add-contact-dark.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        19,
+        255
+      ],
+      [
+        33,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-add-number-dark.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        19,
+        255
+      ],
+      [
+        33,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-add-number.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-automatic-texts.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-blocked.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-contacts.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-disconnection-dark.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        1,
+        255
+      ],
+      [
+        3,
+        255
+      ],
+      [
+        6,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-help.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-invitation-dark.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        9,
+        255
+      ],
+      [
+        19,
+        255
+      ],
+      [
+        33,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-invitation.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-numbers.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-phone-setup-dark.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        1,
+        255
+      ],
+      [
+        3,
+        255
+      ],
+      [
+        6,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-protection.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-quiet.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "accessibility-sharing.png",
+    "size": [
+      1170,
+      2532
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  }
+]

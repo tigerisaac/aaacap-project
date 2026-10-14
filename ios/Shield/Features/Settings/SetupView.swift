@@ -40,8 +40,9 @@ struct SetupView: View {
                     if !setup.consented {
                         Button("Agree to use Shield") { confirmConsent = true }
                             .disabled(working || model.isDemo)
-                            .confirmationDialog("Use Shield to check calls?", isPresented: $confirmConsent, titleVisibility: .visible) {
+                            .alert("Use Shield to check calls?", isPresented: $confirmConsent) {
                                 Button("I agree") { Task { await consent(setup) } }
+                                Button("Not now", role: .cancel) {}
                             } message: {
                                 Text("Your phone sends some calls to Shield. The caller’s words go to our phone and AI providers for a scam check. Shield captures messages from the start and saves voicemail and potentially useful notices with playable audio and a short summary. Full transcripts aren’t saved. Answered calls and clear scams aren’t saved. Calls and messages expire within 30 days. See Privacy for details.")
                             }
@@ -59,8 +60,9 @@ struct SetupView: View {
                     if ["active", "paused"].contains(setup.status) {
                         Button(setup.status == "paused" ? "Resume calls from Shield" : "Pause calls from Shield") { confirmPause = true }
                             .disabled(working || model.isDemo)
-                            .confirmationDialog(setup.status == "paused" ? "Resume calls?" : "Pause calls?", isPresented: $confirmPause, titleVisibility: .visible) {
+                            .alert(setup.status == "paused" ? "Resume calls?" : "Pause calls?", isPresented: $confirmPause) {
                                 Button(setup.status == "paused" ? "Resume calls" : "Pause calls") { Task { await pause(setup.status != "paused") } }
+                                Button("Cancel", role: .cancel) {}
                             } message: { Text("While paused, calls that reach Shield go to voicemail. Your phone still sends those calls to Shield.") }
                     }
                 }
@@ -73,15 +75,17 @@ struct SetupView: View {
                     }
                     Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
                         .disabled(model.isDemo || working || setup.status == "restoring")
-                        .confirmationDialog("Disconnect Shield?", isPresented: $confirmRestore, titleVisibility: .visible) {
+                        .alert("Disconnect Shield?", isPresented: $confirmRestore) {
                             Button("Start disconnecting") { Task { await requestRestoration(deleting: false) } }
+                            Button("Cancel", role: .cancel) {}
                         } message: { Text("Shield stops ringing you. Ask your helper to finish restoring ordinary calls and voicemail. Keep the app until both work.") }
                     if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Ask for setup help", destination: url) }
                     DisclosureGroup("Delete my account") {
                         Button("Delete my account", role: .destructive) { confirmDeletion = true }
                             .disabled(model.isDemo || working)
-                            .confirmationDialog("Delete your account?", isPresented: $confirmDeletion, titleVisibility: .visible) {
+                            .alert("Delete your account?", isPresented: $confirmDeletion) {
                                 Button("Request deletion", role: .destructive) { Task { await requestRestoration(deleting: true) } }
+                                Button("Keep my account", role: .cancel) {}
                             } message: { Text("First, your helper must bring back ordinary calls. Then your Shield information can be deleted.") }
                     }
                 } footer: { Text("Deleting the app alone won’t disconnect Shield.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }

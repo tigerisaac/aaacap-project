@@ -748,6 +748,13 @@
 			"path" = "Shield/Preview/DemoData.swift";
 			"sourceTree" = "<group>";
 		};
+		"2E1D863D9CAAC308439CD07C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "NativeAccessibilityReference.swift";
+			"path" = "Shield/Preview/NativeAccessibilityReference.swift";
+			"sourceTree" = "<group>";
+		};
 		"46F349A2E6735B4426140051" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -942,6 +949,13 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "ShieldUITests.swift";
 			"path" = "ShieldUITests/ShieldUITests.swift";
+			"sourceTree" = "<group>";
+		};
+		"07CFEF9D1B5D5E159CF55A0F" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ShieldUITestSupport.swift";
+			"path" = "ShieldUITests/ShieldUITestSupport.swift";
 			"sourceTree" = "<group>";
 		};
 		"8E0205CD89BF271E3726B26F" = {
@@ -1208,6 +1222,7 @@
 			"name" = "Preview";
 			"children" = (
 				"293C0D67569201BE6ECD94A1",
+				"2E1D863D9CAAC308439CD07C",
 				"46F349A2E6735B4426140051",
 				"4586A72D5DBCAC1FA4BCA3E7",
 				"1CB5D4ED138553E4D9FCB548",
@@ -1287,6 +1302,7 @@
 				"3A6FCB90CEAE6B12A26A61C2",
 				"2F91097E9C438128885DE6CE",
 				"7C43DCD9D709F04B27218BCA",
+				"07CFEF9D1B5D5E159CF55A0F",
 			);
 			"sourceTree" = "<group>";
 		};
@@ -1846,6 +1862,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "293C0D67569201BE6ECD94A1";
 		};
+		"062624282A424AAD3E33F749" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2E1D863D9CAAC308439CD07C";
+		};
 		"5CD35DBA007454E186FDA7EE" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "46F349A2E6735B4426140051";
@@ -1984,6 +2004,7 @@
 				"9D33D22BCCEC0BBFEFE6C475",
 				"CF3C4FE0175C9E4A47DCC772",
 				"10A961AFFDB824898642489D",
+				"062624282A424AAD3E33F749",
 				"5CD35DBA007454E186FDA7EE",
 				"A34406EA56886A52EB0B4E8E",
 				"CB83376B97BC88678D84666F",
@@ -2321,6 +2342,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "7C43DCD9D709F04B27218BCA";
 		};
+		"712D41A43301435BD5E905A1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "07CFEF9D1B5D5E159CF55A0F";
+		};
 		"756A2916FA5FD19F8FD7B024" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = 2147483647;
@@ -2334,6 +2359,7 @@
 				"E06C370E1C055C2CC90F6199",
 				"D45980B3D1F539B9C6442D41",
 				"018F73933805D28516D8FA2D",
+				"712D41A43301435BD5E905A1",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};

@@ -1,0 +1,233 @@
+[
+  {
+    "file": "walkthrough-contact-after-edge-tap.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-contact-removal-confirmation.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-contact-removal-scope.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-exit-confirmation-large.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-exit-confirmation-standard.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-invitation-confirmation-large.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-invitation-confirmation-standard.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-keep-sharing-confirmation-large.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-keep-sharing-confirmation-standard.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-sharing-name-entry-large.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  {
+    "file": "walkthrough-sharing-name-entry-standard.png",
+    "size": [
+      750,
+      1334
+    ],
+    "colorRange": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  }
+]

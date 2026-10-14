@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-13",
+  "scope": "Senior comprehension and original20-diagnostic follow-up",
+  "simulators": [
+    "iPhone18 Pro iOS27",
+    "iPhone17e iOS27 with Increase Contrast for raw audit",
+    "temporary iPhoneSE3 iOS27,375x667"
+  ],
+  "runtimeLimit": "Only iOS27 runtime installed; app minimum deployment iOS26. No hardware VoiceOver or senior-participant evidence.",
+  "rawDailyAudit": {
+    "result": "FAILED",
+    "reports": 12,
+    "contrast": 11,
+    "unlocalizedTextClipping": 1,
+    "auditTypes": [
+      "contrast",
+      "textClipped",
+      "hitRegion",
+      "sufficientElementDescription"
+    ],
+    "handlerExemptions": 0,
+    "cropClassification": {
+      "partlyExposedAtScrollBoundary": 2,
+      "fullyOccludedTarget": 8,
+      "fullyExposedCandidateFalsePositive": 1
+    },
+    "exposedCandidateContrast": 18.6,
+    "nilConclusion": "Unlocalized post-scroll Home report; reproduced in minimal actual Shield stopped-card/plain-list control. No visible clipping localized; cause not certified."
+  },
+  "runs": [
+    {
+      "name": "Final Pro walkthrough",
+      "result": "passed",
+      "evidence": "/tmp/shield-senior-followup-review-matrix.log",
+      "notes": "22 tests: Forwarding14, HomeReadability3, SeniorDesign5;109 named captures."
+    },
+    {
+      "name": "Final dark toolbar and light owner audits",
+      "result": "passed",
+      "evidence": "/tmp/shield-senior-followup-review-dark.log",
+      "notes": "2 test methods audit15 screen states. Four audit types unchanged; no handler exemptions."
+    },
+    {
+      "name": "Final compact sharing confirmations",
+      "result": "passed",
+      "evidence": "/tmp/shield-senior-followup-sharing-keyboard-verdict.log",
+      "notes": "1 method; normal and AX-largest text; Not now retains name, Keep sharing retains grant."
+    },
+    {
+      "name": "Compact contact and exit confirmation",
+      "result": "partial",
+      "evidence": "/tmp/shield-senior-followup-review-compact.log",
+      "notes": "Contact-removal and sample-exit methods passed. Sharing method failed ambiguous Done selection; corrected by stable app keyboard-Done identifier and separately passed."
+    },
+    {
+      "name": "Compact error recovery and secondary AX layouts",
+      "result": "partial",
+      "evidence": "/tmp/shield-senior-followup-compact-final.log",
+      "notes": "4 methods passed: retained number input, played-status visibility and playback, quiet-hours retained unsaved choice,9 secondary routes. Exit and sharing selector failures later corrected and passed."
+    },
+    {
+      "name": "Core flows and raw daily accessibility audit",
+      "result": "failed-audit",
+      "evidence": "/tmp/shield-senior-followup-daily-verdict.log",
+      "notes": "19 core methods passed. Everyday audit method failed with12 reports:11 contrast and1 unlocalized post-scroll Home text clipping."
+    },
+    {
+      "name": "Corrected broad light audits and exact row isolation",
+      "result": "failed-audit",
+      "evidence": "/tmp/shield-senior-followup-corrected-audit.log",
+      "notes": "Onboarding choices, owner settings, forwarding/restoration, welcome/email-sent, and exact call/message row isolation methods passed. Daily method retained12 reports."
+    },
+    {
+      "name": "Minimal native card/list isolation",
+      "result": "failed-audit",
+      "evidence": "/tmp/shield-senior-followup-card-isolation.log",
+      "notes": "Initial stopped-card view has no clipping. Post-scroll actual Shield card plus plain native list rows retains6 unlocalized clipping reports and native contrast reports; not app-free proof of a framework defect."
+    },
+    {
+      "name": "Plain native list control",
+      "result": "failed-audit",
+      "evidence": "/tmp/shield-senior-followup-native-reference.log",
+      "notes": "Three native under-bar contrast reports reproduce without Shield styling. No initial clipping report. This does not adjudicate every Shield report."
+    },
+    {
+      "name": "Final Release build",
+      "result": "passed",
+      "evidence": "/tmp/shield-senior-followup-release-final.log",
+      "notes": "Unsigned generic iOS device Release build. No install or deployment."
+    },
+    {
+      "name": "Repository check",
+      "result": "passed",
+      "evidence": "/tmp/shield-senior-followup-check-confirm.log",
+      "notes": "Typecheck, unit tests and build:22 files passed,7 skipped;203 tests passed,153 skipped because emulator-required tests were run separately."
+    },
+    {
+      "name": "Required Firestore emulator tests",
+      "result": "passed",
+      "evidence": "/tmp/shield-senior-followup-firebase-final.log",
+      "notes": "8 files,154 tests passed; demo-shield, isolated local ports9381\u20139384, JAVA_TOOL_OPTIONS=-Xmx2g. No production operation."
+    }
+  ],
+  "captureManifests": [
+    "pro/capture-manifest.json",
+    "dark/capture-manifest.json",
+    "compact/capture-manifest.json",
+    "compact-recovery/capture-manifest.json"
+  ],
+  "safety": "Synthetic fixtures only. No deployment, real calls, real audio/transcripts, carrier settings, contacts mutation, owner-device installation, or external sharing.",
+  "independentReview": {
+    "file": ".impeccable/review/senior-followup/independent-finish-review.md",
+    "disposition": "ship",
+    "scope": "Reviewed source and simulator viewports; no remaining material barrier established. Does not certify clean daily audit, physical VoiceOver, hardware behavior, or actual senior comprehension."
+  }
+}

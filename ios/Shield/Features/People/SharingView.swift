@@ -15,22 +15,30 @@ struct SharingView: View {
     @FocusState private var editingName: Bool
     @AccessibilityFocusState private var invitationFocused: Bool
     private var usesAccessFixture: Bool { PreviewScenario.requested("sharing-access", preview: model.isPreview) }
+    private var usesConfirmationFixture: Bool {
+        #if DEBUG && targetEnvironment(simulator)
+        model.isPreview && ProcessInfo.processInfo.arguments.contains("--uitesting-sharing-confirmations")
+        #else
+        false
+        #endif
+    }
 
     var body: some View {
         ScrollViewReader { proxy in
         Form {
             ShieldGroup {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
-                    Text("Their name").font(.headline)
-                    TextField("Their name", text: $label, prompt: Text("Name of your helper").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
+                    Text("Your helper’s name").font(.headline)
+                    TextField("Your helper’s name", text: $label, prompt: Text("Name of your helper").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
                         .lineLimit(1...3).frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         .textContentType(.givenName).focused($editingName).submitLabel(.done)
-                        .accessibilityLabel("Their name")
+                        .accessibilityLabel("Your helper’s name")
                         .onSubmit { editingName = false }
                 }.padding(.vertical, ShieldTheme.Spacing.compact)
                 Toggle("Include messages", isOn: $canListen)
             } footer: {
-                Text("They can see your calls. You choose whether to share messages too.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                Text(canListen ? "They can see your calls and read or listen to messages." : "They can see your call history, without messages.")
+                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             .disabled(creating)
             ShieldGroup {
@@ -38,9 +46,10 @@ struct SharingView: View {
                     ShieldActionLabel(title: creating ? "Creating…" : "Make invitation", isWorking: creating)
                 }
                     .shieldPrimaryButton()
-                    .disabled(label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || creating || model.isDemo)
-                    .confirmationDialog("Share your call history?", isPresented: $confirmShare, titleVisibility: .visible) {
+                    .disabled(label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || creating || (model.isDemo && !usesConfirmationFixture))
+                    .alert("Make an invitation for \(label.trimmingCharacters(in: .whitespacesAndNewlines))?", isPresented: $confirmShare) {
                         Button("Make invitation") { Task { await createInvite() } }
+                        Button("Not now", role: .cancel) {}
                     } message: {
                         Text(canListen ? "They can see your calls and read or hear voicemail and saved notices. Send this only to the person you want to help." : "They can see your calls. Your messages stay private. Send this only to the person you want to help.")
                     }
@@ -85,14 +94,15 @@ struct SharingView: View {
                             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         Button("Stop sharing", role: .destructive) { revokeID = grant.id }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            .disabled(model.isDemo)
+                            .disabled(model.isDemo && !usesConfirmationFixture)
                             .accessibilityLabel("Stop sharing with \(grant.label)")
                     }
-                    .confirmationDialog("Stop sharing with this person?", isPresented: Binding(
+                    .alert("Stop sharing with \(grant.label)?", isPresented: Binding(
                         get: { revokeID == grant.id },
                         set: { if !$0 { revokeID = nil } }
-                    ), titleVisibility: .visible) {
+                    )) {
                         Button("Stop sharing", role: .destructive) { Task { await revoke(grant.id) } }
+                        Button("Keep sharing", role: .cancel) { revokeID = nil }
                     }
                 }
             }
@@ -105,7 +115,10 @@ struct SharingView: View {
         .onChange(of: inviteCode) { _, code in
             if code != nil { proxy.scrollTo("new-invitation", anchor: .top); invitationFocused = true }
         }
-        .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editingName = false } } }
+        .toolbar { ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button("Done") { editingName = false }.accessibilityIdentifier("sharing-keyboard-done")
+        } }
         }
     }
 

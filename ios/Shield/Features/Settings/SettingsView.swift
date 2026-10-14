@@ -33,8 +33,9 @@ struct SettingsView: View {
                 let leavesSample = model.isDemo && !model.isTestAccount
                 Button(leavesSample ? "Leave sample app" : "Sign out") { confirmSignOut = true }
                     .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                    .confirmationDialog(leavesSample ? "Leave the sample app?" : "Sign out?", isPresented: $confirmSignOut, titleVisibility: .visible) {
+                    .alert(leavesSample ? "Leave the sample app?" : "Sign out?", isPresented: $confirmSignOut) {
                         Button(leavesSample ? "Leave sample app" : "Sign out") { Task { await model.signOut() } }
+                        Button("Cancel", role: .cancel) {}
                     } message: {
                         if !model.isDemo { Text("Your phone may still send calls to Shield. Use Phone setup to disconnect it.") }
                     }

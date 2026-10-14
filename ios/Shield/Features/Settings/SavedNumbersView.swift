@@ -72,7 +72,7 @@ struct SavedNumbersView: View {
         .sheet(isPresented: $showingAdd, onDismiss: { Task { await load() } }) { AddNumberView(kind: kind) }
         .task { await load() }
         .refreshable { await load() }
-        .confirmationDialog("Remove this saved number?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } }), titleVisibility: .visible) {
+        .alert("Remove \(pendingRemoval?.label ?? "this saved number")?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } })) {
             Button("Remove number", role: .destructive) { if let item = pendingRemoval { Task { await remove(item) } } }
             Button("Keep number", role: .cancel) { pendingRemoval = nil }
         } message: { Text("You can add it again later.") }

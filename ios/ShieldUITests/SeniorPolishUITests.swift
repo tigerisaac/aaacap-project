@@ -12,12 +12,12 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertTrue(email.waitForExistence(timeout: 5))
         email.tap(); email.typeText("synthetic@")
         app.buttons["Done"].tap()
-        XCTAssertFalse(app.buttons["Continue"].isEnabled)
+        XCTAssertFalse(app.buttons["sign-in-submit"].isEnabled)
         XCTAssertTrue(app.staticTexts["Check the email address, including the part after @."].exists)
         email.tap(); app.buttons["Clear email address"].tap(); email.typeText("synthetic@example.com")
         app.buttons["Done"].tap()
-        XCTAssertTrue(app.buttons["Continue"].isEnabled)
-        app.buttons["Continue"].tap()
+        XCTAssertTrue(app.buttons["sign-in-submit"].isEnabled)
+        app.buttons["sign-in-submit"].tap()
         XCTAssertTrue(app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
         XCTAssertEqual(email.value as? String, "synthetic@example.com")
     }
@@ -60,9 +60,12 @@ final class SeniorPolishUITests: XCTestCase {
         app.buttons["Save number"].tap()
         let error = app.staticTexts["Save not confirmed"]
         reveal(error, in: app)
+        reveal(name, in: app, towardTop: true)
         XCTAssertEqual(name.value as? String, "My clinic")
+        reveal(phone, in: app)
         XCTAssertEqual(phone.value as? String, "3125550100")
         XCTAssertTrue(app.buttons["Save number"].isEnabled)
+        reveal(error, in: app)
         capture(app, "polish-add-number-error")
     }
 
@@ -107,8 +110,10 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
         app.buttons["Save quiet hours"].tap()
         XCTAssertTrue(app.staticTexts["Hours not confirmed"].waitForExistence(timeout: 5))
+        reveal(enabled, in: app, towardTop: true)
         XCTAssertEqual(enabled.value as? String, "1")
         XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
+        reveal(app.staticTexts["Hours not confirmed"], in: app)
         capture(app, "polish-quiet-unsaved")
     }
 
@@ -378,6 +383,98 @@ final class SeniorPolishUITests: XCTestCase {
         }
     }
 
+    func testMessagesLeadWithPurposeAndKeepFullReadingInTheDetail() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-light"]
+        app.launch()
+        let title = app.historyRow("Saved account notice")
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["An automated caller reported unusual card activity. The sender hasn’t been verified."].exists)
+        capture(app, "walkthrough-message-purpose")
+        title.tap()
+        XCTAssertTrue(app.staticTexts["message-summary"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Hear sample message"].isHittable)
+        reveal(app.buttons["Find a trusted number"], in: app)
+        capture(app, "walkthrough-message-reading-and-action")
+    }
+
+    func testContactRemovalNamesItsScopeAndHasAFullRowTarget() {
+        let app = launch("contacts", extra: ["--uitesting-contact-removal"])
+        let remove = app.buttons["Remove Jamie from Contacts"]
+        reveal(remove, in: app)
+        XCTAssertTrue(remove.isEnabled)
+        XCTAssertGreaterThanOrEqual(remove.frame.height, 52)
+        XCTAssertGreaterThan(remove.frame.width, 250)
+        capture(app, "walkthrough-contact-removal-scope")
+        remove.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["Remove contact"].waitForExistence(timeout: 5))
+        capture(app, "walkthrough-contact-after-edge-tap")
+        XCTAssertTrue(app.buttons["Keep contact"].exists)
+        XCTAssertTrue(app.staticTexts["This can also remove the contact from your other devices through iCloud. A restore copy stays on this phone."].exists)
+        capture(app, "walkthrough-contact-removal-confirmation")
+        app.buttons["Keep contact"].tap()
+        XCTAssertTrue(app.staticTexts["Jamie"].exists)
+    }
+
+    func testSharingExplainsWhoAndTheCurrentAccessChoice() {
+        let app = launch("sharing")
+        XCTAssertTrue(app.staticTexts["Your helper’s name"].waitForExistence(timeout: 5))
+        let withoutMessages = app.staticTexts["They can see your call history, without messages."]
+        reveal(withoutMessages, in: app)
+        capture(app, "walkthrough-sharing-calls-only")
+        let messages = app.switches["Include messages"]
+        reveal(messages, in: app); messages.tap()
+        let withMessages = app.staticTexts["They can see your calls and read or listen to messages."]
+        XCTAssertTrue(withMessages.waitForExistence(timeout: 5))
+        XCTAssertFalse(withoutMessages.exists)
+        reveal(withMessages, in: app)
+        capture(app, "walkthrough-sharing-messages")
+    }
+
+    func testSharingConfirmationsHaveVisibleSafeChoices() {
+        for large in [false, true] {
+            let arguments = ["--uitesting-sharing-confirmations"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
+            let app = launch("sharing-access", extra: arguments)
+            let name = app.textFields["Your helper’s name"]
+            reveal(name, in: app, towardTop: true); name.tap(); name.typeText("Jamie")
+            capture(app, "walkthrough-sharing-name-entry-\(large ? "large" : "standard")")
+            app.buttons["sharing-keyboard-done"].tap()
+            reveal(app.buttons["Make invitation"], in: app)
+            app.buttons["Make invitation"].tap()
+            XCTAssertTrue(app.alerts["Make an invitation for Jamie?"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["Not now"].isHittable)
+            capture(app, "walkthrough-invitation-confirmation-\(large ? "large" : "standard")")
+            app.buttons["Not now"].tap()
+            reveal(name, in: app, towardTop: true)
+            XCTAssertEqual(name.value as? String, "Jamie")
+            let stop = app.buttons["Stop sharing with Jamie"]
+            reveal(stop, in: app); stop.tap()
+            XCTAssertTrue(app.alerts["Stop sharing with Jamie?"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["Keep sharing"].isHittable)
+            capture(app, "walkthrough-keep-sharing-confirmation-\(large ? "large" : "standard")")
+            app.buttons["Keep sharing"].tap()
+            XCTAssertTrue(app.buttons["Stop sharing with Jamie"].exists)
+        }
+    }
+
+    func testLeavingTheSampleHasVisibleCancellation() {
+        for large in [false, true] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--uitesting-preview", "--uitesting-light"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
+            app.launch()
+            app.tabBars.buttons["More"].tap()
+            let settings = app.staticTexts["Settings"].firstMatch
+            reveal(settings, in: app); settings.tap()
+            let leave = app.buttons["Leave sample app"].firstMatch
+            reveal(leave, in: app); leave.tap()
+            XCTAssertTrue(app.alerts["Leave the sample app?"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["Cancel"].isHittable)
+            capture(app, "walkthrough-exit-confirmation-\(large ? "large" : "standard")")
+            app.buttons["Cancel"].tap()
+            XCTAssertTrue(leave.exists)
+        }
+    }
+
     private func launch(_ screen: String, extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-screen", screen, "--uitesting-light"] + extra
@@ -421,6 +518,7 @@ final class SeniorPolishUITests: XCTestCase {
     }
 
     private func capture(_ app: XCUIApplication, _ name: String) {
+        Thread.sleep(forTimeInterval: 0.8)
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.name = name; shot.lifetime = .keepAlways; add(shot)
         do {

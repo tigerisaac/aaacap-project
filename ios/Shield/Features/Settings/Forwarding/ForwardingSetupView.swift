@@ -4,6 +4,7 @@ struct ForwardingSetupView: View {
     @Environment(AppState.self) private var app
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var model = ForwardingSetupModel()
     @State private var confirmRestore = false
     @State private var leftForPhone = false
@@ -41,6 +42,9 @@ struct ForwardingSetupView: View {
                             }
                             .id("forwarding-step-error")
                         }
+                        if typeSize.isAccessibilitySize && model.step == .consent {
+                            ForwardingActions(model: model, app: app)
+                        }
                     } else if let error = model.error {
                         ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
                         Button("Try again") { Task { await model.load(app) } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
@@ -67,7 +71,9 @@ struct ForwardingSetupView: View {
         .background(ShieldTheme.surface)
         .shieldNavigationSurface()
         .safeAreaInset(edge: .bottom) {
-            if model.status != nil { ForwardingActions(model: model, app: app) }
+            if model.status != nil && !(typeSize.isAccessibilitySize && model.step == .consent) {
+                ForwardingActions(model: model, app: app)
+            }
         }
         .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
         .sensoryFeedback(.success, trigger: model.step) { old, new in
@@ -86,9 +92,10 @@ struct ForwardingSetupView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button { dismiss() } label: { Text("Close").foregroundStyle(Color.primary) }
-                    .disabled(model.working)
+                Button("Close") { dismiss() }
+                    .shieldToolbarAction().disabled(model.working)
             }
+            .sharedBackgroundVisibility(.hidden)
             ToolbarItem(placement: .topBarTrailing) {
                 Menu("Options", systemImage: "ellipsis.circle") {
                     Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
@@ -118,8 +125,9 @@ struct ForwardingSetupView: View {
             }
             if phase == .active { Task { await model.load(app) } }
         }
-        .confirmationDialog("Disconnect Shield?", isPresented: $confirmRestore, titleVisibility: .visible) {
+        .alert("Disconnect Shield?", isPresented: $confirmRestore) {
             Button("Start disconnecting") { Task { await model.restore(app) } }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text("Shield stops ringing you. Follow the steps to bring back ordinary calls and voicemail. Ending a test alone won’t disconnect your phone.")
         }

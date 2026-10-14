@@ -77,9 +77,10 @@ struct BlockedNumbersView: View {
         .shieldListStyle()
         .navigationTitle("Blocked numbers")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog("Allow calls from \(pendingUnblock.map { PhoneDisplay.format($0.phone) } ?? "this number")?", isPresented: Binding(
-            get: { pendingUnblock != nil }, set: { if !$0 { pendingUnblock = nil } }), titleVisibility: .visible) {
+        .alert("Allow calls from \(pendingUnblock.map { PhoneDisplay.format($0.phone) } ?? "this number")?", isPresented: Binding(
+            get: { pendingUnblock != nil }, set: { if !$0 { pendingUnblock = nil } })) {
             Button("Allow calls again", role: .destructive) { if let item = pendingUnblock { Task { await unblock(item) } } }
+            Button("Keep blocking", role: .cancel) { pendingUnblock = nil }
         } message: {
             Text("Shield can check future calls from this number. Only allow calls if you know who it belongs to.")
         }

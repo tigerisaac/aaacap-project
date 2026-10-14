@@ -36,7 +36,7 @@ struct JoinView: View {
                 }
                 ShieldGroup {
                     Button("Sign out") { confirmSignOut = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                        .confirmationDialog("Sign out?", isPresented: $confirmSignOut, titleVisibility: .visible) {
+                        .alert("Sign out?", isPresented: $confirmSignOut) {
                             Button("Sign out") { Task { await model.signOut() } }
                             Button("Cancel", role: .cancel) {}
                         }

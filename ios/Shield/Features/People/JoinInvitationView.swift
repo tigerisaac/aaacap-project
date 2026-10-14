@@ -61,7 +61,8 @@ struct JoinInvitationView: View {
                 .navigationTitle("Use an invitation")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(joining) }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.shieldToolbarAction().disabled(joining) }
+                    .sharedBackgroundVisibility(.hidden)
                     ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
                 }
             }

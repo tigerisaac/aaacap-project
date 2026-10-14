@@ -37,8 +37,9 @@ struct CallProtectionView: View {
         .shieldListStyle()
         .navigationTitle("Checks while you talk")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog("Check calls while you talk?", isPresented: $confirmEnable, titleVisibility: .visible) {
+        .alert("Check calls while you talk?", isPresented: $confirmEnable) {
             Button("Turn on") { Task { await save(enabled: true) } }
+            Button("Not now", role: .cancel) {}
         } message: {
             Text("Shield will read both people’s words and may end a scam call. Checks can be wrong. The caller is told first.")
         }
