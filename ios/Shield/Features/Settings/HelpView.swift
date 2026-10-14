@@ -32,6 +32,7 @@ struct HelpView: View {
             }
         }
         .shieldListStyle()
+        .contentMargins(.top, 0, for: .scrollContent)
         .navigationTitle("Get help").navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -4,16 +4,11 @@ struct VoicemailRow: View {
     let call: CallRecord
     var kept = false
     @Environment(\.dynamicTypeSize) private var typeSize
-    @ScaledMetric(relativeTo: .body) private var symbolSize = 36.0
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        HStack(alignment: .center, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
             if !typeSize.isAccessibilitySize {
-                Image(systemName: kept ? "bookmark" : "recordingtape")
-                    .font(.body.weight(.medium)).foregroundStyle(ShieldTheme.message)
-                    .frame(width: symbolSize, height: symbolSize)
-                    .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
-                    .accessibilityHidden(true)
+                ShieldRowSymbol(systemName: kept ? "bookmark" : "recordingtape", color: ShieldTheme.message)
             }
             VStack(alignment: .leading, spacing: 6) {
                 Text(CallPresentation.title(call)).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
@@ -41,18 +36,21 @@ struct VoicemailRow: View {
     private var stateText: Text? {
         if kept { return Text("\(Image(systemName: "bookmark.fill")) Kept") }
         if call.voicemail?.status == "removed" { return Text("\(Image(systemName: "trash")) Removed") }
-        if call.voicemail?.heardAt == nil { return Text("New").fontWeight(.semibold).foregroundStyle(ShieldTheme.message) }
         return nil
     }
 
+    private var unheard: Bool { !kept && call.voicemail?.heardAt == nil && call.voicemail?.status != "removed" }
+
+    /// "New voicemail" while unheard, the plain kind afterwards: the one accent is what still needs listening.
     private var kindText: Text? {
         guard let message = call.voicemail, message.status != "removed" else { return nil }
+        if unheard { return Text("New \(message.kindLabel.lowercased())").fontWeight(.semibold).foregroundStyle(ShieldTheme.message) }
         return Text(message.kindLabel)
     }
 
     @ViewBuilder private var messageInfo: some View {
         Group {
-            if typeSize >= .xxxLarge {
+            if typeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 6) {
                     if let kindText { kindText }
                     if let stateText { stateText }

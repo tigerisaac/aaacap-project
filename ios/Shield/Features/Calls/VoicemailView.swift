@@ -35,7 +35,7 @@ struct VoicemailView: View {
                             .accessibilityHint("Choose which messages to show")
                             .accessibilityIdentifier("sample-message-filter")
                         } else {
-                            messagePicker.pickerStyle(.segmented)
+                            messagePicker.pickerStyle(.segmented).controlSize(.large)
                                 .accessibilityIdentifier("sample-message-filter")
                         }
                     }
@@ -72,7 +72,8 @@ struct VoicemailView: View {
                 if inbox.nextCursor != nil {
                     ShieldGroup {
                         Button(inbox.loading ? "Getting more…" : "Older messages") { Task { await inbox.load(app, more: true) } }
-                            .disabled(inbox.loading)
+                            .font(.body.weight(.medium))
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(inbox.loading)
                     }
                 }
             }

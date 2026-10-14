@@ -13,6 +13,8 @@ enum ShieldTheme {
     enum Layout {
         static let minimumTarget: CGFloat = 52
         static let rowHeight: CGFloat = 60
+        /// Between a row's symbol tile and its text.
+        static let rowSymbolSpacing: CGFloat = 14
         static let cardRadius: CGFloat = 20
         /// App-icon corner radius as a fraction of the icon's width (continuous corners).
         static let iconCornerRatio: CGFloat = 0.2237

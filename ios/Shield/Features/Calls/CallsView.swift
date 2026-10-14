@@ -26,10 +26,19 @@ struct CallsView: View {
                         }
                     }
                 } else if !model.calls.isEmpty {
-                    ShieldGroup {
-                        ForEach(model.calls) { call in CallNavigationRow(call: call) }
-                        if model.nextCursor != nil {
+                    // Day headings carry the date, so each row only needs its time.
+                    ForEach(CallDay.group(model.calls)) { day in
+                        ShieldGroup {
+                            ForEach(day.calls) { call in CallNavigationRow(call: call, showsDay: false) }
+                        } header: {
+                            Text(day.title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink)
+                                .textCase(nil).accessibilityAddTraits(.isHeader)
+                        }
+                    }
+                    if model.nextCursor != nil {
+                        ShieldGroup {
                             Button(model.isLoadingCalls ? "Getting more…" : "Older calls") { Task { await model.loadCalls(more: true) } }
+                                .font(.body.weight(.medium))
                                 .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isLoadingCalls)
                         }
                     }
@@ -70,7 +79,7 @@ private struct CallFilterPicker: View {
             .accessibilityHint("Choose which calls to show")
             .accessibilityIdentifier("callFilter")
         } else {
-            picker($model.filter).pickerStyle(.segmented).accessibilityIdentifier("callFilter")
+            picker($model.filter).pickerStyle(.segmented).controlSize(.large).accessibilityIdentifier("callFilter")
         }
     }
 

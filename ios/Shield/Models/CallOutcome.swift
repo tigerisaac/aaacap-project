@@ -19,7 +19,7 @@ enum CallOutcome: String, Codable, Sendable {
         switch self {
         case .held, .verification: "hand.raised.fill"
         case .connected: "phone.arrow.up.right.fill"
-        case .voicemail: "waveform"
+        case .voicemail: "recordingtape"
         case .missed: "phone.down.fill"
         case .offered, .screening: "phone.badge.waveform.fill"
         }

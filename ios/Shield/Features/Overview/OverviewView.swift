@@ -99,25 +99,29 @@ struct OverviewView: View {
 
     @ViewBuilder private func statusCard(now: Date) -> some View {
         let presentation = summary(now: now)
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Image(systemName: presentation.symbol).foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
-                Text(presentation.title).font(.headline).foregroundStyle(ShieldTheme.action)
-                    .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
+        // The tile matches the rows below, so the title, explanation and action start on their text column.
+        HStack(alignment: .top, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
+            if !typeSize.isAccessibilitySize {
+                ShieldRowSymbol(systemName: presentation.symbol)
             }
-            Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
-            if !model.isDemo, model.isOwner {
-                if presentation.retry {
-                    Button(checkingStatus ? "Checking…" : "Try again") { Task { await refresh() } }
-                        .disabled(checkingStatus)
-                } else if presentation.needsSetup {
-                    if model.isTrial && !presentation.useSetupMenu {
-                        NavigationLink { ForwardingSetupView() } label: {
-                            Text(presentation.actionTitle)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(presentation.title).font(.headline).foregroundStyle(ShieldTheme.action)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
+                Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                if !model.isDemo, model.isOwner {
+                    if presentation.retry {
+                        Button(checkingStatus ? "Checking…" : "Try again") { Task { await refresh() } }
+                            .disabled(checkingStatus)
+                    } else if presentation.needsSetup {
+                        if model.isTrial && !presentation.useSetupMenu {
+                            NavigationLink { ForwardingSetupView() } label: {
+                                Text(presentation.actionTitle)
+                            }
+                        } else {
+                            NavigationLink(presentation.actionTitle, value: AppRoute.setup)
                         }
-                    } else {
-                        NavigationLink(presentation.actionTitle, value: AppRoute.setup)
                     }
                 }
             }

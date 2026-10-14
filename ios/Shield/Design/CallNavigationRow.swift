@@ -4,9 +4,10 @@ import SwiftUI
 struct CallNavigationRow: View {
     let call: CallRecord
     var showsNumber = true
+    var showsDay = true
 
     var body: some View {
-        let row = CallRow(call: call, showsNumber: showsNumber)
+        let row = CallRow(call: call, showsNumber: showsNumber, showsDay: showsDay)
         let title = CallPresentation.title(call)
         NavigationLink(value: call) { row }
             .accessibilityLabel(title)

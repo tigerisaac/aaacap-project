@@ -37,20 +37,32 @@ struct ScreenIntro: View {
     }
 }
 
+/// The quiet symbol tile that leads call, message, action and status rows, so their text
+/// starts on one shared column.
+struct ShieldRowSymbol: View {
+    let systemName: String
+    var color: Color = ShieldTheme.action
+    @ScaledMetric(relativeTo: .body) private var size = 36.0
+
+    var body: some View {
+        Image(systemName: systemName)
+            .font(.body.weight(.medium)).foregroundStyle(color)
+            .frame(width: size, height: size)
+            .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
+            .accessibilityHidden(true)
+    }
+}
+
 struct ActionRow: View {
     @Environment(\.dynamicTypeSize) private var typeSize
-    @ScaledMetric(relativeTo: .title3) private var symbolWidth = 36.0
     let title: String
     var detail: String = ""
     let symbol: String
     var color: Color = ShieldTheme.action
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
+        HStack(alignment: .center, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
             if !typeSize.isAccessibilitySize {
-                Image(systemName: symbol).font(.body.weight(.medium)).foregroundStyle(color)
-                    .frame(width: symbolWidth, height: symbolWidth)
-                    .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
-                    .accessibilityHidden(true)
+                ShieldRowSymbol(systemName: symbol, color: color)
             }
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.body.weight(.medium)).foregroundStyle(ShieldTheme.ink)

@@ -45,6 +45,7 @@ struct JoinView: View {
             .navigationTitle(model.isLoading || model.contextError != nil ? "Your account" : "Get started")
             .navigationBarTitleDisplayMode(.inline)
             .shieldListStyle()
+            .contentMargins(.top, 0, for: .scrollContent)
             .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }
         }

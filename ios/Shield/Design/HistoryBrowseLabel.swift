@@ -9,8 +9,10 @@ struct HistoryBrowseLabel: View {
             Text(title).font(.body.weight(.medium))
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
-            Image(systemName: "chevron.right")
-                .font(.body.weight(.semibold)).accessibilityHidden(true)
+            // Drawn like the native row disclosure so stacked rows share one chevron.
+            Image(systemName: "chevron.forward")
+                .font(.footnote.weight(.semibold)).imageScale(.large)
+                .foregroundStyle(Color(uiColor: .tertiaryLabel)).accessibilityHidden(true)
         }
         .padding(.vertical, ShieldTheme.Spacing.content)
         .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)

@@ -26,6 +26,7 @@ struct CallDetailView: View {
     @State private var updatingPlayedStatus = false
     @State private var playbackRequest = UUID()
     private var call: CallRecord { updatedCall ?? initialCall }
+    private var callerNumber: String { PhoneDisplay.format(call.callerNumber) }
     private var messageRemoved: Bool { call.voicemail?.status == "removed" }
     private var usesAudioFixture: Bool { PreviewScenario.requested("audio", preview: model.isPreview) }
 
@@ -36,16 +37,29 @@ struct CallDetailView: View {
                 ShieldGroup { ShieldLoadFailure(title: "Call details couldn’t update", detail: loadError) { Task { await load() } } }
             }
             ShieldPageHeader {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
-                        .shieldHeading(.title).foregroundStyle(ShieldTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
-                    if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
-                        OutcomeBadge(outcome: call.outcome)
+                // Headline and outcome, then what happened with who and when: one short article top.
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
+                            .shieldHeading(.title).foregroundStyle(ShieldTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
+                        if call.voicemail == nil, !CallPresentation.title(call).localizedCaseInsensitiveContains(call.outcome.label) {
+                            OutcomeBadge(outcome: call.outcome)
+                        }
                     }
-                    Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
+                    VStack(alignment: .leading, spacing: 4) {
+                        if call.voicemail == nil {
+                            Text(CallPresentation.explanation(call)).foregroundStyle(ShieldTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        MetadataLine.joined([
+                            CallPresentation.title(call) == callerNumber ? nil : Text(PhoneDisplay.unbroken(callerNumber)),
+                            Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        ])
                         .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                }.padding(.vertical, 4).fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
+                    }
+                }.padding(.top, 2).padding(.bottom, 4).fixedSize(horizontal: false, vertical: true)
             }
             if messageRemoved {
                 ShieldGroup {
@@ -151,9 +165,6 @@ struct CallDetailView: View {
                     }
                 }
             }
-            if call.voicemail == nil {
-                ShieldGroup { Text(CallPresentation.explanation(call)) }
-            }
             if !messageRemoved, call.outcome == .held || call.outcome == .verification {
                 ShieldGroup {
                     Text("Need to call back? Use a number you already know.")
@@ -166,7 +177,6 @@ struct CallDetailView: View {
             }
             ShieldGroup {
                 DisclosureGroup("More about this call") {
-                    Text(PhoneDisplay.format(call.callerNumber)).textSelection(.enabled)
                     Text(call.detail).fixedSize(horizontal: false, vertical: true)
                     Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
                     if call.monitored == true { Text("Shield checked the words while you talked.") }
@@ -190,6 +200,8 @@ struct CallDetailView: View {
             }
         }
         .shieldListStyle()
+        // The page heading starts under the bar, not a full empty section below it.
+        .contentMargins(.top, 0, for: .scrollContent)
         .safeAreaInset(edge: .bottom) {
             if !inlineMessageActions { messageActions() }
         }

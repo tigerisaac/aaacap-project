@@ -6,6 +6,8 @@ struct StoppedCallsCard: View {
     let count: Int?
     let openCalls: () -> Void
     @Environment(\.dynamicTypeSize) private var typeSize
+    /// The large serif numeral's side bearing; pulling it back lines its ink up with the label above.
+    @ScaledMetric(relativeTo: .largeTitle) private var numeralBearing = 2.0
 
     var body: some View {
         Button(action: openCalls) {
@@ -18,11 +20,13 @@ struct StoppedCallsCard: View {
                         .accessibilityHidden(true)
                 }
                 if let count, count > 0 {
-                    if typeSize.isAccessibilitySize {
-                        total(count)
-                        Text("in total").font(.body)
-                    } else {
+                    // Side by side whenever it fits, so "in total" reads with its number.
+                    ViewThatFits(in: .horizontal) {
                         HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            total(count)
+                            Text("in total").font(.body).fixedSize()
+                        }
+                        VStack(alignment: .leading, spacing: 0) {
                             total(count)
                             Text("in total").font(.body)
                         }
@@ -55,6 +59,7 @@ struct StoppedCallsCard: View {
         Text(count, format: .number)
             .font(ShieldTheme.Typography.display.scaled(by: 1.6)).monospacedDigit().tracking(-1)
             .fixedSize(horizontal: false, vertical: true)
+            .padding(.leading, -numeralBearing)
             .accessibilityIdentifier("stopped-call-count")
     }
 }

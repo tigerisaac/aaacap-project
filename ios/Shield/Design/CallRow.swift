@@ -4,8 +4,9 @@ import SwiftUI
 struct CallRow: View {
     let call: CallRecord
     var showsNumber = true
+    /// False under a day heading, where the row only needs its time.
+    var showsDay = true
     @Environment(\.dynamicTypeSize) private var typeSize
-    @ScaledMetric(relativeTo: .body) private var symbolSize = 36.0
 
     private var number: String { PhoneDisplay.format(call.callerNumber) }
 
@@ -32,20 +33,16 @@ struct CallRow: View {
 
     private var callTime: String {
         let time = call.occurredAt.formatted(date: .omitted, time: .shortened)
-        if Calendar.current.isDateInToday(call.occurredAt) { return time }
+        if !showsDay || Calendar.current.isDateInToday(call.occurredAt) { return time }
         if Calendar.current.isDateInYesterday(call.occurredAt) { return "Yesterday" }
         return call.occurredAt.formatted(.dateTime.month(.abbreviated).day())
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        // The symbol centers on the text block, as in Phone and Mail, rather than riding above it.
+        HStack(alignment: .center, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
             if !typeSize.isAccessibilitySize {
-                Image(systemName: call.outcome.symbol)
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(ShieldTheme.color(for: call.outcome))
-                    .frame(width: symbolSize, height: symbolSize)
-                    .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
-                    .accessibilityHidden(true)
+                ShieldRowSymbol(systemName: call.outcome.symbol, color: ShieldTheme.color(for: call.outcome))
             }
             VStack(alignment: .leading, spacing: 6) {
                 if typeSize >= .xxxLarge {
@@ -58,11 +55,8 @@ struct CallRow: View {
                         timeText
                     }
                 }
-                if showsOutcomeWord || (showsNumber && title != number) {
+                if outcomeWord != nil || newMessageWord != nil || (showsNumber && title != number) {
                     detailLine
-                }
-                if unheard {
-                    Text("New message").font(.subheadline.weight(.medium)).foregroundStyle(ShieldTheme.message)
                 }
             }
         }
@@ -91,14 +85,16 @@ struct CallRow: View {
 
     private var detailLine: some View {
         Group {
-            if typeSize >= .xxxLarge {
+            if typeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 6) {
-                    outcomeText
+                    if let outcomeWord { outcomeWord }
+                    if let newMessageWord { newMessageWord }
                     numberText
                 }
             } else {
                 MetadataLine.joined([
-                    showsOutcomeWord ? outcomeWord : nil,
+                    outcomeWord,
+                    newMessageWord,
                     showsNumber && title != number ? Text(PhoneDisplay.unbroken(number)) : nil
                 ])
                 .foregroundStyle(ShieldTheme.secondaryText)
@@ -108,14 +104,17 @@ struct CallRow: View {
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var outcomeWord: Text {
-        Text(outcomeLabel).foregroundStyle(ShieldTheme.color(for: call.outcome)).fontWeight(.medium)
+    /// The symbol carries the outcome color; text stays calm so an unheard message is the one accent.
+    /// "New voicemail" replaces a voicemail outcome's own word rather than repeating it.
+    private var outcomeWord: Text? {
+        guard showsOutcomeWord, !(unheard && call.outcome == .voicemail) else { return nil }
+        return Text(outcomeLabel).fontWeight(.medium).foregroundStyle(ShieldTheme.secondaryText)
     }
 
-    private var outcomeText: some View {
-        Group {
-            if showsOutcomeWord { outcomeWord }
-        }
+    private var newMessageWord: Text? {
+        guard unheard else { return nil }
+        return Text("New \((call.voicemail?.kindLabel ?? "Message").lowercased())")
+            .fontWeight(.semibold).foregroundStyle(ShieldTheme.message)
     }
 
     @ViewBuilder private var numberText: some View {

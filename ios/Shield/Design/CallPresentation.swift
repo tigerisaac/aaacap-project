@@ -27,3 +27,31 @@ enum CallPresentation {
         }
     }
 }
+
+/// Calls on one calendar day, newest first, for a dated history list.
+struct CallDay: Identifiable {
+    let id: Date
+    let calls: [CallRecord]
+
+    var title: String {
+        let calendar = Calendar.current
+        if calendar.isDateInToday(id) { return "Today" }
+        if calendar.isDateInYesterday(id) { return "Yesterday" }
+        let sameYear = calendar.isDate(id, equalTo: .now, toGranularity: .year)
+        return id.formatted(sameYear ? .dateTime.weekday(.wide).month(.wide).day() : .dateTime.weekday(.wide).month(.wide).day().year())
+    }
+
+    /// Keeps the incoming order, so paging appends to the last day instead of reshuffling.
+    static func group(_ calls: [CallRecord]) -> [CallDay] {
+        var days: [CallDay] = []
+        for call in calls {
+            let day = Calendar.current.startOfDay(for: call.occurredAt)
+            if let last = days.last, last.id == day {
+                days[days.count - 1] = CallDay(id: day, calls: last.calls + [call])
+            } else {
+                days.append(CallDay(id: day, calls: [call]))
+            }
+        }
+        return days
+    }
+}
