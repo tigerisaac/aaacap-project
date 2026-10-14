@@ -1,5 +1,15 @@
 # Status
 
+## October 13 — lean v158 production candidate; rollout remains limited
+
+The [production candidate report](SCREENING-PRODUCTION-CANDIDATE.md) selects one direct, runtime-compatible v158 prompt, **10.8% shorter** than v134's instructions. It stops unexpected-charge alarms and empty contact invitations, preserves contextual callbacks and useful clarification, and requires evidence before routing a caller as recorded. Existing v134 runtime guards and post-call v10 remain; no experimental observation mapper is adopted. Nothing is deployed.
+
+Subscription Luna medium validation reaches all intended final outcomes in 80 fresh scripted trials (76 strict sequences; four appropriate early holds) and all 32 fresh adaptive-caller trials. Question review retains pronoun/phrasing weaknesses. MASC offers 69/80 ordinary calls, saves six, blocks three and questions two; it stops 157/160 harmful calls, questions three and approves none. All 40 ads stop. FTC records 530/724 stops, 146 unverified saves, 47 questions, zero approvals and one original timeout. All known charge recordings stop. The exact 637-row interrupted prefix, including that timeout, is preserved before completing only 87 never-run identities.
+
+This is a **controlled-pilot candidate, not a broad production recommendation**. Ordinary routing errors and a known development friend false block remain real misses. Public source labels/scores are unchanged. The v157 MASC diagnostic informed a general v158 routing correction, so public results are explicitly reused regressions, not unseen evidence. No matching 12-word public passage was found in the prompt/tool/voice copy audit; that does not establish absence of conceptual adaptation. Frozen-source, input, prefix and score audits pass.
+
+Typecheck, 203 unit tests/build and local dialogue/transport checks pass. The earlier full emulator run had one transaction failure; its complete rerun passed 154/154, and no emulator/runtime code changed afterward. Voice readiness is set aside at the owner's request. No voice test, real call, forwarding change or deployment occurred. Deployed screening remains v31 and post-call v4 as recorded below.
+
 ## October 13 — self-identification remains experimental; continuation integrity improved
 
 The [v154 audit](SCREENING-SELF-IDENTIFICATION-AUDIT.md) completes five logical subscription Luna medium runs / 1,556 trials. The 47-character prompt addition does not repair its motivating development misses. Development preserves 170/170 intended blocks; fresh v154 passes 41/48 versus v153's 44/48, with skipped identity questions and a recorded notice offered. All fresh intended blocks pass. V154 is not promoted.
