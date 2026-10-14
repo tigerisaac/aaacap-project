@@ -76,6 +76,20 @@ export class ScreeningSession {
     if (io.acknowledgementAudio?.length) this.acknowledgement = new WaitAcknowledgement(io.acknowledgementAudio, phase => this.timing(phase));
   }
   get ended() { return this.terminal; }
+  /** Optional local-prototype handoff. The default production path never calls this. */
+  resumeClarification(transcript: string, decision: LiveDecision) {
+    if (this.terminal || this.readyAt !== undefined || this.firstInput || this.hadTranscript
+      || !transcript.trim() || transcript.length > LIVE_LIMITS.maxTranscript
+      || permittedDecision(decision, transcript)?.action !== 'continue') throw new Error('invalid_screening_handoff');
+    this.transcript = transcript;
+    this.spoken = spokenLength(transcript);
+    this.hadTranscript = true;
+    this.lastSpeechAt = this.now();
+    this.checkedLength = transcript.length;
+    this.clarifiedSpoken = this.spoken;
+    this.clarifications = 1;
+    this.clarificationAt = this.now();
+  }
   start() { this.timing('session_start_sent'); this.io.openai({ type: 'session.start', session: liveSessionConfig(this.context) }); }
   async stop(reason: StopReason) { await this.finish(reason); }
   private async finish(decision: LiveDecision | StopReason) {

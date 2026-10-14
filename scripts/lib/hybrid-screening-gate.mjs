@@ -7,10 +7,11 @@ export class HybridScreeningGate {
     this.lastCheckedText = ''; this.lastCheckAt = -Infinity; this.checks = 0;
     this.busy = false; this.closed = false; this.endpoint = false; this.pending = undefined;
     this.lastSpeechAt = -Infinity;
+    this.lastTextAt = -Infinity;
   }
-  speech() { this.lastSpeechAt = this.now(); }
+  speech() { this.lastSpeechAt = this.now(); this.firstSpeechAt ??= this.lastSpeechAt; }
   update(text, provisional = '', endpoint = false) {
-    if (text !== this.text || provisional !== this.provisional) this.revision++;
+    if (text !== this.text || provisional !== this.provisional) { this.revision++; this.lastTextAt = this.now(); }
     this.text = text; this.provisional = provisional; this.endpoint = endpoint;
   }
   close() { this.closed = true; }
@@ -25,6 +26,11 @@ export class HybridScreeningGate {
       } else return;
     }
     const newText = this.text.length - this.lastCheckedText.length;
+    // Avoid paying for a fragment that is still being spoken/finalized. Long speech
+    // can still be assessed periodically, but never apply a superseded result.
+    const periodicAt = Number.isFinite(this.lastCheckAt) ? this.lastCheckAt : (this.firstSpeechAt ?? this.now());
+    if (this.provisional.trim() || (!this.endpoint && this.now() - this.lastSpeechAt < 600
+      && this.now() - periodicAt < 6000) || (!this.endpoint && this.now() - this.lastTextAt < 300)) return;
     if (!this.text.trim() || this.text === this.lastCheckedText || (!this.endpoint && newText < 24)
       || this.now() - this.lastCheckAt < this.intervalMs) return;
     if (this.checks >= this.maximumChecks) { this.closed = true; this.fail('screening_timeout'); return; }
@@ -41,14 +47,17 @@ export class HybridScreeningGate {
   }
 }
 
-export function handoffInput(transcript, decision) {
+export function handoffInput(transcript, decision, question) {
   return [
+    { type: 'message', role: 'assistant', content: [{ type: 'output_text', text: "I'm Shield, an AI call assistant. Who's calling, and what is the call about?" }] },
     { type: 'message', role: 'user', content: [{ type: 'input_text', text: transcript }] },
     { type: 'message', role: 'developer', content: [{ type: 'input_text', text: JSON.stringify({
       handoff: 'The application has already assessed the caller with the configured screening policy.',
       decision: { action: decision.action, hasName: decision.hasName, hasReason: decision.hasReason },
       clarificationAlreadySpoken: false,
-      nextStep: 'Continue the existing conversation with one brief question about the missing information. The opening greeting has already played.'
+      pendingQuestion: question,
+      questionsRemainingAfterThis: 1,
+      nextStep: 'The greeting above already played. Speak the pending question now in English, addressed directly to this caller, then listen. This question renders the missing information in the configured backend decision. Do not repeat the greeting, replace the question, or delegate the unchanged opening again; the backend is waiting for the caller answer.'
     }) }] }
   ];
 }

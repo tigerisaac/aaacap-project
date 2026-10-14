@@ -20,6 +20,33 @@ function harness(research?: (topic: any) => Promise<any>) {
   return { s, io, ready, speech, delegate, tool, advance: (ms: number) => { now += ms; s.tick(); } };
 }
 describe('GPT Live screening controls', () => {
+  it('resumes a pending hybrid question without checking or approving the unchanged opening', () => {
+    const h = harness();
+    const ask = { ...routine, action: 'continue', reason: 'unclear', evidence: '' };
+    h.s.resumeClarification('This is Anna about lunch tomorrow.', ask);
+    expect(() => h.s.resumeClarification('Again.', ask)).toThrow('invalid_screening_handoff');
+    h.ready(); h.advance(2500);
+    expect(h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'message')).toHaveLength(0);
+    h.delegate(); h.tool(routine);
+    expect(h.io.finish).not.toHaveBeenCalled();
+    expect(JSON.parse(h.io.openai.mock.calls.filter(([e]) => e.item?.type === 'function_call_output').at(-1)![0].item.output).status).toBe('awaiting_caller_answer');
+    h.speech(' Please confirm the time.'); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate(); h.tool(routine, 'answer');
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(routine);
+  });
+  it('counts the inherited clarification toward the existing two-question limit', () => {
+    const h = harness(); const ask = { ...routine, action: 'continue', reason: 'unclear', evidence: '' };
+    h.s.resumeClarification('This is Anna.', ask); h.ready();
+    for (let i = 0; i < 2; i++) {
+      h.speech(` More information ${i}.`); h.advance(LIVE_LIMITS.speechPauseMs); h.delegate(); h.tool(ask, `ask-${i}`);
+    }
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith('screening_timeout');
+  });
+  it('rejects invalid or late hybrid handoffs', () => {
+    const h = harness();
+    expect(() => h.s.resumeClarification('This is Anna.', routine)).toThrow('invalid_screening_handoff');
+    h.ready();
+    expect(() => h.s.resumeClarification('This is Anna.', { ...routine, action: 'continue', evidence: '' })).toThrow('invalid_screening_handoff');
+  });
   it.each(['approve', 'hold', 'message', 'continue'])('does not accept %s on unchanged speech after clarification', action => {
     const h = harness(); h.ready(); h.speech('This is Anna about lunch tomorrow.');
     h.advance(LIVE_LIMITS.speechPauseMs); h.delegate();

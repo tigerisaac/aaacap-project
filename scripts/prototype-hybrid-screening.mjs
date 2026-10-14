@@ -1,6 +1,6 @@
 // Local synthetic audio only. No telephony API, Firestore writes or production server.
 import assert from 'node:assert/strict';
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve, relative, join } from 'node:path';
@@ -8,14 +8,16 @@ import { WebSocket } from 'ws';
 import { hybridPrototypeCases as cases } from './fixtures/hybrid-prototype-cases.mjs';
 import { HybridScreeningGate, handoffInput } from './lib/hybrid-screening-gate.mjs';
 import { HybridWaitAcknowledgement } from './lib/hybrid-wait-acknowledgement.mjs';
-import { liveSessionConfig, SCREENING_POLICY_VERSION, permittedDecision, LIVE_LIMITS } from '../dist/live/policy.js';
+import { initialAssessment, clarificationQuestion } from './lib/hybrid-initial-assessment.mjs';
+import { estimateHybridCost } from './lib/hybrid-cost.mjs';
+import { liveSessionConfig, SCREENING_POLICY_VERSION, LIVE_LIMITS } from '../dist/live/policy.js';
 import { ScreeningSession, audiblePCMU } from '../dist/live/session.js';
 import { responseUsage } from '../dist/live/timing.js';
-import { providerKey, screeningCheck } from './lib/screening-target.mjs';
+import { providerKey } from './lib/screening-target.mjs';
 import { researchScamPattern } from '../dist/live/research.js';
 
 const args = process.argv.slice(2), take = key => { const i = args.indexOf(key); return i < 0 ? undefined : args.splice(i, 2)[1]; };
-const output = take('--out'), prepare = args.includes('--prepare'), run = args.includes('--run');
+const output = take('--out'), audioSource = take('--audio-from'), prepare = args.includes('--prepare'), run = args.includes('--run');
 assert.ok(output && prepare !== run && args.every(a => ['--prepare', '--run', '--allow-paid-audio'].includes(a)));
 assert.ok(!run || args.includes('--allow-paid-audio'), 'paid_audio_requires_explicit_flag');
 const out = resolve(output), rel = relative(resolve('artifacts'), out);
@@ -25,17 +27,19 @@ assert.equal(SCREENING_POLICY_VERSION, '2026-10-13-general-v158');
 assert.equal(request.model, 'gpt-6-luna'); assert.equal(request.reasoning.effort, 'medium');
 const hash = b => createHash('sha256').update(b).digest('hex');
 const sources = ['scripts/prototype-hybrid-screening.mjs', 'scripts/lib/hybrid-screening-gate.mjs',
+  'scripts/lib/hybrid-initial-assessment.mjs', 'scripts/lib/hybrid-cost.mjs',
   'scripts/lib/hybrid-wait-acknowledgement.mjs', 'dist/live/acknowledgement.js',
   'backend/src/live/ack-audio/one-moment.pcmu', 'backend/src/live/ack-audio/manifest.json',
   'scripts/fixtures/hybrid-prototype-cases.mjs', 'scripts/lib/screening-target.mjs',
-  'backend/src/live/policy.ts', 'dist/live/policy.js', 'dist/live/session.js', 'dist/live/timing.js',
+  'backend/src/live/policy.ts', 'backend/src/live/session.ts', 'dist/live/policy.js', 'dist/live/session.js', 'dist/live/timing.js',
   'dist/live/evidence.js', 'dist/live/decision-progress.js', 'dist/live/research.js'];
 const hashes = async () => Object.fromEntries(await Promise.all(sources.map(async p => [p, hash(await readFile(p))])));
 const sourceHashes = await hashes();
 const plan = { policyVersion: SCREENING_POLICY_VERSION, requestHash: hash(JSON.stringify(request)), sourceHashes,
   sonioxModel: 'stt-rt-v5', liveModel: config.model, decisionModel: request.model, reasoning: request.reasoning,
+  orchestration: { serviceTier: 'priority', initialToolChoice: 'required', questionRendering: 'missing-identity-purpose-or-action', maximumCorrectionRounds: 3, explicitPendingQuestion: true },
   cases: cases.map(c => ({ id: c.id, category: c.category, expected: c.expected, fixtureHash: hash(JSON.stringify(c)) })),
-  interpretation: 'Five local synthetic calls; live provider audio paced at telephone rate. Four ordinary and one harmful caller. Not a random sample, paired comparison, production deployment or real phone call. Pauses are preserved in the recordings. No replacement credit for retries.' };
+  interpretation: 'Five local synthetic calls; live provider audio paced at telephone rate. Four ordinary and one harmful caller. Selected development regressions, not a random sample, production deployment or real phone call. Pauses are preserved in the recordings. No replacement credit for retries.' };
 
 function convert(source, target, codec = 'mulaw') {
   execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', source, '-ar', '8000', '-ac', '1',
@@ -43,11 +47,18 @@ function convert(source, target, codec = 'mulaw') {
 }
 if (prepare) {
   await mkdir(out, { recursive: false });
+  if (audioSource) {
+    const original = JSON.parse(await readFile(join(audioSource, 'plan.json'), 'utf8'));
+    assert.deepEqual(original.cases, plan.cases, 'caller_fixtures_changed');
+  }
   for (const c of cases) {
     for (const [part, text] of [['opening', c.opening], ['answer', c.answer]]) {
       const prefix = join(out, `${c.id}-${part}`);
-      execFileSync('/usr/bin/say', ['-v', c.voice, '-r', '165', '-o', `${prefix}.aiff`, text], { stdio: ['ignore', 'ignore', 'pipe'] });
-      convert(`${prefix}.aiff`, `${prefix}.pcmu`);
+      if (audioSource) await copyFile(join(audioSource, `${c.id}-${part}.pcmu`), `${prefix}.pcmu`);
+      else {
+        execFileSync('/usr/bin/say', ['-v', c.voice, '-r', '165', '-o', `${prefix}.aiff`, text], { stdio: ['ignore', 'ignore', 'pipe'] });
+        convert(`${prefix}.aiff`, `${prefix}.pcmu`);
+      }
       const audio = await readFile(`${prefix}.pcmu`);
       assert.ok(audio.length >= 8000 && audiblePCMU(audio), 'caller_audio_empty_or_silent');
     }
@@ -109,12 +120,19 @@ async function simulate(c) {
   let assistantText = '', assistantMark = 0, questionText = '', lastAssistantSound = -Infinity, assistantAfterOpening = false;
   let answered = false, answerPosition = 0, postHandoffText = '', gate;
   let firstResponseQuestionMatched = false, resolveDone;
+  let pendingQuestion, sessionStartSentMs, questionReadyMs, sttEnding = false;
+  const handoffAudio = [];
+  const safeFailure = e => /^(initial_|question_)[a-z_]+$/.test(e?.message ?? '') ? e.message : 'provider_or_protocol_failure';
   const done = new Promise(resolveDone_ => { resolveDone = resolveDone_; });
   const writeAudio = (side, bytes) => audio.push({ ms: clock(), side, audio: Buffer.from(bytes) });
   const stt = new WebSocket('wss://stt-rt.soniox.com/transcribe-websocket', {
     headers: { Authorization: `Bearer ${sonioxKey}` }, handshakeTimeout: 5000, followRedirects: false, maxPayload: 1_000_000
   });
-  const closeSTT = () => { if (stt.readyState === 1) { stt.send(''); stt.close(); } else stt.terminate(); sonioxClosedAt ??= clock(); };
+  const closeSTT = () => {
+    if (sttEnding) return; sttEnding = true;
+    if (stt.readyState === 1) { stt.send(''); setTimeout(() => stt.terminate(), 1000).unref(); }
+    else stt.terminate();
+  };
   const end = (value, failure) => {
     if (finished) return;
     finished = true; final = typeof value === 'string' ? value : value.action; if (failure) error = failure;
@@ -125,32 +143,47 @@ async function simulate(c) {
     // Drain final usage briefly; recorded duration stops at the actual decision.
     setTimeout(() => { liveSocket?.terminate(); liveClosedAt ??= clock(); resolveDone(); }, 1200);
   };
-  const assess = async transcript => {
-    waitAudio.startWaiting(clock());
-    stamp('initial_decision_started', { transcriptCharacters: transcript.length });
+  const respond = async (input, toolChoice, stage) => {
+    stamp('luna_request_started', { stage });
     const r = await fetch('https://api.openai.com/v1/responses', { method: 'POST', redirect: 'error',
       signal: AbortSignal.timeout(LIVE_LIMITS.backendMs), headers: { Authorization: `Bearer ${openaiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...request, store: false, input: [screeningCheck(transcript)] }) });
+      body: JSON.stringify({ ...request, service_tier: 'priority', tool_choice: toolChoice, store: false, input }) });
     if (!r.ok) { stamp('provider_error', { provider: 'luna', httpStatus: r.status }); throw new Error('initial_provider_failure'); }
-    const response = await r.json(); usage.push({ stage: 'initial', ...responseUsage(response) });
-    if (response.status !== 'completed') throw new Error('initial_incomplete');
-    const tools = response.output.filter(x => x.type === 'function_call'); allToolCalls += tools.length;
-    // A lookup or malformed result is retained as an unsupported prototype outcome, never fabricated.
-    if (tools.length !== 1 || tools[0].name !== 'screen_call') throw new Error('initial_tool_unsupported');
-    const d = permittedDecision(JSON.parse(tools[0].arguments), transcript);
-    if (!d) throw new Error('initial_decision_invalid');
-    stamp('initial_decision_completed', { action: d.action }); return d;
+    const response = await r.json(); usage.push({ stage, ...responseUsage(response) });
+    allToolCalls += response.output.filter(x => x.type === 'function_call').length;
+    if (allToolCalls > LIVE_LIMITS.maxToolCalls) throw new Error('initial_tool_limit');
+    stamp('luna_request_completed', { stage, status: response.status === 'completed' ? 'completed' : 'incomplete' });
+    return response;
+  };
+  const research = topic => researchScamPattern(topic, openaiKey, async (url, init) => {
+    const response = await fetch(url, init);
+    if (response.ok) {
+      const body = await response.clone().json();
+      usage.push({ stage: 'research', ...responseUsage(body), searchCalls: body.output?.filter(i => i.type === 'web_search_call').length ?? 0 });
+    }
+    return response;
+  });
+  const assess = async transcript => {
+    waitAudio.startWaiting(clock()); stamp('initial_decision_started', { transcriptCharacters: transcript.length });
+    try {
+      const result = await initialAssessment({ transcript, respond, research, diagnose: stamp });
+      stamp('initial_decision_completed', { action: result.decision.action }); return result.decision;
+    } catch (e) { stamp('initial_failure', { category: safeFailure(e) }); throw e; }
   };
   const activate = (decision, transcript) => {
     initialDecision = decision;
     if (decision.action !== 'continue') { end(decision); return; }
     phase = 'handoff'; handoffMs = clock(); stamp('live_requested');
+    pendingQuestion = clarificationQuestion(decision); questionReadyMs = clock(); stamp('question_ready');
     dialogue.push({ speaker: 'caller', text: transcript, source: 'soniox' });
-    session = new ScreeningSession({
+    const maybeStart = () => {
+      if (finished || session || !pendingQuestion || liveSocket?.readyState !== 1) return;
+      session = new ScreeningSession({
       openai: event => {
         if (event.type === 'session.start') {
           assert.deepEqual(event.session, config, 'production_config_changed');
-          event = { ...event, session: { ...event.session, input: handoffInput(transcript, decision) } };
+          event = { ...event, session: { ...event.session, input: handoffInput(transcript, decision, pendingQuestion),
+            delegation: { ...event.session.delegation, responses: { ...request, service_tier: 'priority' } } } };
         }
         if (liveSocket?.readyState === 1) liveSocket.send(JSON.stringify(event));
       },
@@ -162,7 +195,7 @@ async function simulate(c) {
           if (openingEndMs !== undefined) { assistantAfterOpening = true; firstLiveSpeechMs ??= clock(); }
         }
       },
-      research: topic => researchScamPattern(topic, openaiKey),
+      research,
       finish: async d => {
         // The actual prototype has no offer/dial operation. Premature approval is a failure.
         if (typeof d !== 'string' && d.action === 'approve' && !postHandoffText.trim()) end('screening_unavailable', 'approval_without_caller_answer');
@@ -170,13 +203,15 @@ async function simulate(c) {
       },
       close: () => { if (!finished) end('screening_unavailable', 'unexpected_session_close'); },
       timing: (type, fields) => { stamp(`live_${type}`, fields); if (type === 'response_usage') usage.push({ stage: 'live', ...fields }); }
-    });
-    // Local validation must know exactly the caller history seeded into the remote voice session.
-    session.event({ type: 'session.input_transcript.delta', delta: `${transcript} ` });
+      });
+      session.resumeClarification(`${transcript} `, decision);
+      sessionStartSentMs = clock(); session.start();
+      for (const bytes of handoffAudio.splice(0)) session.input(inputFrame++, bytes.toString('base64'));
+    };
     liveSocket = new WebSocket('wss://api.openai.com/v1/live/sessions', {
       headers: { Authorization: `Bearer ${openaiKey}` }, handshakeTimeout: 5000, followRedirects: false, maxPayload: 1_000_000
     });
-    liveSocket.on('open', () => { liveStartedAt = clock(); stamp('live_socket_open'); session.start(); });
+    liveSocket.on('open', () => { liveStartedAt = clock(); stamp('live_socket_open'); maybeStart(); });
     liveSocket.on('message', raw => {
       try {
         const e = JSON.parse(raw.toString());
@@ -191,7 +226,7 @@ async function simulate(c) {
           stamp('provider_error', { provider: 'live', code: /^[a-z_]+$/.test(e.error?.code ?? '') ? e.error.code : 'unknown' });
           if (!finished) error = 'live_provider_error';
         }
-        session.event(e);
+        session?.event(e);
       } catch { end('screening_unavailable', 'invalid_live_event'); }
     });
     liveSocket.on('error', () => end('screening_unavailable', 'live_transport_failure'));
@@ -229,8 +264,12 @@ async function simulate(c) {
       }
       writeAudio('caller', caller);
       if (audiblePCMU(caller)) gate.speech();
-      if (stt.readyState === 1) stt.send(caller);
+      if (stt.readyState === 1 && !sttEnding) stt.send(caller);
       if (session) session.input(inputFrame++, caller.toString('base64'));
+      else if (phase === 'handoff') {
+        if (handoffAudio.length >= 500) { end('screening_unavailable', 'handoff_audio_limit'); return; }
+        handoffAudio.push(Buffer.from(caller));
+      }
       livePlayback = undefined;
       gate.tick(); session?.tick();
       const playback = waitAudio.frame(clock(), caller, livePlayback, finished);
@@ -243,7 +282,7 @@ async function simulate(c) {
       if (e.error_code) { stamp('provider_error', { provider: 'soniox', httpStatus: e.error_code }); end('screening_unavailable', 'soniox_provider_error'); return; }
       const tokens = e.tokens ?? [], finalTokens = tokens.filter(t => t.is_final && !/^<.*>$/.test(t.text));
       finalText += finalTokens.map(t => t.text).join('');
-      provisional = tokens.filter(t => !t.is_final && !/^<.*>$/.test(t.text)).map(t => t.text).join('');
+      if (tokens.length) provisional = tokens.filter(t => !t.is_final && !/^<.*>$/.test(t.text)).map(t => t.text).join('');
       const endpoint = tokens.some(t => t.is_final && t.text === '<end>');
       if (endpoint) stamp('soniox_endpoint');
       if (phase === 'triage') gate.update(finalText, provisional, endpoint);
@@ -263,16 +302,18 @@ async function simulate(c) {
   const result = { id: c.id, title: c.title, category: c.category, expected: c.expected, actual: final, passed,
     failure: error, recording, stereo, durationMs, initialChecks: gate.checks, allToolCalls, initialAction: initialDecision?.action,
     answered, firstResponseQuestionMatched, openingEndMs, handoffMs, liveReadyMs, firstLiveSpeechMs, answerStartMs, answerEndMs,
+    pendingQuestion, questionReadyMs, sessionStartSentMs,
     firstLiveSpeechAfterOpeningMs: firstLiveSpeechMs === undefined ? null : firstLiveSpeechMs - openingEndMs,
     liveStartupMs: liveReadyMs === undefined ? null : liveReadyMs - handoffMs,
     liveDurationMs: liveStartedAt === undefined ? 0 : liveClosedAt - liveStartedAt,
-    sonioxDurationMs: sonioxOpenedAt === undefined ? 0 : sonioxClosedAt - sonioxOpenedAt,
+    sonioxDurationMs: sonioxOpenedAt === undefined ? 0 : (sonioxClosedAt ?? clock()) - sonioxOpenedAt,
     question: questionText, assistantTranscript: assistantText,
     callerTranscript: [dialogue[0]?.text ?? finalText, postHandoffText].filter(Boolean).join(' '), usage, events,
     recordingSHA256: hash(await readFile(join(out, recording))) };
+  result.estimatedCostUSD = estimateHybridCost(result);
   await writeFile(join(out, `${c.id}.json`), JSON.stringify(result, null, 2), { flag: 'wx' });
   console.log(JSON.stringify({ case: c.id, initial: result.initialAction, actual: final, passed,
-    firstLiveSpeechDelayMs: result.firstLiveSpeechAfterOpeningMs, startupMs: result.liveStartupMs, failure: error }));
+    firstLiveSpeechDelayMs: result.firstLiveSpeechAfterOpeningMs, startupMs: result.liveStartupMs, costUSD: result.estimatedCostUSD.total, failure: error }));
   return result;
 }
 
@@ -282,6 +323,7 @@ const summary = { policyVersion: SCREENING_POLICY_VERSION, requestHash: plan.req
   interpretation: plan.interpretation, completed: results.length, passed: results.filter(r => r.passed).length,
   ordinaryOffered: { count: results.filter(r => r.category === 'ordinary' && r.actual === 'approve').length, total: 4 },
   harmfulStopped: { count: results.filter(r => r.category === 'harmful' && r.actual === 'block').length, total: 1 },
+  estimatedCostUSD: results.reduce((n, r) => n + r.estimatedCostUSD.total, 0),
   results: results.map(({ events, usage, callerTranscript, assistantTranscript, ...r }) => r) };
 await writeFile(join(out, 'summary.json'), JSON.stringify(summary, null, 2), { flag: 'wx' });
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -291,9 +333,10 @@ await writeFile(join(out, 'listen.html'), `<!doctype html><html lang="en"><meta 
 <h1>Shield hybrid: five synthetic calls</h1><p>Soniox listens first. Unchanged v158 Luna decides whether clarification is needed. GPT Live then joins with the conversation history.</p>
 <p class="meta">Local prototype • No phone calls or production changes • Real pauses retained • Caller voices are synthesized locally; questions are actual GPT Live audio. The final “offers your call” recording simulates the existing handoff; nobody was dialed.</p>
 <p class="meta">The existing prerecorded “One moment, please” can play once during initial assessment and Live startup. Caller speech or Live speech interrupts it. It does not count as a question or as first Live speech.</p>
+<p>Estimated API cost for all five: $${summary.estimatedCostUSD.toFixed(4)} USD. Luna uses Fast service with unchanged medium reasoning. Cost uses recorded token usage and connection durations; Soniox is estimated at its published typical rate. This is not a provider invoice and excludes telephony and hosting.</p>
 <p>${summary.passed}/5 complete intended sequences. Ordinary offers: ${summary.ordinaryOffered.count}/4. Harmful stops: ${summary.harmfulStopped.count}/1. These five selected cases do not establish general accuracy or cost savings.</p>
 ${results.map(r => `<article><h2>${esc(r.title)}</h2><p>${esc(r.actual)} · ${r.passed ? 'intended sequence completed' : 'review needed'}${r.failure ? ` · ${esc(r.failure)}` : ''}</p>
-<audio controls preload="metadata" src="${esc(r.recording)}"></audio><p class="meta">Opening end → first Live speech: ${sec(r.firstLiveSpeechAfterOpeningMs)} · Live startup: ${sec(r.liveStartupMs)} · Initial Luna checks: ${r.initialChecks}</p>
+<audio controls preload="metadata" src="${esc(r.recording)}"></audio><p class="meta">Opening end → first Live speech: ${sec(r.firstLiveSpeechAfterOpeningMs)} · Live ready (including question preparation): ${sec(r.liveStartupMs)} · Initial Luna checks: ${r.initialChecks} · Estimated API cost: $${r.estimatedCostUSD.total.toFixed(4)}</p>
 <p><a href="${esc(r.recording)}" download>Download recording</a> · <a href="${esc(r.stereo)}" download>Stereo: caller left / Shield right</a></p>
 <details><summary>Recognized dialogue and question</summary><p><b>Question:</b> ${esc(r.question)}</p><p><b>Caller:</b> ${esc(r.callerTranscript)}</p><p><b>Shield:</b> ${esc(r.assistantTranscript)}</p></details></article>`).join('')}
 <p class="meta">Policy ${esc(SCREENING_POLICY_VERSION)}. Recordings are 8 kHz telephone-band audio. See summary.json and individual reports for original outcomes, timings and token usage.</p></html>`, { flag: 'wx' });
