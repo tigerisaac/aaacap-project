@@ -20,7 +20,7 @@ Screen selected unfamiliar forwarded calls, hold sensitive requests for independ
 
 ## Operating Context
 
-The participant keeps their mobile number, native Phone app, and Messages. Carrier setup is assisted and tested. Caregivers accept invitations and can switch between people who have shared access. Live voice delivery is independent of the companion app being foregrounded.
+The participant keeps their mobile number, native Phone app, and Messages. Carrier setup is assisted and tested. Caregivers who already have shared access can switch between the people who share with them; the app does not create or accept invitations. Live voice delivery is independent of the companion app being foregrounded.
 
 ## Capabilities and Constraints
 

@@ -6,6 +6,8 @@ Started October 12, 2026. The design bar is an 80-year-old completing each task 
 
 The entries below describe observed source or simulator problems. “Implemented” means the source fix exists; verification is recorded separately below.
 
+October 14, 2026: invitation creation and acceptance were removed from the app. S42, S43, S77, S79 and S87 no longer apply, and S41 now covers only the helper list and Stop sharing.
+
 | ID | Bottleneck | Change | State |
 | --- | --- | --- | --- |
 | S01 | Welcome assumes the person already knows what Shield does. | Explain unfamiliar-call checks and the person’s choice before asking for an email. | Implemented |

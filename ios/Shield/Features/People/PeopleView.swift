@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PeopleView: View {
     @Environment(AppState.self) private var model
-    @State private var joining = false
     @Environment(\.dynamicTypeSize) private var typeSize
     @ScaledMetric(relativeTo: .body) private var symbolSize = 36.0
 
@@ -52,25 +51,17 @@ struct PeopleView: View {
                         Text("Only they can change their phone settings.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
-                ShieldGroup {
-                    if model.isOwner {
+                if model.isOwner {
+                    ShieldGroup {
                         NavigationLink(value: AppRoute.sharing) {
-                            ActionRow(title: "Invite someone to help", symbol: "person.badge.plus")
+                            ActionRow(title: "Your helpers", symbol: "person.2.badge.gearshape")
                         }
-                    }
-                    Button { joining = true } label: {
-                        ActionRow(title: "Use an invitation", symbol: "envelope.open")
-                    }
-                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                    .disabled(model.isDemo)
-                } footer: {
-                    if model.isOwner {
-                        Text("You choose what they can see.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                    } footer: {
+                        Text("See who can view your calls, or stop sharing.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     }
                 }
             }
             .shieldLargeTitle("Family & friends")
-            .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }
             .shieldListStyle()
     }

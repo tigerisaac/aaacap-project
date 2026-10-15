@@ -10,15 +10,13 @@ struct ScreenPreview: View {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: "--uitesting-screen"), arguments.indices.contains(index + 1) else { return nil }
         let screen = arguments[index + 1]
-        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "invitation", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"].contains(screen) ? screen : nil
+        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"].contains(screen) ? screen : nil
     }
 
     var body: some View {
         Group {
             if screen == "add-number" || screen == "add-contact" {
                 AddNumberView(kind: screen == "add-contact" ? .trusted : .destinations)
-            } else if screen == "invitation" {
-                JoinInvitationView()
             } else if screen == "join" {
                 JoinView()
             } else {
@@ -48,11 +46,6 @@ struct ScreenPreview: View {
         }
         .demoAccessory(true)
         .task {
-            if screen == "invitation", ProcessInfo.processInfo.arguments.contains("--uitesting-invitation-paste") {
-                let invitation = ShieldInvitation.shareText(code: "0123456789abcdefghijklmnopqrstuv", isSample: true)
-                let signature = ProcessInfo.processInfo.arguments.contains("--uitesting-invitation-signature") ? "\n\nSent from my iPhone" : ""
-                UIPasteboard.general.string = invitation + signature
-            }
             if screen == "audio", ProcessInfo.processInfo.arguments.contains("--uitesting-listening-access-changes") {
                 await previewListeningAccessChange()
             }

@@ -12,12 +12,11 @@ enum APIError: LocalizedError {
         case let .service(code, _):
             switch code {
             case "sign_in_required", "sign_in_failed": "Please sign in again."
-            case "enrollment_required": "Your phone needs setup. Ask your helper, or use an invitation someone sent you."
+            case "enrollment_required": "Your phone needs setup. Ask your helper."
             case "owner_required": "Only the person using this phone can change this."
             case "access_denied": "This person is no longer sharing with you."
             case "voicemail_not_shared": "Voicemail hasn’t been shared with you."
             case "recording_unavailable": "This recording isn’t available."
-            case "invite_unavailable": "This invitation expired or was used. Ask for a new code."
             case "invalid_phone": "Enter a valid US or Canadian phone number."
             case "routing_test_required", "setup_incomplete": "Check that your phone works with Shield before starting again."
             case "setup_not_ready": "Finish phone setup before trying again."

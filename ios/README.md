@@ -41,7 +41,7 @@ On October 12, the app was simplified for older adults, with calls and voicemail
 - **Calls:** filters, history, short outcomes, and details on request. History includes only calls reaching Shield. Outcomes use everyday words such as Answered and Stopped.
 - **Messages:** voicemail and saved notices, readable summaries, authorized playback/deletion, and eligible legacy removed messages. Audio offers pause/resume, progress and Start over. Sample data also previews Keep this message; it does not change real-message storage or expiry.
 - **More → Check a text:** pasted text or local OCR of a picture. The person agrees before sending text for a scam check; the picture itself is not uploaded. Checks cannot prove who sent a message.
-- **More → Family & friends:** person switching, one-use invitations, optional message sharing and revocation. Helpers can see shared calls; phone settings stay with the person using the phone.
+- **More → Family & friends:** person switching, and for the owner a Your helpers list with each helper’s access and Stop sharing. The app does not create or accept invitations; helpers who are already linked keep working. Helpers can see shared calls; phone settings stay with the person using the phone.
 - **More → Settings:** guided phone setup and call checks, saved Shield contact, contact updates, checks while talking, trusted numbers, alerts, automatic text-check instructions, and disconnection/deletion requests. The setup menu now calls restoration **Disconnect Shield**.
 
 The [senior design notes](../docs/IOS-SENIOR-DESIGN.md) preserve the earlier design history. The [current polish audit](../docs/IOS-POLISH-AUDIT.md) records onboarding, text scaling, controls and recovery corrections. Real summaries follow the service implementation below; permanent keeping remains a sample-only feature.
@@ -92,7 +92,7 @@ Enable through Messages → Filters → Manage Filtering → Text Message Filter
 
 Before claiming device accessibility, inspect a small supported iPhone and a larger one in light/dark mode, default/largest accessibility text, VoiceOver and Reduce Motion. Check keyboard dismissal, menu/sheet affordances, safe-area layout, contrast, large text and touch targets. Automated synthetic journeys and rendered simulator review have passed as recorded in [the audit](../docs/IOS-POLISH-AUDIT.md); the overall native diagnostic suite is not clean, and physical VoiceOver and older-participant usability have not been established.
 
-Test login refresh, logout during slow requests, switching participants during loads, expired invitations, revoked history/voicemail access, network failures, and stopping audio on navigation/backgrounding. Then test live APNs, contact saving, on-device OCR, message deferral and actual carrier routing. Simulator tests cannot validate forwarding, conditional call delivery, native voicemail or a physical private acceptance step.
+Test login refresh, logout during slow requests, switching participants during loads, revoked history/voicemail access, network failures, and stopping audio on navigation/backgrounding. Then test live APNs, contact saving, on-device OCR, message deferral and actual carrier routing. Simulator tests cannot validate forwarding, conditional call delivery, native voicemail or a physical private acceptance step.
 
 Privacy manifests describe this implementation’s intended collection and must be reconciled with the final deployed services and App Store disclosures. They do not replace that review.
 

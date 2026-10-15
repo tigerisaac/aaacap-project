@@ -258,13 +258,6 @@
 			"path" = "Shield/Features/Overview/StoppedCallsCard.swift";
 			"sourceTree" = "<group>";
 		};
-		"F494176C0E85792C3AAE0723" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"name" = "JoinInvitationView.swift";
-			"path" = "Shield/Features/People/JoinInvitationView.swift";
-			"sourceTree" = "<group>";
-		};
 		"F957AC3F90384A858CB751D5" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -662,13 +655,6 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "SharingGrant.swift";
 			"path" = "Shield/Models/SharingGrant.swift";
-			"sourceTree" = "<group>";
-		};
-		"D9A0AA650C24AC7EA46C2D83" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"name" = "ShieldInvitation.swift";
-			"path" = "Shield/Models/ShieldInvitation.swift";
 			"sourceTree" = "<group>";
 		};
 		"BEA67788814DEDC0ABE461F7" = {
@@ -1124,7 +1110,6 @@
 			"isa" = "PBXGroup";
 			"name" = "People";
 			"children" = (
-				"F494176C0E85792C3AAE0723",
 				"F957AC3F90384A858CB751D5",
 				"284A57C690E4E284F708056F",
 				"B7E2860891D96B4590CF4096",
@@ -1217,7 +1202,6 @@
 				"3E8B47D5AFC73ED2AC2D705B",
 				"C73829942DE3E4CA68ECB1E8",
 				"FDB82353991F7F6120C3B2AA",
-				"D9A0AA650C24AC7EA46C2D83",
 				"BEA67788814DEDC0ABE461F7",
 				"5F6085A7D552B12CA0F26ECC",
 			);
@@ -1622,10 +1606,6 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "87BC0C35E9C08F86CBFC8116";
 		};
-		"8BCBB522D11F05D3C5AC441D" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "F494176C0E85792C3AAE0723";
-		};
 		"66C805635822E7EB5EF60EA8" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "F957AC3F90384A858CB751D5";
@@ -1854,10 +1834,6 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "FDB82353991F7F6120C3B2AA";
 		};
-		"7FEBA398B4E4C97DBDBEEF72" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "D9A0AA650C24AC7EA46C2D83";
-		};
 		"6E8DD06A71A139239376725A" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "BEA67788814DEDC0ABE461F7";
@@ -1986,7 +1962,6 @@
 				"51418B5FD73AD9856F2ECFDF",
 				"7A5EAB61B54D6D529ABEC2F4",
 				"E34A536483F709383490678A",
-				"8BCBB522D11F05D3C5AC441D",
 				"66C805635822E7EB5EF60EA8",
 				"C2B7E8437348A0A0BFDAAAC2",
 				"6A7DEF4B0062F095E96033B3",
@@ -2044,7 +2019,6 @@
 				"0850E0033BFE1EC03D88C844",
 				"98768F881243EA4FC62CB337",
 				"E19D5CE539F1370671D28291",
-				"7FEBA398B4E4C97DBDBEEF72",
 				"6E8DD06A71A139239376725A",
 				"E6A130A25C4040971B35CD56",
 				"3290B3C3F397D2DE8BF9DBBA",

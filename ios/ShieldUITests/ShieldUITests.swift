@@ -351,6 +351,6 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Alex"].exists)
         app.buttons["person-Alex"].tap()
         XCTAssertTrue(app.staticTexts["Only they can change their phone settings."].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.staticTexts["Invite someone to help"].exists)
+        XCTAssertFalse(app.staticTexts["Your helpers"].exists)
     }
 }

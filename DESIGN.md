@@ -148,6 +148,12 @@ An 80-year-old's comprehension is the design bar. Plain labels, generous control
 - Call outcomes, person context, sharing scope and sample-only state expressed in words as well as color.
 - Flat surfaces, restrained SF Symbols and explicit choices with retained state and visible recovery.
 
+**Invitations removed (October 14, 2026):** The app no longer creates or accepts invitations. Get started says "Ask your helper to set up your phone." and keeps Ask for setup help (when a support email exists) and Sign out. Family & friends gives the owner one Your helpers row; that screen lists who has access, with Stop sharing, and the helper-alert setting when it is available. The backend sharing endpoints are unchanged, so linked helpers keep working. Simulator evidence (iPhone 18 Pro, iOS 27):
+- `npm run check` passed.
+- SeniorPolish (22/22), SeniorDesign (5/5), the VoiceOver sharing walkthrough and the helper-view switch passed.
+- RedesignUITests passed 16 of 19. `testCoreScreensAccessibilityAudit` and `testWelcomeAccessibilityAudit` are the known failures below; `testGuidedFlowsAccessibilityAudit` flags contrast on the setup Close button and fails the same way on 79bf06d.
+- SeniorAccessibility had 4 passing raw audits, 1 skip and 8 failures. The same 8 fail on 79bf06d, and none of the reported elements is on Get started, Family & friends or Your helpers.
+
 **Onboarding refinement (October 14, 2026):** Sign-in reads down one left edge, under a larger hero headline, with the email label kept close to its field. Both choice steps share one order. Every wrapped disclosure label keeps its left edge. Pinned actions align with the 24-point text column, the invitation note is a footer, and Cancel/Close use the native toolbar glass. Short field placeholders ("Email", "Code") were restored because longer ones were reported as clipped at the largest text size. Simulator evidence (iPhone 18 Pro, iOS 27):
 - The app builds, and the screens were checked visually in Light, Dark, small and accessibility sizes.
 - A full UI run was stopped partway at the owner's request.
@@ -237,7 +243,7 @@ Like the America.gov reference, serif headings are set slightly tight: `shieldHe
 - **Supporting** (native `.subheadline`): dates, outcomes, numbers, sharing scope, explanations and section footers. ShieldGroup sets footers to `.subheadline`, so they match supporting text inside groups instead of the smaller native footnote.
 - **Label** (native `.subheadline.weight(.semibold)`): unboxed outcome and sample identity.
 
-Tab roots (Home, Calls, Messages, More) and the Check a text and Family & friends destinations use `shieldLargeTitle(_:)`: the native collapsing large title, drawn in serif display through iOS 26's `ToolbarItem(placement: .largeTitle)`. The bar keeps the plain `navigationTitle` for its inline scrolled state, Back and accessibility, and the large-title slot caps its size the way the native title does. Inline titles, tabs and toolbars retain the platform sans face. Some functional headings, including Calls stopped, remain native sans; serif is a content hierarchy, not a replacement for every label. Compact Shield identity uses native serif `.title2`. Invitation/carrier codes and listed phone numbers use monospaced digits. Row times keep proportional digits so a long title does not wrap early beside them.
+Tab roots (Home, Calls, Messages, More) and the Check a text and Family & friends destinations use `shieldLargeTitle(_:)`: the native collapsing large title, drawn in serif display through iOS 26's `ToolbarItem(placement: .largeTitle)`. The bar keeps the plain `navigationTitle` for its inline scrolled state, Back and accessibility, and the large-title slot caps its size the way the native title does. Inline titles, tabs and toolbars retain the platform sans face. Some functional headings, including Calls stopped, remain native sans; serif is a content hierarchy, not a replacement for every label. Compact Shield identity uses native serif `.title2`. Carrier codes and listed phone numbers use monospaced digits. Row times keep proportional digits so a long title does not wrap early beside them.
 
 Short metadata reads as one line joined by middots (`MetadataLine.joined`): "New saved notice · Today", "Answered · (512) 555-0124". A no-break space holds each separator to the word before it, and `PhoneDisplay.unbroken` keeps a number on one line, so a long line wraps like a sentence rather than splitting a number. Visible copy uses sentence case, curly apostrophes and a real ellipsis.
 
@@ -295,7 +301,7 @@ ShieldSwitchStyle keeps the familiar native switch and makes the entire wrapping
 
 ### Inputs / Fields
 
-Sign-in has a persistent visible label, explicit accessibility label, keyboard/content type and a rounded Card field. Its resting boundary is FieldBorder; focus uses Action, and focus/increased contrast use the stronger stroke. Email entry grows vertically, and a labeled Clear action appears during editing. Long names and numbers grow. Invitation entry uses a native single-line field with horizontal scrolling: the opaque code stays intact while keyboard completion and the next action remain reachable.
+Sign-in has a persistent visible label, explicit accessibility label, keyboard/content type and a rounded Card field. Its resting boundary is FieldBorder; focus uses Action, and focus/increased contrast use the stronger stroke. Email entry grows vertically, and a labeled Clear action appears during editing. Long names and numbers grow.
 
 Native Forms retain fields, Picker and Toggle. Add number's bottom action is Done while editing and Save number afterward; validation and working states gate submission. Check a text has a labeled editor, an accessibility-hidden placeholder, native Paste and Picture actions and explicit agreement before sending. Editing clears stale errors. Save failures in entry flows scroll the notice into view and request accessibility focus where implemented. These are source behaviors, with assistive-technology delivery still unverified.
 
@@ -343,9 +349,9 @@ Quiet hours names loading, unsaved, saving and saved states; Save only applies a
 
 ### Person context and sharing
 
-Show the viewed person and whether Calls only or Calls and messages are shared. Owner actions remain conditional on ownership. Include messages, invitation and Stop sharing preserve explicit permission and confirmation. Changing the person stops audio, dismisses the old call detail and resets the old context.
+Show the viewed person and whether Calls only or Calls and messages are shared. Owner actions remain conditional on ownership. Stop sharing asks for confirmation, with Keep sharing as the safe choice. Changing the person stops audio, dismisses the old call detail and resets the old context.
 
-Sharing explicitly labels Your helper’s name, describes the currently selected Calls only or Calls and messages scope, and offers Make invitation. The helper-alert explanation identifies helpers as family or friends the participant invites. Share invitation becomes the main action after creation; the code is behind See invitation code, while its single-use/two-day limit stays visible. Use an invitation accepts a copied message or code through native Paste/entry. Extracting a token never proves that it is valid or grants access.
+The app does not create or accept invitations. Your helpers (More → Family & friends, owner only) lists who has access, names each helper’s scope as Calls only, Calls and messages or Waiting for them to join, and offers Stop sharing. Helpers who are already linked keep their access until the owner stops sharing. Get started asks the person to have their helper set up the phone, with Ask for setup help when a support email exists. The helper-alert explanation identifies helpers as family or friends who help the participant.
 
 **The Visible Context Rule.** Show the person and sharing scope in words, and keep participant ownership distinct from helper access.
 
@@ -392,4 +398,4 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 - Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.
 - Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.
 
-The invitation action says Accept invitation. At accessibility sizes and with VoiceOver it follows the form’s sharing explanation. Finish editing code returns from the long code field to the action, and incomplete input explains why acceptance is unavailable. Sharing similarly offers Finish editing name in the reading flow and returns VoiceOver focus to Include messages. Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
+Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.

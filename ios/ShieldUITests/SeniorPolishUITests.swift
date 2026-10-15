@@ -69,23 +69,6 @@ final class SeniorPolishUITests: XCTestCase {
         capture(app, "polish-add-number-error")
     }
 
-    func testExpiredInvitationRetainsTheCodeAndExplainsRecovery() {
-        let app = launch("invitation")
-        let code = app.textFields["Invitation code"]
-        XCTAssertTrue(code.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Paste"].exists)
-        XCTAssertFalse(app.buttons["Accept invitation"].isEnabled)
-        code.tap(); code.typeText("SyntheticExpiredInvitationCode")
-        finishInvitationEntry(app)
-        reveal(app.buttons["Accept invitation"], in: app); app.buttons["Accept invitation"].tap()
-        XCTAssertTrue(app.staticTexts["You couldn’t join yet"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["This invitation expired or was used. Ask for a new code."].exists)
-        app.buttons["Edit code"].tap()
-        XCTAssertEqual(code.value as? String, "SyntheticExpiredInvitationCode")
-        XCTAssertTrue(app.buttons["Cancel"].isEnabled)
-        capture(app, "polish-invitation-error")
-    }
-
     func testContactSavedOnPhoneExplainsAnUnconfirmedShieldUpdate() {
         let app = launch("add-contact", extra: ["--uitesting-contact-save-sync-fails"])
         let name = app.textFields["Name"]
@@ -116,21 +99,6 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
         reveal(app.staticTexts["Hours not confirmed"], in: app)
         capture(app, "polish-quiet-unsaved")
-    }
-
-    func testCopyingTheWholeInvitationPastesOnlyItsCode() {
-        for signature in [false, true] {
-            let options = ["--uitesting-invitation-paste"] + (signature ? ["--uitesting-invitation-signature"] : [])
-            let app = launch("invitation", extra: options)
-            let code = app.textFields["Invitation code"]
-            XCTAssertTrue(code.waitForExistence(timeout: 5))
-            app.buttons["Paste"].tap()
-            XCTAssertEqual(code.value as? String, "0123456789abcdefghijklmnopqrstuv")
-            XCTAssertTrue(app.buttons["Accept invitation"].isEnabled)
-            reveal(app.buttons["Accept invitation"], in: app); app.buttons["Accept invitation"].tap()
-            XCTAssertTrue(app.staticTexts["You couldn’t join yet"].waitForExistence(timeout: 5))
-            capture(app, "polish-copied-invitation\(signature ? "-email-signature" : "")")
-        }
     }
 
     func testPlayedStatusFailureKeepsPlaybackControlsUsable() {
@@ -197,7 +165,7 @@ final class SeniorPolishUITests: XCTestCase {
         capture(app, "polish-call-context-changed")
     }
 
-    func testLargestTextBringsSaveAndInvitationErrorsIntoView() {
+    func testLargestTextBringsSaveErrorsIntoView() {
         let options = ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         var app = launch("add-number", extra: options)
         let name = app.textFields["Name"]
@@ -215,15 +183,6 @@ final class SeniorPolishUITests: XCTestCase {
         app.buttons["Save number"].tap()
         expectVisible(app.staticTexts["Save not confirmed"], in: app)
         capture(app, "polish-number-repeated-error-large-dark")
-
-        app = launch("invitation", extra: options)
-        let code = app.textFields["Invitation code"]
-        reveal(code, in: app); code.tap(); code.typeText("SyntheticExpiredInvitationCode")
-        finishInvitationEntry(app); reveal(app.buttons["Accept invitation"], in: app); app.buttons["Accept invitation"].tap()
-        expectVisible(app.staticTexts["You couldn’t join yet"], in: app)
-        capture(app, "polish-invitation-error-large-dark")
-        app.buttons["Edit code"].tap(); code.typeText("Corrected")
-        XCTAssertFalse(app.staticTexts["You couldn’t join yet"].exists)
 
         app = launch("quiet", extra: options)
         let enabled = app.switches["Quiet hours"]
@@ -316,17 +275,16 @@ final class SeniorPolishUITests: XCTestCase {
     }
 
     func testSecondaryScreensAtLargestTextKeepAllActionsReachable() {
-        for screen in ["numbers", "add-number", "sharing", "contacts", "quiet", "blocked", "invitation", "help", "automatic-texts"] {
+        for screen in ["numbers", "add-number", "sharing", "contacts", "quiet", "blocked", "help", "automatic-texts"] {
             let app = launch(screen, extra: ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
             capture(app, "polish-\(screen)-large-dark-top")
             switch screen {
             case "numbers": reveal(app.buttons["Call Sample clinic"], in: app)
             case "add-number": XCTAssertTrue(app.buttons["Save number"].isHittable)
-            case "sharing": reveal(app.buttons["Make invitation"], in: app)
+            case "sharing": reveal(app.staticTexts["Sign in to manage sharing."], in: app)
             case "contacts": reveal(app.buttons["Contacts settings"], in: app)
             case "quiet": reveal(app.switches["Quiet hours"], in: app)
             case "blocked": reveal(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'unblock-'")).firstMatch, in: app)
-            case "invitation": reveal(app.buttons["Accept invitation"], in: app)
             case "help": reveal(app.buttons["In an emergency"], in: app)
             case "automatic-texts": reveal(app.buttons["What will Shield see?"], in: app)
             default: break
@@ -417,37 +375,30 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Jamie"].exists)
     }
 
-    func testSharingExplainsWhoAndTheCurrentAccessChoice() {
-        let app = launch("sharing")
-        XCTAssertTrue(app.staticTexts["Your helper’s name"].waitForExistence(timeout: 5))
-        let withoutMessages = app.staticTexts["They can see your call history, without messages."]
-        reveal(withoutMessages, in: app)
-        capture(app, "walkthrough-sharing-calls-only")
-        let messages = app.switches["Include messages"]
-        reveal(messages, in: app); messages.tap()
-        let withMessages = app.staticTexts["They can see your calls and read or listen to messages."]
-        XCTAssertTrue(withMessages.waitForExistence(timeout: 5))
-        XCTAssertFalse(withoutMessages.exists)
-        reveal(withMessages, in: app)
-        capture(app, "walkthrough-sharing-messages")
+    func testGetStartedAsksForHelpWithoutInvitations() {
+        let app = launch("join")
+        XCTAssertTrue(app.staticTexts["Welcome to Shield"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Ask your helper to set up your phone."].exists)
+        XCTAssertFalse(app.buttons["Use an invitation"].exists)
+        XCTAssertTrue(app.buttons["Sign out"].exists)
+        capture(app, "walkthrough-get-started")
+    }
+
+    func testSharingListsHelpersWithoutMakingInvitations() {
+        let app = launch("sharing-access")
+        XCTAssertTrue(app.navigationBars["Your helpers"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Jamie"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Calls and messages"].exists)
+        XCTAssertFalse(app.textFields.firstMatch.exists)
+        XCTAssertFalse(app.buttons["Make invitation"].exists)
+        reveal(app.buttons["Stop sharing with Morgan"], in: app)
+        capture(app, "walkthrough-sharing-helpers")
     }
 
     func testSharingConfirmationsHaveVisibleSafeChoices() {
         for large in [false, true] {
             let arguments = ["--uitesting-sharing-confirmations"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
             let app = launch("sharing-access", extra: arguments)
-            let name = app.textFields["Your helper’s name"]
-            reveal(name, in: app, towardTop: true); name.tap(); name.typeText("Jamie")
-            capture(app, "walkthrough-sharing-name-entry-\(large ? "large" : "standard")")
-            app.buttons["sharing-keyboard-done"].tap()
-            reveal(app.buttons["Make invitation"], in: app)
-            app.buttons["Make invitation"].tap()
-            XCTAssertTrue(app.alerts["Make an invitation for Jamie?"].waitForExistence(timeout: 5))
-            XCTAssertTrue(app.buttons["Not now"].isHittable)
-            capture(app, "walkthrough-invitation-confirmation-\(large ? "large" : "standard")")
-            app.buttons["Not now"].tap()
-            reveal(name, in: app, towardTop: true)
-            XCTAssertEqual(name.value as? String, "Jamie")
             let stop = app.buttons["Stop sharing with Jamie"]
             reveal(stop, in: app); stop.tap()
             XCTAssertTrue(app.alerts["Stop sharing with Jamie?"].waitForExistence(timeout: 5))
@@ -476,21 +427,6 @@ final class SeniorPolishUITests: XCTestCase {
         }
     }
 
-    private func finishInvitationEntry(_ app: XCUIApplication) {
-        if app.keyboards.firstMatch.exists {
-            // The iOS 27 toolbar's accessibility frame can point below its visible button.
-            // Submit through the native keyboard return action instead of that stale frame.
-            app.typeText("\n")
-            return
-        }
-        let inline = app.buttons["Finish editing code"]
-        if inline.exists {
-            reveal(inline, in: app); inline.tap()
-        } else {
-            app.buttons["invitation-keyboard-done"].tap()
-        }
-    }
-
     private func launch(_ screen: String, extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-screen", screen, "--uitesting-light"] + extra
@@ -504,7 +440,7 @@ final class SeniorPolishUITests: XCTestCase {
             let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
             var bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
             if app.keyboards.firstMatch.exists { bottom = min(bottom, app.keyboards.firstMatch.frame.minY) }
-            for title in ["Save number", "Accept invitation", "Save quiet hours", "Saved"] {
+            for title in ["Save number", "Save quiet hours", "Saved"] {
                 let button = app.buttons[title]
                 if button.exists && button.frame.height > 0 { bottom = min(bottom, button.frame.minY) }
             }

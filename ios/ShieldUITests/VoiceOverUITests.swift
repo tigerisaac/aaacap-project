@@ -107,17 +107,11 @@ final class VoiceOverUITests: XCTestCase {
         walk.checkpoint("call-explanation")
     }
 
-    func testVoiceOverSharingRetainsNameAndSafeCancellation() throws {
+    func testVoiceOverSharingHasSafeCancellation() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "sharing", arguments: ["--uitesting-screen", "sharing-access", "--uitesting-sharing-confirmations"], large: true)
         defer { walk.finish() }
-        try walk.enter("Your helper’s name", text: "Jamie")
-        try walk.activate("Finish editing name")
-        try walk.find("They can see your call history, without messages")
-        try walk.activate("Make invitation")
-        try walk.find("Make an invitation for Jamie?")
-        try walk.activate("Not now")
-        XCTAssertEqual(walk.app.textFields.firstMatch.value as? String, "Jamie")
+        try walk.find("Calls and messages")
         try walk.activate("Stop sharing with Jamie")
         try walk.find("Stop sharing with Jamie?")
         try walk.activate("Keep sharing")
@@ -136,22 +130,6 @@ final class VoiceOverUITests: XCTestCase {
         try walk.activate("Keep contact")
         XCTAssertTrue(walk.app.staticTexts["Jamie"].exists)
         walk.checkpoint("safe-contact")
-    }
-
-    func testVoiceOverInvitationErrorIsCorrectable() throws {
-        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
-        let walk = try VoiceOverWalkthrough(self, name: "invitation", arguments: ["--uitesting-screen", "invitation"], large: true)
-        defer { walk.finish() }
-        try walk.enter("Invitation code", text: "SyntheticExpiredInvitationCode")
-        try walk.activate("Finish editing code")
-        try walk.activate("Accept invitation")
-        try walk.find("You couldn’t join yet")
-        try walk.activate("Edit code")
-        try walk.find("Invitation code", where: { $0.localizedCaseInsensitiveContains("Text field") })
-        XCTAssertEqual(walk.app.textFields.firstMatch.value as? String, "SyntheticExpiredInvitationCode")
-        try walk.enter("Invitation code", text: "Corrected")
-        XCTAssertFalse(walk.app.staticTexts["You couldn’t join yet"].exists)
-        walk.checkpoint("correctable-code")
     }
 
     func testVoiceOverQuietHoursExplainsUnsavedState() throws {

@@ -40,7 +40,7 @@ struct ProtectionOnboardingView: View {
                         }
                         if showsHelpers {
                             VStack(alignment: .leading, spacing: 16) {
-                                Text("Shield can alert family or friends you invite when it stops a scam call or call checks are paused.")
+                                Text("Shield can alert family or friends who help you when it stops a scam call or call checks are paused.")
                                 ShieldDisclosure("What does the alert say?") {
                                     Text("It includes your name, but no caller’s words or number. Helpers can also be told when a blocked caller tries again.")
                                         .foregroundStyle(ShieldTheme.secondaryText).padding(.vertical, 8)

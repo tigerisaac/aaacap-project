@@ -9,8 +9,6 @@ enum APIResponses {
     struct BlockedNumbers: Decodable, Sendable { let items: [BlockedNumber] }
     struct HelperAlerts: Decodable, Sendable { let available: Bool; let enabled: Bool; let choiceRecorded: Bool }
     struct Sharing: Decodable, Sendable { let grants: [SharingGrant] }
-    struct Invitation: Decodable, Sendable { let id: UUID; let code: String }
-    struct Joined: Decodable, Sendable { let participantId: UUID }
     struct Empty: Decodable, Sendable {}
     struct ErrorEnvelope: Decodable, Sendable {
         struct Detail: Decodable, Sendable { let code: String }

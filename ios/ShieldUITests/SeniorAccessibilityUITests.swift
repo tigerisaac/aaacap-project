@@ -29,20 +29,9 @@ final class SeniorAccessibilityUITests: XCTestCase {
     }
 
     func testOwnerSettingsScreensAudit() throws {
-        for screen in ["numbers", "add-number", "sharing", "contacts", "quiet", "blocked", "protection", "invitation", "help", "automatic-texts"] {
+        for screen in ["numbers", "add-number", "sharing", "contacts", "quiet", "blocked", "protection", "help", "automatic-texts"] {
             let app = launch(["--uitesting-screen", screen])
             try audit(app, "accessibility-\(screen)")
-        }
-    }
-
-    func testInvitationFieldClippingInBothAppearancesAndLargestText() throws {
-        for dark in [false, true] {
-            for largest in [false, true] {
-                let size = largest ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []
-                let app = launch(["--uitesting-screen", "invitation"] + size, dark: dark)
-                XCTAssertTrue(app.textFields["Invitation code"].waitForExistence(timeout: 5))
-                try audit(app, "invitation-field-\(dark ? "dark" : "light")-\(largest ? "largest" : "standard")", types: .textClipped)
-            }
         }
     }
 
@@ -98,7 +87,7 @@ final class SeniorAccessibilityUITests: XCTestCase {
     }
 
     func testDarkToolbarActionsAudit() throws {
-        for screen in ["add-number", "add-contact", "invitation"] {
+        for screen in ["add-number", "add-contact"] {
             let app = launch(["--uitesting-screen", screen], dark: true)
             try audit(app, "accessibility-\(screen)-dark")
         }

@@ -55,8 +55,8 @@ final class SeniorDesignUITests: XCTestCase {
         openMore(app, "Family & friends")
         XCTAssertTrue(app.buttons["person-Pat"].waitForExistence(timeout: 5))
         capture(app, "senior-family-light")
-        tap(app.staticTexts["Invite someone to help"].firstMatch, in: app)
-        XCTAssertTrue(app.navigationBars["Share with a helper"].waitForExistence(timeout: 5))
+        tap(app.staticTexts["Your helpers"].firstMatch, in: app)
+        XCTAssertTrue(app.navigationBars["Your helpers"].waitForExistence(timeout: 5))
         capture(app, "senior-sharing-light")
         openMore(app, "Get help")
         capture(app, "senior-help-light")
@@ -117,7 +117,7 @@ final class SeniorDesignUITests: XCTestCase {
     /// Rendering coverage for forms that normally require a configured account.
     func testSecondaryScreenVisualsInBothAppearances() {
         for dark in [false, true] {
-            for screen in ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "invitation", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"] {
+            for screen in ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"] {
                 let app = launch(["--uitesting-screen", screen, dark ? "--uitesting-dark" : "--uitesting-light"])
                 XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 5), screen)
                 XCTAssertTrue(app.collectionViews.firstMatch.waitForExistence(timeout: 5), screen)

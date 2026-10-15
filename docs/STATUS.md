@@ -1,5 +1,9 @@
 # Status
 
+## October 14 — invitations removed from the iPhone app
+
+The iPhone app no longer creates or accepts sharing invitations. The owner's Family & friends screen links to **Your helpers**, which lists existing helpers and offers Stop sharing. Get started asks the person's helper to set up the phone. The backend is unchanged: `/api/sharing` still issues and accepts invitations, and helpers who are already linked keep their access. The hosted privacy text still says sharing requires a single-use invitation; it was left for the owner to decide. Evidence: `npm run check` passed, and the affected simulator UI classes passed apart from audit failures that also occur on the previous commit (see DESIGN.md). Not installed on a phone; no deployment.
+
 ## October 13 — monitoring budget distributed across the connected hour
 
 The requested [monitoring cadence](MONITORING-CADENCE.md) is deployed and verified at **23:11 Central** (`2026-10-14T04:11:58.436Z`): API **`shieldapi-00020-mox`**, dispatcher **`monitorconnectedcall-00007-yek`**, private task worker **`monitorscheduledcall-00002-wuv`**. The same 240-check ceiling is reserved as 60 five-second windows, 60 fifteen-second windows and 120 twenty-second windows. Silence after reviewed speech uses no new model check; pending speech has a durable timer. Atomic claims prevent duplicate billing, and provider failures consume rather than refund their attempt. Late speech may wait 20 seconds plus recognition/queue/model time; the final saturated check starts at 59:40. This is not continuous or guaranteed pre-action protection.

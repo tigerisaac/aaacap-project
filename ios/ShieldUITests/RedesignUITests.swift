@@ -5,7 +5,6 @@ final class RedesignUITests: XCTestCase {
     func testInitialAccountErrorShowsRetryInsteadOfJoining() {
         let app = launch(["--uitesting-account-error"])
         XCTAssertTrue(app.staticTexts["Your account couldn’t load"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["Use an invitation"].exists)
         XCTAssertFalse(app.staticTexts["Welcome to Shield"].exists)
         app.buttons["Try again"].tap()
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
@@ -286,12 +285,11 @@ final class RedesignUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
         try auditScreen(app, types: types)
         openMore(app, "Family & friends")
-        let sharing = app.staticTexts["Invite someone to help"].firstMatch
+        let sharing = app.staticTexts["Your helpers"].firstMatch
         for _ in 0..<4 { if sharing.isHittable { break }; app.swipeUp() }
         sharing.tap()
-        XCTAssertTrue(app.navigationBars["Share with a helper"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.switches["Include messages"].value as? String, "0")
-        XCTAssertFalse(app.buttons["Make invitation"].isEnabled)
+        XCTAssertTrue(app.navigationBars["Your helpers"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Make invitation"].exists)
         capture(app, "Redesign Sharing")
         try auditScreen(app, types: types)
     }
@@ -326,11 +324,10 @@ final class RedesignUITests: XCTestCase {
 
         app = launch(large + ["--uitesting-preview"])
         openMore(app, "Family & friends")
-        let sharing = app.staticTexts["Invite someone to help"].firstMatch
+        let sharing = app.staticTexts["Your helpers"].firstMatch
         for _ in 0..<10 { if sharing.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(sharing.isHittable); sharing.tap()
-        XCTAssertTrue(app.navigationBars["Share with a helper"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.switches["Include messages"].value as? String, "0")
+        XCTAssertTrue(app.navigationBars["Your helpers"].waitForExistence(timeout: 5))
         let sharedPerson = app.staticTexts["Sign in to manage sharing."]
         for _ in 0..<10 { if sharedPerson.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(sharedPerson.isHittable)

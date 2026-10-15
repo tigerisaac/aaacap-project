@@ -2,7 +2,6 @@ import SwiftUI
 
 struct JoinView: View {
     @Environment(AppState.self) private var model
-    @State private var joining = false
     @State private var confirmSignOut = false
 
     var body: some View {
@@ -21,14 +20,12 @@ struct JoinView: View {
                     ShieldPageHeader {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                            Text("Ask your helper to set up your phone, or use an invitation someone sent you.")
+                            Text("Ask your helper to set up your phone.")
                                 .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
                         }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }
-                    ShieldGroup {
-                        Button("Use an invitation", systemImage: "envelope.open") { joining = true }
-                            .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                        if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
+                    if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
+                        ShieldGroup {
                             Link(destination: url) { Label("Ask for setup help", systemImage: "phone.badge.plus") }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         }
@@ -46,7 +43,6 @@ struct JoinView: View {
             .navigationBarTitleDisplayMode(.inline)
             .shieldListStyle()
             .contentMargins(.top, 0, for: .scrollContent)
-            .sheet(isPresented: $joining) { JoinInvitationView() }
             .refreshable { await model.refresh() }
         }
     }
