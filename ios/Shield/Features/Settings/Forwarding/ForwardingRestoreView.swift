@@ -8,6 +8,7 @@ struct ForwardingRestoreView: View {
     @State private var returnedFromPhone = false
     @State private var showingHelp = false
     @State private var showingCopiedCode = false
+    @State private var guidePlayer = SetupGuidePlayer()
     let status: ForwardingStatus
     let onStageChange: () -> Void
     @AppStorage private var index: Int
@@ -47,7 +48,14 @@ struct ForwardingRestoreView: View {
                                 .font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
                         }
                     }
-                    PhoneCodeGuide(restoring: true, returned: returnedFromPhone, carrier: status.carrier)
+                    SetupGuideView(guide: .keypad, player: guidePlayer)
+                    if returnedFromPhone {
+                        PhoneCodeGuide(restoring: true, returned: true, carrier: status.carrier)
+                    } else {
+                        ShieldDisclosure("Read the steps") {
+                            PhoneCodeGuide(restoring: true, carrier: status.carrier)
+                        }
+                    }
                     Button {
                         if codeReady { showingPhoneLauncher = false; index += 1; codeReady = false; returnedFromPhone = false; showingHelp = false }
                         else { copyCode() }
@@ -86,6 +94,7 @@ struct ForwardingRestoreView: View {
         .id(index)
         .sensoryFeedback(.success, trigger: index) { old, new in new > old }
         .onChange(of: index) { _, _ in
+            guidePlayer.stop()
             codeReady = false
             returnedFromPhone = false
             showingHelp = false
@@ -93,8 +102,12 @@ struct ForwardingRestoreView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background && codeReady { leftForPhone = true }
-            if phase == .active && leftForPhone { returnedFromPhone = true; leftForPhone = false }
+            if phase == .active && leftForPhone {
+                guidePlayer.returnedToShield()
+                returnedFromPhone = true; leftForPhone = false
+            }
         }
+        .onDisappear { guidePlayer.stop() }
         .task(id: index) {
             if !codeReady { copyCode() }
         }
@@ -103,6 +116,7 @@ struct ForwardingRestoreView: View {
     private func copyCode(showPhoneLauncher: Bool = true) {
         guard guidedCarrier, codes.indices.contains(index) else { return }
         PhoneAppLink.copy(code: codes[index])
+        if showPhoneLauncher { guidePlayer.resumeForHandoff() }
         codeReady = true
         if showPhoneLauncher { returnedFromPhone = false }
         #if DEBUG

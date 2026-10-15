@@ -168,6 +168,7 @@ final class ForwardingSetupModel {
 
     private func prepareCode(_ code: String, showPhoneLauncher: Bool) {
         PhoneAppLink.copy(code: code)
+        if showPhoneLauncher { guidePlayer.resumeForHandoff() }
         codePreparedStep = step
         if showPhoneLauncher { codeReturnedStep = nil }
         #if DEBUG
@@ -218,10 +219,10 @@ final class ForwardingSetupModel {
         pendingSettingsStep = nil
     }
 
-    func settingsSceneChanged(isActive: Bool) {
+    func settingsSceneChanged(isActive: Bool, isBackground: Bool) {
         guard pendingSettingsStep == step, isPhoneSettingsStep else { return }
-        if !isActive { leftForSettings = true }
-        else if leftForSettings {
+        if isBackground { leftForSettings = true }
+        else if isActive && leftForSettings {
             settingsReturned = true
             pendingSettingsStep = nil
             leftForSettings = false

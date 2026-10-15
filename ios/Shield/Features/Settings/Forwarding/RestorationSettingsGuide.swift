@@ -8,6 +8,7 @@ struct RestorationSettingsGuide: View {
     @State private var returned = false
     @State private var working = false
     @State private var destination = PhoneSettingsLink.preferredDestination
+    @State private var guidePlayer = SetupGuidePlayer()
     private var unknownCallers: Bool { index == 3 }
 
     var body: some View {
@@ -23,6 +24,7 @@ struct RestorationSettingsGuide: View {
                 }
             }
             .shieldCard()
+            SetupGuideView(guide: unknownCallers ? .never : .voicemailOn, player: guidePlayer)
             Text(returned ? "Did you make the change? Confirm below. Shield can’t see this setting." : "Already done? Confirm below.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
                 .accessibilityIdentifier("restoration-settings-unverified")
@@ -38,8 +40,12 @@ struct RestorationSettingsGuide: View {
         .fixedSize(horizontal: false, vertical: true)
         .onChange(of: scenePhase) { _, phase in
             if phase == .background && opened { leftSettings = true }
-            if phase == .active && leftSettings { returned = true; leftSettings = false }
+            if phase == .active && leftSettings {
+                guidePlayer.returnedToShield()
+                returned = true; leftSettings = false
+            }
         }
+        .onDisappear { guidePlayer.stop() }
     }
 
     private func openSettings() async {
@@ -52,6 +58,7 @@ struct RestorationSettingsGuide: View {
             return
         }
         #endif
+        await guidePlayer.startFloating()
         destination = await PhoneSettingsLink.open()
     }
 }

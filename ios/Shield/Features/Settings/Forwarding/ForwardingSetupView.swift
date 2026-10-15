@@ -8,6 +8,7 @@ struct ForwardingSetupView: View {
     @State private var model = ForwardingSetupModel()
     @State private var confirmRestore = false
     @State private var leftForPhone = false
+    @State private var leftForGuide = false
     @AccessibilityFocusState private var focusedStep: ForwardingStep?
     @AccessibilityFocusState private var errorFocused: Bool
 
@@ -46,7 +47,7 @@ struct ForwardingSetupView: View {
                             }
                             .id("forwarding-step-error")
                         }
-                        if typeSize.isAccessibilitySize && model.step == .consent {
+                        if typeSize.isAccessibilitySize {
                             ForwardingActions(model: model, app: app, inline: true)
                         }
                     } else if let error = model.error {
@@ -75,7 +76,7 @@ struct ForwardingSetupView: View {
         .background(ShieldTheme.surface)
         .shieldNavigationSurface()
         .safeAreaInset(edge: .bottom) {
-            if model.status != nil && !(typeSize.isAccessibilitySize && model.step == .consent) {
+            if model.status != nil && !typeSize.isAccessibilitySize {
                 ForwardingActions(model: model, app: app)
                     .id(model.step)
             }
@@ -109,6 +110,7 @@ struct ForwardingSetupView: View {
             }
         }
         .task { await model.load(app) }
+        .onDisappear { model.guidePlayer.stop() }
         .task(id: model.step) {
             guard [.ring, .test, .checks].contains(model.step) else { return }
             while !Task.isCancelled {
@@ -118,12 +120,17 @@ struct ForwardingSetupView: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in
-            model.settingsSceneChanged(isActive: phase == .active)
+            model.settingsSceneChanged(isActive: phase == .active, isBackground: phase == .background)
             model.codeSceneChanged(isActive: phase == .active, isBackground: phase == .background)
             if phase == .background && model.showingPhoneLauncher { leftForPhone = true }
             if phase == .active && leftForPhone {
                 model.showingPhoneLauncher = false
                 leftForPhone = false
+            }
+            if phase == .background { leftForGuide = true }
+            if phase == .active && leftForGuide {
+                model.guidePlayer.returnedToShield()
+                leftForGuide = false
             }
             if phase == .active { Task { await model.load(app) } }
         }

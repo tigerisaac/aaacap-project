@@ -1,5 +1,11 @@
 # Status
 
+## October 14 — floating visual setup guides implemented
+
+The iPhone setup and disconnection flows include offline, silent Picture in Picture guides for the two Phone settings and the keypad. Settings starts the guide before its existing launcher; opening Phone from its banner automatically carries the visible guide above the keypad. Written instructions, pause/replay, a static Reduce Motion variant and explicit confirmations remain. Accessibility-size actions scroll with the instructions rather than covering the guide.
+
+Validation: 242 unit tests/typecheck/build and 175 emulator tests pass. Twenty-one distinct simulator UI tests pass across the final runs, with one physical-only Settings test skipped. The smaller iPhone 17e / iOS 26.5 and iPhone 18 Pro / iOS 27 were inspected. On the paired iPhone 12 Pro Max / iOS 27.2, synthetic fixtures verified PiP above Settings and Phone, window movement, the Paste target, and return without confirmation. Encoded assets have verified 30 fps cadence; Instruments could not attach, so there is no measured zero-hitch claim. No call was placed, no code dialed, and no phone/carrier setting or production service was changed. See [implementation, provenance and limits](IOS-SETUP-GUIDES.md).
+
 ## October 14 — phone setup shortened for always-on service
 
 The setup screens now use a four-bullet overview, brief consent headlines, one branded contact preview, larger ring-check instructions, separate Screen Unknown Callers / Live Voicemail pages, compact carrier instructions, and an accented **Don’t answer** instruction. The simulator Demo header and trial/expiry copy are removed. Detailed consent and recovery information remains expandable. Each setting still requires its own confirmation; merely returning from another app never advances a carrier step or passes a call check.

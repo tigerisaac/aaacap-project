@@ -14,7 +14,13 @@ struct ForwardingCodeView: View {
                 }
                 if model.codePreparedStep == model.step {
                     SetupGuideView(guide: .keypad, player: model.guidePlayer)
-                    PhoneCodeGuide(returned: model.codeReturnedStep == model.step, carrier: model.carrier)
+                    if model.codeReturnedStep == model.step {
+                        PhoneCodeGuide(returned: true, carrier: model.carrier)
+                    } else {
+                        ShieldDisclosure("Read the steps") {
+                            PhoneCodeGuide(carrier: model.carrier)
+                        }
+                    }
                 } else {
                     Text("Copy your code, then open Phone and paste it into Keypad.")
                 }

@@ -231,7 +231,10 @@ final class ForwardingUITests: XCTestCase {
 
     func testCarrierCodeAtLargestTextInDarkMode() {
         let app = launch(["--forwarding-start-code", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], title: "When you don’t answer")
+        for _ in 0..<12 where !app.buttons["forwarding-continue"].isHittable { app.scrollViews.firstMatch.swipeUp() }
         XCTAssertTrue(app.buttons["forwarding-continue"].isHittable)
+        app.scrollViews.firstMatch.swipeDown()
+        app.scrollViews.firstMatch.swipeDown()
         app.buttons["See copied code"].tap()
         XCTAssertEqual(app.staticTexts["forwarding-code"].label, "**61*12025550100#")
         let help = app.buttons["Need help?"]
