@@ -35,14 +35,14 @@ struct ForwardingActions: View {
     }
     private var label: String {
         if model.step.codeIndex != nil {
-            if model.code == nil { return "Restart call test" }
+            if model.code == nil { return "Get my code" }
             return model.codePreparedStep == model.step ? "\(model.carrier) confirmed the change" : "Copy \(model.carrier) code"
         }
         if model.isPhoneSettingsStep && !model.settingsReturned { return "Open Phone settings" }
         switch model.step {
         case .overview: return "Set up my phone"
         case .consent: return "Agree and continue"
-        case .save: return "Save Shield"
+        case .save: return "Save contact"
         case .settings: return "I selected Silence"
         case .liveVoicemail: return "Live Voicemail is off"
         case .ring, .test:

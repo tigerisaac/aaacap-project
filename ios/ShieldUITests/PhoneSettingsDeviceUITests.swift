@@ -32,7 +32,7 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 15))
         XCTAssertTrue(settings.navigationBars["Phone"].appears(timeout: 15))
         app.activate()
-        XCTAssertTrue(app.staticTexts["phone-settings-unverified"].appears(timeout: 10))
+        XCTAssertTrue(app.buttons["phone-settings-reopen"].appears(timeout: 10))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         #endif

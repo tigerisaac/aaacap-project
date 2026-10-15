@@ -7,10 +7,10 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         switch self {
         case .overview: "Set up your phone"
         case .consent: "Choose Shield for calls"
-        case .save: "Save Shield in Contacts"
+        case .save: "Add Shield to Contacts"
         case .ring: "Can you hear Shield?"
-        case .settings: "Change two Phone settings"
-        case .liveVoicemail: "Check the voicemail setting"
+        case .settings: "Screen Unknown Callers"
+        case .liveVoicemail: "Live Voicemail"
         case .forward0: "When you don’t answer"
         case .forward1: "When you’re on a call"
         case .forward2: "When there’s no signal"

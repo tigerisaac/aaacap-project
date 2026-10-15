@@ -133,3 +133,10 @@ Connected-call protection now appears in main onboarding after email sign-in, se
 October 10 protection-onboarding validation: typecheck/build and 94 unit tests passed, along with 48 Firebase emulator tests. All five final targeted simulator UI tests passed, covering selected-by-default protection, turning it off, failed-save recovery, largest accessibility text in dark mode, and email sign-in. Normal and largest-text screens were inspected in simulator. The signed normal build was installed and launched on the enrolled iPhone. No call was placed, forwarding changed, or owner monitoring choice saved by this work. Real connected-call monitoring remains unverified.
 
 With owner approval, only `shieldApi` was deployed October 10: revision `shieldapi-00013-seb`, ACTIVE at 22:11:03 UTC; public health returned HTTP 200/ready. The onboarding choice metadata is live.
+
+
+### October 14 — compact phone-setup flow
+
+The setup gallery now matches the always-on direction: no Demo banner, 30-minute offer, expiry label, or temporary-service copy. The overview has four bullets; consent keeps its two main headlines with provider/privacy details expandable; the saved contact has one branded preview; ring-check instructions are larger; and the final forwarding check emphasizes Don’t answer. Screen Unknown Callers and Live Voicemail each have a separate opening/confirmation step. Carrier recovery actions are inside Need help? so the default Open / Paste / Call list fits together. Call-result and carrier-confirmation gates remain intact.
+
+`ForwardingProbes.openWindow` still creates an internal 30-minute setup authorization, and each probe expires after 90 seconds. `screeningOpen` separately accepts `alwaysOn`; expiration of a setup window does not disable that service. These backend controls were inspected, not removed or deployed. The fixture now sets `alwaysOn: true`; the gallery identifies synthetic simulator data outside the product screens. No phone calls or device settings were changed.

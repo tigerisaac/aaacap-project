@@ -9,12 +9,15 @@ struct ForwardingProbeView: View {
                 Label(ring ? "You heard Shield" : "A call reached Shield", systemImage: "checkmark.circle.fill")
                     .font(.title2.bold()).foregroundStyle(ShieldTheme.connected)
                     .accessibilityIdentifier("forwarding-probe-passed")
-                Text(ring ? "You pressed 1. Now we’ll finish connecting your phone." : "The test call reached Shield. Your result is saved.")
-                if !ring { Text("Calls while you’re busy or have no signal still need checking.").foregroundStyle(ForwardingStyle.secondaryText) }
+                if ring { Text("Now we’ll finish connecting your phone.") }
             } else if model.probeWaiting {
                 Label(ring ? "Answer the Shield call" : "Let your phone ring", systemImage: "phone.arrow.down.left")
                     .font(.title2.bold())
-                Text(ring ? "Tap the green answer button. Open Keypad and press 1 when Shield asks." : "Don’t answer or decline. Leave this call ringing.")
+                if ring {
+                    Text("Answer, open Keypad, and press 1.").font(.title2)
+                } else {
+                    dontAnswer
+                }
                 Text("Wait here for the result. It can take 90 seconds.").foregroundStyle(ForwardingStyle.secondaryText)
             } else if model.probe != nil {
                 Label("This check didn’t finish", systemImage: "exclamationmark.circle")
@@ -24,17 +27,20 @@ struct ForwardingProbeView: View {
             } else {
                 Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")
                     .font(.largeTitle).imageScale(.large).foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
-                Text(ring ? "Shield will call you. Answer, listen, and press 1." : "Shield will call your number. Don’t answer. We’ll check where the call goes.")
-                    .font(.title3)
-                Text(ring ? "This checks the sound. Your settings won’t change." : "Answered by mistake? Hang up and try again.")
-                    .foregroundStyle(ForwardingStyle.secondaryText)
-            }
-            if let status = model.status, status.active, let end = status.expiresAt {
-                Text("Call test ends at \(end.formatted(date: .omitted, time: .shortened)).")
-                    .font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
+                Text(ring ? "Shield will call you.\nAnswer, listen, and press 1." : "Shield will call you.")
+                    .font(.title2)
+                if !ring { dontAnswer }
             }
         }
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: .contain)
+    }
+
+    private var dontAnswer: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Don’t answer").font(.title2.bold()).foregroundStyle(ShieldTheme.held)
+            Text("Let it ring. Don’t decline the call.").foregroundStyle(ForwardingStyle.secondaryText)
+        }
+        .accessibilityElement(children: .combine)
     }
 }

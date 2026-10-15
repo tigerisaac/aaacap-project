@@ -9,7 +9,7 @@ struct SetupInstruction: View {
         HStack(alignment: .top, spacing: 12) {
             Text(number, format: .number).font(.headline).foregroundStyle(ShieldTheme.action)
                 .frame(width: numberSize, height: numberSize).background(ShieldTheme.action.opacity(0.10), in: .circle).accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.headline)
                 Text(detail).foregroundStyle(ForwardingStyle.secondaryText)
             }

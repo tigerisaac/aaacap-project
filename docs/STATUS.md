@@ -1,5 +1,13 @@
 # Status
 
+## October 14 — phone setup shortened for always-on service
+
+The setup screens now use a four-bullet overview, brief consent headlines, one branded contact preview, larger ring-check instructions, separate Screen Unknown Callers / Live Voicemail pages, compact carrier instructions, and an accented **Don’t answer** instruction. The simulator Demo header and trial/expiry copy are removed. Detailed consent and recovery information remains expandable. Each setting still requires its own confirmation; merely returning from another app never advances a carrier step or passes a call check.
+
+Backend inspection confirms that always-on screening is independent of the legacy 30-minute setup window. That setup authorization and each probe’s 90-second deadline are unchanged; the countdown was misleading as a service-duration message. Completion now reports the two recorded check results without a temporary-service claim. The optional arrow aimed at Apple’s Open button was left out pending a real-device placement check; the Open → Keypad instructions remain.
+
+Validation: `npm run check` passed typecheck/build and **242 unit tests**; `npm run test:firebase` passed **175 emulator tests**; all **14 forwarding simulator UI tests** passed on the existing iPhone 18 Pro, covering the full flow, independent settings confirmations, failures, carrier return/retry, disconnection, largest text and Dark Mode. The captured normal-size overview and setup steps fit on one screen; expanded help and accessibility sizes can scroll. Updated native screenshots are available in the conversation gallery. This is simulator evidence, not a claim that the broader accessibility audit passes. No production deployment, physical-phone install, real call, text, or phone-setting change.
+
 ## October 14 — phone sign-in and optional trusted-contact alerts implemented
 
 Repository code now includes Telnyx Verify phone-code sign-in, Firebase phone accounts/custom sessions, optional trusted-contact onboarding after successful phone setup, real name/mobile entry or native contact selection, recipient acceptance through the iPhone app or a compact browser page, text/app channel choices, and revocation/STOP handling. Contacts receive only protection updates; no history-sharing grant is created. Existing email sign-in remains available for the current pilot account. Get started now explains pilot enrollment directly rather than telling the person to ask a helper. Setup copy includes the carrier handoff and distinguishes a 30-minute setup test from ongoing service.

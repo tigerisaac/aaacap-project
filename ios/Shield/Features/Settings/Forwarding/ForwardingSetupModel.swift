@@ -4,6 +4,7 @@ import UIKit
 
 @MainActor @Observable
 final class ForwardingSetupModel {
+    let guidePlayer = SetupGuidePlayer()
     var carrier: String { status?.carrier ?? "your carrier" }
     var status: ForwardingStatus?
     var step = ForwardingStep.overview
@@ -139,14 +140,14 @@ final class ForwardingSetupModel {
                 body: APIClient.payload(["stage": next.rawValue]), participantID: status.participantId)
             guard app.selectedPersonID == status.participantId else { return }
         }
-        let reuseSettingsVisit = step == .settings && next == .liveVoicemail && settingsReturned
+        guidePlayer.stop()
         step = next
         codePreparedStep = nil
         codeReturnedStep = nil
         pendingCodeReturn = nil
         showingPhoneLauncher = false
-        settingsReturned = reuseSettingsVisit
-        if reuseSettingsVisit && !isUITest { UserDefaults.standard.set(next.rawValue, forKey: settingsVisitKey) }
+        // Each page guides one setting. A visit to the first does not stand in for the second.
+        settingsReturned = false
         pendingSettingsStep = nil
         leftForSettings = false
         settingsDestination = PhoneSettingsLink.preferredDestination
@@ -203,6 +204,7 @@ final class ForwardingSetupModel {
             return
         }
         #endif
+        await guidePlayer.startFloating()
         settingsDestination = await PhoneSettingsLink.open()
         if settingsDestination == .unavailable {
             pendingSettingsStep = nil
