@@ -17,7 +17,7 @@ const files = async directory => {
   return result;
 };
 const type = file => file.endsWith('.swift') ? 'sourcecode.swift' : file.endsWith('.xcassets') ? 'folder.assetcatalog'
-  : file.endsWith('.mp4') ? 'video.mp4' : file.endsWith('.png') ? 'image.png' : file.endsWith('.storyboard') ? 'file.storyboard' : file.endsWith('.xcconfig') ? 'text.xcconfig' : file.endsWith('.entitlements') ? 'text.plist.entitlements' : 'text.plist.xml';
+  : file.endsWith('.gif') ? 'image.gif' : file.endsWith('.mp4') ? 'video.mp4' : file.endsWith('.png') ? 'image.png' : file.endsWith('.storyboard') ? 'file.storyboard' : file.endsWith('.xcconfig') ? 'text.xcconfig' : file.endsWith('.entitlements') ? 'text.plist.entitlements' : 'text.plist.xml';
 const ref = file => add(`file:${file}`, { isa: 'PBXFileReference', lastKnownFileType: type(file), name: path.basename(file), path: file, sourceTree: '<group>' });
 const appFiles = await files('Shield');
 const extensionFiles = await files('MessageFilter');
@@ -75,7 +75,7 @@ const target = (name, targetFiles, productReference, productType, settings, extr
     SUPPORTED_PLATFORMS: 'iphoneos iphonesimulator', SUPPORTS_MACCATALYST: 'NO', SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: 'NO', PRODUCT_NAME: '$(TARGET_NAME)', ...settings }),
   buildPhases: [phase(name, 'sources', 'PBXSourcesBuildPhase', targetFiles.filter(file => file.endsWith('.swift'))),
     phase(name, 'frameworks', 'PBXFrameworksBuildPhase', []),
-    phase(name, 'resources', 'PBXResourcesBuildPhase', targetFiles.filter(file => file.endsWith('.xcassets') || file.endsWith('.xcprivacy') || file.endsWith('.storyboard') || file.endsWith('.mp4') || file.endsWith('-poster.png'))), ...extraPhases],
+    phase(name, 'resources', 'PBXResourcesBuildPhase', targetFiles.filter(file => file.endsWith('.xcassets') || file.endsWith('.xcprivacy') || file.endsWith('.storyboard') || file.endsWith('.mp4') || file.endsWith('.gif') || file.endsWith('-poster.png'))), ...extraPhases],
   buildRules: [], dependencies, name, productName: name, productReference, productType
 });
 const appTarget = target('Shield', [...appFiles, ...sharedFiles], appProduct, 'com.apple.product-type.application', {

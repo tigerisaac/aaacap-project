@@ -4,71 +4,57 @@ import XCTest
 final class SetupGuideUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
 
-    func testSettingsGuideCanPauseAndReplayWithoutConfirmingSetting() {
+    func testSettingsHasOnePrimaryActionAndNoPlaybackControls() {
         let app = launch(["--forwarding-start-settings"])
-        let playback = app.buttons["setup-guide-playback"]
-        XCTAssertTrue(playback.waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["Pause guide"].waitForExistence(timeout: 5))
-        playback.tap()
-        XCTAssertEqual(playback.label, "Play guide")
-        playback.tap()
-        XCTAssertEqual(playback.label, "Pause guide")
+        XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
+        XCTAssertFalse(app.buttons["setup-guide-float"].exists)
+        XCTAssertTrue(app.staticTexts["phone-settings-navigation"].exists)
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
-        capture(app, "Settings visual guide")
+        capture(app, "Settings handcrafted GIF")
     }
 
-    func testUnavailableFloatingGuideKeepsSettingsAndProgressUsable() {
-        let app = launch(["--forwarding-start-settings", "--setup-guide-unavailable"])
-        app.buttons["setup-guide-float"].tap()
-        XCTAssertTrue(app.staticTexts["setup-guide-fallback"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
+    func testSettingsReturnStillRequiresExplicitConfirmation() {
+        let app = launch(["--forwarding-start-settings"])
         app.buttons["forwarding-continue"].tap()
+        XCTAssertTrue(app.staticTexts["Choose Silence"].exists)
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
         app.buttons["Read the steps"].tap()
         XCTAssertTrue(app.buttons["phone-settings-reopen"].exists)
         app.buttons["Read the steps"].tap()
-        XCTAssertTrue(app.staticTexts["Choose Silence"].exists)
         app.buttons["forwarding-continue"].tap()
         XCTAssertTrue(app.staticTexts["Turn off Live Voicemail"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
-        XCTAssertTrue(app.buttons["setup-guide-playback"].exists)
-        capture(app, "Voicemail visual guide")
+        XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
+        capture(app, "Voicemail handcrafted GIF")
     }
 
-    func testReturnFromOtherAppPausesGuideAndRetainsCarrierStep() {
+    func testReturnFromOtherAppRetainsCarrierStepAndWrittenRecovery() {
         let app = launch(["--forwarding-start-code"])
-        XCTAssertTrue(app.buttons["Pause guide"].waitForExistence(timeout: 5))
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(app.staticTexts["forwarding-carrier-result"].waitForExistence(timeout: 5))
         app.buttons["Watch the guide again"].tap()
-        XCTAssertEqual(app.buttons["setup-guide-playback"].label, "Play guide")
+        XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
+        XCTAssertFalse(app.buttons["setup-guide-float"].exists)
         XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
         XCTAssertFalse(app.staticTexts["When you’re on a call"].exists)
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         capture(app, "Phone guide after return")
     }
 
-    func testClosingDuringFloatingStartupCanReopenTheSameStep() {
+    func testClosingAndReopeningKeepsTheSameStep() {
         let app = launch(["--forwarding-start-settings", "--forwarding-navigation-test"])
-        app.buttons["setup-guide-float"].tap()
         app.buttons["Close"].tap()
         XCTAssertTrue(app.buttons["forwarding-preview-home"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         app.buttons["forwarding-preview-home"].tap()
         XCTAssertTrue(app.staticTexts["Choose Silence"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
-        XCTAssertTrue(app.buttons["Pause guide"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["setup-guide-float"].exists)
     }
 
-    func testLargestTextDarkGuideControlsAndWrittenStepsRemainReachable() {
+    func testLargestTextDarkWrittenStepsAndPrimaryRemainReachable() {
         let app = launch(["--forwarding-start-code", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
-        XCTAssertTrue(app.buttons["Pause guide"].waitForExistence(timeout: 5))
-        let playback = app.buttons["setup-guide-playback"]
-        reveal(playback, in: app)
-        playback.tap()
-        XCTAssertEqual(playback.label, "Play guide")
-        reveal(app.buttons["setup-guide-float"], in: app)
         let writtenSteps = app.buttons["Read the steps"]
         reveal(writtenSteps, in: app)
         writtenSteps.tap()
@@ -79,17 +65,34 @@ final class SetupGuideUITests: XCTestCase {
         capture(app, "Phone guide largest text dark")
     }
 
-    func testRestorationSettingsHaveTheirOwnGuidesAndConfirmations() {
+    func testRestorationGuidesKeepTheirExplicitConfirmations() {
         let app = launch(["--forwarding-start-restore", "--restoration-start-settings"])
         XCTAssertTrue(app.staticTexts["Let ordinary calls ring"].waitForExistence(timeout: 5))
-        reveal(app.buttons["setup-guide-playback"], in: app)
-        XCTAssertTrue(app.buttons["setup-guide-playback"].exists)
+        XCTAssertFalse(app.buttons["setup-guide-float"].exists)
         app.buttons["restoration-settings-confirm"].tap()
         XCTAssertTrue(app.staticTexts["Restore iPhone voicemail"].waitForExistence(timeout: 5))
-        reveal(app.buttons["setup-guide-playback"], in: app)
-        XCTAssertTrue(app.buttons["setup-guide-playback"].exists)
+        XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
-        capture(app, "Restoration voicemail guide")
+        capture(app, "Restoration voicemail handcrafted GIF")
+    }
+
+    func testReducedMotionKeepsSettingInstructionsAndConfirmation() {
+        let app = launch(["--forwarding-start-settings", "-UIAccessibilityReduceMotionEnabled", "YES"])
+        XCTAssertTrue(app.staticTexts["phone-settings-navigation"].exists)
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
+        capture(app, "Reduced motion setting guide")
+    }
+
+    func testLargestTextSettingsInstructionsAndActionRemainReachable() {
+        let app = launch(["--forwarding-start-settings", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        capture(app, "Settings largest text dark top")
+        reveal(app.staticTexts["phone-settings-navigation"], in: app)
+        reveal(app.buttons["Read the steps"], in: app)
+        app.buttons["Read the steps"].tap()
+        reveal(app.buttons["forwarding-continue"], in: app)
+        XCTAssertFalse(app.buttons["setup-guide-float"].exists)
+        capture(app, "Settings guide largest text dark")
     }
 
     private func launch(_ arguments: [String]) -> XCUIApplication {

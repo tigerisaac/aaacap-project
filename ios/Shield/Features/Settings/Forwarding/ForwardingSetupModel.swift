@@ -199,7 +199,7 @@ final class ForwardingSetupModel {
         if !isUITest { UserDefaults.standard.set(step.rawValue, forKey: settingsVisitKey) }
         #if DEBUG
         if isUITest && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
-            settingsDestination = ProcessInfo.processInfo.arguments.contains("--settings-link-fails") ? .unavailable : .phone
+            settingsDestination = ProcessInfo.processInfo.arguments.contains("--settings-link-fails") ? .unavailable : PhoneSettingsLink.preferredDestination
             settingsReturned = true
             pendingSettingsStep = nil
             return
@@ -207,7 +207,9 @@ final class ForwardingSetupModel {
         #endif
         await guidePlayer.startFloating()
         settingsDestination = await PhoneSettingsLink.open()
+        if settingsDestination == .shield { guidePlayer.returnedToShield() }
         if settingsDestination == .unavailable {
+            guidePlayer.returnedToShield()
             pendingSettingsStep = nil
             settingsReturned = true
             reportError("iPhone couldn’t open Settings. Open Settings → Apps → Phone, then make the change shown above.")

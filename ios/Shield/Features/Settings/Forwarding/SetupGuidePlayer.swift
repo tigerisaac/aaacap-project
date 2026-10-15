@@ -2,7 +2,7 @@ import AVKit
 import Observation
 import UIKit
 
-/// One retained player owns the inline preview and the system's floating window.
+/// A retained player carries a steady reminder into the system floating window.
 /// Media is bundled and generic: no clipboard, carrier code, or phone data enters it.
 @MainActor @Observable
 final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerDelegate {
@@ -70,11 +70,6 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
         }
         player.play()
         isPlaying = true
-    }
-
-    func togglePlayback() {
-        if isPlaying { player.pause() } else { player.play() }
-        isPlaying.toggle()
     }
 
     func resumeForHandoff() {

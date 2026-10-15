@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-15",
+  "scope": "Settings, keypad and restoration visual guide refinement; shipped iPhone class.",
+  "current_normal": [
+    "final-settings-handcrafted-gif.png",
+    "small-final-settings-handcrafted-gif.png"
+  ],
+  "accessibility": [
+    "small-final-settings-largest-text-dark-top.png",
+    "small-final-settings-guide-largest-text-dark.png",
+    "small-phone-guide-largest-text-dark.png"
+  ],
+  "private_evidence": "Owner reference and physical screenshots retained locally only in ignored artifacts/private/setup-route-guidance. Excluded from commit following automatic approval review.",
+  "committed_images": "Original generated instructional art and synthetic simulator test captures only.",
+  "limitations": [
+    "Earlier-iOS physical Settings route unverified",
+    "No instrumented iPhone zero-hitch result",
+    "No physical VoiceOver or novice-senior usability session"
+  ],
+  "review": "Fresh independent review against owner screenshots: disposition: ship"
+}

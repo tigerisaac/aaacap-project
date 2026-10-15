@@ -1,5 +1,12 @@
 # Status
 
+## October 15 — original GIFs and a shorter Settings route
+
+Owner feedback replaced the shared inline/PiP movie with original GIF touch demonstrations and a separate steady floating reminder. In-app play/Float controls are removed. Public CallKit navigation now opens near Call Filtering on the tested iOS 27.2 phone; the GIF demonstrates sliding the finger down to the exact section above it. Manual fallback uses the opposite direction and a static target. Explicit confirmations and backend progress remain unchanged.
+
+Required checks passed: 242 unit tests, typecheck/build, 175 emulator tests; one clean 21-case simulator setup run, seven small-phone guide cases, and five final normal/largest-text/fallback confirmations. The signed build is installed on the iPhone. Settings and Phone automatic PiP were visually verified there; physical copy safety passed, while two Settings accessibility checks skipped under Mirroring. Independent visual review: **disposition: ship**. No phone setting, carrier forwarding or live backend deployment was changed. Verification limits and media provenance are in [the guide record](IOS-SETUP-GUIDES.md).
+
+
 ## October 15 — setup videos clarified and pages simplified
 
 Settings steps now have one action heading and a close-up demonstration instead of a moving checklist and repeated paragraphs. Each video isolates a native choice, switch or keypad target, shows a single tap and its result, then leaves time to read it. Written directions and recovery are under Read the steps. After returning from Phone, the carrier result takes priority and the video is available on request. A floating-only reminder explains moving the system window if it covers a control.

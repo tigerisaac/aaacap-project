@@ -4,24 +4,16 @@ import UIKit
 @MainActor
 enum PhoneSettingsLink {
     static var preferredDestination: PhoneSettingsDestination {
-        #if DEBUG
-        .phone
-        #else
-        .callIdentification
-        #endif
+        if #available(iOS 27, *) { .phoneControls } else { .callIdentification }
     }
 
     static func open() async -> PhoneSettingsDestination {
-        #if DEBUG
-        // Best effort for the installed development pilot only. This is not a
-        // documented App Store API. A true return means the URL was accepted,
-        // not that a particular settings page or switch was inspected.
-        if let url = URL(string: "App-prefs:com.apple.mobilephone"), await UIApplication.shared.open(url) { return .phone }
-        #endif
-        // Public CallKit API lands one page inside Phone settings.
+        // Public CallKit shortcut. On the tested iOS 27 phone it scrolls Phone
+        // to Call Filtering, directly BELOW the controls needed by setup.
+        // URL acceptance cannot establish a viewport or confirm a setting.
         do {
             try await CXCallDirectoryManager.sharedInstance.openSettings()
-            return .callIdentification
+            return preferredDestination
         } catch {}
         if let url = URL(string: UIApplication.openSettingsURLString), await UIApplication.shared.open(url) { return .shield }
         return .unavailable

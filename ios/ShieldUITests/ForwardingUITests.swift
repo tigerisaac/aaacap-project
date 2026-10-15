@@ -134,6 +134,7 @@ final class ForwardingUITests: XCTestCase {
     func testSettingsFallbackKeepsProgressAndInstructionsAvailable() {
         let app = launch(["--forwarding-start-settings", "--settings-link-fails"], title: "Choose Silence")
         tapPrimary(app)
+        XCTAssertTrue(app.staticTexts["phone-settings-navigation"].label.contains("finger up"))
         app.buttons["Read the steps"].tap()
         XCTAssertTrue(app.buttons["phone-settings-reopen"].exists)
         app.buttons["Read the steps"].tap()

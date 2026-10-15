@@ -15,10 +15,19 @@ struct RestorationSettingsGuide: View {
         VStack(alignment: .leading, spacing: 24) {
             Text(unknownCallers ? "Let ordinary calls ring" : "Restore iPhone voicemail")
                 .shieldHeading(.title).accessibilityAddTraits(.isHeader)
-            if destination != .phone {
-                Text(destination.directions).foregroundStyle(ForwardingStyle.secondaryText)
+            if destination == .shield || destination == .unavailable {
+                Text(destination.directions)
+            } else {
+                Text(unknownCallers
+                     ? "In Settings, slide your finger down to Screen Unknown Callers. Then tap Never."
+                     : "In Settings, slide your finger down to Live Voicemail, just above Screen Unknown Callers. Leave its switch green (on).")
+                if destination == .callIdentification {
+                    Text("If Call Blocking & Identification opens, tap the back arrow to Phone first.")
+                        .foregroundStyle(ForwardingStyle.secondaryText)
+                }
             }
-            SetupGuideView(guide: unknownCallers ? .never : .voicemailOn, player: guidePlayer)
+            SetupGuideView(guide: unknownCallers ? .never : .voicemailOn, player: guidePlayer,
+                           animateNavigation: destination != .shield && destination != .unavailable)
             Text(returned ? "Did you make the change? Confirm below. Shield can’t see this setting." : "Already done? Confirm below.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
                 .accessibilityIdentifier("restoration-settings-unverified")
@@ -47,12 +56,13 @@ struct RestorationSettingsGuide: View {
         defer { working = false }
         opened = true
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone") {
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
             returned = true
             return
         }
         #endif
         await guidePlayer.startFloating()
         destination = await PhoneSettingsLink.open()
+        if destination == .shield || destination == .unavailable { guidePlayer.returnedToShield() }
     }
 }
