@@ -13,7 +13,7 @@ final class ForwardingUITests: XCTestCase {
         capture(app, "Guided sound check light")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         tapPrimary(app)
-        XCTAssertTrue(app.staticTexts["forwarding-probe-passed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["forwarding-probe-passed"].appears(timeout: 5))
         tapPrimary(app); expect(app, "Change two Phone settings")
         capture(app, "Guided phone settings light")
         tapPrimary(app)
@@ -27,7 +27,7 @@ final class ForwardingUITests: XCTestCase {
             expect(app, title)
             app.buttons["See copied code"].tap()
             XCTAssertTrue(app.staticTexts["forwarding-code"].exists)
-            XCTAssertTrue(app.staticTexts["Code copied"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.staticTexts["Code copied"].appears(timeout: 5))
             capture(app, "Guided \(title) light")
             tapPrimary(app)
         }
@@ -35,7 +35,7 @@ final class ForwardingUITests: XCTestCase {
         capture(app, "Guided forwarding check light")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         tapPrimary(app)
-        XCTAssertTrue(app.staticTexts["forwarding-probe-passed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["forwarding-probe-passed"].appears(timeout: 5))
         capture(app, "Automatic forwarding result")
         tapPrimary(app); expect(app, "Your setup is done")
         XCTAssertFalse(app.staticTexts["Phone setup tested"].exists)
@@ -46,14 +46,14 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["A call reached Shield"].exists)
         capture(app, "Setup completion")
         tapPrimary(app)
-        XCTAssertTrue(app.buttons["forwarding-preview-home"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["forwarding-preview-home"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["Start disconnecting"].exists)
         XCTAssertFalse(app.staticTexts["forwarding-reset-code"].exists)
         app.buttons["forwarding-preview-home"].tap()
         expect(app, "Your setup is done")
         app.buttons["Setup options"].tap()
         app.buttons["Disconnect Shield"].tap()
-        XCTAssertTrue(app.buttons["Start disconnecting"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Start disconnecting"].appears(timeout: 5))
         app.buttons["Start disconnecting"].tap()
         expect(app, "Bring back ordinary calls")
         app.buttons["See copied code"].tap()
@@ -64,7 +64,7 @@ final class ForwardingUITests: XCTestCase {
         let app = launch(["--forwarding-test-fails"])
         for _ in 0..<3 { tapPrimary(app) }
         tapPrimary(app)
-        XCTAssertTrue(app.staticTexts["This check didn’t finish"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["This check didn’t finish"].appears(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Try the call again")
         XCTAssertFalse(app.staticTexts["Change two Phone settings"].exists)
         capture(app, "Call check recovery")
@@ -75,7 +75,7 @@ final class ForwardingUITests: XCTestCase {
         expect(app, "Save Shield in Contacts")
         tapPrimary(app)
         let error = app.staticTexts["forwarding-error"]
-        XCTAssertTrue(error.waitForExistence(timeout: 5))
+        XCTAssertTrue(error.appears(timeout: 5))
         let visible = NSPredicate { _, _ in error.isHittable && error.frame.minY >= app.navigationBars.firstMatch.frame.maxY }
         expectation(for: visible, evaluatedWith: error)
         waitForExpectations(timeout: 5)
@@ -150,7 +150,7 @@ final class ForwardingUITests: XCTestCase {
     func testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed() {
         let app = launch(["--forwarding-start-restore"], title: "Bring back ordinary calls")
         app.buttons["See copied code"].tap()
-        XCTAssertTrue(app.staticTexts["forwarding-reset-code"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["forwarding-reset-code"].appears(timeout: 5))
         XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
         XCTAssertEqual(app.buttons["forwarding-reset-continue"].label, "Tello confirmed this reset")
         app.buttons["forwarding-reset-copy"].tap()
@@ -190,7 +190,7 @@ final class ForwardingUITests: XCTestCase {
         expect(app, "Check your normal voicemail")
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
         app.buttons["restoration-call-confirm"].tap()
-        XCTAssertTrue(app.staticTexts["restoration-complete"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["restoration-complete"].appears(timeout: 5))
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         capture(app, "Restoration checklist complete")
     }
@@ -210,7 +210,7 @@ final class ForwardingUITests: XCTestCase {
         let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
         XCUIDevice.shared.press(.home)
         app.activate()
-        XCTAssertTrue(app.staticTexts["forwarding-carrier-result"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["forwarding-carrier-result"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
         XCTAssertFalse(app.staticTexts["When you’re on a call"].exists)
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
@@ -238,21 +238,22 @@ final class ForwardingUITests: XCTestCase {
         app.launch(); expect(app, title); return app
     }
     private func expect(_ app: XCUIApplication, _ text: String) {
-        XCTAssertTrue(app.staticTexts[text].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts[text].appears(timeout: 5))
     }
     private func tapPrimary(_ app: XCUIApplication) {
         let button = app.buttons["forwarding-continue"]
-        XCTAssertTrue(button.waitForExistence(timeout: 5))
+        XCTAssertTrue(button.appears(timeout: 5))
         for _ in 0..<12 where !button.isHittable { app.scrollViews.firstMatch.swipeUp() }
         XCTAssertTrue(button.isHittable); button.tap()
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
         Thread.sleep(forTimeInterval: 0.8)
-        let shot = XCTAttachment(screenshot: app.screenshot()); shot.name = name; shot.lifetime = .keepAlways; add(shot)
+        let screenshot = app.screenshot()
+        let shot = XCTAttachment(screenshot: screenshot); shot.name = name; shot.lifetime = .keepAlways; add(shot)
         do {
             let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("SeniorScreens")
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            try app.screenshot().pngRepresentation.write(to: directory.appendingPathComponent(name.replacingOccurrences(of: " ", with: "-") + ".png"))
+            try screenshot.pngRepresentation.write(to: directory.appendingPathComponent(name.replacingOccurrences(of: " ", with: "-") + ".png"))
         } catch { XCTFail("Couldn’t save simulator capture: \(error.localizedDescription)") }
 
     }

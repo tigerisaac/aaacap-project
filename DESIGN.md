@@ -281,7 +281,7 @@ Shield uses flat, opaque adaptive surfaces and native grouping rather than custo
 
 Primary and reusable secondary buttons use native large capsule controls. The shared card helper uses the card radius and padding in frontmatter. Sign-in fields and introduction symbol tiles use the field-and-intro radius; repeated call, message and action symbol backings use the symbol radius. Native inset list groups keep their own platform corners and separators, rather than inheriting the custom card helper's geometry.
 
-Outcome labels have no added badge capsule. Icons use SF Symbols, not character glyphs or a separate icon font. ShieldBrand clips the existing identity mark with continuous app-icon corners using a width ratio of 0.2237; this identity-specific shape does not establish a general container. The three existing identity rasters have repository-origin metadata; no image-generation prompt or licensed reference imagery is inferred.
+Outcome labels have no added badge capsule. Icons use SF Symbols, not character glyphs or a separate icon font. ShieldBrand clips the owner-selected rounded, integrated S-shield with continuous app-icon corners using a width ratio of 0.2237; this identity-specific shape does not establish a general container. The app icon, sign-in mark and launch mark share the approved revision-one artwork. Source PNGs, generation prompts, selection and hashes are preserved in `artwork/identity/manifest.json`; these are raster assets made with the built-in image generator. `scripts/generate-ios-assets.mjs` copies the approved icon and derives the rounded launch mark without changing the semantic colors. The UI wordmark remains native serif text.
 
 ## Components
 

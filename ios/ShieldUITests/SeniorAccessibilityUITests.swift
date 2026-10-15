@@ -6,10 +6,10 @@ final class SeniorAccessibilityUITests: XCTestCase {
 
     func testWelcomeAndSentEmailAudit() throws {
         var app = launch(["--uitesting-auth-error"])
-        XCTAssertTrue(app.textFields["Email address"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.textFields["Email address"].appears(timeout: 5))
         try audit(app, "accessibility-welcome")
         app = launch(["--uitesting-email-sent"])
-        XCTAssertTrue(app.staticTexts["Check your email"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Check your email"].appears(timeout: 5))
         try audit(app, "accessibility-email-sent")
     }
 
@@ -37,19 +37,19 @@ final class SeniorAccessibilityUITests: XCTestCase {
 
     func testOnboardingChoicesAudit() throws {
         var app = launch(["--uitesting-protection-onboarding"])
-        XCTAssertTrue(app.switches["onboarding-protection-toggle"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))
         try audit(app, "accessibility-protection-choice")
         app = launch(["--uitesting-helper-alerts-onboarding"])
-        XCTAssertTrue(app.switches["onboarding-helper-alerts-toggle"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.switches["onboarding-helper-alerts-toggle"].appears(timeout: 5))
         try audit(app, "accessibility-helper-choice")
     }
 
     func testPhoneSetupAndDisconnectionAudit() throws {
         var app = launch(["--uitesting-forwarding"])
-        XCTAssertTrue(app.buttons["forwarding-continue"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["forwarding-continue"].appears(timeout: 5))
         try audit(app, "accessibility-phone-setup")
         app = launch(["--uitesting-forwarding", "--forwarding-start-restore"])
-        XCTAssertTrue(app.buttons["forwarding-reset-continue"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["forwarding-reset-continue"].appears(timeout: 5))
         try audit(app, "accessibility-disconnection")
     }
 
@@ -120,7 +120,7 @@ final class SeniorAccessibilityUITests: XCTestCase {
             let footer = app.buttons["native-all-calls"]
             XCTAssertTrue(footer.isHittable)
             footer.tap()
-            XCTAssertTrue(app.staticTexts["Native footer action ran"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.staticTexts["Native footer action ran"].appears(timeout: 5))
             app.terminate()
         }
     }
@@ -134,18 +134,21 @@ final class SeniorAccessibilityUITests: XCTestCase {
 
     private func audit(_ app: XCUIApplication, _ name: String,
                        types: XCUIAccessibilityAuditType = [.contrast, .textClipped, .hitRegion, .sufficientElementDescription]) throws {
+        // Without this settle, edge-row issues come back without an associated element.
         Thread.sleep(forTimeInterval: 0.8)
-        let capture = XCTAttachment(screenshot: app.screenshot())
+        let screenshot = app.screenshot()
+        let capture = XCTAttachment(screenshot: screenshot)
         capture.name = name; capture.lifetime = .keepAlways; add(capture)
         let tree = XCTAttachment(string: app.debugDescription)
         tree.name = "\(name)-accessibility-tree"; tree.lifetime = .keepAlways; add(tree)
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("AccessibilityScreens")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        try app.screenshot().pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
+        try screenshot.pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
         // Keep every diagnostic. Review native scroll-edge/disabled-control reports against the capture.
         try app.performAccessibilityAudit(for: types) { issue in
             print("Shield accessibility: \(name): \(issue.compactDescription); \(issue.element?.debugDescription ?? "No associated element"); Details: \(issue.detailedDescription)")
-            let evidence = XCTAttachment(string: "\(issue.compactDescription)\n\(issue.detailedDescription)\n\(app.debugDescription)")
+            // The whole tree is already attached once above; keep only this element's subtree and path.
+            let evidence = XCTAttachment(string: "\(issue.compactDescription)\n\(issue.detailedDescription)\n\(issue.element?.debugDescription ?? "No associated element")")
             evidence.name = "\(name)-audit-details"; evidence.lifetime = .keepAlways; self.add(evidence)
             return false
         }

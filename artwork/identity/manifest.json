@@ -1,0 +1,71 @@
+{
+  "name": "Shield — selected rounded integrated S-shield",
+  "date": "2026-10-14",
+  "direction": "A clear shield silhouette with rounded shoulders, softened inner cuts, a rounded lower point, and a prominent integrated S. Deep navy and white with an editorial serif wordmark.",
+  "createdWith": "Built-in image generation tool",
+  "delivery": "PNG assets; the 1024 app icon is a size-only export from the generated master. Transparent logos are generated derivatives. These files are not vector artwork.",
+  "assets": [
+    {
+      "file": "shield-app-icon-1024.png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": false,
+      "purpose": "Full-bleed square iOS app icon; system applies the corner mask."
+    },
+    {
+      "file": "shield-app-icon-source.png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": false,
+      "purpose": "Generated app-icon master."
+    },
+    {
+      "file": "shield-symbol-navy.png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "purpose": "Standalone navy emblem for light backgrounds."
+    },
+    {
+      "file": "shield-logo-horizontal.png",
+      "width": 2172,
+      "height": 724,
+      "alpha": true,
+      "purpose": "Navy emblem and Shield wordmark for light backgrounds."
+    }
+  ],
+  "validation": {
+    "dimensions": "Verified with image metadata.",
+    "transparency": "PNG alpha channels verified on logo exports; app icon has no alpha channel.",
+    "visualReview": "Inspected generated images for shield recognition, softer geometry, and spelling.",
+    "usability": "No participant recognition test performed."
+  },
+  "generation": [
+    {
+      "stage": "Shield silhouette",
+      "prompt": "Use case: logo-brand.\nEdit target: the attached Shield S-monogram concept. The client selected the S-shaped shield but says it does not read clearly enough as a shield and feels too sharp/immature. Refine this exact idea into a final dignified app icon.\nKEEP: the capital S integrated with a shield, white mark on deep navy #002664, bold readable simple geometry.\nCHANGE: replace the pointed ribbon/swoosh styling with a grounded upright traditional shield shape. Make the outer silhouette unmistakably a SHIELD: a very shallow crowned top, broad level softly rounded shoulders, short near-vertical upper sides, gently tapering curved lower sides, and one softly rounded bottom point. A compact broad heraldic shield, not a diamond, leaf, hexagon or sports badge. Retain a large highly readable S integrated structurally into the shield. A white solid shield with a broad navy S counterform is welcome if that produces the clearest unified mark. Use calm unhurried curves, blunt softly rounded terminals, even visual weight, open counters. Eliminate needle points, sharp inner wedges, diagonal slant, speed-line swooshes and folded-ribbon effects. Feel like an established public-service institution, warm, dependable and timeless. Avoid gamer/esports branding, insurance-clipart feel, an ornate seal, padlocks, checkmarks, decorations, gradients or 3D.\nOUTPUT: ONLY the final app icon asset, square exactly 1024 by 1024 pixels. Solid uniform deep navy #002664 background extends to all four edges and corners, fully opaque. Do NOT draw a rounded tile or add an outside margin/background; iOS will mask the square itself. One crisp pure-white shield/S emblem centered, about 57% of canvas width and 64% of canvas height, with generous breathing room. No wordmark, no text, no alternate sizes, no concept sheet. Absolutely flat two-color art. High quality vector-like edges."
+    },
+    {
+      "stage": "Softened geometry",
+      "prompt": "Use case: logo-brand. Edit this refined Shield app icon. Preserve the new obvious full shield silhouette and its white S monogram, the scale, centering, pure white on solid navy #002664, and fully opaque square full-bleed navy background.\nMake one controlled refinement: SOFTEN AND CALM THE GEOMETRY. The three interior negative-space cutouts currently terminate in needle-sharp hooks; replace EVERY sharp interior tip with visibly rounded/blunt ends, like the rounded corners of fine traditional lettering. They must not taper to zero. Round the ends where navy meets white without losing the large white S. The top of the shield currently rises steeply to a central peak; reduce that rise to about one third of its current height and use a gentle shallow arch with a rounded crown. Keep the broad rounded shoulders and short near-vertical upper sides. Make the lower point softly rounded. Slightly reduce contrast in stroke thickness so the S feels substantial and balanced. Mature, unhurried, confident civic identity; no ribbon styling, no italic or sports logo energy.\nOutput ONLY this single refined icon. No words, no extra marks, no border around the square, no presentation sheet. Keep the solid background flat and uniform and the mark flat white. Exactly 1024x1024 pixels if supported."
+    },
+    {
+      "stage": "Transparent symbol",
+      "prompt": "Use case: background-extraction / logo-brand. Reference image is the FINAL APPROVED SHAPE for the Shield identity. Extract the white shield/S emblem from this app icon and change its solid fill to deep navy #002664. Remove the navy square background entirely and make that area truly transparent; also make every interior navy counterform truly transparent. Preserve the EXACT outer silhouette, proportions, every softened rounded counterform endpoint, curves and all spacing. Do not redesign, reinterpret, embellish or add anything. Only invert the mark's color to navy and remove the background. A standalone navy shield/S logo on actual alpha transparency, large and centered on a square canvas with modest clear space. No wordmark, no shadow, no checkerboard drawn in the artwork, no background tint. Flat crisp vector-like solid color."
+    },
+    {
+      "stage": "Horizontal logo",
+      "prompt": "Use case: logo-brand / compositing. The reference is the FINAL SHAPE for Shield's logo. Produce a clean horizontal brand lockup on a truly TRANSPARENT background. Preserve the EXACT shield/S emblem silhouette and rounded interior cutouts from the reference, recolor the white emblem to deep navy #002664, and make the old navy background and interior navy cutouts transparent. Place the emblem to the left of the single word \"Shield\" (capital S then lowercase h i e l d). Set the word in refined upright substantial old-style editorial serif lettering, gently bracketed serifs and generous readable counters, medium weight, calm and established. No sharp fashion hairlines, italic, swashes or whimsical details. The wordmark's cap height is approximately 55% of the emblem height, optically centered vertically; clear gap around one third of emblem width. Both logo and text solid #002664. Preserve the emblem exactly, no new border, no tilt, no redesign. Landscape canvas about 3:1, generous clear space at edges. Only this horizontal logo lockup, no tile, no extra text, no mockup, no shadows, gradients or textures. True transparent alpha, no white rectangular background."
+    }
+  ],
+  "status": "Selected by the owner",
+  "selectedRevision": "shield-refined-v1",
+  "selectionDate": "2026-10-14",
+  "selection": "Rounded integrated S-shield with a closed outline and softened inner curves.",
+  "assetHashes": {
+    "shield-app-icon-1024.png": "ba9a62e95e83e0bd44c8131aa10ed4a52df524a26a5fc182217d2a4ad9c0367e",
+    "shield-app-icon-source.png": "a1c65d700806f95856962e03d0e269e34cc370d7787c7ef92bb242ebc52dfedf",
+    "shield-symbol-navy.png": "16a0a5f4f08dba9060b9efaaa622959c62496fc7927bc003ef61211675fb49ce",
+    "shield-logo-horizontal.png": "35e42b2d70522a69f2fce1a8aa6d6272deec9baba79e01cfc896e8939054357f"
+  }
+}

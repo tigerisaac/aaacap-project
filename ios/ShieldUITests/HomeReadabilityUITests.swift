@@ -13,25 +13,25 @@ final class HomeReadabilityUITests: XCTestCase {
             XCTAssertGreaterThanOrEqual(action.frame.height, 52)
             capture(extra.isEmpty ? "readable-all-calls-standard" : "readable-all-calls-largest")
             action.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-            XCTAssertTrue(app.navigationBars["Calls"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.navigationBars["Calls"].appears(timeout: 5))
         }
     }
 
     func testStoppedCountOpensTheMatchingCalls() {
         let app = launch()
         let stopped = app.buttons["home-stopped-calls"]
-        XCTAssertTrue(stopped.waitForExistence(timeout: 5))
+        XCTAssertTrue(stopped.appears(timeout: 5))
         XCTAssertEqual(stopped.label, "Calls stopped")
         XCTAssertEqual(stopped.value as? String, "3 in total")
         capture("readable-home-light")
         stopped.tap()
-        XCTAssertTrue(app.navigationBars["Calls"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Calls"].appears(timeout: 5))
         XCTAssertTrue(app.historyRow("Call stopped").exists)
         XCTAssertFalse(app.historyRow("Prescription reminder").exists)
         capture("readable-stopped-calls-light")
         let removed = app.historyRow("Suspicious message removed")
         reveal(removed, in: app); removed.tap()
-        XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Message removed"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["It seemed suspicious."].exists)
         XCTAssertFalse(app.staticTexts["Shield removed this message"].exists)
         XCTAssertFalse(app.staticTexts["Need to call back? Use a number you already know."].exists)
@@ -59,7 +59,7 @@ final class HomeReadabilityUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments = ["--uitesting-account-error"]
         app.launch()
-        XCTAssertTrue(app.staticTexts["Your account couldn’t load"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Your account couldn’t load"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["home-stopped-calls"].exists)
     }
 
@@ -95,7 +95,7 @@ final class HomeReadabilityUITests: XCTestCase {
         } else {
             revealFully(removed, above: app.tabBars.firstMatch, in: app); removed.tap()
         }
-        XCTAssertTrue(app.staticTexts["Message removed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Message removed"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["restore-voicemail"].exists)
         capture("readable-removed-large-dark")
         let reason = app.staticTexts["It seemed suspicious."]

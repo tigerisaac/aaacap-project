@@ -13,7 +13,22 @@ Select the shared **Shield** scheme and an iPhone simulator, then press **⌘R**
 
 Use **Try sample app** for offline synthetic activity. Sample mode never changes phone routing or places calls. To use real data, point `Config/Local.xcconfig` at `shield-calls-isaac.web.app` and sign in with the email link.
 
-`scripts/generate-xcode-project.mjs` deterministically recreates the project from the Swift/resource directories. Re-run it when adding files. Do not keep manual project-only edits; put build changes in the generator or xcconfig. Regenerate original icon and color assets with `node scripts/generate-ios-assets.mjs`.
+`scripts/generate-xcode-project.mjs` deterministically recreates the project from the Swift/resource directories. Re-run it when adding files. Do not keep manual project-only edits; put build changes in the generator or xcconfig. On macOS, regenerate the app icon, sign-in mark and rounded launch mark with `node scripts/generate-ios-assets.mjs`. It uses the owner-selected rounded S-shield in [`artwork/identity`](../artwork/identity/manifest.json), verifies the source hash and leaves the adaptive color assets unchanged. The full-square icon is masked by iOS; the launch mark has continuous corners baked in. Sign-in keeps native, accessible “Shield” text beside the decorative image.
+
+## Run focused UI audits
+
+Use one existing simulator and the normal Xcode build cache. For the accessibility suite:
+
+```sh
+xcodebuild test -project ios/Shield.xcodeproj -scheme Shield \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
+  -parallel-testing-enabled NO -collect-test-diagnostics never \
+  -only-testing:ShieldUITests/SeniorAccessibilityUITests
+```
+
+Replace the test selector with a specific class or method when checking a correction. The `never` diagnostic policy avoids the large system diagnostic collection that stalled the October 14 run; test failures, screenshots and accessibility issue attachments remain in the result bundle. Omit that policy when investigating a simulator crash that needs system diagnostics. Reuse the same simulator, and do not create parallel clones or extra DerivedData folders. The visual matrix and functional journeys are separate suites and need not run for every audit iteration.
+
+The shared `appears(timeout:)` helper checks immediately before waiting, while keyboard interactions explicitly wait for the keyboard and return key to be hittable. Captures reuse one screenshot for the attachment and PNG export; accessibility failures attach the full tree once per screen and the associated element for each issue. The audit's 0.8-second settle remains because removing it lost element attribution. No accessibility issue is waived by these optimizations.
 
 ## Live configuration
 

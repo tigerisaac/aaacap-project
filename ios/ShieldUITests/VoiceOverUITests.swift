@@ -18,7 +18,7 @@ final class VoiceOverUITests: XCTestCase {
         let walk = try VoiceOverWalkthrough(self, name: "home-message", arguments: ["--uitesting-preview"])
         defer { walk.finish() }
         try walk.activate("Saved account notice")
-        XCTAssertTrue(walk.app.navigationBars["Saved notice"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.navigationBars["Saved notice"].appears(timeout: 5))
         walk.checkpoint("message-opened")
     }
 
@@ -30,7 +30,7 @@ final class VoiceOverUITests: XCTestCase {
         try walk.enter("Email address", text: "synthetic@example.com")
         try walk.activate("Done")
         try walk.activate("Send sign-in link")
-        XCTAssertTrue(walk.app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.staticTexts["sign-in-error"].appears(timeout: 5))
         try walk.find("Couldn’t sign in")
         walk.checkpoint("interrupted-send")
         XCTAssertEqual(walk.app.textFields["Email address"].value as? String, "synthetic@example.com")
@@ -45,7 +45,7 @@ final class VoiceOverUITests: XCTestCase {
         try walk.find("beta@example.com")
         try walk.find("Resend link")
         try walk.activate("Change email")
-        XCTAssertTrue(walk.app.textFields["Email address"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.textFields["Email address"].appears(timeout: 5))
         XCTAssertEqual(walk.app.textFields["Email address"].value as? String, "beta@example.com")
         walk.checkpoint("change-email")
     }
@@ -54,7 +54,7 @@ final class VoiceOverUITests: XCTestCase {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "native-toggle", arguments: ["--uitesting-native-reference", "--native-voiceover-interaction"])
         defer { walk.finish() }
-        XCTAssertTrue(walk.app.staticTexts["VoiceOver is running"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.staticTexts["VoiceOver is running"].appears(timeout: 5))
         try walk.activate("Allow sample alerts")
         XCTAssertEqual(walk.app.switches["Allow sample alerts"].value as? String, "1")
         try walk.find("Allow sample alerts", where: { $0.contains("on") })
@@ -90,9 +90,9 @@ final class VoiceOverUITests: XCTestCase {
         let walk = try VoiceOverWalkthrough(self, name: "daily-navigation", arguments: ["--uitesting-preview"])
         defer { walk.finish() }
         try walk.activate("All messages")
-        XCTAssertTrue(walk.app.navigationBars["Messages"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.navigationBars["Messages"].appears(timeout: 5))
         try walk.activate("Appointment message")
-        XCTAssertTrue(walk.app.navigationBars["Voicemail"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.navigationBars["Voicemail"].appears(timeout: 5))
         try walk.find("Hear sample message")
         try walk.activate("Keep this message")
         XCTAssertTrue(walk.app.buttons["Message kept"].exists)
@@ -152,12 +152,12 @@ final class VoiceOverUITests: XCTestCase {
         let walk = try VoiceOverWalkthrough(self, name: "playback", arguments: ["--uitesting-screen", "audio", "--uitesting-played-status-fails", "--uitesting-long-audio"], large: true)
         defer { walk.finish() }
         try walk.activate("Listen to message")
-        XCTAssertTrue(walk.app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.buttons["Pause message"].appears(timeout: 5))
         try walk.find("You can listen. It may still show as new.")
         try walk.activate("Pause message")
-        XCTAssertTrue(walk.app.buttons["Resume message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.buttons["Resume message"].appears(timeout: 5))
         try walk.activate("Resume message")
-        XCTAssertTrue(walk.app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(walk.app.buttons["Pause message"].appears(timeout: 5))
         try walk.activate("Pause message")
         try walk.activate("Can’t hear the message?")
         try walk.find("Turn up the volume")

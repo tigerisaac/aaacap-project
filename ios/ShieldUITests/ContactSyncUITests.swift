@@ -6,6 +6,6 @@ final class ContactSyncUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-contact-storage"]
         app.launch()
-        XCTAssertTrue(app.staticTexts["Contact restore passed"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["Contact restore passed"].appears(timeout: 20))
     }
 }

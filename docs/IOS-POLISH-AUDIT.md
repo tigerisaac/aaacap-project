@@ -2,6 +2,22 @@
 
 Started October 12, 2026. The design bar is an 80-year-old completing each task with readable text, familiar controls, a clear next step, and a way to recover. This record separates source changes, simulator evidence, and work that needs a person or a real phone.
 
+## October 14 — selected identity and audit performance
+
+The owner-selected rounded, integrated S-shield now supplies the app icon, sign-in mark and launch mark. The four approved source PNGs and their original generation/selection manifest are tracked in `artwork/identity/`. AppIcon and ShieldMark match the approved 1024-pixel source byte-for-byte; LaunchMark applies the existing continuous-corner mask. The generator verifies the source hash, preserves the semantic colors and removes its temporary Swift cache. The sign-in wordmark remains native serif text. The icon was inspected on the simulator home screen and in sign-in; the rounded launch asset was also inspected.
+
+The unfinished audit optimization replaced delayed existence waits with an immediate check, reused screenshots for attachments and file exports, and stopped attaching the full accessibility tree for every issue. The complete tree is still attached once per screen, every issue is still reported, and the 0.8-second audit settle remains: removing it lost associated-element attribution. The sign-in tests now wait for the keyboard and the actual Send/Go key, verify the entered email, and refocus once if a cold simulator exposes a keyboard below the screen. All three corrected sign-in tests passed, including standard and largest text keyboard recovery.
+
+The earlier single-simulator logs from Claude show SeniorDesign's five tests improving from 546.7 to 487.6 seconds and SeniorPolish's 22 tests from 632.1 to 542.3 seconds, all passing. The accessibility suite itself stayed near 291 seconds; most of that cost is in launches and Apple's audit. These are observed, machine-dependent timings from the earlier run, not a controlled benchmark of this final revision. Its two additional keyboard failures were the remaining functional regressions addressed above.
+
+Use the [focused audit command](../ios/README.md#run-focused-ui-audits) with one simulator, the existing build cache and `-collect-test-diagnostics never`. This avoids the system-diagnostic collection that stalled Claude's completed tests, while retaining failure records, screenshots, trees and issue attachments. The final sign-in result bundle closed immediately after the tests (1.8 MB). Typecheck, 232 unit tests, the backend build and 159 Firestore emulator tests passed. Initial sandboxed checks could not bind localhost; the successful runs used local-server access.
+
+Final iPhone 18 Pro / iOS 27 verification: the two invitation-removal tests passed. SeniorAccessibility ran in 327.9 seconds, with four passing tests, eight failing tests and one skipped external-fixture test; it recorded 35 raw findings. The three selected Redesign audits recorded four findings. The failing test names match the earlier runs exactly; differing counts of repeated native diagnostics are not treated as fixes. This final audit run was slower than the earlier 291-second run, so no speedup of Apple's accessibility engine is claimed. The combined 18-test run finished in 407.9 seconds, and result collection completed about half a second later instead of stalling. All five targeted functional checks (three sign-in, two invitation removal) passed.
+
+Local evidence is under `artifacts/brand/`: `sign-in-final.log`, `audit-final.log`, `audit-summary.json`, `audit-evidence/`, `earlier-ui-timings.json` and the two verified repository-check logs. Captures include `shield-in-app.png` and `shield-home-icon.png`. The bulky audit result bundle and generated recordings were removed after retaining its summary, screenshots, accessibility trees and issue text; no extra simulator or DerivedData checkout was created.
+
+This work changes source and simulator builds only. It does not deploy the backend, install on the owner's phone, change forwarding or provide new real-call evidence.
+
 ## Labeled bottlenecks and corrections
 
 The entries below describe observed source or simulator problems. “Implemented” means the source fix exists; verification is recorded separately below.

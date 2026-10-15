@@ -9,7 +9,7 @@ final class SeniorPolishUITests: XCTestCase {
         app.launchArguments = ["--uitesting-auth-error"]
         app.launch()
         let email = app.textFields["Email address"]
-        XCTAssertTrue(email.waitForExistence(timeout: 5))
+        XCTAssertTrue(email.appears(timeout: 5))
         email.tap(); email.typeText("synthetic@")
         app.buttons["Done"].firstMatch.tap()
         XCTAssertFalse(app.buttons["sign-in-submit"].isEnabled)
@@ -18,7 +18,7 @@ final class SeniorPolishUITests: XCTestCase {
         app.buttons["Done"].firstMatch.tap()
         XCTAssertTrue(app.buttons["sign-in-submit"].isEnabled)
         app.buttons["sign-in-submit"].tap()
-        XCTAssertTrue(app.staticTexts["sign-in-error"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["sign-in-error"].appears(timeout: 5))
         XCTAssertEqual(email.value as? String, "synthetic@example.com")
     }
 
@@ -39,14 +39,14 @@ final class SeniorPolishUITests: XCTestCase {
             let retry = app.buttons["Try again"].firstMatch
             reveal(retry, in: app); retry.tap()
             XCTAssertFalse(notice.waitForExistence(timeout: 1), screen)
-            XCTAssertTrue(app.staticTexts[recovered].waitForExistence(timeout: 5) || app.switches[recovered].exists, screen)
+            XCTAssertTrue(app.staticTexts[recovered].appears(timeout: 5) || app.switches[recovered].exists, screen)
         }
     }
 
     func testAddNumberKeepsLabelsAndInputAfterAnInterruptedSave() {
         let app = launch("add-number")
         let name = app.textFields["Name"]
-        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        XCTAssertTrue(name.appears(timeout: 5))
         name.tap(); name.typeText("My clinic")
         let phone = app.textFields["Phone number"]
         phone.tap(); phone.typeText("5550100")
@@ -72,13 +72,13 @@ final class SeniorPolishUITests: XCTestCase {
     func testContactSavedOnPhoneExplainsAnUnconfirmedShieldUpdate() {
         let app = launch("add-contact", extra: ["--uitesting-contact-save-sync-fails"])
         let name = app.textFields["Name"]
-        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        XCTAssertTrue(name.appears(timeout: 5))
         name.tap(); name.typeText("My clinic")
         app.buttons["Done"].firstMatch.tap()
         let phone = app.textFields["Phone number"]
         reveal(phone, in: app); phone.tap(); phone.typeText("3125550100")
         app.buttons["Done"].firstMatch.tap(); app.buttons["Save number"].tap()
-        XCTAssertTrue(app.staticTexts["Save not confirmed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Save not confirmed"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["The number is in iPhone Contacts. Try saving again to update Shield."].exists)
         XCTAssertEqual(phone.value as? String, "3125550100")
         XCTAssertTrue(app.buttons["Save number"].isEnabled)
@@ -88,12 +88,12 @@ final class SeniorPolishUITests: XCTestCase {
     func testQuietHoursFailureKeepsTheUnsavedChoice() {
         let app = launch("quiet")
         let enabled = app.switches["Quiet hours"]
-        XCTAssertTrue(enabled.waitForExistence(timeout: 5))
+        XCTAssertTrue(enabled.appears(timeout: 5))
         XCTAssertEqual(enabled.value as? String, "0")
         enabled.tap()
         XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
         app.buttons["Save quiet hours"].tap()
-        XCTAssertTrue(app.staticTexts["Hours not confirmed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Hours not confirmed"].appears(timeout: 5))
         reveal(enabled, in: app, towardTop: true)
         XCTAssertEqual(enabled.value as? String, "1")
         XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
@@ -103,16 +103,16 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testPlayedStatusFailureKeepsPlaybackControlsUsable() {
         let app = launch("audio", extra: ["--uitesting-played-status-fails"])
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         app.buttons["Listen to message"].tap()
         let pause = app.buttons["Pause message"]
-        XCTAssertTrue(pause.waitForExistence(timeout: 5))
+        XCTAssertTrue(pause.appears(timeout: 5))
         XCTAssertTrue(pause.isEnabled); pause.tap()
         XCTAssertTrue(app.buttons["Resume message"].exists)
-        XCTAssertTrue(app.staticTexts["You can listen. It may still show as new."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["You can listen. It may still show as new."].appears(timeout: 5))
         XCTAssertFalse(app.alerts["Message couldn’t play"].exists)
         app.buttons["Resume message"].tap()
-        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 5))
         let recovery = app.buttons["Mark as listened"]
         reveal(recovery, in: app)
         XCTAssertTrue(recovery.isHittable)
@@ -121,14 +121,14 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testLostListeningAccessDiscardsStartedAudio() {
         let app = launch("audio", extra: ["--uitesting-listening-access-changes"])
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         app.buttons["Listen to message"].tap()
-        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Message is private"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Message is private"].appears(timeout: 10))
         XCTAssertFalse(app.buttons["Pause message"].exists)
         XCTAssertFalse(app.buttons["Resume message"].exists)
         capture(app, "polish-audio-private")
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 8))
         XCTAssertFalse(app.buttons["Resume message"].exists)
         XCTAssertFalse(app.buttons["Start over"].exists)
         capture(app, "polish-audio-permission-restored")
@@ -136,28 +136,28 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testBackgroundingWhileAudioLoadsDoesNotStartItLater() {
         let app = launch("audio", extra: ["--uitesting-delayed-audio"])
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         app.buttons["Listen to message"].tap()
-        XCTAssertTrue(app.buttons["Getting message…"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["Getting message…"].appears(timeout: 2))
         XCUIDevice.shared.press(.home)
         app.activate()
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["Pause message"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Listen to message"].isEnabled)
         XCTAssertFalse(app.buttons["Start over"].exists)
         capture(app, "polish-audio-canceled-download")
         app.buttons["Listen to message"].tap()
-        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 8))
     }
 
     func testPersonContextChangeClosesThePreviousCallDetail() {
         let app = launch("audio", extra: ["--uitesting-detail-context-changes"])
         let open = app.buttons["Open sample call"]
-        XCTAssertTrue(open.waitForExistence(timeout: 5)); open.tap()
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(open.appears(timeout: 5)); open.tap()
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         app.buttons["Listen to message"].tap()
-        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
-        XCTAssertTrue(open.waitForExistence(timeout: 12))
+        XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 5))
+        XCTAssertTrue(open.appears(timeout: 12))
         XCTAssertTrue(open.isHittable)
         expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: app.staticTexts["Sample audio message"])
         waitForExpectations(timeout: 5)
@@ -196,9 +196,9 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testAudioCanPauseResumeRestartAndStopsWhenBackgrounded() {
         let app = launch("audio")
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         app.buttons["Listen to message"].tap()
-        XCTAssertTrue(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 5))
         app.buttons["Pause message"].tap()
         XCTAssertTrue(app.buttons["Resume message"].exists)
         app.buttons["Resume message"].tap()
@@ -209,7 +209,7 @@ final class SeniorPolishUITests: XCTestCase {
         capture(app, "polish-audio-playing")
         XCUIDevice.shared.press(.home)
         app.activate()
-        XCTAssertTrue(app.buttons["Listen to message"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["Resume message"].exists)
     }
 
@@ -218,12 +218,12 @@ final class SeniorPolishUITests: XCTestCase {
         app.launchArguments = ["--uitesting-preview", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
         let people = app.buttons["change-person"]
-        XCTAssertTrue(people.waitForExistence(timeout: 5))
+        XCTAssertTrue(people.appears(timeout: 5))
         XCTAssertTrue(people.isHittable); people.tap()
         let alex = app.buttons["person-Alex"]
         reveal(alex, in: app); alex.tap()
         if app.navigationBars["Family & friends"].exists { app.navigationBars.buttons.firstMatch.tap() }
-        XCTAssertTrue(app.buttons["change-person"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["change-person"].appears(timeout: 5))
         XCTAssertTrue(app.buttons["change-person"].label.contains("Alex"))
         app.tabBars.buttons["Calls"].tap()
         let filter = app.buttons["callFilter"]
@@ -255,7 +255,7 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertGreaterThanOrEqual(completion.frame.minY, toggle.frame.maxY)
         capture(app, "polish-protection-choice-and-next-large-dark")
         completion.tap()
-        XCTAssertTrue(app.staticTexts["Let a helper know"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Let a helper know"].appears(timeout: 5))
         let secondStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 2 of 2")).firstMatch
         expectVisible(secondStep, in: app)
         capture(app, "polish-helper-onboarding-large-dark")
@@ -305,10 +305,10 @@ final class SeniorPolishUITests: XCTestCase {
         reveal(helpers, in: app); helpers.tap()
         reveal(completion, in: app); completion.tap()
         let failure = app.alerts["Couldn’t save your choice"]
-        XCTAssertTrue(failure.waitForExistence(timeout: 5))
+        XCTAssertTrue(failure.appears(timeout: 5))
         capture(app, "polish-onboarding-save-error-large-dark")
         failure.buttons["Try again"].tap()
-        XCTAssertTrue(failure.waitForExistence(timeout: 5))
+        XCTAssertTrue(failure.appears(timeout: 5))
         failure.buttons["Cancel"].tap()
         XCTAssertEqual(helpers.value as? String, "0")
         reveal(completion, in: app)
@@ -347,11 +347,11 @@ final class SeniorPolishUITests: XCTestCase {
         app.launchArguments = ["--uitesting-preview", "--uitesting-light"]
         app.launch()
         let title = app.historyRow("Saved account notice")
-        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertTrue(title.appears(timeout: 5))
         XCTAssertFalse(app.staticTexts["An automated caller reported unusual card activity. The sender hasn’t been verified."].exists)
         capture(app, "walkthrough-message-purpose")
         title.tap()
-        XCTAssertTrue(app.staticTexts["message-summary"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["message-summary"].appears(timeout: 5))
         XCTAssertTrue(app.buttons["Hear sample message"].isHittable)
         reveal(app.buttons["Find a trusted number"], in: app)
         capture(app, "walkthrough-message-reading-and-action")
@@ -366,7 +366,7 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertGreaterThan(remove.frame.width, 250)
         capture(app, "walkthrough-contact-removal-scope")
         remove.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        XCTAssertTrue(app.buttons["Remove contact"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Remove contact"].appears(timeout: 5))
         capture(app, "walkthrough-contact-after-edge-tap")
         XCTAssertTrue(app.buttons["Keep contact"].exists)
         XCTAssertTrue(app.staticTexts["This can also remove the contact from your other devices through iCloud. A restore copy stays on this phone."].exists)
@@ -377,7 +377,7 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testGetStartedAsksForHelpWithoutInvitations() {
         let app = launch("join")
-        XCTAssertTrue(app.staticTexts["Welcome to Shield"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Welcome to Shield"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["Ask your helper to set up your phone."].exists)
         XCTAssertFalse(app.buttons["Use an invitation"].exists)
         XCTAssertTrue(app.buttons["Sign out"].exists)
@@ -386,8 +386,8 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testSharingListsHelpersWithoutMakingInvitations() {
         let app = launch("sharing-access")
-        XCTAssertTrue(app.navigationBars["Your helpers"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Jamie"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Your helpers"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Jamie"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["Calls and messages"].exists)
         XCTAssertFalse(app.textFields.firstMatch.exists)
         XCTAssertFalse(app.buttons["Make invitation"].exists)
@@ -401,7 +401,7 @@ final class SeniorPolishUITests: XCTestCase {
             let app = launch("sharing-access", extra: arguments)
             let stop = app.buttons["Stop sharing with Jamie"]
             reveal(stop, in: app); stop.tap()
-            XCTAssertTrue(app.alerts["Stop sharing with Jamie?"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.alerts["Stop sharing with Jamie?"].appears(timeout: 5))
             XCTAssertTrue(app.buttons["Keep sharing"].isHittable)
             capture(app, "walkthrough-keep-sharing-confirmation-\(large ? "large" : "standard")")
             app.buttons["Keep sharing"].tap()
@@ -419,7 +419,7 @@ final class SeniorPolishUITests: XCTestCase {
             reveal(settings, in: app); settings.tap()
             let leave = app.buttons["Leave sample app"].firstMatch
             reveal(leave, in: app); leave.tap()
-            XCTAssertTrue(app.alerts["Leave the sample app?"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.alerts["Leave the sample app?"].appears(timeout: 5))
             XCTAssertTrue(app.buttons["Cancel"].isHittable)
             capture(app, "walkthrough-exit-confirmation-\(large ? "large" : "standard")")
             app.buttons["Cancel"].tap()
@@ -435,7 +435,7 @@ final class SeniorPolishUITests: XCTestCase {
     }
 
     private func reveal(_ element: XCUIElement, in app: XCUIApplication, towardTop: Bool = false) {
-        _ = element.waitForExistence(timeout: 2)
+        _ = element.appears(timeout: 2)
         for _ in 0..<25 {
             let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
             var bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
@@ -461,7 +461,7 @@ final class SeniorPolishUITests: XCTestCase {
     }
 
     private func expectVisible(_ element: XCUIElement, in app: XCUIApplication) {
-        XCTAssertTrue(element.waitForExistence(timeout: 5))
+        XCTAssertTrue(element.appears(timeout: 5))
         let visible = NSPredicate { _, _ in
             element.isHittable && element.frame.minY >= app.navigationBars.firstMatch.frame.maxY && element.frame.maxY <= app.frame.maxY
         }
@@ -471,12 +471,13 @@ final class SeniorPolishUITests: XCTestCase {
 
     private func capture(_ app: XCUIApplication, _ name: String) {
         Thread.sleep(forTimeInterval: 0.8)
-        let shot = XCTAttachment(screenshot: app.screenshot())
+        let screenshot = app.screenshot()
+        let shot = XCTAttachment(screenshot: screenshot)
         shot.name = name; shot.lifetime = .keepAlways; add(shot)
         do {
             let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("PolishScreens")
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            try app.screenshot().pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
+            try screenshot.pngRepresentation.write(to: directory.appendingPathComponent(name + ".png"))
         } catch { XCTFail("Couldn’t save simulator capture: \(error.localizedDescription)") }
     }
 }
