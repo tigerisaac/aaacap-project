@@ -1,0 +1,70 @@
+import SwiftUI
+
+struct AddTrustedContactView: View {
+    @Environment(AppState.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    let participantID: UUID
+    let onSaved: (TrustedContact) -> Void
+    @State private var requestID = UUID()
+    @State private var name = ""
+    @State private var phone = ""
+    @State private var showingPicker = false
+    @State private var working = false
+    @State private var error: String?
+    @FocusState private var field: Field?
+    private enum Field { case name, phone }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
+                Button("Choose from Contacts", systemImage: "person.crop.circle.badge.plus") { showingPicker = true }
+                    .frame(minHeight: 44).disabled(working)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Their name").font(.headline)
+                    TextField("Name", text: $name, prompt: Text("Name").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.name).focused($field, equals: .name)
+                        .padding(16).background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }.accessibilityIdentifier("trusted-contact-name")
+                    Text("Their mobile number").font(.headline)
+                    TextField("Mobile number", text: $phone, prompt: Text("Mobile number").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.telephoneNumber).keyboardType(.phonePad).focused($field, equals: .phone)
+                        .padding(16).background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }.accessibilityIdentifier("trusted-contact-phone")
+                }.disabled(working)
+                Text("With their permission, send a request. They choose texts, app alerts, or both.")
+                    .foregroundStyle(ShieldTheme.secondaryText)
+                if let error { ShieldNotice(title: "Couldn’t add this contact", detail: error, symbol: "exclamationmark.circle") }
+                Button { Task { await save() } } label: {
+                    ShieldActionLabel(title: working ? "Sending…" : "Send request", isWorking: working)
+                }.shieldPrimaryButton().disabled(working || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || name.count > 60 || MobileNumber.normalized(phone) == nil)
+                    .accessibilityIdentifier("trusted-contact-send")
+                ShieldDisclosure("What is shared?") {
+                    Text("Alerts include your name and a brief protection update. Calls, recordings, and messages stay private. Message and data rates may apply.")
+                        .foregroundStyle(ShieldTheme.secondaryText)
+                }
+            }.padding(ShieldTheme.Spacing.page)
+                .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
+        }.background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
+            .navigationTitle("Add trusted contact").navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(working).interactiveDismissDisabled(working)
+            .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { field = nil } } }
+            .sheet(isPresented: $showingPicker) {
+                TrustedContactPicker(onSelect: { selectedName, selectedPhone in name = selectedName; phone = selectedPhone; showingPicker = false }, onCancel: { showingPicker = false })
+            }
+    }
+    private func save() async {
+        guard let phone = MobileNumber.normalized(phone), !working else { return }
+        working = true; error = nil; field = nil
+        defer { working = false }
+        do {
+            let contact: TrustedContact
+            if model.isPreview {
+                contact = TrustedContact(id: requestID, name: name, phone: phone, status: "pending", textAlerts: false, appAlerts: false, requestDelivery: "submitted")
+            } else {
+                let response: TrustedContactCreated = try await model.api.send("/api/trusted-contacts", method: "POST", body: APIClient.payload([
+                    "id": requestID.uuidString.lowercased(), "name": name.trimmingCharacters(in: .whitespacesAndNewlines), "phone": phone, "consent": true
+                ]), participantID: participantID)
+                contact = response.contact
+            }
+            onSaved(contact); dismiss()
+        } catch { self.error = error.localizedDescription }
+    }
+}

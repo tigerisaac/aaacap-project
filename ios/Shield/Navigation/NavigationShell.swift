@@ -16,6 +16,8 @@ struct NavigationShell<Content: View>: View {
                     case .savedNumbers: SavedNumbersView(kind: .destinations)
                     case .trustedNumbers: SharedContactsView()
                     case .sharing: SharingView()
+                    case .trustedContacts: TrustedContactsView()
+                    case .contactAlerts: ContactAlertsView()
                     case .help: HelpView()
                     case .blockedNumbers: BlockedNumbersView()
                     case .people: PeopleView()

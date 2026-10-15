@@ -1,5 +1,15 @@
 # Architecture
 
+## Phone sign-in and optional alert contacts — repository implementation, October 14
+
+The iPhone entry point now verifies a US/Canadian mobile number with a Telnyx Verify code. Shield keeps an encrypted, five-minute challenge, enforces per-number/IP/global limits and a resend cooldown, allows five checks, and atomically consumes a fenced verification before minting a Firebase custom-auth session. Codes are provider-generated and never stored by Shield. Firebase phone accounts are reused or created; matching a participant's phone does not transfer its ownership to a different UID. Existing email-link sign-in remains available, including cold-launch links. No iOS Firebase SDK is added.
+
+After the owner's ring and forwarding checks pass and setup reaches `checks`, onboarding asks whether to add a trusted contact or continue independently. Both choices are explicit. An owner who opts in enters/selects a contact name and mobile number. A generic SMS links to `/trusted-contacts.html`; the recipient verifies that number and accepts or declines. Recipients choose texts in the browser, or texts, app notifications, or both in the iPhone app. App notification permission is requested in context. A recipient does not need a protected-phone enrollment to accept or register their device.
+
+`alertContacts` is separate from history-sharing `grants` and `memberships`; it never authorizes call/message/audio access. No alerts are sent while pending. Either person can stop the relationship, and the owner can pause all contact alerts. Only protection events are eligible, with no caller words/numbers. Signed Telnyx STOP/START webhooks maintain a hashed SMS suppression record. SMS has an at-most-once submission attempt per event/contact, no automatic retry after uncertain submission, daily quotas, and content-free receipts retained for 30 days. Provider submission is not delivery confirmation. Accepted relationships persist; other requests expire in 30 days. New sign-in challenges and receipts join daily cleanup.
+
+This code has **not been deployed or verified with real SMS/phone calls**. Phone sign-in needs `TELNYX_VERIFY_PROFILE_ID`; contact requests also need `SMS_ALERTS`. APNs is an independent optional channel. Live activation prerequisites are in Operations. Phone sign-in creates an account, not a provisioned Shield number or verified forwarding route; pilot enrollment remains an operator step.
+
 ## Shared-number deployment (October 13, 2026)
 
 At 22:04 Central, the owner-approved hybrid release was verified on `shield-live-00014-pz9`, serving 100% of screening traffic. Soniox transcribes caller audio; GPT-6 Luna medium/Fast assesses the unchanged v158 policy. GPT Live starts only for a useful clarification, carrying caller history, pending question and remaining budgets. The entire screening stays bounded to 75 seconds. Initial silence can end; unresolved speech or provider failures go to voicemail. See [hybrid design and validation](HYBRID-SCREENING.md).

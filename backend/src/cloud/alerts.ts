@@ -2,6 +2,7 @@ import { connect } from 'node:http2';
 import { createPrivateKey, sign, type KeyObject } from 'node:crypto';
 import type { DocumentData, DocumentReference } from 'firebase-admin/firestore';
 import type { CloudStore, Person } from './store.js';
+import { TelnyxTextSender, type TextSender } from './text-alerts.js';
 
 // Push alerts for the person and the helpers they share with. An alert is queued as a contentless job in the same
 // write as the event that causes it; `sendShieldAlert` composes fixed wording and sends it through APNs.
@@ -26,9 +27,9 @@ export type PushEnvironment = 'development' | 'production';
 
 /** Anything with Firestore's `create`: a transaction or a batch. */
 type Writer = { create(ref: DocumentReference, data: DocumentData): unknown };
-/** Queue an alert atomically with the event. Does nothing when push isn't configured. */
+/** Queue an alert atomically with the event. Does nothing when neither delivery channel is configured. */
 export function queueAlert(store: CloudStore, writer: Writer, participantId: string, kind: AlertKind) {
-  if (!store.config.APNS) return;
+  if (!store.config.APNS && !store.config.SMS_ALERTS) return;
   const now = store.now();
   writer.create(store.db.collection('alerts').doc(), { participantId, kind, createdAt: now, expiresAt: now + ALERT_TTL_MS });
 }
@@ -86,7 +87,7 @@ export class APNsSender implements PushSender {
 
 /** Sends one queued alert to the person's and, if they chose it, their helpers' registered devices, then deletes the job. */
 export class AlertDelivery {
-  constructor(readonly store: CloudStore, readonly sender: PushSender) {}
+  constructor(readonly store: CloudStore, readonly sender: PushSender, readonly textSender: TextSender = new TelnyxTextSender(store)) {}
   async deliver(alertId: string) {
     const s = this.store, ref = s.db.collection('alerts').doc(alertId);
     try {
@@ -117,7 +118,48 @@ export class AlertDelivery {
         }
       }
       console.info(JSON.stringify({ event: 'alert_delivered', kind: alert.kind, recipients: targets.length, ...tally }));
+      await this.deliverContacts(alertId, person, alert.kind as AlertKind, spec, alert.createdAt);
     } finally { await ref.delete(); }
+  }
+
+  private async deliverContacts(alertId: string, person: Person, kind: AlertKind, spec: AlertSpec, createdAt: number) {
+    const s = this.store;
+    // Trusted contacts receive protection events only, never voicemail or message activity.
+    if (!['monitor_intervened', 'blocked_caller', 'protection_paused', 'restoration_started', 'setup_check_failed'].includes(kind)) return;
+    const docs = await s.db.collection('alertContacts').where('participantId', '==', person.id).get();
+    for (const contact of docs.docs) {
+      const receipt = s.db.collection('alertDeliveries').doc(s.vault.hash(`${alertId}:${contact.id}`));
+      const claimed = await s.db.runTransaction(async tx => {
+        const [old, personDoc, contactDoc] = await tx.getAll(receipt, s.personRef(person.id), contact.ref);
+        const d = contactDoc!.data(), p = personDoc!.data();
+        if (old!.exists || !p || p.status === 'offboarded' || p.trustedContactsChoice?.enabled !== true || d?.status !== 'accepted' || !d.recipientUid || d.respondedAt > createdAt || p.trustedContactsChoice.updatedAt > createdAt) return;
+        const optOut = (await tx.get(s.db.collection('smsOptOuts').doc(d.phoneHash))).data();
+        tx.create(receipt, { participantId: person.id, startedAt: s.now(), expiresAt: s.now() + 30 * 86400_000 });
+        return { phoneHash: d.phoneHash as string, phoneEnc: d.phoneEnc as string, recipientUid: d.recipientUid as string,
+          push: d.push === true, sms: d.sms === true && !optOut?.stopped };
+      });
+      if (!claimed) continue;
+      const body = spec.helpers(s.name(person));
+      let textResult = 'not_requested';
+      if (claimed.sms) {
+        try {
+          await s.quota([[`contact-alerts:${claimed.phoneHash}`, 20], ['contact-alerts:global', 200]]);
+          textResult = await this.textSender.send(s.vault.open(claimed.phoneEnc, `alert-contact:${contact.id}:phone`), `Shield: ${body} Reply STOP to stop texts.`);
+        } catch { textResult = 'limited'; }
+      }
+      let pushSent = 0;
+      if (claimed.push && s.config.APNS) {
+        const devices = await s.db.collection('devices').where('uid', '==', claimed.recipientUid).limit(10).get();
+        for (const device of devices.docs) {
+          const d = device.data();
+          if (d.expiresAt <= s.now()) continue;
+          const result = await this.sender.send(s.vault.open(d.tokenEnc, `device:${device.id}`), d.environment, body, kind);
+          if (result === 'sent') pushSent++;
+          if (result === 'unregistered') await device.ref.delete();
+        }
+      }
+      await receipt.update({ textResult, pushSent, finishedAt: s.now() });
+    }
   }
 }
 

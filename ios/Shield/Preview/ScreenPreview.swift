@@ -10,7 +10,7 @@ struct ScreenPreview: View {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: "--uitesting-screen"), arguments.indices.contains(index + 1) else { return nil }
         let screen = arguments[index + 1]
-        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"].contains(screen) ? screen : nil
+        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts", "contact-alerts", "trusted-contacts"].contains(screen) ? screen : nil
     }
 
     var body: some View {
@@ -25,6 +25,8 @@ struct ScreenPreview: View {
                     case "numbers": SavedNumbersView(kind: .destinations)
                     case "sharing", "sharing-access": SharingView()
                     case "contacts": SharedContactsView()
+                    case "contact-alerts": ContactAlertsView()
+                    case "trusted-contacts": TrustedContactsView()
                     case "quiet": QuietHoursView()
                     case "blocked": BlockedNumbersView()
                     case "setup", "setup-details", "trial-options": SetupView()

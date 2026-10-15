@@ -104,13 +104,13 @@ final class SeniorDesignUITests: XCTestCase {
 
     func testWelcomeAndChoicesStayBrief() {
         var app = launch([], sample: false)
-        XCTAssertTrue(app.textFields["Email address"].appears(timeout: 5))
+        XCTAssertTrue(app.textFields["sign-in-phone"].appears(timeout: 5))
         capture(app, "senior-sign-in-light")
         app = launch(["--uitesting-protection-onboarding"], sample: false)
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))
         capture(app, "senior-protection-choice-light")
-        app = launch(["--uitesting-helper-alerts-onboarding"], sample: false)
-        XCTAssertTrue(app.switches["onboarding-helper-alerts-toggle"].appears(timeout: 5))
+        app = launch(["--uitesting-trusted-contacts"], sample: false)
+        XCTAssertTrue(app.buttons["trusted-contact-no"].appears(timeout: 5))
         capture(app, "senior-helper-choice-light")
     }
 

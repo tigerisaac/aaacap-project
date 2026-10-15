@@ -48,7 +48,7 @@ export class CloudStore {
   }
   /** One bounded daily invocation; all reads hide expired data immediately. */
   async cleanup(): Promise<void> {
-    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents']) {
+    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents', 'phoneAuthChallenges', 'phoneAuthLimits', 'alertDeliveries', 'alertContacts']) {
       const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
       // Preserve recoverable historical stops before the first post-upgrade cleanup deletes their records.
       if (collection === 'callSessions') {
@@ -57,7 +57,9 @@ export class CloudStore {
           if (person && person.status !== 'offboarded') await stoppedTotal(this, participantId);
         }
       }
-      if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
+      if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => {
+        if (collection !== 'alertContacts' || doc.data().status !== 'accepted') batch.delete(doc.ref);
+      }); await batch.commit(); }
     }
     const blocked = await this.db.collectionGroup('blocked-numbers').where('expiresAt', '<=', this.now()).limit(400).get();
     if (!blocked.empty) { const batch = this.db.batch(); blocked.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }

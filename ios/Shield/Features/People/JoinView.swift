@@ -20,17 +20,22 @@ struct JoinView: View {
                     ShieldPageHeader {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                            Text("Ask your helper to set up your phone.")
+                            Text("You’re signed in. Protecting your phone needs a Shield number and carrier setup. During the pilot, contact Shield to arrange this.")
                                 .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
                         }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }
                     if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                         ShieldGroup {
-                            Link(destination: url) { Label("Ask for setup help", systemImage: "phone.badge.plus") }
+                            Link(destination: url) { Label("Arrange phone setup", systemImage: "phone.badge.plus") }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         }
                     }
                 }
+                ShieldGroup {
+                    NavigationLink { ContactAlertsView() } label: {
+                        ActionRow(title: "Alerts for others", symbol: "bell")
+                    }
+                } footer: { Text("If someone added you as a trusted contact, review their request here. You don’t need to set up call protection.") }
                 ShieldGroup {
                     Button("Sign out") { confirmSignOut = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         .alert("Sign out?", isPresented: $confirmSignOut) {

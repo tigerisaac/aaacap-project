@@ -89,8 +89,10 @@ struct RootView: View {
                     ForwardingSetupView()
                         .safeAreaInset(edge: .top) { Text("Demo · No calls placed").font(.subheadline.weight(.medium)).foregroundStyle(ShieldTheme.secondaryText).padding(8).frame(maxWidth: .infinity).background(ShieldTheme.surface) }
                 }
-            } else if model.signedIn, model.protectionOnboarding != nil || model.helperAlertsOnboarding, let participantID = model.protectionParticipantID {
-                ProtectionOnboardingView(monitoring: model.protectionOnboarding, asksHelperAlerts: model.helperAlertsOnboarding, participantID: participantID)
+            } else if model.signedIn, model.protectionOnboarding != nil, let participantID = model.protectionParticipantID {
+                ProtectionOnboardingView(monitoring: model.protectionOnboarding, participantID: participantID)
+            } else if model.signedIn, model.trustedContactsOnboarding, let participantID = model.protectionParticipantID {
+                NavigationStack { TrustedContactOnboardingView(participantID: participantID) }
             } else if let contactDemoAction, model.signedIn, model.isOwner {
                 NavigationStack { SharedContactsView(demoAction: contactDemoAction) }
             } else if model.signedIn {
@@ -122,7 +124,13 @@ struct RootView: View {
                     }
                 }
             } else {
-                SignInView()
+                #if DEBUG && targetEnvironment(simulator)
+                if ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--uitesting-email") || $0.hasPrefix("--uitesting-auth") }) {
+                    SignInView()
+                } else { PhoneSignInView() }
+                #else
+                PhoneSignInView()
+                #endif
             }
     }
 }

@@ -88,6 +88,19 @@ actor APIClient {
         let _: APIResponses.Empty = try await send("/auth/request-code", method: "POST", body: Self.payload(["email": email]), authenticated: false)
     }
 
+    func requestPhoneCode(phone: String) async throws -> PhoneChallenge {
+        try await send("/auth/phone/start", method: "POST", body: Self.payload(["phone": phone]), authenticated: false)
+    }
+
+    func signIn(challenge: String, code: String) async throws {
+        let generation = sessionGeneration
+        let result: AuthTokens = try await send("/auth/phone/verify", method: "POST", body: Self.payload(["challenge": challenge, "code": code]), authenticated: false)
+        guard generation == sessionGeneration else { throw CancellationError() }
+        try keychain.write(result)
+        sessionGeneration += 1
+        tokens = result
+    }
+
     func signIn(email: String, code: String) async throws {
         let generation = sessionGeneration
         let result: AuthTokens = try await send("/auth/verify-code", method: "POST", body: Self.payload(["email": email, "code": code]), authenticated: false)

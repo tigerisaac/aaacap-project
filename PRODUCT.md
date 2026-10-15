@@ -12,7 +12,7 @@ Native SwiftUI companion; TypeScript backend on Firebase (Functions, Firestore, 
 
 ## Users
 
-Older adults reviewing their calls, and helpers with explicit, revocable access. The owner’s October 12 brief makes an 80-year-old’s understanding the design bar: less text, everyday language, fewer visible choices, and calls and voicemail first. Preserve the native app’s familiar appearance while simplifying every interaction.
+Older adults reviewing their calls, independent users who do not want outside help, and optional trusted contacts. Shared call access remains explicit and revocable. The owner’s October 12 brief makes an 80-year-old’s understanding the design bar: less text, everyday language, fewer visible choices, and calls and voicemail first. Preserve the native app’s familiar appearance while simplifying every interaction.
 
 ## Product Purpose
 
@@ -20,7 +20,7 @@ Screen selected unfamiliar forwarded calls, hold sensitive requests for independ
 
 ## Operating Context
 
-The participant keeps their mobile number, native Phone app, and Messages. Carrier setup is assisted and tested. Caregivers who already have shared access can switch between the people who share with them; the app does not create or accept invitations. Live voice delivery is independent of the companion app being foregrounded.
+The participant keeps their mobile number, native Phone app, and Messages. Carrier setup is assisted and tested. Caregivers who already have shared access can switch between the people who share with them; the app does not create or accept call-history sharing invitations. Optional trusted-contact requests are separate: recipients consent to texts/app alerts and gain no access to call history or recordings. Live voice delivery is independent of the companion app being foregrounded.
 
 ## Capabilities and Constraints
 
@@ -28,7 +28,7 @@ Call history, held-call explanations, protected voicemail, manual message checks
 
 ## Brand Commitments
 
-Shield is a working name. Minimal text and more color are explicit user preferences. AAACAP sponsorship or branding is not authorized.
+Use concise, compact screens with one clear purpose. Avoid eyebrow headings, repeated explanations and oversized spacing. Ordinary one-contact web states should fit without scrolling at default text size; preserve scrolling for accessibility sizes and expanded details. Shield is a working name. Minimal text and more color are explicit user preferences. AAACAP sponsorship or branding is not authorized.
 
 ## Evidence on Hand
 

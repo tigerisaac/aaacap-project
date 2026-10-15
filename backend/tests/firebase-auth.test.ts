@@ -68,3 +68,44 @@ describe('Firebase authentication', () => {
     expect(request).not.toHaveBeenCalled();
   });
 });
+
+describe('Verified phone accounts', () => {
+  const phone = '+12025550101';
+  const phoneAdmin = () => ({ ...admin(), verifyIdToken: vi.fn(async () => ({ uid: 'phone-user', phone_number: phone } as DecodedIdToken)),
+    getUserByPhoneNumber: vi.fn(async () => ({ uid: 'phone-user', disabled: false } as import('firebase-admin/auth').UserRecord)),
+    createUser: vi.fn(async () => ({ uid: 'phone-user', disabled: false } as import('firebase-admin/auth').UserRecord)),
+    createCustomToken: vi.fn(async () => 'synthetic-custom-token') });
+  const session = () => Response.json({ idToken: 'id-token', refreshToken: 'refresh-token', expiresIn: '3600' });
+  it('accepts verified phone claims without requiring an email, but rejects invalid phone claims', async () => {
+    const service = phoneAdmin(), auth = new FirebaseAuth(config, vi.fn(), service);
+    expect(await auth.identify('token')).toEqual({ subject: 'phone-user', verifiedPhone: phone });
+    service.verifyIdToken.mockResolvedValueOnce({ uid: 'phone-user', phone_number: 'unverified-text' } as DecodedIdToken);
+    await expect(auth.identify('token')).rejects.toMatchObject({ statusCode: 401 });
+  });
+  it('reuses the phone account and exchanges a custom token without returning it', async () => {
+    const service = phoneAdmin(), request = vi.fn<typeof fetch>().mockResolvedValue(session());
+    const result = await new FirebaseAuth(config, request, service).signInVerifiedPhone(phone);
+    expect(service.getUserByPhoneNumber).toHaveBeenCalledWith(phone);
+    expect(service.createUser).not.toHaveBeenCalled();
+    expect(service.createCustomToken).toHaveBeenCalledWith('phone-user');
+    expect(JSON.parse(request.mock.calls[0]![1]!.body as string)).toEqual({ token: 'synthetic-custom-token', returnSecureToken: true });
+    expect(result).toEqual({ accessToken: 'id-token', refreshToken: 'refresh-token', expiresIn: 3600 });
+  });
+  it('creates only missing phone accounts and handles concurrent creation without reassignment', async () => {
+    const service = phoneAdmin();
+    service.getUserByPhoneNumber.mockRejectedValueOnce({ code: 'auth/user-not-found' });
+    service.createUser.mockRejectedValueOnce({ code: 'auth/phone-number-already-exists' });
+    await new FirebaseAuth(config, vi.fn<typeof fetch>().mockResolvedValue(session()), service).signInVerifiedPhone(phone);
+    expect(service.createUser).toHaveBeenCalledWith({ phoneNumber: phone });
+    expect(service.getUserByPhoneNumber).toHaveBeenCalledTimes(2);
+    expect(service.createCustomToken).toHaveBeenCalledWith('phone-user');
+  });
+  it('never signs in disabled accounts or creates an account after an infrastructure error', async () => {
+    const service = phoneAdmin(), request = vi.fn<typeof fetch>(), auth = new FirebaseAuth(config, request, service);
+    service.getUserByPhoneNumber.mockResolvedValueOnce({ uid: 'disabled', disabled: true } as import('firebase-admin/auth').UserRecord);
+    await expect(auth.signInVerifiedPhone(phone)).rejects.toMatchObject({ code: 'sign_in_failed' });
+    service.getUserByPhoneNumber.mockRejectedValueOnce(new Error('private detail'));
+    await expect(auth.signInVerifiedPhone(phone)).rejects.toMatchObject({ code: 'sign_in_unavailable' });
+    expect(service.createUser).not.toHaveBeenCalled(); expect(service.createCustomToken).not.toHaveBeenCalled(); expect(request).not.toHaveBeenCalled();
+  });
+});

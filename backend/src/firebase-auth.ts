@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { HttpError, type AuthProvider, type Identity } from './auth.js';
 import type { CloudConfig } from './cloud/config.js';
 
-type FirebaseAdmin = Pick<Auth, 'verifyIdToken' | 'revokeRefreshTokens'>;
+type FirebaseAdmin = Pick<Auth, 'verifyIdToken' | 'revokeRefreshTokens'> & Partial<Pick<Auth, 'getUserByPhoneNumber' | 'createUser' | 'createCustomToken'>>;
 const sessionSchema = z.object({ idToken: z.string().min(1), refreshToken: z.string().min(1),
   expiresIn: z.coerce.number().int().positive().max(86400) });
 
@@ -50,14 +50,39 @@ export class FirebaseAuth implements AuthProvider {
       // Official SDK checks signatures, project audience/issuer and expiry.
       // checkRevoked=true also rejects disabled users and revoked sessions.
       const claims = await this.service().verifyIdToken(token, true);
-      if (!claims.uid || !claims.email_verified) throw new Error('unverified_identity');
-      return { subject: claims.uid };
+      const phone = typeof claims.phone_number === 'string' && /^\+1[2-9]\d{9}$/.test(claims.phone_number) ? claims.phone_number : undefined;
+      if (!claims.uid || (!claims.email_verified && !phone)) throw new Error('unverified_identity');
+      return { subject: claims.uid, ...(phone ? { verifiedPhone: phone } : {}) };
     } catch { throw new HttpError(401, 'sign_in_required'); }
   }
   async requestCode(email: string): Promise<void> {
     await this.provider('sendOobCode', { requestType: 'EMAIL_SIGNIN', email,
       continueUrl: `https://${this.config.FIREBASE_PROJECT_ID}.firebaseapp.com/sign-in`,
       iOSBundleId: this.config.IOS_BUNDLE_ID, canHandleCodeInApp: true });
+  }
+  async signInVerifiedPhone(phone: string): Promise<Record<string, unknown>> {
+    if (!/^\+1[2-9]\d{9}$/.test(phone)) throw new HttpError(400, 'invalid_phone');
+    const service = this.service();
+    if (!service.getUserByPhoneNumber || !service.createUser || !service.createCustomToken) throw new HttpError(503, 'sign_in_unavailable');
+    try {
+      const lookup = () => service.getUserByPhoneNumber!(phone);
+      let user;
+      try { user = await lookup(); }
+      catch (error) {
+        if ((error as { code?: string }).code !== 'auth/user-not-found') throw error;
+        try { user = await service.createUser({ phoneNumber: phone }); }
+        catch (creationError) {
+          if ((creationError as { code?: string }).code !== 'auth/phone-number-already-exists') throw creationError;
+          user = await lookup();
+        }
+      }
+      if (user.disabled) throw new HttpError(401, 'sign_in_failed');
+      const token = await service.createCustomToken(user.uid);
+      return await this.session(await this.provider('signInWithCustomToken', { token, returnSecureToken: true }));
+    } catch (error) {
+      if (error instanceof HttpError) throw error;
+      throw new HttpError(503, 'sign_in_unavailable');
+    }
   }
   async verifyCode(email: string, token: string): Promise<Record<string, unknown>> {
     return this.session(await this.provider('signInWithEmailLink', { email, oobCode: token }));

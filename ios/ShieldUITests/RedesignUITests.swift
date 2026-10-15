@@ -283,7 +283,7 @@ final class RedesignUITests: XCTestCase {
     }
 
     func testWelcomeAccessibilityAudit() throws {
-        let app = launch([])
+        let app = launch(["--uitesting-email-sign-in"])
         XCTAssertTrue(app.textFields["Email address"].appears(timeout: 5))
         try auditScreen(app, types: [.contrast, .textClipped, .hitRegion, .sufficientElementDescription])
     }

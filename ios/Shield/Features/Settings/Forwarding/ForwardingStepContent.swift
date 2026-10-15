@@ -10,7 +10,7 @@ struct ForwardingStepContent: View {
             switch step {
             case .overview:
                 Text("Shield asks unfamiliar callers why they’re calling. You choose whether to answer.").font(.title3)
-                Text("We’ll save Shield, change two Phone settings, and check a call.")
+                Text("We’ll save Shield, check that it can ring you, change two Phone settings, and connect your carrier. Then we’ll check that calls reach Shield.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                 Label("Your place is saved", systemImage: "bookmark").foregroundStyle(ForwardingStyle.secondaryText)
             case .consent:
@@ -25,8 +25,8 @@ struct ForwardingStepContent: View {
                     Text("Shield saves messages with audio and a short summary. Messages and call history are deleted after 30 days.")
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Try it for 30 minutes").font(.headline)
-                    Text("Up to 10 calls can be checked. Your usual \(status.carrier) charges apply.")
+                    Text(status.alwaysOn == true ? "Start with a call test" : "Try it for 30 minutes").font(.headline)
+                    Text(status.alwaysOn == true ? "You have 30 minutes to finish the call test. Once setup is verified, Shield stays on. Your usual \(status.carrier) charges apply." : "Up to 10 calls can be checked. Your usual \(status.carrier) charges apply.")
                 }
                 Text("To leave Shield, use Disconnect Shield in Setup options. Deleting the app won’t disconnect it.")
                     .foregroundStyle(ForwardingStyle.secondaryText)

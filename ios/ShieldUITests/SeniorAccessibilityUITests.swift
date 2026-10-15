@@ -39,8 +39,8 @@ final class SeniorAccessibilityUITests: XCTestCase {
         var app = launch(["--uitesting-protection-onboarding"])
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))
         try audit(app, "accessibility-protection-choice")
-        app = launch(["--uitesting-helper-alerts-onboarding"])
-        XCTAssertTrue(app.switches["onboarding-helper-alerts-toggle"].appears(timeout: 5))
+        app = launch(["--uitesting-trusted-contacts"])
+        XCTAssertTrue(app.buttons["trusted-contact-no"].appears(timeout: 5))
         try audit(app, "accessibility-helper-choice")
     }
 

@@ -242,36 +242,19 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Quiet hours"].exists)
     }
 
-    func testOnboardingChoiceBackRestoresTheUnsavedSelection() {
+    func testOptionalContactCanBeBackedOutOfAtLargestText() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = ["--uitesting-trusted-contacts", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
-        let toggle = app.switches["onboarding-protection-toggle"]
-        let completion = app.buttons["onboarding-protection-continue"]
-        XCTAssertFalse(completion.isHittable, "Read the choice before advancing at accessibility text sizes.")
-        capture(app, "polish-protection-onboarding-large-dark-start")
-        reveal(toggle, in: app); toggle.tap()
-        reveal(completion, in: app)
-        XCTAssertGreaterThanOrEqual(completion.frame.minY, toggle.frame.maxY)
-        capture(app, "polish-protection-choice-and-next-large-dark")
-        completion.tap()
-        XCTAssertTrue(app.staticTexts["Let a helper know"].appears(timeout: 5))
-        let secondStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 2 of 2")).firstMatch
-        expectVisible(secondStep, in: app)
-        capture(app, "polish-helper-onboarding-large-dark")
-        XCTAssertFalse(completion.isHittable, "Read the helper choice before saving at accessibility text sizes.")
-        let helperToggle = app.switches["onboarding-helper-alerts-toggle"]
-        reveal(helperToggle, in: app)
-        reveal(completion, in: app)
-        XCTAssertGreaterThanOrEqual(completion.frame.minY, helperToggle.frame.maxY)
-        capture(app, "polish-helper-choice-and-save-large-dark")
-        app.buttons["Back"].tap()
-        let firstStep = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Your choices, step 1 of 2")).firstMatch
-        expectVisible(firstStep, in: app)
-        capture(app, "polish-protection-onboarding-large-dark")
-        reveal(toggle, in: app)
-        XCTAssertEqual(toggle.value as? String, "0")
-        capture(app, "polish-protection-choice-control-large-dark")
+        let add = app.buttons["trusted-contact-yes"]
+        reveal(add, in: app); add.tap()
+        XCTAssertTrue(app.textFields["trusted-contact-name"].appears(timeout: 5))
+        app.navigationBars.buttons.firstMatch.tap()
+        let skip = app.buttons["trusted-contact-no"]
+        reveal(skip, in: app)
+        capture(app, "optional-contact-choice-large-dark")
+        skip.tap()
+        XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
     }
 
     func testSecondaryScreensAtLargestTextKeepAllActionsReachable() {
@@ -293,31 +276,18 @@ final class SeniorPolishUITests: XCTestCase {
         }
     }
 
-    func testLargestOnboardingSaveFailureRetainsBothChoices() {
+    func testLargestProtectionSaveFailureRetainsChoice() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding", "--protection-save-fails", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = ["--uitesting-protection-onboarding", "--protection-save-fails", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
         let protection = app.switches["onboarding-protection-toggle"]
         let completion = app.buttons["onboarding-protection-continue"]
         reveal(protection, in: app); protection.tap()
         reveal(completion, in: app); completion.tap()
-        let helpers = app.switches["onboarding-helper-alerts-toggle"]
-        reveal(helpers, in: app); helpers.tap()
-        reveal(completion, in: app); completion.tap()
-        let failure = app.alerts["Couldn’t save your choice"]
-        XCTAssertTrue(failure.appears(timeout: 5))
-        capture(app, "polish-onboarding-save-error-large-dark")
-        failure.buttons["Try again"].tap()
-        XCTAssertTrue(failure.appears(timeout: 5))
-        failure.buttons["Cancel"].tap()
-        XCTAssertEqual(helpers.value as? String, "0")
-        reveal(completion, in: app)
-        XCTAssertTrue(completion.isEnabled)
-        capture(app, "polish-onboarding-save-recovery-large-dark")
-        app.buttons["Back"].tap()
-        reveal(protection, in: app)
-        XCTAssertEqual(protection.value as? String, "0")
-        XCTAssertFalse(app.staticTexts["demoBanner"].exists)
+        XCTAssertTrue(app.staticTexts["Couldn’t save your choice"].appears(timeout: 5))
+        reveal(completion, in: app); XCTAssertTrue(completion.isEnabled)
+        reveal(protection, in: app); XCTAssertEqual(protection.value as? String, "0")
+        capture(app, "protection-save-recovery-large-dark")
     }
 
     func testConfiguredSettingsAndSharingScopesStayReadable() {

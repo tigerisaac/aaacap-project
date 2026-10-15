@@ -31,8 +31,8 @@ final class AppState {
     /// These choices affect synthetic messages only; keeping real messages is a proposed feature.
     var demoKeptMessages: Set<UUID> = []
     var protectionOnboarding: ForwardingStatus.Monitoring?
-    /// The person hasn't chosen yet whether their helpers get alerts, and push alerts are available.
-    var helperAlertsOnboarding = false
+    /// Ask about optional contacts only after phone setup has passed its call checks.
+    var trustedContactsOnboarding = false
     var protectionParticipantID: UUID?
     private var protectionChoiceGeneration = 0
     private(set) var sessionGeneration = 0
@@ -58,10 +58,10 @@ final class AppState {
             protectionParticipantID = selectedPersonID
             protectionOnboarding = .init(available: true, enabled: false, consentVersion: "ui-test", choiceRecorded: false)
         }
-        if ProcessInfo.processInfo.arguments.contains("--uitesting-helper-alerts-onboarding") {
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-trusted-contacts") {
             if !isDemo { exploreDemo() }
             protectionParticipantID = selectedPersonID
-            helperAlertsOnboarding = true
+            trustedContactsOnboarding = true
         }
         #if targetEnvironment(simulator)
         if ProcessInfo.processInfo.arguments.contains("--uitesting-account-error") {
@@ -90,7 +90,7 @@ final class AppState {
     private func startPreview(testAccount: Bool) {
         isTestAccount = testAccount
         protectionOnboarding = nil
-        helperAlertsOnboarding = false
+        trustedContactsOnboarding = false
         protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = true
@@ -103,7 +103,7 @@ final class AppState {
 
     func didSignIn() async {
         protectionOnboarding = nil
-        helperAlertsOnboarding = false
+        trustedContactsOnboarding = false
         protectionParticipantID = nil
         sessionGeneration += 1
         isPreview = false
@@ -113,7 +113,7 @@ final class AppState {
 
     func select(_ person: Person) async {
         protectionOnboarding = nil
-        helperAlertsOnboarding = false
+        trustedContactsOnboarding = false
         protectionParticipantID = nil
         selectedPersonID = person.id
         overview = nil
@@ -184,48 +184,46 @@ final class AppState {
         guard let status: ForwardingStatus = try? await api.send("/api/forwarding", participantID: id),
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
               signedIn, selectedPersonID == id else { return }
-        // A service without push alerts reads as nothing to ask.
-        let helpers: APIResponses.HelperAlerts? = try? await api.send("/api/helper-alerts", participantID: id)
+        // Offer optional contacts only when their request-delivery service is configured.
+        let contacts: TrustedContactsResponse? = try? await api.send("/api/trusted-contacts", participantID: id)
         guard generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration, signedIn, selectedPersonID == id else { return }
         if let monitoring = status.monitoring, monitoring.available, monitoring.choiceRecorded == false {
             protectionOnboarding = monitoring
         } else {
             protectionOnboarding = nil
         }
-        helperAlertsOnboarding = helpers?.available == true && helpers?.choiceRecorded == false
-        protectionParticipantID = protectionOnboarding != nil || helperAlertsOnboarding ? id : nil
+        trustedContactsOnboarding = contacts?.available == true && contacts?.choiceRecorded == false
+            && status.ringTestAt != nil && status.forwardingTestAt != nil && status.stage == "checks" && !status.restorationRequested
+        protectionParticipantID = protectionOnboarding != nil || trustedContactsOnboarding ? id : nil
     }
 
-    /// `enabled` is the connected-call protection choice and `helperAlerts` the helper-alert choice; nil means it wasn't asked.
-    func completeProtectionOnboarding(enabled: Bool?, helperAlerts: Bool?, participantID: UUID, version: String?) async throws {
-        guard signedIn, selectedPersonID == participantID, protectionParticipantID == participantID else {
-            throw APIError.invalidResponse
-        }
+    func completeProtectionOnboarding(enabled: Bool, participantID: UUID, version: String) async throws {
+        guard signedIn, selectedPersonID == participantID, protectionParticipantID == participantID else { throw APIError.invalidResponse }
         let generation = sessionGeneration
-        #if DEBUG
-        let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("--uitesting-protection-onboarding") || arguments.contains("--uitesting-helper-alerts-onboarding") {
-            if arguments.contains("--protection-save-fails") { throw APIError.invalidResponse }
-            protectionOnboarding = nil
-            helperAlertsOnboarding = false
-            protectionParticipantID = nil
-            return
-        }
-        #endif
-        if let enabled, let version {
+        if !isPreview {
             let body: [String: Any] = enabled ? ["enabled": true, "version": version] : ["enabled": false]
             let _: APIResponses.Empty = try await api.send("/api/forwarding/monitoring", method: "POST",
                 body: APIClient.payload(body), participantID: participantID)
         }
-        if let helperAlerts {
-            let _: APIResponses.Empty = try await api.send("/api/helper-alerts", method: "POST",
-                body: APIClient.payload(["enabled": helperAlerts]), participantID: participantID)
-        }
+        #if DEBUG && targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--protection-save-fails") { throw APIError.invalidResponse }
+        #endif
         guard generation == sessionGeneration, selectedPersonID == participantID else { return }
         protectionChoiceGeneration += 1
         protectionOnboarding = nil
-        helperAlertsOnboarding = false
-        protectionParticipantID = nil
+        if !trustedContactsOnboarding { protectionParticipantID = nil }
+    }
+
+    func completeTrustedContacts(enabled: Bool, participantID: UUID) async throws {
+        let generation = sessionGeneration
+        if !isPreview {
+            let _: APIResponses.Empty = try await api.send("/api/trusted-contacts/choice", method: "POST",
+                body: APIClient.payload(["enabled": enabled]), participantID: participantID)
+        }
+        guard generation == sessionGeneration, selectedPersonID == participantID else { return }
+        protectionChoiceGeneration += 1
+        trustedContactsOnboarding = false
+        if protectionOnboarding == nil { protectionParticipantID = nil }
     }
 
     func loadContext() async {
@@ -315,7 +313,7 @@ final class AppState {
         calls = []
         service = nil
         protectionOnboarding = nil
-        helperAlertsOnboarding = false
+        trustedContactsOnboarding = false
         protectionParticipantID = nil
         selectedTab = 0
         callsError = nil

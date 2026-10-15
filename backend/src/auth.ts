@@ -3,13 +3,15 @@ import type { FastifyRequest } from 'fastify';
 export class HttpError extends Error {
   constructor(readonly statusCode: number, readonly code: string) { super(code); }
 }
-export type Identity = { subject: string };
+export type Identity = { subject: string; verifiedPhone?: string };
 export interface AuthProvider {
   identify(token: string): Promise<Identity>;
   requestCode(email: string): Promise<void>;
   verifyCode(email: string, token: string): Promise<Record<string, unknown>>;
   refresh(token: string): Promise<Record<string, unknown>>;
   logout(token: string): Promise<void>;
+  /** Server-only: called after the phone verification provider accepts a one-time challenge. */
+  signInVerifiedPhone?(phone: string): Promise<Record<string, unknown>>;
 }
 
 export function bearer(request: FastifyRequest): string {

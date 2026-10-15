@@ -11,7 +11,7 @@ struct ForwardingActions: View {
         VStack(spacing: 4) {
             if model.step != .restore {
                 Button {
-                    if model.step == .checks { dismiss() }
+                    if model.step == .checks { dismiss(); Task { await app.refresh() } }
                     else { Task { await model.primaryAction(app) } }
                 } label: {
                     ShieldActionLabel(title: label, isWorking: model.working || model.probeWaiting && (model.step == .ring || model.step == .test))

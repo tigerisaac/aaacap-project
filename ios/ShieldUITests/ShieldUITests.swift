@@ -4,6 +4,7 @@ import XCTest
 final class ShieldUITests: XCTestCase {
     func testWelcomeEmailValidationAndDemoEntry() {
         let app = XCUIApplication()
+        app.launchArguments += ["--uitesting-email-sign-in"]
         app.launch()
         let email = app.textFields["Email address"]
         XCTAssertTrue(email.appears(timeout: 5))
@@ -25,6 +26,7 @@ final class ShieldUITests: XCTestCase {
 
     func testSimulatorTestAccountSequenceOpensSampleAccount() {
         let app = XCUIApplication()
+        app.launchArguments += ["--uitesting-email-sign-in"]
         app.launch()
         let email = app.textFields["Email address"]
         XCTAssertTrue(email.appears(timeout: 5))
@@ -65,7 +67,7 @@ final class ShieldUITests: XCTestCase {
 
     func testWelcomeAtLargestTextSize() {
         let app = XCUIApplication()
-        app.launchArguments = ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = ["--uitesting-email-sign-in", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
         XCTAssertTrue(app.textFields["Email address"].appears(timeout: 5))
         capture(app, name: "Welcome large text")
@@ -106,32 +108,16 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
     }
 
-    func testHelperAlertsAskedWithProtectionAndDefaultOn() {
+    func testTrustedContactsFollowProtectionWithoutAnAssumedHelper() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding"]
+        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-trusted-contacts"]
         app.launch()
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))
+        app.buttons["onboarding-protection-continue"].tap()
+        XCTAssertTrue(app.buttons["trusted-contact-no"].appears(timeout: 5))
+        XCTAssertTrue(app.buttons["trusted-contact-yes"].exists)
         XCTAssertFalse(app.switches["onboarding-helper-alerts-toggle"].exists)
-        app.buttons["onboarding-protection-continue"].tap()
-        let helpers = app.switches["onboarding-helper-alerts-toggle"]
-        XCTAssertTrue(helpers.appears(timeout: 3))
-        XCTAssertFalse(app.switches["onboarding-protection-toggle"].exists)
-        XCTAssertEqual(helpers.value as? String, "1")
-        capture(app, name: "Onboarding helper alerts step")
-        app.buttons["onboarding-protection-continue"].tap()
-        XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
-    }
-
-    func testHelperAlertsAskedAlone() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-helper-alerts-onboarding"]
-        app.launch()
-        XCTAssertTrue(app.staticTexts["Let a helper know"].appears(timeout: 5))
-        XCTAssertFalse(app.switches["onboarding-protection-toggle"].exists)
-        let helpers = app.switches["onboarding-helper-alerts-toggle"]
-        helpers.tap()
-        XCTAssertEqual(helpers.value as? String, "0")
-        app.buttons["onboarding-protection-continue"].tap()
+        app.buttons["trusted-contact-no"].tap()
         XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
     }
 
@@ -142,8 +128,7 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))
         app.switches["onboarding-protection-toggle"].tap()
         app.buttons["onboarding-protection-continue"].tap()
-        XCTAssertTrue(app.alerts["Couldn’t save your choice"].appears(timeout: 5))
-        app.alerts.buttons["Cancel"].tap()
+        XCTAssertTrue(app.staticTexts["Couldn’t save your choice"].appears(timeout: 5))
         XCTAssertEqual(app.switches["onboarding-protection-toggle"].value as? String, "0")
         XCTAssertFalse(app.staticTexts["demoBanner"].exists)
         XCTAssertTrue(app.buttons["onboarding-protection-continue"].isEnabled)

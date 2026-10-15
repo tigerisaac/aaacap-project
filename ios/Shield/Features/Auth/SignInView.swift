@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SignInView: View {
+    var incomingURL: URL? = nil
     @Environment(AppState.self) private var model
     @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -204,9 +205,10 @@ struct SignInView: View {
             #endif
             guard model.configuration.baseURL != nil else { return }
             if let service: ServiceConfiguration = try? await model.api.send("/public/config", authenticated: false) {
-                usesEmailLink = service.signInMethod == "email-link"
+                usesEmailLink = service.signInMethod == "email-link" || service.signInMethod == "phone"
             }
         }
+        .task(id: incomingURL) { if let incomingURL { await receiveLink(incomingURL) } }
         .onOpenURL { url in Task { await receiveLink(url) } }
     }
 

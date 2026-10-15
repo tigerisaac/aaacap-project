@@ -12,6 +12,7 @@ import { normalizeSharedPhone, sharedContactsSchema, syncSharedContacts } from '
 import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from './alerts.js';
 import { VOICEMAIL_LIMITS } from './voicemail-check.js';
 import { stoppedTotal } from './stopped-total.js';
+import { trustedContactsAvailable } from './trusted-contacts.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -49,7 +50,8 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   const activeCalls = (id: string) => store.db.collection('callSessions').where('participantId', '==', id)
     .where('createdAt', '>', store.now() - RETENTION_MS);
 
-  app.get('/public/config', async () => ({ mode: 'trial', signInMethod: 'email-link', consentVersion: CONSENT_VERSION,
+  app.get('/public/config', async () => ({ mode: 'trial', signInMethod: store.config.TELNYX_VERIFY_PROFILE_ID ? 'phone' : 'email-link', consentVersion: CONSENT_VERSION,
+    phoneSignInAvailable: !!store.config.TELNYX_VERIFY_PROFILE_ID, trustedContactsAvailable: trustedContactsAvailable(store),
     supportEmail: null, messageFilteringAvailable: false, notificationsAvailable: !!store.config.APNS,
     privacyPath: '/privacy', termsPath: '/service-info' }));
   app.post('/auth/request-code', async request => {
@@ -151,7 +153,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     const ctx = await access(request, true);
     if (ctx.participant.forwardingConsent) throw new HttpError(409, 'restore_forwarding_before_deletion');
     await store.personRef(ctx.participant.id).update({ status: 'offboarded' });
-    for (const collection of ['callSessions', 'grants', 'memberships', 'forwardingAudio', 'forwardingAudioChunks', 'voicemailChecks']) {
+    for (const collection of ['callSessions', 'grants', 'memberships', 'alertContacts', 'alertDeliveries', 'forwardingAudio', 'forwardingAudioChunks', 'voicemailChecks']) {
       const docs = await store.db.collection(collection).where('participantId', '==', ctx.participant.id).get();
       if (!docs.empty) {
         const writer = store.db.bulkWriter(); docs.docs.forEach(doc => {
@@ -276,13 +278,15 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   });
   // One registration per phone, keyed by its token, for whoever is signed in on it. The app refreshes it on every open.
   app.post('/api/devices', async request => {
-    const ctx = await access(request);
+    // A verified contact can register their own device without receiving access to a participant's calls.
+    const user = await auth.identify(bearer(request));
+    const uid = request.headers['x-shield-participant'] !== undefined || !user.verifiedPhone ? (await access(request)).uid : user.subject;
     const { token, environment } = z.object({ token: z.string().regex(/^[a-f0-9]{64,200}$/),
       environment: z.enum(['development', 'production']).default('production') }).strict().parse(request.body);
     if (!store.config.APNS) return { registered: false };
-    await store.quota([[`devices:${ctx.uid}`, 60]]);
+    await store.quota([[`devices:${uid}`, 60]]);
     const id = store.vault.hash(token), now = store.now();
-    await store.db.collection('devices').doc(id).set({ uid: ctx.uid, tokenEnc: store.vault.seal(token, `device:${id}`), environment,
+    await store.db.collection('devices').doc(id).set({ uid, tokenEnc: store.vault.seal(token, `device:${id}`), environment,
       updatedAt: now, expiresAt: now + DEVICE_TTL_MS });
     return { registered: true };
   });

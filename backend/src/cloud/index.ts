@@ -71,11 +71,12 @@ export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets:
   await new VoicemailCheck(getStore()).check(event.params.callId, { transcribe: audio => transcribeVoicemail(audio, key), decide: text => decideVoicemail(text, key) });
 });
 
-// Push alerts: one queued, contentless job per event. Nothing is queued unless APNs is configured.
+// Contentless alert jobs support both app notifications and opted-in trusted-contact texts.
 export const sendShieldAlert = onDocumentCreated({ ...options, document: 'alerts/{alertId}', retry: false, concurrency: 4 }, async event => {
   const { AlertDelivery, APNsSender } = await import('./alerts.js');
-  const s = getStore(); if (!s.config.APNS) return;
-  await new AlertDelivery(s, new APNsSender(s.config.APNS, s.config.IOS_BUNDLE_ID)).deliver(event.params.alertId);
+  const s = getStore();
+  const sender = s.config.APNS ? new APNsSender(s.config.APNS, s.config.IOS_BUNDLE_ID) : { send: async () => 'failed' as const };
+  await new AlertDelivery(s, sender).deliver(event.params.alertId);
 });
 
 // Durable outbox: enqueue the timer without holding an instance open until its due time.

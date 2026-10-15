@@ -9,6 +9,9 @@ export const cloudSchema = z.object({
   DATA_ENCRYPTION_KEY: z.string().regex(/^[a-f0-9]{64}$/),
   TELNYX_ACCOUNT_ID: z.string().uuid(),
   TELNYX_API_KEY: z.string().min(16),
+  // Absent until the owner configures verification and an approved messaging sender.
+  TELNYX_VERIFY_PROFILE_ID: z.string().uuid().optional(),
+  SMS_ALERTS: z.object({ messagingProfileId: z.string().uuid(), from: z.string().regex(/^\+1[2-9]\d{9}$/) }).strict().optional(),
   TELNYX_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9+/]{43}=$/),
   TELNYX_APPLICATION_ID: z.string().regex(/^\d{6,30}$/),
   SHARED_NUMBER_ENABLED: z.boolean().default(false),

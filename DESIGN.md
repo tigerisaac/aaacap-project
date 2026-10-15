@@ -399,3 +399,12 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 - Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.
 
 Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
+
+
+## October 14 — phone sign-in and optional trusted contacts
+
+Preserved the rounded S-shield, serif purpose headings, navy actions, semantic surfaces and Dynamic Type. Phone number → code replaces email as the main entry; existing email-link users retain a secondary route. After verified phone setup, equal-weight Add a trusted contact / Continue without one choices replace the assumed helper switch. Adding someone requires name and mobile number (native single-contact picker or manual entry), and shows Waiting for confirmation. Alert consent is separate from call-history access. Recipients choose text/app/both and can decline or stop.
+
+The owner rejected the first browser acceptance layout as too verbose and spacious. The replacement renders one compact state, removes the brand eyebrow and repeated headings, puts actions side by side, and moves secondary explanations into About these alerts. The standard one-person acceptance state was measured at 390×844 with no horizontal or vertical overflow. The same compact direction removes the repeated heading and introductory paragraphs from the native recipient screen, and trims the add-contact form to the picker, name, number and send action. Secondary data-sharing explanations are expandable. Forms use the established field-border and readable placeholder colors. No new imagery was generated.
+
+Simulator verification uses the existing iPhone 18 Pro only. Native light, Dark Mode, largest text, validation/recovery, contact data entry, optional decline and recipient channel choice were exercised. The carrier flow keeps separate settings and carrier confirmations plus real-call-result gates; its introduction now mentions all handoffs and distinguishes a setup test from always-on service. Detailed test results are in Status. No physical-device install or new real-call verification occurred.

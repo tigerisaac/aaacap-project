@@ -18,7 +18,7 @@
     "test:watch": "vitest",
     "ios:generate": "node scripts/generate-xcode-project.mjs",
     "firebase:package": "npm run build && node scripts/package-firebase.mjs",
-    "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts backend/tests/alerts.test.ts backend/tests/voicemail.test.ts backend/tests/pilot.test.ts backend/tests/setup-check.test.ts backend/tests/shared-pilot.test.ts'",
+    "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts backend/tests/alerts.test.ts backend/tests/phone-contacts.test.ts backend/tests/voicemail.test.ts backend/tests/pilot.test.ts backend/tests/setup-check.test.ts backend/tests/shared-pilot.test.ts'",
     "check": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
