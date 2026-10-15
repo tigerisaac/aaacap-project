@@ -13,10 +13,13 @@ struct ForwardingCodeView: View {
                     Text("Your personal \(model.carrier) code").shieldHeading(.title)
                 }
                 if model.codePreparedStep == model.step {
-                    SetupGuideView(guide: .keypad, player: model.guidePlayer)
                     if model.codeReturnedStep == model.step {
                         PhoneCodeGuide(returned: true, carrier: model.carrier)
+                        ShieldDisclosure("Watch the guide again") {
+                            SetupGuideView(guide: .keypad, player: model.guidePlayer)
+                        }
                     } else {
+                        SetupGuideView(guide: .keypad, player: model.guidePlayer)
                         ShieldDisclosure("Read the steps") {
                             PhoneCodeGuide(carrier: model.carrier)
                         }

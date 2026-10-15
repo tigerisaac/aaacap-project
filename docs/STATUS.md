@@ -1,5 +1,11 @@
 # Status
 
+## October 15 — setup videos clarified and pages simplified
+
+Settings steps now have one action heading and a close-up demonstration instead of a moving checklist and repeated paragraphs. Each video isolates a native choice, switch or keypad target, shows a single tap and its result, then leaves time to read it. Written directions and recovery are under Read the steps. After returning from Phone, the carrier result takes priority and the video is available on request. A floating-only reminder explains moving the system window if it covers a control.
+
+Validation: 242 unit tests/typecheck/build and 175 emulator tests passed. All 21 distinct simulator setup, guide and safety cases passed across the initial and corrective runs; eight final tests also passed on the smaller iPhone 17e / iOS 26.5, with large-text/Dark Mode coverage. Final assets have uniform 30 fps timing and match the signed iPhone build. Two final physical checks passed; the system Settings tree was unavailable to the test while Mirroring was active, so that path was manually inspected. The updated preview is installed and open on the iPhone. The independent scoped visual review, including the native-control corrections, returned **ship**. Detailed run history, physical checks and limits are in the [setup-guide record](IOS-SETUP-GUIDES.md). No live service deployment or carrier/phone-setting change.
+
 ## October 14 — floating visual setup guides implemented
 
 The iPhone setup and disconnection flows include offline, silent Picture in Picture guides for the two Phone settings and the keypad. Settings starts the guide before its existing launcher; opening Phone from its banner automatically carries the visible guide above the keypad. Written instructions, pause/replay, a static Reduce Motion variant and explicit confirmations remain. Accessibility-size actions scroll with the instructions rather than covering the guide.

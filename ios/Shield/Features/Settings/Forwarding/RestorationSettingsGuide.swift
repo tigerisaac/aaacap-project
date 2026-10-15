@@ -15,15 +15,9 @@ struct RestorationSettingsGuide: View {
         VStack(alignment: .leading, spacing: 24) {
             Text(unknownCallers ? "Let ordinary calls ring" : "Restore iPhone voicemail")
                 .shieldHeading(.title).accessibilityAddTraits(.isHeader)
-            VStack(alignment: .leading, spacing: 12) {
-                Text(unknownCallers ? "Screen Unknown Callers" : "Live Voicemail").font(.headline)
-                Label(unknownCallers ? "Choose Never" : "Turn On", systemImage: "hand.tap")
-                    .shieldHeading(.title).foregroundStyle(ShieldTheme.action)
-                if unknownCallers {
-                    Text("Turn Live Voicemail on too. We’ll check that next.")
-                }
+            if destination != .phone {
+                Text(destination.directions).foregroundStyle(ForwardingStyle.secondaryText)
             }
-            .shieldCard()
             SetupGuideView(guide: unknownCallers ? .never : .voicemailOn, player: guidePlayer)
             Text(returned ? "Did you make the change? Confirm below. Shield can’t see this setting." : "Already done? Confirm below.")
                 .foregroundStyle(ForwardingStyle.secondaryText)
@@ -32,8 +26,8 @@ struct RestorationSettingsGuide: View {
                 Task { await openSettings() }
             }
             .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working).accessibilityIdentifier("restoration-settings-open")
-            ShieldDisclosure("Can’t find it?") {
-                Text(destination.directions)
+            ShieldDisclosure("Read the steps") {
+                Text((unknownCallers ? SetupGuide.never : .voicemailOn).instructions)
                 Text("Open Settings, then Apps, then Phone. When done, return to Shield.")
             }
         }

@@ -37,6 +37,8 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
         guard AVPictureInPictureController.isPictureInPictureSupported() else { return }
         pictureInPicture = AVPictureInPictureController(playerLayer: layer)
         pictureInPicture?.delegate = self
+        // A ten-second jump would skip whole instructions in these short clips.
+        pictureInPicture?.requiresLinearPlayback = true
         pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = true
     }
 
@@ -77,6 +79,7 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
 
     func resumeForHandoff() {
         guard !unavailable, player.currentItem != nil else { return }
+        player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
         player.play()
         isPlaying = true
     }
@@ -101,6 +104,10 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
         defer { if generation == attemptGeneration { starting = false } }
         floatingUnavailable = false
         startFailed = false
+        // Start at the first instruction when the other app opens, even if the
+        // person has already spent a while watching the inline preview.
+        await player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
+        guard generation == attemptGeneration, !Task.isCancelled else { return false }
         player.play()
         isPlaying = true
         for _ in 0..<20 {
@@ -151,6 +158,12 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
             audioToken = nil
             Task { await MessageAudioSession.shared.deactivate(token) }
         }
+    }
+
+    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        // Phone's native Open banner starts PiP automatically. Begin at the
+        // first instruction even when the inline clip has been playing awhile.
+        if !starting { resumeForHandoff() }
     }
 
     func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {

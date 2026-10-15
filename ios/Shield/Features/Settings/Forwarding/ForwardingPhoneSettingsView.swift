@@ -5,22 +5,23 @@ struct ForwardingPhoneSettingsView: View {
     private var silence: Bool { model.step == .settings }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Text(silence ? "Choose Silence." : "Turn it off.").font(.title2)
-                .accessibilityIdentifier("phone-setting-instruction")
-            SetupGuideView(guide: silence ? .silence : .voicemailOff, player: model.guidePlayer)
-            Text(model.settingsDestination.directions)
-                .font(.callout).foregroundStyle(ForwardingStyle.secondaryText)
-            if model.settingsReturned {
-                Button("Open Phone settings again", systemImage: "gearshape") { Task { await model.openPhoneSettings() } }
-                    .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("phone-settings-reopen")
+        VStack(alignment: .leading, spacing: 16) {
+            if model.settingsDestination != .phone {
+                Text(model.settingsDestination.directions)
+                    .foregroundStyle(ForwardingStyle.secondaryText)
             }
-            ShieldDisclosure("Can’t find it?") {
-                Text("Open Settings, then Apps, then Phone. Find \(silence ? "Screen Unknown Callers and choose Silence" : "Live Voicemail and turn it off").")
+            SetupGuideView(guide: silence ? .silence : .voicemailOff, player: model.guidePlayer)
+            ShieldDisclosure("Read the steps") {
+                Text((silence ? SetupGuide.silence : .voicemailOff).instructions)
+                if model.settingsReturned {
+                    Button("Open Phone settings again", systemImage: "gearshape") { Task { await model.openPhoneSettings() } }
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("phone-settings-reopen")
+                }
                 if !model.settingsReturned {
                     Button("I already changed it") { model.acknowledgeManualSettingsVisit() }
                         .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                 }
+                Text("You can drag the floating video out of the way, or pinch it to make it larger.")
             }
         }.fixedSize(horizontal: false, vertical: true)
     }

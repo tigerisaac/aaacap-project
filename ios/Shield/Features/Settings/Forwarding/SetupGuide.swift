@@ -5,11 +5,11 @@ enum SetupGuide: String, CaseIterable {
 
     var instructions: String {
         switch self {
-        case .silence: "In Phone settings, tap Screen Unknown Callers, then Silence. Return to Shield."
-        case .voicemailOff: "In Phone settings, tap Live Voicemail. Turn Live Voicemail off, then return to Shield."
+        case .silence: "Open Settings, then Apps, then Phone. Scroll to Screen Unknown Callers. Tap Silence and look for its checkmark. Return to Shield."
+        case .voicemailOff: "In Phone settings, find the Live Voicemail switch. Turn it off if it is green. If it is already gray, leave it off. Return to Shield."
         case .keypad: "In Phone, tap Keypad. Tap the space above the numbers, then Paste. Tap the green Call button, wait for your carrier’s result, then return to Shield."
-        case .never: "In Phone settings, tap Screen Unknown Callers, then Never. Return to Shield."
-        case .voicemailOn: "In Phone settings, tap Live Voicemail. Turn Live Voicemail on, then return to Shield."
+        case .never: "Open Settings, then Apps, then Phone. Scroll to Screen Unknown Callers. Tap Never and look for its checkmark. Return to Shield."
+        case .voicemailOn: "In Phone settings, find the Live Voicemail switch. Turn it on if it is gray. If it is already green, leave it on. Return to Shield."
         }
     }
 

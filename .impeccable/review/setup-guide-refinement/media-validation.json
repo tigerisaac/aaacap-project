@@ -1,0 +1,102 @@
+[
+  {
+    "file": "setup-keypad-still.mp4",
+    "frames": 900,
+    "seconds": 30,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "dbac7df110577870aa2dc2c1b7b5959500c6c75ad0e91329b00e783643091809"
+  },
+  {
+    "file": "setup-keypad.mp4",
+    "frames": 900,
+    "seconds": 30,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "db620448487befc963654ae76949051650eb24defb212d955dabad9c76206811"
+  },
+  {
+    "file": "setup-never-still.mp4",
+    "frames": 660,
+    "seconds": 22,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "3ebed9c9fa50b41cabc168aed5013cd7eb1d6aacd7cc39850055ae9ea538cb6c"
+  },
+  {
+    "file": "setup-never.mp4",
+    "frames": 660,
+    "seconds": 22,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "e3cfa7135d3acddd4ceb1459b133e3fb386624a1c02ce83d846592f52eec9bac"
+  },
+  {
+    "file": "setup-silence-still.mp4",
+    "frames": 660,
+    "seconds": 22,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "0ebcdae96dbfd9898e2a35e820e8b2f2a22838b4c82df2411472858518fbb739"
+  },
+  {
+    "file": "setup-silence.mp4",
+    "frames": 660,
+    "seconds": 22,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "c4a3d5b3dff6ef035cce839cdf26c07041ae8311fc83ee7ddb729d2c3dd48b29"
+  },
+  {
+    "file": "setup-voicemailOff-still.mp4",
+    "frames": 720,
+    "seconds": 24,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "3659e71dbe2fc97a57aac4724f805df967833967df93f580e8bb23ea57d88c52"
+  },
+  {
+    "file": "setup-voicemailOff.mp4",
+    "frames": 720,
+    "seconds": 24,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "ce5fe809a05baa114f1cadcbfaf3972ad8d81de1c1436b8594016457d8b46857"
+  },
+  {
+    "file": "setup-voicemailOn-still.mp4",
+    "frames": 720,
+    "seconds": 24,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "a5cb1fb01a3804f4444366f3f9a08ba01386570b29aa83e57d868497f8e015e2"
+  },
+  {
+    "file": "setup-voicemailOn.mp4",
+    "frames": 720,
+    "seconds": 24,
+    "fps": 30,
+    "uniformTiming": true,
+    "silentAudioTrack": true,
+    "deviceBundleMatches": true,
+    "sha256": "7eb30d1563220ccc8719a342aabbce29c0c051e6dc7685c65d69637829ecfa90"
+  }
+]

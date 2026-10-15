@@ -1,0 +1,27 @@
+{
+  "platform": "iPhone only; native simulator captures and generated video contact sheets",
+  "final_asset_content": [
+    "silence-story.png",
+    "never-story.png",
+    "voicemailOff-story.png",
+    "voicemailOn-story.png",
+    "keypad-story.png"
+  ],
+  "current_native_voicemail_captures": [
+    "phone-voicemail-light.png",
+    "phone-voicemail-on-light.png"
+  ],
+  "caller_setting_layout_current": [
+    "phone-settings-light.png",
+    "small-settings-light.png"
+  ],
+  "layout_only_before_final_native_tab_asset": [
+    "phone-keypad-light.png",
+    "small-keypad-light.png",
+    "phone-large-dark.png",
+    "small-large-dark.png",
+    "phone-return-light.png"
+  ],
+  "media_proof": "media-validation.json verifies all final resources against the signed iPhone build; storyboards are authoritative for final video content",
+  "privacy": "App viewport captures are synthetic simulator data. No owner Phone-settings screenshots or user video pixels are committed."
+}
