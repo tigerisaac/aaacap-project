@@ -22,7 +22,7 @@ struct ForwardingSetupView: View {
                         }
                         // The heading sits closer to its own content than to the progress above it.
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
-                            Text(model.step.title).shieldPageHeading().id("forwarding-heading")
+                            Text(model.isPhoneSettingsStep ? model.phoneSettingsTitle : model.step.title).shieldPageHeading().id("forwarding-heading")
                                 .accessibilityAddTraits(.isHeader).accessibilityFocused($focusedStep, equals: model.step)
                                 .task(id: model.step) { focusedStep = model.step }
                             if model.step == .ring || model.step == .test {
@@ -70,6 +70,11 @@ struct ForwardingSetupView: View {
                 proxy.scrollTo("forwarding-step-error", anchor: .top)
                 errorFocused = true
             }
+            .onChange(of: model.phoneSettingsTitle) { _, _ in
+                guard model.isPhoneSettingsStep else { return }
+                proxy.scrollTo("forwarding-heading", anchor: .top)
+                focusedStep = model.step
+            }
         }
         .id(model.step)
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
@@ -110,7 +115,7 @@ struct ForwardingSetupView: View {
             }
         }
         .task { await model.load(app) }
-        .onDisappear { model.guidePlayer.stop() }
+        .onDisappear { model.guidePlayer.stop(); model.shortcutGuidePlayer.stop() }
         .task(id: model.step) {
             guard [.ring, .test, .checks].contains(model.step) else { return }
             while !Task.isCancelled {
@@ -130,6 +135,7 @@ struct ForwardingSetupView: View {
             if phase == .background { leftForGuide = true }
             if phase == .active && leftForGuide {
                 model.guidePlayer.returnedToShield()
+                model.shortcutGuidePlayer.returnedToShield()
                 leftForGuide = false
             }
             if phase == .active { Task { await model.load(app) } }

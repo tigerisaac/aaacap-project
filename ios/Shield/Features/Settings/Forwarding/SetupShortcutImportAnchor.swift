@@ -1,4 +1,3 @@
-#if DEBUG
 import SwiftUI
 import UIKit
 
@@ -54,4 +53,3 @@ struct SetupShortcutImportAnchor: UIViewRepresentable {
         }
     }
 }
-#endif

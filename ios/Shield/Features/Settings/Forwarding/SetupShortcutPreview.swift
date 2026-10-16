@@ -102,7 +102,7 @@ struct SetupShortcutPreview: View {
     private var heading: String {
         switch session.phase {
         case .add: "Let iPhone lend a hand"
-        case .ready: "One switch to check"
+        case .ready: "Turn off Live Voicemail"
         case .returned: "Is Live Voicemail off?"
         case .confirmed: "That’s the phone change"
         }
@@ -115,7 +115,7 @@ struct SetupShortcutPreview: View {
             Text("On the next screen, tap **Add Shortcut**.")
         case .ready:
             Text("Tap below after adding the helper. Your iPhone will select Silence for you and open Phone settings beside Live Voicemail.")
-            Text("Leave Live Voicemail off. Use the button below so the floating reminder comes with you.")
+            Text("Turn Live Voicemail off, then return to Shield.")
         case .returned:
             Text("If its switch is gray, leave it off. Confirm only after you’ve seen it in Settings.")
             Text("Returning here doesn’t check the setting for you.")

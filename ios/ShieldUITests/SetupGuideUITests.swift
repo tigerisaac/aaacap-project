@@ -176,7 +176,7 @@ final class SetupGuideUITests: XCTestCase {
 
     private func launch(_ arguments: [String]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-forwarding"] + arguments
+        app.launchArguments = ["--uitesting-forwarding", "--forwarding-manual-settings"] + arguments
         app.launch()
         XCTAssertTrue(app.buttons["forwarding-continue"].waitForExistence(timeout: 10)
             || app.buttons["restoration-settings-confirm"].waitForExistence(timeout: 5))

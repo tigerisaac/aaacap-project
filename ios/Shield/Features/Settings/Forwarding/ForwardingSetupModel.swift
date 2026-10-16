@@ -5,6 +5,20 @@ import UIKit
 @MainActor @Observable
 final class ForwardingSetupModel {
     let guidePlayer = SetupGuidePlayer()
+    let shortcutGuidePlayer = SetupGuidePlayer(automaticFloating: false)
+    let phoneShortcut = SetupShortcutSession()
+    var usingManualPhoneSettings = false
+    var addingPhoneHelper: Bool { isPhoneSettingsStep && !usingManualPhoneSettings && !settingsReturned && phoneShortcut.phase == .add }
+    var phoneSettingsTitle: String {
+        if usingManualPhoneSettings { return step.title }
+        if settingsReturned { return step == .settings ? "Check Silence" : "Confirm Live Voicemail" }
+        return addingPhoneHelper ? "Let iPhone lend a hand" : "Turn off Live Voicemail"
+    }
+    var phoneSettingsAction: String {
+        if addingPhoneHelper { return "Add to iPhone" }
+        if !settingsReturned { return settingsReminderUnavailable ? "Open Settings anyway" : "Open Phone settings" }
+        return step == .settings ? "Silence has a checkmark" : "Live Voicemail is off"
+    }
     var carrier: String { status?.carrier ?? "your carrier" }
     var status: ForwardingStatus?
     var step = ForwardingStep.overview
@@ -54,6 +68,7 @@ final class ForwardingSetupModel {
         if isUITest {
             if status == nil {
                 status = .uiTestFixture
+                usingManualPhoneSettings = ProcessInfo.processInfo.arguments.contains("--forwarding-manual-settings")
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-settings") { step = .settings }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-voicemail") { step = .liveVoicemail }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-code") { step = .forward0 }
@@ -101,7 +116,8 @@ final class ForwardingSetupModel {
         guard let status, !working else { return }
         error = nil
         if isPhoneSettingsStep && !settingsReturned {
-            await openPhoneSettings(withoutReminder: settingsReminderUnavailable)
+            if addingPhoneHelper { await installPhoneHelper() }
+            else { await openPhoneSettings(withoutReminder: settingsReminderUnavailable) }
             return
         }
         if step.codeIndex != nil {
@@ -145,6 +161,7 @@ final class ForwardingSetupModel {
             guard app.selectedPersonID == status.participantId else { return }
         }
         guidePlayer.stop()
+        shortcutGuidePlayer.stop()
         step = next
         codePreparedStep = nil
         codeReturnedStep = nil
@@ -154,6 +171,7 @@ final class ForwardingSetupModel {
         // never a setting confirmation; the next page still requires its own tap.
         settingsReturned = carriesPhoneVisit
         settingsReminderUnavailable = false
+        phoneShortcut.reminderUnavailable = false
         if !isPhoneSettingsStep {
             combinedPhoneVisit = false
             if !isUITest { UserDefaults.standard.removeObject(forKey: combinedVisitKey) }
@@ -207,6 +225,29 @@ final class ForwardingSetupModel {
         defer { working = false }
         pendingSettingsStep = step
         leftForSettings = false
+        if !usingManualPhoneSettings {
+            settingsReturned = false
+            // Reopening from the Silence confirmation must carry the voicemail
+            // instruction, rather than floating that confirmation's poster.
+            await shortcutGuidePlayer.prepare(.shortcutVoicemail, reduceMotion: UIAccessibility.isReduceMotionEnabled)
+            if !withoutReminder { phoneShortcut.reminderUnavailable = false }
+            await phoneShortcut.run(using: shortcutGuidePlayer)
+            if let message = phoneShortcut.error {
+                pendingSettingsStep = nil
+                settingsReminderUnavailable = phoneShortcut.reminderUnavailable
+                settingsReturned = false
+                reportError(message)
+                return
+            }
+            settingsDestination = .phone
+            if !isUITest { UserDefaults.standard.set(step.rawValue, forKey: settingsVisitKey) }
+            if phoneShortcut.phase == .returned { settingsReturned = true; pendingSettingsStep = nil }
+            if step == .settings {
+                combinedPhoneVisit = true
+                if !isUITest { UserDefaults.standard.set(true, forKey: combinedVisitKey) }
+            }
+            return
+        }
         #if DEBUG
         if isUITest && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
             if !withoutReminder && ProcessInfo.processInfo.arguments.contains("--setup-guide-unavailable") {
@@ -264,7 +305,34 @@ final class ForwardingSetupModel {
         }
     }
 
+    func installPhoneHelper() async {
+        guard !working else { return }
+        working = true
+        defer { working = false }
+        error = nil
+        settingsReturned = false
+        settingsReminderUnavailable = false
+        phoneShortcut.reminderUnavailable = false
+        await phoneShortcut.install(using: shortcutGuidePlayer)
+        if let message = phoneShortcut.error { reportError(message) }
+    }
+
+    func acknowledgePhoneHelper() {
+        phoneShortcut.importHandedOff()
+        settingsReturned = false
+        error = nil
+    }
+
+    func useManualPhoneSettings() {
+        shortcutGuidePlayer.stop()
+        usingManualPhoneSettings = true
+        settingsReturned = false
+        settingsReminderUnavailable = false
+        error = nil
+    }
+
     func settingsSceneChanged(isActive: Bool, isBackground: Bool) {
+        phoneShortcut.sceneChanged(isActive: isActive, isBackground: isBackground)
         guard pendingSettingsStep == step, isPhoneSettingsStep else { return }
         if isBackground { leftForSettings = true }
         else if isActive && leftForSettings {

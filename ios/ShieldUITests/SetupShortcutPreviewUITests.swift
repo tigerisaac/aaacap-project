@@ -92,7 +92,7 @@ final class SetupShortcutPreviewUITests: XCTestCase {
         capture(shortcuts, "Published native Add Shortcut")
         // Cancel by returning to Shield. Do not add or run a telephony action.
         app.activate()
-        XCTAssertTrue(app.staticTexts["One switch to check"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Turn off Live Voicemail"].appears(timeout: 5))
         XCTAssertEqual(primary(app).label, "Open Phone settings")
         XCTAssertFalse(app.staticTexts["Is Live Voicemail off?"].exists)
     }
@@ -105,7 +105,7 @@ final class SetupShortcutPreviewUITests: XCTestCase {
         primary(app).tap()
         XCTAssertTrue(app.staticTexts["setup-shortcut-error"].appears(timeout: 5))
         XCTAssertEqual(primary(app).label, "Add to iPhone")
-        XCTAssertFalse(app.staticTexts["One switch to check"].exists)
+        XCTAssertFalse(app.staticTexts["Turn off Live Voicemail"].exists)
         app.buttons["Need help?"].tap()
         reveal(app.buttons["setup-shortcut-saved-file"], app: app)
         capture(app, "Installation failure saved file recovery")

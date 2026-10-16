@@ -24,7 +24,7 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         #else
         continueAfterFailure = false
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-settings", "--uitesting-system-settings"]
+        app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-settings", "--forwarding-manual-settings", "--uitesting-system-settings"]
         app.launch()
         XCTAssertTrue(app.buttons["forwarding-continue"].appears(timeout: 15))
         app.buttons["forwarding-continue"].tap()

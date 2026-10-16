@@ -2,42 +2,61 @@ import SwiftUI
 
 struct ForwardingPhoneSettingsView: View {
     @Bindable var model: ForwardingSetupModel
-    private var combined: Bool { model.step == .settings }
-    private var guide: SetupGuide { combined ? .phoneSettings : .voicemailOff }
+    @State private var importRequest: UUID?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(model.settingsReturned && model.settingsDestination != .unavailable
-                 ? (combined ? "Check that Silence has a checkmark. You’ll confirm Live Voicemail next." : "Confirm that Live Voicemail is gray (off).")
-                 : model.settingsDestination.directions)
-                .accessibilityIdentifier("phone-settings-navigation")
-            if !model.settingsReturned || model.settingsDestination == .unavailable {
-                Text("Stop at \(guide.settingHeading).")
-                    .accessibilityIdentifier("phone-settings-target")
-                if combined {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("1. Live Voicemail: off")
-                        Text("2. Screen Unknown Callers: Silence")
+        if model.usingManualPhoneSettings {
+            ManualPhoneSettingsGuide(model: model)
+        } else {
+            VStack(alignment: .leading, spacing: 16) {
+                if model.addingPhoneHelper {
+                    Text("Add Shield’s helper once. It selects Silence for you.")
+                    Text("On the next screen, tap **Add Shortcut**. Then tap **Shield** at the top left to come back.")
+                        .accessibilityIdentifier("phone-helper-install-directions")
+                    helpAction("I already added it") { model.acknowledgePhoneHelper() }
+                        .accessibilityIdentifier("phone-helper-already-added")
+                } else {
+                    Text(model.settingsReturned
+                         ? (model.step == .settings ? "Check that Silence has a checkmark." : "Check that Live Voicemail is gray (off).")
+                         : "Your iPhone selects Silence for you. Turn Live Voicemail off, then return to Shield.")
+                        .accessibilityIdentifier("phone-settings-navigation")
+                    SetupGuideView(guide: model.settingsReturned && model.step == .settings ? .silence : .shortcutVoicemail,
+                                   player: model.shortcutGuidePlayer, showingResult: model.settingsReturned)
+                }
+                ShieldDisclosure("Need help?") {
+                    if model.settingsReturned {
+                        helpAction("Open Phone settings again") { Task { await model.openPhoneSettings() } }
+                                .accessibilityIdentifier("phone-settings-reopen")
                     }
-                    .accessibilityIdentifier("phone-settings-two-changes")
+                    Text("If the switch is already gray, leave it off. To return, tap the floating guide, then its Return to App button.")
+                    helpAction("Add the helper again") { Task { await model.installPhoneHelper() } }
+                    helpAction("Open the saved helper file") { importRequest = UUID() }
+                        .accessibilityIdentifier("phone-helper-saved-file")
+                    helpAction("Use the step-by-step guide") { model.useManualPhoneSettings() }
+                        .accessibilityIdentifier("phone-helper-manual-guide")
                 }
             }
-            SetupGuideView(guide: guide, player: model.guidePlayer, showingResult: model.settingsReturned)
-            ShieldDisclosure("Read the steps") {
-                Text("Keep sliding up past Incoming Calls and Announce Calls. Live Voicemail comes before Screen Unknown Callers. Stop when you see the heading shown in the guide.")
-                Text(guide.instructions)
-                if model.settingsReturned {
-                    Button("Open Phone settings again", systemImage: "gearshape") { Task { await model.openPhoneSettings() } }
-                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("phone-settings-reopen")
-                }
-                if !model.settingsReturned {
-                    Button(combined ? "I already changed both" : "It’s already off") { model.acknowledgeManualSettingsVisit() }
-                        .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                }
-                Text("Went too far? Call Filtering is just below Screen Unknown Callers. Slide your finger down a little to come back to it.")
-                Text("If a different page opens, return to Shield, then open Settings → Apps → Phone.")
-                Text("When available, a small reminder comes with you automatically. If it covers a setting, drag it to another corner.")
+            .fixedSize(horizontal: false, vertical: true)
+            .background {
+                SetupShortcutImportAnchor(request: importRequest, onHandoff: {
+                    importRequest = nil
+                    model.acknowledgePhoneHelper()
+                }, onUnavailable: {
+                    importRequest = nil
+                    model.reportError("The helper couldn’t open. Use the step-by-step guide under Need help.")
+                })
             }
-        }.fixedSize(horizontal: false, vertical: true)
+        }
     }
+
+    private func helpAction(_ title: String, action: @escaping @MainActor () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(ShieldTheme.action)
+    }
+
 }

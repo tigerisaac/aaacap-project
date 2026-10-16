@@ -249,11 +249,10 @@ func reminder(_ guide: String) {
     if guide == "shortcutVoicemail" {
         text("Live Voicemail", NSRect(x: 40, y: 28, width: 880, height: 90), size: 68, weight: .semibold, color: .white)
         roundRect(NSRect(x: 40, y: 150, width: 880, height: 236), radius: 26, color: ground)
-        text("Leave it gray (off)", NSRect(x: 72, y: 176, width: 820, height: 84), size: 64, weight: .semibold)
-        text("Green? Tap it once.", NSRect(x: 72, y: 286, width: 820, height: 74), size: 54)
-        text("When finished, tap this guide", NSRect(x: 40, y: 420, width: 880, height: 80), size: 50, color: .white)
-        symbol("pip.exit", rect: NSRect(x: 45, y: 534, width: 86, height: 64), color: .white)
-        text("then return to Shield", NSRect(x: 160, y: 526, width: 760, height: 90), size: 54, weight: .semibold, color: .white)
+        text("Turn it off", NSRect(x: 72, y: 176, width: 820, height: 90), size: 76, weight: .semibold)
+        text("Gray = off", NSRect(x: 72, y: 292, width: 820, height: 74), size: 56)
+        symbol("pip.exit", rect: NSRect(x: 50, y: 472, width: 86, height: 64), color: .white)
+        text("Return to Shield", NSRect(x: 166, y: 460, width: 740, height: 100), size: 62, weight: .semibold, color: .white)
         return
     }
     if guide == "phoneSettings" {

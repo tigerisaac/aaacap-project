@@ -1,4 +1,3 @@
-#if DEBUG
 import Foundation
 import Observation
 import UIKit
@@ -7,7 +6,21 @@ import UIKit
 final class SetupShortcutSession {
     static let installationURL = URL(string: "https://www.icloud.com/shortcuts/a31253e04fa7440094b98f9fd8903bf2")!
     enum Phase { case add, ready, returned, confirmed }
-    var phase: Phase = ProcessInfo.processInfo.arguments.contains("--shortcut-already-added") ? .ready : .add
+    var phase: Phase
+    private let remembersChoice: Bool
+    private static let offeredKey = "shield-easy-setup-ready-to-try-v1"
+
+    init() {
+        #if DEBUG
+        let testing = ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding")
+        let alreadyAdded = testing && ProcessInfo.processInfo.arguments.contains("--shortcut-already-added")
+        #else
+        let testing = false
+        let alreadyAdded = false
+        #endif
+        remembersChoice = !testing
+        phase = alreadyAdded || (!testing && UserDefaults.standard.bool(forKey: Self.offeredKey)) ? .ready : .add
+    }
     var error: String?
     var reminderUnavailable = false
     private(set) var opening = false
@@ -16,16 +29,21 @@ final class SetupShortcutSession {
     private var leftForSettings = false
     var isLeavingForSettings: Bool { pendingRun }
 
-    func importHandedOff() { phase = .ready }
+    /// A remembered choice to try the helper, never proof of installation.
+    func importHandedOff() {
+        phase = .ready
+        if remembersChoice { UserDefaults.standard.set(true, forKey: Self.offeredKey) }
+    }
 
     func install(using player: SetupGuidePlayer) async {
         guard !opening else { return }
         opening = true
         defer { opening = false }
         error = nil
+        phase = .add
         player.returnedToShield()
-        #if targetEnvironment(simulator)
-        if !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
+        #if DEBUG && targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
             if ProcessInfo.processInfo.arguments.contains("--shortcut-install-fails") {
                 reportImportFailure()
             } else {
@@ -51,10 +69,11 @@ final class SetupShortcutSession {
         opening = true
         defer { opening = false }
         error = nil
-        #if targetEnvironment(simulator)
-        if !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
+        phase = .ready
+        #if DEBUG && targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
             if ProcessInfo.processInfo.arguments.contains("--shortcut-open-fails") {
-                error = "Shortcuts couldn’t open. Add the helper again, or use the step-by-step guide below."
+                error = "Shortcuts couldn’t open. Add the helper again, or use the step-by-step guide under Need help."
                 return
             }
             if !reminderUnavailable && ProcessInfo.processInfo.arguments.contains("--setup-guide-unavailable") {
@@ -82,7 +101,7 @@ final class SetupShortcutSession {
         guard let destination = url.url, await UIApplication.shared.open(destination) else {
             pendingRun = false
             player.returnedToShield()
-            error = "Shortcuts couldn’t open. Add the helper again, or use the step-by-step guide below."
+            error = "Shortcuts couldn’t open. Add the helper again, or use the step-by-step guide under Need help."
             return
         }
         // No callback: Settings must remain open while the person uses its switch.
@@ -94,7 +113,7 @@ final class SetupShortcutSession {
         guard pendingRun || pendingImport else { return }
         if isBackground { leftForSettings = true }
         if isActive && leftForSettings {
-            phase = pendingImport ? .ready : .returned
+            if pendingImport { importHandedOff() } else { phase = .returned }
             pendingImport = false
             pendingRun = false
             leftForSettings = false
@@ -107,7 +126,6 @@ final class SetupShortcutSession {
 
     private func reportReminderUnavailable() {
         reminderUnavailable = true
-        error = "The floating reminder couldn’t open. You can still continue: leave Live Voicemail gray (off), then open Shield again."
+        error = "The floating reminder couldn’t open. You can still continue: turn Live Voicemail off, then return to Shield."
     }
 }
-#endif

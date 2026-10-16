@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-16T22:49:53Z",
+  "generatedAt": "2026-10-16T23:30:15Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -824,12 +824,12 @@
       },
       {
         "name": "The Visible Setup Help Rule",
-        "body": "Keep both adjacent Phone-setting actions visible together during their handoff. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.",
+        "body": "Keep the remaining manual action visible during the helper handoff, and both adjacent actions visible in the manual guide. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.",
         "section": "components"
       },
       {
-        "name": "The Trial Handoff Rule",
-        "body": "In the Debug shortcut trial, keep direct native Add Shortcut import quiet, start and arm the steady floating reminder only from Open Phone settings, and reset it on return or import. Require an explicit local confirmation after return; opening the public link or returning to Shield establishes neither Add Shortcut acceptance nor a changed switch.",
+        "name": "The Native Setup Handoff Rule",
+        "body": "Keep direct native Add Shortcut import quiet, start and arm the steady floating reminder only from Open Phone settings, and reset it on return or import. Keep both setting confirmations explicit; a remembered helper choice, opening the public link or returning to Shield establishes neither Add Shortcut acceptance nor a changed switch.",
         "section": "components"
       }
     ],
@@ -844,7 +844,7 @@
       "Do retain explicit privacy, sharing, setup and disconnection confirmations, naming the affected entry and showing a safe choice.",
       "Do show historical totals, current phone status, sample state and message permission as separate readable facts.",
       "Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval.",
-      "Do keep the Debug shortcut trial's native import quiet, its current primary action clear and its accessibility-size action in the scrollable reading order."
+      "Do keep shortcut-assisted setup's native import quiet, its current primary action clear and its accessibility-size action in the scrollable reading order."
     ],
     "donts": [
       "Don't restore the rejected bright-blue/public-library visual world or make all native navigation titles serif.",
@@ -858,7 +858,7 @@
       "Don't reintroduce paragraph excerpts into the daily inbox or repeated decorative headings above an existing purpose.",
       "Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.",
       "Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.",
-      "Don't promote the Debug shortcut trial into normal setup or claim cross-device reliability or novice-user success from its one-phone target and first-time Add/return evidence."
+      "Don't treat helper readiness or app return as setting verification, or claim cross-device reliability or novice-user success from one-phone setup evidence."
     ]
   }
 }

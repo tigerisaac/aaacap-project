@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-16",
+  "baseline": "136bed2",
+  "currentHeadAtLedger": "0dc8b74",
+  "scope": "Normal setup integration explicitly approved by owner; local iPhone install and Release inclusion, no service deployment",
+  "permission": "let\u2019s put that into the actual setup guide",
+  "installationURL": "https://www.icloud.com/shortcuts/a31253e04fa7440094b98f9fd8903bf2",
+  "newPublication": false,
+  "captures": [
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-add-helper.png",
+      "sha256": "4f847c8e0a44cdade1ab89ad672f3f810d10ec231fdc47c884a10b6ba01311e6",
+      "bytes": 185580
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-guide-failure-before-leaving.png",
+      "sha256": "7a616060dbcee84e419a0e59586ff8cef2623b2be708598928a19eb169447b64",
+      "bytes": 234835
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-largest-text-import-recovery.png",
+      "sha256": "b47167f8e1f844a62f4650689f11c43b1842e4b25d19bb19076695d850235dfb",
+      "bytes": 295781
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-largest-text-installation-top.png",
+      "sha256": "0cf485279e037b10c7331c859969d89779a7737ff81eaa5383dd9adbadabfd1c",
+      "bytes": 256885
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-missing-helper-recovery.png",
+      "sha256": "7a3771f3444f41a0457ecd9bb3417c58536a0029da376413f84361dbd5660d67",
+      "bytes": 230043
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-native-add-shortcut.png",
+      "sha256": "c87efa06432325e83c3d12dba95cb0f227ce90b9ea9f1d5bf534d6128771628e",
+      "bytes": 299798
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-turn-live-voicemail-off.png",
+      "sha256": "13728bf599bf6e83fbe0a73b05f22dd9adf4e196d06200b438d4a8e9615e093c",
+      "bytes": 188965
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-unconfirmed-silence.png",
+      "sha256": "f0e25a25913118d33e19be4823a08b769eea8aedcbbce6939c28a7b1f274b383",
+      "bytes": 200562
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/main/actual-setup-unconfirmed-voicemail.png",
+      "sha256": "21476f01e9b65f512e153ce9277d30eb94c99933550d2a06980adc4d3589f902",
+      "bytes": 182323
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-add-helper.png",
+      "sha256": "fb21f69fb1827427959f5af7051b5493314b170a4d8fb36b96c46481ddc78a82",
+      "bytes": 184458
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-guide-failure-before-leaving.png",
+      "sha256": "2f93ae2f2b9da7047aa4562629244bc6ffeaaffb2b447ccd347442a9de99e4e2",
+      "bytes": 249677
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-largest-text-import-recovery.png",
+      "sha256": "6d62a7e5365996fc3482e73cfb5eafa6c0c193e8d0b1b66755c16a211c3f692b",
+      "bytes": 288944
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-largest-text-installation-top.png",
+      "sha256": "59c47f841960e6e00bfe16aa26dc00d3ddf2fada6724ff459b03e1058e591cfb",
+      "bytes": 237739
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-missing-helper-recovery.png",
+      "sha256": "7f780382ab5857a8363d82c8379693d8d0c9df17cc29e7f9d6f6a38548689357",
+      "bytes": 251623
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-native-add-shortcut.png",
+      "sha256": "860d5d5773a72853a4d76d042415319abbbc5b1d8d268e5e5541b5753bef3137",
+      "bytes": 279204
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-turn-live-voicemail-off.png",
+      "sha256": "9387a56e156a9ed5f4970b7b80247c822726ecc08dd1dccd708f59d5456a5ba2",
+      "bytes": 188688
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-unconfirmed-silence.png",
+      "sha256": "991cb62b96b3809ecbce2d6bac5d7be954c4b305118116d4e67e4862de36248a",
+      "bytes": 197374
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/compact/actual-setup-unconfirmed-voicemail.png",
+      "sha256": "3e948f892511082de6bb4cd9f6ea773c1f09b7d604e216ff3efed07ab289cd43",
+      "bytes": 180793
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/physical/add-helper.png",
+      "sha256": "6380eb935a7ba896024fbc43c66d2ca95487dd47cda9b6cf42d2c28ba300557e",
+      "bytes": 109437
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/physical/ready.png",
+      "sha256": "5de3f77de05fbba62727217a156743df3ce66518413024ac855a8c77cd8e83d3",
+      "bytes": 108018
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/physical/settings-with-short-guide.png",
+      "sha256": "ba5f2be0d2aeb887a15e735a0f6490f1634b9f80c6ba5dcc85623dcbc42171f6",
+      "bytes": 175662
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/physical/returned-unconfirmed.png",
+      "sha256": "cfc4db5deef39d26f4747e4fc0b87e6ee187d96e76cd84fd6dad694e52fc78df",
+      "bytes": 111770
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-production/physical/reopened-short-guide.png",
+      "sha256": "93da4351a5387ef19ce38e95dc929f7138cec477efec759e6977d20b795d7806",
+      "bytes": 175404
+    }
+  ],
+  "captureOriginsFile": "capture-origins.json",
+  "sources": [
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingPhoneSettingsView.swift",
+      "sha256": "527db4936004f09153c5cedce9c0c0c07760b6d78a9c4af976af534110aba211",
+      "bytes": 3310
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ManualPhoneSettingsGuide.swift",
+      "sha256": "d015c2e82db3b33f6220ac5655d1b16662877c7f2396dc2344d1236e2c02900f",
+      "bytes": 2671
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingSetupModel.swift",
+      "sha256": "ba8b6ece3829177d5b2e8233e7f1f7e812c1fc3fb8880236c08534b59ae1975d",
+      "bytes": 18161
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift",
+      "sha256": "7a602b00b099f956d1c1754fd747db7ca63be7d952d955953b63a463a55e3333",
+      "bytes": 8288
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift",
+      "sha256": "a32d5bab0eb3657d9ecd679e14181387280ed1b22df9a73b0acc51c3f55f1aa2",
+      "bytes": 3695
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupShortcutSession.swift",
+      "sha256": "ee1510cbf4fb366562bf739ea0ed1d551579d487ac56904afc7dbea72690eec0",
+      "bytes": 5309
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupShortcutImportAnchor.swift",
+      "sha256": "23985c5f1fc54a394e4e87fda17268aae5b1efcafeb1ffcfd61ff68572950e3d",
+      "bytes": 2119
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupGuide.swift",
+      "sha256": "5eb206faaa23952b034a4eb0818e318779440394905da5d8c7b230df107b1e34",
+      "bytes": 1800
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupShortcutPreview.swift",
+      "sha256": "1d4c857d0fb539703d51100433dbe492713eb6b49758d9c51ff469ac1ed09a2e",
+      "bytes": 7291
+    },
+    {
+      "path": "ios/Config/Release.xcconfig",
+      "sha256": "de4fe5f5bacc41e42425fa3dcb179e853192ba87dc3c52fd82e1308f445ebd67",
+      "bytes": 224
+    },
+    {
+      "path": "ios/Shield.xcodeproj/project.pbxproj",
+      "sha256": "f4168edad59578929d56c5807603c5a1930596c1b4063bd2163a190483c3e837",
+      "bytes": 101113
+    },
+    {
+      "path": "scripts/generate-setup-guides.swift",
+      "sha256": "80b337160adf0c2581bc33b1b3b38deda062105a8a243617f6c86e7a86d3db91",
+      "bytes": 24239
+    },
+    {
+      "path": "ios/ShieldUITests/PhoneSetupShortcutUITests.swift",
+      "sha256": "2f4a9bfebbde6c550eb5e1a10ac170cc404a30712edc683347b4617506808b4d",
+      "bytes": 7026
+    },
+    {
+      "path": "ios/ShieldUITests/ForwardingUITests.swift",
+      "sha256": "14d19850d54316f052a1d8c3a240118cf62940ad7e3c759924384ea96c111f91",
+      "bytes": 16448
+    },
+    {
+      "path": "ios/ShieldUITests/SetupGuideUITests.swift",
+      "sha256": "cfbc8111f8f703cb4b141b73033f700eb5412724aae15219762ba5d267cfe2c3",
+      "bytes": 12112
+    },
+    {
+      "path": "ios/ShieldUITests/SetupShortcutPreviewUITests.swift",
+      "sha256": "f1be9d6325f6721545ea540c23c7de714d2751a0c68b5e8a0879e1487288dbab",
+      "bytes": 6955
+    },
+    {
+      "path": "ios/ShieldUITests/PhoneSettingsDeviceUITests.swift",
+      "sha256": "78140b9d1b7485ea8ee2f8e49166c9d73f8c2f3553a3afdb98ac7fdeb4998d1d",
+      "bytes": 4353
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail.mp4",
+      "sha256": "6f9a902fa42f10af9637065085e3befe660f92f442041169d7cc675f0cd73cf6",
+      "bytes": 303379
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail-still.mp4",
+      "sha256": "9955eb914118a4432d362b95dab9d87f7ebae77ef1c5a5bae68cdd04935b8149",
+      "bytes": 306969
+    }
+  ],
+  "checks": {
+    "main-shipping": {
+      "passed": 6,
+      "failed": 0,
+      "log": "/private/tmp/shield-integrated-main-shipping.log",
+      "result": "/private/tmp/shield-integrated-main-shipping.xcresult"
+    },
+    "compact-shipping": {
+      "passed": 6,
+      "failed": 0,
+      "log": "/private/tmp/shield-integrated-compact-shipping.log",
+      "result": "/private/tmp/shield-integrated-compact-shipping.xcresult"
+    },
+    "main-reopen": {
+      "passed": 2,
+      "failed": 0,
+      "log": "/private/tmp/shield-integrated-main-reopen.log",
+      "result": "/private/tmp/shield-integrated-main-reopen.xcresult"
+    },
+    "compact-reopen": {
+      "passed": 2,
+      "failed": 0,
+      "log": "/private/tmp/shield-integrated-compact-reopen.log",
+      "result": "/private/tmp/shield-integrated-compact-reopen.xcresult"
+    },
+    "main-verified": {
+      "passed": 7,
+      "failed": 0,
+      "log": "/private/tmp/shield-integrated-main-verified.log",
+      "result": "/private/tmp/shield-integrated-main-verified.xcresult"
+    },
+    "compact-final": {
+      "passed": 20,
+      "failed": 0,
+      "log": "/private/tmp/shield-integrated-compact-final.log",
+      "result": "/private/tmp/shield-integrated-compact-final.xcresult"
+    },
+    "device": {
+      "succeeded": true,
+      "log": "/private/tmp/shield-integrated-device-reopen.log"
+    },
+    "release": {
+      "succeeded": true,
+      "log": "/private/tmp/shield-integrated-release-reopen.log"
+    },
+    "npmCheck": {
+      "unitPassed": 242,
+      "skippedEmulator": 174,
+      "typecheckAndBuild": true,
+      "log": "/private/tmp/shield-setup-integration-check.log",
+      "scope": "Before unrelated backend task edits appeared; this task changes no backend source."
+    },
+    "firebase": {
+      "passed": 175,
+      "failed": 0,
+      "log": "/private/tmp/shield-setup-integration-firebase.log",
+      "scope": "Same baseline as npmCheck."
+    }
+  },
+  "releaseBundling": {
+    "shortcutCount": 1,
+    "seventhGuideResourceCount": 4,
+    "mediaMatchesSource": true
+  },
+  "provenance": {
+    "posters": 7,
+    "missing": 0,
+    "artworkOrGIFChanged": false
+  },
+  "hardware": {
+    "device": "iPhone 12 Pro Max",
+    "os": "iOS 27.2",
+    "progress": "Local fixture using actual normal setup components; no backend progress writes",
+    "observed": [
+      "Direct Add/Replace of our existing helper and native Shield return before final recovery refinements.",
+      "Final explicit Live Voicemail-off instruction and shorter guide at the target section.",
+      "Reactivating Shield stopped PiP and left the two confirmations unaccepted.",
+      "Reopen from Silence confirmation showed the correct short Live Voicemail guide."
+    ],
+    "untouched": "Live Voicemail; carrier forwarding; backend configuration and setup state",
+    "silenceWasAlreadyOn": true,
+    "voicemailWasAlreadyOff": true,
+    "nativeRestoreTestedThisTurn": false,
+    "keyboardCapture": "off"
+  },
+  "failedAttempts": [
+    {
+      "log": "/private/tmp/shield-integrated-main.log",
+      "outcome": "6/7 UI passed, manual recovery test target failure; result finalization stalled collecting diagnostics, then interrupted."
+    },
+    {
+      "log": "/private/tmp/shield-integrated-main-final.log",
+      "outcome": "6/7 passed; recovery test was tapping without ensuring target cleared the pinned action; target hierarchy and screenshot inspected. Corrected bounds check passed later."
+    }
+  ],
+  "limits": [
+    "Native public Add tests stop before adding/running in simulator; mocked runs establish local UI behavior only.",
+    "One physical phone. Undocumented destination compatibility and App Store acceptance remain unverified.",
+    "No observed off-to-on Silence transition or Live Voicemail change.",
+    "Native PiP restore control not tested this turn; app reactivation verifies return behavior.",
+    "No older-adult usability study or new frame-timing sample.",
+    "Original intermittent missing-guide root cause remains unproven.",
+    "Unrelated backend/test/deployment-script edits in the shared working tree belong to another task and are excluded."
+  ],
+  "finishReview": {
+    "path": ".impeccable/review/setup-shortcut-production/finish-review.md",
+    "disposition": "ship",
+    "role": "fresh generalist fallback for unavailable finish-reviewer specialist",
+    "scope": "23 required captures and bounded source inspection; no new tests or UI run by reviewer"
+  }
+}
