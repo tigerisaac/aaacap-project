@@ -28,6 +28,7 @@ try {
   }
   assert.equal(health?.status, 'ready', 'packaged bridge failed to start');
   assert.equal(health.sharedTransport, 'call-control-v1');
+  assert.equal(health.startupProtocol, 1);
   assert.equal(health.maxSessions, 10);
   assert.equal(health.screeningMode, process.argv.includes('--hybrid') ? 'hybrid' : 'live');
   if (process.argv.includes('--hybrid')) assert.equal(health.transcriptionModel, 'stt-rt-v5');

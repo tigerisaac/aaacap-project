@@ -48,7 +48,7 @@ export class CloudStore {
   }
   /** One bounded daily invocation; all reads hide expired data immediately. */
   async cleanup(): Promise<void> {
-    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents', 'phoneAuthChallenges', 'phoneAuthLimits', 'alertDeliveries', 'alertContacts']) {
+    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents', 'callControlJobs', 'callControlDeadlines', 'phoneAuthChallenges', 'phoneAuthLimits', 'alertDeliveries', 'alertContacts']) {
       const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
       // Preserve recoverable historical stops before the first post-upgrade cleanup deletes their records.
       if (collection === 'callSessions') {

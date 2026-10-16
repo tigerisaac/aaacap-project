@@ -14,12 +14,16 @@ export interface ScreeningIO {
   close(): void;
   timing?: TimingSink;
   acknowledgementAudio?: Buffer;
+  /** Shared calls invite speech only after this session is ready and carrier playback completes. */
+  waitForGreeting?: boolean;
+  ready?(): void;
 }
 
 /** One owner per call. Terminal decisions synchronously cut playback before network I/O. */
 export class ScreeningSession {
   private startedAt: number;
   private readyAt?: number;
+  private listeningAt?: number;
   private lastSpeechAt?: number;
   private callerSoundAt?: number;
   private lastAssistantSoundAt = 0;
@@ -76,6 +80,14 @@ export class ScreeningSession {
     if (io.acknowledgementAudio?.length) this.acknowledgement = new WaitAcknowledgement(io.acknowledgementAudio, phase => this.timing(phase));
   }
   get ended() { return this.terminal; }
+  listen() {
+    if (this.terminal || this.listeningAt !== undefined) return;
+    this.listeningAt = this.now();
+    if (this.readyAt !== undefined) {
+      for (const audio of this.earlyAudio) this.io.openai({ type: 'session.input_audio.append', audio });
+      this.earlyAudio = []; this.earlyBytes = 0;
+    }
+  }
   /** Resume the hybrid's pending question without resetting its clarification budget. */
   resumeClarification(transcript: string, decision: LiveDecision) {
     if (this.terminal || this.readyAt !== undefined || this.firstInput || this.hadTranscript
@@ -98,7 +110,9 @@ export class ScreeningSession {
     this.terminal = true; this.outgoing = Buffer.alloc(0); this.pending.clear(); this.earlyAudio = [];
     this.io.telnyx({ event: 'clear' });
     this.io.openai({ type: 'session.close' });
-    try { await this.io.finish(decision); } finally { this.io.close(); }
+    try { await this.io.finish(decision); }
+    catch { this.timing('handoff_failed'); /* A failed save must never terminate other sessions in this process. */ }
+    finally { this.io.close(); }
   }
   providerEnded() {
     if (this.terminal) return;
@@ -122,7 +136,7 @@ export class ScreeningSession {
         if (!this.callerAudioActive) { this.callerAudioActive = true; this.timing('caller_speech_started'); }
         this.callerSoundAt = this.now();
       }
-      if (this.readyAt !== undefined) this.io.openai({ type: 'session.input_audio.append', audio });
+      if (this.readyAt !== undefined && (!this.io.waitForGreeting || this.listeningAt !== undefined)) this.io.openai({ type: 'session.input_audio.append', audio });
       else {
         this.earlyBytes += Buffer.from(audio, 'base64').length;
         if (this.earlyBytes > 80_000) { void this.stop('screening_unavailable'); return; }
@@ -149,8 +163,8 @@ export class ScreeningSession {
         if (this.readyAt !== undefined || event.session?.model !== 'gpt-live-1') { void this.stop('screening_unavailable'); return; }
         this.readyAt = this.now();
         this.timing('model_ready');
-        for (const audio of this.earlyAudio) this.io.openai({ type: 'session.input_audio.append', audio });
-        this.earlyAudio = []; this.earlyBytes = 0; break;
+        if (!this.io.waitForGreeting) this.listen();
+        this.io.ready?.(); break;
       case 'session.input_transcript.delta':
         if (typeof event.delta !== 'string') break;
         if (!this.hadTranscript && spokenLength(event.delta)) { this.hadTranscript = true; this.timing('first_transcript'); }
@@ -321,6 +335,7 @@ export class ScreeningSession {
       if (now - this.startedAt >= LIVE_LIMITS.startupMs) void this.stop('screening_unavailable');
       return;
     }
+    if (this.io.waitForGreeting && this.listeningAt === undefined) return;
     if (this.deferred) {
       const settleMs = this.deferred.decision.action === 'message' ? LIVE_LIMITS.idleMs : LIVE_LIMITS.speechPauseMs;
       const paused = this.lastSpeechAt === undefined || now - this.lastSpeechAt >= settleMs;
@@ -340,7 +355,7 @@ export class ScreeningSession {
       }
     }
     if (this.backendBusy && this.backendSince !== undefined && now - this.backendSince >= LIVE_LIMITS.backendMs) { void this.stop('screening_unavailable'); return; }
-    if (!this.backendBusy && this.lastSpeechAt === undefined && !this.modelAudioReceived && now - this.readyAt >= LIVE_LIMITS.startupMs) { void this.stop('screening_unavailable'); return; }
+    if (!this.backendBusy && this.lastSpeechAt === undefined && !this.modelAudioReceived && now - (this.listeningAt ?? this.readyAt) >= LIVE_LIMITS.startupMs) { void this.stop('screening_unavailable'); return; }
     let frame: Buffer | undefined;
     if (this.outgoing.length) {
       frame = Buffer.alloc(160, 255); this.outgoing.copy(frame, 0, 0, Math.min(160, this.outgoing.length));
@@ -363,7 +378,7 @@ export class ScreeningSession {
     // Audible caller audio with no transcript means the model stopped hearing them: report a failed check,
     // which the recipient sees, rather than blaming a caller who was talking.
     const quiet: StopReason = this.callerSoundAt !== undefined && now - this.callerSoundAt < LIVE_LIMITS.idleMs / 2 ? 'screening_unavailable' : 'silent_caller';
-    if (!this.backendBusy && this.modelAudioReceived && this.lastSpeechAt === undefined && now - Math.max(this.readyAt, this.lastAssistantSoundAt) >= LIVE_LIMITS.initialSilenceMs) { void this.stop(quiet); return; }
+    if (!this.backendBusy && this.modelAudioReceived && this.lastSpeechAt === undefined && now - Math.max(this.listeningAt ?? this.readyAt, this.lastAssistantSoundAt) >= LIVE_LIMITS.initialSilenceMs) { void this.stop(quiet); return; }
     if (!this.backendBusy && this.lastSpeechAt !== undefined && now - Math.max(this.lastSpeechAt, this.lastAssistantSoundAt, this.lastBackendAt) >= LIVE_LIMITS.idleMs) {
       void this.stop(quiet); return;
     }

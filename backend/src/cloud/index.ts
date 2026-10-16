@@ -107,3 +107,18 @@ export const expireSharedCalls = onSchedule({ ...options, maxInstances: 1, sched
   const { SharedCallControl } = await import('./call-control.js');
   await new SharedCallControl(getStore()).sweep();
 });
+
+export const dispatchSharedCallJob = onDocumentCreated({ ...options, document: 'callControlJobs/{jobId}', retry: true, concurrency: 20 }, async event => {
+  const { dispatchCallJob } = await import('./call-jobs.js');
+  await dispatchCallJob(getStore(), event.params.jobId);
+});
+
+export const runSharedCallJob = onTaskDispatched({ ...options, concurrency: 20,
+  invoker: ['shield-runtime@shield-calls-isaac.iam.gserviceaccount.com'],
+  retryConfig: { maxAttempts: 30, minBackoffSeconds: 1, maxBackoffSeconds: 10, maxRetrySeconds: 300 },
+  rateLimits: { maxConcurrentDispatches: 20, maxDispatchesPerSecond: 20 } }, async request => {
+  const jobId = request.data?.jobId;
+  if (typeof jobId !== 'string' || !/^[a-z0-9-]{1,100}$/.test(jobId)) return;
+  const { SharedCallControl } = await import('./call-control.js');
+  await new SharedCallControl(getStore()).runJob(jobId);
+});

@@ -5,6 +5,7 @@ import type { LiveDecision, StopReason } from '../live/policy.js';
 import type { CloudConfig } from './config.js';
 import { FieldValue } from 'firebase-admin/firestore';
 import { deleteMessageAudio, discardCapture } from './message-audio.js';
+import { queueCallJob } from './call-jobs.js';
 
 export function streamTicket(config: CloudConfig, id: string, expiry: number) {
   return createHmac('sha256', config.TRIAL_PROXY_SECRET).update(`shield-live-v1:${id}:${expiry}`).digest('hex');
@@ -67,6 +68,7 @@ export class ForwardingLive {
         events: [...c.events, { kind: offer ? 'callback_offered' : 'call_stopped', at: now }] };
     // Robocall and solicitation numbers are usually spoofed and change constantly, so only scams are remembered.
     }, (tx, next, personExists) => {
+      if (next.transport === 'call-control') queueCallJob(f.store, tx, next.id, 'outcome');
       if (next.outcome === 'held' && next.reason === 'scam') f.rememberScam(tx, next, 'scam', personExists);
       // A delayed terminal decision can arrive after the carrier capture was processed.
       if (discardCapture(next)) {
@@ -80,7 +82,8 @@ export class ForwardingLive {
   async unavailable(id: string) {
     const f = this.forwarding, now = f.store.now();
     return f.transition(id, c => c.state === 'screening' && !c.liveConnectedAt ? { state: 'voicemail', outcome: 'voicemail', reason: 'screening_unavailable',
-      liveFinishedAt: now, events: [...c.events, { kind: 'voicemail_offered', at: now }] } : undefined);
+      liveFinishedAt: now, events: [...c.events, { kind: 'voicemail_offered', at: now }] } : undefined,
+      (tx, next) => { if (next.transport === 'call-control') queueCallJob(f.store, tx, next.id, 'outcome'); });
   }
 }
 

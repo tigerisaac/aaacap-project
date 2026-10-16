@@ -37,12 +37,23 @@ const sonioxKey = process.env.SONIOX_API_KEY;
 if (screeningMode === 'hybrid' && !sonioxKey) throw new Error('soniox_key_required');
 const store = new CloudStore(getFirestore(getApps()[0] ?? initializeApp()), config);
 const forwarding = new ForwardingStore(store), live = new ForwardingLive(forwarding), telnyx = new TelnyxVoice(config);
-const server = createServer((request, response) => {
+const server = createServer(async (request, response) => {
   response.setHeader('Cache-Control', 'no-store');
+  const prepare = /^\/prepare\/([a-f0-9-]{36})\/(\d{13})\/([a-f0-9]{64})$/.exec(request.url ?? '');
+  if (prepare) {
+    if (request.method !== 'POST' || !validStreamTicket(config, prepare[1]!, Number(prepare[2]), prepare[3]!)) { response.writeHead(403).end(); return; }
+    try {
+      const call = (await store.callRef(prepare[1]!).get()).data();
+      if (!call?.startupVersion || call.state !== 'screening' || call.inboundEndedAt || sessions >= MAX_SESSIONS) { response.writeHead(409).end(); return; }
+      response.setHeader('Content-Type', 'application/json');
+      response.end(JSON.stringify({ startupProtocol: 1 }));
+    } catch { response.writeHead(503).end(); }
+    return;
+  }
   if (request.url !== '/ready') { response.writeHead(404).end(); return; }
   response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify({ status: 'ready', model: 'gpt-live-1', decisionModel: DECISION_MODEL, policyVersion: SCREENING_POLICY_VERSION,
-      timingLogs: true, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1',
+      timingLogs: true, startupProtocol: 1, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1',
       screeningMode, ...(screeningMode === 'hybrid' ? { hybridVersion: HYBRID_SCREENING_VERSION, transcriptionModel: 'stt-rt-v5' } : {}) }));
 });
 const sockets = new WebSocketServer({ noServer: true, maxPayload: 32_768, perMessageDeflate: false });
@@ -53,8 +64,7 @@ let sessions = 0;
 async function refuse(id: string) {
   try {
     const call = await live.unavailable(id), next = afterScreening(config, call);
-    if (call?.transport === 'call-control') await new SharedCallControl(store).outcome(call.id);
-    else if (call && next) await telnyx.update(call.parentSid, next);
+    if (call?.transport !== 'call-control' && call && next) await telnyx.update(call.parentSid, next);
     console.info(JSON.stringify({ event: 'live_screening_refused', reason: 'capacity' }));
   } catch { console.error(JSON.stringify({ event: 'live_refusal_unrouted' })); }
 }
@@ -65,21 +75,24 @@ server.on('upgrade', async (request, socket, head) => {
   sessions++;
   let released = false;
   const release = () => { if (!released) { released = true; sessions--; } };
+  // A client can disappear during the Firestore claim. Release capacity even then.
+  socket.once('close', release);
   const claimStartedAt = Date.now();
   try {
     const call = await live.claim(match[1]!, screeningMode === 'hybrid' ? HYBRID_SCREENING_VERSION : 'gpt-live-1');
+    if (socket.destroyed) { release(); return; }
     if (!call) { release(); socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
     const timing = callTiming(call.id, call.createdAt);
     timing('bridge_claimed', { claimMs: Date.now() - claimStartedAt, processAgeMs: Date.now() - processStartedAt,
       firstCallInProcess: acceptedCalls++ === 0 });
 
     sockets.handleUpgrade(request, socket, head, provider => {
-      let openai: WebSocket | undefined, closing = false;
+      let openai: WebSocket | undefined, closing = false, unsubscribe: (() => void) | undefined;
       const send = (ws: WebSocket | undefined, event: object) => {
         if (ws?.readyState === WebSocket.OPEN && ws.bufferedAmount < 100_000) ws.send(JSON.stringify(event));
       };
       const close = () => {
-        if (closing) return; closing = true; release(); clearInterval(ticker); clearTransportTimer();
+        if (closing) return; closing = true; release(); clearInterval(ticker); clearTransportTimer(); unsubscribe?.();
         timing('transport_closed', {});
         provider.close();
         // Allow final usage to arrive, but never keep a transport alive indefinitely.
@@ -92,6 +105,15 @@ server.on('upgrade', async (request, socket, head) => {
           try { const result = await live.finish(call.id, decision); timing('outcome_saved', { saveMs: Date.now() - began, successful: true }); return result; }
           catch (error) { timing('outcome_saved', { saveMs: Date.now() - began, successful: false }); throw error; }
         };
+        if (call.transport === 'call-control') {
+          // Saving the result atomically queues carrier work on an on-demand
+          // worker. Never depend on this process having CPU after media closes.
+          await save();
+          timing('handoff_finished', { handoffMs: Date.now() - handoffAt });
+          console.info(JSON.stringify({ event: 'live_screening_finished', callId: call.id,
+            decision: typeof decision === 'string' ? decision : decision.action, elapsedMs: Date.now() - call.createdAt, carrierWork: 'queued' }));
+          return;
+        }
         const terminate = async () => {
           for (let attempt = 0; attempt < 3; attempt++) {
             const began = Date.now(); timing('hangup_started', { attempt: attempt + 1 });
@@ -122,12 +144,16 @@ server.on('upgrade', async (request, socket, head) => {
           elapsedMs: Date.now() - call.createdAt }));
       };
       const context = { recentScamStopped: call.screeningCaution === true };
+      const readiness = call.startupVersion ? { waitForGreeting: true,
+        ready: () => { void new SharedCallControl(store).screeningReady(call.id).catch(() => session.stop('screening_unavailable')).catch(() => {}); } } : {};
       const session = screeningMode === 'hybrid'
-        ? new HybridScreeningSession({ telnyx: event => send(provider, event), finish, close, timing, acknowledgementAudio },
+        ? new HybridScreeningSession({ telnyx: event => send(provider, event), finish, close, timing, acknowledgementAudio, ...readiness },
           { openai: apiKey, soniox: sonioxKey! }, context)
         : new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event),
-          research: topic => researchScamPattern(topic, apiKey), finish, close, timing, acknowledgementAudio }, Date.now, context);
-      const ticker = setInterval(() => session.tick(), 20);
+          research: topic => researchScamPattern(topic, apiKey), finish, close, timing, acknowledgementAudio, ...readiness }, Date.now, context);
+      const ticker = setInterval(() => {
+        try { session.tick(); } catch { void session.stop('screening_unavailable').catch(() => {}); }
+      }, 20);
       const clearTransportTimer = attachMediaTransport(provider, session, () => {
           if (session instanceof HybridScreeningSession) { session.start(); return; }
           openai = new WebSocket('wss://api.openai.com/v1/live/sessions', { headers: { Authorization: `Bearer ${apiKey}` },
@@ -142,6 +168,13 @@ server.on('upgrade', async (request, socket, head) => {
           openai.on('error', () => { void session.stop('screening_unavailable'); });
           openai.on('close', () => { if (!session.ended) void session.stop('screening_unavailable'); });
       }, timing);
+      if (call.startupVersion) {
+        unsubscribe = store.callRef(call.id).onSnapshot(snapshot => {
+          const current = snapshot.data();
+          if (!current || current.inboundEndedAt || current.state !== 'screening') { session.providerEnded(); close(); return; }
+          if (current.greetingCompletedAt) session.listen();
+        }, () => { void session.stop('screening_unavailable').catch(() => {}); });
+      }
     });
   } catch { release(); socket.destroy(); }
 });

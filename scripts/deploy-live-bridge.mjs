@@ -57,10 +57,9 @@ if (command === 'build') {
   // Keep the explicitly enabled hybrid mode and its pinned STT secret on future rebuilds.
   const hybridEnv=(existing?.template?.containers?.[0]?.env??[]).filter(e=>['SHIELD_SCREENING_MODE','SONIOX_API_KEY'].includes(e.name));
   const body={name:name.slice(1),description:'Shield GPT Live screening with signed per-call streams; up to ten sessions per instance.',ingress:'INGRESS_TRAFFIC_ALL',
-    // Carrier media connection deadlines cannot wait for a cold container. CPU
-    // must also remain available to finish routing after a socket disconnects.
-    template:{serviceAccount:runtimeIdentity,timeout:'120s',maxInstanceRequestConcurrency:10,scaling:{minInstanceCount:1,maxInstanceCount:2},
-      containers:[{image:s.image,ports:[{containerPort:8080}],resources:{limits:{cpu:'1',memory:'512Mi'},cpuIdle:false,startupCpuBoost:true},
+    // Prepare while ringing; durable workers finish carrier work after media ends.
+    template:{serviceAccount:runtimeIdentity,timeout:'120s',maxInstanceRequestConcurrency:10,scaling:{minInstanceCount:0,maxInstanceCount:2},
+      containers:[{image:s.image,ports:[{containerPort:8080}],resources:{limits:{cpu:'1',memory:'512Mi'},cpuIdle:true,startupCpuBoost:true},
         env:[{name:'SHIELD_RUNTIME',valueSource:{secretKeyRef:{secret:'SHIELD_RUNTIME',version:'latest'}}},
           {name:'OPENAI_API_KEY',valueSource:{secretKeyRef:{secret:'SHIELD_OPENAI_API_KEY',version:'2'}}},...hybridEnv]}]}};
   const o=existing?(await run.patch(name,body,{queryParams:{updateMask:'template,description'}})).body

@@ -27,7 +27,7 @@ export class HybridScreeningSession {
   private readonly gate: HybridScreeningGate; private readonly ack?: WaitAcknowledgement;
   private terminal = false; private started = false; private phase: 'triage' | 'handoff' | 'live' = 'triage';
   private stt?: WebSocket; private voice?: WebSocket; private live?: ScreeningSession;
-  private sttReadyAt?: number; private sttClosing = false; private handoffAt?: number;
+  private sttReadyAt?: number; private sttOpen = false; private listeningAt?: number; private sttClosing = false; private handoffAt?: number;
   private sttQueue: Buffer[] = []; private sttQueuedBytes = 0;
   private tail: { start: number; audio: Buffer }[] = []; private tailBytes = 0;
   private liveQueue: Buffer[] = []; private liveQueuedBytes = 0; private liveChunk = 1;
@@ -48,6 +48,7 @@ export class HybridScreeningSession {
     }, fail: reason => { void this.stop(reason); } }, this.now);
   }
   get ended() { return this.terminal; }
+  listen() { if (!this.terminal) this.listeningAt ??= this.now(); }
   private timing(phase: TimingPhase, metrics: TimingMetrics = {}) {
     try { this.io.timing?.(phase, { sessionMs: this.now() - this.startedAt, ...metrics }); } catch { /* Never affect routing. */ }
   }
@@ -60,7 +61,10 @@ export class HybridScreeningSession {
         if (this.terminal) { this.stt?.terminate(); return; }
         this.send(this.stt, JSON.stringify({ model: 'stt-rt-v5', audio_format: 'mulaw', sample_rate: 8000,
           num_channels: 1, language_hints: ['en'], enable_endpoint_detection: true, max_endpoint_delay_ms: 1500 }));
-        this.sttReadyAt = this.now(); this.timing('hybrid_stt_ready');
+        this.sttOpen = true;
+        // Legacy TeXML has already played its greeting. Shared calls require a
+        // successful processing response: an open socket alone can still reject authentication.
+        if (!this.io.waitForGreeting) { this.sttReadyAt = this.now(); this.listen(); this.timing('hybrid_stt_ready'); }
         for (const frame of this.sttQueue) this.send(this.stt, frame);
         this.sttQueue = []; this.sttQueuedBytes = 0;
       });
@@ -102,7 +106,9 @@ export class HybridScreeningSession {
     if (value === 'silent_caller' && this.text.trim()) value = 'screening_timeout';
     this.terminal = true; this.timing('terminal_decision'); this.cleanup();
     if (this.live && !this.live.ended) this.live.providerEnded();
-    try { await this.io.finish(value); } finally { this.io.close(); }
+    try { await this.io.finish(value); }
+    catch { this.timing('handoff_failed'); /* Carrier failure callbacks and durable deadlines recover this call. */ }
+    finally { this.io.close(); }
   }
   providerEnded() {
     if (this.terminal) return;
@@ -129,7 +135,7 @@ export class HybridScreeningSession {
     if (this.phase === 'triage') {
       this.tail.push({ start, audio: frame }); this.tailBytes += frame.length;
       if (this.tailBytes > LIVE_LIMITS.maximumMs * 8) { void this.stop('screening_unavailable'); return; }
-      if (this.sttReadyAt !== undefined) this.send(this.stt, frame);
+      if (this.sttOpen) this.send(this.stt, frame);
       else { this.sttQueue.push(frame); this.sttQueuedBytes += frame.length;
         if (this.sttQueuedBytes > 80_000) void this.stop('screening_unavailable'); }
     } else {
@@ -149,6 +155,9 @@ export class HybridScreeningSession {
     this.processedMs = processed;
     this.finalizedMs = Math.min(this.audioMs, e.final_audio_proc_ms);
     if (e.tokens.some((t: any) => typeof t.text !== 'string' || typeof t.is_final !== 'boolean')) throw new Error('invalid_stt_tokens');
+    if (this.sttReadyAt === undefined && processed > 0) {
+      this.sttReadyAt = this.now(); this.timing('hybrid_stt_ready'); this.io.ready?.();
+    }
     const words = e.tokens.filter((t: any) => !/^<.*>$/.test(t.text));
     const delta = words.filter((t: any) => t.is_final).map((t: any) => t.text).join('');
     this.text += delta;
@@ -244,7 +253,8 @@ export class HybridScreeningSession {
     }
     if (this.phase === 'triage') {
       if (this.sttReadyAt === undefined && now - this.startedAt >= LIVE_LIMITS.startupMs) { void this.stop('screening_unavailable'); return; }
-      if (this.sttReadyAt !== undefined && this.callerLastAt === undefined && now - this.sttReadyAt >= LIVE_LIMITS.initialSilenceMs) { void this.stop('silent_caller'); return; }
+      if (this.io.waitForGreeting && this.listeningAt === undefined) return;
+      if (this.listeningAt !== undefined && this.callerLastAt === undefined && now - this.listeningAt >= LIVE_LIMITS.initialSilenceMs) { void this.stop('silent_caller'); return; }
       if (this.callerLastAt !== undefined && this.finalizedMs < this.lastSoundMs && now - this.progressAt >= LIVE_LIMITS.idleMs) { void this.stop('screening_unavailable'); return; }
       this.gate.tick();
       if (!this.gate.waiting && this.callerLastAt !== undefined && now - this.callerLastAt >= LIVE_LIMITS.idleMs && !this.text.trim()) {

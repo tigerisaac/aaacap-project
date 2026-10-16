@@ -7,6 +7,7 @@ import { queueAlert } from './alerts.js';
 import { assignedTo, isShieldNumber, numberRef } from './numbers.js';
 import { CloudStore, type Call, type Person } from './store.js';
 import { countStoppedCall, wasStopped } from './stopped-total.js';
+import { queueCallJob } from './call-jobs.js';
 
 export const FORWARDING_CONSENT = `${CONSENT_VERSION}-forwarding-v1`;
 // Consent names the phone provider. Keep this exact value so the owner's existing consent stays valid.
@@ -15,6 +16,7 @@ export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx';
   liveConnectedAt?: number; liveFinishedAt?: number; screeningModel?: string; screeningCaution?: boolean;
   childSid?: string; acceptedAt?: number; voicemail?: { id: string; duration: number; status: string; heardAt: number | null };
   captureFromAnswer?: boolean;
+  startupVersion?: 1; answerRequestedAt?: number; screeningReadyAt?: number; greetingCompletedAt?: number;
   /** Set only by the authenticated hangup for the immutable inbound leg. */
   inboundEndedAt?: number;
   announcementFallbacks?: Record<string, boolean>;
@@ -148,6 +150,14 @@ export class ForwardingStore {
         state: eligible ? 'screening' : 'voicemail', outcome: eligible ? 'screening' : 'voicemail',
         reason, purpose: null, completedAt: null,
         events: [{ kind: eligible ? 'screening_started' : 'voicemail_offered', at: now }] };
+      if (shared) {
+        call.startupVersion = 1;
+        queueCallJob(s, tx, id, 'start');
+        // Admission must never commit a reservation without its crash-recovery timer.
+        const dueAt = now + 20_000;
+        tx.create(s.db.collection('callControlDeadlines').doc(id), { callId: id, phaseSeconds: 20, dueAt, expiresAt: now + 2 * 3600_000 });
+        queueCallJob(s, tx, id, 'deadline', dueAt);
+      }
       tx.create(s.callRef(id), call); tx.create(s.keyRef(sid), { callId: id, expiresAt: now + RETENTION_MS });
       tx.set(totalDoc.ref, { calls: (total?.calls ?? 0) + 1, screened: (total?.screened ?? 0) + (eligible ? 1 : 0), blocked: total?.blocked ?? 0, expiresAt });
       tx.set(mineDoc.ref, { participantId, screened: (mine?.screened ?? 0) + (eligible ? 1 : 0), expiresAt });

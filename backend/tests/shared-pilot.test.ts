@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync, sign } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import Fastify from 'fastify';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
@@ -9,6 +9,7 @@ import { ForwardingStore } from '../src/cloud/forwarding-store.js';
 import { ForwardingLive } from '../src/cloud/forwarding-live.js';
 import { forwardingIdentity, enrollSharedRoute, routeRef } from '../src/cloud/shared-routing.js';
 import { SharedCallControl, registerCallControl } from '../src/cloud/call-control.js';
+import { callJobId, dispatchCallJob } from '../src/cloud/call-jobs.js';
 import { CallControlProvider } from '../src/cloud/call-control-provider.js';
 import { registerSignedFormBody } from '../src/cloud/form-body.js';
 import { SharedProbes } from '../src/cloud/shared-probes.js';
@@ -40,7 +41,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
   const incoming = (sid: string, n: number, patch: Record<string, unknown> = {}) => event(sid, 'call.initiated', { direction: 'incoming', from: '+12025550888', to: config.TELNYX_NUMBER,
     sip_headers: [{ name: 'Diversion', value: `<tel:${people[n]!.phone}>` }], ...patch });
   const approve = { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true } as const;
-  async function arrive(n = 0) { const sid = randomUUID(); await cc.handle(incoming(sid, n)); return (await f.find(sid))!; }
+  const prepare = vi.fn().mockResolvedValue(undefined);
+  async function arrive(n = 0, legacy = false) {
+    const sid = randomUUID(); await cc.handle(incoming(sid, n)); const c = (await f.find(sid))!;
+    // Retain explicit coverage of calls already in flight during a rolling release.
+    if (legacy) { await s.callRef(c.id).update({ startupVersion: FieldValue.delete() }); await cc.answer((await cc.call(c.id))!); }
+    else await cc.runJob(callJobId(c.id, 'start'));
+    return (await f.find(sid))!;
+  }
   async function offer(n = 0) {
     const c = await arrive(n), live = new ForwardingLive(f); await live.claim(c.id); await live.finish(c.id, approve); await cc.outcome(c.id);
     await cc.handle(event(c.parentSid, 'call.playback.ended', { client_state: provider.state(c.id, 'offer') }));
@@ -54,7 +62,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     await db.doc(`shieldNumbers/${config.TELNYX_NUMBER}`).set({ state: 'shared', members: [] });
     for (const p of people.slice(0, 10)) await enrollSharedRoute(s, p.id, { version: randomUUID(), carrier: 'tmobile', qualifiedAt: now });
     action.mockReset().mockResolvedValue({}); request.mockReset().mockImplementation(async () => ({ call_control_id: randomUUID() }));
-    provider = new CallControlProvider(config); provider.action = action; provider.request = request; cc = new SharedCallControl(s, provider);
+    provider = new CallControlProvider(config); provider.action = action; provider.request = request; prepare.mockReset().mockResolvedValue(undefined); cc = new SharedCallControl(s, provider, prepare);
   });
   afterAll(async () => { await db.terminate(); await deleteApp(admin); });
   it('enforces the ten-person enrollment cap and never reassigns an existing forwarding identity', async () => {
@@ -112,7 +120,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeUndefined();
   });
   it('plays Grace before starting screening, and ignores old TTS completion callbacks', async () => {
-    const c = await arrive();
+    const c = await arrive(0, true);
     await cc.handle(event(c.parentSid, 'call.answered'));
     expect(action).toHaveBeenCalledWith(c.parentSid, 'playback_start', expect.objectContaining({ audio_url: announcementAudio(CAPTURE_GREETING)!.url, audio_type: 'wav' }));
     await cc.handle(event(c.parentSid, 'call.speak.ended', { client_state: provider.state(c.id, 'greeting'), status: 'completed' }));
@@ -122,7 +130,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     expect(action.mock.calls.filter(x => x[1] === 'streaming_start')).toHaveLength(1);
   });
   it.each(['failed', 'file_not_found', 'unknown'])('retries a failed Grace greeting once with Joanna (%s), then waits for completion', async status => {
-    const c = await arrive(); await cc.handle(event(c.parentSid, 'call.answered'));
+    const c = await arrive(0, true); await cc.handle(event(c.parentSid, 'call.answered'));
     await cc.handle(event(c.parentSid, 'call.playback.ended', { client_state: provider.state(c.id, 'greeting'), status }));
     await cc.handle(event(c.parentSid, 'call.playback.ended', { client_state: provider.state(c.id, 'greeting'), status }));
     expect(action.mock.calls.filter(x => x[1] === 'speak')).toHaveLength(1);
@@ -133,21 +141,21 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     expect(action.mock.calls.filter(x => x[1] === 'streaming_start')).toHaveLength(1);
   });
   it('never advances a canceled prompt or an unsuccessful backup', async () => {
-    const c = await arrive(); await cc.handle(event(c.parentSid, 'call.answered'));
+    const c = await arrive(0, true); await cc.handle(event(c.parentSid, 'call.answered'));
     await cc.handle(event(c.parentSid, 'call.playback.ended', { client_state: provider.state(c.id, 'greeting'), status: 'cancelled' }));
     expect((await cc.call(c.id))?.state).toBe('ended');
     expect(action.mock.calls.some(x => x[1] === 'speak' || x[1] === 'streaming_start')).toBe(false);
-    const other = await arrive(1); await cc.handle(event(other.parentSid, 'call.answered'));
+    const other = await arrive(1, true); await cc.handle(event(other.parentSid, 'call.answered'));
     await cc.handle(event(other.parentSid, 'call.playback.ended', { client_state: provider.state(other.id, 'greeting'), status: 'failed' }));
     await cc.handle(event(other.parentSid, 'call.speak.ended', { client_state: provider.state(other.id, 'greeting-backup'), status: 'cancelled_amd' }));
     expect((await cc.call(other.id))?.state).toBe('ended');
     expect(action.mock.calls.some(x => x[1] === 'streaming_start')).toBe(false);
   });
   it('uses Joanna after a definite provider rejection, but retries uncertain playback without switching voices', async () => {
-    const c = await arrive(); action.mockRejectedValueOnce(new Error('telnyx_http_422'));
+    const c = await arrive(0, true); action.mockRejectedValueOnce(new Error('telnyx_http_422'));
     await cc.handle(event(c.parentSid, 'call.answered'));
     expect(action.mock.calls.filter(x => x[1] === 'speak')).toHaveLength(1);
-    const other = await arrive(1), answer = event(other.parentSid, 'call.answered');
+    const other = await arrive(1, true), answer = event(other.parentSid, 'call.answered');
     action.mockRejectedValueOnce(new Error('timeout'));
     await expect(cc.handle(answer)).rejects.toThrow('timeout'); await cc.handle(answer);
     const plays = action.mock.calls.filter(x => x[0] === other.parentSid && x[1] === 'playback_start');
@@ -269,7 +277,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
   });
   it('retries an uncertain answer with the same command id, but never redials an uncertain outbound call', async () => {
     const sid = randomUUID(), init = incoming(sid, 0); action.mockRejectedValueOnce(new Error('timeout'));
-    await expect(cc.handle(init)).rejects.toThrow('timeout'); await cc.handle(init);
+    await cc.handle(init); const bound = (await f.find(sid))!;
+    await expect(cc.runJob(callJobId(bound.id, 'start'))).rejects.toThrow('timeout'); await cc.runJob(callJobId(bound.id, 'start'));
     expect(action.mock.calls[0]![2].command_id).toBe(action.mock.calls[1]![2].command_id);
     request.mockRejectedValue(new Error('timeout'));
     const c = (await f.find(sid))!, live = new ForwardingLive(f); await live.claim(c.id); await live.finish(c.id, approve); await cc.outcome(c.id);
@@ -277,7 +286,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     await cc.handle(e); await cc.handle(e); expect(request).toHaveBeenCalledTimes(1); expect((await cc.call(c.id))?.state).toBe('voicemail');
   });
   it('sweeps a crashed screening session without releasing capacity before successful hangup', async () => {
-    const c = await arrive(); now += 91_000; action.mockRejectedValueOnce(new Error('network_down'));
+    const c = await arrive(0, true); now += 91_000; action.mockRejectedValueOnce(new Error('network_down'));
     await expect(cc.sweep()).rejects.toThrow('shared_cleanup_incomplete'); expect((await cc.call(c.id))?.state).toBe('screening');
     now += 500_000;
     expect(await f.begin(randomUUID(), config.TELNYX_NUMBER, undefined, { diverted: people[0]!.phone, legId: 'while-uncertain' })).toBeUndefined();
@@ -402,6 +411,134 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     await cc.handle(event(other.parentSid, 'streaming.failed', { call_leg_id: 'wrong-leg' }));
     await cc.handle(event(other.parentSid, 'call.hangup', { call_leg_id: 'wrong-leg' }));
     expect((await cc.call(other.id))?.state).toBe('screening');
+  });
+  it('keeps ringing during preparation and does not invite speech until the actual recognizer is ready', async () => {
+    const sid = randomUUID(); await cc.handle(incoming(sid, 0)); const c = (await f.find(sid))!;
+    expect(action).not.toHaveBeenCalled();
+    expect((await db.doc(`callControlJobs/${callJobId(c.id, 'start')}`).get()).exists).toBe(true);
+    await cc.runJob(callJobId(c.id, 'start'));
+    expect(prepare).toHaveBeenCalledTimes(1);
+    expect(action).toHaveBeenCalledWith(sid, 'answer', expect.objectContaining({ stream_url: expect.stringContaining(`/media/${c.id}/`), record: 'record-from-answer' }));
+    await cc.handle(event(sid, 'call.answered')); await cc.handle(event(sid, 'streaming.started'));
+    expect(action.mock.calls.some(x => x[1] === 'playback_start')).toBe(false);
+    await new ForwardingLive(f).claim(c.id); await cc.screeningReady(c.id); await cc.screeningReady(c.id);
+    await cc.runJob(callJobId(c.id, 'greet')); await cc.runJob(callJobId(c.id, 'greet'));
+    expect(action.mock.calls.filter(x => x[1] === 'playback_start')).toHaveLength(1);
+    expect((await cc.call(c.id))?.greetingCompletedAt).toBeUndefined();
+    await cc.handle(event(sid, 'call.playback.ended', { client_state: provider.state(c.id, 'greeting') }));
+    expect((await cc.call(c.id))?.greetingCompletedAt).toBe(now);
+    expect(action.mock.calls.some(x => x[1] === 'streaming_start')).toBe(false);
+  });
+  it('recovers admission even if the webhook process dies before any startup work', async () => {
+    const sid = randomUUID(), c = (await f.begin(sid, config.TELNYX_NUMBER, '+12025550888', { diverted: people[0]!.phone, legId: `leg-${sid}` }))!;
+    const deadline = (await db.doc(`callControlDeadlines/${c.id}`).get()).data()!;
+    expect(deadline.dueAt).toBe(now + 20_000);
+    now = deadline.dueAt; await cc.runJob(callJobId(c.id, 'deadline', deadline.dueAt));
+    expect((await cc.call(c.id))?.state).toBe('ended');
+    expect(action).toHaveBeenCalledExactlyOnceWith(sid, 'hangup', expect.anything());
+    expect((await arrive()).state).toBe('screening');
+  });
+  it('ignores hangup before the startup worker and admits a new call immediately', async () => {
+    const sid = randomUUID(); await cc.handle(incoming(sid, 0)); const old = (await f.find(sid))!;
+    await cc.handle(event(sid, 'call.hangup')); await cc.runJob(callJobId(old.id, 'start'));
+    expect(prepare).not.toHaveBeenCalled(); expect(action).not.toHaveBeenCalled();
+    const next = await arrive(); expect(next.state).toBe('screening');
+    await cc.runJob(callJobId(old.id, 'start'));
+    expect((await f.controlRef(next.participantId).get()).data()?.activeCallId).toBe(next.id);
+  });
+  it('admits the next caller while an old preparation is stuck and ignores its late success', async () => {
+    let release!: () => void, entered!: () => void;
+    const started = new Promise<void>(r => { entered = r; });
+    prepare.mockImplementationOnce(() => { entered(); return new Promise<void>(r => { release = r; }); });
+    const sid = randomUUID(); await cc.handle(incoming(sid, 0)); const old = (await f.find(sid))!;
+    const preparing = cc.runJob(callJobId(old.id, 'start')); await started;
+    try {
+      await cc.handle(event(sid, 'call.hangup'));
+      const next = await arrive(); expect(next.state).toBe('screening');
+      await cc.handle(event(sid, 'call.hangup'));
+      expect((await f.controlRef(next.participantId).get()).data()?.activeCallId).toBe(next.id);
+    } finally { release(); await preparing; }
+    expect(action.mock.calls.some(x => x[0] === sid && x[1] === 'answer')).toBe(false);
+  });
+  it('offers voicemail after failed preparation and a hangup cannot strand the next call', async () => {
+    prepare.mockRejectedValueOnce(new Error('synthetic_startup_timeout'));
+    const old = await arrive(); expect(old).toMatchObject({ state: 'voicemail', reason: 'screening_unavailable' });
+    const answer = action.mock.calls.find(x => x[1] === 'answer')!; expect(answer[2].stream_url).toBeUndefined();
+    await cc.handle(event(old.parentSid, 'call.answered'));
+    expect(action).toHaveBeenCalledWith(old.parentSid, 'playback_start', expect.objectContaining({ audio_url: expect.stringContaining('voicemail') }));
+    await cc.handle(event(old.parentSid, 'call.hangup'));
+    const next = await arrive(); await cc.runJob(callJobId(old.id, 'outcome'));
+    expect((await f.controlRef(next.participantId).get()).data()?.activeCallId).toBe(next.id);
+  });
+  it.each(['before-ready', 'queued-greeting', 'during-greeting'])('releases hangup %s without letting late work affect a new call', async phase => {
+    const old = await arrive(), live = new ForwardingLive(f); await live.claim(old.id);
+    if (phase !== 'before-ready') await cc.screeningReady(old.id);
+    if (phase === 'during-greeting') await cc.runJob(callJobId(old.id, 'greet'));
+    await cc.handle(event(old.parentSid, 'call.hangup'));
+    const next = await arrive(); const before = action.mock.calls.length;
+    await cc.screeningReady(old.id); await cc.runJob(callJobId(old.id, 'greet'));
+    await cc.handle(event(old.parentSid, 'call.playback.ended', { client_state: provider.state(old.id, 'greeting') }));
+    expect(action.mock.calls).toHaveLength(before);
+    expect((await f.controlRef(next.participantId).get()).data()?.activeCallId).toBe(next.id);
+  });
+  it('retries a failed greeting with the same command and never restarts streaming', async () => {
+    const c = await arrive(); await new ForwardingLive(f).claim(c.id); await cc.screeningReady(c.id);
+    action.mockRejectedValueOnce(new Error('synthetic_timeout'));
+    await expect(cc.runJob(callJobId(c.id, 'greet'))).rejects.toThrow('synthetic_timeout');
+    await cc.runJob(callJobId(c.id, 'greet'));
+    const plays = action.mock.calls.filter(x => x[1] === 'playback_start');
+    expect(plays).toHaveLength(2); expect(plays[0]![2].command_id).toBe(plays[1]![2].command_id);
+    expect(action.mock.calls.some(x => x[1] === 'streaming_start')).toBe(false);
+  });
+  it('recovers a persisted outcome on a fresh worker after the media process disappears', async () => {
+    const c = await arrive(), live = new ForwardingLive(f); await live.claim(c.id); await live.finish(c.id, 'screening_unavailable');
+    const worker = new SharedCallControl(s, provider, prepare);
+    action.mockImplementationOnce(async () => { throw new Error('synthetic_stream_stop_failure'); });
+    await worker.runJob(callJobId(c.id, 'outcome')); await worker.runJob(callJobId(c.id, 'outcome'));
+    expect(action.mock.calls.filter(x => x[1] === 'playback_start')).toHaveLength(1);
+    await worker.handle(event(c.parentSid, 'call.hangup')); expect((await arrive()).state).toBe('screening');
+  });
+  it('persists recovery even when all media-failure webhook attempts fail', async () => {
+    const c = await arrive(); action.mockImplementation(async (_sid, name) => { if (name === 'playback_start') throw new Error('synthetic_down'); return {}; });
+    const failed = event(c.parentSid, 'streaming.failed');
+    for (let i = 0; i < 3; i++) await expect(cc.handle(failed)).rejects.toThrow('synthetic_down');
+    action.mockResolvedValue({}); await new SharedCallControl(s, provider, prepare).runJob(callJobId(c.id, 'outcome'));
+    expect((await cc.call(c.id))?.state).toBe('voicemail');
+    await cc.handle(event(c.parentSid, 'call.hangup')); expect((await arrive()).state).toBe('screening');
+  });
+  it('uses the durable startup deadline when no media or failed-stream webhook arrives', async () => {
+    const c = await arrive(), deadline = (await db.doc(`callControlDeadlines/${c.id}`).get()).data()!;
+    now = deadline.dueAt; await cc.runJob(callJobId(c.id, 'deadline', deadline.dueAt));
+    expect((await cc.call(c.id))?.state).toBe('voicemail');
+    await cc.runJob(callJobId(c.id, 'outcome'));
+    const fallback = (await db.doc(`callControlDeadlines/${c.id}`).get()).data()!;
+    now = fallback.dueAt; await cc.runJob(callJobId(c.id, 'deadline', fallback.dueAt));
+    expect((await cc.call(c.id))?.state).toBe('ended'); expect((await arrive()).state).toBe('screening');
+  });
+  it('never releases capacity for an unconfirmed timeout hangup and retries it independently', async () => {
+    const c = await arrive(); await s.callRef(c.id).update({ greetingCompletedAt: now });
+    const deadline = (await db.doc(`callControlDeadlines/${c.id}`).get()).data()!; now = deadline.dueAt;
+    action.mockRejectedValueOnce(new Error('synthetic_hangup_failure'));
+    await expect(cc.runJob(callJobId(c.id, 'deadline', deadline.dueAt))).rejects.toThrow('synthetic_hangup_failure');
+    expect((await f.controlRef(c.participantId).get()).data()?.activeCallId).toBe(c.id);
+    await cc.runJob(callJobId(c.id, 'deadline', deadline.dueAt)); expect((await arrive()).state).toBe('screening');
+  });
+  it('discards an obsolete deadline and a delayed outcome once the recipient has accepted', async () => {
+    const c = await offer(); const old = (await db.doc(`callControlDeadlines/${c.id}`).get()).data()!;
+    await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    const before = action.mock.calls.length; now = old.dueAt;
+    await cc.runJob(callJobId(c.id, 'deadline', old.dueAt)); await cc.runJob(callJobId(c.id, 'outcome'));
+    expect((await cc.call(c.id))?.state).toBe('accepted'); expect(action.mock.calls).toHaveLength(before);
+  });
+  it('deduplicates queue delivery but propagates dispatch failures for durable retry', async () => {
+    const c = await arrive(), id = callJobId(c.id, 'deadline', now + 25_000);
+    const queue = { enqueue: vi.fn().mockRejectedValueOnce(new Error('synthetic_queue_down')).mockResolvedValue(undefined) };
+    await expect(dispatchCallJob(s, id, queue)).rejects.toThrow('synthetic_queue_down');
+    await dispatchCallJob(s, id, queue); await dispatchCallJob(s, id, queue);
+    expect(queue.enqueue.mock.calls[1]![1]).toEqual(queue.enqueue.mock.calls[2]![1]);
+    queue.enqueue.mockRejectedValue({ code: 'functions/task-already-exists' });
+    await expect(dispatchCallJob(s, id, queue)).resolves.toBeUndefined();
   });
   it('does not admit disabled or unverified routes', async () => {
     await routeRef(s, config.TELNYX_NUMBER, people[0]!.phone).update({ enabled: false });

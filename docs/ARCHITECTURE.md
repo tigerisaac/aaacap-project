@@ -1,5 +1,9 @@
 # Architecture
 
+## On-demand startup and durable recovery — October 16 implementation, not deployed
+
+New shared calls create a durable startup job at admission. The caller keeps ringing while an on-demand worker prepares the bridge/runtime database channel, then answers with recording and streaming enabled. The actual media session must process audio successfully before the existing greeting is played; successful greeting completion starts the caller’s silence/decision timers. The bridge saves outcomes atomically with durable jobs, so carrier work runs on retried workers after media closes. Scheduled phase deadlines and the minute sweep recover missing callbacks. The bridge and workers keep zero minimum instances and request-based CPU. Confirmed unconnected hangups bypass the executor lease and release only their own reservation. [Incident, bounds, tests and release plan](INCIDENT-2026-10-16.md#on-demand-revision--implemented-not-deployed).
+
 ## Phone sign-in and optional alert contacts — repository implementation, October 14
 
 The iPhone entry point now verifies a US/Canadian mobile number with a Telnyx Verify code. Shield keeps an encrypted, five-minute challenge, enforces per-number/IP/global limits and a resend cooldown, allows five checks, and atomically consumes a fenced verification before minting a Firebase custom-auth session. Codes are provider-generated and never stored by Shield. Firebase phone accounts are reused or created; matching a participant's phone does not transfer its ownership to a different UID. Existing email-link sign-in remains available, including cold-launch links. No iOS Firebase SDK is added.

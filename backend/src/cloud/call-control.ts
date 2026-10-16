@@ -13,6 +13,8 @@ import { CallMonitor, warningText } from './monitoring.js';
 import { purposes } from './copy.js';
 import { MESSAGE_CAPTURE_SECONDS } from './message-audio.js';
 import { ANNOUNCEMENT_BACKUP_VOICE, CAPTURE_GREETING, CAPTURE_VOICEMAIL, failedPlayback, rejectedAudioCommand, requiredAnnouncementAudio } from './announcements.js';
+import { queueCallJob } from './call-jobs.js';
+import { prepareBridge } from './bridge-startup.js';
 
 const eventSchema = z.object({ data: z.object({ id: z.string().min(1).max(200), event_type: z.string().max(100),
   occurred_at: z.string().datetime({ offset: true }), payload: z.object({ call_control_id: z.string().refine(validControlId),
@@ -27,7 +29,7 @@ const TTL = 2 * 3600_000;
 /** Durable call state and command receipts survive webhook retries and multiple API/bridge instances. */
 export class SharedCallControl {
   readonly f: ForwardingStore;
-  constructor(readonly store: CloudStore, readonly provider = new CallControlProvider(store.config)) { this.f = new ForwardingStore(store); }
+  constructor(readonly store: CloudStore, readonly provider = new CallControlProvider(store.config), readonly prepare = prepareBridge) { this.f = new ForwardingStore(store); }
   async call(id: string) { return (await this.store.callRef(id).get()).data() as ForwardingCall | undefined; }
   /** One executor per call. A contended webhook gets 503 and Telnyx retries it; no in-memory global call lock. */
   async exclusive<T>(key: string, run: () => Promise<T>): Promise<T> {
@@ -63,7 +65,9 @@ export class SharedCallControl {
     const ref = this.store.db.collection('callControlDeadlines').doc(c.id);
     await this.store.db.runTransaction(async tx => {
       if ((await tx.get(ref)).data()?.phaseSeconds === seconds) return;
-      tx.set(ref, { callId: c.id, phaseSeconds: seconds, dueAt: this.store.now() + seconds * 1000, expiresAt: this.store.now() + TTL });
+      const dueAt = this.store.now() + seconds * 1000;
+      tx.set(ref, { callId: c.id, phaseSeconds: seconds, dueAt, expiresAt: this.store.now() + TTL });
+      queueCallJob(this.store, tx, c.id, 'deadline', dueAt);
     });
   }
   async stop(c: ForwardingCall) {
@@ -109,24 +113,75 @@ export class SharedCallControl {
   }
   async answer(c: ForwardingCall) {
     // This provider operation captures even speech overlapping the greeting/model startup.
-    await this.store.callRef(c.id).update({ captureFromAnswer: true });
+    const current = await this.f.transition(c.id, (call, ctrl) => call.state !== 'ended' && !call.inboundEndedAt && ctrl.activeCallId === call.id
+      ? { captureFromAnswer: true, answerRequestedAt: call.answerRequestedAt ?? this.store.now() } : undefined);
+    if (!current) return;
+    c = current;
+    if (c.startupVersion) await this.deadline(c, c.state === 'screening' ? 25 : 80);
+    const expiry = c.answerRequestedAt! + 60_000;
+    const stream = c.startupVersion && c.state === 'screening' && this.store.config.LIVE_BRIDGE_URL ? {
+      stream_url: `${this.store.config.LIVE_BRIDGE_URL.replace('https:', 'wss:')}/media/${c.id}/${expiry}/${streamTicket(this.store.config, c.id, expiry)}`,
+      stream_track: 'inbound_track', stream_codec: 'PCMU', stream_bidirectional_codec: 'PCMU', stream_bidirectional_mode: 'rtp', stream_bidirectional_sampling_rate: 8000
+    } : {};
     const result = await this.command(c.parentSid, 'answer', { client_state: this.provider.state(c.id, 'inbound'), send_silence_when_idle: true,
+      ...stream,
       record: 'record-from-answer', record_channels: 'single', record_track: 'inbound', record_format: 'mp3',
       record_max_length: MESSAGE_CAPTURE_SECONDS, record_timeout_secs: 0 }, 'answer');
     // A durable job also covers a missing recording-saved webhook.
     if (validRecordingId(result?.recording_id ?? '')) await this.f.recording(c.parentSid, result.recording_id, 0);
   }
   async voicemail(c: ForwardingCall) {
-    if (c.acceptedAt || c.state !== 'voicemail') return;
+    if (c.acceptedAt || c.inboundEndedAt || c.state !== 'voicemail') return;
     await this.deadline(c, 80);
     await this.play(c, 'voicemail');
   }
+  /** Called only after the actual media session has a healthy recognizer. */
+  async screeningReady(id: string) {
+    return this.f.transition(id, c => c.startupVersion && c.state === 'screening' && c.liveConnectedAt && !c.screeningReadyAt && !c.inboundEndedAt
+      ? { screeningReadyAt: this.store.now() } : undefined,
+    (tx, c) => queueCallJob(this.store, tx, c.id, 'greet'));
+  }
+  async start(id: string) {
+    return this.exclusive(id, async () => {
+      let c = await this.call(id);
+      if (!c || !c.startupVersion || !['screening', 'voicemail'].includes(c.state) || c.inboundEndedAt || c.liveConnectedAt) return;
+      // A delayed/redelivered job must never resurrect an abandoned ring or an uncertain old answer.
+      if (this.store.now() - (c.answerRequestedAt ?? c.createdAt) > 45_000) return this.stop(c);
+      if (!c.answerRequestedAt) await this.deadline(c, c.state === 'screening' ? 20 : 80);
+      if (c.state === 'screening' && !c.answerRequestedAt) {
+        try { await this.prepare(this.store.config, c.id, 12_000 - (this.store.now() - c.createdAt)); }
+        catch {
+          await this.f.transition(c.id, current => current.state === 'screening' && !current.liveConnectedAt && !current.inboundEndedAt
+            ? { state: 'voicemail', outcome: 'voicemail', reason: 'screening_unavailable', liveFinishedAt: this.store.now() } : undefined,
+          (tx, next) => queueCallJob(this.store, tx, next.id, 'outcome'));
+        }
+      }
+      c = await this.call(id);
+      if (!c || c.state === 'ended' || c.inboundEndedAt) return;
+      await this.answer(c);
+    });
+  }
+  async runJob(jobId: string) {
+    const ref = this.store.db.collection('callControlJobs').doc(jobId), job = (await ref.get()).data();
+    if (!job || job.done || job.expiresAt <= this.store.now()) return;
+    if (job.dueAt > this.store.now()) throw new Error('call_job_not_due');
+    if (job.phase === 'start') await this.start(job.callId);
+    else if (job.phase === 'outcome') await this.outcome(job.callId);
+    else if (job.phase === 'greet') await this.exclusive(job.callId, async () => {
+      const c = await this.call(job.callId);
+      if (!c || c.state !== 'screening' || c.inboundEndedAt || !c.screeningReadyAt || c.greetingCompletedAt) return;
+      await this.play(c, 'greeting');
+    });
+    else if (job.phase === 'deadline') await this.expire(job.callId, job.dueAt);
+    else throw new Error('invalid_call_job');
+    await ref.update({ done: true });
+  }
   async outcome(id: string) {
     return this.exclusive(id, async () => {
-      let c = await this.call(id); if (!c || c.transport !== 'call-control' || c.inboundEndedAt) return;
+      let c = await this.call(id); if (!c || c.transport !== 'call-control' || c.inboundEndedAt || c.acceptedAt || c.state === 'accepting') return;
       await this.command(c.parentSid, 'streaming_stop', {}, 'stop-stream').catch(() => undefined);
       // The carrier can confirm hangup while the provider command is in flight.
-      c = await this.call(id); if (!c || c.inboundEndedAt) return;
+      c = await this.call(id); if (!c || c.inboundEndedAt || c.acceptedAt || c.state === 'accepting') return;
       if (c.state === 'voicemail') return this.voicemail(c);
       if (c.state !== 'offering') return this.stop(c);
       await this.deadline(c, 45);
@@ -169,8 +224,8 @@ export class SharedCallControl {
     if (e.event_type === 'call.initiated' && p.direction === 'incoming') {
       if (c) {
         if (c.parentSid === sid && c.parentLegId === p.call_leg_id && c.state !== 'ended') {
-          if (!(await s.db.collection('callControlDeadlines').doc(c.id).get()).exists) await this.deadline(c, 90);
-          await this.answer(c);
+          if (!(await s.db.collection('callControlDeadlines').doc(c.id).get()).exists) await this.deadline(c, c.startupVersion ? 20 : 90);
+          if (!c.startupVersion) await this.answer(c);
         }
         return;
       }
@@ -180,8 +235,8 @@ export class SharedCallControl {
       if (!diverted || to !== s.config.TELNYX_NUMBER || p.from === to) { await this.hangup(sid); return; }
       c = await this.f.begin(sid, to, callerNumber(p.from), { diverted, legId: p.call_leg_id });
       if (!c || c.state === 'ended') { await this.hangup(sid); return; }
-      await this.deadline(c, 90);
-      await this.answer(c);
+      await this.deadline(c, c.startupVersion ? 20 : 90);
+      if (!c.startupVersion) await this.answer(c);
       return;
     }
     if (!c) {
@@ -213,7 +268,7 @@ export class SharedCallControl {
         if (current.state !== 'screening') return;
         return { state: 'voicemail', outcome: 'voicemail', reason: 'screening_unavailable',
           liveFinishedAt: s.now(), events: [...current.events, { kind: 'voicemail_offered', at: s.now() }] };
-      });
+      }, (tx, next) => queueCallJob(s, tx, next.id, 'outcome'));
       if (next) {
         console.info(JSON.stringify({ event: 'shared_stream_recovery', callId: c.id }));
         await this.voicemail(next);
@@ -254,7 +309,7 @@ export class SharedCallControl {
     if (e.event_type === 'call.answered') {
       if (inbound) {
         if (c.state === 'voicemail') return this.voicemail(c);
-        if (c.state === 'screening') await this.play(c, 'greeting');
+        if (c.state === 'screening' && !c.startupVersion) await this.play(c, 'greeting');
       } else {
         const whisper = await this.f.whisper(c.id, sid, c.parentSid); if (!whisper) return;
         if (c.announcementFallbacks?.accept) return this.fallback(c, 'accept');
@@ -276,6 +331,13 @@ export class SharedCallControl {
       // Completion, not command acceptance or cancellation, gates screening/dialing/recording.
       if (p.status !== 'completed') return this.stop(c);
       if (promptPhase === 'greeting' && c.state === 'screening') {
+        if (c.startupVersion) {
+          if (!c.screeningReadyAt) return;
+          await this.f.transition(c.id, current => current.state === 'screening' && !current.greetingCompletedAt && current.screeningReadyAt
+            ? { greetingCompletedAt: s.now() } : undefined);
+          await this.deadline(c, 75);
+          return;
+        }
         const expiry = s.now() + 60_000;
         if (!s.config.LIVE_BRIDGE_URL) return this.stop(c);
         await this.command(sid, 'streaming_start', { stream_url: `${s.config.LIVE_BRIDGE_URL.replace('https:', 'wss:')}/media/${c.id}/${expiry}/${streamTicket(s.config, c.id, expiry)}`,
@@ -320,13 +382,26 @@ export class SharedCallControl {
     }
   }
   /** Scheduled fallback survives crashed API/bridge instances and missing terminal webhooks. */
+  async expire(id: string, dueAt?: number) {
+    await this.exclusive(id, async () => {
+      const ref = this.store.db.collection('callControlDeadlines').doc(id), current = (await ref.get()).data();
+      if (!current || current.dueAt > this.store.now() || (dueAt !== undefined && dueAt !== current.dueAt)) return;
+      const c = await this.call(id);
+      if (c && !c.inboundEndedAt) {
+        if (c.startupVersion && c.state === 'screening' && !c.greetingCompletedAt && c.answerRequestedAt) {
+          const next = await this.f.transition(id, call => call.state === 'screening' && !call.greetingCompletedAt
+            ? { state: 'voicemail', outcome: 'voicemail', reason: 'screening_unavailable', liveFinishedAt: this.store.now() } : undefined,
+          (tx, call) => queueCallJob(this.store, tx, call.id, 'outcome'));
+          if (next) { await this.deadline(next, 80); return; }
+        }
+        await this.stop(c);
+      }
+      await ref.delete();
+    });
+  }
   async sweep() {
     const docs = await this.store.db.collection('callControlDeadlines').where('dueAt', '<=', this.store.now()).limit(30).get();
-    const results = await Promise.allSettled(docs.docs.map(d => this.exclusive(d.id, async () => {
-      const current = (await d.ref.get()).data(); if (!current || current.dueAt > this.store.now()) return;
-      const c = await this.call(d.id); if (c) await this.stop(c);
-      await d.ref.delete();
-    })));
+    const results = await Promise.allSettled(docs.docs.map(d => this.expire(d.id)));
     if (results.some(r => r.status === 'rejected')) throw new Error('shared_cleanup_incomplete');
   }
 }
