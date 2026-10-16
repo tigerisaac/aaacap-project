@@ -56,7 +56,9 @@ final class SetupShortcutPreviewUITests: XCTestCase {
         shortcuts.terminate()
         let app = preview()
         capture(app, "Shortcut add helper")
-        primary(app).tap()
+        app.buttons["Need help?"].tap()
+        reveal(app.buttons["setup-shortcut-saved-file"], app: app)
+        app.buttons["setup-shortcut-saved-file"].tap()
         let destination = app.cells["Shortcuts"].firstMatch
         XCTAssertTrue(destination.appears(timeout: 10))
         destination.tap()
@@ -68,6 +70,45 @@ final class SetupShortcutPreviewUITests: XCTestCase {
         XCTAssertEqual(primary(app).label, "Open Phone settings")
         XCTAssertFalse(app.staticTexts["Is Live Voicemail off?"].exists)
         XCTAssertFalse(app.staticTexts["That’s the phone change"].exists)
+    }
+
+    func testGuidedInstallReturnDoesNotConfirmSettings() {
+        let app = preview()
+        XCTAssertEqual(primary(app).label, "Add to iPhone")
+        XCTAssertTrue(app.staticTexts["On the next screen, tap Add Shortcut."].exists)
+        primary(app).tap()
+        XCTAssertEqual(primary(app).label, "Open Phone settings")
+        XCTAssertFalse(app.staticTexts["Is Live Voicemail off?"].exists)
+        XCTAssertFalse(app.staticTexts["That’s the phone change"].exists)
+        capture(app, "Direct installation return")
+    }
+
+    func testPublishedInstallOpensAddShortcutWithoutRunning() {
+        let shortcuts = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
+        shortcuts.terminate()
+        let app = preview(["--uitesting-system-settings"])
+        primary(app).tap()
+        XCTAssertTrue(shortcuts.buttons["Add Shortcut"].appears(timeout: 30))
+        capture(shortcuts, "Published native Add Shortcut")
+        // Cancel by returning to Shield. Do not add or run a telephony action.
+        app.activate()
+        XCTAssertTrue(app.staticTexts["One switch to check"].appears(timeout: 5))
+        XCTAssertEqual(primary(app).label, "Open Phone settings")
+        XCTAssertFalse(app.staticTexts["Is Live Voicemail off?"].exists)
+    }
+
+    func testInstallFailureKeepsLargestTextRecoveryReachable() {
+        let app = preview(["--shortcut-install-fails", "--uitesting-dark",
+                           "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        capture(app, "Largest text shortcut installation")
+        reveal(primary(app), app: app)
+        primary(app).tap()
+        XCTAssertTrue(app.staticTexts["setup-shortcut-error"].appears(timeout: 5))
+        XCTAssertEqual(primary(app).label, "Add to iPhone")
+        XCTAssertFalse(app.staticTexts["One switch to check"].exists)
+        app.buttons["Need help?"].tap()
+        reveal(app.buttons["setup-shortcut-saved-file"], app: app)
+        capture(app, "Installation failure saved file recovery")
     }
 
     private func preview(_ extra: [String] = []) -> XCUIApplication {

@@ -1,5 +1,13 @@
 # Status
 
+## October 16 — easier shortcut installation and guide follow-up
+
+With the owner's explicit publication approval, the Debug trial's **Add to iPhone** opens the generic [Shield Easy Setup iCloud link](https://www.icloud.com/shortcuts/a31253e04fa7440094b98f9fd8903bf2) directly at Apple's **Add Shortcut** screen. The person taps Add, then the native Shield return link; there is no destination chooser or Shortcuts-library search. The native public import passed on the actual phone and both simulator classes. Adding does not run the helper and returning cannot prove installation, so conditional instructions and saved-file/written recovery remain.
+
+The owner reported a missing floating guide despite a successful Settings landing. The original failure did not reproduce. The player now arms AVKit background handoff through Shortcuts, rejects suspended PiP as visible success, and uses a longer steady reminder item. On the iPhone 12 Pro Max / iOS 27.2, the instrumented guide stayed active for about 7m20 until intentional return; a repeat and the final build also showed it beside Live Voicemail. Return left the setting unconfirmed. Current native PiP restore taps were unreliable through Mirroring; return was checked through Home/Spotlight, not certified as native-control validation. Silence was already On and Live Voicemail already Off, both left unchanged.
+
+Final main UI suite: 7/7. Compact iOS 26.5 suite: 10/10, including three normal-setup regressions. Typecheck/build, 242 unit tests, 175 Firestore emulator tests, Debug device and Release builds passed. The final local trial is installed; Release excludes its UI, shortcut and media. The target remains undocumented and tested on one physical phone, not established across OS versions or novice seniors. Normal setup is unchanged. No calls, carrier changes, screen sharing, backend updates or production deployment. [Implementation and evidence](IOS-SETUP-GUIDES.md#missing-floating-guide-follow-up--october-16).
+
 ## October 16 — working shortcut section-jump trial on the iPhone
 
 At the owner's renewed request, a separate debug trial now uses a native-authored **Shield Easy Setup** shortcut: Silence Unknown Callers On → fixed Phone-section URL → Open URLs → Nothing. On the iPhone 12 Pro Max / iOS 27.2, restarting Phone settings at its top and running the bundled helper from Shield repeatedly opened beside Live Voicemail, with Silence checked. Live Voicemail was already Off and was left unchanged. The exact same URL was rejected when attempted directly by Shield; no hidden Live Voicemail setter or guessed App Intent entity is used. The proposed Open Phone Settings action was not exposed in the tested native catalogs despite existing Apple metadata.

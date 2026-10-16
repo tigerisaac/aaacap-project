@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-16T05:26:50Z",
+  "generatedAt": "2026-10-16T22:49:53Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -829,7 +829,7 @@
       },
       {
         "name": "The Trial Handoff Rule",
-        "body": "In the Debug shortcut trial, keep native import quiet, start the steady floating reminder only for the Settings handoff, and require an explicit local confirmation after return. A successful file handoff establishes neither shortcut installation nor a changed switch.",
+        "body": "In the Debug shortcut trial, keep direct native Add Shortcut import quiet, start and arm the steady floating reminder only from Open Phone settings, and reset it on return or import. Require an explicit local confirmation after return; opening the public link or returning to Shield establishes neither Add Shortcut acceptance nor a changed switch.",
         "section": "components"
       }
     ],

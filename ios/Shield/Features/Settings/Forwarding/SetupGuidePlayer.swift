@@ -22,6 +22,7 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
     @ObservationIgnored private var startFailed = false
     @ObservationIgnored private var frameObservation: NSKeyValueObservation?
     @ObservationIgnored private let automaticFloating: Bool
+    @ObservationIgnored private var handoffArmed = false
 
     init(automaticFloating: Bool = true) {
         self.automaticFloating = automaticFloating
@@ -30,6 +31,7 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
 
     func attach(_ layer: AVPlayerLayer) {
         guard self.layer !== layer else { return }
+        SetupGuideTrace.record("attach source layer")
         self.layer = layer
         layer.player = player
         let sourceID = ObjectIdentifier(layer)
@@ -45,13 +47,14 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
         pictureInPicture?.delegate = self
         // A ten-second jump would skip whole instructions in these short clips.
         pictureInPicture?.requiresLinearPlayback = true
-        pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = automaticFloating
+        pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = automaticFloating || handoffArmed
     }
 
     func prepare(_ guide: SetupGuide, reduceMotion: Bool) async {
         let key = guide.rawValue + String(reduceMotion)
         guard selection != key else { return }
-        stop()
+        SetupGuideTrace.record("prepare \(key)")
+        stop(reason: "prepare new guide")
         selection = key
         unavailable = false
         floatingUnavailable = false
@@ -88,12 +91,21 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
     /// Bound readiness/startup. Failure never traps the person in Shield.
     @discardableResult
     func startFloating() async -> Bool {
+        SetupGuideTrace.record("start requested")
         guard !starting else { return false }
         guard !unavailable, let pictureInPicture else {
             floatingUnavailable = true
             return false
         }
-        if pictureInPicture.isPictureInPictureActive { return true }
+        // Keep AVKit's automatic background handoff armed through intermediate
+        // apps such as Shortcuts, as well as starting the window explicitly.
+        // Returning disarms this for import screens that should stay quiet.
+        handoffArmed = true
+        pictureInPicture.canStartPictureInPictureAutomaticallyFromInline = true
+        if pictureInPicture.isPictureInPictureActive {
+            SetupGuideTrace.record("already active suspended=\(pictureInPicture.isPictureInPictureSuspended)")
+            return !pictureInPicture.isPictureInPictureSuspended
+        }
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--setup-guide-unavailable") {
             floatingUnavailable = true
@@ -118,6 +130,7 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
             do { try await Task.sleep(for: .milliseconds(50)) } catch { return false }
         }
         guard pictureInPicture.isPictureInPicturePossible else {
+            SetupGuideTrace.record("start unavailable possible=false hasFrame=\(hasFrame)")
             floatingUnavailable = true
             return false
         }
@@ -126,26 +139,36 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
         for _ in 0..<30 {
             guard generation == attemptGeneration else { return false }
             if Task.isCancelled { pictureInPicture.stopPictureInPicture(); return false }
-            if pictureInPicture.isPictureInPictureActive { return true }
+            if pictureInPicture.isPictureInPictureActive && !pictureInPicture.isPictureInPictureSuspended {
+                SetupGuideTrace.record("start confirmed")
+                return true
+            }
             if startFailed { break }
             do { try await Task.sleep(for: .milliseconds(50)) } catch { break }
         }
         pictureInPicture.stopPictureInPicture()
+        SetupGuideTrace.record("start unavailable after attempt")
         floatingUnavailable = true
         return false
     }
 
-    func returnedToShield() {
+    func returnedToShield(reason: String = "returned to Shield") {
+        SetupGuideTrace.record("stop floating: \(reason)")
         generation += 1
         starting = false
+        handoffArmed = false
+        pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = automaticFloating
         pictureInPicture?.stopPictureInPicture()
         player.pause()
         isPlaying = false
     }
 
-    func stop() {
+    func stop(reason: String = "stop player") {
+        SetupGuideTrace.record(reason)
         generation += 1
         starting = false
+        handoffArmed = false
+        pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = automaticFloating
         pictureInPicture?.stopPictureInPicture()
         player.pause()
         looper?.disableLooping()
@@ -162,22 +185,26 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
     }
 
     func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        SetupGuideTrace.record("PiP will start")
         // Phone's native Open banner starts PiP automatically. Begin at the
         // first instruction even when the inline clip has been playing awhile.
         if !starting { resumeForHandoff() }
     }
 
     func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        SetupGuideTrace.record("PiP did start")
         isFloating = true
     }
 
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        SetupGuideTrace.record("PiP did stop appState=\(UIApplication.shared.applicationState.rawValue)")
         isFloating = false
     }
 
     func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController,
                                     failedToStartPictureInPictureWithError error: any Error) {
         startFailed = true
+        SetupGuideTrace.record("PiP failed code=\((error as NSError).code)")
         floatingUnavailable = true
         isFloating = false
     }

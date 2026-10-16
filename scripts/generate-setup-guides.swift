@@ -343,14 +343,21 @@ func draw(_ guide: String, time: Double, still: Bool) {
 for guide in guides {
     try makeGIF(guide)
     if gifOnly { continue }
-    let seconds = 2
+    // Give the native PiP controls a stable item while the person reads and
+    // returns. A two-second loop replaces its player item every two seconds.
+    let seconds = guide == "shortcutVoicemail" ? 60 : 2
     for still in [false, true] {
         let url = output.appendingPathComponent("setup-\(guide)\(still ? "-still" : "").mp4")
         try? FileManager.default.removeItem(at: url)
         let writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
         let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
             AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: width, AVVideoHeightKey: height,
-            AVVideoCompressionPropertiesKey: [AVVideoAverageBitRateKey: 900_000, AVVideoMaxKeyFrameIntervalKey: 30]
+            AVVideoCompressionPropertiesKey: [
+                AVVideoAverageBitRateKey: 900_000,
+                // The steady reminder seeks only to zero. Avoid encoding the
+                // same text as a large new keyframe once per second.
+                AVVideoMaxKeyFrameIntervalKey: guide == "shortcutVoicemail" ? seconds * Int(fps) : 30
+            ]
         ])
         input.expectsMediaDataInRealTime = false
         let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: [

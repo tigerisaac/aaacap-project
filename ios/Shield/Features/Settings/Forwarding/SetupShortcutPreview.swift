@@ -17,7 +17,9 @@ struct SetupShortcutPreview: View {
                 VStack(alignment: .leading, spacing: 24) {
                     Text(heading).shieldPageHeading()
                     instructions
-                    if session.phase != .confirmed {
+                    if session.phase == .add {
+                        Text("Then tap **Shield** at the top left to come back. You won’t need to find anything in Shortcuts.")
+                    } else if session.phase != .confirmed {
                         SetupGuideView(guide: .shortcutVoicemail, player: player,
                                        showingResult: session.phase == .returned)
                         Text("Off means the switch is gray and its white circle is on the left.")
@@ -42,9 +44,12 @@ struct SetupShortcutPreview: View {
                     }
                     ShieldDisclosure("Need help?") {
                         Text("The helper is named Shield Easy Setup. If Settings didn’t open, add it again, then try once more.")
-                        Button("Add the helper again") { importRequest = UUID() }
+                        Button("Add the helper again") { Task { await session.install(using: player) } }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .accessibilityIdentifier("setup-shortcut-add-again")
+                        Button("Open the saved helper file") { importRequest = UUID() }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            .accessibilityIdentifier("setup-shortcut-saved-file")
                         NavigationLink("Use the step-by-step guide") { ForwardingSetupView() }
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     }
@@ -77,20 +82,21 @@ struct SetupShortcutPreview: View {
             })
         }
         .onChange(of: scenePhase) { _, phase in
+            SetupGuideTrace.record("trial scene \(phase) pendingSettings=\(session.isLeavingForSettings)")
             if phase == .background {
                 leftShield = true
-                if !session.isLeavingForSettings { player.returnedToShield() }
+                if !session.isLeavingForSettings { player.returnedToShield(reason: "non-settings background") }
             }
             if phase == .active && leftShield {
                 leftShield = false
-                player.returnedToShield()
+                player.returnedToShield(reason: "trial scene active after background")
             }
             session.sceneChanged(isActive: phase == .active, isBackground: phase == .background)
         }
         .onChange(of: session.phase) { _, phase in
             if phase == .confirmed { player.stop() }
         }
-        .onDisappear { player.stop() }
+        .onDisappear { player.stop(reason: "trial view disappeared") }
     }
 
     private var heading: String {
@@ -105,11 +111,11 @@ struct SetupShortcutPreview: View {
     @ViewBuilder private var instructions: some View {
         switch session.phase {
         case .add:
-            Text("An iPhone shortcut will silence unfamiliar callers and take you to Live Voicemail.")
-            Text("Choose Shortcuts, then Add Shortcut. Tap ‹ Shield to come back here. You only add it once.")
+            Text("Add Shield’s helper once. Your iPhone can then silence unfamiliar callers for you.")
+            Text("On the next screen, tap **Add Shortcut**.")
         case .ready:
-            Text("After adding the helper, tap below. Your iPhone will silence unfamiliar callers and open Phone settings beside Live Voicemail.")
-            Text("Leave Live Voicemail off. A small reminder comes with you.")
+            Text("Tap below after adding the helper. Your iPhone will select Silence for you and open Phone settings beside Live Voicemail.")
+            Text("Leave Live Voicemail off. Use the button below so the floating reminder comes with you.")
         case .returned:
             Text("If its switch is gray, leave it off. Confirm only after you’ve seen it in Settings.")
             Text("Returning here doesn’t check the setting for you.")
@@ -122,7 +128,7 @@ struct SetupShortcutPreview: View {
     private var primaryAction: some View {
         Button {
             switch session.phase {
-            case .add: importRequest = UUID()
+            case .add: Task { await session.install(using: player) }
             case .ready: Task { await session.run(using: player) }
             case .returned: session.phase = .confirmed
             case .confirmed: session.phase = .ready
@@ -137,7 +143,7 @@ struct SetupShortcutPreview: View {
 
     private var primaryTitle: String {
         switch session.phase {
-        case .add: "Add setup helper"
+        case .add: "Add to iPhone"
         case .ready: session.reminderUnavailable ? "Open Settings anyway" : "Open Phone settings"
         case .returned: "Live Voicemail is off"
         case .confirmed: "Try it again"

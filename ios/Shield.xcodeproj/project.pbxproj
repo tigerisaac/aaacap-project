@@ -482,6 +482,13 @@
 			"path" = "Shield/Features/Settings/Forwarding/SetupGuidePlayer.swift";
 			"sourceTree" = "<group>";
 		};
+		"8894BDEF064CB67BA4C0E3E1" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "SetupGuideTrace.swift";
+			"path" = "Shield/Features/Settings/Forwarding/SetupGuideTrace.swift";
+			"sourceTree" = "<group>";
+		};
 		"CD758CA6AFDEC55366C35D3F" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1529,6 +1536,7 @@
 				"9BE828CF586B5706B876E0E9",
 				"73D5F4FA4A2E936677C3F4F5",
 				"6CC7011D8EB030196E88A518",
+				"8894BDEF064CB67BA4C0E3E1",
 				"CD758CA6AFDEC55366C35D3F",
 				"9B9FEDE5F1FF37E63E606A8D",
 				"596229E24F646F11622CD47E",
@@ -2190,6 +2198,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "6CC7011D8EB030196E88A518";
 		};
+		"9B8A39CCC49F97E182CD72F5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "8894BDEF064CB67BA4C0E3E1";
+		};
 		"0972FBE64335E58BDD40D4DD" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "CD758CA6AFDEC55366C35D3F";
@@ -2542,6 +2554,7 @@
 				"B67DEB5603767F2632A3A01A",
 				"554777E2C8B4B9A0CA77112D",
 				"E192A5F89B750719A74FCD9D",
+				"9B8A39CCC49F97E182CD72F5",
 				"0972FBE64335E58BDD40D4DD",
 				"D97F148CF0DB4B4CDC818230",
 				"2C9E958C8060380E2C2053D0",

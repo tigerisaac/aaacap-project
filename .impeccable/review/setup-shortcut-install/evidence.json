@@ -1,0 +1,286 @@
+{
+  "date": "2026-10-16",
+  "baseline": "a971440",
+  "scope": "Debug shortcut installation and reported missing-guide follow-up; normal setup unchanged",
+  "installationURL": "https://www.icloud.com/shortcuts/a31253e04fa7440094b98f9fd8903bf2",
+  "publicationPermission": "Yes, publish the install link",
+  "captures": [
+    {
+      "path": ".impeccable/review/setup-shortcut-install/main/shortcut-add-helper.png",
+      "bytes": 164470,
+      "sha256": "d89a8923b2ac087894ed4886f070337cec2516f37f3761d20f5cf80f18342b99"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/main/largest-text-shortcut-installation.png",
+      "bytes": 227011,
+      "sha256": "7cdd510ca3ace4166d5643abc59cad6a34f5a36b83da87e0e0cc3efe0a707fdf"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/main/installation-failure-saved-file-recovery.png",
+      "bytes": 236447,
+      "sha256": "d0552e6d8bafe392962e9f54365141e03825cd128216ee44affb3809cff13817"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/main/direct-installation-return.png",
+      "bytes": 202673,
+      "sha256": "cf253067c22cea2222c6d82c173fb4272627f65aca0b4e820100b309152d04ae"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/main/published-native-add-shortcut.png",
+      "bytes": 297286,
+      "sha256": "25286dfb04e8a0da5a7edb07aa0bce9bf00f230319d941234165716d6344347d"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/compact/shortcut-add-helper.png",
+      "bytes": 158782,
+      "sha256": "bd9f3e2f1cea053cf682da07344fe3bd0c38f1787c4e6ddfff68fc38f7c90663"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/compact/largest-text-shortcut-installation.png",
+      "bytes": 208090,
+      "sha256": "071b8e54338059fea140a403871a39a2220fccff22e6a460ff74d82d5009179c"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/compact/installation-failure-saved-file-recovery.png",
+      "bytes": 222886,
+      "sha256": "5393a316f5c3bccaacc88a24018bc2dd00833d1d4ecff40c33e6ec6bf7687c11"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/compact/direct-installation-return.png",
+      "bytes": 192689,
+      "sha256": "3ddbd9e2a3f73ae4ae66b9d8bbfeb944473dbaca0dcc630df4895503488e0f6e"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/compact/published-native-add-shortcut.png",
+      "bytes": 279840,
+      "sha256": "97b93a06a635211993511284e37a0441c49c72efe5b68940a6da09219724b766"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/physical/direct-add-shortcut.png",
+      "bytes": 95087,
+      "sha256": "641d8eb0f5711280b7f2b2f820ed1fbc090baa95e3fdcb7fd0692b11c84a9685"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/physical/armed-guide-stays-visible.png",
+      "bytes": 206101,
+      "sha256": "b7b56452cd0d4412ed760d6b192cc2f6e3cd17df8a6c6a708ca93794bee970e3"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/physical/armed-return-unconfirmed.png",
+      "bytes": 131618,
+      "sha256": "cd09ffe24affc1e561272dc5d02b66e219e149160c5462d23b9142476e7777ed"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/physical/final-ready.png",
+      "bytes": 144875,
+      "sha256": "3ee68b1f928112348b695e537d76ea96a4372e5e55f1191300c4483b7a6f7153"
+    },
+    {
+      "path": ".impeccable/review/setup-shortcut-install/physical/final-settings-with-guide.png",
+      "bytes": 191501,
+      "sha256": "61efed36d92dc2f0141ed99f05adc366bcb6af236934e676de25555c47cc7602"
+    }
+  ],
+  "sources": [
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupShortcutPreview.swift",
+      "bytes": 7327,
+      "sha256": "e587cd176d5982ddfcd16fa51c52cdef0610d541caaf32bd511360e7fbe73536"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupShortcutSession.swift",
+      "bytes": 4412,
+      "sha256": "83ec79675b06880e32bf0e85c5f76c92303e8ee0fb94407cb31f92e0642de96b"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupGuidePlayer.swift",
+      "bytes": 9715,
+      "sha256": "83fca6c64141b5c7821e3bdf0bd9a1b0f23f07e7555c09d204eb01f75377b779"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupGuideTrace.swift",
+      "bytes": 398,
+      "sha256": "2b494796cdd4aefc06ca6248382ac3dbc8add3211d3e364715eb88fb9ecf3bb7"
+    },
+    {
+      "path": "ios/ShieldUITests/SetupShortcutPreviewUITests.swift",
+      "bytes": 6947,
+      "sha256": "3dfe6cd4bace71af1149d9dd9b84d129c31bf14e47181165428379ed8b54dc64"
+    },
+    {
+      "path": "scripts/generate-setup-guides.swift",
+      "bytes": 24378,
+      "sha256": "cf3f37dc4bc5d121ed3512b3370e46bc4394ca195c7ec560d411057b56067c59"
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail.mp4",
+      "bytes": 416744,
+      "sha256": "6ebfb7dc326341607f307ff7ed454127d7b12d4720634314e3ceafd464c086e2"
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail-still.mp4",
+      "bytes": 443012,
+      "sha256": "89c777bd1ef405a939cac81a02ab2ceaa3415ca6ac7aa19180d3171288998de4"
+    }
+  ],
+  "lifecycleEvents": [
+    {
+      "uptime": 125219.24874745835,
+      "event": "prepare shortcutVoicemailfalse"
+    },
+    {
+      "uptime": 125219.24879404168,
+      "event": "prepare new guide"
+    },
+    {
+      "uptime": 125219.31027195834,
+      "event": "attach source layer"
+    },
+    {
+      "uptime": 125219.54996045835,
+      "event": "trial scene active pendingSettings=false"
+    },
+    {
+      "uptime": 125245.48579633333,
+      "event": "start requested"
+    },
+    {
+      "uptime": 125245.55174083334,
+      "event": "PiP will start"
+    },
+    {
+      "uptime": 125246.1676085,
+      "event": "PiP did start"
+    },
+    {
+      "uptime": 125246.19713108335,
+      "event": "start confirmed"
+    },
+    {
+      "uptime": 125246.19725620834,
+      "event": "opening Shortcuts"
+    },
+    {
+      "uptime": 125246.23855245834,
+      "event": "trial scene inactive pendingSettings=true"
+    },
+    {
+      "uptime": 125246.292405625,
+      "event": "Shortcuts URL accepted"
+    },
+    {
+      "uptime": 125247.07711766667,
+      "event": "trial scene background pendingSettings=true"
+    },
+    {
+      "uptime": 125686.64835183334,
+      "event": "trial scene inactive pendingSettings=true"
+    },
+    {
+      "uptime": 125686.96865400001,
+      "event": "trial scene active pendingSettings=true"
+    },
+    {
+      "uptime": 125686.96871983334,
+      "event": "stop floating: trial scene active after background"
+    },
+    {
+      "uptime": 125687.01481983335,
+      "event": "prepare shortcutVoicemailtrue"
+    },
+    {
+      "uptime": 125687.01484525001,
+      "event": "prepare new guide"
+    },
+    {
+      "uptime": 125687.63220216667,
+      "event": "PiP did stop appState=0"
+    },
+    {
+      "uptime": 125749.40560737501,
+      "event": "start requested"
+    },
+    {
+      "uptime": 125749.48729145834,
+      "event": "PiP will start"
+    },
+    {
+      "uptime": 125750.09230029167,
+      "event": "PiP did start"
+    },
+    {
+      "uptime": 125750.12281883335,
+      "event": "start confirmed"
+    },
+    {
+      "uptime": 125750.12306858334,
+      "event": "opening Shortcuts"
+    },
+    {
+      "uptime": 125750.17560470835,
+      "event": "trial scene inactive pendingSettings=true"
+    },
+    {
+      "uptime": 125750.18643691667,
+      "event": "Shortcuts URL accepted"
+    },
+    {
+      "uptime": 125750.994374125,
+      "event": "trial scene background pendingSettings=true"
+    }
+  ],
+  "observedActiveIntervalSeconds": 440.801,
+  "checks": {
+    "mainUI": {
+      "passed": 7,
+      "failed": 0,
+      "log": "/private/tmp/shield-shortcut-install-main-final.log",
+      "result": "/private/tmp/shield-shortcut-install-main-final.xcresult"
+    },
+    "compactUI": {
+      "passed": 10,
+      "failed": 0,
+      "includes": "7 trial + 3 normal setup regression checks",
+      "log": "/private/tmp/shield-shortcut-install-compact-final.log",
+      "result": "/private/tmp/shield-shortcut-install-compact-final.xcresult"
+    },
+    "npmCheck": {
+      "unitPassed": 242,
+      "emulatorSkipped": 174,
+      "log": "/private/tmp/shield-shortcut-easy-check.log"
+    },
+    "firebase": {
+      "passed": 175,
+      "failed": 0,
+      "log": "/private/tmp/shield-shortcut-easy-firebase.log"
+    },
+    "debugDeviceBuild": "/private/tmp/shield-shortcut-install-device-final.log",
+    "releaseBuild": "/private/tmp/shield-shortcut-install-release.log",
+    "deviceInstall": "/private/tmp/shield-shortcut-install-final-device.log",
+    "releaseExcludedTrialResources": true,
+    "debugMediaMatchesSource": true,
+    "assetProvenance": {
+      "postersScanned": 7,
+      "missing": 0,
+      "newRasterArtwork": false
+    }
+  },
+  "limits": [
+    "Original owner-reported PiP disappearance did not reproduce; root cause unproven.",
+    "Physical evidence is one iPhone 12 Pro Max on iOS 27.2; undocumented destination compatibility elsewhere is unverified.",
+    "Silence was already On and Live Voicemail already Off; no off-to-on transition was observed.",
+    "Current native PiP restore taps were unreliable through Mirroring; return tested using Home/Spotlight. Prior build native restore evidence is separate.",
+    "Simulators tested native Add without adding/running telephony actions; mocked runs do not verify settings or real PiP.",
+    "No novice older-adult usability test, production deployment, calls, forwarding, screen sharing, backend updates or setup confirmation.",
+    "One compact native-return assertion originally ran before scene transition completed; bounded heading wait fixed it and final 10/10 suite passed.",
+    "Earlier 30fps GIF presentation timing was not remeasured; no artwork/GIF change this turn."
+  ],
+  "priorShortcutCommit": "ed4912b",
+  "finishReview": {
+    "path": ".impeccable/review/setup-shortcut-install/finish-review.md",
+    "disposition": "ship",
+    "scope": "isolated Debug direct-install and guide-hardening refinement",
+    "materialFixes": 0,
+    "reviewer": "fresh generalist fallback; named specialist unavailable"
+  }
+}
