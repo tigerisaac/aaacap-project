@@ -30,19 +30,7 @@ struct RootView: View {
     var body: some View {
         @Bindable var model = model
         Group {
-            #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--uitesting-live-setup-guide") {
-                if #available(iOS 27.0, *) {
-                    NavigationStack { LiveSetupPrototypeView() }
-                } else {
-                    Text("This screen-aware guide experiment needs iOS 27.")
-                }
-            } else {
-                mainContent
-            }
-            #else
             mainContent
-            #endif
         }
         .preferredColorScheme(previewColorScheme)
         .toggleStyle(ShieldSwitchStyle())
