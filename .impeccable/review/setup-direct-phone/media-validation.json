@@ -1,0 +1,296 @@
+{
+  "provenance": "Original code-authored instructional artwork; no supplied video or phone screenshot pixels.",
+  "authoredGIFRate": 24,
+  "assets": {
+    "setup-keypad-inline.gif": {
+      "sha256": "8698262c75ed0b6ac416a82859ae12cadc1a00ab29aece1fcf33cba11b8d244b",
+      "bytes": 308089,
+      "width": 1440,
+      "height": 960,
+      "frames": 432,
+      "signedBundleBytesMatch": true
+    },
+    "setup-keypad-poster.png": {
+      "sha256": "ee5e2534103f34a81f8c3d6d9feb5c4df887391e43b5b197053fdf7cfab887e2",
+      "bytes": 70393,
+      "width": 1440,
+      "height": 960,
+      "frames": 1,
+      "signedBundlePixelsMatch": true
+    },
+    "setup-keypad-still.mp4": {
+      "sha256": "a9082c2f4124d7623aee32419a22bf6fd3c56244bbcc1f2051215a6393186c9f",
+      "bytes": 117301,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-keypad.mp4": {
+      "sha256": "3479607a6c06363b30b3f6c9e2d69ebf06cd4f1468215332def692d680626ab1",
+      "bytes": 117301,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-never-inline.gif": {
+      "sha256": "fabd502916896f57760c22399835c691ff64a09ffa693375ad7ceb1bae49a6e9",
+      "bytes": 1499412,
+      "width": 1440,
+      "height": 960,
+      "frames": 336,
+      "signedBundleBytesMatch": true
+    },
+    "setup-never-poster.png": {
+      "sha256": "60bf36b60f431971e4876bea8e82970f67fab3fa013b9bcbb735b2c902e74333",
+      "bytes": 65838,
+      "width": 1440,
+      "height": 960,
+      "frames": 1,
+      "signedBundlePixelsMatch": true
+    },
+    "setup-never-still.mp4": {
+      "sha256": "cab700ab0db809ebf18e1a7350ff89c5b2894796f45527f4ad189bae5811c7d2",
+      "bytes": 111894,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-never.mp4": {
+      "sha256": "14fb28a7015f2df3ab0cd2908df9806caa0891609a82f34de2f8d772ae0b95db",
+      "bytes": 111894,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-silence-inline.gif": {
+      "sha256": "f1ebaa8c6c429aa369f9a18b71de77e1f18cc0db95df4a1a7d621b9ee077da06",
+      "bytes": 1499408,
+      "width": 1440,
+      "height": 960,
+      "frames": 336,
+      "signedBundleBytesMatch": true
+    },
+    "setup-silence-poster.png": {
+      "sha256": "18d5424969ca31c7b4064401830bf574a4b3d1f3b26ce9e508cfebc21a017dd9",
+      "bytes": 65873,
+      "width": 1440,
+      "height": 960,
+      "frames": 1,
+      "signedBundlePixelsMatch": true
+    },
+    "setup-silence-still.mp4": {
+      "sha256": "82b6161eec5813799e8dc7f9a3a15b5731ed0ec17b3080bcff6fa951c8a4409c",
+      "bytes": 113758,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-silence.mp4": {
+      "sha256": "161d45da283e775b5e697a82e5c200da3dce05ad299f9a94472e99f674168e86",
+      "bytes": 113758,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-voicemailOff-inline.gif": {
+      "sha256": "97497e647e865d30d5d834a1a395ee16723673c57aeea7fec7940a6f0e4cc8ce",
+      "bytes": 1511356,
+      "width": 1440,
+      "height": 960,
+      "frames": 336,
+      "signedBundleBytesMatch": true
+    },
+    "setup-voicemailOff-poster.png": {
+      "sha256": "2c2e15e0b210d78948ed7e9e24b43d7b16b51e579f02a18e4542f8f2386c3026",
+      "bytes": 41443,
+      "width": 1440,
+      "height": 960,
+      "frames": 1,
+      "signedBundlePixelsMatch": true
+    },
+    "setup-voicemailOff-still.mp4": {
+      "sha256": "b5438d086ecefadb704b4051f842958f462ebe48dea0351144be5ae6bc172385",
+      "bytes": 109579,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-voicemailOff.mp4": {
+      "sha256": "f1798b07b3c046ffa7189664f76034775d60d3e7a14a7f92b34b7805c6482c92",
+      "bytes": 109579,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-voicemailOn-inline.gif": {
+      "sha256": "d03a3b22e7da8ca8f77939b1043537b09dc7ae0f3d904a6b270d4c6d5dadce6f",
+      "bytes": 1510819,
+      "width": 1440,
+      "height": 960,
+      "frames": 336,
+      "signedBundleBytesMatch": true
+    },
+    "setup-voicemailOn-poster.png": {
+      "sha256": "3f9ad6e8ac3cebda169bf9be1331508144be18cb4dae36b9f83c11e7d38ba146",
+      "bytes": 41762,
+      "width": 1440,
+      "height": 960,
+      "frames": 1,
+      "signedBundlePixelsMatch": true
+    },
+    "setup-voicemailOn-still.mp4": {
+      "sha256": "d59a1ffcff20dae3b3b448d1bdf6e739fd02ea0a42f73d2cc94aaf14d9af21fb",
+      "bytes": 110157,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    },
+    "setup-voicemailOn.mp4": {
+      "sha256": "a38bd50f567028f34ec1e872ab8266ebc69dde982617c714c78976c1853c2dbb",
+      "bytes": 110157,
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 960,
+          "height": 640,
+          "r_frame_rate": "30/1",
+          "nb_frames": "60"
+        },
+        {
+          "codec_type": "audio",
+          "r_frame_rate": "0/0",
+          "nb_frames": "87"
+        }
+      ],
+      "signedBundleBytesMatch": true
+    }
+  },
+  "decodeBenchmark": {
+    "host": "Mac, while builds/tests were active",
+    "frames": 336,
+    "averageMS": 8.47,
+    "maximumMS": 54.96,
+    "limitation": "Not iPhone frame-time evidence. Final decoder rasterizes on a separate actor, with one in-flight frame and no backlog."
+  },
+  "sourceSHA256": {
+    "ForwardingPhoneSettingsView.swift": "1b3cf2058112909ca9f9ad323c5168e567212e377c42cec19413009389f37a2a",
+    "ForwardingRestoreView.swift": "377196361a261f764498f326770c4850b16466d6054e6c28a78f53adb4a4a74b",
+    "ForwardingSetupModel.swift": "a7543875e3ca1030d95704834ee5dcca1d3124972f448d8fcc64386efcee08ea",
+    "PhoneSettingsDestination.swift": "ed307238144043e4f60f1fbc317e81a28294645eb4e3ffdbb24d8c75e324c0d9",
+    "PhoneSettingsLink.swift": "ccd1cf281a53c824fe66cbf40c26a6139380abdc6947bd35d4fc9a91e72b781f",
+    "RestorationSettingsGuide.swift": "7c75bfd370659d81e88b511fde1f59ec326faf57d1a0ddcf2b0ec9cb53c2fc4d",
+    "SetupGuide.swift": "d63316cf43a2da2545e6f4b811e831bf970f692a3757a8f291e13963b8cc5106",
+    "SetupGuideView.swift": "c303fc3c4834ed224187737456ebee6821e200366d7c10fb0a635e359dacb35e",
+    "SetupTouchAnimation.swift": "af8693a8a344ef8f591cab88ca86e4c7603ef841bbc9359f0e2bb4add4b9c3ef",
+    "scripts/generate-setup-guides.swift": "7130fecf30ac0b6bbff4ae5002872e990fe18447dde1f7791ebf8840a756a079"
+  },
+  "verification": "Final signed iPhone app assets verified again after all UI fixes; source hashes match the finished implementation."
+}

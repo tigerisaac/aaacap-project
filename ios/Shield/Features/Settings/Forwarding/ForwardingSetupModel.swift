@@ -207,7 +207,6 @@ final class ForwardingSetupModel {
         #endif
         await guidePlayer.startFloating()
         settingsDestination = await PhoneSettingsLink.open()
-        if settingsDestination == .shield { guidePlayer.returnedToShield() }
         if settingsDestination == .unavailable {
             guidePlayer.returnedToShield()
             pendingSettingsStep = nil

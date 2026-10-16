@@ -1,6 +1,5 @@
 import XCTest
 import CallKit
-import UIKit
 
 @MainActor
 final class PhoneSettingsDeviceUITests: XCTestCase {
@@ -31,38 +30,14 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         app.buttons["forwarding-continue"].tap()
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 15))
-        if settings.navigationBars.count == 0 && settings.cells.count == 0 {
-            throw XCTSkip("Settings exposes no native accessibility tree while iPhone Mirroring owns the display. Verify this handoff in Mirroring.")
+        let phone = settings.navigationBars["Phone"]
+        if !phone.appears(timeout: 5),
+           !settings.navigationBars["Call Blocking & Identification"].exists,
+           settings.navigationBars.allElementsBoundByIndex.allSatisfy({ $0.label.isEmpty }) {
+            throw XCTSkip("Settings exposes no readable navigation labels under Mirroring. Check the first destination visually, before scrolling.")
         }
-        if settings.navigationBars["Call Blocking & Identification"].exists { settings.navigationBars.buttons.firstMatch.tap() }
-        XCTAssertTrue(settings.navigationBars["Phone"].appears(timeout: 15))
+        XCTAssertTrue(phone.exists, "The first page must be Phone, without a back-arrow detour")
         try verifyNativeChoices(settings, app: app)
-        #endif
-    }
-
-    func testShortcutLandsNearCallerControlsWithoutLongScroll() throws {
-        #if targetEnvironment(simulator)
-        throw XCTSkip("Verify native Settings on the physical phone")
-        #else
-        continueAfterFailure = false
-        let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-forwarding", "--forwarding-start-settings", "--uitesting-system-settings"]
-        app.launch()
-        XCTAssertTrue(app.buttons["forwarding-continue"].appears(timeout: 15))
-        XCTAssertFalse(app.buttons["setup-guide-float"].exists)
-        app.buttons["forwarding-continue"].tap()
-        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
-        XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 15))
-        if settings.navigationBars.count == 0 && settings.cells.count == 0 {
-            throw XCTSkip("Mirroring hides Settings accessibility. The public shortcut and one downward slide require the recorded manual device check.")
-        }
-        if settings.navigationBars["Call Blocking & Identification"].exists { settings.navigationBars.buttons.firstMatch.tap() }
-        XCTAssertTrue(settings.staticTexts["Silence"].isHittable || settings.staticTexts["Unknown Callers"].isHittable)
-        settings.swipeDown()
-        XCTAssertTrue(settings.staticTexts["Silence"].isHittable)
-        app.activate()
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
-        XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         #endif
     }
 
@@ -70,8 +45,7 @@ final class PhoneSettingsDeviceUITests: XCTestCase {
         // Read the native choices without selecting or changing any of them.
         // This checks the visual guide against iOS, rather than our own fixture.
         let silence = settings.staticTexts["Silence"]
-        if settings.navigationBars["Call Blocking & Identification"].exists { settings.navigationBars.buttons.firstMatch.tap() }
-        for _ in 0..<3 where !settings.staticTexts["Never"].isHittable { settings.swipeDown() }
+        for _ in 0..<8 where !settings.staticTexts["Never"].isHittable { settings.swipeUp() }
         let heading = settings.descendants(matching: .any)
             .matching(NSPredicate(format: "label ==[c] %@", "Screen Unknown Callers")).firstMatch
         XCTAssertTrue(heading.isHittable)

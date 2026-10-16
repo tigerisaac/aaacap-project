@@ -35,8 +35,10 @@ struct ForwardingRestoreView: View {
                     FlowProgress(title: index < 3 ? "Disconnect \(status.carrier)" : index < 5 ? "Restore settings" : "Check ordinary service", current: index + 1, total: 7)
                         .accessibilityFocused($focusedStage, equals: index)
                         .task(id: index) { focusedStage = index }
-                    Text(index < 3 ? "Do each reset, one at a time." : "Now check Phone settings and ordinary calls.")
-                        .font(.title3)
+                    if index < 3 || index >= 5 {
+                        Text(index < 3 ? "Do each reset, one at a time." : "Now check ordinary calls.")
+                            .font(.title3)
+                    }
                 }
                 if codes.indices.contains(index) {
                     VStack(alignment: .leading, spacing: 6) {

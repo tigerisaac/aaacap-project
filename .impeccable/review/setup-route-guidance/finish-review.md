@@ -1,3 +1,5 @@
+> Superseded by the owner’s later first-page screenshot: CallKit initially opens Call Blocking & Identification. The Settings-route approval below is invalid. See the direct-Phone correction and fresh review.
+
 # Independent finish review — October 15, 2026
 
 Physical and owner-reference captures were reviewed locally and are retained only in ignored `artifacts/private/setup-route-guidance/`. Only synthetic app captures and original generated art are committed.

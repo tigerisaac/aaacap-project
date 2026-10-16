@@ -10,34 +10,29 @@ struct RestorationSettingsGuide: View {
     @State private var destination = PhoneSettingsLink.preferredDestination
     @State private var guidePlayer = SetupGuidePlayer()
     private var unknownCallers: Bool { index == 3 }
+    private var guide: SetupGuide { unknownCallers ? .never : .voicemailOn }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text(unknownCallers ? "Let ordinary calls ring" : "Restore iPhone voicemail")
                 .shieldHeading(.title).accessibilityAddTraits(.isHeader)
-            if destination == .shield || destination == .unavailable {
-                Text(destination.directions)
-            } else {
-                Text(unknownCallers
-                     ? "In Settings, slide your finger down to Screen Unknown Callers. Then tap Never."
-                     : "In Settings, slide your finger down to Live Voicemail, just above Screen Unknown Callers. Leave its switch green (on).")
-                if destination == .callIdentification {
-                    Text("If Call Blocking & Identification opens, tap the back arrow to Phone first.")
-                        .foregroundStyle(ForwardingStyle.secondaryText)
-                }
-            }
-            SetupGuideView(guide: unknownCallers ? .never : .voicemailOn, player: guidePlayer,
-                           animateNavigation: destination != .shield && destination != .unavailable)
-            Text(returned ? "Did you make the change? Confirm below. Shield can’t see this setting." : "Already done? Confirm below.")
-                .foregroundStyle(ForwardingStyle.secondaryText)
-                .accessibilityIdentifier("restoration-settings-unverified")
+            Text(destination.directions)
+            Text("Stop at \(guide.settingHeading).")
             Button(opened ? "Open Phone settings again" : "Open Phone settings", systemImage: "gearshape") {
                 Task { await openSettings() }
             }
             .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working).accessibilityIdentifier("restoration-settings-open")
+            SetupGuideView(guide: guide, player: guidePlayer)
+            if returned {
+                Text("Did you make the change? Confirm below. Shield can’t see this setting.")
+                    .foregroundStyle(ForwardingStyle.secondaryText)
+                    .accessibilityIdentifier("restoration-settings-unverified")
+            }
             ShieldDisclosure("Read the steps") {
-                Text((unknownCallers ? SetupGuide.never : .voicemailOn).instructions)
-                Text("Open Settings, then Apps, then Phone. When done, return to Shield.")
+                Text("Already changed it? You can confirm below. Shield can’t see this setting.")
+                Text(destination.directions)
+                Text(guide.instructions)
+                Text("If a different page opens, return to Shield, then open Settings → Apps → Phone. When done, return to Shield.")
             }
         }
         .fixedSize(horizontal: false, vertical: true)
@@ -63,6 +58,6 @@ struct RestorationSettingsGuide: View {
         #endif
         await guidePlayer.startFloating()
         destination = await PhoneSettingsLink.open()
-        if destination == .shield || destination == .unavailable { guidePlayer.returnedToShield() }
+        if destination == .unavailable { guidePlayer.returnedToShield() }
     }
 }

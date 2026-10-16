@@ -1,8 +1,14 @@
 # Status
 
+## October 15 — direct Phone handoff and sharper guides
+
+The owner’s first-page screenshot disproved the earlier CallKit route claim: it opens Call Blocking & Identification. The back-arrow workaround was rejected and removed. Setup now uses a best-effort direct Phone-page URL and teaches upward scrolling with recognizable landmarks and the exact stopping heading. The URL is undocumented and does not jump to the individual setting; rejected links retain a manual route. GIFs are 1440×960, up from 600×400. The floating reminder stays still while the person navigates. Explicit confirmations remain separate.
+
+Required backend checks passed 242 unit tests/typecheck/build and 175 emulator tests. Main and compact setup/large-text checks passed; actual Reduce Motion revealed and verified a native poster-layer correction. The review’s restore-action visibility fix also passed normal/compact/largest-text checks. The signed build is installed; first Phone landing, automatic Settings/Phone PiP and retained confirmations were visually checked. Full evidence is recorded in [the current guide record](IOS-SETUP-GUIDES.md). No owner phone setting, carrier forwarding, real call or live backend deployment is changed. Earlier first-page route claims below are superseded.
+
 ## October 15 — original GIFs and a shorter Settings route
 
-Owner feedback replaced the shared inline/PiP movie with original GIF touch demonstrations and a separate steady floating reminder. In-app play/Float controls are removed. Public CallKit navigation now opens near Call Filtering on the tested iOS 27.2 phone; the GIF demonstrates sliding the finger down to the exact section above it. Manual fallback uses the opposite direction and a static target. Explicit confirmations and backend progress remain unchanged.
+Owner feedback replaced the shared inline/PiP movie with original GIF touch demonstrations and a separate steady floating reminder. In-app play/Float controls are removed. The earlier public-CallKit first-page claim was disproved by the owner’s later screenshot; see the correction above. This dated implementation taught sliding down on the parent Phone page. Manual fallback uses the opposite direction and a static target. Explicit confirmations and backend progress remain unchanged.
 
 Required checks passed: 242 unit tests, typecheck/build, 175 emulator tests; one clean 21-case simulator setup run, seven small-phone guide cases, and five final normal/largest-text/fallback confirmations. The signed build is installed on the iPhone. Settings and Phone automatic PiP were visually verified there; physical copy safety passed, while two Settings accessibility checks skipped under Mirroring. Independent visual review: **disposition: ship**. No phone setting, carrier forwarding or live backend deployment was changed. Verification limits and media provenance are in [the guide record](IOS-SETUP-GUIDES.md).
 

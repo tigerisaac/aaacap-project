@@ -1,0 +1,15 @@
+# Direct Phone route check — October 15, 2026
+
+The owner’s first-page screenshot is primary evidence: public CallKit opened Call Blocking & Identification, not the target. The owner rejected a back-arrow workaround.
+
+The installed final Debug build was opened with the synthetic setup fixture. One Open Phone settings tap opened the top of Phone settings. The first settled capture showed the normal access rows; the existing movable PiP covered the title. Moving only PiP (no Back tap or page scroll) exposed the Phone title. Private captures are in ignored artifacts/private/setup-direct-phone/. No system switch was changed and no code was pasted or dialed.
+
+The direct URL is App-prefs:com.apple.mobilephone, from UIApplication inside Shield. It is undocumented, not an exact-section API, and not a claim of App Store approval. The tested section fragments/path and Search candidates either were rejected or landed on Apps/Phone without the desired section. Their accepted boolean alone was not treated as landing evidence.
+
+The final original GIFs show upward finger gestures on two landmark excerpts, then the target choice or switch. They do not imply two swipes reach it. The steady reminder retains direction, landmark, exact stop heading and action. Source art contains no owner pixels. Returning must still leave the current step unconfirmed.
+
+On return from the final Settings handoff, the same Choose Silence step showed I selected Silence, with PiP stopped; no setting was confirmed. A separate final Phone fixture showed the native Open banner, automatic steady PiP with the keypad reminder above Phone, and the public Calls / Contacts / Keypad tabs. No code was pasted and no Call button was pressed. The physical guide crop remains private. Final UI-test evidence uses only synthetic simulator captures.
+
+Reduce Motion correction: the launch argument did not turn the real setting on. The first actual simulator check exposed the AVPlayer layer above the SwiftUI poster. SetupGuidePoster now uses a native UIImageView above the player, matching the animated view’s stack. On iPhone 17e / iOS 26.5, Device Hub’s real Reduce Motion switch was set on; the final target poster appeared, with no hand/gesture. Two captures several seconds apart had identical poster pixels (region x100...1070,y1000...1550). The switch was restored off. The misleading UI-test flag/capture name was removed; that test asserts instructions/confirmation only. Public-only settings-guide-crop.png in the private evidence folder shows the full physical UP instruction without masking public words.
+
+The review’s one normal-size restoration hierarchy fix was applied: remove repeated general context for the two settings tasks; put Open Phone settings before the GIF. Both native setting stages now have a visible launcher above their explicit confirmation on normal and compact phones. Main normal/largest-text checks passed 2/2; compact normal passed 1/1. Updated restoration captures replace the rejected action-hidden frame. The earlier full main guide run passed 10/10, compact selected run 3/3, and post-poster confirmation run2/2.

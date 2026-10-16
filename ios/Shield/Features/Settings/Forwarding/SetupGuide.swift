@@ -3,6 +3,14 @@ import Foundation
 enum SetupGuide: String, CaseIterable {
     case silence, voicemailOff, keypad, never, voicemailOn
 
+    var settingHeading: String {
+        switch self {
+        case .silence, .never: "Screen Unknown Callers"
+        case .voicemailOff, .voicemailOn: "Live Voicemail"
+        case .keypad: "Keypad"
+        }
+    }
+
     var instructions: String {
         switch self {
         case .silence: "Find Screen Unknown Callers, just above Call Filtering. Tap Silence and look for its checkmark. Return to Shield."

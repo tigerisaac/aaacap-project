@@ -1,21 +1,15 @@
-import CallKit
 import UIKit
 
 @MainActor
 enum PhoneSettingsLink {
-    static var preferredDestination: PhoneSettingsDestination {
-        if #available(iOS 27, *) { .phoneControls } else { .callIdentification }
-    }
+    static var preferredDestination: PhoneSettingsDestination { .phone }
 
     static func open() async -> PhoneSettingsDestination {
-        // Public CallKit shortcut. On the tested iOS 27 phone it scrolls Phone
-        // to Call Filtering, directly BELOW the controls needed by setup.
-        // URL acceptance cannot establish a viewport or confirm a setting.
-        do {
-            try await CXCallDirectoryManager.sharedInstance.openSettings()
-            return preferredDestination
-        } catch {}
-        if let url = URL(string: UIApplication.openSettingsURLString), await UIApplication.shared.open(url) { return .shield }
-        return .unavailable
+        // Best effort: this URL is undocumented. Verified from Shield on the
+        // pilot iPhone; it opens Phone, not the individual caller section.
+        // Never substitute CallKit’s unrelated identification page on failure.
+        guard let url = URL(string: "App-prefs:com.apple.mobilephone"),
+              await UIApplication.shared.open(url) else { return .unavailable }
+        return .phone
     }
 }

@@ -8,7 +8,9 @@ final class SetupGuideUITests: XCTestCase {
         let app = launch(["--forwarding-start-settings"])
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         XCTAssertFalse(app.buttons["setup-guide-float"].exists)
-        XCTAssertTrue(app.staticTexts["phone-settings-navigation"].exists)
+        XCTAssertTrue(app.staticTexts["phone-settings-navigation"].label.contains("Slide your finger up past Announce Calls"))
+        XCTAssertTrue(app.staticTexts["phone-settings-target"].label.contains("Stop at Screen Unknown Callers"))
+        XCTAssertFalse(app.staticTexts["phone-settings-navigation"].label.contains("back arrow"))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         capture(app, "Settings handcrafted GIF")
@@ -69,25 +71,33 @@ final class SetupGuideUITests: XCTestCase {
         let app = launch(["--forwarding-start-restore", "--restoration-start-settings"])
         XCTAssertTrue(app.staticTexts["Let ordinary calls ring"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["setup-guide-float"].exists)
+        XCTAssertTrue(app.buttons["restoration-settings-open"].isHittable)
+        XCTAssertLessThanOrEqual(app.buttons["restoration-settings-open"].frame.maxY,
+                                 app.buttons["restoration-settings-confirm"].frame.minY)
+        capture(app, "Restoration unknown callers action")
         app.buttons["restoration-settings-confirm"].tap()
         XCTAssertTrue(app.staticTexts["Restore iPhone voicemail"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
+        XCTAssertTrue(app.buttons["restoration-settings-open"].isHittable)
+        XCTAssertLessThanOrEqual(app.buttons["restoration-settings-open"].frame.maxY,
+                                 app.buttons["restoration-settings-confirm"].frame.minY)
         capture(app, "Restoration voicemail handcrafted GIF")
     }
 
-    func testReducedMotionKeepsSettingInstructionsAndConfirmation() {
-        let app = launch(["--forwarding-start-settings", "-UIAccessibilityReduceMotionEnabled", "YES"])
+    func testSettingInstructionsKeepExplicitConfirmation() {
+        let app = launch(["--forwarding-start-settings"])
         XCTAssertTrue(app.staticTexts["phone-settings-navigation"].exists)
         app.buttons["forwarding-continue"].tap()
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
-        capture(app, "Reduced motion setting guide")
+        capture(app, "Setting instructions and confirmation")
     }
 
     func testLargestTextSettingsInstructionsAndActionRemainReachable() {
         let app = launch(["--forwarding-start-settings", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         capture(app, "Settings largest text dark top")
         reveal(app.staticTexts["phone-settings-navigation"], in: app)
+        reveal(app.staticTexts["phone-settings-target"], in: app)
         reveal(app.buttons["Read the steps"], in: app)
         app.buttons["Read the steps"].tap()
         reveal(app.buttons["forwarding-continue"], in: app)
