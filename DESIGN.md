@@ -359,9 +359,15 @@ The app does not create or accept invitations. Your helpers (More → Family & f
 
 Assisted setup retains readable Step … of … progress, serif task headings, numbered native Phone instructions and one clearly named action. Steps reset scrolling and request heading focus; Back and Close remain available outside working states. Codes are copied for manual Phone handoff, with See copied code, Copy code again, Show Phone again and Need help? recovery.
 
+Change Phone settings guides one visit to the two adjacent controls: Live Voicemail off, then Screen Unknown Callers → Silence below it. The steady floating reminder keeps both actions visible together. Returning replaces the animated illustration with its static target and offers I selected Silence, followed by the separate Live Voicemail is off confirmation. The visit carries navigation to that second confirmation; it does not verify either setting. A standalone resumed voicemail step and Read the steps retain a route back to Settings. Restoration keeps its separate guides and confirmations.
+
+If the floating reminder cannot start, Shield stays open and focuses the existing scrollable error explanation, which names the required action or both actions for the combined visit. The sole primary action becomes Open Settings anyway; a deliberate further tap continues without the reminder. Back and Close remain available. This recovery uses the page rather than a native alert whose message clipped at the largest text size.
+
 Returning from Phone or Settings changes guidance, not verification. Carrier result, each Phone setting, ordinary call and voicemail require explicit checks. Done dismisses completed setup; Disconnect Shield is a separate confirmed option. Detailed privacy/provider context stays within More before you agree.
 
 **The Explicit Confirmation Rule.** Keep action and proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.
+
+**The Visible Setup Help Rule.** Keep both adjacent Phone-setting actions visible together during their handoff. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.
 
 ### Sample-only features
 
@@ -436,3 +442,14 @@ Owner screenshots overturned the earlier setup-guide approval: the timed video s
 The owner’s screenshot supersedes the previous route approval: CallKit first opens an unrelated Shield identification switch. No back-arrow scene or instruction ships. The primary handoff now attempts Phone directly. The inline demonstration uses original 1440×960 raster artwork and upward finger gestures on close-ups of the starting rows and Announce Calls landmark, followed by the exact target. The floating reminder is steady: direction, landmark, stop heading, action, conditional return. No extra play/float controls appear. Written help covers overshooting and a manual route; Reduce Motion shows the target result. This is a best-effort undocumented Phone-page shortcut, not an exact-section API. Explicit confirmations and privacy boundaries remain.
 
 The real Reduce Motion check exposed AVPlayerLayer above a SwiftUI image; the final static target uses a native image view in the same stack as the GIF. Restoration removes repeated general context and places Open Phone settings before the demonstration, so the next action is visible above the separate confirmation at normal text size. Already-done instructions remain in Read the steps.
+
+
+## October 15 — one Phone-settings visit
+
+The current setup supersedes the separate-visit and playback-control descriptions above while preserving Shield's navy actions, serif task headings and native reading surfaces. The combined guide shows Live Voicemail off and Silence immediately below in one visit. A larger steady Picture in Picture reminder holds both tasks on screen instead of advancing instructions on a timer. The best-effort direct Phone-settings handoff remains undocumented and cannot guarantee a landing section or scroll position. Landmark excerpts and Read the steps cover reopening, overshooting and the manual Settings → Apps → Phone route. Settings return and the two explicit confirmations remain separate events.
+
+Six original 1440×960 GIFs run on a 30 fps timeline, with five prepared frames and decoding in batches of at most two. This bounds the decoded runway rather than retaining the whole animation. Playback pauses outside the active scene; Reduce Motion and the post-return state use a static target above the native video layer. There are no in-app Play/Float controls, Shortcuts installation or screen-sharing recognition. The authored artwork uses shapes and system labels, with no owner screenshot pixels or captured screen content.
+
+Failed PiP startup stays on the scrollable Shield page, focuses its explanation and changes the sole primary action to Open Settings anyway. Choosing that action deliberately proceeds without a reminder. Reopening follows the same recovery and clears the returned state so the confirmation cannot masquerade as the fallback action. The native-alert experiment was removed after its message clipped at the largest text size.
+
+This is an implementation record. The [October 15 review input](.impeccable/review/setup-one-visit/input.md), [dated evidence](.impeccable/review/setup-one-visit/evidence.json) and [setup-guide record](docs/IOS-SETUP-GUIDES.md) retain the scoped source, synthetic captures, measured artwork timing and physical handoff observations. They do not establish universal smoothness, older-adult usability or real-call behavior. The [final verdict](.impeccable/review/setup-one-visit/finish-verdict.md) scored the sole missing-reminder recovery finding resolved with disposition ship; its scope is that correction and directly introduced regressions. Two final main-phone and three compact-phone recovery checks passed.

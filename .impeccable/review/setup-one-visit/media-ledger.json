@@ -1,0 +1,374 @@
+[
+  {
+    "file": "setup-keypad-inline.gif",
+    "sourceSHA256": "b805e8336d47929bc6226c8b2a4f41a7bac25452de11d14c5dc505ff0dbd859a",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "size": [
+      1440,
+      960
+    ],
+    "frames": 540,
+    "durationMs": 18000,
+    "delayMs": [
+      30,
+      40
+    ]
+  },
+  {
+    "file": "setup-keypad-poster.png",
+    "sourceSHA256": "05b881238ae10b8c8f19f5e7f67e9adecc8ce5fd4a0a987e930f5e910d0a2011",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels"
+  },
+  {
+    "file": "setup-keypad-still.mp4",
+    "sourceSHA256": "a9082c2f4124d7623aee32419a22bf6fd3c56244bbcc1f2051215a6393186c9f",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-keypad.mp4",
+    "sourceSHA256": "3479607a6c06363b30b3f6c9e2d69ebf06cd4f1468215332def692d680626ab1",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-never-inline.gif",
+    "sourceSHA256": "fa3704106526265269e135ef4b48822317c28f613f286b48b93cf620ea9dbcdb",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "size": [
+      1440,
+      960
+    ],
+    "frames": 420,
+    "durationMs": 14000,
+    "delayMs": [
+      30,
+      40
+    ]
+  },
+  {
+    "file": "setup-never-poster.png",
+    "sourceSHA256": "706b326df98641e996ea39893cb63779a9c1b5a4cee8594cffd658ef29c4bc8a",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels"
+  },
+  {
+    "file": "setup-never-still.mp4",
+    "sourceSHA256": "cab700ab0db809ebf18e1a7350ff89c5b2894796f45527f4ad189bae5811c7d2",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-never.mp4",
+    "sourceSHA256": "14fb28a7015f2df3ab0cd2908df9806caa0891609a82f34de2f8d772ae0b95db",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-phoneSettings-inline.gif",
+    "sourceSHA256": "a2ee4772e6af8ef422a8e0b731659640cd29c09d1841534fbac97e65a5638f3a",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "size": [
+      1440,
+      960
+    ],
+    "frames": 540,
+    "durationMs": 18000,
+    "delayMs": [
+      30,
+      40
+    ]
+  },
+  {
+    "file": "setup-phoneSettings-poster.png",
+    "sourceSHA256": "78d03e52db080dd4b18b7e4bd36ac6d7c5e6ade4e0778ba25c6e6853b45a55b9",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels"
+  },
+  {
+    "file": "setup-phoneSettings-still.mp4",
+    "sourceSHA256": "e3a736b51f91abcd8f8e80edd3dcb5485ea1b643f9a028d61269844d6bd7da8f",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-phoneSettings.mp4",
+    "sourceSHA256": "901bd17e9f8efd4c39ceaf966dc987a939f8d93eff94d04fc0d2ffbd6f775214",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-silence-inline.gif",
+    "sourceSHA256": "88f5c0ba41a4d1145bd1cfb67d7857da4b33492f389a92988afd313fc942f841",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "size": [
+      1440,
+      960
+    ],
+    "frames": 420,
+    "durationMs": 14000,
+    "delayMs": [
+      30,
+      40
+    ]
+  },
+  {
+    "file": "setup-silence-poster.png",
+    "sourceSHA256": "f0c77753d7f130f445ec5a4ace1294755087a707ef92011e8efa9ea0a898087a",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels"
+  },
+  {
+    "file": "setup-silence-still.mp4",
+    "sourceSHA256": "82b6161eec5813799e8dc7f9a3a15b5731ed0ec17b3080bcff6fa951c8a4409c",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-silence.mp4",
+    "sourceSHA256": "161d45da283e775b5e697a82e5c200da3dce05ad299f9a94472e99f674168e86",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-voicemailOff-inline.gif",
+    "sourceSHA256": "adc3acb6dc0199410ff8d760477ab65b219fe29f4513c9edf1d0a486254c218b",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "size": [
+      1440,
+      960
+    ],
+    "frames": 420,
+    "durationMs": 14000,
+    "delayMs": [
+      30,
+      40
+    ]
+  },
+  {
+    "file": "setup-voicemailOff-poster.png",
+    "sourceSHA256": "0b2edf4b65382a2ae0c655e10ab916a62008bc35353b0cbe1bcf16c9350d7096",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels"
+  },
+  {
+    "file": "setup-voicemailOff-still.mp4",
+    "sourceSHA256": "b5438d086ecefadb704b4051f842958f462ebe48dea0351144be5ae6bc172385",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-voicemailOff.mp4",
+    "sourceSHA256": "f1798b07b3c046ffa7189664f76034775d60d3e7a14a7f92b34b7805c6482c92",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-voicemailOn-inline.gif",
+    "sourceSHA256": "4cecd05951b606c7a74fb149a5634f2ba3fd2a7eac113cc0e05c78311f95e1ff",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "size": [
+      1440,
+      960
+    ],
+    "frames": 420,
+    "durationMs": 14000,
+    "delayMs": [
+      30,
+      40
+    ]
+  },
+  {
+    "file": "setup-voicemailOn-poster.png",
+    "sourceSHA256": "8427d02cf075ccfdb4f9ecf7d69bbb7d2b9ef6c8249fde518895479a7bb810f1",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels"
+  },
+  {
+    "file": "setup-voicemailOn-still.mp4",
+    "sourceSHA256": "d59a1ffcff20dae3b3b448d1bdf6e739fd02ea0a42f73d2cc94aaf14d9af21fb",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  },
+  {
+    "file": "setup-voicemailOn.mp4",
+    "sourceSHA256": "a38bd50f567028f34ec1e872ab8266ebc69dde982617c714c78976c1853c2dbb",
+    "bundledMatch": true,
+    "origin": "Original programmatic Shield artwork: scripts/generate-setup-guides.swift; no reference video or owner pixels",
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "60"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "nb_frames": "87"
+      }
+    ]
+  }
+]

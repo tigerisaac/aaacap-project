@@ -14,7 +14,7 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         tapPrimary(app)
         XCTAssertTrue(app.staticTexts["forwarding-probe-passed"].appears(timeout: 5))
-        tapPrimary(app); expect(app, "Choose Silence")
+        tapPrimary(app); expect(app, "Change Phone settings")
         capture(app, "Guided phone settings light")
         tapPrimary(app)
         app.buttons["Read the steps"].tap()
@@ -22,9 +22,8 @@ final class ForwardingUITests: XCTestCase {
         app.buttons["Read the steps"].tap()
         tapPrimary(app); expect(app, "Turn off Live Voicemail")
         capture(app, "Guided voicemail setting light")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
         XCTAssertFalse(app.buttons["phone-settings-reopen"].exists)
-        tapPrimary(app)
         app.buttons["Read the steps"].tap()
         XCTAssertTrue(app.buttons["phone-settings-reopen"].exists)
         app.buttons["Read the steps"].tap()
@@ -76,7 +75,7 @@ final class ForwardingUITests: XCTestCase {
         tapPrimary(app)
         XCTAssertTrue(app.staticTexts["This check didn’t finish"].appears(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Try the call again")
-        XCTAssertFalse(app.staticTexts["Choose Silence"].exists)
+        XCTAssertFalse(app.staticTexts["Change Phone settings"].exists)
         capture(app, "Call check recovery")
     }
     func testLargestTextContactsFailureIsVisibleWithoutAdvancing() {
@@ -117,7 +116,7 @@ final class ForwardingUITests: XCTestCase {
         capture(app, "Contact dark")
     }
     func testSettingsReturnDoesNotConfirmSwitchesAndCanReopen() {
-        let app = launch(["--forwarding-start-settings"], title: "Choose Silence")
+        let app = launch(["--forwarding-start-settings"], title: "Change Phone settings")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
         capture(app, "Phone setting shortcut")
         tapPrimary(app)
@@ -128,11 +127,11 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         app.buttons["Read the steps"].tap()
         app.buttons["phone-settings-reopen"].tap()
-        expect(app, "Choose Silence")
+        expect(app, "Change Phone settings")
         capture(app, "Phone setting return")
     }
     func testSettingsFallbackKeepsProgressAndInstructionsAvailable() {
-        let app = launch(["--forwarding-start-settings", "--settings-link-fails"], title: "Choose Silence")
+        let app = launch(["--forwarding-start-settings", "--settings-link-fails"], title: "Change Phone settings")
         tapPrimary(app)
         XCTAssertTrue(app.staticTexts["phone-settings-navigation"].label.contains("finger up"))
         app.buttons["Read the steps"].tap()

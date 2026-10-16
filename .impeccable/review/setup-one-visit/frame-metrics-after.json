@@ -1,0 +1,14 @@
+{
+  "bufferFillsOverFrameBudget" : 1,
+  "elapsedSeconds" : 40.007270000001881,
+  "guide" : "phoneSettings",
+  "maxBufferFillMs" : 34.774041669152211,
+  "maxPresentationGapMs" : 33.714791665261146,
+  "maxTickGapMs" : 33.749750000424683,
+  "p95BufferFillMs" : 13.197041662351694,
+  "presentationGapsOver1_5FrameBudgets" : 0,
+  "presentedFrames" : 1193,
+  "requestedFramesPerSecond" : 30,
+  "tickCount" : 1194,
+  "tickGapsOver1_5FrameBudgets" : 0
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-15",
+  "captures": "synthetic simulator data, never owner Settings",
+  "checks": {
+    "mainInitial": "12 cases / 0 failures; before buffer, no later layout changes",
+    "compact": "4 cases / 0 failures; iOS26.5",
+    "mainFinal": "3 cases / 0 failures; buffer compiled, explicit confirmation screenshot corrected",
+    "npmCheck": "242 passed, typecheck and build passed",
+    "firebase": "175/175 passed with METADATA_SERVER_DETECTION=none npm run test:firebase. Three preceding runs failed on varying timing/transaction assertions with metadata discovery timeouts. No backend/test/config files changed.",
+    "deviceDebug": "build/install passed",
+    "release": "Final unsigned Release build succeeded; metric/prototype classes absent from binary",
+    "recoveryMain": "2/2 final inline failure, deliberate continuation and largest-text reachability checks passed; first long/short native alerts were discarded because they constrained the message",
+    "recoveryCompact": "3/3 final inline failure, largest-text reachability and failed-reopen deliberate fallback cases passed"
+  },
+  "phone": "iPhone12ProMax iOS27.2. Direct Phone handoff and stable PiP inspected; read LiveVM off and Silence checkmark without changing settings. Return stopped PiP and first explicit confirmation stayed pending. No call/paste/carrier operation. Native Phone Open banner opened Phone with automatic keypad PiP; no paste/call/setting change. Final forced missing-PiP check stayed in Shield with readable recovery; deliberate Open Settings anyway opened Phone without PiP, returning retained I selected Silence. Existing controls remained unchanged. After first explicit Silence confirmation, native Shield displayed separate Live Voicemail is off confirmation immediately, with no second external visit. Final guide preview reopened without diagnostics.",
+  "finalActiveTiming": "40.022 active seconds,1200 presented frames,0 presentation/tick gaps over50ms,max presentation46.083ms. Same buffered playback as first post-fix sample. DEBUG timer counts active intervals only.",
+  "review": "Full scoped review fix: one missing-reminder recovery finding; final verdict ship for that resolved finding and directly introduced regressions, not universal usability."
+}

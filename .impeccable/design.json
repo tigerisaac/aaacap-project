@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-14T01:51:07Z",
+  "generatedAt": "2026-10-16T04:00:01Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -820,6 +820,11 @@
       {
         "name": "The Explicit Confirmation Rule",
         "body": "Keep action and proof separate: returning from another app never confirms a carrier or Phone-setting change, and ending a call test never disconnects the phone.",
+        "section": "components"
+      },
+      {
+        "name": "The Visible Setup Help Rule",
+        "body": "Keep both adjacent Phone-setting actions visible together during their handoff. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.",
         "section": "components"
       }
     ],

@@ -18,9 +18,12 @@ final class ForwardingSetupModel {
     var showingHelp = false
     var settingsDestination = PhoneSettingsLink.preferredDestination
     var settingsReturned = false
+    var settingsReminderUnavailable = false
     private var pendingSettingsStep: ForwardingStep?
     private var leftForSettings = false
     private var settingsVisitKey: String { "shield-phone-settings-visit-" + (status?.participantId.uuidString ?? "none") }
+    private var combinedVisitKey: String { settingsVisitKey + "-both-v1" }
+    private var combinedPhoneVisit = false
     var isPhoneSettingsStep: Bool { step == .settings || step == .liveVoicemail }
     private var participantID: UUID?
     private var loaded = false
@@ -52,6 +55,7 @@ final class ForwardingSetupModel {
             if status == nil {
                 status = .uiTestFixture
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-settings") { step = .settings }
+                if ProcessInfo.processInfo.arguments.contains("--forwarding-start-voicemail") { step = .liveVoicemail }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-code") { step = .forward0 }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-checks") {
                     step = .checks
@@ -83,9 +87,8 @@ final class ForwardingSetupModel {
                 codeReturnedStep = nil
                 pendingCodeReturn = nil
                 showingPhoneLauncher = false
-                if UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue {
-                    settingsReturned = true
-                }
+                settingsReturned = UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue
+                combinedPhoneVisit = isPhoneSettingsStep && UserDefaults.standard.bool(forKey: "shield-phone-settings-visit-" + id.uuidString + "-both-v1")
             }
             if status == nil { error = nil }
             status = result
@@ -98,7 +101,7 @@ final class ForwardingSetupModel {
         guard let status, !working else { return }
         error = nil
         if isPhoneSettingsStep && !settingsReturned {
-            await openPhoneSettings()
+            await openPhoneSettings(withoutReminder: settingsReminderUnavailable)
             return
         }
         if step.codeIndex != nil {
@@ -135,6 +138,7 @@ final class ForwardingSetupModel {
 
     func move(to next: ForwardingStep, app: AppState) async throws {
         guard let status else { return }
+        let carriesPhoneVisit = step == .settings && next == .liveVoicemail && settingsReturned && combinedPhoneVisit
         if !isUITest {
             let _: APIResponses.Empty = try await app.api.send("/api/forwarding/progress", method: "POST",
                 body: APIClient.payload(["stage": next.rawValue]), participantID: status.participantId)
@@ -146,8 +150,15 @@ final class ForwardingSetupModel {
         codeReturnedStep = nil
         pendingCodeReturn = nil
         showingPhoneLauncher = false
-        // Each page guides one setting. A visit to the first does not stand in for the second.
-        settingsReturned = false
+        // One guide now shows both adjacent controls. Carry only the visit,
+        // never a setting confirmation; the next page still requires its own tap.
+        settingsReturned = carriesPhoneVisit
+        settingsReminderUnavailable = false
+        if !isPhoneSettingsStep {
+            combinedPhoneVisit = false
+            if !isUITest { UserDefaults.standard.removeObject(forKey: combinedVisitKey) }
+        }
+        if carriesPhoneVisit && !isUITest { UserDefaults.standard.set(next.rawValue, forKey: settingsVisitKey) }
         pendingSettingsStep = nil
         leftForSettings = false
         settingsDestination = PhoneSettingsLink.preferredDestination
@@ -189,35 +200,68 @@ final class ForwardingSetupModel {
         // A return changes the instructions, never carrier progress or verification.
     }
 
-    func openPhoneSettings() async {
+    func openPhoneSettings(withoutReminder: Bool = false) async {
         guard isPhoneSettingsStep, !working else { return }
         error = nil
         working = true
         defer { working = false }
         pendingSettingsStep = step
         leftForSettings = false
-        if !isUITest { UserDefaults.standard.set(step.rawValue, forKey: settingsVisitKey) }
         #if DEBUG
         if isUITest && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-settings") {
+            if !withoutReminder && ProcessInfo.processInfo.arguments.contains("--setup-guide-unavailable") {
+                pendingSettingsStep = nil
+                reportReminderUnavailable()
+                return
+            }
             settingsDestination = ProcessInfo.processInfo.arguments.contains("--settings-link-fails") ? .unavailable : PhoneSettingsLink.preferredDestination
             settingsReturned = true
             pendingSettingsStep = nil
+            if step == .settings { combinedPhoneVisit = settingsDestination == .phone }
             return
         }
         #endif
-        await guidePlayer.startFloating()
+        if !withoutReminder {
+            let floated = await guidePlayer.startFloating()
+            guard floated else {
+                pendingSettingsStep = nil
+                guidePlayer.returnedToShield()
+                reportReminderUnavailable()
+                return
+            }
+        }
+        if withoutReminder { guidePlayer.returnedToShield() }
+        // Persist only an actual handoff attempt, not a failed reminder start.
+        if !isUITest { UserDefaults.standard.set(step.rawValue, forKey: settingsVisitKey) }
         settingsDestination = await PhoneSettingsLink.open()
         if settingsDestination == .unavailable {
             guidePlayer.returnedToShield()
             pendingSettingsStep = nil
             settingsReturned = true
             reportError("iPhone couldn’t open Settings. Open Settings → Apps → Phone, then make the change shown above.")
+        } else if step == .settings {
+            combinedPhoneVisit = true
+            if !isUITest { UserDefaults.standard.set(true, forKey: combinedVisitKey) }
         }
+    }
+
+    private func reportReminderUnavailable() {
+        settingsReminderUnavailable = true
+        settingsReturned = false
+        pendingSettingsStep = nil
+        reportError(step == .settings
+                    ? "The floating reminder couldn’t open. Turn Live Voicemail off, then choose Silence just below it. You can stay here to watch the guide, or tap Open Settings anyway to continue without the reminder."
+                    : "The floating reminder couldn’t open. Turn Live Voicemail off. You can stay here to watch the guide, or tap Open Settings anyway to continue without the reminder.")
     }
 
     func acknowledgeManualSettingsVisit() {
         settingsReturned = true
         pendingSettingsStep = nil
+        if !isUITest { UserDefaults.standard.set(step.rawValue, forKey: settingsVisitKey) }
+        if step == .settings {
+            combinedPhoneVisit = true
+            if !isUITest { UserDefaults.standard.set(true, forKey: combinedVisitKey) }
+        }
     }
 
     func settingsSceneChanged(isActive: Bool, isBackground: Bool) {

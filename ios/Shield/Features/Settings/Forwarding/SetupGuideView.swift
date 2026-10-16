@@ -3,6 +3,7 @@ import SwiftUI
 struct SetupGuideView: View {
     let guide: SetupGuide
     @Bindable var player: SetupGuidePlayer
+    var showingResult = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
 
@@ -11,7 +12,7 @@ struct SetupGuideView: View {
             // The system needs a mounted AVPlayerLayer to carry the reminder
             // into Settings. The independently authored GIF covers it in Shield.
             SetupGuideVideoSurface(guidePlayer: player)
-            if reduceMotion {
+            if reduceMotion || showingResult {
                 SetupGuidePoster(guide: guide)
             } else {
                 SetupTouchAnimation(guide: guide, running: scenePhase == .active)
@@ -20,7 +21,9 @@ struct SetupGuideView: View {
         .aspectRatio(1.5, contentMode: .fit)
         .clipShape(.rect(cornerRadius: 12))
         .accessibilityHidden(true)
-        .task(id: guide.rawValue + String(reduceMotion)) { await player.prepare(guide, reduceMotion: reduceMotion) }
+        .task(id: guide.rawValue + String(reduceMotion || showingResult)) {
+            await player.prepare(guide, reduceMotion: reduceMotion || showingResult)
+        }
     }
 }
 

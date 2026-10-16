@@ -30,15 +30,7 @@ struct RootView: View {
     var body: some View {
         @Bindable var model = model
         Group {
-            #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--uitesting-shortcut-preview") {
-                SetupShortcutPreview()
-            } else {
-                mainContent
-            }
-            #else
             mainContent
-            #endif
         }
         .preferredColorScheme(previewColorScheme)
         .toggleStyle(ShieldSwitchStyle())

@@ -13,8 +13,10 @@ let navy = NSColor(srgbRed: 0.06, green: 0.12, blue: 0.20, alpha: 1)
 let ground = NSColor(srgbRed: 0.95, green: 0.95, blue: 0.97, alpha: 1)
 let blue = NSColor(srgbRed: 0, green: 0.32, blue: 0.85, alpha: 1)
 let green = NSColor(srgbRed: 0.08, green: 0.52, blue: 0.22, alpha: 1)
-let guides = ["silence", "voicemailOff", "keypad", "never", "voicemailOn"]
-    .filter { CommandLine.arguments.count == 1 || CommandLine.arguments.dropFirst().contains($0) }
+let requestedGuides = CommandLine.arguments.dropFirst().filter { !$0.hasPrefix("--") }
+let guides = ["phoneSettings", "silence", "voicemailOff", "keypad", "never", "voicemailOn"]
+    .filter { requestedGuides.isEmpty || requestedGuides.contains($0) }
+let gifOnly = CommandLine.arguments.contains("--gif-only")
 
 // Close-ups preserve the native labels, order, control shapes and outcomes.
 // The artwork contains no phone number, carrier code, or purported carrier result.
@@ -151,6 +153,31 @@ func keypad(time: Double, still: Bool) {
         else if time < 18 { tap(NSPoint(x: 480, y: 602), local: time - 15) }
     }
 }
+func combinedPhoneSettings(time: Double, still: Bool) {
+    phoneHeader()
+    let switchedOff = still || time >= 9
+    roundRect(NSRect(x: 48, y: 114, width: 864, height: 104), radius: 26, color: .white)
+    text("Live Voicemail", NSRect(x: 82, y: 138, width: 620, height: 70), size: 46)
+    roundRect(NSRect(x: 740, y: 132, width: 136, height: 70), radius: 35,
+              color: switchedOff ? NSColor(srgbRed: 0.55, green: 0.56, blue: 0.58, alpha: 1) : green)
+    let progress = still ? 1 : min(1, max(0, (time - 9) / 0.25))
+    roundRect(NSRect(x: 746 + 66 * (1 - progress), y: 138, width: 58, height: 58), radius: 29, color: .white)
+    text("Screen Unknown Callers", NSRect(x: 80, y: 246, width: 820, height: 64), size: 44, weight: .semibold)
+    roundRect(NSRect(x: 48, y: 318, width: 864, height: 282), radius: 26, color: .white)
+    for (index, label) in ["Never", "Ask Reason for Calling", "Silence"].enumerated() {
+        let y = CGFloat(318 + index * 94)
+        text(label, NSRect(x: 82, y: y + 22, width: 735, height: 64), size: 44)
+        if index < 2 { separator(y + 94) }
+        if index == 2 && (still || time >= 14) {
+            symbol("checkmark", rect: NSRect(x: 840, y: y + 28, width: 38, height: 38), color: blue)
+        }
+    }
+    if !still {
+        tap(NSPoint(x: 808, y: 167), local: time - 7)
+        tap(NSPoint(x: 792, y: 553), local: time - 12)
+    }
+}
+
 // The in-app GIF is original touch artwork, with no timed directions.
 // It is deliberately separate from the steady external reminder card.
 func phoneArtwork(_ guide: String, time: Double, still: Bool) {
@@ -158,6 +185,12 @@ func phoneArtwork(_ guide: String, time: Double, still: Bool) {
     if guide == "keypad" {
         keypad(time: still ? 10 : time, still: still)
         ground.setFill(); NSRect(x: 0, y: 0, width: width, height: 112).fill()
+        return
+    }
+    if guide == "phoneSettings" && (still || time >= 6) {
+        combinedPhoneSettings(time: time, still: still)
+        ground.setFill(); NSRect(x: 0, y: 0, width: width, height: 108).fill()
+        text("Phone", NSRect(x: 80, y: 22, width: 800, height: 64), size: 38, weight: .semibold, alignment: .center)
         return
     }
     // Two close-up excerpts teach the finger direction and a recognizable
@@ -204,6 +237,15 @@ func inlineArtwork(_ guide: String, time: Double, still: Bool) {
 
 func reminder(_ guide: String) {
     navy.setFill(); NSRect(x: 0, y: 0, width: width, height: height).fill()
+    if guide == "phoneSettings" {
+        text("Slide UP to", NSRect(x: 40, y: 16, width: 880, height: 82), size: 60, weight: .semibold, color: .white)
+        text("Live Voicemail", NSRect(x: 40, y: 106, width: 880, height: 90), size: 64, weight: .semibold, color: .white)
+        roundRect(NSRect(x: 40, y: 220, width: 880, height: 310), radius: 26, color: ground)
+        text("1. Leave gray (off)", NSRect(x: 72, y: 246, width: 820, height: 90), size: 60, weight: .semibold)
+        text("2. Below: tap Silence ✓", NSRect(x: 72, y: 382, width: 820, height: 110), size: 58, weight: .semibold)
+        text("Then tap ‹ Shield", NSRect(x: 40, y: 552, width: 880, height: 74), size: 52, color: .white)
+        return
+    }
     if guide == "keypad" {
         let lines = [("hand.draw", "Drag me to a clear corner"), ("circle.grid.3x3.fill", "Tap Keypad"), ("hand.tap", "Tap above numbers → Paste"), ("phone.fill", "Tap green Call; wait for result"), ("arrow.left", "When finished, tap ‹ Shield")]
         for (index, line) in lines.enumerated() {
@@ -228,8 +270,8 @@ func reminder(_ guide: String) {
 
 func makeGIF(_ guide: String) throws {
     let url = output.appendingPathComponent("setup-\(guide)-inline.gif")
-    let seconds = guide == "keypad" ? 18 : 14
-    let rate = 24, count = seconds * rate
+    let seconds = guide == "keypad" || guide == "phoneSettings" ? 18 : 14
+    let rate = 30, count = seconds * rate
     guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.gif.identifier as CFString, count, nil) else { fatalError("GIF destination") }
     CGImageDestinationSetProperties(destination, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]] as CFDictionary)
     for frame in 0..<count {
@@ -242,17 +284,36 @@ func makeGIF(_ guide: String) throws {
             NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
             inlineArtwork(guide, time: Double(frame) / Double(rate), still: false)
             let image = context.makeImage()!
-            CGImageDestinationAddImage(destination, image, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 1.0 / Double(rate)]] as CFDictionary)
+            // GIF stores centiseconds. 3, 3, 4 repeats preserve a true 30 fps timeline.
+            let delay = frame % 3 == 2 ? 0.04 : 0.03
+            CGImageDestinationAddImage(destination, image, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: delay]] as CFDictionary)
             if frame == count - 1 {
                 // Reduced motion shows the demonstrated result, not the floating card.
                 let bitmap = NSBitmapImageRep(cgImage: image)
-                try! bitmap.representation(using: .png, properties: [:])!.write(to: output.appendingPathComponent("setup-\(guide)-poster.png"))
+                try! pngWithOrigin(bitmap.representation(using: .png, properties: [:])!, guide: guide).write(to: output.appendingPathComponent("setup-\(guide)-poster.png"))
             }
             NSGraphicsContext.restoreGraphicsState()
         }
     }
     precondition(CGImageDestinationFinalize(destination))
     print(url.lastPathComponent)
+}
+
+// The origin travels with each exported raster, including rebuilt posters.
+func pngWithOrigin(_ data: Data, guide: String) -> Data {
+    let origin = "Original Shield artwork from scripts/generate-setup-guides.swift; \(guide) final target frame. Core Graphics/AppKit shapes and system text; no supplied video, owner screenshot, personal number, carrier code or captured Settings pixels."
+    let payload = Data("impeccable:prompt\0\(origin)".utf8)
+    let kind = Data("tEXt".utf8)
+    var crc: UInt32 = 0xffffffff
+    for byte in kind + payload {
+        crc ^= UInt32(byte)
+        for _ in 0..<8 { crc = (crc & 1) == 1 ? (crc >> 1) ^ 0xedb88320 : crc >> 1 }
+    }
+    func bytes(_ value: UInt32) -> Data {
+        var big = value.bigEndian
+        return withUnsafeBytes(of: &big) { Data($0) }
+    }
+    return data.dropLast(12) + bytes(UInt32(payload.count)) + kind + payload + bytes(crc ^ 0xffffffff) + data.suffix(12)
 }
 
 func draw(_ guide: String, time: Double, still: Bool) {
@@ -262,6 +323,7 @@ func draw(_ guide: String, time: Double, still: Bool) {
 
 for guide in guides {
     try makeGIF(guide)
+    if gifOnly { continue }
     let seconds = 2
     for still in [false, true] {
         let url = output.appendingPathComponent("setup-\(guide)\(still ? "-still" : "").mp4")

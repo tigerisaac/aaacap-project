@@ -1,8 +1,8 @@
 import ImageIO
 import SwiftUI
 
-/// Decode just the current GIF frame. UIImage's animated-image convenience
-/// retains every decoded frame, which is wasteful on older iPhones.
+/// Keep a small runway of decoded GIF frames, rather than decoding on each
+/// display deadline or retaining the entire animation on older iPhones.
 struct SetupTouchAnimation: UIViewRepresentable {
     let guide: SetupGuide
     let running: Bool
@@ -24,9 +24,15 @@ struct SetupTouchAnimation: UIViewRepresentable {
         private var frameTask: Task<Void, Never>?
         private var frames = 0
         private var displayed = -1
+        private var wanted = 0
+        private var frameBuffer: [Int: CGImage] = [:]
+        private let bufferCapacity = 5
         private var started: CFTimeInterval = 0
         private var displayLink: CADisplayLink?
         private let clockTarget = ClockTarget()
+        #if DEBUG
+        private let metrics = SetupGuideFrameMetrics.enabled ? SetupGuideFrameMetrics() : nil
+        #endif
 
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -45,35 +51,78 @@ struct SetupTouchAnimation: UIViewRepresentable {
                 .flatMap { FrameDecoder(url: $0) }
             frames = decoder?.frameCount ?? 0
             displayed = -1
+            frameBuffer.removeAll()
             started = CACurrentMediaTime()
+            #if DEBUG
+            metrics?.begin(guide: guide)
+            #endif
             image = UIImage(named: "setup-\(guide.rawValue)-poster")
             showFrame(0)
         }
         func setRunning(_ running: Bool) {
             if running, displayLink == nil {
                 let link = CADisplayLink(target: clockTarget, selector: #selector(ClockTarget.tick(_:)))
-                link.preferredFrameRateRange = CAFrameRateRange(minimum: 24, maximum: 24, preferred: 24)
+                // 30 divides both 60 Hz and 120 Hz displays evenly.
+                let rate = Float(SetupGuide.animationFrameRate)
+                link.preferredFrameRateRange = CAFrameRateRange(minimum: rate, maximum: rate, preferred: rate)
                 link.add(to: .main, forMode: .common)
                 displayLink = link
             } else if !running {
                 displayLink?.invalidate(); displayLink = nil
                 frameTask?.cancel(); frameTask = nil
+                #if DEBUG
+                metrics?.pause()
+                #endif
             }
         }
         fileprivate func tick(_ link: CADisplayLink) {
             guard frames > 0 else { return }
-            showFrame(Int((link.timestamp - started) * 24) % frames)
+            #if DEBUG
+            metrics?.tick(at: CACurrentMediaTime())
+            #endif
+            showFrame(Int((link.timestamp - started) * SetupGuide.animationFrameRate) % frames)
         }
         private func showFrame(_ index: Int) {
-            guard index >= 0, index != displayed, frameTask == nil, let decoder else { return }
-            // One in-flight frame, with no queue of obsolete animation work.
+            guard index >= 0, frames > 0 else { return }
+            wanted = index
+            // Present already-rasterized pixels on the display deadline. A
+            // bounded five-frame runway absorbs occasional ImageIO delays.
+            frameBuffer = frameBuffer.filter { ($0.key - index + frames) % frames < bufferCapacity }
+            presentBufferedFrame()
+            refillBuffer()
+        }
+
+        private func presentBufferedFrame() {
+            guard wanted != displayed, let frame = frameBuffer[wanted] else { return }
+            displayed = wanted
+            image = UIImage(cgImage: frame)
+            #if DEBUG
+            metrics?.presented()
+            #endif
+        }
+
+        private func refillBuffer() {
+            guard frameTask == nil, let decoder, frames > 0 else { return }
+            let missing = (0..<bufferCapacity).map { (wanted + $0) % frames }
+                .filter { frameBuffer[$0] == nil }
+            // Small batches let a seek or pause cancel obsolete work promptly.
+            let indices = Array(missing.prefix(2))
+            guard !indices.isEmpty else { return }
+            #if DEBUG
+            let requestedAt = CACurrentMediaTime()
+            #endif
             frameTask = Task { [weak self] in
-                let frame = await decoder.frame(index)
+                let decoded = await decoder.frames(indices)
                 guard !Task.isCancelled, let self, self.decoder === decoder else { return }
                 self.frameTask = nil
-                guard let frame else { return }
-                self.displayed = index
-                self.image = UIImage(cgImage: frame)
+                for (index, frame) in decoded where (index - self.wanted + self.frames) % self.frames < self.bufferCapacity {
+                    self.frameBuffer[index] = frame
+                }
+                #if DEBUG
+                self.metrics?.bufferFilled(after: CACurrentMediaTime() - requestedAt)
+                #endif
+                self.presentBufferedFrame()
+                if self.displayLink != nil { self.refillBuffer() }
             }
         }
     }
@@ -90,7 +139,14 @@ struct SetupTouchAnimation: UIViewRepresentable {
             frameCount = CGImageSourceGetCount(source)
         }
 
-        func frame(_ index: Int) -> CGImage? {
+        func frames(_ indices: [Int]) -> [(Int, CGImage)] {
+            indices.compactMap { index in
+                guard let image = frame(index) else { return nil }
+                return (index, image)
+            }
+        }
+
+        private func frame(_ index: Int) -> CGImage? {
             guard !Task.isCancelled else { return nil }
             return autoreleasepool {
                 guard let frame = CGImageSourceCreateImageAtIndex(source, index, [kCGImageSourceShouldCache: false] as CFDictionary),

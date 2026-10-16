@@ -9,7 +9,9 @@ final class SetupGuideUITests: XCTestCase {
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         XCTAssertFalse(app.buttons["setup-guide-float"].exists)
         XCTAssertTrue(app.staticTexts["phone-settings-navigation"].label.contains("Slide your finger up past Announce Calls"))
-        XCTAssertTrue(app.staticTexts["phone-settings-target"].label.contains("Stop at Screen Unknown Callers"))
+        XCTAssertTrue(app.staticTexts["phone-settings-target"].label.contains("Stop at Live Voicemail"))
+        XCTAssertTrue(app.staticTexts["1. Live Voicemail: off"].exists)
+        XCTAssertTrue(app.staticTexts["2. Screen Unknown Callers: Silence"].exists)
         XCTAssertFalse(app.staticTexts["phone-settings-navigation"].label.contains("back arrow"))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
@@ -19,16 +21,62 @@ final class SetupGuideUITests: XCTestCase {
     func testSettingsReturnStillRequiresExplicitConfirmation() {
         let app = launch(["--forwarding-start-settings"])
         app.buttons["forwarding-continue"].tap()
-        XCTAssertTrue(app.staticTexts["Choose Silence"].exists)
+        XCTAssertTrue(app.staticTexts["Change Phone settings"].exists)
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
         app.buttons["Read the steps"].tap()
         XCTAssertTrue(app.buttons["phone-settings-reopen"].exists)
         app.buttons["Read the steps"].tap()
         app.buttons["forwarding-continue"].tap()
         XCTAssertTrue(app.staticTexts["Turn off Live Voicemail"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
+        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists, "A visit must not confirm either setting")
+        capture(app, "Voicemail confirmation after the same Settings visit")
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertTrue(app.staticTexts["When you don’t answer"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
-        capture(app, "Voicemail handcrafted GIF")
+    }
+
+    func testUnavailableFloatingReminderExplainsBeforeLeaving() {
+        let app = launch(["--forwarding-start-settings", "--setup-guide-unavailable"])
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertTrue(app.staticTexts["forwarding-error"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Settings anyway")
+        XCTAssertFalse(app.buttons["I selected Silence"].exists)
+        capture(app, "Floating reminder unavailable recovery")
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
+        XCTAssertTrue(app.staticTexts["Change Phone settings"].exists)
+        capture(app, "Reminder unavailable return stays unconfirmed")
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
+    }
+
+    func testUnavailableReminderWhenReopeningKeepsDeliberateFallback() {
+        let app = launch(["--forwarding-start-settings", "--setup-guide-unavailable"])
+        app.buttons["forwarding-continue"].tap()
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
+        app.buttons["Read the steps"].tap()
+        reveal(app.buttons["phone-settings-reopen"], in: app)
+        app.buttons["phone-settings-reopen"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Settings anyway")
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
+        XCTAssertTrue(app.staticTexts["Change Phone settings"].exists)
+    }
+
+    func testUnavailableReminderLargestTextRecoveryIsReachable() {
+        let app = launch(["--forwarding-start-settings", "--setup-guide-unavailable", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        reveal(app.buttons["forwarding-continue"], in: app)
+        app.buttons["forwarding-continue"].tap()
+        let message = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "The floating reminder couldn’t open.")).firstMatch
+        XCTAssertTrue(message.waitForExistence(timeout: 5))
+        capture(app, "Reminder unavailable largest text dark top")
+        reveal(app.buttons["forwarding-continue"], in: app)
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Settings anyway")
+        capture(app, "Reminder unavailable largest text dark action")
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
     }
 
     func testReturnFromOtherAppRetainsCarrierStepAndWrittenRecovery() {
@@ -50,7 +98,7 @@ final class SetupGuideUITests: XCTestCase {
         app.buttons["Close"].tap()
         XCTAssertTrue(app.buttons["forwarding-preview-home"].waitForExistence(timeout: 5))
         app.buttons["forwarding-preview-home"].tap()
-        XCTAssertTrue(app.staticTexts["Choose Silence"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Change Phone settings"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
         XCTAssertFalse(app.buttons["setup-guide-float"].exists)
     }
@@ -91,6 +139,27 @@ final class SetupGuideUITests: XCTestCase {
         app.buttons["forwarding-continue"].tap()
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
         capture(app, "Setting instructions and confirmation")
+    }
+
+    func testVoicemailResumedWithoutCombinedVisitStillOpensSettings() {
+        let app = launch(["--forwarding-start-voicemail"])
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
+        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists)
+    }
+
+    func testAlreadyChangedBothStillRequiresBothConfirmations() {
+        let app = launch(["--forwarding-start-settings"])
+        app.buttons["Read the steps"].tap()
+        let changed = app.buttons["I already changed both"]
+        reveal(changed, in: app)
+        changed.tap()
+        app.buttons["Read the steps"].tap()
+        app.buttons["forwarding-continue"].tap()
+        XCTAssertTrue(app.staticTexts["Turn off Live Voicemail"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
+        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists)
     }
 
     func testLargestTextSettingsInstructionsAndActionRemainReachable() {

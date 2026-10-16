@@ -9,7 +9,7 @@ enum ForwardingStep: String, CaseIterable, Identifiable {
         case .consent: "Choose Shield for calls"
         case .save: "Add Shield to Contacts"
         case .ring: "Can you hear Shield?"
-        case .settings: "Choose Silence"
+        case .settings: "Change Phone settings"
         case .liveVoicemail: "Turn off Live Voicemail"
         case .forward0: "When you don’t answer"
         case .forward1: "When you’re on a call"

@@ -1,0 +1,14 @@
+{
+  "decodesOverFrameBudget" : 5,
+  "elapsedSeconds" : 40.018262291669089,
+  "guide" : "phoneSettings",
+  "maxDecodeMs" : 85.570708331943024,
+  "maxPresentationGapMs" : 88.157916667114478,
+  "maxTickGapMs" : 48.6232499970356,
+  "p95DecodeMs" : 13.90420833195094,
+  "presentationGapsOver1_5FrameBudgets" : 12,
+  "presentedFrames" : 1176,
+  "requestedFramesPerSecond" : 30,
+  "tickCount" : 1193,
+  "tickGapsOver1_5FrameBudgets" : 0
+}
