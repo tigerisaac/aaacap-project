@@ -369,6 +369,20 @@ Returning from Phone or Settings changes guidance, not verification. Carrier res
 
 **The Visible Setup Help Rule.** Keep both adjacent Phone-setting actions visible together during their handoff. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.
 
+### Debug shortcut trial
+
+The isolated Phone setup trial (October 16, 2026) reuses the pinned navy/neutral surfaces, serif purpose headings and native sans controls. Normal setup remains the guided single visit described above. The trial cannot advance backend setup or change carrier forwarding, and Release excludes its UI, shortcut and media. Its native shortcut can set Silence Unknown Callers On; the trial is a device-setting action, not a sample-only simulation.
+
+Each state has one primary action: Add setup helper, Open Phone settings, Live Voicemail is off, then Try it again. Apple's native Open In and Add Shortcut interfaces own import. The first visit explains choosing Shortcuts, adding the helper and returning to Shield; handing off the file does not establish that Add Shortcut was accepted. First-time import and the manual return remain a trial tradeoff. Need help? retains re-import and the existing step-by-step guide.
+
+Floating help stays absent during native import. This trial explicitly starts the steady AVKit reminder for the Settings handoff, while the shared player's automatic behavior remains the default for normal setup. The original inline demonstration isolates the native Live Voicemail switch; words explain gray/off and the white circle on the left. The steady reminder leaves the task visible until the person finishes. Return stops floating help and shows the static target, an unconfirmed question and the separate Live Voicemail is off action. That action records the person's local confirmation, not a Settings readback or completed setup.
+
+At standard text sizes the primary action uses the existing bottom safe-area surface. At accessibility sizes it moves into the scrollable reading order and wraps. A failed reminder stays in Shield, scrolls to and focuses its explanation, and requires a deliberate Open Settings anyway action before continuing without help. A failed Shortcuts handoff keeps retry and the existing guide available.
+
+**The Trial Handoff Rule.** In the Debug shortcut trial, keep native import quiet, start the steady floating reminder only for the Settings handoff, and require an explicit local confirmation after return. A successful file handoff establishes neither shortcut installation nor a changed switch.
+
+The [scoped ship review](.impeccable/review/setup-shortcut-section/finish-review.md) covers this isolated trial and its 24 required captures. The [evidence packet](.impeccable/review/setup-shortcut-section/input.md) distinguishes compact/main simulator paths from the physical iPhone 12 Pro Max / iOS 27.2 handoff. The fixed Phone-section target is undocumented and was accepted through Shortcuts on that phone while rejected directly by Shield; compatibility elsewhere is unverified. Silence was already selected and Live Voicemail already off, so the final observation is not proof of a switch transition. First-time Add/return friction remains; novice/older-adult usability is unverified. The verdict does not authorize production rollout or establish real-call behavior.
+
 ### Sample-only features
 
 The persistent Sample app or Test account · Sample data marker establishes fixture context. Sample summary identifies authored text; Hear sample message is on-device speech, not a caller recording. Sample Keep/filter actions only affect memory. Real messages retain service expiry/deletion and have no permanent Keep action. Permissions still gate listening and owner controls. Sample text-check results retain the explicit example/not-checked explanation without a repeated Sample answer eyebrow.
@@ -389,6 +403,7 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 - Do retain explicit privacy, sharing, setup and disconnection confirmations, naming the affected entry and showing a safe choice.
 - Do show historical totals, current phone status, sample state and message permission as separate readable facts.
 - Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval.
+- Do keep the Debug shortcut trial's native import quiet, its current primary action clear and its accessibility-size action in the scrollable reading order.
 
 ### Don't:
 
@@ -403,6 +418,7 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 - Don't reintroduce paragraph excerpts into the daily inbox or repeated decorative headings above an existing purpose.
 - Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.
 - Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.
+- Don't promote the Debug shortcut trial into normal setup or claim cross-device reliability or novice-user success from its one-phone target and first-time Add/return evidence.
 
 Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
 

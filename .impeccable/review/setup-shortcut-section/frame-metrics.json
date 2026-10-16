@@ -1,0 +1,14 @@
+{
+  "bufferFillsOverFrameBudget" : 5,
+  "elapsedSeconds" : 40.025744833335921,
+  "guide" : "shortcutVoicemail",
+  "maxBufferFillMs" : 36.935791671567131,
+  "maxPresentationGapMs" : 35.393708327319473,
+  "maxTickGapMs" : 35.456208330288064,
+  "p95BufferFillMs" : 12.221124998177402,
+  "presentationGapsOver1_5FrameBudgets" : 0,
+  "presentedFrames" : 1201,
+  "requestedFramesPerSecond" : 30,
+  "tickCount" : 1202,
+  "tickGapsOver1_5FrameBudgets" : 0
+}

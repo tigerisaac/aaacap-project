@@ -21,6 +21,12 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
     @ObservationIgnored private var audioToken: UUID?
     @ObservationIgnored private var startFailed = false
     @ObservationIgnored private var frameObservation: NSKeyValueObservation?
+    @ObservationIgnored private let automaticFloating: Bool
+
+    init(automaticFloating: Bool = true) {
+        self.automaticFloating = automaticFloating
+        super.init()
+    }
 
     func attach(_ layer: AVPlayerLayer) {
         guard self.layer !== layer else { return }
@@ -39,7 +45,7 @@ final class SetupGuidePlayer: NSObject, @MainActor AVPictureInPictureControllerD
         pictureInPicture?.delegate = self
         // A ten-second jump would skip whole instructions in these short clips.
         pictureInPicture?.requiresLinearPlayback = true
-        pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = true
+        pictureInPicture?.canStartPictureInPictureAutomaticallyFromInline = automaticFloating
     }
 
     func prepare(_ guide: SetupGuide, reduceMotion: Bool) async {

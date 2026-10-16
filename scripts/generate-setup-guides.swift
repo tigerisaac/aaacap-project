@@ -14,7 +14,7 @@ let ground = NSColor(srgbRed: 0.95, green: 0.95, blue: 0.97, alpha: 1)
 let blue = NSColor(srgbRed: 0, green: 0.32, blue: 0.85, alpha: 1)
 let green = NSColor(srgbRed: 0.08, green: 0.52, blue: 0.22, alpha: 1)
 let requestedGuides = CommandLine.arguments.dropFirst().filter { !$0.hasPrefix("--") }
-let guides = ["phoneSettings", "silence", "voicemailOff", "keypad", "never", "voicemailOn"]
+let guides = ["phoneSettings", "silence", "voicemailOff", "keypad", "never", "voicemailOn", "shortcutVoicemail"]
     .filter { requestedGuides.isEmpty || requestedGuides.contains($0) }
 let gifOnly = CommandLine.arguments.contains("--gif-only")
 
@@ -182,6 +182,15 @@ func combinedPhoneSettings(time: Double, still: Bool) {
 // It is deliberately separate from the steady external reminder card.
 func phoneArtwork(_ guide: String, time: Double, still: Bool) {
     ground.setFill(); NSRect(x: 0, y: 0, width: width, height: height).fill()
+    if guide == "shortcutVoicemail" {
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current!.cgContext.translateBy(x: 0, y: -110)
+        voicemail("voicemailOff", time: time + 6, still: still)
+        NSGraphicsContext.restoreGraphicsState()
+        ground.setFill(); NSRect(x: 0, y: 0, width: width, height: 108).fill()
+        text("Phone", NSRect(x: 80, y: 22, width: 800, height: 64), size: 38, weight: .semibold, alignment: .center)
+        return
+    }
     if guide == "keypad" {
         keypad(time: still ? 10 : time, still: still)
         ground.setFill(); NSRect(x: 0, y: 0, width: width, height: 112).fill()
@@ -237,6 +246,16 @@ func inlineArtwork(_ guide: String, time: Double, still: Bool) {
 
 func reminder(_ guide: String) {
     navy.setFill(); NSRect(x: 0, y: 0, width: width, height: height).fill()
+    if guide == "shortcutVoicemail" {
+        text("Live Voicemail", NSRect(x: 40, y: 28, width: 880, height: 90), size: 68, weight: .semibold, color: .white)
+        roundRect(NSRect(x: 40, y: 150, width: 880, height: 236), radius: 26, color: ground)
+        text("Leave it gray (off)", NSRect(x: 72, y: 176, width: 820, height: 84), size: 64, weight: .semibold)
+        text("Green? Tap it once.", NSRect(x: 72, y: 286, width: 820, height: 74), size: 54)
+        text("When finished, tap this guide", NSRect(x: 40, y: 420, width: 880, height: 80), size: 50, color: .white)
+        symbol("pip.exit", rect: NSRect(x: 45, y: 534, width: 86, height: 64), color: .white)
+        text("then return to Shield", NSRect(x: 160, y: 526, width: 760, height: 90), size: 54, weight: .semibold, color: .white)
+        return
+    }
     if guide == "phoneSettings" {
         text("Slide UP to", NSRect(x: 40, y: 16, width: 880, height: 82), size: 60, weight: .semibold, color: .white)
         text("Live Voicemail", NSRect(x: 40, y: 106, width: 880, height: 90), size: 64, weight: .semibold, color: .white)
@@ -270,7 +289,7 @@ func reminder(_ guide: String) {
 
 func makeGIF(_ guide: String) throws {
     let url = output.appendingPathComponent("setup-\(guide)-inline.gif")
-    let seconds = guide == "keypad" || guide == "phoneSettings" ? 18 : 14
+    let seconds = guide == "shortcutVoicemail" ? 8 : guide == "keypad" || guide == "phoneSettings" ? 18 : 14
     let rate = 30, count = seconds * rate
     guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.gif.identifier as CFString, count, nil) else { fatalError("GIF destination") }
     CGImageDestinationSetProperties(destination, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]] as CFDictionary)

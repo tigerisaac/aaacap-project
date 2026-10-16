@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-16 America/Chicago",
+  "scope": "Debug-only working trial; normal setup unchanged; no production deployment or real call.",
+  "actionOrder": [
+    "is.workflow.actions.silenceunknowncallers.set",
+    "is.workflow.actions.url",
+    "is.workflow.actions.openurl",
+    "is.workflow.actions.nothing"
+  ],
+  "nativeSource": "docs/shortcuts/Shield Easy Setup.wflow",
+  "sourceSha256": "978f0131ec4959708755e3be613cb8131c316557d20855b737550952ee30a351",
+  "signedFileSha256": "1cd578f9eb656442c4d5657190669b1aef89df1254ff2697cd6b15bc31bbd35b",
+  "physical": {
+    "device": "iPhone 12 Pro Max",
+    "os": "27.2",
+    "start": "Settings restarted; Phone top visually inspected before run",
+    "result": "Bundled helper opened beside Live Voicemail; Off switch and Silence checkmark visually inspected; PiP returned to unconfirmed Shield view.",
+    "import": "Native Add reached without PiP; Add/Replace updated our own test helper; four actions inspected; native Shield breadcrumb returned to ready screen.",
+    "settingsChanged": "Approved native Silence On ran; Silence already selected. Live Voicemail already Off, untouched. No carrier setting or forwarding changed.",
+    "screenSharing": false,
+    "publicICloudLink": false
+  },
+  "checks": {
+    "compactIOS26_5": "5/5 final, four trial tests plus existing setup action regression",
+    "mainIOS27": "4/4 final trial tests",
+    "npmCheck": "242 passed; typecheck/build passed. Initial sandbox run could not bind APNs fixture server.",
+    "firebase": "175/175 passed with METADATA_SERVER_DETECTION=none. Initial overlapping run had one 15s timeout.",
+    "deviceBuild": "Passed final signed Debug build/install",
+    "releaseBuild": "Passed unsigned Release; trial code/resources excluded",
+    "resources": "Signed helper, GIF and both MP4s match source bytes; poster pixels match after Xcode PNG normalization. Release contains neither trial code markers nor trial resources."
+  },
+  "logs": [
+    "/private/tmp/shield-shortcut-final-compact.log",
+    "/private/tmp/shield-shortcut-final-main.log",
+    "/private/tmp/shield-shortcut-reviewed-device2.log",
+    "/private/tmp/shield-shortcut-reviewed-release.log",
+    "/private/tmp/shield-shortcut-check-final.log",
+    "/private/tmp/shield-shortcut-firebase-final.log"
+  ],
+  "captures": [
+    "compact/native-four-action-add-shortcut.png",
+    "compact/settings-handcrafted-gif.png",
+    "compact/shortcut-add-helper.png",
+    "compact/shortcut-largest-text-fallback.png",
+    "compact/shortcut-largest-text-top.png",
+    "compact/shortcut-largest-text-unconfirmed-return.png",
+    "compact/shortcut-local-confirmation.png",
+    "compact/shortcut-ready.png",
+    "compact/shortcut-return-is-unconfirmed.png",
+    "compact/shortcut-unavailable-recovery.png",
+    "main/native-four-action-add-shortcut.png",
+    "main/shortcut-add-helper.png",
+    "main/shortcut-largest-text-fallback.png",
+    "main/shortcut-largest-text-top.png",
+    "main/shortcut-largest-text-unconfirmed-return.png",
+    "main/shortcut-local-confirmation.png",
+    "main/shortcut-ready.png",
+    "main/shortcut-return-is-unconfirmed.png",
+    "main/shortcut-unavailable-recovery.png",
+    "physical/floating-guide.png",
+    "physical/native-add.png",
+    "physical/native-authored-actions.png",
+    "physical/native-target-controls.png",
+    "physical/ready.png",
+    "physical/returned-unconfirmed.png"
+  ],
+  "limitations": [
+    "First-time import still needs Choose Shortcuts, Add Shortcut and return to Shield.",
+    "The Phone section URL is undocumented; only physical iOS27.2 landing was verified.",
+    "The proposed Open Phone Settings App Intent was absent from tested native catalogs.",
+    "Return and URL acceptance do not read settings; explicit confirmation is local to this trial.",
+    "The animation timing sample is not display-scanout or novice-user validation."
+  ],
+  "finishReview": {
+    "disposition": "ship",
+    "scope": "Isolated Debug trial, all 24 required captures and sampled source; no production or novice-usability certification.",
+    "path": "finish-review.md"
+  }
+}

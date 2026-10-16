@@ -80,6 +80,18 @@ struct RootView: View {
     }
 
     @ViewBuilder private var appContent: some View {
+            #if DEBUG
+            if isForwardingPreview && ProcessInfo.processInfo.arguments.contains("--uitesting-shortcut-preview") {
+                NavigationStack { SetupShortcutPreview() }
+            } else {
+                regularAppContent
+            }
+            #else
+            regularAppContent
+            #endif
+    }
+
+    @ViewBuilder private var regularAppContent: some View {
             @Bindable var model = model
             if isForwardingPreview && ProcessInfo.processInfo.arguments.contains("--forwarding-navigation-test") {
                 NavigationStack {

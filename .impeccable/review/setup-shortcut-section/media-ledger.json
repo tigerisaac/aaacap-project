@@ -1,0 +1,25 @@
+{
+  "origin": "Original Shield artwork from scripts/generate-setup-guides.swift; generic switch shapes and native labels, no supplied video or captured Settings pixels.",
+  "assets": [
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail-inline.gif",
+      "bytes": 101027,
+      "sha256": "3fff85cfdfceee77e47de8920b5abf5da0efe00356fca8919b1d77833c030775"
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail-poster.png",
+      "bytes": 41717,
+      "sha256": "34c80b6f9a20147d301f3c8a6a9fc15e4e5ed1dfd3eb24e08d99791d1cda9b03"
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail-still.mp4",
+      "bytes": 118061,
+      "sha256": "f1599fbe8ab8dbc9b20b94fef525c9b36614adcb456bf038dfbe1026bc008068"
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-shortcutVoicemail.mp4",
+      "bytes": 120371,
+      "sha256": "b965e1d0e239f72e5225c2b39037ab3307c5593e7b2a0d6f82c4ba1901f9aecc"
+    }
+  ]
+}
