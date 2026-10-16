@@ -323,6 +323,86 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     expect((await cc.call(c.id))?.state).toBe('ended');
     expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeUndefined();
   });
+  it.each([false, true])('recovers failed media with a held executor lock (bridge claimed: %s)', async claimed => {
+    const c = await arrive(), live = new ForwardingLive(f);
+    if (claimed) await live.claim(c.id);
+    await cc.exclusive(c.id, async () => {
+      const failed = event(c.parentSid, 'streaming.failed');
+      await cc.handle(failed); await cc.handle(failed);
+      const next = await cc.call(c.id);
+      expect(next).toMatchObject({ state: 'voicemail', reason: 'screening_unavailable' });
+      expect(next?.events.filter(e => e.kind === 'voicemail_offered')).toHaveLength(1);
+      expect(await live.claim(c.id)).toBeUndefined();
+      expect(action.mock.calls.filter(x => x[1] === 'playback_start')).toHaveLength(1);
+      expect(action.mock.calls.some(x => x[1] === 'hangup' || x[1] === 'bridge')).toBe(false);
+      expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeDefined();
+    });
+  });
+  it('retries failed recovery without repeating a successful voicemail command', async () => {
+    const c = await arrive(), failed = event(c.parentSid, 'streaming.failed');
+    action.mockRejectedValueOnce(new Error('network_down'));
+    await expect(cc.handle(failed)).rejects.toThrow('network_down');
+    await cc.handle(failed); await cc.handle(event(c.parentSid, 'streaming.stopped'));
+    const plays = action.mock.calls.filter(x => x[1] === 'playback_start');
+    expect(plays).toHaveLength(2);
+    expect(plays[0]![2].command_id).toBe(plays[1]![2].command_id);
+    expect((await cc.call(c.id))?.state).toBe('voicemail');
+  });
+  it('releases an unconnected hangup during a stalled outcome and admits the next caller', async () => {
+    const c = await arrive(), live = new ForwardingLive(f);
+    await live.claim(c.id); await live.finish(c.id, 'screening_unavailable');
+    let release!: () => void, entered!: () => void;
+    const started = new Promise<void>(r => { entered = r; });
+    action.mockImplementation(async (_sid, name) => {
+      if (name === 'streaming_stop') { entered(); await new Promise<void>(r => { release = r; }); }
+      return {};
+    });
+    const outcome = cc.outcome(c.id);
+    await started;
+    try {
+      const hangup = event(c.parentSid, 'call.hangup');
+      await cc.handle(hangup); await cc.handle(hangup);
+      expect((await cc.call(c.id))?.state).toBe('ended');
+      expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeUndefined();
+      const next = await arrive();
+      expect(next.state).toBe('screening');
+      await cc.handle(hangup);
+      expect((await f.controlRef(next.participantId).get()).data()?.activeCallId).toBe(next.id);
+    } finally { release(); await outcome; }
+    expect(action.mock.calls.some(x => x[1] === 'playback_start' || x[1] === 'bridge')).toBe(false);
+  });
+  it('persists a recording callback despite a held executor lock', async () => {
+    const c = await arrive(), recording = randomUUID();
+    await cc.exclusive(c.id, async () => {
+      const saved = event(c.parentSid, 'call.recording.saved', { recording_id: recording,
+        recording_started_at: new Date(now).toISOString(), recording_ended_at: new Date(now + 5000).toISOString() });
+      await cc.handle(saved); await cc.handle(saved);
+      expect((await db.collection('forwardingRecordings').doc(recording).get()).data()).toMatchObject({ callId: c.id, duration: 5 });
+    });
+  });
+  it('still terminates a completed saved notice without mistaking its decision for a carrier hangup', async () => {
+    const c = await arrive(), live = new ForwardingLive(f); await live.claim(c.id);
+    await live.finish(c.id, { ...approve, action: 'message' });
+    expect((await cc.call(c.id))?.state).toBe('ended');
+    await cc.outcome(c.id);
+    expect(action).toHaveBeenCalledWith(c.parentSid, 'hangup', expect.anything());
+  });
+  it('ignores stale media failure after an offer or acceptance and rejects another inbound leg', async () => {
+    const c = await offer();
+    await cc.handle(event(c.parentSid, 'streaming.failed'));
+    expect((await cc.call(c.id))?.state).toBe('offering');
+    await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    const before = action.mock.calls.length;
+    await cc.handle(event(c.parentSid, 'streaming.stopped'));
+    expect((await cc.call(c.id))?.state).toBe('accepted');
+    expect(action.mock.calls).toHaveLength(before);
+    expect(await f.unconnectedHangup(c.id, c.parentSid, c.parentLegId!)).toBeUndefined();
+    const other = await arrive(1);
+    await cc.handle(event(other.parentSid, 'streaming.failed', { call_leg_id: 'wrong-leg' }));
+    await cc.handle(event(other.parentSid, 'call.hangup', { call_leg_id: 'wrong-leg' }));
+    expect((await cc.call(other.id))?.state).toBe('screening');
+  });
   it('does not admit disabled or unverified routes', async () => {
     await routeRef(s, config.TELNYX_NUMBER, people[0]!.phone).update({ enabled: false });
     expect(await f.begin(randomUUID(), config.TELNYX_NUMBER, undefined, { diverted: people[0]!.phone, legId: 'x' })).toBeUndefined();

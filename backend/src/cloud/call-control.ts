@@ -123,8 +123,10 @@ export class SharedCallControl {
   }
   async outcome(id: string) {
     return this.exclusive(id, async () => {
-      const c = await this.call(id); if (!c || c.transport !== 'call-control') return;
+      let c = await this.call(id); if (!c || c.transport !== 'call-control' || c.inboundEndedAt) return;
       await this.command(c.parentSid, 'streaming_stop', {}, 'stop-stream').catch(() => undefined);
+      // The carrier can confirm hangup while the provider command is in flight.
+      c = await this.call(id); if (!c || c.inboundEndedAt) return;
       if (c.state === 'voicemail') return this.voicemail(c);
       if (c.state !== 'offering') return this.stop(c);
       await this.deadline(c, 45);
@@ -138,12 +140,27 @@ export class SharedCallControl {
     let c = await this.f.find(sid);
     if (!c && state) c = await this.call(state.id);
     const lock = c?.id ?? sid;
-    return this.exclusive(lock, async () => {
-      const receipt = s.db.collection('callControlEvents').doc(s.vault.hash(e.id));
+    const receipt = s.db.collection('callControlEvents').doc(s.vault.hash(e.id));
+    const boundInbound = c?.transport === 'call-control' && c.parentSid === sid && c.parentLegId === p.call_leg_id;
+    if (boundInbound && e.event_type === 'call.hangup') {
+      // Telnyx can exhaust all retries in less than a second. An executor lease
+      // is not grounds to discard proof that this unconnected call has ended.
+      const ended = await this.f.unconnectedHangup(c!.id, sid, p.call_leg_id);
+      if (ended) {
+        await new CallMonitor(this.f).end(ended.id);
+        await receipt.set({ expiresAt: s.now() + TTL });
+        return;
+      }
+    }
+    const run = async () => {
       if ((await receipt.get()).exists) return;
       if (!await new SharedProbes(s, this.provider).handle(e.event_type, e.payload)) await this.process(e);
       await receipt.set({ expiresAt: s.now() + TTL });
-    });
+    };
+    // These operations use transactional state and idempotent command IDs. They
+    // must survive a stuck executor: preserve captures and recover failed media.
+    if (boundInbound && ['call.recording.saved', 'streaming.failed', 'streaming.stopped'].includes(e.event_type)) return run();
+    return this.exclusive(lock, run);
   }
   async process(e: Event) {
     const s = this.store, p = e.payload, sid = p.call_control_id, phase = this.provider.readState(p.client_state);
@@ -190,6 +207,19 @@ export class SharedCallControl {
       c = (await this.call(c.id))!;
     }
     if (!inbound && sid !== c.childSid) return;
+    if (inbound && ['streaming.failed', 'streaming.stopped'].includes(e.event_type)) {
+      const next = await this.f.transition(c.id, current => {
+        if (current.state === 'voicemail' && current.reason === 'screening_unavailable') return {};
+        if (current.state !== 'screening') return;
+        return { state: 'voicemail', outcome: 'voicemail', reason: 'screening_unavailable',
+          liveFinishedAt: s.now(), events: [...current.events, { kind: 'voicemail_offered', at: s.now() }] };
+      });
+      if (next) {
+        console.info(JSON.stringify({ event: 'shared_stream_recovery', callId: c.id }));
+        await this.voicemail(next);
+      }
+      return;
+    }
     if (e.event_type === 'call.hangup') {
       if (inbound) {
         if (c.childSid && !c.monitorIntervenedAt) await this.hangup(c.childSid);

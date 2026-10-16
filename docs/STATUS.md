@@ -1,5 +1,11 @@
 # Status
 
+## October 16 — demo transport failure investigated; recovery prepared locally
+
+Read-only provider and Cloud Run evidence traced the 10:29 Central incident to media connection failure during a bridge cold start, an ignored `streaming.failed` callback, and hangup/recording callbacks rejected three times with `503 call_busy`. The stale reservation remained for about 85 seconds after the caller hung up and refused four later attempts from the same recipient's route. Neither speech recognition nor a decision model ran. Current production reservations are clear.
+
+Local recovery handles media failures with voicemail, allows authenticated unconnected hangups and recording callbacks through a stuck executor, preserves newer calls during duplicate cleanup, and isolates transport errors. The proposed bridge configuration keeps one instance warm with CPU available after disconnect. Typecheck, 252 unit tests, build, all 182 Firestore emulator tests and both packaged bridge startup modes pass. An intermediate emulator run hit the existing ten-concurrent-admissions timeout; the complete isolated rerun passed. The prepared release overlays only five bridge modules and two API modules on the verified production packages; screening v158, post-call filtering and dependency hashes are unchanged. **No deployment or real phone call has occurred.** Owner approval is required to publish the repair. [Incident evidence, implementation and release scope](INCIDENT-2026-10-16.md).
+
 ## October 16 — easier shortcut installation and guide follow-up
 
 With the owner's explicit publication approval, the Debug trial's **Add to iPhone** opens the generic [Shield Easy Setup iCloud link](https://www.icloud.com/shortcuts/a31253e04fa7440094b98f9fd8903bf2) directly at Apple's **Add Shortcut** screen. The person taps Add, then the native Shield return link; there is no destination chooser or Shortcuts-library search. The native public import passed on the actual phone and both simulator classes. Adding does not run the helper and returning cannot prove installation, so conditional instructions and saved-file/written recovery remain.

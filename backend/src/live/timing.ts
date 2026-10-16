@@ -1,7 +1,7 @@
 /** Timing only: no event bodies, model arguments, transcript, audio, URLs or provider IDs. */
 export const TIMING_PHASES = [
   'hybrid_stt_started', 'hybrid_stt_ready', 'hybrid_transcript', 'hybrid_check_started', 'hybrid_check_rejected', 'hybrid_handoff',
-  'bridge_claimed', 'provider_started', 'model_socket_open', 'session_start_sent', 'model_ready',
+  'bridge_claimed', 'provider_started', 'provider_start_timeout', 'model_socket_open', 'session_start_sent', 'model_ready',
   'first_audio_received', 'caller_speech_started', 'caller_speech_paused', 'first_transcript',
   'delegation_created', 'response_started', 'response_completed', 'response_usage', 'first_tool_output', 'decision_received',
   'decision_rejected', 'decision_deferred', 'decision_superseded', 'decision_applied',

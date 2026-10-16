@@ -15,6 +15,8 @@ export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx';
   liveConnectedAt?: number; liveFinishedAt?: number; screeningModel?: string; screeningCaution?: boolean;
   childSid?: string; acceptedAt?: number; voicemail?: { id: string; duration: number; status: string; heardAt: number | null };
   captureFromAnswer?: boolean;
+  /** Set only by the authenticated hangup for the immutable inbound leg. */
+  inboundEndedAt?: number;
   announcementFallbacks?: Record<string, boolean>;
   monitoringStartedAt?: number; monitorPolicyVersion?: string; monitorIntervenedAt?: number; monitorConcern?: string;
   monitorEvidenceAt?: number; monitorRedirectedAt?: number;
@@ -235,6 +237,18 @@ export class ForwardingStore {
     await this.transition(call.id, c => c.state === 'ended' ? undefined : {
       state: 'ended', completedAt: this.store.now(), outcome: c.acceptedAt ? 'connected' : c.state === 'voicemail' ? 'voicemail' : 'missed',
       events: [...c.events, { kind: 'call_ended', at: this.store.now() }] });
+  }
+  /** A verified inbound hangup must not wait behind a stalled screening executor.
+   * Offered/connected calls still need coordinated cleanup of their other leg. */
+  async unconnectedHangup(id: string, sid: string, legId: string) {
+    return this.transition(id, c => {
+      if (c.transport !== 'call-control' || c.parentSid !== sid || c.parentLegId !== legId
+        || c.childSid || c.acceptedAt || ['offering', 'accepting', 'accepted'].includes(c.state)) return;
+      const inboundEndedAt = c.inboundEndedAt ?? this.store.now();
+      if (c.state === 'ended') return { inboundEndedAt };
+      return { state: 'ended', completedAt: this.store.now(), inboundEndedAt, outcome: c.state === 'voicemail' ? 'voicemail' : 'missed',
+        events: [...c.events, { kind: 'call_ended', at: this.store.now() }] };
+    });
   }
   async recording(sid: string, recordingSid: string, duration: number) {
     const call = await this.find(sid);

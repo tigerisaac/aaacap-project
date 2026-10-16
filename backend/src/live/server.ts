@@ -15,6 +15,7 @@ import { HybridScreeningSession, HYBRID_SCREENING_VERSION } from './hybrid.js';
 import { SCREENING_POLICY_VERSION } from './policy.js';
 import { DECISION_MODEL, researchScamPattern } from './research.js';
 import { callTiming } from './timing.js';
+import { attachMediaTransport } from './media-transport.js';
 
 const processStartedAt = Date.now() - process.uptime() * 1000;
 let acceptedCalls = 0;
@@ -73,12 +74,12 @@ server.on('upgrade', async (request, socket, head) => {
       firstCallInProcess: acceptedCalls++ === 0 });
 
     sockets.handleUpgrade(request, socket, head, provider => {
-      let openai: WebSocket | undefined, streamStarted = false, closing = false;
+      let openai: WebSocket | undefined, closing = false;
       const send = (ws: WebSocket | undefined, event: object) => {
         if (ws?.readyState === WebSocket.OPEN && ws.bufferedAmount < 100_000) ws.send(JSON.stringify(event));
       };
       const close = () => {
-        if (closing) return; closing = true; release(); clearInterval(ticker); clearTimeout(startTimer);
+        if (closing) return; closing = true; release(); clearInterval(ticker); clearTransportTimer();
         timing('transport_closed', {});
         provider.close();
         // Allow final usage to arrive, but never keep a transport alive indefinitely.
@@ -127,15 +128,7 @@ server.on('upgrade', async (request, socket, head) => {
         : new ScreeningSession({ openai: event => send(openai, event), telnyx: event => send(provider, event),
           research: topic => researchScamPattern(topic, apiKey), finish, close, timing, acknowledgementAudio }, Date.now, context);
       const ticker = setInterval(() => session.tick(), 20);
-      const startTimer = setTimeout(() => { void session.stop('screening_unavailable'); }, 5000);
-      provider.on('message', raw => {
-        let e: any; try { e = JSON.parse(raw.toString()); } catch { void session.stop('screening_unavailable'); return; }
-        if (e.event === 'start') {
-          if (streamStarted || e.start?.media_format?.encoding !== 'PCMU' || e.start.media_format.sample_rate !== 8000 || e.start.media_format.channels !== 1) {
-            void session.stop('screening_unavailable'); return;
-          }
-          streamStarted = true; clearTimeout(startTimer);
-          timing('provider_started', {});
+      const clearTransportTimer = attachMediaTransport(provider, session, () => {
           if (session instanceof HybridScreeningSession) { session.start(); return; }
           openai = new WebSocket('wss://api.openai.com/v1/live/sessions', { headers: { Authorization: `Bearer ${apiKey}` },
             handshakeTimeout: 5000, maxPayload: 1_000_000, perMessageDeflate: false, followRedirects: false });
@@ -148,18 +141,7 @@ server.on('upgrade', async (request, socket, head) => {
           });
           openai.on('error', () => { void session.stop('screening_unavailable'); });
           openai.on('close', () => { if (!session.ended) void session.stop('screening_unavailable'); });
-        } else if (e.event === 'media' && streamStarted && e.media?.track === 'inbound') session.input(Number(e.media.chunk), e.media.payload);
-        else if (e.event === 'stop' && !session.ended) {
-          session.providerEnded();
-          // A media stream stopping is not proof that either telephone leg has ended.
-          if (call.transport === 'call-control') {
-            const cc = new SharedCallControl(store);
-            void cc.exclusive(call.id, () => cc.stop(call)).catch(() => console.error(JSON.stringify({ event: 'live_hangup_unconfirmed' })));
-          } else void forwarding.ended(call.parentSid).catch(() => {});
-        }
-      });
-      provider.on('error', () => { void session.stop('screening_unavailable'); });
-      provider.on('close', () => { if (!session.ended) void session.stop('screening_unavailable'); });
+      }, timing);
     });
   } catch { release(); socket.destroy(); }
 });
