@@ -5,21 +5,22 @@ struct ForwardingStepContent: View {
     let status: ForwardingStatus
     @Bindable var model: ForwardingSetupModel
     var onRestorationStageChange: () -> Void = {}
+    @Environment(\.dynamicTypeSize) private var typeSize
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             switch step {
             case .overview:
-                VStack(alignment: .leading, spacing: 20) {
-                    ForEach(["Save Shield", "Check that it can ring you", "Change settings", "Connect your carrier"], id: \.self) { item in
-                        HStack(spacing: 14) {
-                            Circle().fill(ShieldTheme.action).frame(width: 6, height: 6).accessibilityHidden(true)
-                            Text(item).font(.title3)
-                        }
-                    }
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                    point("Save Shield", symbol: "person.crop.circle.badge.plus")
+                    point("Check that it can ring you", symbol: "phone.badge.waveform")
+                    point("Change settings", symbol: "gearshape")
+                    point("Connect your carrier", symbol: "antenna.radiowaves.left.and.right")
                 }
             case .consent:
-                Text("You choose whether to answer").font(.headline)
-                Text("Messages come to Shield").font(.headline)
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                    point("You choose whether to answer", symbol: "hand.tap")
+                    point("Messages come to Shield", symbol: "recordingtape")
+                }
                 Text("To leave, choose Options → Disconnect Shield.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                 ShieldDisclosure("More before you agree") {
@@ -54,5 +55,14 @@ struct ForwardingStepContent: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+    }
+
+    /// A short setup point led by the shared row symbol tile, so the list reads like the rest of Shield.
+    private func point(_ title: String, symbol: String) -> some View {
+        HStack(spacing: ShieldTheme.Layout.rowSymbolSpacing) {
+            if !typeSize.isAccessibilitySize { ShieldRowSymbol(systemName: symbol) }
+            Text(title).font(.title3.weight(.medium)).foregroundStyle(ShieldTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }

@@ -108,7 +108,7 @@ struct CallDetailView: View {
             } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen || usesAudioFixture {
                 ShieldGroup {
                     if voicemail.status == "ready", model.canListen {
-                        Text(voicemail.durationLabel).foregroundStyle(ShieldTheme.secondaryText)
+                        LabeledContent("Length", value: voicemail.durationLabel)
                         if player.hasAudio {
                             MessagePlaybackProgress(player: player) {
                                 Task {

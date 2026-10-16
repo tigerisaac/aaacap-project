@@ -180,9 +180,10 @@ struct ShieldDisclosure<Content: View>: View {
         }
     }
 
+    // Stacked disclosures outside a List keep a full touch target each.
     private var label: some View {
         Text(title).multilineTextAlignment(.leading)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
     }
 }
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ForwardingProbeView: View {
     let model: ForwardingSetupModel
+    @Environment(\.dynamicTypeSize) private var typeSize
     private var ring: Bool { model.step == .ring }
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -25,10 +26,21 @@ struct ForwardingProbeView: View {
                 Text(ring ? "Turn Focus off. Check your signal. Answer the next call and press 1." : "Check Live Voicemail is off and \(model.carrier) accepted your codes. Let the next call ring.")
                 Text("Your place is saved. Your phone may still be connected to Shield.").foregroundStyle(ForwardingStyle.secondaryText)
             } else {
-                Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")
-                    .font(.largeTitle).imageScale(.large).foregroundStyle(ShieldTheme.action).accessibilityHidden(true)
-                Text(ring ? "Shield will call you.\nAnswer, listen, and press 1." : "Shield will call you.")
-                    .font(.title2)
+                HStack(alignment: .top, spacing: ShieldTheme.Spacing.content) {
+                    if !typeSize.isAccessibilitySize {
+                        Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")
+                            .font(.title2.weight(.semibold)).foregroundStyle(ShieldTheme.action)
+                            .frame(width: 56, height: 56)
+                            .background(ShieldTheme.action.opacity(0.10), in: .rect(cornerRadius: 14))
+                            .accessibilityHidden(true)
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Shield will call you.").font(.title2.weight(.semibold))
+                        if ring { Text("Answer, listen, and press 1.").font(.title3).foregroundStyle(ForwardingStyle.secondaryText) }
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityElement(children: .combine)
+                }
                 if !ring { dontAnswer }
             }
         }

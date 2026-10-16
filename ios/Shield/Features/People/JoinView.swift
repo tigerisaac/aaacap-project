@@ -20,7 +20,7 @@ struct JoinView: View {
                     ShieldPageHeader {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                            Text("You’re signed in. Protecting your phone needs a Shield number and carrier setup. During the pilot, contact Shield to arrange this.")
+                            Text("Your phone isn’t connected yet. Contact Shield to set it up.")
                                 .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
                         }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }
@@ -35,7 +35,7 @@ struct JoinView: View {
                     NavigationLink { ContactAlertsView() } label: {
                         ActionRow(title: "Alerts for others", symbol: "bell")
                     }
-                } footer: { Text("If someone added you as a trusted contact, review their request here. You don’t need to set up call protection.") }
+                } footer: { Text("Someone added you as a trusted contact? Review it here.") }
                 ShieldGroup {
                     Button("Sign out") { confirmSignOut = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         .alert("Sign out?", isPresented: $confirmSignOut) {

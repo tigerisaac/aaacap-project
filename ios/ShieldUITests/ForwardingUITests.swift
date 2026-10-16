@@ -169,6 +169,9 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["forwarding-reset-code"].appears(timeout: 5))
         XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
         XCTAssertEqual(app.buttons["forwarding-reset-continue"].label, "Tello confirmed this reset")
+        // Optional help sits below the action; scroll it clear of the home indicator first.
+        app.scrollViews.firstMatch.swipeUp()
+        app.buttons["Need help?"].tap()
         app.buttons["forwarding-reset-copy"].tap()
         XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
         app.buttons["forwarding-reset-continue"].tap()

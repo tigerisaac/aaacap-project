@@ -469,3 +469,16 @@ Six original 1440×960 GIFs run on a 30 fps timeline, with five prepared frames 
 Failed PiP startup stays on the scrollable Shield page, focuses its explanation and changes the sole primary action to Open Settings anyway. Choosing that action deliberately proceeds without a reminder. Reopening follows the same recovery and clears the returned state so the confirmation cannot masquerade as the fallback action. The native-alert experiment was removed after its message clipped at the largest text size.
 
 This is an implementation record. The [October 15 review input](.impeccable/review/setup-one-visit/input.md), [dated evidence](.impeccable/review/setup-one-visit/evidence.json) and [setup-guide record](docs/IOS-SETUP-GUIDES.md) retain the scoped source, synthetic captures, measured artwork timing and physical handoff observations. They do not establish universal smoothness, older-adult usability or real-call behavior. The [final verdict](.impeccable/review/setup-one-visit/finish-verdict.md) scored the sole missing-reminder recovery finding resolved with disposition ship; its scope is that correction and directly introduced regressions. Two final main-phone and three compact-phone recovery checks passed.
+
+
+## October 16 — page-by-page cleanup
+
+Every reachable sample and fixture screen was captured on the iPhone 18 Pro simulator (iOS 27) and reviewed against the brief: less text, no repeated headings, one text edge per group. Changes:
+
+- **Fewer words.** Trusted contacts drops its second heading and paragraph for a one-line footer. Get started, Get help, Message alerts, the trusted-contact choice and phone sign-in say the same facts in shorter sentences. Get help's heading is one line, with "You can check it later." as supporting text.
+- **One text edge.** Phone setup details, the trial options and Message alerts no longer mix bare icons, tiles and plain rows. Status icons move to the trailing side, and tiled rows use `ActionRow`, which now dims when disabled. Home's "Phone setup needs attention" row and the Contacts share row use the shared symbol tile.
+- **Clear choices.** Alerts for others puts Accept in a primary button with Decline beneath it. The trusted-contact onboarding choices are tiled cards with a short line each. Phone sign-in groups its secondary links like the email screen.
+- **Setup pages.** The overview and consent points lead with symbol tiles instead of dots and bare bold lines. The sound check pairs its icon tile with the instruction. The carrier-code and restore steps share one order: copied state, guide, then evenly spaced optional help. `ShieldDisclosure` labels now have a 44-point minimum target.
+- **Small fixes.** Quiet hours moves its explanation into the group footer. Message detail labels its duration ("Length"). Check a text's Choose picture button is sized nearer to the native Paste button.
+
+See the [before/after sheet](docs/images/ios-page-cleanup.jpg). The behavior, confirmations, consent text and setup handoffs are unchanged. This is simulator evidence only; no physical phone, VoiceOver session or older-adult test was run.

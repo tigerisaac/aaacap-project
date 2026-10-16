@@ -41,22 +41,13 @@ struct ForwardingRestoreView: View {
                     }
                 }
                 if codes.indices.contains(index) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ShieldDisclosure("See copied code", isExpanded: $showingCopiedCode) {
-                            Text(codes[index]).font(.body.monospaced()).accessibilityIdentifier("forwarding-reset-code")
-                        }
-                        if codeReady {
-                            Label("Copied", systemImage: "checkmark.circle.fill")
-                                .font(.subheadline).foregroundStyle(ForwardingStyle.secondaryText)
-                        }
+                    // Same order as the setup code step: copied state, guide, then optional help.
+                    if codeReady {
+                        Label("Code copied", systemImage: "checkmark.circle.fill").font(.headline)
                     }
                     SetupGuideView(guide: .keypad, player: guidePlayer)
                     if returnedFromPhone {
                         PhoneCodeGuide(restoring: true, returned: true, carrier: status.carrier)
-                    } else {
-                        ShieldDisclosure("Read the steps") {
-                            PhoneCodeGuide(restoring: true, carrier: status.carrier)
-                        }
                     }
                     Button {
                         if codeReady { showingPhoneLauncher = false; index += 1; codeReady = false; returnedFromPhone = false; showingHelp = false }
@@ -65,13 +56,24 @@ struct ForwardingRestoreView: View {
                     .shieldPrimaryButton()
                     .accessibilityIdentifier("forwarding-reset-continue")
                     .id(index)
-                    if codeReady {
-                        Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }.frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("forwarding-reset-copy")
-                        Button("Show Phone again", systemImage: "phone") { copyCode() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                        Button("Need help?", systemImage: "questionmark.circle") { showingHelp.toggle() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                        if showingHelp {
-                            Text("Open the green Phone app if there’s no banner. Touch and hold above the keypad if Paste is missing. Stop if \(status.carrier) gives an error; ask your helper.")
-                                .foregroundStyle(ForwardingStyle.secondaryText)
+                    VStack(alignment: .leading, spacing: 0) {
+                        if !returnedFromPhone {
+                            ShieldDisclosure("Read the steps") {
+                                PhoneCodeGuide(restoring: true, carrier: status.carrier)
+                            }
+                        }
+                        ShieldDisclosure("See copied code", isExpanded: $showingCopiedCode) {
+                            Text(codes[index]).font(.body.monospaced()).accessibilityIdentifier("forwarding-reset-code")
+                        }
+                        if codeReady {
+                            ShieldDisclosure("Need help?", isExpanded: $showingHelp) {
+                                Button("Copy reset code again", systemImage: "document.on.document") { copyCode(showPhoneLauncher: false) }
+                                    .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("forwarding-reset-copy")
+                                Button("Show Phone again", systemImage: "phone") { copyCode() }
+                                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                Text("Open the green Phone app if there’s no banner. Touch and hold above the keypad if Paste is missing. Stop if \(status.carrier) gives an error; ask your helper.")
+                                    .foregroundStyle(ForwardingStyle.secondaryText)
+                            }
                         }
                     }
                 } else if index < 5 {

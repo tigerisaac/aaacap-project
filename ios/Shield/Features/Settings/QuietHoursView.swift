@@ -38,12 +38,13 @@ struct QuietHoursView: View {
                                 ForEach(0..<24, id: \.self) { Text(label($0)).tag($0) }
                             }
                         }
+                    } footer: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Calls that reach Shield go to voicemail during these hours.")
+                            Text("Times are Central time.")
+                            if changed { Text("Save below to use these hours.").fontWeight(.semibold) }
+                        }
                     }.disabled(working || (model.isDemo && !usesFixture) || !loaded)
-                    ShieldGroup {
-                        Text("Calls that reach Shield go to voicemail during these hours.")
-                        Text("Times are Central time.").foregroundStyle(ShieldTheme.secondaryText)
-                        if changed { Text("Save below to use these hours.").foregroundStyle(ShieldTheme.secondaryText) }
-                    }
                 }
                 if let saveError {
                     ShieldGroup {

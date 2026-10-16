@@ -25,9 +25,7 @@ struct SharedContactsView: View {
         List {
             ShieldGroup {
                 Button { Task { await model.share(app) } } label: {
-                    Label(model.working ? "Updating contacts…" : model.hasShared(app.selectedPersonID) ? "Update my contacts" : "Use my iPhone contacts", systemImage: "person.2.badge.plus")
-                        .font(.headline).padding(.vertical, 8)
-                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                    ActionRow(title: model.working ? "Updating contacts…" : model.hasShared(app.selectedPersonID) ? "Update my contacts" : "Use my iPhone contacts", symbol: "person.2.badge.plus")
                 }
                 .disabled(model.working || app.isDemo)
                 .accessibilityIdentifier("share-all-contacts")

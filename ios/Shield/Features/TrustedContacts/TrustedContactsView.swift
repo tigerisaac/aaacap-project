@@ -10,10 +10,6 @@ struct TrustedContactsView: View {
 
     var body: some View {
         List {
-            ShieldPageHeader {
-                Text("Choose who can help").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                Text("Contacts receive protection alerts only after they accept. They choose texts, app notifications, or both. Call history and messages stay private.").foregroundStyle(ShieldTheme.secondaryText)
-            }
             if let response {
                 if !response.available { ShieldGroup { Text("Trusted-contact alerts aren’t available yet. You can use Shield without them.") } }
                 if !response.contacts.isEmpty {
@@ -41,7 +37,7 @@ struct TrustedContactsView: View {
                         } } label: {
                             ActionRow(title: "Add trusted contact", symbol: "person.badge.plus")
                         }
-                    }
+                    } footer: { Text("They get alerts only after they accept. Your calls and messages stay private.") }
                 }
             } else if error == nil { ShieldGroup { ProgressView("Loading contacts…") } }
             if let error { ShieldGroup { Text(error); Button("Try again") { Task { await load() } }.frame(minHeight: 44) } }

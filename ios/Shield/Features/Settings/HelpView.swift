@@ -6,8 +6,10 @@ struct HelpView: View {
     var body: some View {
         List {
             ShieldPageHeader {
-                Text("If a call worries you, hang up.\nYou can check it later.")
-                    .shieldPageHeading().accessibilityAddTraits(.isHeader).padding(.vertical, 4)
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                    Text("If a call worries you, hang up.").shieldPageHeading().accessibilityAddTraits(.isHeader)
+                    Text("You can check it later.").foregroundStyle(ShieldTheme.secondaryText)
+                }.padding(.vertical, 4)
             }
             ShieldGroup {
                 ShieldDisclosure("How can I check a caller?") {
@@ -25,10 +27,12 @@ struct HelpView: View {
                 if model.isOwner { NavigationLink("Help with my phone", value: AppRoute.setup) }
                 if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                     Link("Ask for help with Shield", destination: url)
-                } else { Text("Need a hand? Ask the person who helped set up your phone.") }
+                }
                 ShieldDisclosure("In an emergency") {
                     Text("Use your usual emergency number. Shield and helper alerts aren’t watched all the time.")
                 }
+            } footer: {
+                if model.service?.supportEmail == nil { Text("Need a hand? Ask the person who helped set up your phone.") }
             }
         }
         .shieldListStyle()

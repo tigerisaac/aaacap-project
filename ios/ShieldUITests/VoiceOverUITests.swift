@@ -171,7 +171,7 @@ final class VoiceOverUITests: XCTestCase {
             defer { walk.finish() }
             if restore {
                 try walk.find("Bring back ordinary calls")
-                try walk.find("Copy")
+                try walk.find("See copied code")
                 try walk.find("Close", where: { $0.localizedCaseInsensitiveContains("Button") })
             } else {
                 try walk.activate("Set up my phone")

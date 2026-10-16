@@ -18,8 +18,9 @@ struct TrialSetupView: View {
         }
         if ["active", "paused"].contains(setup.status) {
         ShieldGroup {
-            Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks",
-                   systemImage: setup.status == "paused" ? "play.circle" : "pause.circle") { confirmPause = true }
+            Button { confirmPause = true } label: {
+                ActionRow(title: setup.status == "paused" ? "Resume call checks" : "Pause call checks", symbol: setup.status == "paused" ? "play.fill" : "pause.fill")
+            }
                 .disabled(working || model.isDemo)
                 .alert(setup.status == "paused" ? "Resume call checks?" : "Pause call checks?", isPresented: $confirmPause) {
                     Button(setup.status == "paused" ? "Resume call checks" : "Pause call checks", action: togglePause)

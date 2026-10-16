@@ -61,6 +61,7 @@ enum ProtectionCheck {
 struct ProtectionCheckCard: View {
     @Environment(AppState.self) private var model
     @Environment(\.openURL) private var openURL
+    @Environment(\.dynamicTypeSize) private var typeSize
     let check: ProtectionCheckState
     @State private var working = false
 
@@ -76,8 +77,16 @@ struct ProtectionCheckCard: View {
                         }.padding(.vertical, 8)
                     }
                 } label: {
-                    Label("Phone setup needs attention", systemImage: "exclamationmark.circle")
-                        .font(.headline).foregroundStyle(ShieldTheme.held)
+                    // The same tile and text edge as the other Home rows.
+                    HStack(spacing: ShieldTheme.Layout.rowSymbolSpacing) {
+                        if !typeSize.isAccessibilitySize {
+                            ShieldRowSymbol(systemName: "exclamationmark.circle", color: ShieldTheme.held)
+                        }
+                        Text("Phone setup needs attention").font(.headline).foregroundStyle(ShieldTheme.held)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.vertical, 4)
+                    .accessibilityElement(children: .combine)
                 }
             }
         }

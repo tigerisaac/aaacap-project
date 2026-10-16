@@ -117,14 +117,13 @@ struct CheckView: View {
     @ViewBuilder private var inputActions: some View {
         PasteButton(payloadType: String.self) { values in text = values.joined(separator: "\n") }
             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule)
-            .controlSize(.extraLarge)
+            .controlSize(.large)
             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
             .disabled(checking || readingPhoto)
         PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto] in
             Label(readingPhoto ? "Reading picture…" : "Choose picture", systemImage: "photo")
-                .font(.body).frame(minHeight: 32)
         }
-        .shieldSecondaryButton().controlSize(.extraLarge)
+        .shieldSecondaryButton()
         .disabled(readingPhoto || checking)
     }
 

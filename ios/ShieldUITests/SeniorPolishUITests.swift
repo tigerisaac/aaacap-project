@@ -348,7 +348,7 @@ final class SeniorPolishUITests: XCTestCase {
     func testGetStartedAsksForHelpWithoutInvitations() {
         let app = launch("join")
         XCTAssertTrue(app.staticTexts["Welcome to Shield"].appears(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Ask your helper to set up your phone."].exists)
+        XCTAssertTrue(app.staticTexts["Your phone isn’t connected yet. Contact Shield to set it up."].exists)
         XCTAssertFalse(app.buttons["Use an invitation"].exists)
         XCTAssertTrue(app.buttons["Sign out"].exists)
         capture(app, "walkthrough-get-started")

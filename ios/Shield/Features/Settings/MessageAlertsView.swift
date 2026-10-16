@@ -6,6 +6,7 @@ struct MessageAlertsView: View {
     @Environment(AppState.self) private var model
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var authorization: UNAuthorizationStatus?
     @State private var working = false
     @State private var error: String?
@@ -18,12 +19,10 @@ struct MessageAlertsView: View {
                 if authorization == nil {
                     ShieldLoadingView(title: "Checking message alerts…")
                 } else {
-                    Label(authorization == .provisional ? "Quiet alerts are on" : allowed ? "Message alerts are on" : "Message alerts are off", systemImage: allowed ? "bell.badge" : "bell.slash")
-                        .font(.headline).accessibilityAddTraits(.isHeader)
-                    Text("Shield can tell you about new messages and phone setup problems.")
-                    Text("Alerts don’t include a caller’s words or number.").foregroundStyle(ShieldTheme.secondaryText)
-                    if authorization == .provisional { Text("Your iPhone delivers these quietly. You can change sounds in Notifications settings.").foregroundStyle(ShieldTheme.secondaryText) }
+                    status
                 }
+            } footer: {
+                if authorization != nil { Text("Alerts don’t include a caller’s words or number.") }
             }
             if authorization == .notDetermined {
                 ShieldGroup {
@@ -35,10 +34,12 @@ struct MessageAlertsView: View {
                 }
             } else if authorization != nil {
                 ShieldGroup {
-                    Button("Open iPhone settings", systemImage: "gearshape") {
+                    Button {
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                    }.frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
-                    if !allowed { Text("Open Notifications, then turn on Allow Notifications.").foregroundStyle(ShieldTheme.secondaryText) }
+                    } label: { ActionRow(title: "Open iPhone settings", symbol: "gearshape") }
+                    .disabled(model.isDemo)
+                } footer: {
+                    if !allowed { Text("Open Notifications, then turn on Allow Notifications.") }
                 }
             }
             if let error { ShieldGroup { ShieldNotice(title: "Alerts couldn’t be changed", detail: error, symbol: "exclamationmark.circle") } }
@@ -47,6 +48,21 @@ struct MessageAlertsView: View {
         .navigationTitle("Message alerts").navigationBarTitleDisplayMode(.inline)
         .task { await load() }
         .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await load() } } }
+    }
+
+    @ViewBuilder private var status: some View {
+        let title = authorization == .provisional ? "Quiet alerts are on" : allowed ? "Message alerts are on" : "Message alerts are off"
+        let detail = authorization == .provisional ? "They arrive without a sound." : allowed ? "For new messages and phone setup problems." : "Turn them on to hear about new messages."
+        HStack(spacing: ShieldTheme.Layout.rowSymbolSpacing) {
+            if !typeSize.isAccessibilitySize {
+                ShieldRowSymbol(systemName: allowed ? "bell.badge" : "bell.slash", color: allowed ? ShieldTheme.action : ShieldTheme.secondaryText)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(.headline).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
+                Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            }.fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 10)
     }
 
     private func load() async {

@@ -55,6 +55,7 @@ struct ShieldRowSymbol: View {
 
 struct ActionRow: View {
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.isEnabled) private var isEnabled
     let title: String
     var detail: String = ""
     let symbol: String
@@ -74,6 +75,7 @@ struct ActionRow: View {
         }
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+        .opacity(isEnabled ? 1 : 0.5)
         .accessibilityElement(children: .combine)
     }
 }
@@ -95,14 +97,19 @@ struct FlowProgress: View {
 }
 
 /// Native grouping with Shield's display heading and adaptive card surface.
-struct ShieldSection<Content: View>: View {
+struct ShieldSection<Content: View, Footer: View>: View {
     let title: String
     let content: Content
-    init(_ title: String, @ViewBuilder content: () -> Content) {
-        self.title = title; self.content = content()
+    let footer: Footer
+    init(_ title: String, @ViewBuilder content: () -> Content) where Footer == EmptyView {
+        self.title = title; self.content = content(); footer = EmptyView()
+    }
+    init(_ title: String, @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
+        self.title = title; self.content = content(); self.footer = footer()
     }
     var body: some View {
         Section { content } header: { Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil).accessibilityAddTraits(.isHeader) }
+            footer: { footer.font(.subheadline) }
             .listRowBackground(ShieldTheme.card)
     }
 }

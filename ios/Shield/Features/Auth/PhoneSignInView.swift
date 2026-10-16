@@ -49,8 +49,9 @@ struct PhoneSignInView: View {
                                 .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }
                         }
                         if challenge == nil {
-                            Text("We’ll text you a sign-in code. US and Canadian mobile numbers. Message and data rates may apply.")
+                            Text("US and Canadian mobile numbers. Message and data rates may apply.")
                                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }.disabled(working)
                     if let error { ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle").accessibilityIdentifier("phone-sign-in-error") }
@@ -59,21 +60,28 @@ struct PhoneSignInView: View {
                     }
                     .shieldPrimaryButton().disabled(working || normalizedPhone == nil || (challenge != nil && !validCode))
                     .accessibilityIdentifier("phone-sign-in-submit")
-                    if challenge != nil {
-                        TimelineView(.periodic(from: .now, by: 1)) { context in
-                            let seconds = max(0, Int(ceil(resendAt.timeIntervalSince(context.date))))
-                            Button(seconds > 0 ? "Resend code in \(seconds)s" : "Resend code") { Task { await requestCode() } }
-                                .disabled(working || seconds > 0).frame(minHeight: 44)
-                                .accessibilityIdentifier("phone-sign-in-resend")
+                    // Secondary choices stack as one quiet group of full-width targets below the action.
+                    VStack(alignment: .leading, spacing: 0) {
+                        if challenge != nil {
+                            TimelineView(.periodic(from: .now, by: 1)) { context in
+                                let seconds = max(0, Int(ceil(resendAt.timeIntervalSince(context.date))))
+                                secondaryButton(seconds > 0 ? "Resend code in \(seconds)s" : "Resend code") { Task { await requestCode() } }
+                                    .disabled(working || seconds > 0)
+                                    .accessibilityIdentifier("phone-sign-in-resend")
+                            }
+                            secondaryButton("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
+                                .disabled(working)
+                        } else {
+                            secondaryButton("Try sample app") { model.exploreDemo() }.disabled(working)
+                            secondaryButton("Use email instead") { showingEmail = true }.disabled(working)
                         }
-                        Button("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
-                            .frame(minHeight: 44).disabled(working)
-                    } else {
-                        Button("Try sample app") { model.exploreDemo() }.frame(minHeight: 44).disabled(working)
-                        Button("Use email instead") { showingEmail = true }.frame(minHeight: 44).disabled(working)
-                    }
-                    if let base = model.configuration.baseURL {
-                        Link("Privacy", destination: base.appending(path: "privacy")).frame(minHeight: 44)
+                        if let base = model.configuration.baseURL {
+                            Link(destination: base.appending(path: "privacy")) {
+                                Text("Privacy").foregroundStyle(ShieldTheme.action)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                    .contentShape(.rect)
+                            }.buttonStyle(.plain)
+                        }
                     }
                 }
                 .padding(ShieldTheme.Spacing.page)
@@ -84,6 +92,14 @@ struct PhoneSignInView: View {
             .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focus = nil } } }
             .sheet(isPresented: $showingEmail) { SignInView(incomingURL: emailLink) }
             .onOpenURL { url in emailLink = url; showingEmail = true }
+        }
+    }
+
+    private func secondaryButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title).font(.body.weight(.medium))
+                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                .contentShape(.rect)
         }
     }
 

@@ -15,19 +15,25 @@ struct ForwardingCodeView: View {
                 if model.codePreparedStep == model.step {
                     if model.codeReturnedStep == model.step {
                         PhoneCodeGuide(returned: true, carrier: model.carrier)
-                        ShieldDisclosure("Watch the guide again") {
-                            SetupGuideView(guide: .keypad, player: model.guidePlayer)
-                        }
                     } else {
                         SetupGuideView(guide: .keypad, player: model.guidePlayer)
-                        ShieldDisclosure("Read the steps") {
-                            PhoneCodeGuide(carrier: model.carrier)
-                        }
                     }
                 } else {
                     Text("Copy your code, then open Phone and paste it into Keypad.")
                 }
+                // Optional help reads as one evenly spaced group under the main guidance.
                 VStack(alignment: .leading, spacing: 0) {
+                    if model.codePreparedStep == model.step {
+                        if model.codeReturnedStep == model.step {
+                            ShieldDisclosure("Watch the guide again") {
+                                SetupGuideView(guide: .keypad, player: model.guidePlayer)
+                            }
+                        } else {
+                            ShieldDisclosure("Read the steps") {
+                                PhoneCodeGuide(carrier: model.carrier)
+                            }
+                        }
+                    }
                     ShieldDisclosure("See copied code") {
                         Text(code).font(.body.monospaced()).textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")

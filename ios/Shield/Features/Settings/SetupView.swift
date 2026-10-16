@@ -31,12 +31,16 @@ struct SetupView: View {
             } else if let setup {
                 ShieldGroup {
                     LabeledContent("My number", value: PhoneDisplay.format(setup.phone))
-                    Button(contactSaved ? "Shield contact saved" : "Save Shield in Contacts", systemImage: contactSaved ? "checkmark" : "person.crop.circle.badge.plus") {
-                        Task { await saveContact(setup.shieldNumber) }
+                    Button { Task { await saveContact(setup.shieldNumber) } } label: {
+                        HStack {
+                            Text(contactSaved ? "Shield contact saved" : "Save Shield in Contacts")
+                            Spacer()
+                            if contactSaved { Image(systemName: "checkmark").foregroundStyle(ShieldTheme.connected).accessibilityHidden(true) }
+                        }
                     }.disabled(working || contactSaved || model.isDemo)
                 }
                 ShieldSection("Phone check") {
-                    Label {
+                    HStack(spacing: ShieldTheme.Spacing.regular) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(setup.phoneVerified ? "Your phone has been checked" : "Your phone needs a check")
                             if let date = setup.lastTestAt {
@@ -45,9 +49,12 @@ struct SetupView: View {
                             }
                         }
                         .fixedSize(horizontal: false, vertical: true)
-                    } icon: {
-                        Image(systemName: setup.phoneVerified ? "checkmark.circle" : "phone")
+                        Spacer(minLength: 0)
+                        Image(systemName: setup.phoneVerified ? "checkmark.circle.fill" : "exclamationmark.circle")
+                            .font(.title3).foregroundStyle(setup.phoneVerified ? ShieldTheme.connected : ShieldTheme.held)
+                            .accessibilityHidden(true)
                     }
+                    .padding(.vertical, 4)
                     .accessibilityElement(children: .combine)
                     if !setup.consented {
                         Button("Agree to use Shield") { confirmConsent = true }
@@ -84,7 +91,7 @@ struct SetupView: View {
                             ForEach(Array(steps.enumerated()), id: \.offset) { index, step in Text("\(index + 1). \(step)").textSelection(.enabled) }
                         }
                     }
-                    Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
+                    Button("Disconnect Shield") { confirmRestore = true }
                         .disabled(model.isDemo || working || setup.status == "restoring")
                         .alert("Disconnect Shield?", isPresented: $confirmRestore) {
                             Button("Start disconnecting") { Task { await requestRestoration(deleting: false) } }
