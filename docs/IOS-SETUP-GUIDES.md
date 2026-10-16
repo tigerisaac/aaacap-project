@@ -10,6 +10,22 @@ There are **five original GIFs in the app**, independently of the floating remin
 
 Returning, opening Settings/Phone, copying or watching never confirms a setting or carrier change. Explicit confirmations remain separate for each setting and each carrier code. No phone setting, carrier routing, consent or backend verification flag is changed by this UI.
 
+## October 15 — screen-aware experiment (not enabled in normal setup)
+
+The owner asked for a substantially easier route after the direct Phone correction. Further read-only checks did not establish an exact-section URL. The modern path and fragment candidates still landed at Phone root; the Search bundle candidate and legacy root/path candidate landed at Apps. Manually selecting the Phone “Silence Unknown Callers” search result also settled at Phone root. URL acceptance and the route-diagnostic test passing were not treated as proof of correct navigation. Private XCTest system screenshots were black while mirroring, so they supplied no destination evidence. Temporary link probes and their automated research test were removed.
+
+Phone → Calls → Filter → Manage Filtering was also inspected. With filtering not enabled it displayed an optional “Reduce Distractions from Unknown Callers” sheet, rather than opening the desired settings. Only “Set Up Later in Settings” was selected; no filtering or other setting was enabled. This route was not adopted.
+
+A **debug-only, iOS 27 prototype** now combines ScreenCaptureKit, on-device Vision and an authored sample-buffer PiP card. It presents one current instruction: slide up, move slowly, slide down slightly after overshooting, or stop and tap Silence. Unlike the existing fixed reminder, it is intended to respond to the visible Settings layout. It cannot start from normal onboarding or a Release build. It is not yet a replacement for the shipped flow.
+
+The experiment requires a separate native full-display sharing permission. It attaches only a screen output, disables microphone/camera controls and audio capture, writes no recording, and uses no network. OCR runs synchronously on one serial sample queue, at most once per 0.8 seconds; buffers and non-whitelisted text are discarded. Only exact public labels and normalized rectangles reach the UI. Recognition requires the centered Phone navigation title plus the heading and all three ordered choices. The guide's own card does not contain a counterfeit Settings group. Two matching frames are required before “Stop here”; moving away clears that advice. Capture stops on return to Shield after handoff, PiP closure, native cancellation/error, view dismissal or a two-minute deadline. Recognition never confirms or changes a setting.
+
+Launch locally with `--uitesting-forwarding --uitesting-live-setup-guide`. Add `--uitesting-live-guide-demo` for a synthetic, timed card preview with **no capture**; this is not recognition evidence. The additional `--uitesting-live-guide-floating` flag exercises authored PiP without screen capture. ScreenCaptureKit is absent from the simulator SDK, so simulators use an explicit unavailable-capture stub. iOS 26 normal setup remains on the existing illustrated flow.
+
+Validation so far: 17 synthetic recognition/stability checks passed, including false tutorial/search matches, clipped controls, wrapped headings, overshoot and clearing stale advice. The authored changing PiP passed on the actual pilot iPhone without requesting screen sharing. PiP did not become possible in the simulator, so its hardware-only test is explicitly skipped there; three simulator layout/recovery checks passed, including largest text. Required checks passed again: 242 unit tests/typecheck/build and 175 Firestore emulator tests. Live recognition, interruption/cancellation during real capture, capture latency and a senior usability session remain unverified. Owner authorization for the new screen access is pending. No phone setting, carrier operation, call or live deployment was changed.
+
+Apple API reference: [Capturing screen content on iOS](https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-on-ios). Permission is supplied by the native picker; an app launch, installed build or mirroring permission is not permission to start this new capture.
+
 ## Assets and playback
 
 Source: `scripts/generate-setup-guides.swift` (original AppKit/Core Graphics artwork; ImageIO GIF export; AVFoundation/ffmpeg silent AAC for PiP). Rebuild with `swift scripts/generate-setup-guides.swift`, then `npm run ios:generate`.

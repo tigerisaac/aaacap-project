@@ -1,5 +1,9 @@
 # Status
 
+## October 15 — screen-aware setup prototype, awaiting a live capture check
+
+A debug-only iOS 27 experiment draws a changing floating instruction and uses local screen-label recognition to tell the person when to stop scrolling. Normal onboarding and Release builds do not enter it. The authored PiP passed on the actual iPhone without screen sharing; synthetic recognition, simulator layout/recovery and the required backend checks passed. Live recognition still requires the owner's separate screen-access approval and has not been verified. Further link/search research did not produce an exact-section shortcut. No phone setting or carrier/backend state was changed. See [the experiment and its limits](IOS-SETUP-GUIDES.md#october-15--screen-aware-experiment-not-enabled-in-normal-setup).
+
 ## October 15 — direct Phone handoff and sharper guides
 
 The owner’s first-page screenshot disproved the earlier CallKit route claim: it opens Call Blocking & Identification. The back-arrow workaround was rejected and removed. Setup now uses a best-effort direct Phone-page URL and teaches upward scrolling with recognizable landmarks and the exact stopping heading. The URL is undocumented and does not jump to the individual setting; rejected links retain a manual route. GIFs are 1440×960, up from 600×400. The floating reminder stays still while the person navigates. Explicit confirmations remain separate.

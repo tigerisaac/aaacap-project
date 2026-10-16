@@ -30,14 +30,18 @@ struct RootView: View {
     var body: some View {
         @Bindable var model = model
         Group {
-            #if DEBUG && targetEnvironment(simulator)
-            if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-storage") {
-                ContactStorageCheckView()
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-live-setup-guide") {
+                if #available(iOS 27.0, *) {
+                    NavigationStack { LiveSetupPrototypeView() }
+                } else {
+                    Text("This screen-aware guide experiment needs iOS 27.")
+                }
             } else {
-                content
+                mainContent
             }
             #else
-            content
+            mainContent
             #endif
         }
         .preferredColorScheme(previewColorScheme)
@@ -56,6 +60,20 @@ struct RootView: View {
             Button("OK") { model.errorMessage = nil }
         } message: {
             Text(model.errorMessage ?? "")
+        }
+    }
+
+    @ViewBuilder private var mainContent: some View {
+        Group {
+            #if DEBUG && targetEnvironment(simulator)
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-storage") {
+                ContactStorageCheckView()
+            } else {
+                content
+            }
+            #else
+            content
+            #endif
         }
     }
 
