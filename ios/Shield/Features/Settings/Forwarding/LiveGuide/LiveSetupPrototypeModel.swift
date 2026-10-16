@@ -10,6 +10,7 @@ final class LiveSetupPrototypeModel {
     let isDemo = ProcessInfo.processInfo.arguments.contains("--uitesting-live-guide-demo")
     private(set) var demoInstruction: LiveSetupInstruction = .slideUp
     private(set) var handoffFailed = false
+    private(set) var practiceResult: LiveSetupPracticeCheck?
     private var wentToSettings = false
 
     var instruction: LiveSetupInstruction { isDemo ? demoInstruction : capture.instruction }
@@ -21,6 +22,10 @@ final class LiveSetupPrototypeModel {
         capture.didStart = { [weak self] in await self?.handoff() }
         floating.show(instruction)
         guard isDemo else { return }
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-live-guide-ocr") {
+            let fixtures = LiveSetupPracticeImages.make()
+            practiceResult = await Task.detached(priority: .userInitiated) { LiveSetupPracticeCheck.run(fixtures) }.value
+        }
         if ProcessInfo.processInfo.arguments.contains("--uitesting-live-guide-floating") {
             handoffFailed = !(await floating.start())
         }

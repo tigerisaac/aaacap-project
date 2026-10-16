@@ -27,6 +27,12 @@ import Foundation
         expect(.chooseSilence, [phone, label(.screenUnknown, 0.1, 0.26), label(.callers, 0.1, 0.29)] + Array(target.suffix(3)), "Wrapped large-text heading is supported")
         expect(.slowDown, Array(target.prefix(4)) + [label(.silence, 0.13, 0.95)], "Offscreen tap target is not actionable")
         expect(.slowDown, Array(target.prefix(4)) + [label(.silence, 0.55, 0.54)], "Unrelated floating text cannot complete the group")
+        let wrappedAsk = target.filter { $0.label != .ask } + [label(.askReasonFor, 0.13, 0.46), label(.calling, 0.13, 0.49)]
+        expect(.chooseSilence, wrappedAsk, "Two-line action label is supported")
+        expect(.chooseSilence, target.filter { $0.label != .ask } + [label(.askReason, 0.13, 0.46), label(.forCalling, 0.13, 0.49)], "Alternative native line break is supported")
+        expect(.slowDown, target.filter { $0.label != .ask } + [label(.calling, 0.13, 0.46), label(.askReasonFor, 0.13, 0.49)], "Reversed fragments never form an action label")
+        expect(.slowDown, target.filter { $0.label != .ask } + [label(.askReasonFor, 0.13, 0.46), label(.calling, 0.50, 0.49)], "Text in a different column is not joined")
+        expect(.slowDown, target.filter { $0.label != .ask } + [label(.askReasonFor, 0.13, 0.35), label(.calling, 0.13, 0.48)], "Widely separated fragments are not joined")
         precondition(O(recognizedText: "A private caller or number", bounds: .zero) == nil)
         checks += 1
         var stable = LiveSetupStability()

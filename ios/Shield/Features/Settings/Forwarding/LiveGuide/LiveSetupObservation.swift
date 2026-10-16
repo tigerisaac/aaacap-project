@@ -7,9 +7,20 @@ struct LiveSetupObservation: Sendable {
         case phone = "phone"
         case screenUnknownCallers = "screen unknown callers"
         case screenUnknown = "screen unknown"
+        case screenWord = "screen"
+        case unknownWord = "unknown"
+        case unknownCallers = "unknown callers"
         case callers
         case never
         case ask = "ask reason for calling"
+        case askReasonFor = "ask reason for"
+        case askReason = "ask reason"
+        case askWord = "ask"
+        case forCalling = "for calling"
+        case reasonForCalling = "reason for calling"
+        case reasonFor = "reason for"
+        case forWord = "for"
+        case calling
         case silence
         case callFiltering = "call filtering"
         case liveVoicemail = "live voicemail"

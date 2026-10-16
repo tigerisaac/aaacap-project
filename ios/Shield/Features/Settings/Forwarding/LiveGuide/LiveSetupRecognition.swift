@@ -4,20 +4,14 @@ import Foundation
 enum LiveSetupRecognition {
     static func instruction(for observations: [LiveSetupObservation]) -> LiveSetupInstruction {
         typealias Label = LiveSetupObservation.Label
-        func matches(_ label: Label) -> [LiveSetupObservation] { observations.filter { $0.label == label } }
+        func matches(_ label: Label) -> [LiveSetupObservation] { LiveSetupLabelLayout.matches(label, in: observations) }
         // The real navigation title stays centered near the top. Search results,
         // Phone history, and the inline tutorial cannot satisfy the whole layout.
         guard matches(.phone).contains(where: {
             $0.bounds.minY < 0.16 && $0.bounds.midX > 0.35 && $0.bounds.midX < 0.65
         }) else { return .waiting }
 
-        var headings = matches(.screenUnknownCallers)
-        for first in matches(.screenUnknown) {
-            for second in matches(.callers) where abs(first.bounds.minX - second.bounds.minX) < 0.08 &&
-                second.bounds.minY >= first.bounds.maxY && second.bounds.minY - first.bounds.maxY < 0.05 {
-                headings.append(.init(label: .screenUnknownCallers, bounds: first.bounds.union(second.bounds)))
-            }
-        }
+        let headings = matches(.screenUnknownCallers)
         for heading in headings where heading.bounds.minY > 0.16 {
             for never in matches(.never) where never.bounds.minY > heading.bounds.maxY {
                 for ask in matches(.ask) where ask.bounds.minY > never.bounds.maxY {

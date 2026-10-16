@@ -34,7 +34,7 @@ final class LiveSetupCapture: NSObject, SCContentSharingPickerObserver, SCStream
         var configuration = SCContentSharingPickerConfiguration()
         configuration.showsCameraControl = false
         configuration.showsMicrophoneControl = false
-        picker.configuration = configuration
+        picker.defaultConfiguration = configuration
         picker.isActive = true
         picker.present()
     }

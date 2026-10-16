@@ -48,6 +48,18 @@ final class LiveSetupGuideUITests: XCTestCase {
         #endif
     }
 
+    func testRecognitionOfAuthoredImagesOnDeviceWithoutScreenAccess() {
+        let app = launch(["--uitesting-live-guide-demo", "--uitesting-live-guide-ocr"])
+        let result = app.staticTexts["live-guide-ocr-result"]
+        XCTAssertTrue(result.waitForExistence(timeout: 30))
+        let diagnostics = app.staticTexts["live-guide-ocr-diagnostics"]
+        let detail = diagnostics.exists ? diagnostics.label : ""
+        print("SYNTHETIC_OCR_DETAIL \(detail)")
+        XCTAssertTrue(result.label.contains("Practice recognition: 3/3"), result.label + " " + detail)
+        print("SYNTHETIC_OCR \(result.label)")
+        XCTAssertFalse(app.buttons["live-guide-open-settings"].isEnabled)
+    }
+
     private func launch(_ arguments: [String]) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()

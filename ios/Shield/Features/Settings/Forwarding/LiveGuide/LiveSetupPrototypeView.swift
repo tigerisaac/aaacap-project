@@ -32,6 +32,13 @@ struct LiveSetupPrototypeView: View {
                     Text(model.floating.floating ? "Floating guide active" : "Practice screen")
                         .accessibilityIdentifier("live-guide-floating-status")
                 }
+                if let result = model.practiceResult {
+                    Text("Practice recognition: \(result.passed)/\(result.total), slowest \(result.slowestMilliseconds) ms")
+                        .accessibilityIdentifier("live-guide-ocr-result")
+                    if !result.failureDetail.isEmpty {
+                        Text(result.failureDetail).accessibilityIdentifier("live-guide-ocr-diagnostics")
+                    }
+                }
                 if model.handoffFailed {
                     Text("The floating guide couldn’t open. You can continue with the illustrated steps in Phone setup.")
                 }
@@ -40,12 +47,18 @@ struct LiveSetupPrototypeView: View {
         }
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
-            Button("Open Phone settings") { model.capture.request() }
+            VStack(spacing: 12) {
+                Button(model.capture.requestingPermission ? "Waiting for iPhone permission" : "Open Phone settings") { model.capture.request() }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 .disabled(model.isDemo || model.capture.requestingPermission || model.capture.active)
                 .accessibilityIdentifier("live-guide-open-settings")
+                if model.capture.requestingPermission {
+                    Button("Cancel") { model.stop() }
+                        .accessibilityIdentifier("live-guide-cancel-permission")
+                }
+            }
                 .padding(24)
                 .background(ShieldTheme.surface)
         }
