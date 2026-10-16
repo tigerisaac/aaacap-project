@@ -20,6 +20,12 @@ A simpler route through Apple's built-in “Set Silence Unknown Callers” Short
 
 Removal validation: the device build succeeded and was installed on the pilot iPhone. The normal setup's primary-action and explicit-confirmation simulator regressions both passed. Required checks passed: 242 unit tests/typecheck/build and 175 Firestore emulator tests. The removal has no backend or carrier change.
 
+## Native Shortcuts import under evaluation
+
+A small debug-only preview (`--uitesting-forwarding --uitesting-shortcut-preview`) now shares an Apple-signed file named **Shield Call Silencing**. The person chooses Shortcuts, then Add Shortcut. Adding it does not run it. The file contains exactly the native `is.workflow.actions.silenceunknowncallers.set` action with the editor's default On parameters; Apple's native file preview was inspected and displays **Turn Silence Unknown Callers On**. It has no network, dialing, recording, contact or forwarding action. The generator is `scripts/generate-setup-shortcut.py`; the `anyone` signing mode validates the authored file through Apple and does not use the contact-sharing mode.
+
+The shorter import route passed a real iOS 27 simulator UI test through the native **Add Shortcut** screen, stopping before Add or Run. Quick Look by itself only previews the file and supplied no Add button, so the preview uses the normal share destination instead. The one-action shortcut returned an unknown error when run in the simulator. Applying it on the physical phone and its mapping to the current three-choice caller setting remain unverified. The preview never runs it automatically, and normal setup/Release do not expose this experimental route. It does not solve Live Voicemail. Nothing has been run or changed on the owner's phone through this approach.
+
 ## Assets and playback
 
 Source: `scripts/generate-setup-guides.swift` (original AppKit/Core Graphics artwork; ImageIO GIF export; AVFoundation/ffmpeg silent AAC for PiP). Rebuild with `swift scripts/generate-setup-guides.swift`, then `npm run ios:generate`.

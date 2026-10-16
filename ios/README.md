@@ -17,6 +17,8 @@ Use **Try sample app** for offline synthetic activity. Sample mode never changes
 
 ## Run focused UI audits
 
+Keep Device Hub's **Capture Keyboard** off while collaborating with the owner. It redirects the Mac's typing into the simulator; leaving it enabled interrupted the owner's keyboard on October 15. Use the existing UI-test tooling without enabling keyboard capture.
+
 Use one existing simulator and the normal Xcode build cache. For the accessibility suite:
 
 ```sh
