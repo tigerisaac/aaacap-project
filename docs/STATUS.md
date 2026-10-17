@@ -1,12 +1,12 @@
 # Status
 
-## October 16 — navigation caching and device local-audio correction (not installed)
+## October 16 — navigation caching and device local-audio correction (installed)
 
 The iPhone client now reuses recent owner history/message/detail responses and saved/trusted/blocked numbers across navigation, shares overlapping reads, and keeps public configuration for an hour. Home shares a recent protection check with its original timestamp; setup workflows and helper authorization remain fresh. Refreshes, edits and session changes invalidate the appropriate cached data, and late requests cannot refill a cleared cache. Browsed message summaries now join the protected persistent history. Response caching itself is bounded and session-only.
 
-The review found a physical-device/Release playback branch still fetching remote audio despite the simulator using local storage. Both now use the same verified local-first library path. This corrects the earlier installed-app playback claim; physical offline playback remains unverified until the new app is installed and checked.
+The review found a physical-device/Release playback branch still fetching remote audio despite the simulator using local storage. Both now use the same verified local-first library path. This corrects the earlier installed-app playback claim; physical offline playback remains unverified pending a separate device check.
 
-Validation: `npm run check` passed (303 unit tests, typecheck/build); `npm run test:firebase` passed all 229 tests. Swift tests cover cache reuse/expiry, per-person/filter separation, concurrent reads, invalidation races, retry, retained check timestamps, and existing durable audio/history failure cases. The unsigned device Release build and the two focused simulator tests for offline history/filter/detail and audio playback after relaunch passed. No production deployment, phone installation, call or carrier change occurred. [Behavior and limits](IOS-OFFLINE.md#navigation-caching--october-16-repository-implementation).
+Validation: `npm run check` passed (303 unit tests, typecheck/build); `npm run test:firebase` passed all 229 tests. Swift tests cover cache reuse/expiry, per-person/filter separation, concurrent reads, invalidation races, retry, retained check timestamps, and existing durable audio/history failure cases. The unsigned device Release build and the two focused simulator tests for offline history/filter/detail and audio playback after relaunch passed. At 23:51 Central, the owner-requested signed Debug build from `ac67642` passed signature verification and was installed over the existing app on the paired iPhone 12 Pro Max. The first launch attempt hit an unavailable device remote service; retrying launched Shield successfully. No production deployment, call or carrier change occurred. [Behavior and limits](IOS-OFFLINE.md#navigation-caching--october-16-repository-implementation).
 
 ## October 16 — isolated browser calls verified; production unchanged
 

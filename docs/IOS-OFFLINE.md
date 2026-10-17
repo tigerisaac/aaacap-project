@@ -10,7 +10,7 @@ Message pages now also save their summaries to the existing protected owner hist
 
 This review found that the earlier device/Release playback branch still called the remote audio endpoint, while the debug simulator branch used the local library. Playback now has one common local-first path on both devices and simulators. Already-delivered owner audio plays from the verified local file; only missing audio needs delivery. The existing server acknowledgement/deletion contract is unchanged. This correction supersedes the earlier unverified claim that the installed physical-device UI played saved audio locally.
 
-Validation and installation status are recorded in [Status](STATUS.md). No cloud deployment is required for these client changes; physical airplane-mode playback still needs verification after installation.
+Validation and installation status are recorded in [Status](STATUS.md). The signed update was installed on the paired iPhone 12 Pro Max at the owner’s request on October 16 at 23:51 Central. No cloud deployment is required for these client changes; physical airplane-mode playback still needs verification.
 
 The iPhone app previously kept most call history only in memory. Reopening it required `/api/people`, public configuration, setup/contact checks and history requests before its normal screens had data. A temporary connection failure could therefore look like an unusable app, even though cloud call screening continued independently.
 
