@@ -1,0 +1,426 @@
+[
+  {
+    "run": "functional",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=F8D78742-03B7-46CD-B5E3-95D0F1FF8815\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-functional-oct17.xcresult \"-only-testing:ShieldUITests/PhoneOnboardingUITests\" \"-only-testing:ShieldUITests/ReleaseReadinessUITests\" \"-only-testing:ShieldUITests/ContactNameValidationUITests\" \"-only-testing:ShieldUITests/NavigationRegressionUITests\" \"-only-testing:ShieldUITests/HomeReadabilityUITests\" \"-only-testing:ShieldUITests/SubscriptionUITests\" \"-only-testing:ShieldUITests/DisconnectUITests/testHomeOffersDirectCancellationWithoutChangingSettings\" \"-only-testing:ShieldUITests/DisconnectUITests/testCallChecksAndCompletionAtLargestText\" \"-only-testing:ShieldUITests/DisconnectUITests/testDeleteAccountReturnsFromGuidedRestorationBeforeFinalConfirmation\" \"-only-testing:ShieldUITests/DisconnectUITests/testDeletionProgressDistinguishesUnsentAcceptedAndCompleted\" \"-only-testing:ShieldUITests/FiveAreaRefinementUITests/testUnavailableRecordingKeepsDetailsWithoutOfferingBrokenPlayback\" \"-only-testing:ShieldUITests/FiveAreaRefinementUITests/testFailedSharingChangeIsVisibleAndKeepsAccessAtLargestText\" \"-only-testing:ShieldUITests/FiveAreaRefinementUITests/testSettingsReturnOffersReopenBeforeConfirmation\" \"-only-testing:ShieldUITests/FiveAreaRefinementUITests/testRefinedScreensAtBothAppearancesAndLargestText\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.ContactNameValidationUITests/testCaretakerRejectsOverlongNameAndRecoversWithoutSendingARequest",
+        "result": "passed",
+        "seconds": 24.463
+      },
+      {
+        "test": "ShieldUITests.ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing",
+        "result": "passed",
+        "seconds": 28.189
+      },
+      {
+        "test": "ShieldUITests.DisconnectUITests/testCallChecksAndCompletionAtLargestText",
+        "result": "passed",
+        "seconds": 37.631
+      },
+      {
+        "test": "ShieldUITests.DisconnectUITests/testDeleteAccountReturnsFromGuidedRestorationBeforeFinalConfirmation",
+        "result": "passed",
+        "seconds": 16.299
+      },
+      {
+        "test": "ShieldUITests.DisconnectUITests/testDeletionProgressDistinguishesUnsentAcceptedAndCompleted",
+        "result": "passed",
+        "seconds": 33.589
+      },
+      {
+        "test": "ShieldUITests.DisconnectUITests/testHomeOffersDirectCancellationWithoutChangingSettings",
+        "result": "passed",
+        "seconds": 7.607
+      },
+      {
+        "test": "ShieldUITests.FiveAreaRefinementUITests/testFailedSharingChangeIsVisibleAndKeepsAccessAtLargestText",
+        "result": "passed",
+        "seconds": 11.473
+      },
+      {
+        "test": "ShieldUITests.FiveAreaRefinementUITests/testRefinedScreensAtBothAppearancesAndLargestText",
+        "result": "passed",
+        "seconds": 93.919
+      },
+      {
+        "test": "ShieldUITests.FiveAreaRefinementUITests/testSettingsReturnOffersReopenBeforeConfirmation",
+        "result": "passed",
+        "seconds": 10.312
+      },
+      {
+        "test": "ShieldUITests.FiveAreaRefinementUITests/testUnavailableRecordingKeepsDetailsWithoutOfferingBrokenPlayback",
+        "result": "passed",
+        "seconds": 37.733
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testAllCallsRespondsAcrossTheRowAtStandardAndLargestText",
+        "result": "passed",
+        "seconds": 23.656
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testEmptyHomeKeepsAFullWidthMessagesRoute",
+        "result": "passed",
+        "seconds": 7.511
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testHelpResourceDisclosureCollapsesWithoutOpeningTheBrowser",
+        "result": "passed",
+        "seconds": 35.79
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testHomeStatusUsesTheReadingEdgeAndReachableRecovery",
+        "result": "passed",
+        "seconds": 16.425
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testLargestMessageFilterRespondsAcrossItsWidth",
+        "result": "passed",
+        "seconds": 11.378
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testLargestTextDarkModeKeepsDiscardedMessageReadable",
+        "result": "passed",
+        "seconds": 18.346
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testLongSwitchLabelsKeepTheirWidthAndToggleFromTheRow",
+        "result": "passed",
+        "seconds": 8.59
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testStoppedCountOpensTheMatchingCalls",
+        "result": "passed",
+        "seconds": 11.103
+      },
+      {
+        "test": "ShieldUITests.HomeReadabilityUITests/testZeroCountIsExplicitAndUnavailableCountIsNotZero",
+        "result": "passed",
+        "seconds": 15.615
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testDisclosureExpandsWithinItsCardAndCollapses",
+        "result": "passed",
+        "seconds": 32.353
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testHomeHasNoAccountButtonAtStandardAndLargestText",
+        "result": "passed",
+        "seconds": 11.829
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testMessageTypeFiltersReuseTheSameInbox",
+        "result": "passed",
+        "seconds": 14.332
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testMoreTitleReturnsWithThePageRepeatedly",
+        "result": "passed",
+        "seconds": 14.723
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testPeopleRemainAvailableFromMore",
+        "result": "passed",
+        "seconds": 10.757
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testRootTypographyAndDirectPhoneSetupReturn",
+        "result": "passed",
+        "seconds": 46.065
+      },
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testTextCheckOpensDirectlyFromSettingsAndTitlesFollowTheStack",
+        "result": "passed",
+        "seconds": 18.285
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testCanContinueIndependently",
+        "result": "passed",
+        "seconds": 14.108
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testCodeKeyboardHasNoExtraDoneToolbar",
+        "result": "passed",
+        "seconds": 40.113
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testContactRequiresDetailsAndWaitsForAcceptance",
+        "result": "passed",
+        "seconds": 15.219
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testPhoneAndContactChoicesAtLargestTextDark",
+        "result": "passed",
+        "seconds": 19.812
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testPhoneCodeErrorAndSuccessfulSignIn",
+        "result": "passed",
+        "seconds": 28.256
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testRecipientChoosesBothChannelsAndCanStop",
+        "result": "failed",
+        "seconds": 12.595
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testSignInOffersOnlyPhoneAndPrivacy",
+        "result": "passed",
+        "seconds": 9.909
+      },
+      {
+        "test": "ShieldUITests.ReleaseReadinessUITests/testCaretakerRequestKeepsCallAccessSeparateAtLargestText",
+        "result": "passed",
+        "seconds": 28.755
+      },
+      {
+        "test": "ShieldUITests.ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate",
+        "result": "passed",
+        "seconds": 12.432
+      },
+      {
+        "test": "ShieldUITests.ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings",
+        "result": "passed",
+        "seconds": 12.032
+      },
+      {
+        "test": "ShieldUITests.ReleaseReadinessUITests/testSavedNumberSelectionHasAComfortableTouchTarget",
+        "result": "passed",
+        "seconds": 5.626
+      },
+      {
+        "test": "ShieldUITests.ReleaseReadinessUITests/testUnavailableCaretakerCannotSendRequests",
+        "result": "passed",
+        "seconds": 9.703
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testBillingGraceShowsAccessDeadlineInsteadOfAPastRenewal",
+        "result": "passed",
+        "seconds": 13.277
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testDeletionKeepsAppleReminderWhenAccessLookupFails",
+        "result": "passed",
+        "seconds": 15.595
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testExpiredPilotHasSupportInsteadOfAPaywall",
+        "result": "passed",
+        "seconds": 13.018
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testFailedLookupRemainsRecoverable",
+        "result": "passed",
+        "seconds": 13.102
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testPendingPurchaseExplainsApproval",
+        "result": "passed",
+        "seconds": 45.435
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testPilotNeverSeesMonetaryActionsAtLargestText",
+        "result": "passed",
+        "seconds": 23.369
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent",
+        "result": "passed",
+        "seconds": 17.671
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testSubscribedAccountHasManagementAndDeletionReminder",
+        "result": "passed",
+        "seconds": 15.83
+      }
+    ]
+  },
+  {
+    "run": "compatibility",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=4E5B0E5C-582E-4939-A9CA-F71342045F44\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-compatibility-oct17.xcresult \"-only-testing:ShieldUITests/PhoneOnboardingUITests/testCodeKeyboardHasNoExtraDoneToolbar\" \"-only-testing:ShieldUITests/NavigationRegressionUITests/testMoreTitleReturnsWithThePageRepeatedly\" \"-only-testing:ShieldUITests/SeniorDesignUITests/testMotionQuietHoursKeepsTimeRowsStableAndCanReverse\" \"-only-testing:ShieldUITests/ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings\" \"-only-testing:ShieldUITests/SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testMoreTitleReturnsWithThePageRepeatedly",
+        "result": "passed",
+        "seconds": 19.47
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testCodeKeyboardHasNoExtraDoneToolbar",
+        "result": "passed",
+        "seconds": 28.685
+      },
+      {
+        "test": "ShieldUITests.ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings",
+        "result": "passed",
+        "seconds": 11.252
+      },
+      {
+        "test": "ShieldUITests.SeniorDesignUITests/testMotionQuietHoursKeepsTimeRowsStableAndCanReverse",
+        "result": "passed",
+        "seconds": 24.067
+      },
+      {
+        "test": "ShieldUITests.SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent",
+        "result": "passed",
+        "seconds": 17.656
+      }
+    ]
+  },
+  {
+    "run": "accessibility",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=4E5B0E5C-582E-4939-A9CA-F71342045F44\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-accessibility-oct17.xcresult \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testEverydayScreensAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testOwnerSettingsScreensAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testSwitchLabelsAtStandardAndLargestText\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testOnboardingChoicesAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit\" \"-only-testing:ShieldUITests/SeniorDesignUITests/testMotionAllSecondaryScreensAtLargestText\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+        "result": "passed",
+        "seconds": 26.698
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testEverydayScreensAudit",
+        "result": "failed",
+        "seconds": 34.244
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testOnboardingChoicesAudit",
+        "result": "passed",
+        "seconds": 12.631
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testOwnerSettingsScreensAudit",
+        "result": "failed",
+        "seconds": 56.86
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "result": "failed",
+        "seconds": 12.746
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testSwitchLabelsAtStandardAndLargestText",
+        "result": "passed",
+        "seconds": 50.189
+      },
+      {
+        "test": "ShieldUITests.SeniorDesignUITests/testMotionAllSecondaryScreensAtLargestText",
+        "result": "passed",
+        "seconds": 145.444
+      }
+    ]
+  },
+  {
+    "run": "recipient-265",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=4E5B0E5C-582E-4939-A9CA-F71342045F44\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-recipient-265-oct17.xcresult \"-only-testing:ShieldUITests/PhoneOnboardingUITests/testRecipientChoosesBothChannelsAndCanStop\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testRecipientChoosesBothChannelsAndCanStop",
+        "result": "passed",
+        "seconds": 8.081
+      }
+    ]
+  },
+  {
+    "run": "final",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=F8D78742-03B7-46CD-B5E3-95D0F1FF8815\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-final-oct17.xcresult \"-only-testing:ShieldUITests/PhoneOnboardingUITests/testRecipientChoosesBothChannelsAndCanStop\" \"-only-testing:ShieldUITests/NavigationRegressionUITests/testMoreTitleReturnsWithThePageRepeatedly\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testEverydayScreensAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testOwnerSettingsScreensAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testNativeControlReferenceAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testNativeStoppedCardDiagnosticIsolation\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.NavigationRegressionUITests/testMoreTitleReturnsWithThePageRepeatedly",
+        "result": "passed",
+        "seconds": 24.238
+      },
+      {
+        "test": "ShieldUITests.PhoneOnboardingUITests/testRecipientChoosesBothChannelsAndCanStop",
+        "result": "passed",
+        "seconds": 10.381
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testEverydayScreensAudit",
+        "result": "failed",
+        "seconds": 45.668
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testNativeControlReferenceAudit",
+        "result": "failed",
+        "seconds": 9.484
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testNativeStoppedCardDiagnosticIsolation",
+        "result": "failed",
+        "seconds": 17.588
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testOwnerSettingsScreensAudit",
+        "result": "failed",
+        "seconds": 71.437
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "result": "failed",
+        "seconds": 16.907
+      }
+    ]
+  },
+  {
+    "run": "step-contrast-27",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=F8D78742-03B7-46CD-B5E3-95D0F1FF8815\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-step-contrast-27-oct17.xcresult \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+        "result": "failed",
+        "seconds": 47.261
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "result": "failed",
+        "seconds": 19.414
+      }
+    ]
+  },
+  {
+    "run": "step-contrast-265",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=4E5B0E5C-582E-4939-A9CA-F71342045F44\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-step-contrast-265-oct17.xcresult \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+        "result": "passed",
+        "seconds": 26.556
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "result": "passed",
+        "seconds": 12.486
+      }
+    ]
+  },
+  {
+    "run": "toolbar-contrast-27",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=F8D78742-03B7-46CD-B5E3-95D0F1FF8815\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-toolbar-contrast-27-oct17.xcresult \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+        "result": "failed",
+        "seconds": 47.448
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "result": "failed",
+        "seconds": 18.237
+      }
+    ]
+  },
+  {
+    "run": "toolbar-contrast-265",
+    "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/shield-theme-derived/Build/Products/Shield_iphonesimulator27.0-arm64.xctestrun -destination \"platform=iOS Simulator,id=4E5B0E5C-582E-4939-A9CA-F71342045F44\" -parallel-testing-enabled NO -collect-test-diagnostics never -resultBundlePath /tmp/shield-theme-toolbar-contrast-265-oct17.xcresult \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit\" \"-only-testing:ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit\"",
+    "tests": [
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+        "result": "passed",
+        "seconds": 29.688
+      },
+      {
+        "test": "ShieldUITests.SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "result": "passed",
+        "seconds": 18.548
+      }
+    ]
+  }
+]

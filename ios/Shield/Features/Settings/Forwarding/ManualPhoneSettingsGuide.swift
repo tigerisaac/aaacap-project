@@ -6,7 +6,7 @@ struct ManualPhoneSettingsGuide: View {
     private var guide: SetupGuide { combined ? .phoneSettings : .voicemailOff }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
             Text(model.settingsReturned && model.settingsDestination != .unavailable
                  ? (combined ? "Check that Silence has a checkmark. You’ll confirm Live Voicemail next." : "Confirm that Live Voicemail is gray (off).")
                  : model.settingsDestination.directions)
@@ -15,7 +15,7 @@ struct ManualPhoneSettingsGuide: View {
                 Text("Stop at \(guide.settingHeading).")
                     .accessibilityIdentifier("phone-settings-target")
                 if combined {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                         Text("1. Live Voicemail: off")
                         Text("2. Screen Unknown Callers: Silence")
                     }

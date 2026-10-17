@@ -28,7 +28,7 @@ struct OverviewView: View {
                         TimelineView(.periodic(from: .now, by: 30)) { context in
                             statusCard(now: context.date)
                         }
-                        .listRowBackground(HomeStatusBackground(tone: summary(now: .now).tone))
+                        .listRowBackground(ShieldTheme.card)
                     }
                 }
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
@@ -52,7 +52,7 @@ struct OverviewView: View {
                         }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
                             .accessibilityLabel("All messages")
                             .accessibilityIdentifier("today-messages")
-                    } header: { Text("Messages").shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
+                    } header: { Text("Messages").textCase(nil) }
                     ShieldGroup {
                         if overview.recent.filter({ $0.voicemail == nil }).isEmpty {
                             Text("Your calls will appear here.").foregroundStyle(ShieldTheme.secondaryText)
@@ -66,7 +66,7 @@ struct OverviewView: View {
                         }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
                             .accessibilityLabel("All calls")
                             .accessibilityIdentifier("home-all-calls")
-                    } header: { Text("Recent calls").shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
+                    } header: { Text("Recent calls").textCase(nil) }
                 } else if model.isLoading {
                     if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your calls…") } }
                 } else {
@@ -84,7 +84,6 @@ struct OverviewView: View {
             }
             .deferredLoading(model.isLoading && model.overview == nil, visible: $loadingVisible)
             .shieldListStyle()
-            .scrollEdgeEffectHidden(for: .top)
             .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.overview?.status ?? "")-\(model.isTestAccount)") {
                 if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
             }
@@ -115,8 +114,7 @@ struct OverviewView: View {
         }
     }
 
-    /// The status reads in one glance: a badge, a bold state and one line, then the card's one next
-    /// action as a real button. Checks on gets the teal card.
+    /// A native symbol tile and a clear state, with each recovery action kept as a real button.
     @ViewBuilder private func statusCard(now: Date) -> some View {
         let presentation = summary(now: now)
         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
@@ -125,7 +123,7 @@ struct OverviewView: View {
                     HomeStatusBadge(symbol: presentation.symbol, tone: presentation.tone)
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(presentation.title).font(.title2.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
+                    Text(presentation.title).font(.headline).foregroundStyle(ShieldTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
                     Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
@@ -247,54 +245,20 @@ struct OverviewView: View {
 
 }
 
-/// The status symbol on a circle: solid teal with a white check when checks are on, navy for setup,
-/// a quiet tile otherwise. In Dark Mode the bright hues become tinted tiles with a coloured glyph,
-/// so the card pops without glowing. Decorative; the title says the state in words.
+/// The status uses the same Settings-style tile as the rest of the app.
 private struct HomeStatusBadge: View {
     let symbol: String
     let tone: HomeStatusPresentation.Tone
-    @Environment(\.colorScheme) private var colorScheme
-    @ScaledMetric(relativeTo: .title2) private var size = 52.0
 
     var body: some View {
-        Image(systemName: glyph)
-            .font(.system(size: size * 0.44, weight: .semibold))
-            .foregroundStyle(ink)
-            .frame(width: size, height: size)
-            .background(fill, in: .circle)
-            .accessibilityHidden(true)
+        ShieldRowSymbol(systemName: symbol, color: color)
     }
 
-    private var hue: Color? {
+    private var color: Color {
         switch tone {
         case .on: ShieldTheme.connected
         case .setup: ShieldTheme.action
-        case .neutral: nil
-        }
-    }
-
-    private var fill: Color {
-        guard let hue else { return ShieldTheme.quietSurface }
-        return colorScheme == .dark ? hue.opacity(0.18) : hue
-    }
-
-    private var ink: Color {
-        guard let hue else { return ShieldTheme.secondaryText }
-        return colorScheme == .dark ? hue : ShieldTheme.actionInk
-    }
-
-    /// The circle is already drawn, so "pause.circle" becomes "pause".
-    private var glyph: String { symbol.hasSuffix(".circle") ? String(symbol.dropLast(".circle".count)) : symbol }
-}
-
-/// Checks on reads as a calm teal card (fainter in Dark Mode); every other state keeps the Card surface.
-private struct HomeStatusBackground: View {
-    let tone: HomeStatusPresentation.Tone
-    @Environment(\.colorScheme) private var colorScheme
-    var body: some View {
-        ZStack {
-            ShieldTheme.card
-            if tone == .on { ShieldTheme.connected.opacity(colorScheme == .dark ? 0.06 : 0.1) }
+        case .neutral: ShieldTheme.secondaryText
         }
     }
 }

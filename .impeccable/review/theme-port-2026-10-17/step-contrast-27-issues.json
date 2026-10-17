@@ -1,0 +1,22 @@
+[
+  {
+    "screen": "accessibility-add-number-dark",
+    "issue": "Contrast failed",
+    "element": "Attributes: Button, 0x108bf9680, {{20.0, 104.7}, {76.7, 36.0}}, label: 'Cancel'"
+  },
+  {
+    "screen": "accessibility-add-contact-dark",
+    "issue": "Contrast failed",
+    "element": "Attributes: Button, 0x108bf9400, {{20.0, 104.7}, {76.7, 36.0}}, label: 'Cancel'"
+  },
+  {
+    "screen": "accessibility-disconnection-dark",
+    "issue": "Contrast failed",
+    "element": "Attributes: Button, 0x108bfb480, {{303.0, 51.0}, {67.0, 36.0}}, label: 'Close'"
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast failed",
+    "element": "Attributes: Button, 0x108bfb5c0, {{303.0, 51.0}, {67.0, 36.0}}, label: 'Close'"
+  }
+]

@@ -1,0 +1,212 @@
+{
+  "date": "2026-10-17",
+  "themeSource": {
+    "branch": "origin/Andrewwww",
+    "commit": "c9818b6",
+    "ancestor": "c9412ca9dcbf585965a24d6a0d026a6cb6d36b09",
+    "method": "selective visual port with current-main behavior preserved"
+  },
+  "backend": {
+    "unit": {
+      "command": "npm run check",
+      "passed": 344,
+      "skippedBySuiteSelection": 261,
+      "typecheck": "passed",
+      "build": "passed",
+      "log": "artifacts/private/theme-port-oct17/backend-check.log"
+    },
+    "firestoreInitial": {
+      "command": "npm run test:firebase",
+      "passed": 253,
+      "failed": 1,
+      "failure": "25 simultaneous admissions on two clients exceeded the existing 15-second test timeout",
+      "log": "artifacts/private/theme-port-oct17/firestore.log"
+    },
+    "firestoreRetry": {
+      "result": "could not start",
+      "reason": "default emulator port 8089 was occupied",
+      "log": "artifacts/private/theme-port-oct17/firestore-local-only.log"
+    },
+    "firestoreFinal": {
+      "command": "METADATA_SERVER_DETECTION=none npm run test:firebase -- --config artifacts/private/theme-port-oct17/firebase.emulators.json",
+      "passed": 254,
+      "failed": 0,
+      "implementationOrTimeoutChanged": false,
+      "log": "artifacts/private/theme-port-oct17/firestore-isolated.log"
+    },
+    "sourceCommit": "a7a077d02ab5493e57a683452154a1b8c99e306b"
+  },
+  "buildHistory": [
+    {
+      "log": "build.log",
+      "result": "failed",
+      "reason": "old branch auth fixture referenced an unavailable contrast variable; corrected to use environment-aware field modifier"
+    },
+    {
+      "log": "build-2.log",
+      "result": "passed",
+      "sourceManifest": "tested-source-first.json"
+    },
+    {
+      "log": "build-final.log",
+      "result": "passed",
+      "sourceManifest": "tested-source-before-step-contrast.json"
+    },
+    {
+      "log": "build-step-contrast.log",
+      "result": "passed",
+      "sourceManifest": "tested-source-step-only.json"
+    },
+    {
+      "log": "build-toolbar-contrast.log",
+      "result": "passed",
+      "sourceManifest": "tested-source-final.json"
+    }
+  ],
+  "uiRuns": [
+    {
+      "summary": "functional-summary.json",
+      "bundle": "/tmp/shield-theme-functional-oct17.xcresult",
+      "runtime": "iOS 27",
+      "passed": 45,
+      "failed": 1,
+      "note": "Stale caretaker empty-state sentence; fixed assertion additionally verifies removal of acceptance and switch controls."
+    },
+    {
+      "summary": "compatibility-summary.json",
+      "bundle": "/tmp/shield-theme-compatibility-oct17.xcresult",
+      "runtime": "iOS 26.5",
+      "passed": 5,
+      "failed": 0
+    },
+    {
+      "summary": "accessibility-summary.json",
+      "bundle": "/tmp/shield-theme-accessibility-oct17.xcresult",
+      "runtime": "iOS 26.5",
+      "passed": 4,
+      "failed": 3,
+      "note": "21-fixture largest-dark matrix and switch/onboarding/dark audits passed; 19 product contrast reports remain in audit-issues-first.json."
+    },
+    {
+      "summary": "recipient-265-summary.json",
+      "bundle": "/tmp/shield-theme-recipient-265-oct17.xcresult",
+      "runtime": "iOS 26.5",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "summary": "final-summary.json",
+      "bundle": "/tmp/shield-theme-final-oct17.xcresult",
+      "runtime": "iOS 27",
+      "passed": 2,
+      "failed": 5,
+      "note": "Corrected caretaker and repeated navigation passed. Three product audit methods produced 21 contrast reports; two diagnostic reference methods produced 11 contrast and 3 clipping reports. See audit-issues-27.json."
+    },
+    {
+      "summary": "step-contrast-27-summary.json",
+      "bundle": "/tmp/shield-theme-step-contrast-27-oct17.xcresult",
+      "runtime": "iOS 27",
+      "passed": 0,
+      "failed": 2,
+      "note": "Three setup numeral reports cleared; four Cancel/Close reports retained in step-contrast-27-issues.json."
+    },
+    {
+      "summary": "step-contrast-265-summary.json",
+      "bundle": "/tmp/shield-theme-step-contrast-265-oct17.xcresult",
+      "runtime": "iOS 26.5",
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "summary": "toolbar-contrast-27-summary.json",
+      "bundle": "/tmp/shield-theme-toolbar-contrast-27-oct17.xcresult",
+      "runtime": "iOS 27",
+      "passed": 0,
+      "failed": 2,
+      "note": "No numeral reports; four native Cancel/Close control contrast reports persist despite primary-color labels. No filters or waivers."
+    },
+    {
+      "summary": "toolbar-contrast-265-summary.json",
+      "bundle": "/tmp/shield-theme-toolbar-contrast-265-oct17.xcresult",
+      "runtime": "iOS 26.5",
+      "passed": 2,
+      "failed": 0
+    }
+  ],
+  "interactionResult": "All 46 distinct original interaction methods passed across the first run and corrected caretaker reruns; original failing result retained.",
+  "sourceScope": {
+    "firstManifest": "tested-source-first.json",
+    "firstFiles": 239,
+    "beforeNumeralCorrection": "tested-source-before-step-contrast.json",
+    "finalManifest": "tested-source-final.json",
+    "finalFiles": 264,
+    "note": "The complete manifest includes tracked iOS project, source, resources and test files, two new color assets, and a hash only for ignored local configuration."
+  },
+  "preservedSideEffects": "preserved-effects.json",
+  "visualReview": {
+    "selectedCaptures": "screenshots.json",
+    "largestDarkScrolledFixtures": 21,
+    "allLargestMatrixCapturesIndividuallyReviewed": false,
+    "notes": [
+      "Persistent field labels remain readable where native placeholders truncate at maximum text size.",
+      "Quiet-hours largest-text tray retains its reserved height; time-row stability and reversal passed.",
+      "Native scroll-edge rendering and disabled controls are retained, with audit findings open."
+    ]
+  },
+  "remainingReleaseGates": [
+    "Unresolved accessibility audit findings and physical-device accessibility acceptance",
+    "Apple configuration, signing, StoreKit lifecycle and TestFlight acceptance",
+    "Exact-release real-call and carrier qualification, including monitoring audibility",
+    "Other gates in docs/IOS-RELEASE-VERIFICATION.md"
+  ],
+  "externalActions": {
+    "backendDeployed": false,
+    "physicalPhoneInstalled": false,
+    "appleChanged": false,
+    "revenuecatChanged": false,
+    "realCallsOrMessagesSent": false,
+    "carrierSettingsChanged": false
+  },
+  "archive": {
+    "verification": "archive-complete-verification.json",
+    "path": "/tmp/shield-apple-theme-complete-oct17.xcarchive",
+    "sourceManifest": "tested-source-final.json",
+    "appBinarySha256": "135b0edb94562b6ea2303d5fbc7aad12b9963cb9f96b6c215d6e40a4ac19f7b9",
+    "distributionSigningVerified": false
+  },
+  "contrastCorrections": [
+    "Use system primary text for numbered setup steps on tinted circles.",
+    "Use system primary text for Cancel/Close labels on native glass controls."
+  ],
+  "privateWorkingDirectory": "artifacts/private/theme-port-oct17",
+  "contrastCorrectionOutcome": {
+    "setupNumerals": "cleared on both runtimes",
+    "toolbarLabels": "rendered primary text, but iOS 27 native-control audits still fail; retained as open",
+    "pixelObservation": "toolbar-pixel-observation.json"
+  },
+  "runtimeWarningsAcrossRecordedUIRuns": 0,
+  "sourceHashesVerifiedAtFinish": true,
+  "archiveHistory": [
+    {
+      "verification": "archive-verification.json",
+      "sourceManifest": "tested-source-first.json"
+    },
+    {
+      "verification": "archive-final-verification.json",
+      "sourceManifest": "tested-source-before-step-contrast.json"
+    },
+    {
+      "verification": "archive-verified-verification.json",
+      "sourceManifest": "tested-source-step-only.json"
+    },
+    {
+      "verification": "archive-complete-verification.json",
+      "sourceManifest": "tested-source-final.json"
+    }
+  ],
+  "namedColorAssetValidation": {
+    "validAssets": 7,
+    "missingReferences": 0,
+    "retiredAssetReferences": 0
+  }
+}

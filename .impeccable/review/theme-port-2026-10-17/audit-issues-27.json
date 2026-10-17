@@ -1,0 +1,212 @@
+[
+  {
+    "screen": "accessibility-home",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247c00, {{84.0, 749.3}, {70.0, 18.0}}, label: 'Answered'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-home",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112248b40, {{32.0, 801.3}, {326.0, 52.3}}, label: 'All calls'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-home-row-exposed",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247d40, {{84.0, 749.3}, {70.0, 18.0}}, label: 'Answered'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-home-row-exposed",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112248b40, {{32.0, 801.3}, {326.0, 52.3}}, label: 'All calls'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-calls",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x11227c3c0, {{84.0, 781.0}, {145.3, 42.3}}, label: 'Suspicious message removed'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-calls",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x11227c500, {{281.3, 783.0}, {54.7, 18.0}}, identifier: 'call-time-E1A849B2-234B-4B09-AE18-B64C445F010D', label: '7:37\u202fAM'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-calls",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x11227c8c0, {{84.0, 827.3}, {179.7, 18.0}}, label: 'Stopped\u00a0\u00b7 (512)\u00a0555-0129'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112244b40, {{84.0, 48.3}, {100.0, 20.3}}, label: 'Call stopped'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112244f00, {{84.0, 72.7}, {107.7, 18.0}}, label: '(512)\u00a0555-0123'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112246440, {{280.0, 130.3}, {56.0, 18.0}}, identifier: 'call-time-126A4A2A-1479-4592-9E82-A86FC1A70FF6', label: '4:29\u202fPM'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-native-control-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247200, {{32.0, 756.0}, {106.3, 18.0}}, label: 'Supporting text'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-control-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247c00, {{32.0, 804.0}, {102.7, 20.3}}, label: 'Native row 10'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-control-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247d40, {{32.0, 826.7}, {106.3, 18.0}}, label: 'Supporting text'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247c00, {{32.0, 768.3}, {95.3, 20.3}}, label: 'Native row 8'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112247d40, {{32.0, 791.0}, {106.3, 18.0}}, label: 'Supporting text'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Text clipped",
+    "element": "No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Text clipped",
+    "element": "No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Text clipped",
+    "element": "No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x1110bb700, {{32.0, -6.3}, {106.3, 18.0}}, label: 'Supporting text'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112244780, {{32.0, 41.7}, {102.7, 20.3}}, label: 'Native row 10'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x1122448c0, {{32.0, 64.3}, {106.3, 18.0}}, label: 'Supporting text'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x11224b840, {{32.0, 748.3}, {105.0, 20.3}}, label: 'Native row 20'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x11224b980, {{32.0, 771.0}, {106.3, 18.0}}, label: 'Supporting text'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-native-stopped-card-scrolled-reference",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x11227c3c0, {{32.0, 819.0}, {102.3, 20.3}}, label: 'Native row 21'",
+    "nativeReference": true
+  },
+  {
+    "screen": "accessibility-numbers",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x108fa1040, {{32.0, 301.0}, {96.3, 74.0}}, label: 'Call', Disabled",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-add-number",
+    "issue": "Contrast failed",
+    "element": "Attributes: Button, 0x1110a30c0, {{20.0, 104.7}, {76.7, 36.0}}, label: 'Cancel'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast nearly passed",
+    "element": "Attributes: StaticText, 0x112241540, {{32.0, 204.7}, {326.0, 22.0}}, label: 'Share contacts once', Disabled",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112242e40, {{79.7, 435.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x112243e80, {{79.7, 609.8}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast failed",
+    "element": "Attributes: StaticText, 0x1110b9680, {{32.7, 757.0}, {173.7, 22.7}}, label: 'Contacts settings'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-protection",
+    "issue": "Contrast nearly passed",
+    "element": "Attributes: StaticText, 0x108fa2080, {{32.0, 204.7}, {326.0, 52.0}}, label: 'Check calls while I talk', Disabled",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast failed",
+    "element": "Attributes: Button, 0x1057edb80, {{303.0, 51.0}, {67.0, 36.0}}, label: 'Close'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast nearly passed",
+    "element": "Attributes: StaticText, 0x112240f00, {{16.0, 326.7}, {32.0, 32.0}}, label: '1'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast nearly passed",
+    "element": "Attributes: StaticText, 0x112241400, {{16.0, 413.3}, {32.0, 32.0}}, label: '2'",
+    "nativeReference": false
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast nearly passed",
+    "element": "Attributes: StaticText, 0x112241900, {{16.0, 500.0}, {32.0, 32.0}}, label: '3'",
+    "nativeReference": false
+  }
+]

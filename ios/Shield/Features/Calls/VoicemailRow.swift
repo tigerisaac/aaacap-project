@@ -8,15 +8,15 @@ struct VoicemailRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
             if !typeSize.isAccessibilitySize {
-                ShieldRowSymbol(systemName: kept ? "bookmark" : "recordingtape", color: ShieldTheme.message)
+                ShieldRowSymbol(systemName: kept ? "bookmark.fill" : "recordingtape", color: ShieldTheme.message, style: .avatar)
             }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(CallPresentation.title(call)).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                Text(CallPresentation.title(call)).font(.headline).foregroundStyle(ShieldTheme.ink)
                     .fixedSize(horizontal: false, vertical: true)
                 messageInfo
             }
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, ShieldTheme.Spacing.compact)
     }
 
     var accessibilityDetails: String {
@@ -51,7 +51,7 @@ struct VoicemailRow: View {
     @ViewBuilder private var messageInfo: some View {
         Group {
             if typeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                     if let kindText { kindText }
                     if let stateText { stateText }
                     Text(dateLabel)

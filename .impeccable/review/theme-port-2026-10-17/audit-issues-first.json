@@ -1,0 +1,116 @@
+[
+  {
+    "screen": "accessibility-home",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-home",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-home-row-exposed",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-home-row-exposed",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-calls-row-exposed",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-numbers",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast nearly passed",
+    "element": "No associated element",
+    "detail": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger."
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-contacts",
+    "issue": "Contrast failed",
+    "element": "No associated element",
+    "detail": "Contrast failed for SwiftUI.AccessibilityNode"
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast nearly passed",
+    "element": "No associated element",
+    "detail": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger."
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast nearly passed",
+    "element": "No associated element",
+    "detail": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger."
+  },
+  {
+    "screen": "accessibility-disconnection",
+    "issue": "Contrast nearly passed",
+    "element": "No associated element",
+    "detail": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger."
+  }
+]

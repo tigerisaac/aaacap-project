@@ -70,11 +70,11 @@ struct ProtectionCheckCard: View {
             if let items = check.items, !items.isEmpty {
                 DisclosureGroup {
                     ForEach(items) { item in
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text(item.title).font(.headline)
                             Text(item.detail).foregroundStyle(ShieldTheme.secondaryText)
-                            fixButton(item.fix).disabled(working).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                        }.padding(.vertical, 8)
+                            fixButton(item.fix).disabled(working).frame(minHeight: ShieldTheme.Layout.systemTarget)
+                        }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }
                 } label: {
                     // The same tile and text edge as the other Home rows.
@@ -85,7 +85,7 @@ struct ProtectionCheckCard: View {
                         Text("Phone setup needs attention").font(.headline).foregroundStyle(ShieldTheme.held)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, ShieldTheme.Spacing.tight)
                     .accessibilityElement(children: .combine)
                 }
                 .transaction { transaction in

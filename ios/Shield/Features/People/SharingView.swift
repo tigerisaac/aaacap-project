@@ -55,7 +55,7 @@ struct SharingView: View {
                         .accessibilityIdentifier("sharing-empty")
                 }
                 ForEach(grants) { grant in
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                         Text(grant.label).font(.headline)
                         Text(grant.accepted ? grant.canListen ? "Calls and messages" : "Calls only" : "Waiting for them to join")
                             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)

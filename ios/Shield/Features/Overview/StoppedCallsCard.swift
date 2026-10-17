@@ -5,45 +5,40 @@ import SwiftUI
 struct StoppedCallsCard: View {
     let count: Int?
     let openCalls: () -> Void
-    @Environment(\.dynamicTypeSize) private var typeSize
-    /// The large serif numeral's side bearing; pulling it back lines its ink up with the label above.
-    @ScaledMetric(relativeTo: .largeTitle) private var numeralBearing = 2.0
 
+    /// A Health-style summary: a tinted header with its symbol, the figure in SF Rounded, then units.
     var body: some View {
         Button(action: openCalls) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Text("Calls stopped").font(.headline)
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.tight) {
+                    Image(systemName: "hand.raised.fill").accessibilityHidden(true)
+                        .font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.held)
+                    Text("Calls stopped")
+                        .font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.held)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
-                    Image(systemName: "hand.raised").font(.body.weight(.medium))
+                    Image(systemName: "chevron.forward").font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color(uiColor: .tertiaryLabel))
                         .accessibilityHidden(true)
                 }
                 if let count, count > 0 {
-                    // Side by side whenever it fits, so "in total" reads with its number.
                     ViewThatFits(in: .horizontal) {
-                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.tight) {
                             total(count)
-                            Text("in total").font(.body).fixedSize()
+                            units.fixedSize()
                         }
                         VStack(alignment: .leading, spacing: 0) {
                             total(count)
-                            Text("in total").font(.body)
+                            units
                         }
                     }
                 } else {
                     Text(count == nil ? "Total unavailable" : "None so far").font(.body)
+                        .foregroundStyle(ShieldTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                HStack(spacing: 8) {
-                    Text("See calls").font(.headline)
-                    Image(systemName: "arrow.right").font(.body.weight(.semibold))
-                        .accessibilityHidden(true)
-                }
-                .padding(.top, typeSize.isAccessibilitySize ? 0 : 4)
             }
-            .foregroundStyle((count ?? 0) > 0 ? ShieldTheme.actionInk : Color.primary)
-            .padding(.vertical, 12)
+            .padding(.vertical, ShieldTheme.Spacing.tight)
             .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
             .contentShape(.rect)
         }
@@ -52,14 +47,18 @@ struct StoppedCallsCard: View {
         .accessibilityValue(count.map { "\($0) in total" } ?? "Total unavailable")
         .accessibilityHint("Shows recent stopped calls, including calls that need review.")
         .accessibilityIdentifier("home-stopped-calls")
-        .listRowBackground((count ?? 0) > 0 ? ShieldTheme.action : ShieldTheme.card)
+    }
+
+    private var units: some View {
+        Text("in total").font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.secondaryText)
     }
 
     private func total(_ count: Int) -> some View {
         Text(count, format: .number)
-            .font(ShieldTheme.Typography.display.scaled(by: 1.6)).monospacedDigit().tracking(-1)
+            .font(.system(.largeTitle, design: .rounded).weight(.bold)).monospacedDigit()
+            .foregroundStyle(ShieldTheme.ink)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.leading, -numeralBearing)
             .accessibilityIdentifier("stopped-call-count")
     }
+
 }

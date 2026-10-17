@@ -5,51 +5,60 @@
       "color": {
         "color-space": "srgb",
         "components": {
-          "red": "0x72",
+          "red": "0x89",
           "green": "0x44",
-          "blue": "0xB9",
+          "blue": "0xAB",
           "alpha": "1.000"
         }
       }
     },
     {
       "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0xBF",
+          "green": "0x5A",
+          "blue": "0xF2",
+          "alpha": "1.000"
+        }
+      },
       "appearances": [
         {
           "appearance": "luminosity",
           "value": "dark"
         }
-      ],
-      "color": {
-        "color-space": "srgb",
-        "components": {
-          "red": "0xCA",
-          "green": "0xAE",
-          "blue": "0xFF",
-          "alpha": "1.000"
-        }
-      }
+      ]
     },
     {
       "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0x6E",
+          "green": "0x35",
+          "blue": "0x90",
+          "alpha": "1.000"
+        }
+      },
       "appearances": [
         {
           "appearance": "contrast",
           "value": "high"
         }
-      ],
-      "color": {
-        "color-space": "srgb",
-        "components": {
-          "red": "0x58",
-          "green": "0x30",
-          "blue": "0x8F",
-          "alpha": "1.000"
-        }
-      }
+      ]
     },
     {
       "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0xDA",
+          "green": "0x8F",
+          "blue": "0xFF",
+          "alpha": "1.000"
+        }
+      },
       "appearances": [
         {
           "appearance": "luminosity",
@@ -59,16 +68,7 @@
           "appearance": "contrast",
           "value": "high"
         }
-      ],
-      "color": {
-        "color-space": "srgb",
-        "components": {
-          "red": "0xDE",
-          "green": "0xCA",
-          "blue": "0xFF",
-          "alpha": "1.000"
-        }
-      }
+      ]
     }
   ],
   "info": {

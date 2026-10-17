@@ -7,10 +7,6 @@ struct ShieldApp: App {
     @State private var model = AppState()
     @Environment(\.scenePhase) private var scenePhase
 
-    init() {
-        ShieldTheme.Typography.configureNavigation()
-    }
-
     var body: some Scene {
         WindowGroup {
             RootView()

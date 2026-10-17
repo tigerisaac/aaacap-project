@@ -1,0 +1,23 @@
+{
+  "capture": "artifacts/private/theme-port-oct17/toolbar-candidate-dark.png",
+  "reportedFramePoints": [
+    20,
+    104.7,
+    76.7,
+    36
+  ],
+  "scale": 3,
+  "whiteGlyphRGB": [
+    255,
+    255,
+    255
+  ],
+  "mostCommonControlRGB": [
+    32,
+    32,
+    32
+  ],
+  "sampleRatio": 16.293,
+  "whitePixelCount": 1192,
+  "limitation": "Dominant control background and white glyph sample only; not a full control/material audit or a waiver of its failing automated result."
+}

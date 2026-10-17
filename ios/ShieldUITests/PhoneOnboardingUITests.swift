@@ -12,7 +12,8 @@ final class PhoneOnboardingUITests: XCTestCase {
             XCTAssertFalse(app.textFields["Email address"].exists)
             XCTAssertTrue(app.buttons["Privacy"].exists || app.links["Privacy"].exists)
             XCTAssertGreaterThanOrEqual(app.textFields["sign-in-phone"].frame.height, 52)
-            XCTAssertGreaterThanOrEqual(app.buttons["phone-sign-in-submit"].frame.height, 52)
+            // The native large capsule supplies its height; retain the 44-point minimum target.
+            XCTAssertGreaterThanOrEqual(app.buttons["phone-sign-in-submit"].frame.height, 44)
             capture(app, "Phone-only sign-in \(appearance)")
         }
     }
@@ -108,7 +109,11 @@ final class PhoneOnboardingUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["You’re a caretaker."].appears(timeout: 5))
         capture(app, "recipient-both-channels")
         let stop = app.buttons["Stop these alerts"]; reveal(stop, app); stop.tap()
-        XCTAssertTrue(app.staticTexts["No requests for this mobile number."].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["No requests"].appears(timeout: 5))
+        XCTAssertFalse(app.buttons["contact-accept"].exists)
+        XCTAssertFalse(app.switches["contact-text-alerts"].exists)
+        XCTAssertTrue(app.buttons["Done"].isHittable)
+        capture(app, "recipient-alerts-stopped")
     }
 
     private func launch(_ arguments: [String]) -> XCUIApplication {

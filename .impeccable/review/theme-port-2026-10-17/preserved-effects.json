@@ -1,0 +1,26 @@
+[
+  {
+    "path": "ios/Shield/Features/Auth/PhoneSignInView.swift",
+    "from": "private func requestCode()",
+    "unchanged": true,
+    "sha256": "49a96079ecd4776bb5072cf59f6b82616b5dc16912ceb57383439680512bb9ee"
+  },
+  {
+    "path": "ios/Shield/Features/Settings/AddNumberView.swift",
+    "from": "private func finishEditing()",
+    "unchanged": true,
+    "sha256": "bbc775059302fb304d72392a2bb93ccb4f643a338176b9f5ee8c9241a50c11a3"
+  },
+  {
+    "path": "ios/Shield/Features/TrustedContacts/AddTrustedContactView.swift",
+    "from": "private func",
+    "unchanged": true,
+    "sha256": "992a6ae29d4c3d5b400cfda43b44a48d621e2284a4c938f41148490f961c4bfa"
+  },
+  {
+    "path": "ios/Shield/Features/Auth/ProtectionOnboardingView.swift",
+    "from": "private func save()",
+    "unchanged": true,
+    "sha256": "b65f5639ede980ec538eb45ae6ed31d152c098b5b610639b24f3b3aaf0c42e96"
+  }
+]

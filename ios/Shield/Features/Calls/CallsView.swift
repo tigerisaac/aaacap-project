@@ -32,15 +32,15 @@ struct CallsView: View {
                         ShieldGroup {
                             ForEach(day.calls) { call in CallNavigationRow(call: call, showsDay: false) }
                         } header: {
-                            Text(day.title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink)
+                            Text(day.title)
                                 .textCase(nil).accessibilityAddTraits(.isHeader)
                         }
                     }
                     if model.nextCursor != nil {
                         ShieldGroup {
                             Button(model.isLoadingCalls ? "Getting more…" : "Older calls") { Task { await model.loadCalls(more: true) } }
-                                .font(.body.weight(.medium))
-                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isLoadingCalls)
+                                .font(.body)
+                                .frame(maxWidth: .infinity).disabled(model.isLoadingCalls)
                         }
                     }
                 }

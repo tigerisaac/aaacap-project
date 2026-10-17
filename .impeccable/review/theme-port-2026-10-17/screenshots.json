@@ -1,0 +1,93 @@
+[
+  {
+    "file": "screenshots/home-light.png",
+    "source": "artifacts/private/theme-port-oct17/visual-captures/accessibility-home.png",
+    "sha256": "3a47fe502a3f85f6f4ea58ac6c12ddf2956f96f04c5042af6b79a533c5745dfe",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/home-dark.png",
+    "source": "artifacts/private/theme-port-oct17/functional-captures/Native Home standard-dark.png",
+    "sha256": "e5b650bacc9443929c3e7ab14d16b8df9e0565d67ccd1b6e93c6a75775738bc5",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/more-light.png",
+    "source": "artifacts/private/theme-port-oct17/visual-captures/accessibility-more.png",
+    "sha256": "d1f51600ae3f787e596e4fd19d5c2b5b8469a4549916b3c7427276c3fdeb74ad",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/settings-light.png",
+    "source": "artifacts/private/theme-port-oct17/compatibility-captures/Release independent Settings.png",
+    "sha256": "60f88c484e2d6fc99fd97fc90a303ac7915ef27d89196576ba1619a167d79dfc",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/signin-light.png",
+    "source": "artifacts/private/theme-port-oct17/functional-captures/Phone-only sign-in --uitesting-light.png",
+    "sha256": "99a68e65446a6e4c6810a121d126640bdbb24d41af0b4a1e6457bfd4cc3e9e96",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/signin-dark.png",
+    "source": "artifacts/private/theme-port-oct17/functional-captures/Phone-only sign-in --uitesting-dark.png",
+    "sha256": "b01d253acc66cffb8934512cde28147f43d3404799c752e3b11b98eef5899be5",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/subscription-light.png",
+    "source": "artifacts/private/theme-port-oct17/compatibility-captures/Subscription annual billing.png",
+    "sha256": "28b6747c46f2b0fa13efccf4b81b2cbaf9820b2f921b74c6c229f9986137b5a3",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/caretaker-channels.png",
+    "source": "artifacts/private/theme-port-oct17/functional-captures/recipient-both-channels.png",
+    "sha256": "048b498d04159f56d717249accf57e0f833d42aecd247f7c92f648ba73479e4e",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/caretaker-stopped.png",
+    "source": "artifacts/private/theme-port-oct17/recipient-265-captures/recipient-alerts-stopped.png",
+    "sha256": "e6ea1465f982053cd4727cdb9f8a95a29a5fe85fecc894a1b087a98667c3644e",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/disconnect-light.png",
+    "source": "artifacts/private/theme-port-oct17/toolbar-contrast-27-captures/accessibility-disconnection.png",
+    "sha256": "0ab9a19a033e856d58bc0ae4a791e3627f4d6caf2f6072c6810a43fde7d742c4",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/disconnect-dark.png",
+    "source": "artifacts/private/theme-port-oct17/toolbar-contrast-27-captures/accessibility-disconnection-dark.png",
+    "sha256": "862d0c47c8904a7e15480ea482efb0113786c4231e6ece8d76a92bc02a8e794b",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/cancel-dark.png",
+    "source": "artifacts/private/theme-port-oct17/toolbar-candidate-dark.png",
+    "sha256": "ab3d067caa9e75ea97eee02e69697ac47a04c827590ab4e6fd38ab1b22f0d59f",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  },
+  {
+    "file": "screenshots/native-reference-edge.png",
+    "source": "artifacts/private/theme-port-oct17/final-captures/accessibility-native-control-reference.png",
+    "sha256": "696027bc986093ee8a04c4a404f2497936bd22e88424a2ea14eae530d0cac07a",
+    "syntheticDataOnly": true,
+    "visuallyInspected": true
+  }
+]

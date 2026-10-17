@@ -54,11 +54,11 @@ struct SharedContactsView: View {
             }
             ShieldGroup {
                 ForEach(filtered) { item in
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                         Text(item.label).font(.headline)
                         Text(PhoneDisplay.format(item.phone)).font(.subheadline).monospacedDigit().foregroundStyle(ShieldTheme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.bottom, 8)
+                            .padding(.bottom, ShieldTheme.Spacing.compact)
                         Button(role: .destructive) { pendingRemoval = item } label: {
                             HStack(alignment: .firstTextBaseline) {
                                 Image(systemName: "minus.circle")
@@ -74,10 +74,10 @@ struct SharedContactsView: View {
                         .accessibilityLabel("Remove \(item.label) from Contacts")
                         .accessibilityInputLabels(["Remove from iPhone", "Remove \(item.label)"])
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, ShieldTheme.Spacing.tight)
                 }
             } footer: {
-                Text("Removing a number here also removes it from iPhone Contacts.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                Text("Removing a number here also removes it from iPhone Contacts.").foregroundStyle(ShieldTheme.secondaryText)
             }
             if model.items.contains(where: { !$0.isEnabled }) {
                 ShieldGroup {
@@ -88,7 +88,7 @@ struct SharedContactsView: View {
                                 Button("Add back to Contacts", systemImage: "arrow.uturn.backward") {
                                     Task { _ = await model.change(true, item: item, app: app) }
                                 }
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working || app.isDemo)
+                                .frame(minHeight: ShieldTheme.Layout.systemTarget).disabled(model.working || app.isDemo)
                                 .accessibilityLabel("Add \(item.label) back to Contacts")
                             }
                         }
@@ -98,7 +98,7 @@ struct SharedContactsView: View {
             ShieldGroup {
                 Button("Contacts settings", systemImage: "gearshape") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                }
             }
         }
         .alert("Remove \(pendingRemoval?.label ?? "this contact") from iPhone Contacts?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } })) {

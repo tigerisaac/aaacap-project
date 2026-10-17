@@ -50,7 +50,7 @@ final class NavigationRegressionUITests: XCTestCase {
             for tab in ["Home", "Calls", "Messages", "More"] {
                 app.tabBars.buttons[tab].tap()
                 XCTAssertTrue(app.navigationBars[tab].appears(timeout: 3))
-                capture(app, "Serif \(tab) \(large ? "large-light" : "standard-dark")")
+                capture(app, "Native \(tab) \(large ? "large-light" : "standard-dark")")
             }
             app.buttons["Settings"].tap()
             reveal(app.buttons["Phone setup"], app)
@@ -64,7 +64,7 @@ final class NavigationRegressionUITests: XCTestCase {
             XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
             app.navigationBars.buttons.firstMatch.tap()
             XCTAssertTrue(app.navigationBars["More"].appears(timeout: 3))
-            capture(app, "Serif More restored \(large ? "large-light" : "standard-dark")")
+            capture(app, "Native More restored \(large ? "large-light" : "standard-dark")")
         }
     }
 

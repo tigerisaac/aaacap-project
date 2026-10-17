@@ -33,13 +33,13 @@ struct SavedNumbersView: View {
                     ContentUnavailableView("No numbers yet", systemImage: "phone",
                         description: Text("Save a number from a card, bill, or official website."))
                     Button("Add a number", systemImage: "plus") { showingAdd = true }
-                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
+                        .disabled(model.isDemo)
                 }
             }
             ShieldGroup {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                             Text(item.label).font(.headline).fixedSize(horizontal: false, vertical: true)
                             Text(PhoneDisplay.format(item.phone)).font(.subheadline).monospacedDigit()
                                 .foregroundStyle(ShieldTheme.secondaryText)
@@ -88,13 +88,14 @@ struct SavedNumbersView: View {
     @ViewBuilder private func numberActions(_ item: SavedNumber) -> some View {
         if kind == .destinations {
             Button { call(item.phone) } label: {
-                Label("Call", systemImage: "phone.fill").frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                Label("Call", systemImage: "phone.fill").frame(minHeight: ShieldTheme.Layout.systemTarget)
             }
             .accessibilityLabel("Call \(item.label)").accessibilityInputLabels(["Call \(item.label)", "Call"])
             .shieldSecondaryButton().disabled(model.isDemo)
         }
         Button("Remove", systemImage: "minus.circle", role: .destructive) { pendingRemoval = item }
-            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
+            .frame(minHeight: ShieldTheme.Layout.systemTarget)
+            .disabled(model.isDemo)
             .accessibilityLabel("Remove \(item.label)")
     }
 

@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — Andrewwww's Apple-style theme ported onto current release flows
+
+The visual work from `origin/Andrewwww` (`c9818b6`) is selectively ported onto current main: native system headings, grouped surfaces, bar materials, Settings-style symbols, call/message avatars and welcome/setup actions. Current phone sign-in, one-time contact sharing, optional alert-only caretakers, subscriptions, account deletion, guided disconnection and switch accessibility remain intact. The older branch's retired flows and unrelated implementation changes were not restored.
+
+Typecheck/build and **344 unit + 254 Firestore tests** passed. All **46 distinct interaction methods** have passing evidence across the original 45/46 run and corrected caretaker reruns on iOS 27/26.5; the stale test assertion and original result are retained. Five additional compatibility checks and the 21-fixture largest-dark screen matrix passed. Setup-numeral contrast is corrected. Final focused audits pass 2/2 on iOS 26.5; iOS 27 retains four native Cancel/Close control reports despite primary-color labels. Wider unfiltered audit findings remain open, with product and native-reference reports recorded separately. The final unsigned archive passes packaging checks. No backend deployment, physical installation, Apple change or phone operation occurred. [Port, screenshots, exact evidence and release limits](IOS-THEME-PORT.md).
+
 ## October 17 — switch accessibility layout corrected (before the Andrewwww theme port)
 
 Removed a redundant hidden accessibility representation from the custom switch after reproducing both clipping reports against a passing native-switch reference. The inherited native role/state, full-row tap action and standard/largest text layouts passed on iOS 27 and 26.5; three focused VoiceOver methods passed. All runs have zero runtime warnings. The unchanged unfiltered audits still fail with ten contrast reports; their earlier 17-report result is retained separately. Eight final iOS 27 captures and three largest-text iOS 26.5 captures were inspected.

@@ -9,6 +9,7 @@ struct ShieldPhoneEntry<Field: Hashable>: View {
     let identifier: String
     var mobileOnly = false
     var allowsClear = false
+    var fill: Color = ShieldTheme.card
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
@@ -33,7 +34,7 @@ struct ShieldPhoneEntry<Field: Hashable>: View {
                 .focused(focus, equals: field)
                 .padding(.leading, typeSize.isAccessibilitySize ? 0 : ShieldTheme.Spacing.section)
                 .padding(.trailing, allowsClear && focus.wrappedValue == field && !text.isEmpty ? ShieldTheme.Layout.minimumTarget : 0)
-                .shieldField(focused: focus.wrappedValue == field)
+                .shieldField(focused: focus.wrappedValue == field, fill: fill)
                 .overlay(alignment: .leading) {
                     if !typeSize.isAccessibilitySize {
                         Image(systemName: "phone").foregroundStyle(ShieldTheme.secondaryText)

@@ -26,7 +26,7 @@ struct TrialSetupView: View {
                     Text(setup.status == "paused" ? "Shield checks calls that reach it until the call test ends." : "Calls that reach Shield go to voicemail. Your phone still sends those calls to Shield.")
                 }
         } footer: {
-            Text("The call test still ends at the same time.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            Text("The call test still ends at the same time.").foregroundStyle(ShieldTheme.secondaryText)
         }
         }
     }

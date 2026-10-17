@@ -5,7 +5,7 @@ struct OutcomeBadge: View {
     let outcome: CallOutcome
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
+        HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.tight) {
             Image(systemName: outcome.symbol).accessibilityHidden(true)
             Text(outcome.label)
         }
