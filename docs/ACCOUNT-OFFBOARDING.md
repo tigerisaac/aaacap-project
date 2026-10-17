@@ -1,6 +1,6 @@
 # Guided disconnection and account deletion
 
-October 17, 2026 — the guided disconnection subset is deployed as `shieldapi-00026-hiy` with owner approval; the durable account-deletion and privacy rollout remains repository implementation only. The iPhone guide and saved carrier instructions are available locally. Explicit progress and final routing changes use the server. [Deployment evidence](STATUS.md#october-17--local-phone-setup-and-disconnection-guide-installed-guided-backend-deployed). No carrier change or real phone call was performed.
+October 17, 2026 — the guided disconnection subset, including explicit cancellation, is deployed as `shieldapi-00027-xaw` with owner approval; the durable account-deletion and privacy rollout remains repository implementation only. The iPhone guide and saved carrier instructions are available locally. Explicit progress and final routing changes use the server. [Deployment evidence](STATUS.md#october-17--local-phone-setup-and-disconnection-guide-installed-guided-backend-deployed). No carrier change or real phone call was performed.
 
 ## The senior's journey
 
