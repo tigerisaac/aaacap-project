@@ -1,5 +1,13 @@
 # Status
 
+## October 17 — retention inventory and two cleanup corrections (local, not deployed)
+
+The [data inventory](DATA-INVENTORY.md) now traces identity, explicit contact sharing, caretaker consent, call content, device tokens, purchases, operational records and iPhone copies through storage and deletion. It identifies unresolved provider/log/backup retention, sharing-grant and SMS-suppression retention, diagnostic privacy categories and other-device acceptance. This is a source inventory and draft privacy mapping, not final Apple/legal approval.
+
+Two reproduced gaps are corrected: successful/exhausted completed phone-code checks erase their encrypted phone/provider fields while retaining replay/attempt state; daily expiry cleanup removes completed recording-erasure jobs while preserving unfinished provider deletion. App/web privacy wording now distinguishes the two-hour transcript expiry from daily fallback removal. Four regressions failed before the fixes; all **27 focused tests**, required typecheck/build and **344 unit + 257 Firestore tests** passed afterward. The disclosure expands, scrolls to its final link above the tab bar and collapses at standard/largest text on the compact iOS 27 simulator, with zero runtime warnings. The updated unsigned archive passed both arm64 bundles, all three privacy manifests and fixture exclusions. [Exact evidence](../.impeccable/review/release-2026-10-17/privacy-retention/verification.json).
+
+The earlier theme commit `98dbc2b` also passed its independent [backend CI run](https://github.com/tigerisaac/aaacap-project/actions/runs/39079353458), including account lifecycle checks. No backend deployment, physical phone installation, provider configuration or real-call test was made for this retention follow-up. The release checklist remains open.
+
 ## October 17 — Andrewwww's Apple-style theme ported onto current release flows
 
 The visual work from `origin/Andrewwww` (`c9818b6`) is selectively ported onto current main: native system headings, grouped surfaces, bar materials, Settings-style symbols, call/message avatars and welcome/setup actions. Current phone sign-in, one-time contact sharing, optional alert-only caretakers, subscriptions, account deletion, guided disconnection and switch accessibility remain intact. The older branch's retired flows and unrelated implementation changes were not restored.

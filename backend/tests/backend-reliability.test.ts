@@ -103,6 +103,26 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('backend reliability recov
     expect((await db.collection('callControlDeadlines').doc(c.id).get()).data()).toEqual(deadline);
     expect((await cc.call(c.id))!.state).toBe(finish === 'caller hangup' ? 'ended' : 'voicemail');
   });
+  it('expires completed recording jobs across retained pages without discarding unfinished provider erasure', async () => {
+    const jobs = db.collection('forwardingRecordings'), write = db.bulkWriter();
+    for (let n = 0; n < 805; n++) {
+      write.set(jobs.doc(String(n).padStart(4, '0')), { status: n < 400 ? 'pending' : 'done', expiresAt: now - 1 });
+    }
+    write.set(jobs.doc('stored'), { status: 'stored', expiresAt: now - 1 });
+    write.set(jobs.doc('unknown'), { status: 'legacy', expiresAt: now - 1 });
+    write.set(jobs.doc('fresh'), { status: 'done', expiresAt: now + 1000 });
+    await write.close();
+    await s.cleanup();
+    const remaining = (await jobs.get()).docs;
+    expect(remaining).toHaveLength(403);
+    expect(remaining.filter(d => d.data().status === 'done').map(d => d.id)).toEqual(['fresh']);
+    expect((await jobs.doc('stored').get()).exists).toBe(true);
+    expect((await jobs.doc('unknown').get()).exists).toBe(true);
+    await jobs.doc('stored').update({ status: 'done' });
+    await s.cleanup();
+    expect((await jobs.doc('stored').get()).exists).toBe(false);
+    expect((await jobs.doc('0000').get()).exists).toBe(true);
+  });
   it('drains multiple expiry pages, skips retained contacts and preserves historical totals', async () => {
     const write = db.bulkWriter(), person = people[0]!;
     for (let n = 0; n < 805; n++) {

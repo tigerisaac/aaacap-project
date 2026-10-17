@@ -73,6 +73,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
     const check = (code: string) => app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code } });
     expect((await check('000000')).json().error.code).toBe('phone_code_incorrect'); expect(mint).not.toHaveBeenCalled();
     expect((await check('123456')).statusCode).toBe(200); expect(mint).toHaveBeenCalledExactlyOnceWith(PHONE);
+    const consumed = (await db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge)).get()).data()!;
+    expect(consumed.consumed).toBe(true);
+    expect(consumed.phoneEnc).toBeUndefined(); expect(consumed.providerID).toBeUndefined();
     expect((await check('123456')).json().error.code).toBe('phone_code_expired');
     expect((await app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone: PHONE } })).statusCode).toBe(429);
     expect(start).toHaveBeenCalledTimes(1);
@@ -80,6 +83,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
   it('rejects expired and exhausted challenges before calling the provider', async () => {
     const { challenge } = (await app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone: PHONE } })).json();
     for (let i = 0; i < 5; i++) await app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '000000' } });
+    const exhausted = (await db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge)).get()).data()!;
+    expect(exhausted.attempts).toBe(5);
+    expect(exhausted.phoneEnc).toBeUndefined(); expect(exhausted.providerID).toBeUndefined();
     expect((await app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '123456' } })).json().error.code).toBe('phone_code_expired');
     expect(verify).toHaveBeenCalledTimes(5); expect(mint).not.toHaveBeenCalled();
     now += 61_000;
@@ -93,6 +99,29 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
     const replies = await Promise.all([0, 1].map(() => app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '123456' } })));
     expect(replies.filter(r => r.statusCode === 200)).toHaveLength(1); expect(mint).toHaveBeenCalledTimes(1);
   });
+  it('erases verified challenge payload even when the identity exchange fails, without allowing a replay', async () => {
+    const { challenge } = (await app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone: PHONE } })).json();
+    mint.mockRejectedValueOnce(new Error('synthetic_identity_outage'));
+    const failed = await app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '123456' } });
+    expect(failed.statusCode).toBe(500);
+    const consumed = (await db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge)).get()).data()!;
+    expect(consumed.consumed).toBe(true);
+    expect(consumed.phoneEnc).toBeUndefined(); expect(consumed.providerID).toBeUndefined();
+    const replay = await app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '123456' } });
+    expect(replay.json().error.code).toBe('phone_code_expired');
+    expect(mint).toHaveBeenCalledTimes(1); expect(verify).toHaveBeenCalledTimes(1);
+  });
+  it('erases an exhausted challenge after a provider failure without allowing another provider check', async () => {
+    const { challenge } = (await app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone: PHONE } })).json();
+    const check = () => app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '000000' } });
+    for (let i = 0; i < 4; i++) expect((await check()).statusCode).toBe(401);
+    verify.mockRejectedValueOnce(new Error('synthetic_provider_outage'));
+    expect((await check()).statusCode).toBe(500);
+    const exhausted = (await db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge)).get()).data()!;
+    expect(exhausted.phoneEnc).toBeUndefined(); expect(exhausted.providerID).toBeUndefined();
+    expect((await check()).json().error.code).toBe('phone_code_expired');
+    expect(verify).toHaveBeenCalledTimes(5); expect(mint).not.toHaveBeenCalled();
+  });
   it('fences a slow verification whose lease was superseded, even if the provider accepts it', async () => {
     const { challenge } = (await app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone: PHONE } })).json();
     verify.mockImplementationOnce(async () => {
@@ -101,6 +130,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
     });
     expect((await app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge, code: '123456' } })).statusCode).toBe(401);
     expect(mint).not.toHaveBeenCalled();
+    const current = (await db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge)).get()).data()!;
+    expect(current.phoneEnc).toBeDefined(); expect(current.providerID).toBeDefined();
   });
   it('limits active contacts to five and keeps declined contacts from consuming a slot', async () => {
     const ids: string[] = [];

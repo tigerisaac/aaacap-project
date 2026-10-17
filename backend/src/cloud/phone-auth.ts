@@ -1,6 +1,7 @@
 import pilotLimits from './pilot-limits.json' with { type: 'json' };
 import { randomBytes } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
+import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
 import { HttpError, type AuthProvider } from '../auth.js';
 import { normalizePhone } from '../crypto.js';
@@ -79,12 +80,14 @@ export function registerPhoneAuth(app: FastifyInstance, store: CloudStore, auth:
       await store.db.runTransaction(async tx => {
         const latest = (await tx.get(ref)).data();
         if (!latest || latest.consumed || latest.expiresAt <= store.now() || latest.checkingID !== checkingID) throw new HttpError(401, 'phone_code_expired');
-        tx.update(ref, { consumed: true, checkingUntil: 0 });
+        tx.update(ref, { consumed: true, checkingUntil: 0, phoneEnc: FieldValue.delete(), providerID: FieldValue.delete() });
       });
       return await auth.signInVerifiedPhone!(phone);
     } finally {
       if (!verified) await store.db.runTransaction(async tx => {
-        if ((await tx.get(ref)).data()?.checkingID === checkingID) tx.update(ref, { checkingUntil: 0 });
+        const latest = (await tx.get(ref)).data();
+        if (latest?.checkingID === checkingID) tx.update(ref, { checkingUntil: 0,
+          ...(latest.attempts >= 5 ? { phoneEnc: FieldValue.delete(), providerID: FieldValue.delete() } : {}) });
       });
     }
   });

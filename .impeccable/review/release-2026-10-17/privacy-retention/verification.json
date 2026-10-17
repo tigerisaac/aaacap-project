@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-17",
+  "baseCommit": "98dbc2bcd5431b9f179c1a7a4adce0d2cd1ffcc9",
+  "sourceOverlays": "source-overlays.json",
+  "scope": [
+    "Erase phone/provider payload from consumed or completed exhausted sign-in challenges",
+    "Expire completed provider-recording jobs while retaining unfinished erasure",
+    "Correct transcript-expiry/deletion wording in app and policy",
+    "Trace repository data retention and unresolved external/device gates"
+  ],
+  "regressionBeforeFix": {
+    "failed": 4,
+    "skipped": 22,
+    "reason": "Three sign-in cases retained encrypted phone data; completed recording jobs were not removed at expiry.",
+    "tests": [
+      "issues opaque expiring challenges",
+      "rejects expired and exhausted challenges",
+      "erases verified challenge payload even when identity exchange fails",
+      "expires completed recording jobs across retained pages"
+    ]
+  },
+  "focusedAfterFix": {
+    "passed": 27,
+    "failed": 0,
+    "suites": [
+      "phone-contacts",
+      "backend-reliability"
+    ],
+    "additionalChecks": [
+      "Fifth-attempt provider failure scrubs payload and denies replay",
+      "Superseded verification preserves the current challenge",
+      "An entire retained page does not starve completed jobs",
+      "Pending/stored/unknown jobs survive; stored job expires once done"
+    ]
+  },
+  "requiredChecks": {
+    "unit": {
+      "passed": 344,
+      "skippedBySuiteSelection": 264,
+      "typecheck": "passed",
+      "build": "passed"
+    },
+    "firestore": {
+      "passed": 257,
+      "failed": 0,
+      "suites": 12,
+      "project": "demo-shield",
+      "config": "artifacts/private/privacy-inventory-oct17/firebase.emulators.json",
+      "metadataServerDetection": "none"
+    }
+  },
+  "ui": {
+    "runtime": "iOS 27",
+    "model": "iPhone 17e",
+    "test": "NavigationRegressionUITests/testDisclosureExpandsWithinItsCardAndCollapses",
+    "initial": {
+      "passed": 1,
+      "failed": 0,
+      "summary": "ios-summary.json",
+      "resultBundle": "/tmp/shield-privacy-disclosure-oct17.xcresult"
+    },
+    "final": {
+      "passed": 1,
+      "failed": 0,
+      "summary": "ios-bottom-summary.json",
+      "resultBundle": "/tmp/shield-privacy-disclosure-bottom-oct17.xcresult"
+    },
+    "runtimeWarnings": 0,
+    "coverage": "Both standard and largest text in dark appearance; expand, bottom link wholly above tab bar, return and collapse.",
+    "limit": "Initial largest-text capture alone did not show the end. Four selected captures reviewed; wider accessibility findings remain open."
+  },
+  "archive": {
+    "archive": "/tmp/shield-privacy-retention-oct17.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "d3befe70714997b9e449eea3543aaba9d2be12dd2e8c5e2e766002b8bb431c29"
+  },
+  "themeCI": {
+    "commit": "98dbc2bcd5431b9f179c1a7a4adce0d2cd1ffcc9",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39079353458",
+    "conclusion": "success",
+    "completedAt": "2026-10-17T23:35:32Z",
+    "steps": [
+      "npm run check",
+      "npm run test:firebase",
+      "npm run test:accounts"
+    ]
+  },
+  "privateLogs": [
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/retention-red.log",
+      "sha256": "6fcef23eef7f4ec50b87dd7fb16e7b40ac1b04497834e93184ed8b93fb6782ca"
+    },
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/retention-focused.log",
+      "sha256": "b607850e20f7a986f70874bca6e96c2a773531af3cbb29a1a4bf616fceabb80d"
+    },
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/npm-check.log",
+      "sha256": "2fa6db5f33e075fede485af347372f67b4a4344911fa3fa35378d0ff8b297fb1"
+    },
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/firestore-full.log",
+      "sha256": "80314b9af8f91cafc5f9b5a6940f0eea8ec365c8347037f096d071da7e7ca113"
+    },
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/ios-disclosure.log",
+      "sha256": "220cb787666c6e1dbbe3795c91631f2d720340a404b08cdf33b2bbbe6728c929"
+    },
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/ios-disclosure-bottom.log",
+      "sha256": "905e421d3d58b283dc8c38bc45f4ad360f8d7f8a4e690c3e774bd0ac7a247d9a"
+    },
+    {
+      "path": "artifacts/private/privacy-inventory-oct17/archive.log",
+      "sha256": "85aba37c474ee2f5aedec906a9569c4306e5ac76826c4b50d881e774e7b2b1ec"
+    }
+  ],
+  "toolingNote": "The first Xcode result reader was blocked from its local report cache; the permitted read/export succeeded. Both iOS runs passed. The intentional pre-fix backend regression failures are recorded separately.",
+  "externalActions": {
+    "deployed": false,
+    "physicalPhoneInstalled": false,
+    "realCallsOrMessagesSent": false,
+    "providerConfigurationChanged": false,
+    "carrierSettingsChanged": false,
+    "appleSetupChanged": false
+  },
+  "remainingGates": [
+    "App Store/Apple and legal release requirements",
+    "Provider/log/backup retention and final diagnostic privacy categories",
+    "Sharing-grant and SMS suppression retention basis",
+    "Physical and other-device cleanup/notification/carrier acceptance",
+    "Previously open accessibility reports"
+  ],
+  "releaseApproved": false
+}

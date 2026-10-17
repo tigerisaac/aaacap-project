@@ -49,7 +49,7 @@ export class CloudStore {
   /** Drain a fixed expiry cutoff in bounded batches; committed pages survive an invocation retry. */
   async cleanup(): Promise<void> {
     const cutoff = this.now();
-    const drain = async (query: Query, beforeDelete?: (docs: QueryDocumentSnapshot[]) => Promise<void>, preserveAccepted = false) => {
+    const drain = async (query: Query, beforeDelete?: (docs: QueryDocumentSnapshot[]) => Promise<void>, canDelete: (data: DocumentData) => boolean = () => true) => {
       const ordered = query.where('expiresAt', '<=', cutoff).orderBy('expiresAt').orderBy(FieldPath.documentId()).limit(400);
       let cursor: QueryDocumentSnapshot | undefined;
       for (;;) {
@@ -63,11 +63,11 @@ export class CloudStore {
         for (const doc of candidates) {
           const data = doc.data();
           if (doc.exists && typeof data?.expiresAt === 'number' && data.expiresAt <= cutoff
-            && (!preserveAccepted || data.status !== 'accepted')) batch.delete(doc.ref, { lastUpdateTime: doc.updateTime! });
+            && canDelete(data)) batch.delete(doc.ref, { lastUpdateTime: doc.updateTime! });
         }
         await batch.commit();
         if (page.size < 400) return;
-        // Advance even if a whole page was retained (legacy accepted contacts).
+        // Advance even if a whole page was retained (accepted contacts or unfinished provider erasure).
         cursor = page.docs.at(-1);
       }
     };
@@ -78,8 +78,10 @@ export class CloudStore {
           const person = (await this.personRef(participantId).get()).data();
           if (person && person.status !== 'offboarded') await stoppedTotal(this, participantId);
         }
-      } : undefined, collection === 'alertContacts');
+      } : undefined, data => collection !== 'alertContacts' || data.status !== 'accepted');
     }
+    // A recording job must survive account/call expiry until the provider copy is erased.
+    await drain(this.db.collection('forwardingRecordings'), undefined, data => data.status === 'done');
     await drain(this.db.collection('billingWebhookReceipts'));
     await drain(this.db.collectionGroup('blocked-numbers'));
   }

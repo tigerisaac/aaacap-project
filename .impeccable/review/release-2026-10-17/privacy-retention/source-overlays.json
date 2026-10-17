@@ -1,0 +1,34 @@
+{
+  "baseCommit": "98dbc2bcd5431b9f179c1a7a4adce0d2cd1ffcc9",
+  "overlays": [
+    {
+      "path": "backend/src/cloud/app.ts",
+      "sha256": "dc57ad302a9bb66db60e0f779f5ab719e0ac1acde220c06b89254afe0dbed421"
+    },
+    {
+      "path": "backend/src/cloud/phone-auth.ts",
+      "sha256": "7db61e0d18fb3c000751cd9f5b20fee4923c2eff3a039180bc5804d2dd9dd696"
+    },
+    {
+      "path": "backend/src/cloud/store.ts",
+      "sha256": "046d97c6137d791885029a1404da479ef92b3a9b2c1f896e2e19929959909dc0"
+    },
+    {
+      "path": "backend/tests/backend-reliability.test.ts",
+      "sha256": "463203bf0b22552676fca14a7c9bde58926480f73453d54f1a6ccab7481bd924"
+    },
+    {
+      "path": "backend/tests/phone-contacts.test.ts",
+      "sha256": "be0047dc6529f0038ff89864206c2a51a6635c72620f1a337ca12550a5e58d07"
+    },
+    {
+      "path": "ios/Shield/Features/Auth/CallProtectionExplanation.swift",
+      "sha256": "422446b7908607b1acb2d403cbe59e93653d9c8fd2fdde6323dd953ffce57923"
+    },
+    {
+      "path": "ios/ShieldUITests/NavigationRegressionUITests.swift",
+      "sha256": "27d2bfedf01eb01b04eb1f85a5bbeddc3b1f1bcdff10a2d6acc0a38914bc06e5"
+    }
+  ],
+  "note": "All other tracked runtime/package inputs match this base. The UI-test strengthening followed the archive build; production iOS source is identical in both disclosure runs and the archive."
+}

@@ -4,6 +4,14 @@
 
 The work uses the canonical `tigerisaac/aaacap-project` checkout on `main`. Concurrent phone-sign-in/disconnection changes were preserved. Code, deployed state and physical-call evidence are reported separately below.
 
+## Latest source checkpoints
+
+The [Andrewwww theme port](IOS-THEME-PORT.md) preserves the current contact/caretaker/purchase flows and has passing evidence for all 46 original interaction methods across the documented runs. Its exact commit `98dbc2b` passed [independent backend CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39079353458). Unfiltered accessibility findings remain open; the theme report records them separately from passing interaction checks.
+
+The subsequent [data and retention inventory](DATA-INVENTORY.md) corrects two reproduced retention gaps and the app/web claim about two-hour transcript deletion. Required checks passed **344 unit + 257 Firestore tests**; the complete focused auth/contact/cleanup suites passed **27/27**. The corrected disclosure passed the existing standard/largest-text navigation test, then a strengthened run verified scrolling to its final link above the tab bar and back to collapse. Both runs have zero runtime warnings. The initial largest-text screenshot alone did not show the paragraph's end; the second run's bottom captures do. This is a focused iOS 27 check, not a new full accessibility certification.
+
+The updated unsigned `/tmp/shield-privacy-retention-oct17.xcarchive` passed packaging: two arm64 bundles, three privacy manifests, no unfinished text-filter extension or synthetic fixtures. Binary SHA-256: `d3befe70714997b9e449eea3543aaba9d2be12dd2e8c5e2e766002b8bb431c29`. [Evidence and source overlays](../.impeccable/review/release-2026-10-17/privacy-retention/verification.json) distinguish the four pre-fix failures from the passing final checks. Retention changes and policy copy are local; deployment, provider/backup policy, final App Privacy answers, physical acceptance and legal review remain open. The matrix below preserves earlier checkpoint counts rather than replacing their historical evidence.
+
 ## Product decisions applied
 
 - People who use Shield independently do not see a family-management entry. **Switch person** appears only when more than one person is available.

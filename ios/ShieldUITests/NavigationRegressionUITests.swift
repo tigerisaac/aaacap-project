@@ -105,7 +105,18 @@ final class NavigationRegressionUITests: XCTestCase {
             XCTAssertGreaterThanOrEqual(details.frame.minX, disclosure.frame.minX - 2)
             XCTAssertLessThanOrEqual(details.frame.maxX, app.frame.maxX - 12)
             capture(app, "Disclosure expanded within card \(large ? "large" : "standard")")
-            reveal(disclosure, app)
+            // The expanded paragraph is taller than the viewport at maximum text size.
+            // Reach its last action, then return to the disclosure before collapsing it.
+            let privacy = app.descendants(matching: .any).matching(identifier: "Privacy details").firstMatch
+            for _ in 0..<8 {
+                if privacy.isHittable && privacy.frame.maxY <= app.tabBars.firstMatch.frame.minY { break }
+                app.swipeUp()
+            }
+            XCTAssertTrue(privacy.isHittable)
+            XCTAssertLessThanOrEqual(privacy.frame.maxY, app.tabBars.firstMatch.frame.minY)
+            capture(app, "Disclosure bottom reachable \(large ? "large" : "standard")")
+            for _ in 0..<8 where !disclosure.isHittable { app.swipeDown() }
+            XCTAssertTrue(disclosure.isHittable)
             disclosure.tap()
             XCTAssertTrue(details.waitForNonExistence(timeout: 3))
             // Opening an external link can finish after the first accessibility

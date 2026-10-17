@@ -1,0 +1,26 @@
+[
+  {
+    "file": "disclosure-expanded-large-top.png",
+    "sha256": "51e786a4c332079538d005e477a20feaeb6529fdff8faf37d8e886088c4840ad",
+    "attachment": "Disclosure expanded within card large_0_517658A3-C21F-4CF4-ABB6-6E1EEA8BEFC7.png",
+    "visuallyInspected": true
+  },
+  {
+    "file": "disclosure-expanded-standard.png",
+    "sha256": "cc0c6a54d6dafd2c17fee0c8d4ed3867ec92c9cc2396f55420e6011a66b96cbe",
+    "attachment": "Disclosure expanded within card standard_0_D4A94FEA-39F5-4FE0-B7B8-7CA0DE22666F.png",
+    "visuallyInspected": true
+  },
+  {
+    "file": "disclosure-bottom-large.png",
+    "sha256": "557fdc92699e5b598792aa7453703f79dc6d854c3db304068078d24117b16603",
+    "attachment": "Disclosure bottom reachable large_0_AD0A1527-38D9-404F-BCB0-440D1D11C124.png",
+    "visuallyInspected": true
+  },
+  {
+    "file": "disclosure-bottom-standard.png",
+    "sha256": "195942060f047171f0e5621564d46b7ed878f54c791f250fba3f87ca22d75f06",
+    "attachment": "Disclosure bottom reachable standard_0_6E8644F3-C870-42B4-BD11-165C1E32CE54.png",
+    "visuallyInspected": true
+  }
+]
