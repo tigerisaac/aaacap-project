@@ -20,7 +20,7 @@ npm run check
 npm run test:firebase
 ```
 
-`npm run check` runs the typecheck, the unit tests and the build. `npm run test:firebase` runs the Firestore emulator integration tests for the API, forwarding and monitoring. Neither proves carrier audio or screening accuracy. For those, see [Screening](SCREENING.md).
+`npm run check` runs the typecheck, the unit tests and the build. `npm run test:firebase` runs the Firestore emulator integration tests for the API, forwarding and monitoring. `npm run test:accounts` separately checks identity creation/deletion, session rejection and retry recovery with dedicated Firebase Auth/Firestore demo emulators. CI runs all three using Node 24 and Java 21. These checks do not prove production IAM, provider erasure, carrier audio or screening accuracy. See [account verification](ACCOUNT-OFFBOARDING.md#local-validation) and [Screening](SCREENING.md).
 
 ## Deployment archive retention — October 17, 2026
 

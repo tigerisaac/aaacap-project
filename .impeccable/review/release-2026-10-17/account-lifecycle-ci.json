@@ -1,0 +1,26 @@
+{
+  "runId": 39070897266,
+  "commit": "577e62b2b0c2500faaabdec1a73d50b22a4c16f4",
+  "conclusion": "success",
+  "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39070897266",
+  "checks": [
+    {
+      "command": "npm run check",
+      "passed": 335
+    },
+    {
+      "command": "npm run test:firebase",
+      "passed": 250
+    },
+    {
+      "command": "npm run test:accounts",
+      "passed": 8
+    }
+  ],
+  "logSha256": "5a0029786405a6c3c226f49030dfbe35cb4f71b9c57f31d5f7ae05711f4fc911",
+  "annotations": [
+    "Legacy checkout/setup-node actions run Node 20 and are forced onto Node 24",
+    "ubuntu-latest announced migration to Ubuntu 26"
+  ],
+  "followup": "Upgrade checkout/setup-node to v6 and pin ubuntu-24.04; verify the changed workflow separately."
+}
