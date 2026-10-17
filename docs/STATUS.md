@@ -1,10 +1,10 @@
 # Status
 
-## October 17 — stable navigation refresh and simpler Messages
+## October 17 — stable navigation refresh and simpler Messages (installed)
 
 Call filters remember successful loads, including empty results, and owner inbox refreshes keep the existing list visible. Home, Calls and Messages defer first-load progress by 250 ms so fast cache reads cannot flash a loading card. The delay runs on the stable screen; an initial empty-section implementation failed the slow-load check and was replaced. The permanent Messages storage/delivery disclaimer is removed; actual delivery failures remain visible.
 
-Validation: typecheck/build and 306 unit tests passed, along with all 229 Firestore emulator tests. A five-second synthetic response test passed on iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27: initial progress appears, repeat empty-call and empty-inbox refreshes retain content, and the disclaimer is absent. The existing offline relaunch/filter/detail test also passed on the compact simulator. The fixtures are simulator-only and do not contact the live service. No cloud deployment or real-call test was performed.
+Validation: typecheck/build and 306 unit tests passed, along with all 229 Firestore emulator tests. A five-second synthetic response test passed on iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27: initial progress appears, repeat empty-call and empty-inbox refreshes retain content, and the disclaimer is absent. The existing offline relaunch/filter/detail test also passed on the compact simulator. The fixtures are simulator-only and do not contact the live service. At 00:02 Central, signed Debug source `05f27bf` passed signature verification and was installed and launched on the paired iPhone 12 Pro Max. No cloud deployment or real-call test was performed.
 
 ## October 16 — navigation caching and device local-audio correction (installed)
 
