@@ -1,12 +1,12 @@
-# 25-user paid pilot — prepared, not deployed
+# 25-user paid pilot — deployed, provider capacity restricted
 
-October 16, 2026. Scope: 25 enrolled people sharing Shield's existing Telnyx number, with one active incoming call per person. The owner authorized local fixes and tests, but requires approval before live settings, deployments or spending. This task has made no production write or real call.
+October 16, 2026. Scope: 25 enrolled people sharing Shield's existing Telnyx number, with one active incoming call per person. The owner approved the scoped release and voice/billing settings, then requested smaller recharge and deferred higher account verification. Additional messaging fees and real phone calls still require approval. No real call or SMS was made.
 
-## Prepared changes
+## Deployed changes
 
 `backend/src/cloud/pilot-limits.json` is the common source for capacity, enrollment, provider recommendations and abuse limits. API readiness reports its limits version, capacity and whether phone sign-in and contact texts are configured. Configuration presence is not delivery evidence.
 
-| Setting | Prepared value | Reason |
+| Setting | Target value | Reason |
 |---|---:|---|
 | Enrolled people / active incoming calls | 25 / 25 | One reservation per person; immutable recipient and press-1 acceptance remain |
 | Telnyx inbound / outbound application channels | 30 / 30 | Five channels of setup/callback headroom |
@@ -21,25 +21,29 @@ October 16, 2026. Scope: 25 enrolled people sharing Shield's existing Telnyx num
 
 Admission queues briefly within each API process to avoid competing transactions on shared capacity and daily-usage documents. Firestore transactions still enforce capacity across processes. Existing calls do not wait for this queue. Ending a call deletes only its own reservation without reading and replacing everyone else's reservations.
 
-## Proposed billing — approval required
+## Applied billing — October 16
 
-- **Outbound profile ceiling: $15/day**, enabled. The current $1/day ceiling can block recipient callbacks. Keep US-only destinations, the $0.05/minute destination-rate restriction, and no blanket call recording.
-- **Auto recharge: threshold $20, amount $30**, targeting a $50 balance under the portal's stated behavior. With the observed $7.10 balance, enabling it may immediately collect approximately **$42.90**, before applicable adjustments. Confirm the displayed charge before saving.
-- The profile ceiling is **not an overall spending cap**: inbound calls, Voice API features, messaging/Verify, other vendors and cloud hosting have separate costs. Auto recharge is not a spending cap either. The portal allows up to ten recharges per 24 hours, so replenishment can substantially exceed $30/day.
-- Confirm billing alerts and review initial usage before increasing limits. No recurring monitoring schedule was created.
+- **Outbound profile ceiling: $15/day**, enabled and read back. US-only destinations, the $0.05/minute destination-rate restriction, and no blanket call recording are preserved.
+- **Auto recharge: threshold $5, amount $10**, targeting a $15 balance under Telnyx's threshold-plus-amount behavior. The balance remained **$7.10** immediately after saving, so this change did not trigger an immediate recharge.
+- The profile ceiling is **not an overall spending cap**: inbound calls, Voice API features, messaging/Verify, other vendors and cloud hosting have separate costs. Auto recharge is not a spending cap either; repeated recharges can exceed $10/day.
+- Billing alerts remain to be confirmed. No recurring monitoring schedule was created.
 
 On metered calling, more concurrent calls produce more billable minutes without inherently increasing the per-minute rate. [Telnyx concurrency limits](https://support.telnyx.com/en/articles/1130717-limits-on-concurrent-outbound-calls), [profile controls](https://support.telnyx.com/en/articles/4320411-more-about-outbound-voice-profiles), [Voice API pricing](https://telnyx.com/pricing/voice-api).
 
 ## Live evidence and remaining gates
 
-Read-only October 16 inspection found **10 inbound / 10 outbound** application channels, profile capacity **10**, first-command timeout **10 seconds**, outbound ceiling **$1/day**, and credit **$7.10**. The portal showed account outbound capacity **10** and auto recharge disabled. The latest runtime lacks `TELNYX_VERIFY_PROFILE_ID` and `SMS_ALERTS`; the number has no messaging profile. API/bridge readiness does not report the new limits version.
+The approved live readback confirmed **30 inbound / 30 outbound application channels**, **30-second first-command timeout**, **$15/day outbound profile ceiling**, and **$5/$10 auto recharge**. Other application/profile fields were preserved. The profile remains **10 simultaneous outbound calls**: requests for both 30 and 11 were rejected with Telnyx's account-level verification error. Raising application limits does not bypass this restriction. The owner deferred verification/support outreach; no support message was sent.
+
+Bridge **`shield-live-00016-xgr`** and API **`shieldapi-00024-lin`** are live, with workers **`runsharedcalljob-00002-yux`**, **`expiresharedcalls-00004-qew`**, **`cleanupshield-00012-xac`**, and **`sendshieldalert-00004-vef`**. Source hashes, IAM, existing secret versions, unrelated function revisions and policies were preserved. All affected services retain zero minimum instances and request-based CPU. The bridge has four maximum instances and ten sessions per instance. API readiness reports capacity 25 and `paid-pilot-25-v1`.
+
+Phone sign-in and contact texts remain unconfigured: the runtime lacks `TELNYX_VERIFY_PROFILE_ID` and `SMS_ALERTS`, and the number has no messaging profile. Their deployed code does not establish provider activation or SMS delivery.
 
 Before accepting the full paid cohort:
 
 1. **Get account outbound capacity approved for 30**, independently of application/profile settings. No support message has been sent. The read-only planner deliberately reports account capacity as unverified because resource GET responses do not establish it.
-2. **Apply approved voice and billing settings, then read them back.** Preserve number assignment, webhook URLs, DTMF, destination restrictions, press-1 and the recording lifecycle. Leave built-in forwarding, blanket recording and network rejection off. Shared voice capacity requires no replacement number purchase.
+2. **Completed: apply approved voice and billing settings and read them back.** Preserve number assignment, webhook URLs, DTMF, destination restrictions, press-1 and the recording lifecycle. Leave built-in forwarding, blanket recording and network rejection off. Shared voice capacity requires no replacement number purchase.
 3. **Activate phone sign-in and contact texts** with an approved Verify profile and provider-approved messaging sender/profile. Obtain required business/sender approval and disclose fees before spending. Configure signed STOP/START webhooks and narrowly scoped custom-token signing permission per [Operations](OPERATIONS.md). Verify actual SMS delivery and consent with approved test recipients. APNs is a separate optional channel.
-4. **Deploy the reviewed release and scaling configuration**, including affected workers/cleanup, after explicit approval. Confirm deployed versions, API capacity, four-instance bridge ceiling and provider/model quotas. Zero minimum instances retain on-demand costs; real cold starts still require measurement.
+4. **Completed: deploy and verify the scoped release**, including affected workers/cleanup. Provider/model quota qualification and real cold-start measurements remain outstanding.
 5. **Qualify every forwarding route and the purchase-to-activation journey.** Phone sign-in creates an account, not an enrolled or carrier-qualified route. Enrollment remains an operator step. Do not sell unattended activation until purchase, enrollment, setup and restoration match the supported flow.
 6. **Run approved real-call checks** for overlap, press-1, decline, voicemail/audio delivery, hangup/retry, cold starts and routing isolation. Never call the owner's phones without explicit authorization. Expand from a few people after evidence; these changes cannot guarantee error-free carrier service.
 
@@ -51,7 +55,7 @@ Before accepting the full paid cohort:
 - The first complete emulator run exposed a transaction-lock failure (**212 passed, one failed**). After the admission queue fix, the focused suite passed **56/56** and its 25-call lifecycle took about **1.6 seconds**, versus about 15 seconds in the failed attempt. The complete final suite passed, including the two-client test. An earlier exploratory run was interrupted and is not counted as a pass.
 - All provider actions, phone codes and model results are mocked. Audio uses synthetic frames and an injected recognizer. These establish isolation/control flow, **not 25 real phone/audio sessions or production latency**.
 
-## Local release
+## Scoped release
 
 `node scripts/paid-pilot-plan.mjs` reads the latest runtime/provider settings and returns a sanitized proposed plan. It has no mutation mode, prints no keys/phone numbers/webhook URLs, and keeps unknown readiness, billing and real-call evidence as explicit gates.
 
@@ -66,4 +70,4 @@ node scripts/stage-paid-pilot-release.mjs
 
 The release in ignored `artifacts/private/paid-pilot-25-release/` has a changed-module/hash manifest. It preserves the frozen API's post-call **v4** and other decision modules, and the bridge's screening **v158**. The bridge overlays only server, admission/shared-routing modules and limit JSON. The API includes already-written phone-auth/contact modules, configuration/cleanup and existing recording-origin hardening. Do not deploy generic full-main output: it includes an unreleased post-call policy. The stage script requires the retained October 16 deployment snapshots and fails if policy baselines are missing or wrong.
 
-The assembled API and both bridge modes pass synthetic startup checks. No cloud build, deployment, SMS, purchase, billing change or production write has occurred. Provider activation and deployment are the next approval boundary.
+The assembled API and both bridge modes passed synthetic startup checks. The owner-approved cloud build and scoped deployments completed October 16 Central. Four contentless production jobs (start, greet, outcome and scheduled deadline) completed through the private worker without phone/provider IDs. Production readiness, private-worker rejection of unauthenticated requests, empty active reservations, source hashes and preserved IAM/configuration passed. The complete scoped log query at 21:53:57 Central found zero errors since 21:49:29. This is synthetic infrastructure evidence, not real-call or carrier evidence. Private deployment evidence is retained under `artifacts/private/paid-pilot-25-release/live/`.

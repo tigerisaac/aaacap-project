@@ -26,7 +26,7 @@ it('prepares a bounded live change plan using GET requests only and fails closed
   expect(plan.blockers).toEqual(expect.arrayContaining(['account_outbound_limit_requires_verified_increase', 'phone_sign_in_provider', 'trusted_contact_text_provider', 'backend_capacity_release']));
   expect(plan.proposed.application).toEqual({ first_command_timeout: true, first_command_timeout_secs: 30, inbound: { channel_limit: 30 }, outbound: { channel_limit: 30 } });
   expect(plan.proposed.profile.daily_spend_limit).toBe('15.00');
-  expect(plan.proposed.billing).toMatchObject({ rechargeThresholdUSD: 20, rechargeAmountUSD: 30, targetBalanceUSD: 50, totalAccountSpendCap: false });
+  expect(plan.proposed.billing).toMatchObject({ rechargeThresholdUSD: 5, rechargeAmountUSD: 10, targetBalanceUSD: 15, totalAccountSpendCap: false });
   expect(request).toHaveBeenCalledTimes(4);
 });
 

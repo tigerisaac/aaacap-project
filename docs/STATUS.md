@@ -1,10 +1,12 @@
 # Status
 
-## October 16 — 25-user paid-pilot capacity prepared locally
+## October 16 — 25-user capacity release deployed; Telnyx outbound ceiling remains 10
 
-The candidate supports 25 enrolled people and active incoming calls, isolated per-person daily allowances, and sign-in/contact quotas sized for the cohort. A simultaneous-admission database lock failure was repaired by queuing admission within each process while retaining transactional cross-instance limits. Call termination now releases only its own reservation. Proposed live settings are 30 inbound/outbound channels at every applicable level, a 30-second first-command timeout, four on-demand bridge instances, a $15/day outbound ceiling, and $20/$30 auto recharge targeting $50 credit. **None has been applied.**
+With owner approval, the scoped release is live on bridge **`shield-live-00016-xgr`**, API **`shieldapi-00024-lin`**, and updated call-job, expiry, cleanup and alert workers. It supports 25 enrolled people/active incoming calls with isolated quotas and reduced admission contention. The bridge allows four maximum instances; all affected services retain zero minimum instances and request-based CPU. Screening v158, message policy v4, secret versions, IAM and unrelated function revisions are preserved.
 
-Validation passed typecheck/build, **276 unit tests and all 213 emulator tests**, including 25 admissions across independent clients and 25 isolated press-1 call lifecycles. Local API/bridge packages preserve deployed screening v158 and message policy v4. Live capacity, funding, Verify/messaging activation, deployment and real-carrier qualification remain gates; no calls or paid tests occurred. [Prepared changes, evidence and approval plan](PAID-PILOT-25.md).
+Telnyx now has 30 inbound/30 outbound application channels, a 30-second first-command timeout, a $15/day outbound ceiling and owner-requested small recharge: threshold $5, amount $10, targeting $15. The balance remained $7.10 immediately after saving. **The outbound profile/account ceiling remains 10**: both 30 and 11 were rejected for account verification. The owner deferred verification/support outreach. Application capacity does not override that ceiling; full 25-way simultaneous forwarding is not ready.
+
+Typecheck/build, **276 unit tests and all 213 emulator tests** passed. Deployed source/configuration/readiness and four contentless background jobs passed; the scoped postflight log query found zero errors. Phone sign-in/contact texts remain unconfigured, and enrollment, purchase-to-activation, carrier qualification and real-call tests remain gates. No calls or SMS occurred. [Deployment evidence, costs and remaining gates](PAID-PILOT-25.md).
 
 ## October 16 — audio delivery deployed; app history works offline
 
