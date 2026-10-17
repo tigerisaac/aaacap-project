@@ -32,7 +32,7 @@ The lab prepares an `X-Shield-Lab-Ticket` header containing a signed, short-live
 
 [Telnyx documents custom X-header propagation](https://support-v2.telnyx.com/en/articles/16666680-custom-sip-x-header-propagation-on-telnyx) for same-account SIP to Programmable Voice, including webhook `custom_headers`. PSTN/cross-account transport is not guaranteed. Custom metadata is not a forged carrier `Diversion` header and cannot qualify a mobile forwarding route.
 
-A numberless test route is plausible using a separate [Voice API application's inbound SIP subdomain](https://support.telnyx.com/en/articles/4374050-configuring-call-control-texml-applications-voice-api), restricted to our connections. It is not configured or verified on this account. No numbers are purchased or planned at this stage.
+A numberless test route is plausible using a separate [Voice API application's inbound SIP subdomain](https://support.telnyx.com/en/articles/4374050-configuring-call-control-texml-applications-voice-api), restricted to our connections. The separate resources were created in a disabled state on October 16, as recorded below. Header propagation and audio are not yet verified on this account. No numbers were purchased or assigned.
 
 ## Proposed paid run — not enabled
 
@@ -69,7 +69,7 @@ Rates checked October 16: [Telnyx Voice API pricing](https://telnyx.com/pricing/
 
 This release is the local rehearsal setup. It has no live executor or public webhook endpoint. A paid run is not one switch away and has not been attempted.
 
-Before placing any calls, obtain approval for an isolated Telnyx connection and test gateway configuration. Build/verify its separate software recipient endpoints, restricted credentials, live media adapter and provider-side duration limits; persist the two-attempt budget across restarts; add server-side cleanup of every leg and a stop control. Never rely on an open browser or a JavaScript timer to cap billing. Uncertain dial responses must consume their reservation and stop retries. Keep the test database, routes, bridge and endpoints separate from production. Never redirect an owner's real number through the test adapter.
+The owner approved the separate Telnyx connection on October 16; its disabled staging is complete. Before placing any calls, finish and verify the isolated test gateway, software recipient endpoints, restricted credentials, live media adapter and provider-side duration limits; persist the two-attempt budget across restarts; add server-side cleanup of every leg and a stop control. Never rely on an open browser or a JavaScript timer to cap billing. Uncertain dial responses must consume their reservation and stop retries. Keep the test database, routes, bridge and endpoints separate from production. Never redirect an owner's real number through the test adapter.
 
 Then ask for explicit approval of the exact two-call run and its cost estimate. First verify same-account header transport with one of the two reserved sessions. If that fails, stop; do not buy a number, add PSTN calls, silently switch providers, or expand the workload.
 
@@ -78,3 +78,22 @@ After the small live run, pilot qualification still needs actual voicemail audio
 ## Verification record
 
 October 16, 2026: the CLI completed all eight local scenarios; browser controls completed the suite and an individually selected 25th recipient; signed-routing preview worked; mobile (390px) and desktop (1280px) showed no horizontal overflow. Foreign-origin mutation, arbitrary-recipient preview and a nonexistent live-call route were rejected. The 11 new security/budget tests passed. `npm run check` passed typecheck, 293 unit tests and build before the final additional budget test; the targeted suite then passed all 11 tests. Required Firestore checks passed 229 tests against `demo-shield`. These shared-tree checks include another agent's uncommitted work and do not assert it was deployed. The call lab itself uses the separately hash-locked deployed package. No real-call or real-audio verification occurred.
+
+
+## Telnyx test connection staging — October 16, 2026
+
+With explicit owner approval, the following new resources were created and read back at 23:07 Central. They remain disabled; no call execution is authorized by this setup approval.
+
+| Resource | Name | ID | Verified state |
+|---|---|---|---|
+| Browser SIP credential connection | Shield call lab browser | `3072448855816537112` | Inactive; SIP URI receive restricted to this account; 1 inbound / 1 outbound channel |
+| Voice API receiver | Shield call lab receiver | `3072448854122038294` | Inactive; SIP subdomain restricted to this account; 1 inbound / 1 outbound channel |
+| Separate outbound profile | Shield call lab outbound | `3072448852872135701` | Disabled; 2 outbound channels; $0.25 daily outbound spend limit enabled |
+
+The receiver's SIP subdomain is `shield-call-lab-20261016`. Both connections use only the new lab outbound profile. The profile uses metered rate-deck billing, a US destination allowlist, a $0.01 maximum destination rate and no automatic profile-level recording. This does not authorize PSTN tests. The receiver requests cost webhooks, uses RFC 2833 DTMF, redacts DTMF debug logs and has a 10-second first-command timeout. That timeout is not a maximum call-duration limit.
+
+The receiver's webhook is a non-routable `.invalid` placeholder, not Shield's production handler. A real isolated gateway has not been deployed. SIP credentials were generated randomly and retained only in ignored owner-readable private files; none were inserted into browser code, chat, tracked files or the production runtime. No browser login token was issued.
+
+Readback verified the intended settings, compared every pre-existing listed application/connection/profile against the pre-change snapshot, and confirmed that all phone-number assignments and the available balance were unchanged. The three creation requests did not assign or buy numbers, place calls, change recharge settings or deploy anything. Private snapshots, credentials and the sanitized status report are under `artifacts/private/call-lab/telnyx/`. The initial readback comparison was adjusted to accept Telnyx's extra default recording fields; a subsequent read-only verification passed against the original pre-change snapshot.
+
+The [profile daily limit](https://developers.telnyx.com/api-reference/outbound-voice-profiles/create-an-outbound-voice-profile) disallows new outbound calls once the profile threshold is reached. It is not a guaranteed all-services 25¢ cap and does not replace duration/attempt controls. The prior 13¢ planning estimate remains an estimate, not a measured invoice. This step only verified configuration; no authentication, audio, routing-header propagation or real-call behavior was tested. Local/backend test suites were not rerun for this documentation-only repository change.
