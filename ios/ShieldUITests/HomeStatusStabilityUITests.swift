@@ -31,7 +31,7 @@ final class HomeStatusStabilityUITests: XCTestCase {
             XCTAssertTrue(title.appears(timeout: 5))
             XCTAssertEqual(title.label, "Call checks are on")
             XCTAssertFalse(app.staticTexts["Couldn’t check your phone"].exists)
-            if state == "refresh-failed" { XCTAssertTrue(app.staticTexts["today-status-confirmed"].exists) }
+            XCTAssertFalse(app.staticTexts["today-status-confirmed"].exists)
             XCTAssertLessThanOrEqual(title.frame.maxX, app.frame.maxX - 12)
             capture(app, "Confirmed Home \(state) \(extra.count)")
         }

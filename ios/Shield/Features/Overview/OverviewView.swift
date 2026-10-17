@@ -129,13 +129,6 @@ struct OverviewView: View {
                         .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
                     Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
-                    if presentation.isSaved, let checkedAt {
-                        Text("Last confirmed \(checkedAt.formatted(date: .abbreviated, time: .shortened)).")
-                            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, ShieldTheme.Spacing.compact)
-                            .accessibilityIdentifier("today-status-confirmed")
-                    }
                 }
             }
             if !model.isDemo || isStatusFixture, model.isOwner { statusActions(presentation) }
