@@ -115,6 +115,14 @@ actor APIClient {
     func data(_ path: String, method: String = "GET", body: Data? = nil, participantID: UUID? = nil, authenticated: Bool = true, retried: Bool = false, expectedGeneration: Int? = nil) async throws -> Data {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
+        #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-navigation-loading"),
+           path == "/api/calls?filter=connected" || path == "/api/calls?filter=voicemail" || path == "/api/calls?filter=all" {
+            // Synthetic slow, successful empty pages exercise refresh presentation without a service.
+            if path != "/api/calls?filter=all" { try await Task.sleep(for: .seconds(5)) }
+            return Data(#"{"calls":[],"nextCursor":null}"#.utf8)
+        }
+        #endif
         guard let baseURL = configuration.baseURL, path.hasPrefix("/"), !path.hasPrefix("//"),
               let url = URL(string: path, relativeTo: baseURL)?.absoluteURL,
               url.host == baseURL.host, url.scheme == baseURL.scheme, url.port == baseURL.port else { throw APIError.unconfigured }

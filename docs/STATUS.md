@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — stable navigation refresh and simpler Messages
+
+Call filters remember successful loads, including empty results, and owner inbox refreshes keep the existing list visible. Home, Calls and Messages defer first-load progress by 250 ms so fast cache reads cannot flash a loading card. The delay runs on the stable screen; an initial empty-section implementation failed the slow-load check and was replaced. The permanent Messages storage/delivery disclaimer is removed; actual delivery failures remain visible.
+
+Validation: typecheck/build and 306 unit tests passed, along with all 229 Firestore emulator tests. A five-second synthetic response test passed on iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27: initial progress appears, repeat empty-call and empty-inbox refreshes retain content, and the disclaimer is absent. The existing offline relaunch/filter/detail test also passed on the compact simulator. The fixtures are simulator-only and do not contact the live service. No cloud deployment or real-call test was performed.
+
 ## October 16 — navigation caching and device local-audio correction (installed)
 
 The iPhone client now reuses recent owner history/message/detail responses and saved/trusted/blocked numbers across navigation, shares overlapping reads, and keeps public configuration for an hour. Home shares a recent protection check with its original timestamp; setup workflows and helper authorization remain fresh. Refreshes, edits and session changes invalidate the appropriate cached data, and late requests cannot refill a cleared cache. Browsed message summaries now join the protected persistent history. Response caching itself is bounded and session-only.

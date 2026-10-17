@@ -8,6 +8,7 @@ struct OverviewView: View {
     @State private var forwarding: ForwardingStatus?
     @State private var checkedAt: Date?
     @State private var checkingStatus = false
+    @State private var loadingVisible = false
 
     var body: some View {
         NavigationShell {
@@ -65,7 +66,7 @@ struct OverviewView: View {
                             .accessibilityIdentifier("home-all-calls")
                     } header: { Text("Recent calls").shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                 } else if model.isLoading {
-                    ShieldGroup { ShieldLoadingView(title: "Getting your calls…") }
+                    if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your calls…") } }
                 } else {
                     ShieldGroup {
                         ShieldLoadFailure(title: "Your calls couldn’t load", detail: "Check your internet connection and try again.") {
@@ -79,6 +80,7 @@ struct OverviewView: View {
                     }
                 }
             }
+            .deferredLoading(model.isLoading && model.overview == nil, visible: $loadingVisible)
             .shieldListStyle()
             .scrollEdgeEffectHidden(for: .top)
             .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.overview?.status ?? "")-\(model.isTestAccount)") {

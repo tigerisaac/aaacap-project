@@ -5,6 +5,8 @@ struct VoicemailView: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     @State private var inbox = VoicemailInbox()
     @State private var keptOnly = false
+    @State private var loadingVisible = false
+    private var initialLoading: Bool { inbox.loading && inbox.calls.isEmpty && !inbox.hasLoaded }
 
     private var messages: [CallRecord] {
         inbox.calls.filter { $0.voicemail?.status != "removed" && (!keptOnly || app.demoKeptMessages.contains($0.id)) }
@@ -15,12 +17,8 @@ struct VoicemailView: View {
         NavigationShell {
             List {
                 PersonContextSection()
-                if !app.isDemo, app.isOwner {
-                    ShieldGroup {
-                        Text("Recordings are saved on this iPhone. Open Shield within 24 hours of a call to receive its audio. Recordings aren’t included in iCloud backups.")
-                            .foregroundStyle(ShieldTheme.secondaryText)
-                        if let error = app.audioSyncError { Text(error).foregroundStyle(ShieldTheme.secondaryText) }
-                    }
+                if !app.isDemo, app.isOwner, let error = app.audioSyncError {
+                    ShieldGroup { Text(error).foregroundStyle(ShieldTheme.secondaryText) }
                 }
                 if app.isDemo, app.isOwner, app.canListen {
                     ShieldGroup(background: .clear) {
@@ -53,8 +51,8 @@ struct VoicemailView: View {
                         ShieldLoadFailure(title: "Messages couldn’t load", detail: error) { Task { await inbox.load(app) } }
                     }
                 }
-                if inbox.loading, inbox.calls.isEmpty {
-                    ShieldGroup { ShieldLoadingView(title: "Getting your messages…") }
+                if initialLoading {
+                    if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your messages…") } }
                 } else if messages.isEmpty, inbox.error == nil {
                     ShieldGroup {
                         ContentUnavailableView(keptOnly ? "No kept messages yet" : "No messages yet", systemImage: "tray",
@@ -84,6 +82,7 @@ struct VoicemailView: View {
                     }
                 }
             }
+            .deferredLoading(initialLoading, visible: $loadingVisible)
             .shieldListStyle()
             .shieldLargeTitle("Messages")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }

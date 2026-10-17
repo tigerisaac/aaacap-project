@@ -8,6 +8,8 @@ Home, its setup checklist and onboarding share a protection check for up to 60 s
 
 Message pages now also save their summaries to the existing protected owner history, including older pages browsed in Messages. History/audio persistence remains separate from the session-only response cache; saved-number responses are not persisted across app launches.
 
+Navigation presentation retains loaded empty call filters and the current owner inbox while refreshing. Only a first load without content can show a loading card, after 250 ms; fast cache reads never insert the card. The delay belongs to the stable screen rather than an empty List section, so genuinely slow loads still display progress. The Messages page no longer shows the permanent audio-storage/delivery disclaimer. Actual delivery errors remain visible when they occur.
+
 This review found that the earlier device/Release playback branch still called the remote audio endpoint, while the debug simulator branch used the local library. Playback now has one common local-first path on both devices and simulators. Already-delivered owner audio plays from the verified local file; only missing audio needs delivery. The existing server acknowledgement/deletion contract is unchanged. This correction supersedes the earlier unverified claim that the installed physical-device UI played saved audio locally.
 
 Validation and installation status are recorded in [Status](STATUS.md). The signed update was installed on the paired iPhone 12 Pro Max at the owner’s request on October 16 at 23:51 Central. No cloud deployment is required for these client changes; physical airplane-mode playback still needs verification.

@@ -31,6 +31,8 @@ final class AppState {
     var nextCursor: String?
     var filter: CallFilter = .all
     private var callsFilter: CallFilter = .all
+    private var loadedCallFilters: Set<CallFilter> = []
+    var hasLoadedCalls: Bool { loadedCallFilters.contains(filter) }
     var isLoading = false
     var isLoadingCalls = false
     var callsError: String?
@@ -113,6 +115,7 @@ final class AppState {
     }
 
     private func startPreview(testAccount: Bool) {
+        loadedCallFilters.removeAll()
         isTestAccount = testAccount
         protectionOnboarding = nil
         trustedContactsOnboarding = false
@@ -127,6 +130,7 @@ final class AppState {
     }
 
     func didSignIn() async {
+        loadedCallFilters.removeAll()
         protectionOnboarding = nil
         trustedContactsOnboarding = false
         protectionParticipantID = nil
@@ -144,6 +148,7 @@ final class AppState {
         trustedContactsOnboarding = false
         protectionParticipantID = nil
         selectedPersonID = person.id
+        loadedCallFilters.removeAll()
         overview = nil
         calls = []
         nextCursor = nil
@@ -182,6 +187,7 @@ final class AppState {
             isDemo = response.isDemo
             if !people.contains(where: { $0.id == selectedPersonID }) {
                 selectedPersonID = people.first?.id
+                loadedCallFilters.removeAll()
                 overview = nil
                 calls = []
             }
@@ -276,6 +282,7 @@ final class AppState {
             callsError = nil
             calls = page.calls
             callsFilter = requestedFilter
+            loadedCallFilters.insert(requestedFilter)
             nextCursor = page.nextCursor
             showingSavedHistory = false
             await saveOfflineHistory(page: page.calls, overview: newOverview)
@@ -299,6 +306,7 @@ final class AppState {
                 let state = args[i + 1]
                 calls = []
                 nextCursor = nil
+                loadedCallFilters.remove(filter)
                 isLoadingCalls = state == "loading"
                 callsError = state == "error" ? "Your connection was interrupted. Please try again." : nil
                 return
@@ -306,6 +314,7 @@ final class AppState {
             #endif
             callsError = nil
             calls = (person.map(DemoData.overview)?.recent ?? []).filter(filter.includes)
+            loadedCallFilters.insert(filter)
             nextCursor = nil
             return
         }
@@ -321,6 +330,7 @@ final class AppState {
             let page: APIResponses.Calls = try await api.send(path, participantID: id)
             guard selectedPersonID == id, filter == requestedFilter, generation == sessionGeneration else { return }
             calls = more ? calls + page.calls : page.calls
+            loadedCallFilters.insert(requestedFilter)
             nextCursor = page.nextCursor
             showingSavedHistory = false
             await saveOfflineHistory(page: page.calls)
@@ -362,6 +372,7 @@ final class AppState {
         selectedPersonID = nil
         overview = nil
         calls = []
+        loadedCallFilters.removeAll()
         service = nil
         protectionOnboarding = nil
         trustedContactsOnboarding = false
@@ -377,6 +388,7 @@ final class AppState {
 
     func invalidateAccountLoads() {
         sessionGeneration += 1
+        loadedCallFilters.removeAll()
         audioSyncTask?.cancel()
         audioSyncTask = nil
     }
@@ -394,6 +406,7 @@ final class AppState {
                 people.removeAll { $0.id == selectedPersonID }
                 Task { await reconcileOfflineOwners() }
                 selectedPersonID = people.first?.id
+                loadedCallFilters.removeAll()
                 overview = nil
                 calls = []
             }
@@ -427,6 +440,7 @@ final class AppState {
         #endif
         calls = preview.recent.filter(filter.includes)
         callsFilter = filter
+        loadedCallFilters.insert(filter)
         nextCursor = nil
     }
 }

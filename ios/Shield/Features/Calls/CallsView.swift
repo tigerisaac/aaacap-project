@@ -3,6 +3,9 @@ import SwiftUI
 struct CallsView: View {
     @Environment(AppState.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
+    @State private var loadingVisible = false
+
+    private var initialLoading: Bool { (model.isLoadingCalls || model.isLoading) && !model.hasLoadedCalls && model.calls.isEmpty }
 
     var body: some View {
         @Bindable var model = model
@@ -21,10 +24,10 @@ struct CallsView: View {
                     }
                 }
                 if model.calls.isEmpty && model.callsError == nil {
-                    ShieldGroup {
-                        if model.isLoadingCalls || model.isLoading {
-                            ShieldLoadingView(title: "Getting your calls…")
-                        } else {
+                    if initialLoading {
+                        if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your calls…") } }
+                    } else {
+                        ShieldGroup {
                             ContentUnavailableView(model.filter == .all ? "No calls yet" : "No \(model.filter.label.lowercased()) calls", systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
                             if model.filter != .all { Button("Show all calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
                         }
@@ -48,6 +51,7 @@ struct CallsView: View {
                     }
                 }
             }
+            .deferredLoading(initialLoading, visible: $loadingVisible)
             .shieldLargeTitle("Calls")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task(id: model.filter) { await model.loadCalls() }

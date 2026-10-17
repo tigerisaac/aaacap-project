@@ -76,6 +76,13 @@
 			"path" = "Shield/Design/CallRow.swift";
 			"sourceTree" = "<group>";
 		};
+		"DAE6F56CC4F9E70D14DE62A4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "DeferredLoading.swift";
+			"path" = "Shield/Design/DeferredLoading.swift";
+			"sourceTree" = "<group>";
+		};
 		"5EE06DEAA63B21F813AF077E" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1588,6 +1595,7 @@
 				"52B99FF87EF154EB678BDB7E",
 				"74F89345558047B20073563E",
 				"530C1C35A0772490CAE8187C",
+				"DAE6F56CC4F9E70D14DE62A4",
 				"5EE06DEAA63B21F813AF077E",
 				"306A1A2802D5E5F5C046A629",
 				"A1FF81B219EBD7124FEFB419",
@@ -2141,6 +2149,10 @@
 		"7F3B966733029A940CC2CF5A" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "530C1C35A0772490CAE8187C";
+		};
+		"60771D591CF1AA503EB7C914" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DAE6F56CC4F9E70D14DE62A4";
 		};
 		"F563ABACC53BBDA7F9B365BE" = {
 			"isa" = "PBXBuildFile";
@@ -2736,6 +2748,7 @@
 				"F1EE32A6BE56423A2AFDB96F",
 				"6EF7EBA136F06AEABEFDA2FD",
 				"7F3B966733029A940CC2CF5A",
+				"60771D591CF1AA503EB7C914",
 				"F563ABACC53BBDA7F9B365BE",
 				"668B75EEEB79A1EA3F5FB7C2",
 				"1022DF582A9057A43AA3AB43",
