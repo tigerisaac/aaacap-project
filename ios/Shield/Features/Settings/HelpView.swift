@@ -24,7 +24,7 @@ struct HelpView: View {
                 }
             }
             ShieldGroup {
-                if model.isOwner { NavigationLink("Help with my phone", value: AppRoute.setup) }
+                if model.isOwner { NavigationLink("Help with my phone", value: AppRoute.forwardingSetup) }
                 if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                     Link("Ask for help with Shield", destination: url)
                 }

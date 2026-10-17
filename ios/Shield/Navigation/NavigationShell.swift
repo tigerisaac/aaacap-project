@@ -21,7 +21,7 @@ struct NavigationShell<Content: View>: View {
                     case .forwardingSetup: ForwardingSetupView()
                     case .disconnect(let id): DisconnectView(participantID: id)
                     case .settings: SettingsView()
-                    case .setup: SetupView()
+                    case .phoneOptions: PhoneOptionsView()
                     case .savedNumbers: SavedNumbersView(kind: .destinations)
                     case .trustedNumbers: SharedContactsView()
                     case .sharing: SharingView()

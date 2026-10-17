@@ -2,6 +2,31 @@ import XCTest
 
 @MainActor
 final class NavigationRegressionUITests: XCTestCase {
+    func testRootTypographyAndDirectPhoneSetupReturn() {
+        for large in [false, true] {
+            let app = launch(["--uitesting-forwarding-route"] + (large
+                ? ["--uitesting-light", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+            for tab in ["Home", "Calls", "Messages", "More"] {
+                app.tabBars.buttons[tab].tap()
+                XCTAssertTrue(app.navigationBars[tab].appears(timeout: 3))
+                capture(app, "Serif \(tab) \(large ? "large-light" : "standard-dark")")
+            }
+            app.buttons["Settings"].tap()
+            reveal(app.buttons["Phone setup"], app)
+            app.buttons["Phone setup"].tap()
+            XCTAssertTrue(app.staticTexts["Save Shield"].appears(timeout: 5))
+            XCTAssertTrue(app.navigationBars["Phone setup"].exists)
+            XCTAssertFalse(app.buttons["Open phone setup"].exists)
+            XCTAssertFalse(app.navigationBars["Phone options"].exists)
+            capture(app, "Direct phone setup \(large ? "large-light" : "standard-dark")")
+            app.navigationBars.buttons["Close"].tap()
+            XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
+            app.navigationBars.buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["More"].appears(timeout: 3))
+            capture(app, "Serif More restored \(large ? "large-light" : "standard-dark")")
+        }
+    }
+
     func testTextCheckPushesAboveAutomaticChecksAndTitlesFollowTheStack() {
         let app = launch()
         app.tabBars.buttons["More"].tap()
@@ -33,6 +58,10 @@ final class NavigationRegressionUITests: XCTestCase {
             app.buttons["Settings"].tap()
             reveal(app.buttons["Checks while you talk"], app)
             app.buttons["Checks while you talk"].tap()
+            XCTAssertTrue(app.staticTexts["It may warn you and end a suspicious call."].appears(timeout: 3))
+            XCTAssertFalse(app.staticTexts.containing(NSPredicate(format: "label BEGINSWITH %@", "Telnyx and its transcription provider")).firstMatch.exists)
+            XCTAssertFalse(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "It can miss scams or end ordinary calls.")).firstMatch.exists)
+            capture(app, "Simplified call checks \(large ? "large" : "standard")")
             let disclosure = app.buttons["What happens to my words?"]
             reveal(disclosure, app)
             disclosure.tap()
@@ -71,7 +100,7 @@ final class NavigationRegressionUITests: XCTestCase {
 
     private func launch(_ extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting-preview", "--uitesting-dark"] + extra
+        app.launchArguments = ["--uitesting-preview"] + (extra.contains("--uitesting-light") ? [] : ["--uitesting-dark"]) + extra
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["More"].appears(timeout: 5))
         return app

@@ -35,7 +35,7 @@ struct TrustedContactOnboardingView: View {
                 if let error { ShieldNotice(title: "Couldn’t save your choice", detail: error, symbol: "exclamationmark.circle") }
             }.padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
-        }.background(ShieldTheme.surface).shieldNavigationSurface()
+        }.background(ShieldTheme.surface)
             .navigationTitle("Your choice").navigationBarTitleDisplayMode(.inline)
     }
     /// One of two equal choices: the shared row symbol and text, on its own card.

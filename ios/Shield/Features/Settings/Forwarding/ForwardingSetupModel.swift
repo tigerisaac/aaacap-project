@@ -46,7 +46,7 @@ final class ForwardingSetupModel {
 
     var isUITest: Bool {
         #if DEBUG
-        ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding")
+        ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") || ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding-route")
         #else
         false
         #endif

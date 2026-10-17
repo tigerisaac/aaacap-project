@@ -14,10 +14,15 @@ struct ForwardingSetupView: View {
 
     var body: some View {
         Group {
-            if model.step == .restore, let id = model.status?.participantId {
+            if app.isDemo && !model.isUITest {
+                ContentUnavailableView("Phone setup", systemImage: "phone",
+                    description: Text("Phone setup is done with a helper, one step at a time. The sample app doesn’t change your phone."))
+                    .background(ShieldTheme.surface)
+                    .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
+            } else if model.step == .restore, let id = model.status?.participantId {
                 DisconnectView(participantID: id)
             } else { setupBody }
-        }.task { await model.load(app) }
+        }.task { if !app.isDemo || model.isUITest { await model.load(app) } }
     }
     private var setupBody: some View {
         ScrollViewReader { proxy in
@@ -89,7 +94,6 @@ struct ForwardingSetupView: View {
         }
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
         .background(ShieldTheme.surface)
-        .shieldNavigationSurface()
         .safeAreaInset(edge: .bottom) {
             if model.status != nil && !typeSize.isAccessibilitySize {
                 ForwardingActions(model: model, app: app)

@@ -47,13 +47,6 @@ extension View {
             .safeAreaPadding(.bottom, ShieldTheme.Spacing.content)
             .padding(.vertical, ShieldTheme.Spacing.compact)
             .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .vertical))
-            .shieldNavigationSurface()
-    }
-
-    /// Use SwiftUI's native bar preferences so large titles retain their system layout.
-    func shieldNavigationSurface() -> some View {
-        toolbarBackground(ShieldTheme.surface, for: .navigationBar)
-            .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
     }
 
     /// Native button behavior and disabled feedback; labels remain free to wrap.

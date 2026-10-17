@@ -24,6 +24,27 @@ enum ShieldTheme {
         static let display = Font.system(.largeTitle, design: .serif)
         static let title = Font.system(.title, design: .serif)
         static let section = Font.system(.title3, design: .serif).weight(.medium)
+
+        /// Style the native large title, keeping UIKit responsible for transitions,
+        /// scrolling and Dynamic Type. Inline navigation and controls remain sans.
+        /// Keep the background here too: per-page toolbarBackground overrides
+        /// replace these title attributes when SwiftUI configures a destination.
+        @MainActor static func configureNavigation() {
+            let descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .largeTitle)
+            let font = UIFont(descriptor: descriptor.withDesign(.serif) ?? descriptor, size: 0)
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithDefaultBackground()
+            appearance.backgroundColor = UIColor(named: "Surface")
+            appearance.largeTitleTextAttributes = [.font: font, .kern: -0.7]
+            let scrollEdge = UINavigationBarAppearance()
+            scrollEdge.configureWithTransparentBackground()
+            scrollEdge.largeTitleTextAttributes = appearance.largeTitleTextAttributes
+            let bar = UINavigationBar.appearance()
+            bar.standardAppearance = appearance
+            bar.compactAppearance = appearance
+            bar.scrollEdgeAppearance = scrollEdge
+            bar.compactScrollEdgeAppearance = scrollEdge
+        }
     }
     static let secondaryText = Color(uiColor: UIColor { traits in
         let highContrast = traits.accessibilityContrast == .high

@@ -48,7 +48,7 @@ struct DeleteAccountView: View {
                 if app.isDemo { Text("This is a sample. No account will be deleted.").foregroundStyle(ShieldTheme.secondaryText) }
             }.padding(24).frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
         }
-        .background(ShieldTheme.surface).shieldNavigationSurface()
+        .background(ShieldTheme.surface)
         .navigationTitle("Delete account").navigationBarTitleDisplayMode(.inline)
         .task { await load() }
         .navigationDestination(item: $disconnecting) { phone in DisconnectView(participantID: phone.id, forDeletion: true) }

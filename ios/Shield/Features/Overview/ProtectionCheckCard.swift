@@ -103,7 +103,7 @@ struct ProtectionCheckCard: View {
             if model.isTrial {
                 NavigationLink(value: AppRoute.forwardingSetup) { Text("Open setup") }
             } else {
-                NavigationLink(value: AppRoute.setup) { Text("Open setup") }
+                NavigationLink(value: AppRoute.phoneOptions) { Text("Phone options") }
             }
         case .saveShieldContact(let number):
             Button("Save Shield contact") { Task { await perform { try await SaveShieldContact.save(number: number) } } }

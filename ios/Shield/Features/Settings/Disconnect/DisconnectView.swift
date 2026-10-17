@@ -74,7 +74,7 @@ struct DisconnectView: View {
                 if value != nil { proxy.scrollTo("disconnect-error", anchor: .top); errorFocused = true }
             }
         }
-        .background(ShieldTheme.surface).shieldNavigationSurface()
+        .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
             if model.status != nil && !typeSize.isAccessibilitySize {
                 action.padding(.horizontal, 24).padding(.vertical, 12).background(ShieldTheme.surface)

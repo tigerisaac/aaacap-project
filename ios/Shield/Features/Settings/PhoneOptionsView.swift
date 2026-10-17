@@ -1,6 +1,7 @@
 import SwiftUI
 
-struct SetupView: View {
+/// Account-level pause/resume and legacy line options, separate from guided phone setup.
+struct PhoneOptionsView: View {
     @Environment(AppState.self) private var model
     @State private var setup: SetupStatus?
     @State private var working = false
@@ -108,7 +109,7 @@ struct SetupView: View {
         .deferredLoading(loading && setup == nil, visible: $loadingVisible)
         .refreshable { await model.api.invalidateNavigationCache(); await load() }
         .shieldListStyle()
-        .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Phone options").navigationBarTitleDisplayMode(.inline)
         .task { await load() }
     }
 

@@ -664,6 +664,13 @@
 			"path" = "Shield/Features/Settings/PhoneContacts.swift";
 			"sourceTree" = "<group>";
 		};
+		"8BB8F9266FAB8BC83CB6E646" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "PhoneOptionsView.swift";
+			"path" = "Shield/Features/Settings/PhoneOptionsView.swift";
+			"sourceTree" = "<group>";
+		};
 		"46676D3FA9F6E9E964B2EE83" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -690,13 +697,6 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "SettingsView.swift";
 			"path" = "Shield/Features/Settings/SettingsView.swift";
-			"sourceTree" = "<group>";
-		};
-		"3EA05A2CDAC2771F46A44D23" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"name" = "SetupView.swift";
-			"path" = "Shield/Features/Settings/SetupView.swift";
 			"sourceTree" = "<group>";
 		};
 		"B44972FF126A126F1E6CF2B1" = {
@@ -1777,11 +1777,11 @@
 				"327D01B8B2336D3C4DEBE8FB",
 				"61D972671442EB135A78E664",
 				"22773E7A335C60D136AAC546",
+				"8BB8F9266FAB8BC83CB6E646",
 				"46676D3FA9F6E9E964B2EE83",
 				"A74D83A135332FB456107AFF",
 				"0D26A78514CDF4B5827B707B",
 				"51DC14E924CE1D8B46B9A7BD",
-				"3EA05A2CDAC2771F46A44D23",
 				"B44972FF126A126F1E6CF2B1",
 				"5859CCBC92F3C396BE8C34A9",
 				"58415C897754DF98D21754F3",
@@ -2534,6 +2534,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "22773E7A335C60D136AAC546";
 		};
+		"760A457DD571D2E3819BD9EE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "8BB8F9266FAB8BC83CB6E646";
+		};
 		"B612141E955FA67FBE7E2F5E" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "46676D3FA9F6E9E964B2EE83";
@@ -2549,10 +2553,6 @@
 		"12AB26B6D8A99E255C69B6F7" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "51DC14E924CE1D8B46B9A7BD";
-		};
-		"947CD024871FF58DD8BCB36C" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "3EA05A2CDAC2771F46A44D23";
 		};
 		"06BBCBEEC76D5DF6461A2447" = {
 			"isa" = "PBXBuildFile";
@@ -2896,11 +2896,11 @@
 				"ED605FB617A9F586F308BCB4",
 				"D3845A247E288DB9104E57ED",
 				"C7AF71DAB61C90D3B3057A4F",
+				"760A457DD571D2E3819BD9EE",
 				"B612141E955FA67FBE7E2F5E",
 				"CA5B05C21D938511CD37F64F",
 				"4BDA37D533B2790B424B520D",
 				"12AB26B6D8A99E255C69B6F7",
-				"947CD024871FF58DD8BCB36C",
 				"06BBCBEEC76D5DF6461A2447",
 				"2FCB17DB259FC8FEB73FF93F",
 				"AFF644EE78DEB15BFDBA4867",

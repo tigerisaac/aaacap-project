@@ -13,7 +13,7 @@ struct ProtectionOnboardingView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
                     Text("Help while you talk").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                    CallProtectionExplanation()
+                    CallProtectionExplanation(includesConsentDetails: true)
                     Toggle("Check calls while I talk", isOn: $enabled)
                         .font(.headline).padding(ShieldTheme.Spacing.content)
                         .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
@@ -24,7 +24,7 @@ struct ProtectionOnboardingView: View {
                     }.shieldPrimaryButton().disabled(working).accessibilityIdentifier("onboarding-protection-continue")
                 }.padding(ShieldTheme.Spacing.page)
                     .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
-            }.background(ShieldTheme.surface).shieldNavigationSurface()
+            }.background(ShieldTheme.surface)
                 .navigationTitle("Your choices").navigationBarTitleDisplayMode(.inline)
         }
     }

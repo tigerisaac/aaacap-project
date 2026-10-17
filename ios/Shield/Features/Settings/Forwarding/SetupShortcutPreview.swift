@@ -64,7 +64,6 @@ struct SetupShortcutPreview: View {
             }
         }
         .background(ShieldTheme.surface)
-        .shieldNavigationSurface()
         .navigationTitle("Phone setup trial")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {

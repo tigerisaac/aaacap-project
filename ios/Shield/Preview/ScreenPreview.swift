@@ -29,7 +29,7 @@ struct ScreenPreview: View {
                     case "trusted-contacts": TrustedContactsView()
                     case "quiet": QuietHoursView()
                     case "blocked": BlockedNumbersView()
-                    case "setup", "setup-details", "trial-options": SetupView()
+                    case "setup", "setup-details", "trial-options": PhoneOptionsView()
                     case "protection": CallProtectionView()
                     case "help": HelpView()
                     case "automatic-texts": MessageFilterSetupView()

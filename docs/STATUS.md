@@ -1,5 +1,13 @@
 # Status
 
+## October 17 — restored title typography and direct phone setup (installed)
+
+The shared native navigation appearance restores the serif large-title font and tracking for Home, Calls, Messages and More. Native destination titles and transitions remain responsible for push/pop and scrolling; inline navigation stays sans. Settings → Phone setup and Get help → Help with my phone now open the existing forwarding guide directly, resuming its saved step. The account pause/resume surface is explicitly named Phone options and keeps its separate route. The sample app does not fetch or change phone setup.
+
+Checks while you talk now shows the requested two short paragraphs, omitting the provider paragraph and the missed-scam/ordinary-call sentence from that settings page. The expandable privacy details remain, and the initial consent flow retains its provider and limitation information. No screening, monitoring or backend behavior changed.
+
+Validation: typecheck/build and 316 unit tests passed; all 229 Firestore emulator tests passed. Three final navigation/disclosure/route UI tests passed on each of iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27, with standard Dark Mode and maximum-text Light Mode header captures. The Phone options account-deletion exclusion test also passed. The first visual pass caught SwiftUI's per-page background overriding the title font; the final shared appearance owns both, and confirmation captures show serif root titles and correct return navigation on both devices. The initial sandboxed unit run could not open its local test server; its authorized rerun passed. Optional simulator diagnostic collection was stopped after the first passing UI runs stalled; final runs disabled that collection and completed normally. The final signed Debug build passed signature verification, installed and launched on the owner's iPhone at approximately 09:42 Central. iPhone Mirroring timed out twice, so this pass has installation evidence and simulator UI evidence, not a new physical-screen walkthrough or real-call verification. No live backend deployment or phone-setting change occurred.
+
 ## October 17 — stable Home configuration and Calls message filtering (installed)
 
 The remaining Calls → Messages flicker came from different local/server predicates: local history included stopped calls with removed-message metadata, while the API filters by voicemail outcome. Both now use the outcome, and changing the picker swaps rows synchronously before its request. Populated Calls filters refresh without a progress flash; first empty loads retain delayed compact progress.

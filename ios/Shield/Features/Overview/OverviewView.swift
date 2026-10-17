@@ -133,7 +133,7 @@ struct OverviewView: View {
                                 Text(presentation.actionTitle)
                             }
                         } else {
-                            NavigationLink(presentation.actionTitle, value: AppRoute.setup)
+                            NavigationLink(presentation.actionTitle, value: AppRoute.phoneOptions)
                         }
                     }
                 }

@@ -11,7 +11,7 @@ struct SettingsView: View {
                     if let id = model.selectedPersonID {
                         NavigationLink(value: AppRoute.disconnect(id)) { ActionRow(title: "Disconnect Shield", symbol: "arrow.uturn.backward") }
                     }
-                    NavigationLink(value: AppRoute.setup) { ActionRow(title: "Phone setup", symbol: "phone") }
+                    NavigationLink(value: AppRoute.forwardingSetup) { ActionRow(title: "Phone setup", symbol: "phone") }
                     NavigationLink(value: AppRoute.callProtection) { ActionRow(title: "Checks while you talk", symbol: "waveform") }
                     NavigationLink(value: AppRoute.quietHours) { ActionRow(title: "Quiet hours", symbol: "moon") }
                     NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") }
