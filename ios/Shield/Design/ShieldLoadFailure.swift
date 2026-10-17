@@ -4,13 +4,14 @@ import SwiftUI
 struct ShieldLoadFailure: View {
     let title: String
     let detail: String
+    var symbol = "wifi.exclamationmark"
     let retry: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
-            ShieldNotice(title: title, detail: detail, symbol: "wifi.exclamationmark")
+            ShieldNotice(title: title, detail: detail, symbol: symbol)
             Button(action: retry) {
-                Label("Try again", systemImage: "arrow.clockwise")
+                Label("Try again", systemImage: "arrow.clockwise").shieldWrappingLabel()
                     .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
             }
             .shieldSecondaryButton()

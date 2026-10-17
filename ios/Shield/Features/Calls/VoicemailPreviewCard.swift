@@ -15,8 +15,11 @@ struct VoicemailPreviewCard: View {
                 if kept { app.demoKeptMessages.remove(call.id) } else { app.demoKeptMessages.insert(call.id) }
             } label: {
                 Label(kept ? "Message kept" : "Keep this message", systemImage: kept ? "bookmark.fill" : "bookmark")
-                    .font(.headline).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    .shieldWrappingLabel()
+                    .font(.headline).frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                    .contentTransition(.symbolEffect(.replace))
             }
+            .sensoryFeedback(.selection, trigger: kept)
             .accessibilityIdentifier("keep-sample-message")
             }
         } footer: {

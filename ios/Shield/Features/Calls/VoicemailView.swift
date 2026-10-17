@@ -46,7 +46,7 @@ struct VoicemailView: View {
                     }.listRowInsets(EdgeInsets())
                 }
                 if !app.isDemo, app.isOwner, let error = app.audioSyncError {
-                    ShieldGroup { Text(error).foregroundStyle(ShieldTheme.secondaryText) }
+                    ShieldGroup { ShieldNotice(title: "Recordings aren’t saved yet", detail: error, symbol: "arrow.down.circle") }
                 }
                 if app.isDemo, !showsKindFilter, app.isOwner, app.canListen {
                     ShieldGroup(background: .clear) {

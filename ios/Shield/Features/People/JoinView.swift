@@ -11,10 +11,7 @@ struct JoinView: View {
                     ShieldGroup { ShieldLoadingView(title: "Getting your calls…") }
                 } else if let error = model.contextError {
                     ShieldGroup {
-                        ShieldNotice(title: "Your account couldn’t load", detail: error, symbol: "wifi.exclamationmark")
-                        Button("Try again", systemImage: "arrow.clockwise") {
-                            Task { await model.refresh() }
-                        }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        ShieldLoadFailure(title: "Your account couldn’t load", detail: error) { Task { await model.refresh() } }
                     }
                 } else {
                     ShieldPageHeader {
@@ -26,8 +23,7 @@ struct JoinView: View {
                     }
                     if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                         ShieldGroup {
-                            Link(destination: url) { Label("Arrange phone setup", systemImage: "phone.badge.plus") }
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            Link(destination: url) { ActionRow(title: "Arrange phone setup", symbol: "phone.badge.plus") }
                         }
                     }
                 }
@@ -38,9 +34,9 @@ struct JoinView: View {
                 } footer: { Text("Someone added you as a trusted contact? Review it here.") }
                 ShieldGroup {
                     NavigationLink { DeleteAccountView() } label: {
-                        ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
+                        ActionRow(title: "Delete account", symbol: "person.badge.minus")
                     }
-                    Button("Sign out") { confirmSignOut = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    Button { confirmSignOut = true } label: { ActionRow(title: "Sign out", symbol: "rectangle.portrait.and.arrow.right") }
                         .alert("Sign out?", isPresented: $confirmSignOut) {
                             Button("Sign out") { Task { await model.signOut() } }
                             Button("Cancel", role: .cancel) {}

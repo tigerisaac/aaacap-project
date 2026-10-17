@@ -21,12 +21,14 @@ struct TrustedContactsView: View {
                 }
                 ForEach(response.contacts) { contact in
                     ShieldSection(contact.name) {
-                        Text(PhoneDisplay.format(contact.phone))
-                        Text(contact.statusLabel).foregroundStyle(ShieldTheme.secondaryText)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(PhoneDisplay.format(contact.phone)).monospacedDigit()
+                            Text(contact.statusLabel).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        }.padding(.vertical, 4)
                         if contact.status == "pending", contact.requestDelivery != "submitted" {
                             Text("The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
-                        Button("Remove contact", role: .destructive) { removing = contact; confirmRemoval = true }.frame(minHeight: 44).disabled(working)
+                        Button("Remove contact", role: .destructive) { removing = contact; confirmRemoval = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
                     }
                 }
                 if response.available, let id = model.selectedPersonID {
@@ -40,8 +42,12 @@ struct TrustedContactsView: View {
                         }
                     } footer: { Text("They get alerts only after they accept. Your calls and messages stay private.") }
                 }
-            } else if error == nil, loadingVisible { ShieldGroup { ProgressView("Loading contacts…") } }
-            if let error { ShieldGroup { Text(error); Button("Try again") { Task { await load() } }.frame(minHeight: 44) } }
+            } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your trusted contacts…") } }
+            if let error {
+                ShieldGroup {
+                    ShieldLoadFailure(title: response == nil ? "Trusted contacts couldn’t load" : "That didn’t finish", detail: error) { Task { await load() } }
+                }
+            }
         }.deferredLoading(response == nil && error == nil, visible: $loadingVisible)
             .shieldListStyle().shieldLargeTitle("Trusted contacts")
             .task { await load() }.refreshable { await load() }

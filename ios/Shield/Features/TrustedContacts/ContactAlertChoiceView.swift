@@ -34,8 +34,8 @@ struct ContactAlertChoiceView: View {
         }
         if notificationsDenied || error != nil {
             ShieldGroup {
-                if let error { Text(error).foregroundStyle(ShieldTheme.secondaryText).accessibilityIdentifier("contact-alert-error") }
-                if notificationsDenied, let url = URL(string: UIApplication.openSettingsURLString) { Link("Open notification settings", destination: url).frame(minHeight: 44) }
+                if let error { ShieldNotice(title: "Alert choices not saved", detail: error, symbol: "exclamationmark.circle").accessibilityIdentifier("contact-alert-error") }
+                if notificationsDenied, let url = URL(string: UIApplication.openSettingsURLString) { Link("Open notification settings", destination: url).frame(minHeight: ShieldTheme.Layout.minimumTarget) }
             }
         }
         Section {

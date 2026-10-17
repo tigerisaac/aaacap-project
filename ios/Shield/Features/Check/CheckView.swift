@@ -3,6 +3,7 @@ import SwiftUI
 
 struct CheckView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var text = ""
     @State private var result: CheckResult?
     @State private var resultVersion = 0
@@ -97,7 +98,11 @@ struct CheckView: View {
                     }
                 }
                 .shieldLargeTitle("Check a text")
-                .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } } }
+                .toolbar {
+                    // Done sits in the bar while typing; a keyboard toolbar on a pushed screen
+                    // trips SwiftUI's invalid-frame diagnostic.
+                    if editing { ToolbarItem(placement: .confirmationAction) { Button("Done") { editing = false } } }
+                }
                 .task(id: selectedPhoto) { await readPhoto() }
                 .onChange(of: text) { _, _ in result = nil; error = nil }
                 .scrollDismissesKeyboard(.interactively)
@@ -120,8 +125,10 @@ struct CheckView: View {
             .controlSize(.large)
             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
             .disabled(checking || readingPhoto)
-        PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto] in
+        PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto, wide = typeSize.isAccessibilitySize] in
             Label(readingPhoto ? "Reading picture…" : "Choose picture", systemImage: "photo")
+                .labelStyle(ShieldWrappingLabelStyle())
+                .frame(maxWidth: wide ? .infinity : nil)
         }
         .shieldSecondaryButton()
         .disabled(readingPhoto || checking)

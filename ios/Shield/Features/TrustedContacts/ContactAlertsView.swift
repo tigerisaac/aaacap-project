@@ -19,8 +19,10 @@ struct ContactAlertsView: View {
                     }
                         .id("\(request.id)-\(request.status)-\(request.textAlerts)-\(request.appAlerts)")
                 }
-            } else if error == nil, loadingVisible { ShieldGroup { ProgressView("Loading requests…") } }
-            if let error { ShieldGroup { Text(error); Button("Try again") { Task { await load() } }.frame(minHeight: 44) } }
+            } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your requests…") } }
+            if let error {
+                ShieldGroup { ShieldLoadFailure(title: "Requests couldn’t load", detail: error) { Task { await load() } } }
+            }
         }.deferredLoading(response == nil && error == nil, visible: $loadingVisible)
             .shieldListStyle().navigationTitle("Alerts for others").navigationBarTitleDisplayMode(.inline)
             .task { await load() }.refreshable { await load() }

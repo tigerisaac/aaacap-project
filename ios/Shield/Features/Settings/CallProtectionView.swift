@@ -17,10 +17,9 @@ struct CallProtectionView: View {
         Form {
             ShieldGroup {
                 if loadFailed {
-                    Text("Couldn’t check this setting.")
-                    Button("Try again") { Task { await load() } }
+                    ShieldLoadFailure(title: "Couldn’t check this setting", detail: "Your saved choice couldn’t be checked.") { Task { await load() } }
                 } else if !loaded, !model.isPreview, !model.isDemo {
-                    if loadingVisible { ProgressView("Checking your setting…") }
+                    if loadingVisible { ShieldLoadingView(title: "Checking your setting…") }
                 } else {
                 Toggle("Check calls while I talk", isOn: Binding(
                     get: { monitoring?.enabled == true },
@@ -31,7 +30,7 @@ struct CallProtectionView: View {
                 if working { ProgressView("Saving your choice…") }
                 }
             } footer: {
-                Text(footer).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                if !footer.isEmpty { Text(footer) }
             }
             ShieldGroup { CallProtectionExplanation() }
         }
@@ -50,7 +49,7 @@ struct CallProtectionView: View {
 
     private var footer: String {
         if model.isPreview || model.isDemo { return "This setting doesn’t change in the sample app." }
-        if loadFailed { return "Your saved choice couldn’t be checked." }
+        if loadFailed { return "" }
         guard let monitoring else { return loaded ? "This isn’t ready for your phone yet." : "" }
         if !monitoring.available { return "This isn’t ready for your phone yet." }
         return monitoring.enabled ? "On for calls you answer through Shield." : "Off. Shield can still check calls before your phone rings."

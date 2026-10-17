@@ -9,7 +9,7 @@ struct DeletionProgressView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
                     Text(complete ? "Your account is deleted" : app.deletionSubmitted ? "Deleting your account" : "Sending your deletion request").shieldPageHeading().accessibilityAddTraits(.isHeader)
                     if complete {
                         Text("Your Shield account and saved account information have been removed. This iPhone’s saved messages were removed too.")
@@ -21,7 +21,6 @@ struct DeletionProgressView: View {
                         Text(app.deletionSubmitted ? "You don’t need to keep this screen open. Shield will keep working on your request." : "We haven’t confirmed your request yet. Connect to the internet, then check again.").font(.title3)
                         Text(app.deletionSubmitted ? "This normally takes a few minutes. Come back here to check when it’s finished." : "Your saved messages on this iPhone have been removed. Your online account may still be there until the request reaches Shield.")
                             .foregroundStyle(ShieldTheme.secondaryText)
-                        if checking { ProgressView("Checking progress…") }
                         if let error {
                             ShieldNotice(title: "We couldn’t check progress", detail: error, symbol: "wifi.exclamationmark")
                             Button("Close this status screen") { Task { await app.signOut(); app.clearDeletionReceipt() } }
@@ -31,7 +30,7 @@ struct DeletionProgressView: View {
                         Button { Task { await check() } } label: { ShieldActionLabel(title: "Check progress", isWorking: checking) }
                             .shieldPrimaryButton().disabled(checking)
                     }
-                }.padding(24).frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
+                }.padding(ShieldTheme.Spacing.page).frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }.background(ShieldTheme.surface).navigationTitle("Account deletion").navigationBarTitleDisplayMode(.inline)
         }
         .task {

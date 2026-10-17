@@ -85,6 +85,56 @@ extension View {
             .buttonBorderShape(.capsule)
             .tint(ShieldTheme.action)
     }
+
+    /// The shared text-field surface: Card fill and a visible boundary that turns Action and
+    /// thickens while focused, so the person can always see where typing goes.
+    func shieldField(focused: Bool) -> some View {
+        modifier(ShieldFieldSurface(focused: focused))
+    }
+
+    /// For icon-and-title action labels that can wrap: see `ShieldWrappingLabelStyle`.
+    func shieldWrappingLabel() -> some View {
+        labelStyle(ShieldWrappingLabelStyle())
+    }
+}
+
+/// Wrapped lines keep the title's left edge instead of starting under the icon. At accessibility
+/// sizes the decorative icon gives its width to the words, as rows already do.
+struct ShieldWrappingLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        WrappingLabel(configuration: configuration)
+    }
+
+    private struct WrappingLabel: View {
+        @Environment(\.dynamicTypeSize) private var typeSize
+        let configuration: LabelStyleConfiguration
+
+        var body: some View {
+            if typeSize.isAccessibilitySize {
+                configuration.title.fixedSize(horizontal: false, vertical: true)
+            } else {
+                HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.compact) {
+                    configuration.icon
+                    configuration.title.fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+}
+
+private struct ShieldFieldSurface: ViewModifier {
+    @Environment(\.colorSchemeContrast) private var contrast
+    let focused: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .padding(ShieldTheme.Spacing.content)
+            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(focused ? ShieldTheme.action : ShieldTheme.fieldBorder, lineWidth: focused || contrast == .increased ? 2 : 1)
+            }
+    }
 }
 
 enum ShieldHeadingLevel {

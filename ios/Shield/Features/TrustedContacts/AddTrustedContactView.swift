@@ -17,17 +17,18 @@ struct AddTrustedContactView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
-                Button("Choose from Contacts", systemImage: "person.crop.circle.badge.plus") { showingPicker = true }
-                    .frame(minHeight: 44).disabled(working)
-                VStack(alignment: .leading, spacing: 12) {
+                Button { showingPicker = true } label: {
+                    Label("Choose from Contacts", systemImage: "person.text.rectangle").shieldWrappingLabel()
+                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                }
+                .shieldSecondaryButton().disabled(working)
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                     Text("Their name").font(.headline)
                     TextField("Name", text: $name, prompt: Text("Name").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.name).focused($field, equals: .name)
-                        .padding(16).background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }.accessibilityIdentifier("trusted-contact-name")
-                    Text("Their mobile number").font(.headline)
+                        .shieldField(focused: field == .name).accessibilityIdentifier("trusted-contact-name")
+                    Text("Their mobile number").font(.headline).padding(.top, ShieldTheme.Spacing.regular)
                     TextField("Mobile number", text: $phone, prompt: Text("Mobile number").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.telephoneNumber).keyboardType(.phonePad).focused($field, equals: .phone)
-                        .padding(16).background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }.accessibilityIdentifier("trusted-contact-phone")
+                        .shieldField(focused: field == .phone).accessibilityIdentifier("trusted-contact-phone")
                 }.disabled(working)
                 Text("With their permission, send a request. They choose texts, app alerts, or both.")
                     .foregroundStyle(ShieldTheme.secondaryText)
@@ -45,7 +46,9 @@ struct AddTrustedContactView: View {
         }.background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .navigationTitle("Add trusted contact").navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(working).interactiveDismissDisabled(working)
-            .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { field = nil } } }
+            .toolbar {
+                if field != nil { ToolbarItem(placement: .confirmationAction) { Button("Done") { field = nil } } }
+            }
             .sheet(isPresented: $showingPicker) {
                 TrustedContactPicker(onSelect: { selectedName, selectedPhone in name = selectedName; phone = selectedPhone; showingPicker = false }, onCancel: { showingPicker = false })
             }

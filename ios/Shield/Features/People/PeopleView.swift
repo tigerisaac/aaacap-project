@@ -3,14 +3,12 @@ import SwiftUI
 struct PeopleView: View {
     @Environment(AppState.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
-    @ScaledMetric(relativeTo: .body) private var symbolSize = 36.0
 
     var body: some View {
             List {
                 if let error = model.contextError {
                     ShieldGroup {
-                        ShieldNotice(title: "Couldn’t get these calls", detail: error, symbol: "wifi.exclamationmark")
-                        Button("Try again", systemImage: "arrow.clockwise") { Task { await model.refresh() } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        ShieldLoadFailure(title: "Couldn’t get these calls", detail: error) { Task { await model.refresh() } }
                     }
                 }
                 ShieldSection("Whose calls would you like to see?") {
@@ -18,13 +16,9 @@ struct PeopleView: View {
                         Button {
                             Task { await model.select(person) }
                         } label: {
-                            HStack(spacing: 14) {
+                            HStack(spacing: ShieldTheme.Layout.rowSymbolSpacing) {
                                 if !typeSize.isAccessibilitySize {
-                                Image(systemName: person.isOwner ? "person" : "person.2")
-                                    .font(.body.weight(.medium)).foregroundStyle(ShieldTheme.action)
-                                    .frame(width: symbolSize, height: symbolSize)
-                                    .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
-                                    .accessibilityHidden(true)
+                                    ShieldRowSymbol(systemName: person.isOwner ? "person" : "person.2")
                                 }
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(person.name).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
@@ -45,16 +39,13 @@ struct PeopleView: View {
                         .accessibilityElement(children: .combine)
                         .accessibilityAddTraits(person.id == model.selectedPersonID ? .isSelected : [])
                     }
-                }
-                if !model.isOwner {
-                    ShieldGroup {
-                        Text("Only they can change their phone settings.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                    }
+                } footer: {
+                    if !model.isOwner { Text("Only they can change their phone settings.") }
                 }
                 if model.isOwner {
                     ShieldGroup {
                         NavigationLink(value: AppRoute.trustedContacts) {
-                            ActionRow(title: "Trusted contacts", symbol: "person.crop.circle.badge.checkmark")
+                            ActionRow(title: "Trusted contacts", symbol: "person.badge.shield.checkmark")
                         }
                         NavigationLink(value: AppRoute.sharing) {
                             ActionRow(title: "Your helpers", symbol: "person.2.badge.gearshape")

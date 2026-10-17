@@ -11,7 +11,7 @@ struct ForwardingStepContent: View {
             switch step {
             case .overview:
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
-                    point("Save Shield", symbol: "person.crop.circle.badge.plus")
+                    point("Save Shield", symbol: "person.text.rectangle")
                     point("Check that it can ring you", symbol: "phone.badge.waveform")
                     point("Change settings", symbol: "gearshape")
                     point("Connect your carrier", symbol: "antenna.radiowaves.left.and.right")

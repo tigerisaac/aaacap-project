@@ -12,7 +12,7 @@ struct DeleteAccountView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
                 Text(status?.restorationRequired == true ? "First, bring back ordinary calls" : "Delete your account").shieldPageHeading()
                     .accessibilityAddTraits(.isHeader)
                 if let status {
@@ -34,19 +34,20 @@ struct DeleteAccountView: View {
                         }
                         Text("Deletion normally takes a few minutes and continues if you close Shield. This iPhone’s saved recordings are removed first. This cannot be undone.")
                             .foregroundStyle(ShieldTheme.secondaryText)
-                        Button("Delete my account", role: .destructive) { confirming = true }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            .foregroundStyle(ShieldTheme.held)
-                            .accessibilityIdentifier("delete-account-confirm")
-                            .disabled(working)
+                        Button(role: .destructive) { confirming = true } label: {
+                            Text("Delete my account").font(.headline)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                        }
+                        .shieldSecondaryButton().tint(ShieldTheme.held)
+                        .accessibilityIdentifier("delete-account-confirm")
+                        .disabled(working)
                     }
-                } else if working { ProgressView("Checking your account…") }
+                } else if working { ShieldLoadingView(title: "Checking your account…") }
                 if let error {
-                    ShieldNotice(title: "Deletion hasn’t started", detail: error, symbol: "exclamationmark.circle")
-                    Button("Try again") { Task { await load() } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    ShieldLoadFailure(title: "Deletion hasn’t started", detail: error, symbol: "exclamationmark.circle") { Task { await load() } }
                 }
                 if app.isDemo { Text("This is a sample. No account will be deleted.").foregroundStyle(ShieldTheme.secondaryText) }
-            }.padding(24).frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
+            }.padding(ShieldTheme.Spacing.page).frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
         }
         .background(ShieldTheme.surface)
         .navigationTitle("Delete account").navigationBarTitleDisplayMode(.inline)

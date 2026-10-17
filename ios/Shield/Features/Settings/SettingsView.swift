@@ -35,10 +35,11 @@ struct SettingsView: View {
             ShieldGroup {
                 let leavesSample = model.isDemo && !model.isTestAccount
                 NavigationLink(value: AppRoute.deleteAccount) {
-                    ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
+                    ActionRow(title: "Delete account", symbol: "person.badge.minus")
                 }
-                Button(leavesSample ? "Leave sample app" : "Sign out") { confirmSignOut = true }
-                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                Button { confirmSignOut = true } label: {
+                    ActionRow(title: leavesSample ? "Leave sample app" : "Sign out", symbol: "rectangle.portrait.and.arrow.right")
+                }
                     .alert(leavesSample ? "Leave the sample app?" : "Sign out?", isPresented: $confirmSignOut) {
                         Button(leavesSample ? "Leave sample app" : "Sign out") { Task { await model.signOut() } }
                         Button("Cancel", role: .cancel) {}

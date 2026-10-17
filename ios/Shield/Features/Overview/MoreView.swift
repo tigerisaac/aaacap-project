@@ -24,8 +24,9 @@ struct MoreView: View {
                 }
                 if model.isDemo && !model.isTestAccount {
                     ShieldGroup {
-                        Button("Leave sample app") { Task { await model.signOut() } }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        Button { Task { await model.signOut() } } label: {
+                            ActionRow(title: "Leave sample app", symbol: "rectangle.portrait.and.arrow.right")
+                        }
                     }
                 }
             }

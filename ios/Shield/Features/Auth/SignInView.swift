@@ -5,7 +5,6 @@ struct SignInView: View {
     var allowsDismissal = false
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var model
-    @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.dynamicTypeSize) private var typeSize
     @State private var email = ""
     @State private var code = ""
@@ -96,9 +95,7 @@ struct SignInView: View {
                                     }
                                 }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                .padding(16)
-                                .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(focusedField == nil ? ShieldTheme.fieldBorder : ShieldTheme.action, lineWidth: focusedField == nil && contrast != .increased ? 1 : 2) }
+                                .shieldField(focused: focusedField != nil)
                                 .disabled(working).submitLabel(codeSent ? .go : .send)
                                 .onSubmit { if canSubmit { Task { await submit() } } }
                             }
@@ -179,9 +176,11 @@ struct SignInView: View {
                 if allowsDismissal {
                     ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(working) }
                 }
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") { focusedField = nil }
+                if allowsDismissal {
+                    if focusedField != nil { ToolbarItem(placement: .confirmationAction) { Button("Done") { focusedField = nil } } }
+                } else {
+                    ToolbarSpacer(.flexible, placement: .keyboard)
+                    ToolbarItem(placement: .keyboard) { Button("Done") { focusedField = nil } }
                 }
             }
             }

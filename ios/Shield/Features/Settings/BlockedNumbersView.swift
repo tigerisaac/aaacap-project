@@ -28,7 +28,7 @@ struct BlockedNumbersView: View {
                 ShieldGroup {
                     LabeledContent("Block on this iPhone", value: phoneBlocking == true ? "On" : "Off")
                     if phoneBlocking == false {
-                        Button("Turn on in Settings", systemImage: "gear") { Task { await CallDirectorySync.openSettings() } }
+                        Button("Turn on in Settings", systemImage: "gearshape") { Task { await CallDirectorySync.openSettings() } }
                     }
                 } footer: {
                     Text(phoneBlocking == true

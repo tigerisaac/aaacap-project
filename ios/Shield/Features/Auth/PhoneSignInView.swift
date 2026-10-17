@@ -39,14 +39,12 @@ struct PhoneSignInView: View {
                             TextField("Mobile number", text: $phone, prompt: Text("Mobile number").foregroundStyle(ShieldTheme.secondaryText))
                                 .textContentType(.telephoneNumber).keyboardType(.phonePad)
                                 .focused($focus, equals: .phone).accessibilityIdentifier("sign-in-phone")
-                                .padding(16).background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }
+                                .shieldField(focused: focus == .phone)
                         } else {
                             TextField("Code", text: $code, prompt: Text("Code").foregroundStyle(ShieldTheme.secondaryText))
                                 .textContentType(.oneTimeCode).keyboardType(.numberPad)
                                 .focused($focus, equals: .code).accessibilityIdentifier("sign-in-phone-code")
-                                .padding(16).background(ShieldTheme.card, in: .rect(cornerRadius: 14))
-                                .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(ShieldTheme.fieldBorder, lineWidth: 1) }
+                                .shieldField(focused: focus == .code)
                         }
                         if challenge == nil {
                             Text("US and Canadian mobile numbers. Message and data rates may apply.")
@@ -89,7 +87,10 @@ struct PhoneSignInView: View {
             }
             .background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
-            .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focus = nil } } }
+            .toolbar {
+                ToolbarSpacer(.flexible, placement: .keyboard)
+                ToolbarItem(placement: .keyboard) { Button("Done") { focus = nil } }
+            }
             .sheet(isPresented: $showingEmail) { SignInView(incomingURL: emailLink, allowsDismissal: true) }
             .onOpenURL { url in emailLink = url; showingEmail = true }
         }
