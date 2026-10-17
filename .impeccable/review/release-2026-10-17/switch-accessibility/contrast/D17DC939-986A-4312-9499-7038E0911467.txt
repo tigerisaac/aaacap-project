@@ -1,0 +1,46 @@
+Attributes: Application, 0x105677980, pid: 99069, label: 'Shield'
+Element subtree:
+ →Application, 0x105677980, pid: 99069, label: 'Shield'
+    Window (Main), 0x105677700, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1056748c0, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x105675040, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1057e9900, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1057eb840, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x1057eb980, {{141.7, 55.0}, {106.7, 26.0}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+              Other, 0x1057e9180, {{0.0, 89.0}, {390.0, 755.0}}
+                NavigationBar, 0x1057e92c0, {{0.0, 99.0}, {390.0, 54.0}}, identifier: 'Add number'
+                  Other, 0x1057e97c0, {{20.0, 103.0}, {76.7, 36.0}}
+                    Other, 0x1057e9b80, {{20.0, 103.0}, {76.7, 36.0}}
+                      Button, 0x1057e9cc0, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'
+                  StaticText, 0x1057eb700, {{146.0, 110.7}, {97.7, 20.7}}, label: 'Add number'
+                Other, 0x1057eb480, {{0.0, 89.0}, {390.0, 755.0}}
+                  Other, 0x1057eb340, {{0.0, 89.0}, {390.0, 755.0}}
+                    Other, 0x1057eb5c0, {{0.0, 89.0}, {390.0, 755.0}}
+                      Other, 0x1057ea300, {{0.0, 89.0}, {390.0, 755.0}}
+                        ScrollView, 0x1057eb200, {{0.0, 89.0}, {390.0, 755.0}}
+                          Other, 0x1057eaf80, {{0.0, 89.0}, {390.0, 755.0}}
+                            Other, 0x1057eb0c0, {{0.0, 89.0}, {390.0, 104.0}}
+                          Other, 0x1057eabc0, {{0.0, 89.0}, {390.0, 755.0}}
+                          Other, 0x1057eae40, {{0.0, 153.0}, {390.0, 336.7}}
+                            StaticText, 0x1057ead00, {{24.0, 177.0}, {46.7, 20.3}}, label: 'Name'
+                            TextField, 0x1057eaa80, {{40.0, 225.3}, {310.0, 22.0}}, label: 'Name', placeholderValue: 'For example, My clinic'
+                              Other, 0x1057ea940, {{40.0, 233.3}, {310.0, 11.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                                Other, 0x1057ea6c0, {{43.0, 241.3}, {304.0, 3.0}}
+                            StaticText, 0x1057ea440, {{24.0, 279.3}, {116.0, 20.3}}, label: 'Phone number'
+                            StaticText, 0x1057ea080, {{275.0, 281.3}, {91.0, 18.0}}, label: 'US & Canada'
+                            TextField, 0x1057ea800, {{24.0, 311.7}, {342.0, 56.0}}, identifier: 'saved-number-phone', label: 'Phone number', placeholderValue: '(201) 555-0123'
+                            Button, 0x1057ea1c0, {{24.0, 383.7}, {342.0, 82.0}}, label: 'Save number', Disabled
+                              StaticText, 0x1057e9f40, {{143.0, 414.5}, {104.0, 20.3}}, label: 'Save number', Disabled
+                          Other, 0x1057e9a40, {{357.0, 153.0}, {30.0, 643.7}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1057e9e00, {{384.0, 476.3}, {3.0, 317.3}}
+                          Other, 0x1057e8b40, {{357.0, 153.0}, {30.0, 643.7}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1057e8dc0, {{384.0, 476.3}, {3.0, 317.3}}
+                Toolbar, 0x1057e9040, {{0.0, 89.0}, {390.0, 755.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x1057e8f00, {{0.0, 89.0}, {390.0, 755.0}}
+Path to element:
+ →Application, 0x105677980, pid: 99069, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x1057e8c80, pid: 99069, label: 'Shield'
+  }

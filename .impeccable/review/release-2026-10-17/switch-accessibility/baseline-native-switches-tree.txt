@@ -1,0 +1,93 @@
+Attributes: Application, 0x1037c8a00, pid: 6292, label: 'Shield'
+Element subtree:
+ →Application, 0x1037c8a00, pid: 6292, label: 'Shield'
+    Window (Main), 0x1037c8b40, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1037c8f00, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1037c8c80, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x1037c9040, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1037c8dc0, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1037c9180, {{0.0, 0.0}, {390.0, 844.0}}
+              Other, 0x1037c9680, {{0.0, 0.0}, {390.0, 844.0}}
+                Other, 0x1037c97c0, {{0.0, 0.0}, {390.0, 844.0}}
+                  Other, 0x1037c9b80, {{0.0, 0.0}, {390.0, 844.0}}
+                    Other, 0x1037c9a40, {{0.0, 0.0}, {390.0, 844.0}}
+                      Other, 0x1037c9cc0, {{0.0, 0.0}, {390.0, 844.0}}
+                        Other, 0x1037c9e00, {{0.0, 0.0}, {390.0, 844.0}}
+                          Other, 0x1037ca1c0, {{0.0, 0.0}, {390.0, 844.0}}
+                            NavigationBar, 0x1037c9f40, {{0.0, 47.0}, {390.0, 106.0}}, identifier: 'Native reference'
+                              StaticText, 0x1037ca300, {{16.0, 104.7}, {233.3, 40.7}}, label: 'Native reference'
+                            Other, 0x1037ca580, {{0.0, 0.0}, {390.0, 844.0}}
+                              Other, 0x1037ca6c0, {{0.0, 0.0}, {390.0, 844.0}}
+                                Other, 0x1037ca080, {{0.0, 0.0}, {390.0, 844.0}}
+                                  Other, 0x1037ca800, {{0.0, 0.0}, {390.0, 844.0}}
+                                    CollectionView, 0x1037caa80, {{0.0, 0.0}, {390.0, 844.0}}
+                                      Other, 0x1037cabc0, {{-16.0, -1535.0}, {422.0, 3500.0}}
+                                      Other, 0x1037ca940, {{0.0, 0.0}, {390.0, 844.0}}
+                                        Other, 0x1037cad00, {{0.0, 0.0}, {390.0, 87.0}}
+                                        Other, 0x1037caf80, {{0.0, 711.0}, {390.0, 133.0}}
+                                      Other, 0x1037cb0c0, {{0.0, 0.0}, {390.0, 844.0}}
+                                      Cell, 0x1037cae40, {{16.0, 153.0}, {358.0, 52.0}}
+                                        Other, 0x1037cb200, {{16.0, 153.0}, {358.0, 52.0}}
+                                          Other, 0x1037cb480, {{16.0, 153.0}, {358.0, 52.0}}
+                                        Other, 0x1037cb5c0, {{16.0, 153.0}, {358.0, 52.0}}
+                                          Other, 0x1037cb340, {{16.0, 153.0}, {358.0, 52.0}}
+                                            Other, 0x1037cb700, {{16.0, 153.0}, {358.0, 52.0}}
+                                              Switch, 0x1037cb840, {{16.0, 153.0}, {358.0, 52.0}}, label: 'Quiet hours', value: 0
+                                                StaticText, 0x1037cb980, {{32.0, 168.8}, {88.3, 20.3}}, label: 'Quiet hours'
+                                                Switch, 0x1037cbc00, {{297.0, 165.0}, {63.0, 28.0}}, value: 0
+                                      Cell, 0x1037cbd40, {{16.0, 205.0}, {358.0, 52.0}}
+                                        Other, 0x1037cbac0, {{16.0, 205.0}, {358.0, 52.0}}
+                                          Other, 0x1037c8000, {{16.0, 205.0}, {358.0, 52.0}}
+                                        Other, 0x103676bc0, {{16.0, 205.0}, {358.0, 52.0}}
+                                          Other, 0x103676f80, {{16.0, 205.0}, {358.0, 52.0}}
+                                            Other, 0x103677200, {{16.0, 205.0}, {358.0, 52.0}}
+                                              Switch, 0x103677340, {{16.0, 205.0}, {358.0, 52.0}}, label: 'Check calls while I talk', value: 0, Disabled
+                                                StaticText, 0x103677480, {{32.0, 220.8}, {171.0, 20.3}}, label: 'Check calls while I talk', Disabled
+                                                Switch, 0x103677700, {{297.0, 217.0}, {63.0, 28.0}}, value: 0, Disabled
+                                      Other, 0x103677840, {{32.0, 204.0}, {326.0, 1.0}}
+                                      Other, 0x1036775c0, {{357.0, 101.0}, {30.0, 660.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                                        Other, 0x103674780, {{384.0, 751.0}, {3.0, 7.0}}
+                                      Other, 0x103674f00, {{357.0, 101.0}, {30.0, 660.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                                        Other, 0x106d0c000, {{384.0, 751.0}, {3.0, 7.0}}
+                            Toolbar, 0x106d0c140, {{0.0, 0.0}, {390.0, 844.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                              Other, 0x106d0c280, {{0.0, 0.0}, {390.0, 844.0}}
+                Other, 0x106d0c3c0, {{0.0, 0.0}, {390.0, 844.0}}
+                  Other, 0x106d0c500, {{0.0, 761.0}, {390.0, 83.0}}
+                    Other, 0x106d0c640, {{0.0, 0.0}, {390.0, 844.0}}
+                      TabBar, 0x106d0c780, {{0.0, 761.0}, {390.0, 83.0}}, label: 'Tab Bar'
+                        Other, 0x106d0c8c0, {{21.0, 761.0}, {348.0, 62.0}}
+                          Other, 0x106d0ca00, {{21.0, 761.0}, {92.0, 54.0}}
+                          Other, 0x106d0cb40, {{21.0, 761.0}, {348.0, 62.0}}
+                            Button, 0x106d0cc80, {{25.0, 765.0}, {92.0, 54.0}}, identifier: 'house', label: 'Home', Selected
+                              Image, 0x106d0cdc0, {{54.3, 771.0}, {33.3, 28.0}}, identifier: 'house.fill', label: 'home'
+                            Button, 0x106d0cf00, {{107.7, 765.0}, {92.0, 54.0}}, identifier: 'phone', label: 'Calls'
+                              Image, 0x106d0d040, {{140.3, 772.3}, {26.7, 25.3}}, identifier: 'phone.fill', label: 'Call'
+                            Button, 0x106d0d180, {{190.3, 765.0}, {92.0, 54.0}}, identifier: 'tray', label: 'Messages'
+                              Image, 0x106d0d2c0, {{220.0, 773.0}, {33.0, 23.7}}, identifier: 'tray.fill', label: 'inbox'
+                            Button, 0x106d0d400, {{273.0, 765.0}, {92.0, 54.0}}, identifier: 'ellipsis', label: 'More'
+                              Image, 0x106d0d540, {{306.7, 780.7}, {25.0, 8.7}}, identifier: 'ellipsis', label: 'More'
+                          Other, 0x106d0d680, {{21.0, 761.0}, {348.0, 62.0}}
+                          Other, 0x106d0d7c0, {{25.0, 765.0}, {92.0, 54.0}}
+                            Other, 0x106d0d900, {{25.0, 765.0}, {92.0, 54.0}}
+                              Other, 0x106d0da40, {{25.0, 765.0}, {92.0, 54.0}}
+                              Other, 0x106d0db80, {{25.0, 765.0}, {92.0, 54.0}}
+                                Other, 0x106d0dcc0, {{25.0, 765.0}, {92.0, 54.0}}
+                                  Other, 0x106d0de00, {{25.0, 765.0}, {92.0, 54.0}}
+                                    Other, 0x106d0df40, {{25.0, 765.0}, {92.0, 54.0}}
+                                  Other, 0x106d0e080, {{25.0, 765.0}, {92.0, 54.0}}
+                                Other, 0x106d0e1c0, {{25.0, 765.0}, {92.0, 54.0}}
+                    Other, 0x106d0e300, {{0.0, 761.0}, {390.0, 83.0}}
+                      Other, 0x106d0e440, {{0.0, 761.0}, {390.0, 83.0}}
+                        Other, 0x106d0e580, {{0.0, 761.0}, {390.0, 83.0}}
+                          Other, 0x106d0e6c0, {{0.0, 761.0}, {390.0, 83.0}}
+                            Other, 0x106d0e800, {{0.0, 761.0}, {390.0, 83.0}}
+                              Other, 0x106d0e940, {{0.0, 761.0}, {390.0, 83.0}}
+                          Other, 0x106d0ea80, {{0.0, 761.0}, {390.0, 83.0}}
+                            Other, 0x106d0ebc0, {{0.0, 761.0}, {390.0, 83.0}}
+Path to element:
+ →Application, 0x1037c8a00, pid: 6292, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x106d0ed00, pid: 6292, label: 'Shield'
+  }

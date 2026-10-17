@@ -1,0 +1,212 @@
+{
+  "sourceAudit": ".impeccable/review/release-2026-10-17/contact-sharing/accessibility.json",
+  "method": "Unmodified pre-audit 1170x2532 PNGs declare sRGB. Use each capture\u2019s own accessibility-tree rectangle at 3 pixels/point (not the later audit\u2019s different coordinates). Foreground is the observed opaque text-core color matching its source theme, verified in at least 100 pixels. Background is the most frequent pixel within the rectangle. Calculate the WCAG sRGB relative-luminance ratio without rounding before comparison. No image pixels changed. These are representative rendered pairs, not a minimum over gradient/antialias edges or a complete system audit.",
+  "scope": "All eight enabled-element contrast reports from the retained October 17 contact-sharing audit. Seven disabled-control reports retained separately; WCAG 1.4.3 exempts inactive components, but this is not a universal usability waiver.",
+  "findings": [
+    {
+      "screen": "accessibility-disconnection-dark",
+      "label": "1",
+      "capture": "contrast/C2E90171-C5F5-4507-AAD9-91E301ECD0C0.png",
+      "captureSha256": "f9e58cecab012d02ca0841b8636e0cc6f0ff430e429f82a5b76356967cb50fe5",
+      "tree": "contrast/65C8A548-B40C-4F8B-8E89-5DEB7F6EBC4E.txt",
+      "treeSha256": "b3b7dafb5a2baec2b777bf683c25e5bbcb0c594f6a01ebb0d99d879e74ce2b06",
+      "rectanglePoints": [
+        24.0,
+        325.7,
+        32.0,
+        32.0
+      ],
+      "rectanglePixels": [
+        72,
+        977,
+        168,
+        1073
+      ],
+      "foreground": "#b9cdf2",
+      "foregroundCorePixels": 215,
+      "dominantBackground": "#212d3f",
+      "backgroundPixels": 6724,
+      "contrastRatio": 8.650330951612354
+    },
+    {
+      "screen": "accessibility-disconnection-dark",
+      "label": "Close",
+      "capture": "contrast/C2E90171-C5F5-4507-AAD9-91E301ECD0C0.png",
+      "captureSha256": "f9e58cecab012d02ca0841b8636e0cc6f0ff430e429f82a5b76356967cb50fe5",
+      "tree": "contrast/65C8A548-B40C-4F8B-8E89-5DEB7F6EBC4E.txt",
+      "treeSha256": "b3b7dafb5a2baec2b777bf683c25e5bbcb0c594f6a01ebb0d99d879e74ce2b06",
+      "rectanglePoints": [
+        303.0,
+        51.0,
+        67.0,
+        36.0
+      ],
+      "rectanglePixels": [
+        909,
+        153,
+        1110,
+        261
+      ],
+      "foreground": "#b9cdf2",
+      "foregroundCorePixels": 992,
+      "dominantBackground": "#2c3a4e",
+      "backgroundPixels": 8586,
+      "contrastRatio": 7.176283639137717
+    },
+    {
+      "screen": "accessibility-phone-setup-dark",
+      "label": "Close",
+      "capture": "contrast/F71217A0-F2BE-4094-AE0C-46B136F9A01B.png",
+      "captureSha256": "696362152e81bd3c7d26f8d73467827f78b9816b047c507a40f7cc543d08e5da",
+      "tree": "contrast/AB34D611-25E0-4056-BE18-F415821B3C4E.txt",
+      "treeSha256": "fe68b6cf19ffe30f571f64eb92fd7b1a26543023313ccd9689ad0a8141292ea7",
+      "rectanglePoints": [
+        199.0,
+        51.0,
+        67.0,
+        36.0
+      ],
+      "rectanglePixels": [
+        597,
+        153,
+        798,
+        261
+      ],
+      "foreground": "#b9cdf2",
+      "foregroundCorePixels": 992,
+      "dominantBackground": "#2c3a4e",
+      "backgroundPixels": 8520,
+      "contrastRatio": 7.176283639137717
+    },
+    {
+      "screen": "accessibility-add-contact-dark",
+      "label": "Cancel",
+      "capture": "contrast/56BF1DF9-985F-4931-8D5D-CDC8F7D8EB0A.png",
+      "captureSha256": "f143091617f85d7b0f5031c596ff9340d2186f36f240f624d29bacfb39a5943f",
+      "tree": "contrast/D17DC939-986A-4312-9499-7038E0911467.txt",
+      "treeSha256": "9e7beb2570e81ca1cab0b0d7c31ce7c7735dc36179bfaace286d519b3f806d98",
+      "rectanglePoints": [
+        20.0,
+        103.0,
+        76.7,
+        36.0
+      ],
+      "rectanglePixels": [
+        60,
+        309,
+        290,
+        417
+      ],
+      "foreground": "#b9cdf2",
+      "foregroundCorePixels": 1192,
+      "dominantBackground": "#2c3a4e",
+      "backgroundPixels": 10197,
+      "contrastRatio": 7.176283639137717
+    },
+    {
+      "screen": "accessibility-add-number-dark",
+      "label": "Don\u2019t use a number from an unexpected call or text.",
+      "capture": "contrast/D91AE926-FB70-4A3C-93A3-7BDFEEF28D4A.png",
+      "captureSha256": "9e6dc0800b9f41baaf139cd1c0467cea87230fcaef7431a758a25534b5f72528",
+      "tree": "contrast/CF4533EE-8608-4AE2-89F3-5F97EBB2C59E.txt",
+      "treeSha256": "058312855097b04f7677886ad9857b97fed474880b72f7d4c9c42433c4117e9d",
+      "rectanglePoints": [
+        24.0,
+        480.0,
+        307.0,
+        38.0
+      ],
+      "rectanglePixels": [
+        72,
+        1440,
+        993,
+        1554
+      ],
+      "foreground": "#b8c4d6",
+      "foregroundCorePixels": 6045,
+      "dominantBackground": "#101b2b",
+      "backgroundPixels": 93565,
+      "contrastRatio": 9.808980885085111
+    },
+    {
+      "screen": "accessibility-add-number-dark",
+      "label": "Cancel",
+      "capture": "contrast/D91AE926-FB70-4A3C-93A3-7BDFEEF28D4A.png",
+      "captureSha256": "9e6dc0800b9f41baaf139cd1c0467cea87230fcaef7431a758a25534b5f72528",
+      "tree": "contrast/CF4533EE-8608-4AE2-89F3-5F97EBB2C59E.txt",
+      "treeSha256": "058312855097b04f7677886ad9857b97fed474880b72f7d4c9c42433c4117e9d",
+      "rectanglePoints": [
+        20.0,
+        103.0,
+        76.7,
+        36.0
+      ],
+      "rectanglePixels": [
+        60,
+        309,
+        290,
+        417
+      ],
+      "foreground": "#b9cdf2",
+      "foregroundCorePixels": 1192,
+      "dominantBackground": "#2c3a4e",
+      "backgroundPixels": 10197,
+      "contrastRatio": 7.176283639137717
+    },
+    {
+      "screen": "accessibility-add-number",
+      "label": "Don\u2019t use a number from an unexpected call or text.",
+      "capture": "contrast/7B2C0A50-40FE-4ECA-9846-8E8B21CFA433.png",
+      "captureSha256": "3419960b9df8c72495c0b028e597ff72911f1fe3407bfbeb269ae3730ff5acfe",
+      "tree": "contrast/3E1D92DE-C9DB-4643-B1D5-B538299F3CFF.txt",
+      "treeSha256": "d3db86fb496f30b93715b30b075dc8254c051768fceefe55dcc6fedd3700f881",
+      "rectanglePoints": [
+        24.0,
+        480.0,
+        307.0,
+        38.0
+      ],
+      "rectanglePixels": [
+        72,
+        1440,
+        993,
+        1554
+      ],
+      "foreground": "#525e70",
+      "foregroundCorePixels": 6045,
+      "dominantBackground": "#f2f3f4",
+      "backgroundPixels": 93565,
+      "contrastRatio": 5.918310837240229
+    },
+    {
+      "screen": "accessibility-add-number",
+      "label": "Cancel",
+      "capture": "contrast/7B2C0A50-40FE-4ECA-9846-8E8B21CFA433.png",
+      "captureSha256": "3419960b9df8c72495c0b028e597ff72911f1fe3407bfbeb269ae3730ff5acfe",
+      "tree": "contrast/3E1D92DE-C9DB-4643-B1D5-B538299F3CFF.txt",
+      "treeSha256": "d3db86fb496f30b93715b30b075dc8254c051768fceefe55dcc6fedd3700f881",
+      "rectanglePoints": [
+        20.0,
+        103.0,
+        76.7,
+        36.0
+      ],
+      "rectanglePixels": [
+        60,
+        309,
+        290,
+        417
+      ],
+      "foreground": "#002664",
+      "foregroundCorePixels": 1192,
+      "dominantBackground": "#f7f8f9",
+      "backgroundPixels": 7646,
+      "contrastRatio": 13.515480485336976
+    }
+  ],
+  "disposition": "All representative pairs exceed 4.5:1. The automated failures remain unresolved: pixel measurements do not prove what caused them or supersede whole-screen audit results.",
+  "references": [
+    "https://www.w3.org/TR/WCAG22/#contrast-minimum",
+    "https://developer.apple.com/documentation/accessibility/performing-accessibility-audits-for-your-app"
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "conclusion": "success",
+  "headSha": "d5769fa12cadfb616f0e4dfd797137e3b7ee6547",
+  "jobs": [
+    {
+      "completedAt": "2026-10-17T22:22:30Z",
+      "conclusion": "success",
+      "databaseId": 117518812608,
+      "name": "backend",
+      "startedAt": "2026-10-17T22:18:26Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-17T22:18:29Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-17T22:18:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:18:34Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v6",
+          "number": 2,
+          "startedAt": "2026-10-17T22:18:29Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:18:37Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v6",
+          "number": 3,
+          "startedAt": "2026-10-17T22:18:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:18:53Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 4,
+          "startedAt": "2026-10-17T22:18:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:19:19Z",
+          "conclusion": "success",
+          "name": "Run npm run check",
+          "number": 5,
+          "startedAt": "2026-10-17T22:18:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:19:19Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-java@v5",
+          "number": 6,
+          "startedAt": "2026-10-17T22:19:19Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:22:00Z",
+          "conclusion": "success",
+          "name": "Run npm run test:firebase",
+          "number": 7,
+          "startedAt": "2026-10-17T22:19:19Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:22:27Z",
+          "conclusion": "success",
+          "name": "Run npm run test:accounts",
+          "number": 8,
+          "startedAt": "2026-10-17T22:22:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:22:27Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-java@v5",
+          "number": 14,
+          "startedAt": "2026-10-17T22:22:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:22:28Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v6",
+          "number": 15,
+          "startedAt": "2026-10-17T22:22:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:22:28Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v6",
+          "number": 16,
+          "startedAt": "2026-10-17T22:22:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-17T22:22:28Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-10-17T22:22:28Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39074523685/job/117518812608"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39074523685",
+  "verifiedTestTotals": {
+    "unit": 335,
+    "firestore": 250,
+    "accountLifecycle": 8
+  },
+  "logSha256": "7db609f6cda2b4cc5184879759edf18191a425523fc1c094889cde794ae6bf7f"
+}

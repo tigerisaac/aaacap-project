@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-17",
+  "source": {
+    "baseRevision": "99e3ddc9d3bbda1f98f7689a6b9d5e39154b4b9d",
+    "overlays": [
+      "ios/Shield/Design/ShieldSwitchStyle.swift",
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift"
+    ]
+  },
+  "sourceManifest": {
+    "files": 267,
+    "manifestSha256": "1d87a217e98b04e52745a1afa6a6ee8d8fc2b989e36d1c79a8490d78e0fda502"
+  },
+  "change": "Remove a redundant hidden accessibilityRepresentation from ShieldSwitchStyle; preserve native ToggleStyle semantics and the existing full-row wrapping layout. Add a regression across both labels, appearances and standard/largest text.",
+  "baseline": {
+    "result": "Failed",
+    "passedTests": 1,
+    "failedTests": 1,
+    "runtimeWarnings": []
+  },
+  "baselineExplanation": "Native switches passed; Shield produced two text-clipping reports in one failing method.",
+  "isolatedCorrection": {
+    "result": "Passed",
+    "passedTests": 3,
+    "failedTests": 0,
+    "runtimeWarnings": []
+  },
+  "voiceOver": {
+    "result": "Passed",
+    "passedTests": 3,
+    "failedTests": 0,
+    "runtimeWarnings": []
+  },
+  "voiceOverLimits": "Checks reported focus/speech then performs direct actions with VoiceOver temporarily disabled; not physical native-gesture acceptance.",
+  "finalIOS27": {
+    "result": "Failed",
+    "passedTests": 2,
+    "failedTests": 2,
+    "runtimeWarnings": []
+  },
+  "finalIOS27Explanation": "Two passing methods: eight layout/audit cases and the full-row action. Two unchanged unfiltered audit methods failed with 10 contrast reports and no clipping.",
+  "compatibilityIOS265": {
+    "result": "Passed",
+    "passedTests": 2,
+    "failedTests": 0,
+    "runtimeWarnings": []
+  },
+  "compatibilityExplanation": "Eight switch cases plus the row action, two passing methods.",
+  "backend": {
+    "unit": 339,
+    "firestore": 252,
+    "typecheckAndBuild": true,
+    "sourceUnchangedDuringChecks": true,
+    "backendSourceManifestSha256": "80dae8e037ed25697fd34f1796bac6529a8b828694e14a66e3100d2f97cdf3ad",
+    "initialSandboxFailure": "The first npm run check had 331 passing tests and could not bind the APNs test loopback server (EPERM); the complete rerun with loopback permission passed.",
+    "deployed": false
+  },
+  "archive": {
+    "archive": "/tmp/shield-switch-accessibility.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "77015cec62730627fa293644deaf319617a418ad7b5763ada44e44d42aef1f2c"
+  },
+  "visualReview": {
+    "ios27": 8,
+    "ios265": 3,
+    "notes": "All reviewed switch labels are complete. Large pages extend below the viewport; this is not a whole-page usability certification. The full-row target and native role/state remain verified. Additional candidate and VoiceOver captures reviewed."
+  },
+  "logs": {
+    "baseline.log": "bc9e8dfde8ae1934337b78e7309acc5a564d80f9b26f5bd650e984d44978e494",
+    "inherited-ui.log": "fcdef7cf5c4fef00e8bbd97e871ae25c9f9b34a6ce5dbe3ff1ebc3a60405f580",
+    "voiceover.log": "6d02233da1f13a6a6e9461bf86643f85b75d7f049b3c72652ef303808c5e608b",
+    "final-ui.log": "80af2f2e1508cec9b937238eb70dd87bffd1d6ce584373512bf27ffc86900088",
+    "compatibility-ui.log": "8c971420f2f52803c5d9e3565c3a05624f6b89e763e1ff83feb364f62caa0e2d",
+    "archive.log": "820928ea53a9c5b6d091ffb0e454b40562da4ed15421d6824432814df89e8b10",
+    "check.log": "e73e21dba63fa88416b3bc60c6dcb7b916ea3a1c3049e339fe8703d5b892968c",
+    "check-allowed.log": "ed6f3963ddf90948ed1224e23e4450b32ee0fa5ecc8c11089afca40d1a5e15d7",
+    "firebase.log": "8c6cc26fdbe4b891071ddee724eadc4956b57274dc67a240e644ceb012cffe17"
+  },
+  "remaining": "Unfiltered contrast diagnostics, physical accessibility acceptance and the broader public/pilot release gates remain open. No phone installation, call, SMS, Apple change or new backend deployment."
+}

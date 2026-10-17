@@ -35,6 +35,25 @@ final class SeniorAccessibilityUITests: XCTestCase {
         }
     }
 
+    func testSwitchLabelsAtStandardAndLargestText() throws {
+        for dark in [false, true] {
+            for largest in [false, true] {
+                for (screen, label) in [("quiet", "Quiet hours"), ("protection", "Check calls while I talk")] {
+                    var arguments = ["--uitesting-preview", "--uitesting-screen", screen]
+                    if largest {
+                        arguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+                    }
+                    let app = launch(arguments, dark: dark)
+                    let toggle = app.switches[label].firstMatch
+                    XCTAssertTrue(toggle.appears(timeout: 5))
+                    XCTAssertEqual(toggle.isEnabled, screen == "quiet")
+                    XCTAssertGreaterThanOrEqual(toggle.frame.height, 52)
+                    try audit(app, "switch-\(screen)-\(dark ? "dark" : "light")-\(largest ? "largest" : "standard")", types: .textClipped)
+                }
+            }
+        }
+    }
+
     func testOnboardingChoicesAudit() throws {
         var app = launch(["--uitesting-protection-onboarding"])
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))

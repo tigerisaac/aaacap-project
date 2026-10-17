@@ -1,0 +1,20 @@
+[
+  {
+    "command": [
+      "npm",
+      "run",
+      "check"
+    ],
+    "log": "check-allowed.log",
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "test:firebase"
+    ],
+    "log": "firebase.log",
+    "exitCode": 0
+  }
+]

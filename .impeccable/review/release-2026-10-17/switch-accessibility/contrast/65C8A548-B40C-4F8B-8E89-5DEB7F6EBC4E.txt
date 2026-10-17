@@ -1,0 +1,58 @@
+Attributes: Application, 0x1057eb840, pid: 99088, label: 'Shield'
+Element subtree:
+ →Application, 0x1057eb840, pid: 99088, label: 'Shield'
+    Window (Main), 0x1057e9180, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1057e9040, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x1057eb980, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1057e8c80, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1057e8b40, {{0.0, 0.0}, {390.0, 844.0}}
+              Other, 0x1057e8dc0, {{0.0, 0.0}, {390.0, 844.0}}
+                NavigationBar, 0x1057e9a40, {{0.0, 47.0}, {390.0, 54.0}}, identifier: 'Disconnect Shield'
+                  StaticText, 0x1057e9e00, {{123.0, 58.7}, {143.7, 20.7}}, label: 'Disconnect Shield'
+                  Other, 0x1057e97c0, {{303.0, 51.0}, {67.0, 36.0}}
+                    Other, 0x1057e9b80, {{303.0, 51.0}, {67.0, 36.0}}
+                      Button, 0x1057e9cc0, {{303.0, 51.0}, {67.0, 36.0}}, label: 'Close'
+                Other, 0x1057eb700, {{0.0, 0.0}, {390.0, 844.0}}
+                  Other, 0x1057eae40, {{0.0, 0.0}, {390.0, 844.0}}
+                    Other, 0x1057eb0c0, {{0.0, 0.0}, {390.0, 844.0}}
+                      Other, 0x1057e92c0, {{0.0, 0.0}, {390.0, 844.0}}
+                        ScrollView, 0x1057eabc0, {{0.0, 0.0}, {390.0, 844.0}}
+                          Other, 0x1057eaf80, {{0.0, 0.0}, {390.0, 844.0}}
+                            Other, 0x1057ea080, {{0.0, 0.0}, {390.0, 141.0}}
+                          Other, 0x1057ead00, {{0.0, 0.0}, {390.0, 844.0}}
+                            Other, 0x1057ea6c0, {{0.0, 0.0}, {390.0, 141.0}}
+                          Other, 0x1057ea940, {{0.0, 96.0}, {390.0, 600.0}}
+                            StaticText, 0x1057eaa80, {{24.0, 144.0}, {294.0, 33.7}}, identifier: 'disconnect-heading', label: 'Bring back ordinary calls'
+                            StaticText, 0x1057ea440, {{24.0, 201.7}, {286.0, 24.0}}, label: 'We’ll take this one step at a time.'
+                            Button, 0x1057ea800, {{24.0, 245.7}, {342.0, 60.0}}, label: 'Read all phone steps'
+                              StaticText, 0x1057ea1c0, {{24.0, 245.7}, {342.0, 60.0}}, label: 'Read all phone steps'
+                              Image, 0x1057e9f40, {{358.3, 269.7}, {7.0, 12.0}}, identifier: 'collapsed'
+                            StaticText, 0x1057e8f00, {{24.0, 325.7}, {313.3, 66.7}}, label: 'Restore your phone settings, Use the instructions saved for your mobile line.'
+                              StaticText, 0x1057eb200, {{24.0, 325.7}, {32.0, 32.0}}, label: '1'
+                              StaticText, 0x1057eb340, {{68.0, 325.7}, {223.7, 20.3}}, label: 'Restore your phone settings'
+                              StaticText, 0x1057eb5c0, {{68.0, 350.0}, {269.3, 42.3}}, label: 'Use the instructions saved for your mobile line.'
+                            StaticText, 0x1057ea300, {{24.0, 412.3}, {342.0, 66.7}}, label: 'Check calls and voicemail, You’ll need another phone, or someone who can call you.'
+                              StaticText, 0x1057eb480, {{24.0, 412.3}, {32.0, 32.0}}, label: '2'
+                              StaticText, 0x1057e8500, {{68.0, 412.3}, {203.7, 20.3}}, label: 'Check calls and voicemail'
+                              StaticText, 0x1057ebe80, {{68.0, 436.7}, {298.0, 42.3}}, label: 'You’ll need another phone, or someone who can call you.'
+                            StaticText, 0x1057ebc00, {{24.0, 499.0}, {342.0, 66.7}}, label: 'Choose what to keep, Disconnecting keeps your account and saved messages.'
+                              StaticText, 0x1057ebd40, {{24.0, 499.0}, {32.0, 32.0}}, label: '3'
+                              StaticText, 0x1057e8140, {{68.0, 499.0}, {166.7, 20.3}}, label: 'Choose what to keep'
+                              StaticText, 0x1057e8640, {{68.0, 523.3}, {298.0, 42.3}}, label: 'Disconnecting keeps your account and saved messages.'
+                            StaticText, 0x1057ebac0, {{24.0, 585.7}, {328.7, 86.3}}, label: 'Shield keeps its current service available while you follow the steps. Changing your carrier settings is what stops calls going to Shield.'
+                          Other, 0x1056748c0, {{357.0, 101.0}, {30.0, 595.0}}, label: 'Vertical scroll bar, 2 pages', value: 100%
+                            Other, 0x105675040, {{384.0, 107.3}, {3.0, 585.7}}
+                          Other, 0x105677840, {{357.0, 101.0}, {30.0, 595.0}}, label: 'Vertical scroll bar, 2 pages', value: 100%
+                            Other, 0x108ec4000, {{384.0, 107.3}, {3.0, 585.7}}
+                        Other, 0x108ec4140, {{195.0, 455.7}, {0.0, 0.0}}
+                        Button, 0x108ec4280, {{24.0, 716.0}, {342.0, 82.0}}, identifier: 'disconnect-continue', label: 'Start disconnecting'
+                          StaticText, 0x108ec43c0, {{116.8, 746.8}, {156.3, 20.3}}, label: 'Start disconnecting'
+                Toolbar, 0x108ec4500, {{0.0, 0.0}, {390.0, 844.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x108ec4640, {{0.0, 0.0}, {390.0, 844.0}}
+Path to element:
+ →Application, 0x1057eb840, pid: 99088, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x108ec4780, pid: 99088, label: 'Shield'
+  }

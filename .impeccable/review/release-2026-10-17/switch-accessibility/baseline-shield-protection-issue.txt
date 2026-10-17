@@ -1,0 +1,33 @@
+Text clipped
+Text of this SwiftUI.AccessibilityNode may be clipped at larger Dynamic Type sizes.
+Attributes: StaticText, 0x10f0b88c0, {{32.0, 179.8}, {171.0, 20.3}}, label: 'Check calls while I talk', Disabled
+Element subtree:
+ →StaticText, 0x10f0b88c0, {{32.0, 179.8}, {171.0, 20.3}}, label: 'Check calls while I talk', Disabled
+Path to element:
+ →Application, 0x106d0f840, pid: 6317, label: 'Shield'
+  ↳Window (Main), 0x106d0f980, {{0.0, 0.0}, {390.0, 844.0}}
+   ↳Other, 0x106d0fac0, {{0.0, 0.0}, {390.0, 844.0}}
+    ↳Other, 0x106d0f5c0, {{0.0, 0.0}, {390.0, 844.0}}
+     ↳Other, 0x106d0e6c0, {{0.0, 0.0}, {390.0, 844.0}}
+      ↳Other, 0x106d0ed00, {{0.0, 0.0}, {390.0, 844.0}}
+       ↳Other, 0x106d0ef80, {{0.0, 89.0}, {390.0, 755.0}}
+        ↳Other, 0x106d0f200, {{0.0, 89.0}, {390.0, 755.0}}
+         ↳Other, 0x106d0e800, {{0.0, 89.0}, {390.0, 755.0}}
+          ↳Other, 0x106d0e940, {{0.0, 89.0}, {390.0, 755.0}}
+           ↳Other, 0x106d0ea80, {{0.0, 89.0}, {390.0, 755.0}}
+            ↳CollectionView, 0x106d0ebc0, {{0.0, 89.0}, {390.0, 755.0}}
+             ↳Cell, 0x106d0d900, {{16.0, 161.0}, {358.0, 82.0}}
+              ↳Other, 0x10f0b8280, {{16.0, 161.0}, {358.0, 82.0}}
+               ↳Other, 0x10f0b83c0, {{16.0, 161.0}, {358.0, 82.0}}
+                ↳Other, 0x10f0b8500, {{16.0, 161.0}, {358.0, 82.0}}
+                 ↳Switch, 0x10f0b8640, {{16.0, 161.0}, {358.0, 82.0}}, label: 'Check calls while I talk', value: 0, Disabled
+                  ↳StaticText, 0x10f0b88c0, {{32.0, 179.8}, {171.0, 20.3}}, label: 'Check calls while I talk', Disabled
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x10f0c1cc0, pid: 6317, label: 'Shield'
+  }
+  ↪︎Find: Descendant with identity binding to AX element pid: 6317, elementOrHash.elementID: 4565139936.54
+    Output: {
+      StaticText, 0x106d0e080, {{32.0, 179.8}, {171.0, 20.3}}, label: 'Check calls while I talk', Disabled
+    }

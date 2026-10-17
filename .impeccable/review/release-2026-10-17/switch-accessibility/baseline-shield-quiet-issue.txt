@@ -1,0 +1,33 @@
+Text clipped
+Text of this SwiftUI.AccessibilityNode may be clipped at larger Dynamic Type sizes.
+Attributes: StaticText, 0x10f0b9a40, {{32.0, 179.8}, {88.3, 20.3}}, label: 'Quiet hours'
+Element subtree:
+ →StaticText, 0x10f0b9a40, {{32.0, 179.8}, {88.3, 20.3}}, label: 'Quiet hours'
+Path to element:
+ →Application, 0x106d0fd40, pid: 6304, label: 'Shield'
+  ↳Window (Main), 0x106d0f700, {{0.0, 0.0}, {390.0, 844.0}}
+   ↳Other, 0x106d0f480, {{0.0, 0.0}, {390.0, 844.0}}
+    ↳Other, 0x106d0f5c0, {{0.0, 0.0}, {390.0, 844.0}}
+     ↳Other, 0x106d0f340, {{0.0, 0.0}, {390.0, 844.0}}
+      ↳Other, 0x106d0ea80, {{0.0, 0.0}, {390.0, 844.0}}
+       ↳Other, 0x106d0e800, {{0.0, 89.0}, {390.0, 755.0}}
+        ↳Other, 0x10f0b8280, {{0.0, 89.0}, {390.0, 755.0}}
+         ↳Other, 0x10f0b83c0, {{0.0, 89.0}, {390.0, 755.0}}
+          ↳Other, 0x10f0b8500, {{0.0, 89.0}, {390.0, 755.0}}
+           ↳Other, 0x10f0b8640, {{0.0, 89.0}, {390.0, 755.0}}
+            ↳CollectionView, 0x10f0b8780, {{0.0, 89.0}, {390.0, 755.0}}
+             ↳Cell, 0x10f0b8dc0, {{16.0, 161.0}, {358.0, 82.0}}
+              ↳Other, 0x10f0b9400, {{16.0, 161.0}, {358.0, 82.0}}
+               ↳Other, 0x10f0b9540, {{16.0, 161.0}, {358.0, 82.0}}
+                ↳Other, 0x10f0b9680, {{16.0, 161.0}, {358.0, 82.0}}
+                 ↳Switch, 0x10f0b97c0, {{16.0, 161.0}, {358.0, 82.0}}, label: 'Quiet hours', value: 0
+                  ↳StaticText, 0x10f0b9a40, {{32.0, 179.8}, {88.3, 20.3}}, label: 'Quiet hours'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x10f145680, pid: 6304, label: 'Shield'
+  }
+  ↪︎Find: Descendant with identity binding to AX element pid: 6304, elementOrHash.elementID: 4607856384.71
+    Output: {
+      StaticText, 0x10f0c35c0, {{32.0, 179.8}, {88.3, 20.3}}, label: 'Quiet hours'
+    }

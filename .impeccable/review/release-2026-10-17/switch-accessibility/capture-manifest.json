@@ -1,0 +1,182 @@
+[
+  {
+    "file": "baseline-native-switches-tree.txt",
+    "originalAttachment": "DF27808C-C0E3-4DB8-BE19-02260C93A86A.txt",
+    "sha256": "cc16b6508e4ff8793aa7176ea5e2522922be7a5e6d1fef655d2256ef1ebfbfab",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-native-switches.png",
+    "originalAttachment": "AE4AA92D-D976-4DA7-A3D7-B9AF4408294A.png",
+    "sha256": "a71ea32cd67c205af864a7a92a5204296a1fced6449ce006d402e65797989adc",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-shield-protection-issue.txt",
+    "originalAttachment": "B0B01312-82C3-4FDC-A1DE-D6FE06FFC4F8.txt",
+    "sha256": "bfdac51db6d690f40bc90e2ccf040ea4e7e9d6e69ef048ca5c7b9b99a2dc659c",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-shield-protection-tree.txt",
+    "originalAttachment": "90D21C96-865F-48A8-B6D3-B538B8230A1C.txt",
+    "sha256": "a04848472d3dabe97999910091b30643e507e7e6a6b3ae36c9c4655ee71d6d01",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-shield-protection.png",
+    "originalAttachment": "85386FBA-324A-44EA-B779-185365E90CF3.png",
+    "sha256": "1e9d7af27a2afa3468b1b76798cfb904abbbcd5744290f142bd8393d7cfd1564",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-shield-quiet-issue.txt",
+    "originalAttachment": "EA358D94-EF94-4A8A-AEC9-FB587C3981FC.txt",
+    "sha256": "fbb944fb14da38d47ca37fedbbfed0e9cfc69f484dace7b5e1289a5cef45eea7",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-shield-quiet-tree.txt",
+    "originalAttachment": "924C2F11-1EA8-433B-AD97-2E65416A0238.txt",
+    "sha256": "a38cb6cf429cfe79f9dfaa6fafa0ce8a5723eb2460febc28991f431d55190fca",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "baseline-shield-quiet.png",
+    "originalAttachment": "06EC2206-B089-4E5A-8DAF-5A703BD23E72.png",
+    "sha256": "0bc0539337aa13662b1a776f0c214512ac19ba9cfd54847a5f896de32b5d3f7e",
+    "phase": "baseline-attachments"
+  },
+  {
+    "file": "refinement-long-switch-largest.png",
+    "originalAttachment": "97BEAA2F-71FC-4135-A0A9-2548112F48CB.png",
+    "sha256": "ee072a7fc8294d4747d793f9c0a1d9d1b065a7cd63a43b0476f9741daac2d191",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-dark-largest-accessibility-tree.txt",
+    "originalAttachment": "8B48DA34-D28A-4EB1-B38C-75A1823A4F46.txt",
+    "sha256": "014c9cb82e2437efd15badff5e2d11d4e9e1fb0b4d8dfcfb787d2cf29561c6f1",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-dark-largest.png",
+    "originalAttachment": "1E87F10C-4E86-47AB-AA82-956499DC7855.png",
+    "sha256": "b1407abb15f76e07825a1f3f7699b990c64c3e2780c6cb4dbe906aca2c53ca81",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-dark-largest-accessibility-tree.txt",
+    "originalAttachment": "C016DB15-82CB-476F-86F8-822412C4B713.txt",
+    "sha256": "25f9af8304be1e0a239d3473d8f5194ed3452e0aa8581b6a46e4edd0bd6549c2",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-dark-largest.png",
+    "originalAttachment": "2E4BC88F-AC3E-4876-840F-B882E3FED406.png",
+    "sha256": "cf07ba4194898b36e3e925b88369582525611a01e5bef408287e418abe55052d",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-dark-standard-accessibility-tree.txt",
+    "originalAttachment": "CE885B02-3D4A-4D72-9801-3FDC06D27FB4.txt",
+    "sha256": "69acf4437ed39ae4238539063b03c3bbb6fafaffa168436954ae9cd35b1216bf",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-dark-standard.png",
+    "originalAttachment": "758382B4-5C35-4090-A16C-E922B6DD4F0B.png",
+    "sha256": "2d76fd3e95324e534a1ab0da3f915f78dafeda9a55b1c0c3308ada1e67ca5918",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-dark-standard-accessibility-tree.txt",
+    "originalAttachment": "143BF309-2E42-479B-8971-8E77A823D774.txt",
+    "sha256": "3b145436fd868a67275404996d8a9e99fb39d5dbb55f143fb9bf3dfd77b9dd60",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-dark-standard.png",
+    "originalAttachment": "9352EA03-A80C-4B8F-8072-4B34ECE30BBF.png",
+    "sha256": "99835c633a98b6fc65df7bf9c268f1d601af03b9db52dbedeb082fc0ff995d68",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-light-largest-accessibility-tree.txt",
+    "originalAttachment": "C59BDC8C-134E-400A-8D6A-320AFDA005E7.txt",
+    "sha256": "d10353816ead5e70fc1f8ae2295027822c81383f25ca93a1d1d976836158a78d",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-light-largest.png",
+    "originalAttachment": "D0AA46FD-1AC7-4B57-806D-670EF4C0A147.png",
+    "sha256": "ec9c2abb07798d6fe526fcaa95860d8820436922844ab40ab6b741fd7842f5d4",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-light-largest-accessibility-tree.txt",
+    "originalAttachment": "58123213-EA7E-4BE5-88E1-1EF8504B9A99.txt",
+    "sha256": "18732d25996fd5e5473c26a9b852c667d86f2882d32948b2705dc0d3e0d2019d",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-light-largest.png",
+    "originalAttachment": "EC79D678-0BC9-4611-A2B7-961913334BE0.png",
+    "sha256": "76a3c0dd9d3a8eeebdc092899aaf366c6cd7ce25263a325e2dae15773f117956",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-light-standard-accessibility-tree.txt",
+    "originalAttachment": "1681EDE9-45C7-4108-A4F6-BA6DE1847AB4.txt",
+    "sha256": "8cec9613aa17c95bc670684d683905741c094939fc0e0e2898605de79fe8d9d4",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-protection-light-standard.png",
+    "originalAttachment": "0A70640C-587C-4156-B6E9-A1767B6D03CE.png",
+    "sha256": "740e35d98b00fb61330cdff59c05f25bceb299f4a656d637c6579366e589dc87",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-light-standard-accessibility-tree.txt",
+    "originalAttachment": "45713B9D-C90B-4A1E-85D9-339AAD3BE83A.txt",
+    "sha256": "2627d72c91fa075e0f3d2e96ceb0fef3b9610db09c052d40ed4f2c008ab759b4",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "switch-quiet-light-standard.png",
+    "originalAttachment": "BC4E85EC-EBE2-4325-9E55-1EBEB7FC711E.png",
+    "sha256": "8a24ba9c1ad960e8b062bf388dacd32989161415aca53fa2c310d4bde47a06e2",
+    "phase": "final-attachments"
+  },
+  {
+    "file": "voiceover-onboarding-retained-protection-choice.png",
+    "originalAttachment": "3325A1F4-A451-4E33-A185-3FFF1D2C0D6D.png",
+    "sha256": "5acee103cce29f0e4f714745751fff62604d688cfebcc6ce9ac3b913e21100c6",
+    "phase": "voiceover-attachments"
+  },
+  {
+    "file": "voiceover-quiet-hours-unsaved-hours.png",
+    "originalAttachment": "B720D2C2-D67F-4611-8BC5-36D3D16289A3.png",
+    "sha256": "29d23b557df09dfbeb390c171399c925c62314b83aafed1a300ab005cb1d4f46",
+    "phase": "voiceover-attachments"
+  },
+  {
+    "file": "ios26-refinement-long-switch-largest.png",
+    "originalAttachment": "9AB43E94-D009-4467-AF32-D734875A5011.png",
+    "sha256": "caeb817bace933a3d889e040a80e21750751c2d19040b50ce43c278310d2312d",
+    "phase": "compatibility-attachments"
+  },
+  {
+    "file": "ios26-switch-protection-dark-largest.png",
+    "originalAttachment": "9FF9430F-BE08-4419-B884-BB0127A97D3B.png",
+    "sha256": "949fff01caa9deb641a585f3bf3170b55de2a30aad208ba184d2a7c0fcae4125",
+    "phase": "compatibility-attachments"
+  },
+  {
+    "file": "ios26-switch-quiet-dark-largest.png",
+    "originalAttachment": "95C8314F-9C44-4FA2-82D7-3926F1C5E3CC.png",
+    "sha256": "cc775fa778e49978f7327d77667be9ef8fa10c4ed36ba344139d4ab6a8170c1b",
+    "phase": "compatibility-attachments"
+  }
+]

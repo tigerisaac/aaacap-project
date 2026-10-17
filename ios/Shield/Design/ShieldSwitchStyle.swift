@@ -24,10 +24,8 @@ struct ShieldSwitchStyle: ToggleStyle {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityRepresentation {
-            Toggle(isOn: configuration.$isOn) { configuration.label }
-                .toggleStyle(.switch)
-        }
+        // ToggleStyle inherits the native switch semantics. A hidden replacement
+        // would give the label a separate layout that cannot follow this wrapping.
     }
 
     private func indicator(_ configuration: Configuration) -> some View {

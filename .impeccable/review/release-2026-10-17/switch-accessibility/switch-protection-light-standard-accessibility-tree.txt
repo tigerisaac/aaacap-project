@@ -1,0 +1,67 @@
+Attributes: Application, 0x106011e00, pid: 10167, label: 'Shield'
+Element subtree:
+ →Application, 0x106011e00, pid: 10167, label: 'Shield'
+    Window (Main), 0x106013200, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1060135c0, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x106013d40, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1060121c0, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1060112c0, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x106010500, {{141.7, 55.0}, {106.7, 26.0}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+              Other, 0x1060126c0, {{0.0, 89.0}, {390.0, 755.0}}
+                NavigationBar, 0x106011a40, {{0.0, 99.0}, {390.0, 54.0}}, identifier: 'Checks while you talk'
+                  StaticText, 0x106012e40, {{109.3, 110.7}, {171.3, 20.7}}, label: 'Checks while you talk'
+                Other, 0x106012300, {{0.0, 89.0}, {390.0, 755.0}}
+                  Other, 0x106011b80, {{0.0, 89.0}, {390.0, 755.0}}
+                    Other, 0x106011040, {{0.0, 89.0}, {390.0, 755.0}}
+                      Other, 0x106011cc0, {{0.0, 89.0}, {390.0, 755.0}}
+                        CollectionView, 0x106011900, {{0.0, 89.0}, {390.0, 755.0}}
+                          Other, 0x106012a80, {{-16.0, -1349.0}, {422.0, 1624.0}}
+                          Other, 0x1032835c0, {{0.0, 89.0}, {390.0, 755.0}}
+                            Other, 0x103283840, {{0.0, 89.0}, {390.0, 104.0}}
+                          Other, 0x1066cef80, {{0.0, 89.0}, {390.0, 755.0}}
+                          Cell, 0x1066ce6c0, {{16.0, 161.0}, {358.0, 82.0}}
+                            Other, 0x1066cdb80, {{16.0, 161.0}, {358.0, 82.0}}
+                              Other, 0x1066cc280, {{16.0, 161.0}, {358.0, 82.0}}
+                                Other, 0x1066cf5c0, {{16.0, 161.0}, {358.0, 82.0}}
+                                  Other, 0x1066cfac0, {{16.0, 161.0}, {358.0, 82.0}}
+                            Other, 0x1066cc140, {{16.0, 161.0}, {358.0, 82.0}}
+                              Other, 0x1066cfe80, {{16.0, 161.0}, {358.0, 82.0}}
+                                Other, 0x1066ce1c0, {{16.0, 161.0}, {358.0, 82.0}}
+                                  Switch, 0x1066cd180, {{16.0, 161.0}, {358.0, 82.0}}, label: 'Check calls while I talk', value: 0, Disabled
+                                    StaticText, 0x1066cc8c0, {{32.0, 176.0}, {326.0, 52.0}}, label: 'Check calls while I talk', Disabled
+                                    Switch, 0x1066ce800, {{297.0, 188.0}, {61.0, 28.0}}, value: 0, Disabled
+                                      Switch, 0x1066cd680, {{297.0, 188.0}, {63.0, 28.0}}, value: 0, Disabled
+                          Cell, 0x1066cf980, {{16.0, 243.0}, {358.0, 32.0}}
+                            Other, 0x1066cd040, {{16.0, 243.0}, {358.0, 32.0}}
+                            Other, 0x1066cd540, {{16.0, 243.0}, {358.0, 32.0}}
+                              Other, 0x1066ce940, {{16.0, 243.0}, {358.0, 32.0}}
+                                Other, 0x1066cdf40, {{16.0, 243.0}, {358.0, 32.0}}
+                                  StaticText, 0x1066cebc0, {{16.0, 243.0}, {358.0, 32.0}}, label: 'This setting doesn’t change in the sample app.'
+                          Other, 0x1066cf0c0, {{-16.0, 303.0}, {422.0, 1686.7}}
+                          Cell, 0x1066ce580, {{16.0, 303.0}, {358.0, 176.7}}
+                            Other, 0x1066cf200, {{16.0, 303.0}, {358.0, 176.7}}
+                              Other, 0x1066ce080, {{16.0, 303.0}, {358.0, 176.7}}
+                                Other, 0x1066ced00, {{16.0, 303.0}, {358.0, 176.7}}
+                                  Other, 0x1066cc640, {{16.0, 303.0}, {358.0, 176.7}}
+                            Other, 0x1066cf840, {{16.0, 303.0}, {358.0, 176.7}}
+                              Other, 0x1066ccb40, {{16.0, 303.0}, {358.0, 176.7}}
+                                Other, 0x1066cd7c0, {{16.0, 303.0}, {358.0, 176.7}}
+                                  StaticText, 0x1066cee40, {{32.0, 318.0}, {318.7, 42.3}}, label: 'Shield reads both people’s words on calls you answer through Shield.'
+                                  StaticText, 0x1066ccf00, {{32.0, 376.3}, {318.3, 20.3}}, label: 'It may warn you and end a suspicious call.'
+                                  Button, 0x1066cfd40, {{32.0, 412.7}, {326.0, 52.0}}, label: 'What happens to my words?'
+                                    StaticText, 0x1066cca00, {{32.0, 412.7}, {307.7, 52.0}}, label: 'What happens to my words?'
+                                    Button, 0x1066cf480, {{347.7, 431.7}, {10.3, 14.0}}
+                                      Image, 0x1066cf700, {{347.7, 431.7}, {10.3, 14.0}}, identifier: 'collapsed'
+                          Other, 0x1066cea80, {{357.0, 153.0}, {30.0, 641.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1066cc780, {{384.0, 784.0}, {3.0, 7.0}}
+                          Other, 0x1066ccdc0, {{357.0, 153.0}, {30.0, 641.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1066cc3c0, {{384.0, 784.0}, {3.0, 7.0}}
+                Toolbar, 0x1066cc000, {{0.0, 89.0}, {390.0, 755.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x1066ce300, {{0.0, 89.0}, {390.0, 755.0}}
+Path to element:
+ →Application, 0x106011e00, pid: 10167, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x1066cdcc0, pid: 10167, label: 'Shield'
+  }

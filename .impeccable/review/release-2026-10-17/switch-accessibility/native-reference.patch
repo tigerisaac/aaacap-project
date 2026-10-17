@@ -1,0 +1,14 @@
+--- ios/Shield/Preview/NativeAccessibilityReference.swift
++++ ios/Shield/Preview/NativeAccessibilityReference.swift
+@@ -12,7 +12,10 @@
+             Tab("Home", systemImage: "house") {
+                 NavigationStack {
+                     List {
+-                        if arguments.contains("--native-voiceover-interaction") {
++                        if arguments.contains("--native-toggle-text-reference") {
++                            Toggle("Quiet hours", isOn: $sampleAlerts).toggleStyle(.switch)
++                            Toggle("Check calls while I talk", isOn: $sampleAlerts).toggleStyle(.switch).disabled(true)
++                        } else if arguments.contains("--native-voiceover-interaction") {
+                             Text(voiceOverRunning ? "VoiceOver is running" : "VoiceOver is off")
+                             Toggle("Allow sample alerts", isOn: $sampleAlerts).toggleStyle(.switch)
+                         } else if arguments.contains("--native-footer-button") {

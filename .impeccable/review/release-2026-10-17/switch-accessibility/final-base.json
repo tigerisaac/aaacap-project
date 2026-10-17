@@ -1,0 +1,7 @@
+{
+  "baseRevision": "99e3ddc9d3bbda1f98f7689a6b9d5e39154b4b9d",
+  "overlays": [
+    "ios/Shield/Design/ShieldSwitchStyle.swift",
+    "ios/ShieldUITests/SeniorAccessibilityUITests.swift"
+  ]
+}

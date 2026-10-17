@@ -1,0 +1,100 @@
+{
+  "bundle": "/tmp/shield-switch-final-audits.xcresult",
+  "result": "Failed",
+  "passed": 2,
+  "failed": 2,
+  "runtimeWarnings": [],
+  "issues": [
+    {
+      "screen": "accessibility-disconnection-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Close",
+      "disabled": false,
+      "element": "Attributes: Button, 0x1066cc8c0, {{303.0, 51.0}, {67.0, 36.0}}, label: 'Close'",
+      "attachmentSha256": "b03ff056b9ccabc8f41f17b691c3291848515cefd23850e1c27526f2aec8e33a"
+    },
+    {
+      "screen": "accessibility-phone-setup-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Close",
+      "disabled": false,
+      "element": "Attributes: Button, 0x106012f80, {{199.0, 51.0}, {67.0, 36.0}}, label: 'Close'",
+      "attachmentSha256": "ab09dc9f133730bae920e9ef1140f9d4e11d7dd55df071054f4819cad4b1a038"
+    },
+    {
+      "screen": "accessibility-add-contact-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Cancel",
+      "disabled": false,
+      "element": "Attributes: Button, 0x1066cc280, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'",
+      "attachmentSha256": "c8a9039adcf288e2bce26194c7e4693c96bbd309443048f48e53c28d0c37e4c7"
+    },
+    {
+      "screen": "accessibility-add-number-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Cancel",
+      "disabled": false,
+      "element": "Attributes: Button, 0x1060121c0, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'",
+      "attachmentSha256": "1fb0289d92fbf8310a2f7bec3b742b89ce1b89b76f0783abd40eb8ae8c128a2a"
+    },
+    {
+      "screen": "accessibility-protection",
+      "kind": "Contrast nearly passed",
+      "details": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.",
+      "label": "Check calls while I talk",
+      "disabled": true,
+      "element": "Attributes: StaticText, 0x1067c9900, {{32.0, 176.0}, {326.0, 52.0}}, label: 'Check calls while I talk', Disabled",
+      "attachmentSha256": "080ad8a18cad4d349f05711be09fecb46c61b94bbb2d4b9c2cc1166c39646c40"
+    },
+    {
+      "screen": "accessibility-contacts",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": null,
+      "disabled": false,
+      "element": "No associated element",
+      "attachmentSha256": "953d8e6b83e2cc0394be149bb31e300cc45eb004436b17fddcfb0373a7ee6a60"
+    },
+    {
+      "screen": "accessibility-contacts",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": null,
+      "disabled": false,
+      "element": "No associated element",
+      "attachmentSha256": "953d8e6b83e2cc0394be149bb31e300cc45eb004436b17fddcfb0373a7ee6a60"
+    },
+    {
+      "screen": "accessibility-contacts",
+      "kind": "Contrast nearly passed",
+      "details": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.",
+      "label": null,
+      "disabled": false,
+      "element": "No associated element",
+      "attachmentSha256": "cdd5c028e9dd7fef2a63f9d54531b052c4e0f0fe8018db1c3ad63ee80a570d16"
+    },
+    {
+      "screen": "accessibility-add-number",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Cancel",
+      "disabled": false,
+      "element": "Attributes: Button, 0x1066cf980, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'",
+      "attachmentSha256": "a08a95bd4dd706bfe221d776ade38ff4d88e80d43cf363c0a34ac7f059690b8a"
+    },
+    {
+      "screen": "accessibility-numbers",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": null,
+      "disabled": false,
+      "element": "No associated element",
+      "attachmentSha256": "953d8e6b83e2cc0394be149bb31e300cc45eb004436b17fddcfb0373a7ee6a60"
+    }
+  ],
+  "disposition": "Unfiltered audit reports retained. The targeted text-clipping regression and full-row action are separate passing checks."
+}

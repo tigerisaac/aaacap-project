@@ -1,0 +1,83 @@
+Attributes: Application, 0x1066cea80, pid: 10503, label: 'Shield'
+Element subtree:
+ →Application, 0x1066cea80, pid: 10503, label: 'Shield'
+    Window (Main), 0x1066cc640, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1066ccdc0, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x1066cc3c0, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1066ce300, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1066cd180, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x1066ce800, {{117.3, 55.0}, {155.3, 38.0}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+              Other, 0x1066cc280, {{0.0, 101.0}, {390.0, 743.0}}
+                NavigationBar, 0x1066ce940, {{0.0, 111.0}, {390.0, 54.0}}, identifier: 'Quiet hours'
+                  StaticText, 0x1066cf0c0, {{139.3, 120.3}, {111.3, 25.3}}, label: 'Quiet hours'
+                Other, 0x1066cc000, {{0.0, 101.0}, {390.0, 743.0}}
+                  Other, 0x1066cdb80, {{0.0, 101.0}, {390.0, 743.0}}
+                    Other, 0x1066cdcc0, {{0.0, 101.0}, {390.0, 743.0}}
+                      Other, 0x1066cc8c0, {{0.0, 101.0}, {390.0, 743.0}}
+                        CollectionView, 0x1066cef80, {{0.0, 101.0}, {390.0, 743.0}}
+                          Other, 0x1066ce080, {{-16.0, -1313.0}, {422.0, 4054.7}}
+                          Other, 0x1066cebc0, {{0.0, 101.0}, {390.0, 743.0}}
+                            Other, 0x1066cd040, {{0.0, 101.0}, {390.0, 104.0}}
+                          Other, 0x1066cf980, {{0.0, 101.0}, {390.0, 743.0}}
+                          Cell, 0x1066cd680, {{16.0, 173.0}, {358.0, 129.3}}
+                            Other, 0x1066ce1c0, {{16.0, 173.0}, {358.0, 129.3}}
+                              Other, 0x1066cdf40, {{16.0, 173.0}, {358.0, 129.3}}
+                                Other, 0x1066cf200, {{16.0, 173.0}, {358.0, 129.3}}
+                                  Other, 0x1066ccf00, {{16.0, 173.0}, {358.0, 129.3}}
+                            Other, 0x1066cee40, {{16.0, 173.0}, {358.0, 129.3}}
+                              Other, 0x1066cd540, {{16.0, 173.0}, {358.0, 129.3}}
+                                Other, 0x106011b80, {{16.0, 173.0}, {358.0, 129.3}}
+                                  Switch, 0x1060135c0, {{16.0, 173.0}, {358.0, 129.3}}, label: 'Quiet hours', value: 0
+                                    StaticText, 0x106013e80, {{32.0, 188.0}, {326.0, 99.3}}, label: 'Quiet hours'
+                                    Switch, 0x106013d40, {{297.0, 259.3}, {61.0, 28.0}}, value: 0
+                                      Switch, 0x1060121c0, {{297.0, 259.3}, {63.0, 28.0}}, value: 0
+                          Cell, 0x1060112c0, {{16.0, 302.3}, {358.0, 174.7}}
+                            Other, 0x106011cc0, {{16.0, 302.3}, {358.0, 174.7}}
+                              Other, 0x106011900, {{16.0, 302.3}, {358.0, 174.7}}
+                                Other, 0x106012a80, {{16.0, 302.3}, {358.0, 174.7}}
+                                  Other, 0x106013340, {{16.0, 302.3}, {358.0, 174.7}}
+                            Other, 0x1060103c0, {{16.0, 302.3}, {358.0, 174.7}}
+                              Other, 0x106011e00, {{16.0, 302.3}, {358.0, 174.7}}
+                                Other, 0x106013200, {{16.0, 302.3}, {358.0, 174.7}}
+                                  StaticText, 0x106011040, {{32.0, 317.3}, {115.0, 63.3}}, label: 'From', Disabled
+                                  Button, 0x106010b40, {{32.0, 317.3}, {173.7, 144.7}}, identifier: 'quiet-start-time', label: 'From, 9 PM', Disabled
+                                    StaticText, 0x106012e40, {{44.0, 391.7}, {119.7, 63.3}}, label: '9 PM'
+                          Other, 0x106010dc0, {{32.0, 301.3}, {326.0, 1.0}}
+                          Cell, 0x1060117c0, {{16.0, 477.0}, {358.0, 174.7}}
+                            Other, 0x106013700, {{16.0, 477.0}, {358.0, 174.7}}
+                              Other, 0x106013c00, {{16.0, 477.0}, {358.0, 174.7}}
+                                Other, 0x1060126c0, {{16.0, 477.0}, {358.0, 174.7}}
+                                  Other, 0x106012940, {{16.0, 477.0}, {358.0, 174.7}}
+                            Other, 0x106011a40, {{16.0, 477.0}, {358.0, 174.7}}
+                              Other, 0x106010f00, {{16.0, 477.0}, {358.0, 174.7}}
+                                Other, 0x106013980, {{16.0, 477.0}, {358.0, 174.7}}
+                                  StaticText, 0x106012d00, {{32.0, 492.0}, {104.3, 63.3}}, label: 'Until', Disabled
+                                  Button, 0x106011f40, {{32.0, 492.0}, {175.7, 144.7}}, identifier: 'quiet-end-time', label: 'Until, 8 AM', Disabled
+                                    StaticText, 0x106011180, {{44.0, 566.3}, {121.7, 63.3}}, label: '8 AM'
+                          Other, 0x106012080, {{32.0, 476.0}, {326.0, 1.0}}
+                          Cell, 0x106010500, {{16.0, 651.7}, {358.0, 604.0}}
+                            Other, 0x106012300, {{16.0, 651.7}, {358.0, 604.0}}
+                            Other, 0x1067c8000, {{16.0, 651.7}, {358.0, 604.0}}
+                              Other, 0x1067c8140, {{16.0, 651.7}, {358.0, 604.0}}
+                                Other, 0x1067c8280, {{16.0, 651.7}, {358.0, 604.0}}
+                                  StaticText, 0x1067c83c0, {{32.0, 659.7}, {326.0, 290.7}}, label: 'Calls that reach Shield go to voicemail during these hours.'
+                                  StaticText, 0x1067c8500, {{32.0, 954.3}, {263.0, 116.7}}, label: 'Times are Central time.'
+                                  StaticText, 0x1067c8640, {{32.0, 1075.0}, {315.0, 174.7}}, label: 'Save below to use these hours.'
+                          Other, 0x1067c8780, {{357.0, 165.0}, {30.0, 427.3}}, label: 'Vertical scroll bar, 3 pages', value: 0%
+                            Other, 0x1067c88c0, {{384.0, 582.3}, {3.0, 7.0}}
+                          Other, 0x1067c8a00, {{357.0, 165.0}, {30.0, 427.3}}, label: 'Vertical scroll bar, 3 pages', value: 0%
+                            Other, 0x1067c8b40, {{384.0, 582.3}, {3.0, 7.0}}
+                        Button, 0x1067c8c80, {{16.0, 632.3}, {358.0, 161.7}}, label: 'Saved', Disabled
+                          Other, 0x1067c8dc0, {{16.0, 632.3}, {358.0, 161.7}}, label: 'Saved', Disabled
+                            StaticText, 0x1067c8f00, {{121.0, 681.5}, {148.0, 63.3}}, label: 'Saved', Disabled
+                          Other, 0x1067c9040, {{0.0, 0.0}, {0.0, 0.0}}, Disabled
+                          Other, 0x1067c9180, {{0.0, 0.0}, {0.0, 0.0}}, Disabled
+                Toolbar, 0x1067c92c0, {{0.0, 101.0}, {390.0, 743.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x1067c9400, {{0.0, 101.0}, {390.0, 743.0}}
+Path to element:
+ →Application, 0x1066cea80, pid: 10503, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x1067c9540, pid: 10503, label: 'Shield'
+  }
