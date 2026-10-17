@@ -6,6 +6,7 @@ struct AddTrustedContactView: View {
     let participantID: UUID
     let onSaved: (TrustedContact) -> Void
     @State private var requestID = UUID()
+    @State private var requestedDetails: String?
     @State private var name = ""
     @State private var phone = ""
     @State private var showingPicker = false
@@ -38,13 +39,13 @@ struct AddTrustedContactView: View {
                 }.shieldPrimaryButton().disabled(working || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || name.count > 60 || MobileNumber.normalized(phone) == nil)
                     .accessibilityIdentifier("trusted-contact-send")
                 ShieldDisclosure("What is shared?") {
-                    Text("Alerts include your name and a brief protection update. Calls, recordings, and messages stay private. Message and data rates may apply.")
+                    Text("They hear only when checks while you talk detect a possible scam request and intervene. Those checks must be on. Alerts include your name; calls, recordings, and messages stay private. Message and data rates may apply.")
                         .foregroundStyle(ShieldTheme.secondaryText)
                 }
             }.padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
         }.background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
-            .navigationTitle("Add trusted contact").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Add caretaker").navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(working).interactiveDismissDisabled(working)
             .toolbar {
                 if field != nil { ToolbarItem(placement: .confirmationAction) { Button("Done") { field = nil } } }
@@ -54,7 +55,12 @@ struct AddTrustedContactView: View {
             }
     }
     private func save() async {
-        guard let phone = MobileNumber.normalized(phone), !working else { return }
+        guard let phone = MobileNumber.normalized(phone), !working,
+              model.isOwner, model.selectedPersonID == participantID else { return }
+        let generation = model.sessionGeneration
+        let details = name.trimmingCharacters(in: .whitespacesAndNewlines) + "\u{0}" + phone
+        if let requestedDetails, requestedDetails != details { requestID = UUID() }
+        requestedDetails = details
         working = true; error = nil; field = nil
         defer { working = false }
         do {
@@ -67,7 +73,9 @@ struct AddTrustedContactView: View {
                 ]), participantID: participantID)
                 contact = response.contact
             }
+            guard generation == model.sessionGeneration, model.selectedPersonID == participantID else { return }
             onSaved(contact); dismiss()
-        } catch { self.error = error.localizedDescription }
+        } catch is CancellationError { return }
+        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
     }
 }

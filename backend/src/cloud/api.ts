@@ -14,6 +14,8 @@ import { VOICEMAIL_LIMITS } from './voicemail-check.js';
 import { stoppedTotal } from './stopped-total.js';
 import { trustedContactsAvailable } from './trusted-contacts.js';
 import { requestAccountDeletion, deletionReceipt } from './deletion-jobs.js';
+import commercial from './commercial-policy.json' with { type: 'json' };
+import { ServiceAccess, accessRef } from './service-access.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -41,7 +43,7 @@ export function cloudCallDTO(store: CloudStore, call: Call, canListen = false) {
       ...(removed ? { removedAt: at(call.voicemail.removedAt), restorableUntil: call.voicemail.purgedAt ? null : at(call.voicemail.removedAt + VOICEMAIL_LIMITS.purgeMs) } : {}) } : null };
 }
 
-export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, checker: MessageChecker) {
+export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, checker: MessageChecker, serviceAccess = new ServiceAccess(store)) {
   const identify = async (request: FastifyRequest) => (await auth.identify(bearer(request))).subject;
   const access = async (request: FastifyRequest, owner = false) => {
     const raw = request.headers['x-shield-participant'];
@@ -54,7 +56,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
 
   app.get('/public/config', async () => ({ mode: 'trial', signInMethod: store.config.TELNYX_VERIFY_PROFILE_ID ? 'phone' : 'email-link', consentVersion: CONSENT_VERSION,
     phoneSignInAvailable: !!store.config.TELNYX_VERIFY_PROFILE_ID, trustedContactsAvailable: trustedContactsAvailable(store),
-    supportEmail: null, messageFilteringAvailable: false, notificationsAvailable: !!store.config.APNS,
+    supportEmail: commercial.supportEmail, messageFilteringAvailable: false, notificationsAvailable: !!store.config.APNS,
     privacyPath: '/privacy', termsPath: '/service-info' }));
   app.post('/auth/request-code', async request => {
     const { email } = z.object({ email: z.string().email().max(254) }).parse(request.body);
@@ -144,6 +146,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   app.post('/api/setup/pause', async request => {
     const ctx = await access(request, true); const { paused } = z.object({ paused: z.boolean() }).parse(request.body);
     if (ctx.participant.status === 'restoring') throw new HttpError(409, 'restoration_in_progress');
+    if (!paused) await serviceAccess.requireActivation(ctx.uid, ctx.participant.id);
     const batch = store.db.batch(); batch.update(store.personRef(ctx.participant.id), { status: paused ? 'paused' : 'setup' });
     if (paused && ctx.participant.status !== 'paused') queueAlert(store, batch, ctx.participant.id, 'protection_paused');
     await batch.commit(); return { updated: true };
@@ -159,8 +162,13 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   });
   app.get('/api/account/deletion', async request => {
     const uid = await identify(request);
-    const owned = await store.db.collection('participants').where('ownerUid', '==', uid).get();
+    const [owned, accountAccess] = await Promise.all([
+      store.db.collection('participants').where('ownerUid', '==', uid).get(), accessRef(store, uid).get(),
+    ]);
+    // Cancellation guidance must survive a RevenueCat outage and must not delay deletion.
+    const audience = accountAccess.data()?.audience;
     return { restorationRequired: owned.docs.some(doc => !!doc.data().forwardingConsent),
+      subscriptionAudience: audience === 'public' || audience === 'pilot' ? audience : null,
       phones: owned.docs.map(doc => ({ id: doc.id, name: doc.data().nameEnc ? store.name(doc.data() as Person) : "Your phone", restorationRequired: !!doc.data().forwardingConsent })) };
   });
   app.post('/api/account/deletion/receipt', async request => {
@@ -189,7 +197,8 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     const rows = (id: string) => store.personRef(id).collection(collection);
     app.get(`/api/${collection}`, async request => {
       const ctx = await access(request, true); const docs = await rows(ctx.participant.id).orderBy('createdAt').limit(collection === 'trusted-numbers' ? 5000 : 100).get();
-      return { items: docs.docs.map(doc => ({ id: doc.id, createdAt: at(doc.data().createdAt),
+      return { ...(collection === 'trusted-numbers' ? { sharedAt: at(ctx.participant.contactsSyncedAt) } : {}),
+        items: docs.docs.map(doc => ({ id: doc.id, createdAt: at(doc.data().createdAt),
         label: store.vault.open(doc.data().labelEnc, `contact:${doc.id}:label`), phone: store.vault.open(doc.data().phoneEnc, `contact:${doc.id}:phone`),
         provenance: collection === 'destinations' ? doc.data().provenance : null, enabled: doc.data().enabled !== false })) };
     });
@@ -198,19 +207,37 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
       const data = (collection === 'destinations' ? contactSchema.extend({ provenance: z.enum(['card', 'statement', 'official_website', 'known_person']) }) : contactSchema).parse(request.body);
       const phone = collection === 'trusted-numbers' ? normalizeSharedPhone(data.phone) : normalizePhone(data.phone); if (!phone) throw new HttpError(400, 'invalid_phone');
       const id = randomUUID(); const hash = store.vault.hash(phone);
-      await store.db.runTransaction(async tx => {
+      const savedId = await store.db.runTransaction(async tx => {
         const maximum = collection === 'trusted-numbers' ? 5000 : 100;
+        const person = await tx.get(store.personRef(ctx.participant.id));
+        if (!person.exists || person.data()?.status === 'offboarded' || person.data()?.ownerUid !== ctx.uid) throw new HttpError(403, 'owner_required');
+        if (collection === 'trusted-numbers' && person.data()?.contactsSyncUntil > store.now()) throw new HttpError(409, 'contacts_sync_busy');
         const existing = await tx.get(rows(ctx.participant.id).limit(maximum + 1));
+        const prior = existing.docs.find(doc => doc.data().phoneHash === hash);
+        if (prior && collection === 'trusted-numbers') {
+          // Single-contact saves are retryable and restore an existing disabled row.
+          // Never upload or replace the rest of the owner's contacts for this action.
+          tx.update(prior.ref, { labelEnc: store.vault.seal(data.label, `contact:${prior.id}:label`), enabled: true });
+          return prior.id;
+        }
+        if (prior) throw new HttpError(409, 'number_already_saved');
         if (existing.size >= maximum) throw new HttpError(409, 'number_limit_reached');
-        if (existing.docs.some(doc => doc.data().phoneHash === hash)) throw new HttpError(409, 'number_already_saved');
         tx.create(rows(ctx.participant.id).doc(id), { labelEnc: store.vault.seal(data.label, `contact:${id}:label`),
           phoneEnc: store.vault.seal(phone, `contact:${id}:phone`), phoneHash: hash, createdAt: store.now(),
           ...('provenance' in data ? { provenance: data.provenance } : {}) });
+        return id;
       });
-      return { id };
+      return { id: savedId };
     });
     app.delete(`/api/${collection}/:id`, async request => {
-      const ctx = await access(request, true); await rows(ctx.participant.id).doc(getId(request)).delete(); return { deleted: true };
+      const ctx = await access(request, true);
+      await store.db.runTransaction(async tx => {
+        const person = await tx.get(store.personRef(ctx.participant.id));
+        if (!person.exists || person.data()?.status === 'offboarded' || person.data()?.ownerUid !== ctx.uid) throw new HttpError(403, 'owner_required');
+        if (collection === 'trusted-numbers' && person.data()?.contactsSyncUntil > store.now()) throw new HttpError(409, 'contacts_sync_busy');
+        tx.delete(rows(ctx.participant.id).doc(getId(request)));
+      });
+      return { deleted: true };
     });
   }
   app.get('/api/sharing', async request => {

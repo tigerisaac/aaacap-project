@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readdir, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-// Small deterministic generator: no XcodeGen or third-party iOS dependencies.
+// Small deterministic generator; Swift Package Manager resolves the pinned purchase SDK.
 const root = path.resolve(import.meta.dirname, '../ios');
 const objects = {};
 const id = value => createHash('sha256').update(value).digest('hex').slice(0, 24).toUpperCase();
@@ -60,15 +60,13 @@ const configs = (key, baseSettings = {}) => {
     buildSettings: { ...baseSettings }, name }));
   return add(`configs:${key}`, { isa: 'XCConfigurationList', buildConfigurations: values, defaultConfigurationIsVisible: 0, defaultConfigurationName: 'Release' });
 };
-const extensionProxy = add('extension-proxy', { isa: 'PBXContainerItemProxy', containerPortal: id('project'), proxyType: 1,
-  remoteGlobalIDString: id('target:ShieldMessages'), remoteInfo: 'ShieldMessages' });
-const extensionDependency = add('extension-dependency', { isa: 'PBXTargetDependency', target: id('target:ShieldMessages'), targetProxy: extensionProxy });
+// Keep the unfinished message-filter target available for development, but do not
+// build or embed it in Shield until its backend, host and device checks are ready.
 const callDirectoryProxy = add('call-directory-proxy', { isa: 'PBXContainerItemProxy', containerPortal: id('project'), proxyType: 1,
   remoteGlobalIDString: id('target:ShieldCallDirectory'), remoteInfo: 'ShieldCallDirectory' });
 const callDirectoryDependency = add('call-directory-dependency', { isa: 'PBXTargetDependency', target: id('target:ShieldCallDirectory'), targetProxy: callDirectoryProxy });
 const embed = add('phase:embed', { isa: 'PBXCopyFilesBuildPhase', buildActionMask: 2147483647, dstPath: '', dstSubfolderSpec: 13,
-  files: [add('build:embed', { isa: 'PBXBuildFile', fileRef: extensionProduct, settings: { ATTRIBUTES: ['RemoveHeadersOnCopy'] } }),
-    add('build:embed-call-directory', { isa: 'PBXBuildFile', fileRef: callDirectoryProduct, settings: { ATTRIBUTES: ['RemoveHeadersOnCopy'] } })],
+  files: [add('build:embed-call-directory', { isa: 'PBXBuildFile', fileRef: callDirectoryProduct, settings: { ATTRIBUTES: ['RemoveHeadersOnCopy'] } })],
   name: 'Embed App Extensions', runOnlyForDeploymentPostprocessing: 0 });
 const target = (name, targetFiles, productReference, productType, settings, extraPhases = [], dependencies = []) => add(`target:${name}`, {
   isa: 'PBXNativeTarget', buildConfigurationList: configs(name, { SDKROOT: 'iphoneos', TARGETED_DEVICE_FAMILY: '1',
@@ -82,7 +80,15 @@ const appTarget = target('Shield', [...appFiles, ...sharedFiles], appProduct, 'c
   PRODUCT_BUNDLE_IDENTIFIER: '$(SHIELD_APP_BUNDLE_ID)', INFOPLIST_FILE: 'Shield/Resources/Info.plist',
   CODE_SIGN_ENTITLEMENTS: 'Shield/Resources/Shield.entitlements', ASSETCATALOG_COMPILER_APPICON_NAME: 'AppIcon',
   ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: 'Action'
-}, [embed], [extensionDependency, callDirectoryDependency]);
+}, [embed], [callDirectoryDependency]);
+const revenueCat = add('package:revenuecat', { isa: 'XCRemoteSwiftPackageReference',
+  repositoryURL: 'https://github.com/RevenueCat/purchases-ios-spm.git',
+  requirement: { kind: 'exactVersion', version: '5.96.0' } });
+const revenueCatProduct = add('package-product:revenuecat', { isa: 'XCSwiftPackageProductDependency',
+  package: revenueCat, productName: 'RevenueCat' });
+objects[appTarget].packageProductDependencies = [revenueCatProduct];
+objects[id('phase:Shield:frameworks')].files.push(add('build:revenuecat', {
+  isa: 'PBXBuildFile', productRef: revenueCatProduct }));
 const extensionTarget = target('ShieldMessages', extensionFiles, extensionProduct, 'com.apple.product-type.app-extension', {
   PRODUCT_BUNDLE_IDENTIFIER: '$(SHIELD_APP_BUNDLE_ID).Messages', INFOPLIST_FILE: 'MessageFilter/Info.plist',
   CODE_SIGN_ENTITLEMENTS: 'MessageFilter/MessageFilter.entitlements', APPLICATION_EXTENSION_API_ONLY: 'YES', SKIP_INSTALL: 'YES'
@@ -99,11 +105,12 @@ const testTarget = target('ShieldUITests', testFiles, testsProduct, 'com.apple.p
 }, [], [testsDependency]);
 const project = add('project', { isa: 'PBXProject', attributes: { BuildIndependentTargetsInParallel: 'YES', LastUpgradeCheck: '2700',
   TargetAttributes: { [appTarget]: { CreatedOnToolsVersion: '27.0', SystemCapabilities: { 'com.apple.Push': { enabled: 1 }, 'com.apple.AssociatedDomains': { enabled: 1 },
-    'com.apple.ApplicationGroups.iOS': { enabled: 1 } } },
+    'com.apple.ApplicationGroups.iOS': { enabled: 1 }, 'com.apple.InAppPurchase': { enabled: 1 } } },
     [extensionTarget]: { CreatedOnToolsVersion: '27.0' }, [callDirectoryTarget]: { CreatedOnToolsVersion: '27.0', SystemCapabilities: { 'com.apple.ApplicationGroups.iOS': { enabled: 1 } } },
     [testTarget]: { CreatedOnToolsVersion: '27.0', TestTargetID: appTarget } } },
   buildConfigurationList: configs('project', {}), compatibilityVersion: 'Xcode 14.0', developmentRegion: 'en', hasScannedForEncodings: 0,
-  knownRegions: ['en', 'Base'], mainGroup, productRefGroup: id('group:Products'), projectDirPath: '', projectRoot: '', targets: [appTarget, extensionTarget, callDirectoryTarget, testTarget] });
+  knownRegions: ['en', 'Base'], mainGroup, productRefGroup: id('group:Products'), projectDirPath: '', projectRoot: '',
+  packageReferences: [revenueCat], targets: [appTarget, extensionTarget, callDirectoryTarget, testTarget] });
 const format = (value, level = 0) => {
   const pad = '\t'.repeat(level);
   if (Array.isArray(value)) return `(\n${value.map(item => `${pad}\t${format(item, level + 1)},`).join('\n')}\n${pad})`;
@@ -123,4 +130,4 @@ await writeFile(path.join(root, 'Shield.xcodeproj/xcshareddata/xcschemes/Shield.
  <ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES"><BuildableProductRunnable runnableDebuggingMode="0">${buildable(appTarget, 'Shield', 'Shield.app')}</BuildableProductRunnable></ProfileAction>
  <AnalyzeAction buildConfiguration="Debug"/><ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>
 </Scheme>\n`);
-console.log(`Generated Shield.xcodeproj: ${appFiles.filter(f => f.endsWith('.swift')).length} app files, message and call directory extensions, UI tests.`);
+console.log(`Generated Shield.xcodeproj: ${appFiles.filter(f => f.endsWith('.swift')).length} app files, embedded call directory, unshipped message-filter target, UI tests.`);

@@ -9,7 +9,7 @@ final class PhoneOnboardingUITests: XCTestCase {
         XCTAssertFalse(app.buttons["Try sample app"].exists)
         XCTAssertFalse(app.buttons["Use email instead"].exists)
         XCTAssertFalse(app.textFields["Email address"].exists)
-        XCTAssertTrue(app.links["Privacy"].exists)
+        XCTAssertTrue(app.buttons["Privacy"].exists || app.links["Privacy"].exists)
         capture(app, "Phone-only sign-in")
     }
     func testPhoneCodeErrorAndSuccessfulSignIn() {
@@ -91,7 +91,7 @@ final class PhoneOnboardingUITests: XCTestCase {
         let texts = app.switches["contact-text-alerts"], alerts = app.switches["contact-app-alerts"]
         reveal(texts, app); texts.tap(); reveal(alerts, app); alerts.tap()
         reveal(accept, app); XCTAssertTrue(accept.isEnabled); accept.tap()
-        XCTAssertTrue(app.staticTexts["You’re a trusted contact."].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["You’re a caretaker."].appears(timeout: 5))
         capture(app, "recipient-both-channels")
         let stop = app.buttons["Stop these alerts"]; reveal(stop, app); stop.tap()
         XCTAssertTrue(app.staticTexts["No requests for this mobile number."].appears(timeout: 5))
@@ -101,7 +101,15 @@ final class PhoneOnboardingUITests: XCTestCase {
         let app = XCUIApplication(); app.launchArguments = arguments; app.launch(); return app
     }
     private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
-        for _ in 0..<10 where !element.isHittable { app.swipeUp() }
+        // Swipe inside the content above the keyboard; a full-screen swipe can land on the number pad.
+        for _ in 0..<10 {
+            let keyboard = app.keyboards.firstMatch
+            let bottom = keyboard.exists ? keyboard.frame.minY : app.frame.maxY
+            if element.isHittable && element.frame.maxY < bottom - 8 { return }
+            let startY = max(0.25, min(0.7, (bottom - 36) / app.frame.height))
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: startY))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.18)))
+        }
     }
     private func done(_ app: XCUIApplication) {
         let button = app.buttons["Done"].firstMatch

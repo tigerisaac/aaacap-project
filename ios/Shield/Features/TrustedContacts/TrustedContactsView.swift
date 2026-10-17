@@ -12,10 +12,13 @@ struct TrustedContactsView: View {
     var body: some View {
         List {
             if let response {
-                if !response.available { ShieldGroup { Text("Trusted-contact alerts aren’t available yet. You can use Shield without them.") } }
+                if !response.available { ShieldGroup { Text("Caretaker alerts aren’t available yet. You can use Shield without a caretaker.") } }
+                if response.available, response.contacts.isEmpty {
+                    ShieldGroup { Text("A caretaker can receive an alert if checks while you talk detect a possible scam request and intervene. Your calls and messages stay private.") }
+                }
                 if !response.contacts.isEmpty {
                     ShieldGroup {
-                        Toggle("Send alerts to my trusted contacts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
+                        Toggle("Send protection alerts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
                             .disabled(working || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
                     }
                 }
@@ -38,44 +41,61 @@ struct TrustedContactsView: View {
                                 self.response = .init(available: true, choiceRecorded: true, enabled: true, contacts: response.contacts + [contact])
                             } else { Task { await load() } }
                         } } label: {
-                            ActionRow(title: "Add trusted contact", symbol: "person.badge.plus")
+                            ActionRow(title: "Add caretaker", symbol: "person.badge.plus")
                         }
-                    } footer: { Text("They get alerts only after they accept. Your calls and messages stay private.") }
+                    } footer: { Text("They must accept first. Alerts are sent only when checks while you talk intervene, so those checks must be on.") }
                 }
-            } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your trusted contacts…") } }
+            } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your caretakers…") } }
             if let error {
                 ShieldGroup {
-                    ShieldLoadFailure(title: response == nil ? "Trusted contacts couldn’t load" : "That didn’t finish", detail: error) { Task { await load() } }
+                    ShieldLoadFailure(title: response == nil ? "Caretakers couldn’t load" : "That didn’t finish", detail: error) { Task { await load() } }
                 }
             }
         }.deferredLoading(response == nil && error == nil, visible: $loadingVisible)
-            .shieldListStyle().shieldLargeTitle("Trusted contacts")
+            .shieldListStyle().navigationTitle("Caretakers").navigationBarTitleDisplayMode(.inline)
             .task { await load() }.refreshable { await load() }
-            .alert("Remove this trusted contact?", isPresented: $confirmRemoval) {
+            .alert("Remove this caretaker?", isPresented: $confirmRemoval) {
                 Button("Remove contact", role: .destructive) { Task { await remove() } }
                 Button("Cancel", role: .cancel) { removing = nil }
             } message: { Text("They will stop receiving alerts about your protection.") }
     }
     private func load() async {
         error = nil
-        if model.isPreview { if response == nil { response = .init(available: true, choiceRecorded: false, enabled: false, contacts: []) }; return }
-        do { response = try await model.api.send("/api/trusted-contacts", participantID: model.selectedPersonID) }
-        catch { self.error = error.localizedDescription }
+        if model.isPreview {
+            #if DEBUG && targetEnvironment(simulator)
+            if response == nil {
+                response = .init(available: !ProcessInfo.processInfo.arguments.contains("--uitesting-caretakers-unavailable"), choiceRecorded: false, enabled: false, contacts: [])
+            }
+            #endif
+            return
+        }
+        guard let id = model.selectedPersonID, model.isOwner else { return }
+        let generation = model.sessionGeneration
+        do {
+            let loaded: TrustedContactsResponse = try await model.api.send("/api/trusted-contacts", participantID: id)
+            guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
+            response = loaded
+        } catch is CancellationError { return }
+        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
     }
     private func setEnabled(_ enabled: Bool) async {
-        working = true; defer { working = false }
+        guard !working, model.isOwner, let id = model.selectedPersonID else { return }
+        working = true; error = nil; defer { working = false }
         do {
-            if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/choice", method: "POST", body: APIClient.payload(["enabled": enabled]), participantID: model.selectedPersonID) }
+            if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/choice", method: "POST", body: APIClient.payload(["enabled": enabled]), participantID: id) }
             if model.isPreview, let response { self.response = .init(available: true, choiceRecorded: true, enabled: enabled, contacts: response.contacts) }
             await load()
-        } catch { self.error = error.localizedDescription }
+        } catch is CancellationError { return }
+        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
     }
     private func remove() async {
-        guard let removing else { return }; working = true; defer { working = false }
+        guard let removing, !working, model.isOwner, let id = model.selectedPersonID else { return }
+        working = true; error = nil; defer { working = false; self.removing = nil }
         do {
-            if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/\(removing.id.uuidString.lowercased())", method: "DELETE", participantID: model.selectedPersonID) }
+            if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/\(removing.id.uuidString.lowercased())", method: "DELETE", participantID: id) }
             if model.isPreview, let response { self.response = .init(available: true, choiceRecorded: true, enabled: response.enabled, contacts: response.contacts.filter { $0.id != removing.id }) }
             await load()
-        } catch { self.error = error.localizedDescription }
+        } catch is CancellationError { return }
+        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
     }
 }

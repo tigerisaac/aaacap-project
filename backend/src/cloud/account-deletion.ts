@@ -2,9 +2,10 @@ import type { Query } from 'firebase-admin/firestore';
 import { HttpError, type AuthProvider, type Identity } from '../auth.js';
 import type { CloudStore } from './store.js';
 import { contactPhoneHash } from './trusted-contacts.js';
+import { ServiceAccess } from './service-access.js';
 
 /** Account-wide deletion; selecting a shared person must never delete that person's account. */
-export async function deleteAccount(store: CloudStore, auth: AuthProvider, identity: Identity, selected?: string, rememberedIds: string[] = []) {
+export async function deleteAccount(store: CloudStore, auth: AuthProvider, identity: Identity, selected?: string, rememberedIds: string[] = [], serviceAccess = new ServiceAccess(store)) {
   const uid = identity.subject;
   // Fence the owned participants before any destructive work. Retain forwarding's existing
   // restoration guard until a verified offboarding flow can safely replace it.
@@ -69,6 +70,9 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
   }
   await remove(store.db.collection('alertDeliveries').where('recipientUid', '==', uid));
   await remove(store.db.collection('devices').where('uid', '==', uid));
+  // Account deletion is separate from cancelling an Apple subscription; the UI explains this.
+  // Keep the durable deletion job retryable until RevenueCat has erased the customer profile.
+  await serviceAccess.erase(uid);
   // Last: a transient identity-provider failure leaves the caller able to retry cleanup.
   // Minimal SMS STOP hashes and short-lived abuse counters retain their existing policies.
   await auth.deleteAccount(uid);

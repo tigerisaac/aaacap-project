@@ -1,0 +1,321 @@
+{
+  "checkedAt": "2026-10-17T20:02:56.670Z",
+  "approved": true,
+  "deployed": true,
+  "baselineVersion": "projects/562628621854/sites/shield-calls-isaac/versions/b1ed614a2305e3ca",
+  "baselineConfig": {
+    "headers": [
+      {
+        "headers": {
+          "Referrer-Policy": "no-referrer",
+          "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff"
+        },
+        "glob": "**"
+      },
+      {
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable"
+        },
+        "glob": "/speech/**"
+      },
+      {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "glob": "/.well-known/apple-app-site-association"
+      }
+    ],
+    "rewrites": [
+      {
+        "glob": "/{api,auth,forwarding,public,voice}/**",
+        "run": {
+          "serviceId": "shieldapi",
+          "region": "us-central1"
+        }
+      },
+      {
+        "glob": "/{privacy,service-info}",
+        "run": {
+          "serviceId": "shieldapi",
+          "region": "us-central1"
+        }
+      }
+    ],
+    "appAssociation": "NONE"
+  },
+  "baselineFiles": [
+    {
+      "path": "/.well-known/apple-app-site-association",
+      "hash": "f82e13c4c1fe1ec8ac6b891be6f6d9897920dff744e9c791402f9a14a995eaf8"
+    },
+    {
+      "path": "/__/firebase/init.js",
+      "hash": "d7dd340f6759ce49bc8bb297ebe2497830defea42ce1273bcfbb2308c99ff64c"
+    },
+    {
+      "path": "/__/firebase/init.json",
+      "hash": "ddabf64791e16fe9cc22c29de6549d68ebe86ed6f6983846c1f7dd59c1b2b5f1"
+    },
+    {
+      "path": "/sign-in/index.html",
+      "hash": "c6746a77c3e8f400a0480042feb2d8658a6f59d9ba1fa407615e46134fa1037f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/01-greeting.wav",
+      "hash": "d837748d8c5d361b751ffec2d11fe4807e35f75f130412a6571c4bad102d1bc2"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/02-hold.wav",
+      "hash": "fc76638e32e9c405e2e9ba8a23f961810957f3a5e57f3aeca998e050b9526a67"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/03-hold-monitoring.wav",
+      "hash": "7bf48d480bada76eeaf9d4e9b15af212410ae04e9a255f53183400263886f34f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/04-voicemail.wav",
+      "hash": "c83f1c7bd7de27538e946a8ee9fdffa45b4b5e3584a7f68541527dc70e3cc0ae"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/05-voicemail-after-screening.wav",
+      "hash": "9f848345afbfd3a0df04a861c17f0a5eef95771e9eea53490e42c5f783810dca"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/06-unavailable.wav",
+      "hash": "715368d9b3b1fcc135ddd325807f5802ff8dd2fec0891d490ca2d333d34e3bb7"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/07-not-ready.wav",
+      "hash": "dec6226d4c149377f2a09ecc494bcdce8eb84bae329ff771223be13334424692"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/08-cannot-connect.wav",
+      "hash": "3c79f8c3879d3ddf890a39e15ba611947c908eb46500f69db791e91388799f09"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/09-goodbye.wav",
+      "hash": "89bfd6c072bc5ff88fa8105169b27a4a09745665d284ad97bee5a5bf309c88a4"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/10-sound-check.wav",
+      "hash": "f1bb0a32b969a2f3b2379a47675a9e68f22436760a8eb8ce6f5c6234a5d53945"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/11-sound-check-passed.wav",
+      "hash": "2b78f104a7db1fdb0ef1336cab1002b1da4e76d0491bfcf948ae8e0da1aff95d"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-appointment.wav",
+      "hash": "0287f34d8e0eb4fd572eeaa4e5cf7f7fd952efad5b7f19c3b623a49b90a5d76f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-delivery.wav",
+      "hash": "9ebe34e06f360fa2aeee337244fc43da68ca429263da15d2ab370528381fe5fb"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-fallback.wav",
+      "hash": "2659988c4659a4b0227657faaa71bfff133862156d01ad79fa51a496b5f4e13e"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-other.wav",
+      "hash": "db1eee7d1d51c0f89ef9a1c09945bc78e7b3be188d9f44d40a66dc7314e7cb7f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-personal.wav",
+      "hash": "1041af55d32967e7baaee7c7601fd5ea41ccc41d32e6f6bb40f345be60a10323"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-prescription.wav",
+      "hash": "5b02272d6ca3cb68c7b0456a21499e28a01cdfb03b47cfcbe1e056f1d0508703"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/offer-unknown.wav",
+      "hash": "56d95b08c79b3262daa4a0f75deda808648ca85dd6b4a908f504a303926fc204"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-code_or_password.wav",
+      "hash": "6cf56b339aa8935916ba9f448b06ac9b94fa4e8af8e9332840ee296f3b9eeb2d"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-fallback.wav",
+      "hash": "d5886bb7734878bb53d644c2208a55414e7bee449304bcf3763b0e35b3f24e5c"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-identity_numbers.wav",
+      "hash": "32f834ec2987f551b86ffb9b9297c9f424c0b0d01be1d3c4039bcb96e6f68ccc"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-investment.wav",
+      "hash": "a9d714c0ef523a4c53375ca19c72125f4a5bd7bfc5929380483b376e9af90c05"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-payment_or_transfer.wav",
+      "hash": "061f450b8219f4b1d767e5803ec65a3f8c2f92493101a30da74a979a69da3eaf"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-remote_access.wav",
+      "hash": "c8cdbef333c8929b644f97cc420f126d9c387ac72be32c632d81682f3c6b84d7"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-10/warning-secrecy.wav",
+      "hash": "e72f67197afdbc48a95901571cdc9dfaa2f600f85d6b619e94e34b708ca0805c"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/01-greeting.wav",
+      "hash": "d837748d8c5d361b751ffec2d11fe4807e35f75f130412a6571c4bad102d1bc2"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/02-hold.wav",
+      "hash": "fc76638e32e9c405e2e9ba8a23f961810957f3a5e57f3aeca998e050b9526a67"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/03-hold-monitoring.wav",
+      "hash": "7bf48d480bada76eeaf9d4e9b15af212410ae04e9a255f53183400263886f34f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/04-voicemail.wav",
+      "hash": "c83f1c7bd7de27538e946a8ee9fdffa45b4b5e3584a7f68541527dc70e3cc0ae"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/05-voicemail-after-screening.wav",
+      "hash": "9f848345afbfd3a0df04a861c17f0a5eef95771e9eea53490e42c5f783810dca"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/06-unavailable.wav",
+      "hash": "715368d9b3b1fcc135ddd325807f5802ff8dd2fec0891d490ca2d333d34e3bb7"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/07-not-ready.wav",
+      "hash": "dec6226d4c149377f2a09ecc494bcdce8eb84bae329ff771223be13334424692"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/08-cannot-connect.wav",
+      "hash": "3c79f8c3879d3ddf890a39e15ba611947c908eb46500f69db791e91388799f09"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/09-goodbye.wav",
+      "hash": "89bfd6c072bc5ff88fa8105169b27a4a09745665d284ad97bee5a5bf309c88a4"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/10-sound-check.wav",
+      "hash": "f1bb0a32b969a2f3b2379a47675a9e68f22436760a8eb8ce6f5c6234a5d53945"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/11-sound-check-passed.wav",
+      "hash": "2b78f104a7db1fdb0ef1336cab1002b1da4e76d0491bfcf948ae8e0da1aff95d"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/12-capture-greeting.wav",
+      "hash": "3803235b130c3b1f332b2a1cada62a542b1e3980f5171c5b97bdd2e6081bce60"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/13-capture-voicemail.wav",
+      "hash": "8992efedbfc2baf428c5ca748dbe302ae8f089a2a6b643678f1448473f8cb8da"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/14-setup-check.wav",
+      "hash": "8b02cf616668ba40c66a6e492f2fd38190ab85f7f7f243f59859edcb34cb3a22"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/15-routing-test.wav",
+      "hash": "d30cd1e875e0463ae69d0bf976fd62f48803fbabf3ff8fa8112cca4847e02132"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/16-routing-hold.wav",
+      "hash": "da044268d5b7a25e8992e6a78daefd41e7295a4dd8ed458e203e3c133d636e1a"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-appointment.wav",
+      "hash": "0287f34d8e0eb4fd572eeaa4e5cf7f7fd952efad5b7f19c3b623a49b90a5d76f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-delivery.wav",
+      "hash": "9ebe34e06f360fa2aeee337244fc43da68ca429263da15d2ab370528381fe5fb"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-fallback.wav",
+      "hash": "2659988c4659a4b0227657faaa71bfff133862156d01ad79fa51a496b5f4e13e"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-other.wav",
+      "hash": "db1eee7d1d51c0f89ef9a1c09945bc78e7b3be188d9f44d40a66dc7314e7cb7f"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-personal.wav",
+      "hash": "1041af55d32967e7baaee7c7601fd5ea41ccc41d32e6f6bb40f345be60a10323"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-prescription.wav",
+      "hash": "5b02272d6ca3cb68c7b0456a21499e28a01cdfb03b47cfcbe1e056f1d0508703"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/offer-unknown.wav",
+      "hash": "56d95b08c79b3262daa4a0f75deda808648ca85dd6b4a908f504a303926fc204"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-code_or_password.wav",
+      "hash": "6cf56b339aa8935916ba9f448b06ac9b94fa4e8af8e9332840ee296f3b9eeb2d"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-fallback.wav",
+      "hash": "d5886bb7734878bb53d644c2208a55414e7bee449304bcf3763b0e35b3f24e5c"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-identity_numbers.wav",
+      "hash": "32f834ec2987f551b86ffb9b9297c9f424c0b0d01be1d3c4039bcb96e6f68ccc"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-investment.wav",
+      "hash": "a9d714c0ef523a4c53375ca19c72125f4a5bd7bfc5929380483b376e9af90c05"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-payment_or_transfer.wav",
+      "hash": "061f450b8219f4b1d767e5803ec65a3f8c2f92493101a30da74a979a69da3eaf"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-remote_access.wav",
+      "hash": "c8cdbef333c8929b644f97cc420f126d9c387ac72be32c632d81682f3c6b84d7"
+    },
+    {
+      "path": "/speech/soniox-grace-2026-10-12/warning-secrecy.wav",
+      "hash": "e72f67197afdbc48a95901571cdc9dfaa2f600f85d6b619e94e34b708ca0805c"
+    }
+  ],
+  "changes": [
+    {
+      "path": "/trusted-contacts.html",
+      "operation": "add",
+      "baselineHash": null,
+      "candidateSha256": "9accaec835947a9ee980f6dccf1ba9a757e5fed5d0df19f817a9a5e553bd3582",
+      "uploadGzipSha256": "d778c86e370d0a1a23277c09c3b4b90ae99d36776e509b7986eb54327132ddba"
+    },
+    {
+      "path": "/trusted-contacts.js",
+      "operation": "add",
+      "baselineHash": null,
+      "candidateSha256": "b40dfc4f51155800f32db7e377a851e66691ccb58f3e7f97333e5f0e200f2a4e",
+      "uploadGzipSha256": "55689fb9477fcb746684998db7defa9c10c667e06140a95ad30a65630c3897cd"
+    },
+    {
+      "path": "/trusted-contacts.css",
+      "operation": "add",
+      "baselineHash": null,
+      "candidateSha256": "56dcf3f895482f80af7df3338fc7aa3e8e69c1d792b47ea3c9ba85d644fe8dd2",
+      "uploadGzipSha256": "92ef7c52495a901da164439925c6a590e524c4e2558c32a72c3efa98dec36812"
+    }
+  ],
+  "publicationMethod": "After owner approval, clone this exact version without finalizing, add only the three listed paths, preserve configuration and all 59 existing files, verify the resulting file manifest, then finalize and release. Do not deploy the three-file folder as a whole Hosting site.",
+  "reference": "https://firebase.google.com/docs/reference/hosting/rest/v1beta1/sites.versions/clone",
+  "localValidation": {
+    "pageDependenciesPresent": true,
+    "allExistingAssetsPreservedByPlan": true,
+    "phoneCodeRequestsSent": 0
+  },
+  "approval": {
+    "ownerAnswer": "Approve this scoped backend update",
+    "scope": "Existing live version plus caretaker HTML, JavaScript and required CSS; all existing files/configuration preserved."
+  },
+  "deployedVersion": "sites/shield-calls-isaac/versions/d62ef31f0f12c172",
+  "verificationEvidence": "hosting-deployment-verified.json"
+}

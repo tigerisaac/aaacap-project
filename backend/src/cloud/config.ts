@@ -34,6 +34,18 @@ export const cloudSchema = z.object({
   // Push alerts are offered only when an APNs auth key (.p8) from the Apple Developer account is configured.
   APNS: z.object({ keyId: z.string().regex(/^[A-Z0-9]{10}$/), teamId: z.string().regex(/^[A-Z0-9]{10}$/),
     privateKey: z.string().includes('PRIVATE KEY') }).strict().optional(),
+  // Secret credentials stay in SHIELD_RUNTIME. Only applePublicKey goes to the signed-in iOS app.
+  // Purchase availability additionally requires an operator-verified phone setup for this account.
+  REVENUECAT: z.object({
+    applePublicKey: z.string().regex(/^appl_[A-Za-z0-9]+$/),
+    secretApiKey: z.string().min(20).max(512),
+    webhookAuthorization: z.string().min(32).max(512),
+    entitlementId: z.string().min(1).max(100).default('shield_access'),
+    offeringId: z.string().min(1).max(100).default('default'),
+    monthlyProductId: z.string().min(1).max(200).default('shield_monthly'),
+    annualProductId: z.string().min(1).max(200).default('shield_annual'),
+    purchasesEnabled: z.boolean().default(false),
+  }).strict().refine(value => value.monthlyProductId !== value.annualProductId, 'Distinct subscription products required').optional(),
 });
 export type CloudConfig = z.infer<typeof cloudSchema>;
 export const CONSENT_VERSION = 'shield-2026-10-16-privacy-v2';

@@ -1,0 +1,149 @@
+{
+  "captured": "2026-10-17",
+  "screens": [
+    {
+      "file": "caretaker-pending-largest-dark.png",
+      "test": "ReleaseReadinessUITests/testCaretakerRequestKeepsCallAccessSeparateAtLargestText()",
+      "sourceAttachment": "0248AAA1-2319-4526-B19A-683DF0964413.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "contacts-explicit.png",
+      "test": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate()",
+      "sourceAttachment": "F42960A3-A77A-49E3-86FF-C6E1D3200FEB.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "caretaker-optional.png",
+      "test": "ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings()",
+      "sourceAttachment": "BCAE9265-5EDC-4F91-A29B-BEBA2934B1DB.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "settings-independent.png",
+      "test": "ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings()",
+      "sourceAttachment": "6253FAAA-B484-40A1-9D0E-21A3AE1A6FD9.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "subscription-error.png",
+      "test": "SubscriptionUITests/testFailedLookupRemainsRecoverable()",
+      "sourceAttachment": "02224FDC-1D1F-4008-AA8D-404F9E0FCEE2.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "subscription-plans.png",
+      "test": "SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent()",
+      "sourceAttachment": "E07F35FF-841F-45ED-AB80-6BDE6AEF5793.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "subscription-deletion.png",
+      "test": "SubscriptionUITests/testSubscribedAccountHasManagementAndDeletionReminder()",
+      "sourceAttachment": "2962EE99-523D-4843-9EE6-B20D64BC238B.png",
+      "device": "iPhone 17e",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-access-ui.xcresult"
+    },
+    {
+      "file": "subscription-billing-grace.png",
+      "test": "SubscriptionUITests/testBillingGraceShowsAccessDeadlineInsteadOfAPastRenewal()",
+      "sourceAttachment": "29335509-F974-4A86-9EA6-86D902B8A989.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-final-focused-retry.xcresult"
+    },
+    {
+      "file": "subscription-deletion-outage.png",
+      "test": "SubscriptionUITests/testDeletionKeepsAppleReminderWhenAccessLookupFails()",
+      "sourceAttachment": "ED1D691A-8DD8-4CAE-9554-E6AE6F99D6C1.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-final-focused-retry.xcresult"
+    },
+    {
+      "file": "pilot-largest-dark.png",
+      "test": "SubscriptionUITests/testPilotNeverSeesMonetaryActionsAtLargestText()",
+      "sourceAttachment": "0625A9DE-5E29-41AD-9747-BE9F5F3A270E.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-final-focused-retry.xcresult"
+    },
+    {
+      "file": "accessibility-cancel-dark.png",
+      "test": "SeniorAccessibilityUITests/testDarkToolbarActionsAudit()",
+      "sourceCapture": "AccessibilityScreens/accessibility-add-number-dark.png",
+      "device": "iPhone 18 Pro / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-wide.xcresult"
+    },
+    {
+      "file": "accessibility-close-dark.png",
+      "test": "SeniorAccessibilityUITests/testDarkToolbarActionsAudit()",
+      "sourceCapture": "AccessibilityScreens/accessibility-phone-setup-dark.png",
+      "device": "iPhone 18 Pro / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-wide.xcresult"
+    },
+    {
+      "file": "accessibility-close-light.png",
+      "test": "RedesignUITests/testGuidedFlowsAccessibilityAudit()",
+      "sourceCapture": "SeniorScreens/audit-Phone setup.png",
+      "device": "iPhone 18 Pro / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-wide.xcresult"
+    },
+    {
+      "file": "disconnect-code-revealed.png",
+      "test": "ForwardingUITests/testDoneLeavesSetupAndRestorationRemainsSeparate()",
+      "sourceAttachment": "8A785E42-51D2-4409-B8C4-8C465B6E13FB.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-audit-followup.xcresult"
+    },
+    {
+      "file": "accessibility-revealed-settings.png",
+      "test": "RedesignUITests/testContrastOfReportedRowsWhenFullyVisible()",
+      "sourceAttachment": "F7EF6592-E5F3-49F3-81BE-2535F45500CB.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-audit-followup.xcresult"
+    },
+    {
+      "file": "accessibility-revealed-calls.png",
+      "test": "RedesignUITests/testContrastOfReportedRowsWhenFullyVisible()",
+      "sourceAttachment": "876350BB-886E-48C4-8159-303DA231546B.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-audit-followup.xcresult"
+    },
+    {
+      "file": "accessibility-revealed-home.png",
+      "test": "RedesignUITests/testContrastOfReportedRowsWhenFullyVisible()",
+      "sourceAttachment": "81187B7B-785B-452A-B160-8A0D61DCCC35.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-audit-followup.xcresult"
+    },
+    {
+      "file": "saved-number-touch-target.png",
+      "test": "ReleaseReadinessUITests/testSavedNumberSelectionHasAComfortableTouchTarget()",
+      "sourceAttachment": "FD9DE2C0-0DAB-47C0-BA8D-AB79345D50CC.png",
+      "device": "iPhone 17e / iOS 27",
+      "synthetic": true,
+      "resultBundle": "/tmp/shield-release-number-target.xcresult"
+    }
+  ]
+}

@@ -17,10 +17,11 @@ import { VoicemailCheck } from './voicemail-check.js';
 import { deleteMessageAudio, readMessageAudio } from './message-audio.js';
 import { registerAudioDelivery } from './audio-delivery.js';
 import { startRestoration, confirmRestoration, cancelRestoration, setupReviewRequired, restorationDTO } from './restoration.js';
+import { ServiceAccess } from './service-access.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
-export async function registerForwardingAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, deps: ProbeDependencies = {}) {
+export async function registerForwardingAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, deps: ProbeDependencies = {}, serviceAccess = new ServiceAccess(store)) {
   registerAudioDelivery(app, store, auth);
   const probes = new ForwardingProbes(store);
   const f = new ForwardingStore(store), consent = forwardingConsent;
@@ -65,6 +66,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   app.post('/api/forwarding/test-window', async request => {
     const ctx = await owner(request);
     z.object({ allowAnyCaller: z.literal(true) }).strict().parse(request.body);
+    await serviceAccess.requireActivation(ctx.uid, ctx.participant.id);
     await probes.openWindow(ctx.participant.id); return { opened: true };
   });
   // On app launch, run the setup check if the last one is over a day old (the daily schedule covers the rest).
@@ -119,9 +121,11 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   app.post('/api/forwarding/progress', async request => {
     const ctx = await owner(request), { stage } = z.object({ stage: z.enum(stages) }).parse(request.body);
     if (stage.startsWith('forward')) {
+      await serviceAccess.requireActivation(ctx.uid, ctx.participant.id);
       const c = (await f.controlRef(ctx.participant.id).get()).data();
       if (!c?.provisioned || !c.dataPlanConfirmed || !c.restorationGuide?.length || !c.enabled || c.expiresAt <= store.now() || !ctx.participant.phoneVerifiedAt || ctx.participant.forwardingConsent !== consent) throw new HttpError(409, 'setup_not_ready');
     }
+    if (stage === 'checks') await serviceAccess.activatePilot(ctx.uid, ctx.participant.id);
     await store.personRef(ctx.participant.id).update({ forwardingStage: stage }); return { saved: true };
   });
   app.post('/api/forwarding/restore', async request => {

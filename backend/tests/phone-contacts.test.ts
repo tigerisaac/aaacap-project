@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
-import { AlertDelivery, queueAlert, type AlertKind } from '../src/cloud/alerts.js';
+import { ALERTS, AlertDelivery, queueAlert, type AlertKind } from '../src/cloud/alerts.js';
 import { contactPhoneHash } from '../src/cloud/trusted-contacts.js';
 import type { AuthProvider } from '../src/auth.js';
 
@@ -32,7 +32,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
   const create = (id = randomUUID(), phone = PHONE, uid = 'owner') => app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: headers(uid), payload: { id, name: 'Alex', phone, consent: true } });
   const respond = (id: string, accept = true, textAlerts = true, appAlerts = true, uid = 'contact') => app.inject({ method: 'POST', url: `/api/contact-alerts/${id}`, headers: headers(uid, false), payload: { accept, textAlerts, appAlerts } });
   const list = (uid = 'contact') => app.inject({ url: '/api/contact-alerts', headers: headers(uid, false) });
-  const queue = async (kind: AlertKind = 'blocked_caller') => { const batch = db.batch(); queueAlert(store, batch, PERSON, kind); await batch.commit(); return (await db.collection('alerts').get()).docs[0]!.id; };
+  const queue = async (kind: AlertKind = 'monitor_intervened') => { const batch = db.batch(); queueAlert(store, batch, PERSON, kind); await batch.commit(); return (await db.collection('alerts').get()).docs[0]!.id; };
   const delivery = () => new AlertDelivery(store, { send: push }, { send: sms });
   it('lets 25 different users request codes behind one proxy without trusting forwarded IPs', async () => {
     for (let n = 0; n < 25; n++) {
@@ -141,14 +141,28 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
     expect((await db.collection('memberships').get()).empty).toBe(true); expect((await db.collection('grants').get()).empty).toBe(true);
     expect((await app.inject({ method: 'POST', url: '/api/devices', headers: headers('contact', false), payload: { token: 'ab'.repeat(32), environment: 'development' } })).statusCode).toBe(200);
   });
-  it('delivers opted-in text and push once, skips pending contacts and excludes voicemail activity', async () => {
+  it('delivers an opted-in monitoring intervention once through text and push, but no other event', async () => {
     const id = (await create()).json().contact.id; sms.mockClear();
     await delivery().deliver(await queue()); expect(sms).not.toHaveBeenCalled();
     await respond(id); await app.inject({ method: 'POST', url: '/api/devices', headers: headers('contact', false), payload: { token: 'ab'.repeat(32), environment: 'development' } });
     const job = await queue(); await Promise.all([delivery().deliver(job), delivery().deliver(job)]);
     expect(sms).toHaveBeenCalledTimes(1); expect(push).toHaveBeenCalledTimes(1);
     expect(sms.mock.calls[0]![1]).toContain('Margaret'); expect(sms.mock.calls[0]![1]).not.toContain(PHONE);
-    await delivery().deliver(await queue('voicemail')); expect(sms).toHaveBeenCalledTimes(1); expect(push).toHaveBeenCalledTimes(1);
+    for (const kind of Object.keys(ALERTS) as AlertKind[]) {
+      if (kind === 'monitor_intervened') continue;
+      await delivery().deliver(await queue(kind));
+      expect(sms).toHaveBeenCalledTimes(1); expect(push).toHaveBeenCalledTimes(1);
+    }
+    expect((await db.collection('alertDeliveries').get()).docs.filter(doc => doc.data().textResult)).toHaveLength(1);
+  });
+  it('does not send duplicate pushes when a caretaker also has shared call access or workers overlap', async () => {
+    const id = (await create()).json().contact.id; await respond(id); sms.mockClear();
+    await app.inject({ method: 'POST', url: '/api/devices', headers: headers('contact', false), payload: { token: 'ab'.repeat(32), environment: 'development' } });
+    await db.collection('grants').doc(randomUUID()).set({ participantId: PERSON, granteeUid: 'contact', acceptedAt: now, canListen: true });
+    await store.personRef(PERSON).update({ helperAlerts: { enabled: true, updatedAt: now } });
+    const job = await queue();
+    await Promise.all([delivery().deliver(job), delivery().deliver(job)]);
+    expect(push).toHaveBeenCalledTimes(1); expect(sms).toHaveBeenCalledTimes(1);
   });
   it('does not deliver queued events from before acceptance', async () => {
     const id = (await create()).json().contact.id; sms.mockClear(); const job = await queue(); now += 10;

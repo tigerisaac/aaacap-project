@@ -57,6 +57,14 @@ export const finishAccountDeletions = onSchedule({ ...options, maxInstances: 1, 
   await processAccountDeletions(s, new FirebaseAuth(s.config));
 });
 
+// Recover missed billing notifications and flag expiry for forwarding-safe assisted offboarding.
+export const reviewServiceAccess = onSchedule({ ...options, maxInstances: 1, schedule: 'every 1 hours', timeoutSeconds: 120,
+  retryCount: 0 }, async () => {
+  const { ServiceAccess } = await import('./service-access.js');
+  const result = await new ServiceAccess(getStore()).reviewBatch();
+  if (result.failed) console.error('subscription_review_incomplete', result);
+});
+
 export const ingestForwardingVoicemail = onDocumentCreated({ ...options, document: 'forwardingRecordings/{recordingId}', retry: true, concurrency: 2 }, async event => {
   const { ingestForwardingRecording } = await import('./forwarding-recordings.js');
   await ingestForwardingRecording(getStore(), event.params.recordingId);

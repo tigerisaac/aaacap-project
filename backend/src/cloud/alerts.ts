@@ -10,7 +10,7 @@ import { TelnyxTextSender, type TextSender } from './text-alerts.js';
 
 /** Fixed wording only. Lock-screen text never includes caller words or numbers; helpers see the person's name. */
 export const ALERTS = {
-  monitor_intervened: { helpers: (name: string) => `Shield ended a call to ${name} after hearing a common scam request.` },
+  monitor_intervened: { helpers: (name: string) => `Shield detected a possible scam request during a call with ${name}. Check in with them.` },
   blocked_caller: { helpers: (name: string) => `A caller Shield blocked tried to reach ${name} again.` },
   voicemail_removed: { helpers: (name: string) => `Shield removed a scam voicemail left for ${name}.` },
   voicemail: { person: () => 'You have a new voicemail in Shield.', helpers: (name: string) => `${name} has a new voicemail in Shield.`, helpersNeedListen: true },
@@ -100,7 +100,7 @@ export class AlertDelivery {
       if (!person || person.status === 'offboarded') return;
       const targets: { uid: string; body: string }[] = [];
       if (spec.person) targets.push({ uid: person.ownerUid, body: spec.person() });
-      if (helperAlertsEnabled(person)) {
+      if (helperAlertsEnabled(person) && alert.kind === 'monitor_intervened') {
         const name = s.name(person);
         const grants = await s.db.collection('grants').where('participantId', '==', person.id).get();
         for (const grant of grants.docs.map(d => d.data())) {
@@ -110,24 +110,42 @@ export class AlertDelivery {
       }
       const tally = { sent: 0, unregistered: 0, failed: 0 };
       for (const target of targets) {
-        const devices = await s.db.collection('devices').where('uid', '==', target.uid).limit(10).get();
-        for (const device of devices.docs) {
-          const d = device.data();
-          if (d.expiresAt <= s.now()) continue;
-          const result = await this.sender.send(s.vault.open(d.tokenEnc, `device:${device.id}`), d.environment, target.body, alert.kind);
-          tally[result]++;
-          if (result === 'unregistered') await device.ref.delete();
-        }
+        const result = await this.deliverPush(alertId, person.id, target.uid, target.body, alert.kind);
+        for (const key of ['sent', 'unregistered', 'failed'] as const) tally[key] += result[key];
       }
       console.info(JSON.stringify({ event: 'alert_delivered', kind: alert.kind, recipients: targets.length, ...tally }));
       await this.deliverContacts(alertId, person, alert.kind as AlertKind, spec, alert.createdAt);
     } finally { await ref.delete(); }
   }
 
+  /** One push attempt per event/account, even when a caretaker also has a sharing
+   * grant or two workers receive the same event. A timeout is not a safe retry. */
+  private async deliverPush(alertId: string, participantId: string, uid: string, body: string, kind: AlertKind) {
+    const s = this.store, tally = { sent: 0, unregistered: 0, failed: 0 };
+    const receipt = s.db.collection('alertDeliveries').doc(s.vault.hash(`push:${alertId}:${uid}`));
+    const claimed = await s.db.runTransaction(async tx => {
+      if ((await tx.get(receipt)).exists) return false;
+      tx.create(receipt, { participantId, startedAt: s.now(), expiresAt: s.now() + 30 * 86400_000 });
+      return true;
+    });
+    if (!claimed) return tally;
+    const devices = await s.db.collection('devices').where('uid', '==', uid).limit(10).get();
+    for (const device of devices.docs) {
+      const d = device.data();
+      if (d.expiresAt <= s.now()) continue;
+      const result = await this.sender.send(s.vault.open(d.tokenEnc, `device:${device.id}`), d.environment, body, kind);
+      tally[result]++;
+      if (result === 'unregistered') await device.ref.delete();
+    }
+    await receipt.update({ ...tally, finishedAt: s.now() });
+    return tally;
+  }
+
   private async deliverContacts(alertId: string, person: Person, kind: AlertKind, spec: AlertSpec, createdAt: number) {
     const s = this.store;
-    // Trusted contacts receive protection events only, never voicemail or message activity.
-    if (!['monitor_intervened', 'blocked_caller', 'protection_paused', 'restoration_started', 'setup_check_failed'].includes(kind)) return;
+    // Caretakers hear only about an actual connected-call intervention. Screened
+    // blocks, messages, setup changes and pauses must never notify another person.
+    if (kind !== 'monitor_intervened') return;
     const docs = await s.db.collection('alertContacts').where('participantId', '==', person.id).get();
     for (const contact of docs.docs) {
       const receipt = s.db.collection('alertDeliveries').doc(s.vault.hash(`${alertId}:${contact.id}`));
@@ -151,14 +169,7 @@ export class AlertDelivery {
       }
       let pushSent = 0;
       if (claimed.push && s.config.APNS) {
-        const devices = await s.db.collection('devices').where('uid', '==', claimed.recipientUid).limit(10).get();
-        for (const device of devices.docs) {
-          const d = device.data();
-          if (d.expiresAt <= s.now()) continue;
-          const result = await this.sender.send(s.vault.open(d.tokenEnc, `device:${device.id}`), d.environment, body, kind);
-          if (result === 'sent') pushSent++;
-          if (result === 'unregistered') await device.ref.delete();
-        }
+        pushSent = (await this.deliverPush(alertId, person.id, claimed.recipientUid, body, kind)).sent;
       }
       await receipt.update({ textResult, pushSent, finishedAt: s.now() });
     }

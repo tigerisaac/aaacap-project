@@ -1,5 +1,7 @@
 # Protection plan
 
+**October 17 amendment:** The current caretaker and helper alert scope is connected-call monitoring interventions only. Optional caretakers live in Settings and do not receive call-history/audio permission. Old default-on helper onboarding and screening/voicemail alert proposals below are historical, superseded by [the release verification record](IOS-RELEASE-VERIFICATION.md).
+
 Agreed with the owner on October 10, 2026. **Mostly not deployed.** Monitoring Fast mode and the bridge wake-up were deployed October 11. Since then, more has been built in code but not deployed; each section says which. It comes from a critique of Shield after two real monitored calls were ended by an intervention that day (see [Status](STATUS.md)). Each section says what to build, where in the code, and how to check it.
 
 The target user is an older adult, often with cognitive impairment, who is likely to press 1 on any offered call and answer a caller's questions at once. That's why speed, memory and caregiver alerts matter more here than the private summary.

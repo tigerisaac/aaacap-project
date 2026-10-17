@@ -1,5 +1,7 @@
 # Shield for iPhone
 
+Current release work: [iOS verification record](../docs/IOS-RELEASE-VERIFICATION.md) and [RevenueCat/pilot integration](../docs/REVENUECAT.md). Apple setup is deferred; no public paid release is enabled.
+
 Native SwiftUI, iOS 26+, Swift 6. No third-party app frameworks. The project contains the Shield app, a Message Filter extension, a Call Directory extension, and UI tests.
 
 ## Open and run
@@ -37,18 +39,19 @@ The shared `appears(timeout:)` helper checks immediately before waiting, while k
 Automatic signing uses **Wheema, Inc.** (`6R6HMW3DWN`) in both Debug and Release. `Config/Base.xcconfig` is the shared source for signing, so regenerating the project preserves this configuration:
 
 - App: `org.isaaczhang.Shield`
-- Message extension: `org.isaaczhang.Shield.Messages`
+- Call Directory extension: `org.isaaczhang.Shield.CallDirectory`
+- Unshipped message-filter development target: `org.isaaczhang.Shield.Messages`
 - UI tests: `org.isaaczhang.Shield.UITests`
 
 On 2026-09-21, the Debug build for the connected physical iPhone passed using existing local provisioning profiles. Both the app and embedded extension passed signature verification under Wheema, Inc.; both profiles include the connected phone. Release signing settings resolve to the same team and bundle IDs. This verifies development signing, not App Store distribution or live-service behavior.
 
-Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` for debug and `Config/ReleaseLocal.xcconfig` for release, or edit an existing local file. Set the HTTPS host and message-filter host; bundle ID and Apple team ID inherit from `Base.xcconfig`. Never include Telnyx, Twilio, Firebase administrative, OpenRouter, Soniox, OpenAI or APNs private keys in these files or the app.
+Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` for debug and `Config/ReleaseLocal.xcconfig` for release, or edit an existing local file. Set the HTTPS API host; bundle ID and Apple team ID inherit from `Base.xcconfig`. The unfinished message-filter host is not used by the shipped app. Never include Telnyx, Twilio, Firebase administrative, OpenRouter, Soniox, OpenAI or APNs private keys in these files or the app.
 
-Register the containing app and `.Messages` extension with matching bundle IDs and signing. Enable Associated Domains for the app/extension and Push Notifications for the app. Set the backend’s `APPLE_TEAM_ID=6R6HMW3DWN` and `IOS_BUNDLE_ID=org.isaaczhang.Shield` to match. The app’s association is `messagefilter:YOUR_HOST`; the extension’s deferral URL is `https://YOUR_HOST/sms/classify`.
+Register the containing app and `.CallDirectory` extension with matching bundle IDs, App Groups and signing. Enable Associated Domains and Push Notifications for the app. Set the backend’s `APPLE_TEAM_ID=6R6HMW3DWN` and `IOS_BUNDLE_ID=org.isaaczhang.Shield` to match. The unfinished `.Messages` target remains available for development but is neither a Shield dependency nor embedded. The app no longer declares its placeholder `messagefilter:` association.
 
-The main sign-in screen uses a Telnyx Verify phone code followed by Firebase custom authentication through Shield’s backend. This path is implemented but not deployed as of October 14; see Operations for activation prerequisites. Existing Firebase email links remain supported as a secondary option. `SHIELD_AUTH_HOST` identifies the dedicated `shield-calls-isaac.firebaseapp.com` domain for Universal Links; the matching AASA file is in `deploy/firebase/public/.well-known/`. The app validates the host/action/code and asks for the email on a cold launch, without reading it from the URL. No Firebase iOS framework or administrative credential is bundled. A legacy server can still select the existing email-code UI.
+The main sign-in screen is phone-only: Telnyx Verify code followed by Firebase custom authentication through Shield’s backend. This was activated and verified on the owner’s handset October 17; see Status for exact evidence. Legacy email screens remain only in simulator regression fixtures. `SHIELD_AUTH_HOST` retains the dedicated `shield-calls-isaac.firebaseapp.com` Universal Link domain and AASA file in `deploy/firebase/public/.well-known/`. No Firebase iOS framework or administrative credential is bundled.
 
-Tokens stay in device-only Keychain storage. The app rejects HTTP redirects and uses an ephemeral network session. Release API requests require HTTPS. Loopback transport is allowed for the local simulator; a physical device needs an HTTPS service. Firebase email-link auth and the hosted API are configured. Live synthetic auth/history tests pass. The app now uses `shield-calls-isaac.web.app` and its signed build is installed on the iPhone. On September 21 the owner completed verified-email sign-in and confirmed the real trial call appearing as “Appointment reminder,” with its caller number and “Missed” status because the trial cannot transfer calls. Broader email-provider deliverability and cold-launch link QA remain untested. Message filtering remains disabled on its placeholder host. Backend deployment is in [Operations](../docs/OPERATIONS.md).
+Tokens stay in device-only Keychain storage. The app rejects HTTP redirects and uses an ephemeral network session. Release API requests require HTTPS. Loopback transport is allowed for the local simulator; a physical device needs an HTTPS service. Firebase email-link auth and the hosted API are configured. Live synthetic auth/history tests pass. The app now uses `shield-calls-isaac.web.app` and its signed build is installed on the iPhone. On September 21 the owner completed verified-email sign-in and confirmed the real trial call appearing as “Appointment reminder,” with its caller number and “Missed” status because the trial cannot transfer calls. Broader email-provider deliverability and cold-launch link QA remain untested. Automatic message filtering remains unavailable; its unfinished extension is excluded from the current app package. Backend deployment is in [Operations](../docs/OPERATIONS.md).
 
 ## App behavior
 
@@ -101,9 +104,9 @@ The Messages tab combines voicemail and saved notices. Authorized users see a sh
 
 ## Message extension limits
 
-The extension uses `ILMessageFilterExtension` and `deferQueryRequestToNetwork`. It has no direct network client or shared inbox storage. Network/configuration failure returns `.none`; the backend returns no automatic classification until the explicit SMS switch is enabled. The containing app cannot enumerate the extension’s filtered messages or Apple’s blocked-call list.
+The unshipped development target uses `ILMessageFilterExtension` and `deferQueryRequestToNetwork`, with no direct network client or shared inbox storage. Its host is a placeholder and `/sms/classify` does not exist. Re-embedding requires a real backend/host, reviewed privacy behavior and physical verification. A remote availability flag cannot enable setup in this app version. Manual **Check a text** remains available. The containing app cannot enumerate filtered messages or Apple’s blocked-call list.
 
-Enable through Messages → Filters → Manage Filtering → Text Message Filter on supported configurations. Confirm the exact UI on the deployment OS. Current Apple consumer guidance includes SMS/MMS/RCS, while Shield’s extension coverage still needs physical validation; do not claim all RCS is screened. iMessage is outside this extension. Sources: [Apple extension setup](https://developer.apple.com/documentation/identitylookup/creating-a-message-filter-app-extension), [network deferral](https://developer.apple.com/documentation/identitylookup/ilmessagefilterextensioncontext/deferqueryrequesttonetwork(completion:)), [Messages filtering guide](https://support.apple.com/guide/iphone/iph203ab0be4/ios).
+For a future implemented extension, setup is through Messages → Filters → Manage Filtering → Text Message Filter on supported configurations. Confirm the exact UI on the deployment OS. Current Apple consumer guidance includes SMS/MMS/RCS, while Shield’s extension coverage still needs physical validation; do not claim all RCS is screened. iMessage is outside this extension. Sources: [Apple extension setup](https://developer.apple.com/documentation/identitylookup/creating-a-message-filter-app-extension), [network deferral](https://developer.apple.com/documentation/identitylookup/ilmessagefilterextensioncontext/deferqueryrequesttonetwork(completion:)), [Messages filtering guide](https://support.apple.com/guide/iphone/iph203ab0be4/ios).
 
 ## Required device verification
 

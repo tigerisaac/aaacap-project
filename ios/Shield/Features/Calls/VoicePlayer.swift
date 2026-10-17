@@ -25,14 +25,12 @@ final class VoicePlayer: NSObject, AVAudioPlayerDelegate {
         let token = UUID()
         sessionToken = token
         do {
-            try await MessageAudioSession.shared.activate(token)
+            let audio = try await MessageAudioSession.shared.preparePlayer(token, data: data)
             guard generation == request else {
                 await MessageAudioSession.shared.deactivate(token)
                 throw CancellationError()
             }
-            let audio = try AVAudioPlayer(data: data)
             audio.delegate = self
-            audio.prepareToPlay()
             guard audio.play() else { throw APIError.invalidResponse }
             player = audio
             playing = true

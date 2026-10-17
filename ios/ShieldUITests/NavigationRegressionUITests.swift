@@ -17,7 +17,7 @@ final class NavigationRegressionUITests: XCTestCase {
         let app = launch()
         XCTAssertEqual(app.navigationBars.buttons.count, 0)
         app.tabBars.buttons["More"].tap()
-        app.buttons["Family & friends"].tap()
+        app.buttons["Switch person"].tap()
         app.buttons["person-Alex"].tap()
         app.tabBars.buttons["Home"].tap()
         XCTAssertTrue(app.navigationBars["Home"].exists)

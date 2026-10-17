@@ -720,6 +720,34 @@
 			"path" = "Shield/Features/Settings/TrialSetupView.swift";
 			"sourceTree" = "<group>";
 		};
+		"EB48004F78DFD4F4170FCEC1" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "RevenueCatClient.swift";
+			"path" = "Shield/Features/Subscription/RevenueCatClient.swift";
+			"sourceTree" = "<group>";
+		};
+		"6552E5B0364993B867033E3A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "SubscriptionClient.swift";
+			"path" = "Shield/Features/Subscription/SubscriptionClient.swift";
+			"sourceTree" = "<group>";
+		};
+		"B833AB057447E6CDD6F9935A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "SubscriptionModel.swift";
+			"path" = "Shield/Features/Subscription/SubscriptionModel.swift";
+			"sourceTree" = "<group>";
+		};
+		"7E3EBC913BB98F9E26E784E3" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "SubscriptionView.swift";
+			"path" = "Shield/Features/Subscription/SubscriptionView.swift";
+			"sourceTree" = "<group>";
+		};
 		"C8D38907A52FBA3F4E0C259A" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -886,6 +914,13 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "SavedNumber.swift";
 			"path" = "Shield/Models/SavedNumber.swift";
+			"sourceTree" = "<group>";
+		};
+		"C61BF43D499566FD5601527A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ServiceAccessStatus.swift";
+			"path" = "Shield/Models/ServiceAccessStatus.swift";
 			"sourceTree" = "<group>";
 		};
 		"49381071DF42949A60EAF34A" = {
@@ -1406,6 +1441,13 @@
 			"path" = "CallDirectory/Info.plist";
 			"sourceTree" = "<group>";
 		};
+		"50E201516C68B8D41937CF54" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.xml";
+			"name" = "PrivacyInfo.xcprivacy";
+			"path" = "CallDirectory/PrivacyInfo.xcprivacy";
+			"sourceTree" = "<group>";
+		};
 		"EF780B79797346F2810FD202" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1504,6 +1546,13 @@
 			"path" = "ShieldUITests/RedesignUITests.swift";
 			"sourceTree" = "<group>";
 		};
+		"1C0EE21691D962D9A22E14F3" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ReleaseReadinessUITests.swift";
+			"path" = "ShieldUITests/ReleaseReadinessUITests.swift";
+			"sourceTree" = "<group>";
+		};
 		"ABF81905A4E4908E247615C8" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1551,6 +1600,13 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "ShieldUITestSupport.swift";
 			"path" = "ShieldUITests/ShieldUITestSupport.swift";
+			"sourceTree" = "<group>";
+		};
+		"D6736D9E456DB60DA1CDAA66" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "SubscriptionUITests.swift";
+			"path" = "ShieldUITests/SubscriptionUITests.swift";
 			"sourceTree" = "<group>";
 		};
 		"ACEE4BD22FC6123AED3A1EDB" = {
@@ -1790,6 +1846,17 @@
 			);
 			"sourceTree" = "<group>";
 		};
+		"8FEBFE2BE5CA27C19C67F429" = {
+			"isa" = "PBXGroup";
+			"name" = "Subscription";
+			"children" = (
+				"EB48004F78DFD4F4170FCEC1",
+				"6552E5B0364993B867033E3A",
+				"B833AB057447E6CDD6F9935A",
+				"7E3EBC913BB98F9E26E784E3",
+			);
+			"sourceTree" = "<group>";
+		};
 		"495123DCE6D6FCDDBF9FE7A8" = {
 			"isa" = "PBXGroup";
 			"name" = "TrustedContacts";
@@ -1813,6 +1880,7 @@
 				"E74FF2D02A77D6D5F121D363",
 				"CBCFD373AAF1D91C675468D0",
 				"A348E8A288201CDE15695425",
+				"8FEBFE2BE5CA27C19C67F429",
 				"495123DCE6D6FCDDBF9FE7A8",
 			);
 			"sourceTree" = "<group>";
@@ -1839,6 +1907,7 @@
 				"6DF71AB6690E34CDAC55F3DC",
 				"8FD98A6E0C55C3741EC25D4C",
 				"00FFE53181DB46A8440A5A07",
+				"C61BF43D499566FD5601527A",
 				"49381071DF42949A60EAF34A",
 				"3E8B47D5AFC73ED2AC2D705B",
 				"C73829942DE3E4CA68ECB1E8",
@@ -1986,6 +2055,7 @@
 				"9AF645D69E02A65EC2CB9B0C",
 				"B11BE479EBE1B7EF2E902B32",
 				"382B40D1FB6E6F5F05BBCBDC",
+				"50E201516C68B8D41937CF54",
 			);
 			"sourceTree" = "<group>";
 		};
@@ -2014,6 +2084,7 @@
 				"515A771173B8B086FAA2A319",
 				"3BBB99BB8300128852DE99CA",
 				"C93FD066648E96BD0E86767B",
+				"1C0EE21691D962D9A22E14F3",
 				"ABF81905A4E4908E247615C8",
 				"3A6FCB90CEAE6B12A26A61C2",
 				"2F91097E9C438128885DE6CE",
@@ -2021,6 +2092,7 @@
 				"CBBFF28C4E3BE5464676BA32",
 				"7C43DCD9D709F04B27218BCA",
 				"07CFEF9D1B5D5E159CF55A0F",
+				"D6736D9E456DB60DA1CDAA66",
 				"ACEE4BD22FC6123AED3A1EDB",
 				"9185945E8FEA69ECA7E2861D",
 			);
@@ -2061,18 +2133,6 @@
 			);
 			"sourceTree" = "<group>";
 		};
-		"EBB30C28FB56077190499346" = {
-			"isa" = "PBXContainerItemProxy";
-			"containerPortal" = "244210E48437B6556980A702";
-			"proxyType" = 1;
-			"remoteGlobalIDString" = "CBF32C1C1325BEBE8A94B918";
-			"remoteInfo" = "ShieldMessages";
-		};
-		"965FF32F58B180754D654307" = {
-			"isa" = "PBXTargetDependency";
-			"target" = "CBF32C1C1325BEBE8A94B918";
-			"targetProxy" = "EBB30C28FB56077190499346";
-		};
 		"B5139E3364E795A4F2D7A209" = {
 			"isa" = "PBXContainerItemProxy";
 			"containerPortal" = "244210E48437B6556980A702";
@@ -2084,15 +2144,6 @@
 			"isa" = "PBXTargetDependency";
 			"target" = "4E11AD99E2B23C54018A125C";
 			"targetProxy" = "B5139E3364E795A4F2D7A209";
-		};
-		"C45F26720B3284BD9B807151" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "70357665407E70E905DFFB32";
-			"settings" = {
-				"ATTRIBUTES" = (
-					"RemoveHeadersOnCopy",
-				);
-			};
 		};
 		"44CBB954DB74F0569A214A84" = {
 			"isa" = "PBXBuildFile";
@@ -2109,7 +2160,6 @@
 			"dstPath" = "";
 			"dstSubfolderSpec" = 13;
 			"files" = (
-				"C45F26720B3284BD9B807151",
 				"44CBB954DB74F0569A214A84",
 			);
 			"name" = "Embed App Extensions";
@@ -2566,6 +2616,22 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "58415C897754DF98D21754F3";
 		};
+		"835A9424B395A91E7F2C679B" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "EB48004F78DFD4F4170FCEC1";
+		};
+		"1D1240249B84FB3533F368AF" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6552E5B0364993B867033E3A";
+		};
+		"F56C834D199D4A5CDE9D7642" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B833AB057447E6CDD6F9935A";
+		};
+		"A6CEF837CBFBDD18348A6941" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "7E3EBC913BB98F9E26E784E3";
+		};
 		"31C595AAE44EF27F50DDECD3" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "C8D38907A52FBA3F4E0C259A";
@@ -2661,6 +2727,10 @@
 		"5812CEFF8E218EC8D73E9EEC" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "00FFE53181DB46A8440A5A07";
+		};
+		"8B2EBA542FA1AB8C4993D6CD" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "C61BF43D499566FD5601527A";
 		};
 		"91ECF51521572DA6C4FB962E" = {
 			"isa" = "PBXBuildFile";
@@ -2904,6 +2974,10 @@
 				"06BBCBEEC76D5DF6461A2447",
 				"2FCB17DB259FC8FEB73FF93F",
 				"AFF644EE78DEB15BFDBA4867",
+				"835A9424B395A91E7F2C679B",
+				"1D1240249B84FB3533F368AF",
+				"F56C834D199D4A5CDE9D7642",
+				"A6CEF837CBFBDD18348A6941",
 				"31C595AAE44EF27F50DDECD3",
 				"02402A5063D31F3935065755",
 				"5ABC9FAC2445640090E7434C",
@@ -2928,6 +3002,7 @@
 				"78D4FBAC815CE14BD0167D77",
 				"6C54EB9D699AE3DF71D4BE8B",
 				"5812CEFF8E218EC8D73E9EEC",
+				"8B2EBA542FA1AB8C4993D6CD",
 				"91ECF51521572DA6C4FB962E",
 				"0850E0033BFE1EC03D88C844",
 				"98768F881243EA4FC62CB337",
@@ -2969,7 +3044,7 @@
 			"isa" = "PBXFrameworksBuildPhase";
 			"buildActionMask" = 2147483647;
 			"files" = (
-
+				"14F0C0C330BEDE4C38A1240A",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
@@ -3153,13 +3228,32 @@
 
 			);
 			"dependencies" = (
-				"965FF32F58B180754D654307",
 				"CFD54D20AA6421E4D54315E9",
 			);
 			"name" = "Shield";
 			"productName" = "Shield";
 			"productReference" = "ADCEDC49BDD63D32B09E10A0";
 			"productType" = "com.apple.product-type.application";
+			"packageProductDependencies" = (
+				"1968F63A95D3FCB1F6A3D987",
+			);
+		};
+		"B264C453234BE9F6AA35E804" = {
+			"isa" = "XCRemoteSwiftPackageReference";
+			"repositoryURL" = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			"requirement" = {
+				"kind" = "exactVersion";
+				"version" = "5.96.0";
+			};
+		};
+		"1968F63A95D3FCB1F6A3D987" = {
+			"isa" = "XCSwiftPackageProductDependency";
+			"package" = "B264C453234BE9F6AA35E804";
+			"productName" = "RevenueCat";
+		};
+		"14F0C0C330BEDE4C38A1240A" = {
+			"isa" = "PBXBuildFile";
+			"productRef" = "1968F63A95D3FCB1F6A3D987";
 		};
 		"8FE95B413AA27C113D48E6CC" = {
 			"isa" = "XCBuildConfiguration";
@@ -3323,11 +3417,15 @@
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
+		"969D7C9707227C5A62051E2F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "50E201516C68B8D41937CF54";
+		};
 		"101A2B209576180EAB20DA72" = {
 			"isa" = "PBXResourcesBuildPhase";
 			"buildActionMask" = 2147483647;
 			"files" = (
-
+				"969D7C9707227C5A62051E2F",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
@@ -3453,6 +3551,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "C93FD066648E96BD0E86767B";
 		};
+		"BE8169E126F5651E7AFF050A" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1C0EE21691D962D9A22E14F3";
+		};
 		"7340C819A100AFE24FE6CF40" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "ABF81905A4E4908E247615C8";
@@ -3481,6 +3583,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "07CFEF9D1B5D5E159CF55A0F";
 		};
+		"C36134A452B8500C52056EEC" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D6736D9E456DB60DA1CDAA66";
+		};
 		"A4AC58B53B8A5F267F8DE405" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "ACEE4BD22FC6123AED3A1EDB";
@@ -3506,6 +3612,7 @@
 				"E2AE624731EB65BD0E608846",
 				"5534423F96E1B3322742E41F",
 				"DAD5E547CC6ACE58622D0773",
+				"BE8169E126F5651E7AFF050A",
 				"7340C819A100AFE24FE6CF40",
 				"E06C370E1C055C2CC90F6199",
 				"D45980B3D1F539B9C6442D41",
@@ -3513,6 +3620,7 @@
 				"05BD7333579AF72CEA75A09F",
 				"018F73933805D28516D8FA2D",
 				"712D41A43301435BD5E905A1",
+				"C36134A452B8500C52056EEC",
 				"A4AC58B53B8A5F267F8DE405",
 				"6959B7388BD06F759B20F82D",
 			);
@@ -3596,6 +3704,9 @@
 							"com.apple.ApplicationGroups.iOS" = {
 								"enabled" = 1;
 							};
+							"com.apple.InAppPurchase" = {
+								"enabled" = 1;
+							};
 						};
 					};
 					"CBF32C1C1325BEBE8A94B918" = {
@@ -3627,6 +3738,9 @@
 			"productRefGroup" = "AE7805B56D1DCAFAA071416F";
 			"projectDirPath" = "";
 			"projectRoot" = "";
+			"packageReferences" = (
+				"B264C453234BE9F6AA35E804",
+			);
 			"targets" = (
 				"EC3A7D758695159868AC1E76",
 				"CBF32C1C1325BEBE8A94B918",

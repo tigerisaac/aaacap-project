@@ -10,8 +10,10 @@ struct MoreView: View {
                     NavigationLink(value: AppRoute.check) {
                         ActionRow(title: "Check a text", symbol: "text.magnifyingglass")
                     }
-                    NavigationLink(value: AppRoute.people) {
-                        ActionRow(title: "Family & friends", symbol: "person.2")
+                    if model.people.count > 1 {
+                        NavigationLink(value: AppRoute.people) {
+                            ActionRow(title: "Switch person", symbol: "person.2")
+                        }
                     }
                     NavigationLink(value: AppRoute.help) {
                         ActionRow(title: "Get help", symbol: "questionmark.circle")

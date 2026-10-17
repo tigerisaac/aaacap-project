@@ -1,0 +1,11 @@
+{
+  "verifiedAt": "2026-10-17T20:22:47.954Z",
+  "accountDeletionRolePermissions": [
+    "firebaseauth.users.delete"
+  ],
+  "runtimeBindingVerified": true,
+  "otherProjectBindingsPreserved": true,
+  "deletionIndexReady": true,
+  "totalCompositeIndexes": 4,
+  "allIndexesReady": true
+}

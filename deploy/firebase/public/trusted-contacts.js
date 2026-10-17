@@ -49,14 +49,14 @@ const text = (tag, content) => { const node = document.createElement(tag); node.
 async function loadRequests() {
   const result = await api('/api/contact-alerts');
   el('requests').replaceChildren();
-  el('heading').textContent = result.requests.length === 1 ? `Alerts for ${result.requests[0].name}` : 'Trusted contacts';
+  el('heading').textContent = result.requests.length === 1 ? `Alerts for ${result.requests[0].name}` : 'Caretaker requests';
   el('intro').hidden = true; el('about').hidden = result.requests.length === 0;
   if (result.textsStopped) el('requests').append(text('p', errors.texts_stopped));
   if (!result.requests.length) el('requests').append(text('p', 'No requests for this mobile number.'));
   for (const request of result.requests) {
     const card = document.createElement('article');
     if (result.requests.length > 1) card.append(text('h2', request.name));
-    card.append(text('p', request.status === 'accepted' ? 'You’re a trusted contact.' : 'Would you like to be a trusted contact?'));
+    card.append(text('p', request.status === 'accepted' ? 'You’re a caretaker.' : 'Receive alerts when Shield intervenes during a call?'));
     if (request.ownerPaused) card.append(text('p', `${request.name} has paused these alerts.`));
     const label = document.createElement('label'), checkbox = document.createElement('input');
     checkbox.type = 'checkbox'; checkbox.checked = request.textAlerts && !result.textsStopped;

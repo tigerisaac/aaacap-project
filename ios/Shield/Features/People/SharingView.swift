@@ -23,17 +23,17 @@ struct SharingView: View {
                 ShieldGroup {
                     HelperAlertsToggle()
                     ShieldDisclosure("When will they hear from Shield?") {
-                        Text("When Shield ends a scam call, a blocked caller tries again, or call checks are paused. Alerts include your name, but no caller’s words or number.")
+                        Text("Only when checks while you talk detect a possible scam request and intervene. Alerts include your name, but no caller’s words or number.")
                     }
                 }
             }
             ShieldSection("Who has access") {
                 if let loadError {
-                    ShieldLoadFailure(title: "Your helpers couldn’t load", detail: loadError) { Task { await load() } }
+                    ShieldLoadFailure(title: "Call sharing couldn’t load", detail: loadError) { Task { await load() } }
                 } else if model.isDemo && !usesAccessFixture {
                     Text("Sign in to manage sharing.").foregroundStyle(ShieldTheme.secondaryText)
                 } else if loading && grants.isEmpty {
-                    if loadingVisible { ShieldLoadingView(title: "Getting your helpers…") }
+                    if loadingVisible { ShieldLoadingView(title: "Getting shared access…") }
                 } else if grants.isEmpty {
                     Text("No one has access yet.").foregroundStyle(ShieldTheme.secondaryText)
                 }
@@ -59,7 +59,7 @@ struct SharingView: View {
         }
         .deferredLoading(loading && grants.isEmpty, visible: $loadingVisible)
         .shieldListStyle()
-        .navigationTitle("Your helpers")
+        .navigationTitle("Call sharing")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
     }

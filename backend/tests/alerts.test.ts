@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema, RETENTION_MS } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
-import { AlertDelivery, queueAlert, type PushSender } from '../src/cloud/alerts.js';
+import { ALERTS, AlertDelivery, queueAlert, type AlertKind, type PushSender } from '../src/cloud/alerts.js';
 import { ForwardingStore, forwardingConsent } from '../src/cloud/forwarding-store.js';
 import { CallMonitor } from '../src/cloud/monitoring.js';
 import { HttpError, type AuthProvider } from '../src/auth.js';
@@ -94,14 +94,20 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
     sent.length = 0;
     const batch = db.batch(); queueAlert(s, batch, id, 'voicemail'); queueAlert(s, batch, id, 'monitor_intervened'); await batch.commit();
     await deliverAll();
-    // Voicemail reaches only helpers who can listen; a stopped scam reaches every helper but not the person, who heard the warning.
+    // Shared-history helpers follow the same intervention-only alert rule as caretakers.
     expect(sent).toEqual(expect.arrayContaining([
       { token: tokens.owner, body: 'You have a new voicemail in Shield.' },
-      { token: tokens.helper, body: 'Margaret has a new voicemail in Shield.' },
-      { token: tokens.helper, body: 'Shield ended a call to Margaret after hearing a common scam request.' },
-      { token: tokens.viewer, body: 'Shield ended a call to Margaret after hearing a common scam request.' }]));
-    expect(sent).toHaveLength(4);
+      { token: tokens.helper, body: 'Shield detected a possible scam request during a call with Margaret. Check in with them.' },
+      { token: tokens.viewer, body: 'Shield detected a possible scam request during a call with Margaret. Check in with them.' }]));
+    expect(sent).toHaveLength(3);
     expect(sent.some(m => /\+1\d{10}/.test(m.body))).toBe(false);
+    sent.length = 0;
+    for (const kind of Object.keys(ALERTS) as AlertKind[]) {
+      if (kind === 'monitor_intervened') continue;
+      const job = db.batch(); queueAlert(s, job, id, kind); await job.commit();
+    }
+    await deliverAll();
+    expect(sent.every(message => message.token === tokens.owner)).toBe(true);
   });
   it('drops a registration Apple reports as gone, skips expired ones and stale jobs', async () => {
     await register('owner');
@@ -126,7 +132,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
     await app.inject({ method: 'POST', url: '/api/setup/pause', headers: headers(), payload: { paused: true } });
     expect(await queued()).toEqual([]);
   });
-  it('alerts helpers once an hour when a blocked number keeps calling, and when Shield ends a connected call', async () => {
+  it('throttles blocked-call jobs and queues an alert when Shield ends a connected call', async () => {
     const f = new ForwardingStore(s), from = '+12025550102', hash = s.vault.hash(from);
     await f.controlRef(PERSON).set({ provisioned: true, enabled: false, used: 0, expiresAt: now });
     await s.personRef(id).update({ shieldNumber: NUMBER });

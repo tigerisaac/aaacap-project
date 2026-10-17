@@ -80,6 +80,7 @@ export class CloudStore {
         }
       } : undefined, collection === 'alertContacts');
     }
+    await drain(this.db.collection('billingWebhookReceipts'));
     await drain(this.db.collectionGroup('blocked-numbers'));
   }
 }

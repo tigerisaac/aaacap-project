@@ -1,0 +1,82 @@
+{
+  "checkedAt": "2026-10-17T20:00:21.993Z",
+  "readOnly": true,
+  "deletionIndexes": [],
+  "accountDeletionPermissionDefined": true,
+  "workers": [
+    {
+      "name": "finishaccountdeletions",
+      "present": false,
+      "httpStatus": 404
+    },
+    {
+      "name": "reviewserviceaccess",
+      "present": false,
+      "httpStatus": 404
+    }
+  ],
+  "observedIndexes": [
+    {
+      "collectionGroup": "callSessions",
+      "state": "READY",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "forwardingRecordings",
+      "state": "READY",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "callSessions",
+      "state": "READY",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "outcome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "deletionIndexReady": false
+}

@@ -87,8 +87,19 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertFalse(app.buttons["Copy phone code"].exists)
         app.buttons["disconnect-continue"].tap()
         expect(app, "Bring calls back to your phone")
-        app.buttons["See the code"].tap()
-        XCTAssertTrue(app.staticTexts["##61#"].exists)
+        let disclosure = app.buttons["See the code"]
+        let action = app.buttons["disconnect-continue"]
+        for _ in 0..<8 {
+            if disclosure.exists && disclosure.isHittable && disclosure.frame.maxY < action.frame.minY { break }
+            app.scrollViews.firstMatch.swipeUp()
+        }
+        XCTAssertTrue(disclosure.isHittable)
+        XCTAssertLessThan(disclosure.frame.maxY, action.frame.minY)
+        disclosure.tap()
+        let resetCode = app.staticTexts["##61#"]
+        for _ in 0..<5 where !resetCode.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        capture(app, "Restoration code disclosure")
+        XCTAssertTrue(resetCode.appears(timeout: 5))
     }
 
     func testFailedSoundCheckShowsRetryAndDoesNotAdvance() {

@@ -7,6 +7,7 @@ import UserNotifications
 @Observable
 final class AppState {
     let api: APIClient
+    let subscription = SubscriptionModel(client: RevenueCatClient())
     let historyStore = OfflineHistoryStore()
     var offlineHistories: [OfflineHistory] = []
     var historySavedAt: Date?
@@ -91,6 +92,11 @@ final class AppState {
         if isPreview, ProcessInfo.processInfo.arguments.contains("--uitesting-single-person") {
             people = people.filter { $0.id == selectedPersonID }
         }
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: "--uitesting-subscription"), arguments.indices.contains(index + 1) {
+            if !isPreview { exploreDemo() }
+            subscription.preview(arguments[index + 1])
+        }
         if ProcessInfo.processInfo.arguments.contains("--uitesting-deletion-restoration") {
             UserDefaults.standard.removeObject(forKey: "shield-disconnect-fixture")
         }
@@ -138,6 +144,7 @@ final class AppState {
     private func startPreview(testAccount: Bool) {
         isRestoringSession = false
         restoredPhoneSetup = nil
+        subscription.reset()
         loadedCallFilters.removeAll()
         isTestAccount = testAccount
         protectionOnboarding = nil
@@ -153,6 +160,7 @@ final class AppState {
     }
 
     func didSignIn() async {
+        subscription.reset()
         loadedCallFilters.removeAll()
         protectionOnboarding = nil
         trustedContactsOnboarding = false
@@ -242,6 +250,8 @@ final class AppState {
             }
             await loadProtectionOnboarding(generation: generation)
             await syncCallDirectory(generation: generation)
+            guard generation == sessionGeneration, signedIn, !isPreview else { return }
+            await subscription.load(api: api)
         } catch { if generation == sessionGeneration { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
@@ -398,6 +408,7 @@ final class AppState {
     func signOut() async {
         isRestoringSession = false
         restoredPhoneSetup = nil
+        subscription.reset()
         isTestAccount = false
         sessionGeneration += 1
         demoKeptMessages = []
@@ -433,6 +444,7 @@ final class AppState {
     func invalidateAccountLoads() {
         isRestoringSession = false
         restoredPhoneSetup = nil
+        subscription.reset()
         sessionGeneration += 1
         loadedCallFilters.removeAll()
         audioSyncTask?.cancel()
@@ -446,7 +458,11 @@ final class AppState {
     func handle(_ error: Error) {
         if error is CancellationError { return }
         if case let APIError.service(code, status) = error {
-            if status == 401 { signedIn = false; people = []; selectedPersonID = nil; overview = nil; calls = [] }
+            if status == 401 {
+                invalidateAccountLoads()
+                signedIn = false; people = []; selectedPersonID = nil; overview = nil; calls = []
+                service = nil; protectionOnboarding = nil; trustedContactsOnboarding = false
+            }
             if status == 403 && code == "access_denied" {
                 offlineHistories.removeAll { $0.person.id == selectedPersonID }
                 people.removeAll { $0.id == selectedPersonID }

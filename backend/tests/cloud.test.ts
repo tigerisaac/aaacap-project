@@ -162,6 +162,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect(saved).toHaveLength(1); expect(saved[0]!.data().phoneEnc).not.toContain('3125550148');
     const list = (await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json();
     expect(list.items[0]).toMatchObject({ label: 'Mom', phone: '+13125550148', enabled: true });
+    expect(list.sharedAt).toBe(new Date(now).toISOString());
     expect((await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers(), payload: { contacts: [], photos: ['unexpected'] } })).statusCode).toBe(400);
   });
   it('can remove and restore a number without losing its original list identity', async () => {
@@ -176,6 +177,36 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     list = (await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json(); expect(list.items).toHaveLength(1); expect(list.items[0]).toMatchObject({ id, enabled: true });
     await store.personRef(PERSON).update({ contactsSyncUntil: now + 60_000, contactsSyncToken: 'other' });
     expect((await sync([entry])).statusCode).toBe(409);
+  });
+
+  it('adds only the selected contact, retries safely and restores its original identity without replacing the calling list', async () => {
+    const save = (label: string, phone = '+13125550148', token = 'owner') => app!.inject({ method: 'POST', url: '/api/trusted-numbers', headers: headers(token), payload: { label, phone } });
+    expect((await save('Clinic', undefined, 'stranger')).statusCode).toBe(403);
+    const first = await save('Clinic'); expect(first.statusCode).toBe(200);
+    expect((await save('Clinic')).json().id).toBe(first.json().id);
+    const second = await save('Neighbour', '+13125550149'); expect(second.statusCode).toBe(200);
+    await app!.inject({ method: 'PATCH', url: `/api/trusted-numbers/${first.json().id}`, headers: headers(), payload: { enabled: false } });
+    expect((await save('My clinic')).json().id).toBe(first.json().id);
+    const list = (await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json();
+    expect(list.sharedAt).toBeNull(); // Adding one person never claims the address book was shared.
+    expect(list.items).toHaveLength(2);
+    expect(list.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: first.json().id, label: 'My clinic', enabled: true }),
+      expect.objectContaining({ id: second.json().id, label: 'Neighbour', enabled: true })
+    ]));
+  });
+
+  it('fences individual contact additions, restorations and deletions while a full share owns the list', async () => {
+    const payload = { label: 'Clinic', phone: '+13125550148' };
+    const { id } = (await app!.inject({ method: 'POST', url: '/api/trusted-numbers', headers: headers(), payload })).json();
+    await store.personRef(PERSON).update({ contactsSyncUntil: now + 60_000, contactsSyncToken: 'other' });
+    for (const request of [
+      { method: 'POST' as const, url: '/api/trusted-numbers', payload },
+      { method: 'POST' as const, url: '/api/trusted-numbers', payload: { label: 'Neighbour', phone: '+13125550149' } },
+      { method: 'PATCH' as const, url: `/api/trusted-numbers/${id}`, payload: { enabled: false } },
+      { method: 'DELETE' as const, url: `/api/trusted-numbers/${id}` }
+    ]) expect((await app!.inject({ ...request, headers: headers() })).json().error.code).toBe('contacts_sync_busy');
+    expect((await store.personRef(PERSON).collection('trusted-numbers').get()).size).toBe(1);
   });
 
   it('restricts history and checks to an owner or accepted caregiver', async () => {

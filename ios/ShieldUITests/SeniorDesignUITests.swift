@@ -52,11 +52,12 @@ final class SeniorDesignUITests: XCTestCase {
         app.buttons["Show sample answer"].tap()
         XCTAssertTrue(app.staticTexts["This is an example. Your text hasn’t been checked."].appears(timeout: 5))
         capture(app, "senior-check-answer-light")
-        openMore(app, "Family & friends")
+        openMore(app, "Switch person")
         XCTAssertTrue(app.buttons["person-Pat"].appears(timeout: 5))
         capture(app, "senior-family-light")
-        tap(app.staticTexts["Your helpers"].firstMatch, in: app)
-        XCTAssertTrue(app.navigationBars["Your helpers"].appears(timeout: 5))
+        openMore(app, "Settings")
+        tap(app.staticTexts["Call sharing"].firstMatch, in: app)
+        XCTAssertTrue(app.navigationBars["Call sharing"].appears(timeout: 5))
         capture(app, "senior-sharing-light")
         openMore(app, "Get help")
         capture(app, "senior-help-light")
@@ -201,20 +202,18 @@ final class SeniorDesignUITests: XCTestCase {
         }
     }
 
-    func testMotionEmailSheetHasAnExplicitExitWithKeyboardAndLargestText() {
+    func testPhoneSignInHasNoRetiredEmailSheetAtLargestText() {
         for large in [false, true] {
             let args = ["--uitesting-phone-sign-in", "--uitesting-dark"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
             let app = launch(args, sample: false)
-            tap(app.buttons["Use email instead"], in: app)
-            let email = app.textFields["Email address"]
-            XCTAssertTrue(email.appears(timeout: 5))
-            tap(email, in: app)
-            email.typeText("synthetic@example.com")
-            XCTAssertTrue(app.buttons["Close"].isHittable)
-            capture(app, "motion-email-sheet-keyboard-\(large ? "large" : "standard")")
-            app.buttons["Close"].tap()
-            XCTAssertTrue(app.textFields["sign-in-phone"].appears(timeout: 5))
-            XCTAssertFalse(email.exists)
+            let phone = app.textFields["sign-in-phone"]
+            XCTAssertTrue(phone.appears(timeout: 5))
+            tap(phone, in: app)
+            phone.typeText("2025550102")
+            XCTAssertFalse(app.buttons["Use email instead"].exists)
+            XCTAssertFalse(app.textFields["Email address"].exists)
+            XCTAssertFalse(app.buttons["Done"].exists)
+            capture(app, "phone-keyboard-\(large ? "large" : "standard")")
         }
     }
 

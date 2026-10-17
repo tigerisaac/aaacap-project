@@ -42,23 +42,9 @@ struct PeopleView: View {
                 } footer: {
                     if !model.isOwner { Text("Only they can change their phone settings.") }
                 }
-                if model.isOwner {
-                    ShieldGroup {
-                        NavigationLink(value: AppRoute.trustedContacts) {
-                            ActionRow(title: "Trusted contacts", symbol: "person.badge.shield.checkmark")
-                        }
-                        NavigationLink(value: AppRoute.sharing) {
-                            ActionRow(title: "Your helpers", symbol: "person.2.badge.gearshape")
-                        }
-                    } footer: {
-                        Text("See who can view your calls, or stop sharing.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                    }
-                }
-                ShieldGroup {
-                    NavigationLink(value: AppRoute.contactAlerts) { ActionRow(title: "Alerts for others", symbol: "bell") }
-                }
             }
-            .shieldLargeTitle("Family & friends")
+            .navigationTitle("Switch person")
+            .navigationBarTitleDisplayMode(.inline)
             .refreshable { await model.refresh() }
             .shieldListStyle()
     }

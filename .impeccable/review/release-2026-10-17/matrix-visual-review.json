@@ -1,0 +1,231 @@
+{
+  "date": "2026-10-17",
+  "device": "iPhone 17e / iOS 27.0 Simulator",
+  "textSize": "Accessibility XXXL",
+  "appearance": "dark",
+  "synthetic": true,
+  "resultBundle": "/tmp/shield-release-screen-matrices.xcresult",
+  "test": "SeniorDesignUITests/testMotionAllSecondaryScreensAtLargestText",
+  "reviewedCaptureCount": 42,
+  "observations": [
+    "All 42 top/scrolled captures were visually inspected. Content wraps within the viewport; these two scroll positions are not proof that every row was exercised.",
+    "Single-line empty-field examples truncate at the largest setting; persistent Name/Phone number labels and the area-code instructions remain readable.",
+    "Native floating/search bars obscure content at the scroll edge. Whole-screen accessibility findings remain open; separate revealed-row and interaction checks provide narrower evidence.",
+    "Sample-only actions are deliberately disabled; their low-contrast appearance does not establish the enabled control appearance.",
+    "Very large text requires multiple screens of reading. Older-adult task rehearsal and physical VoiceOver gestures remain unverified."
+  ],
+  "captures": [
+    {
+      "attachmentName": "motion-add-contact-largest-dark-scrolled",
+      "sha256": "6234713609588e3389270c160e2da5242514f43b4ab1aba86c8b8aba31a1d260",
+      "exportedFileName": "33979C5A-D959-468E-965B-0A96AE9C9651.png"
+    },
+    {
+      "attachmentName": "motion-add-contact-largest-dark-top",
+      "sha256": "1168871a7db48289d83e546cbb380c783ced37e5d6c839029b4942c4ac7413fb",
+      "exportedFileName": "DCB869C5-7B26-4469-B28B-669DC2B2C3A8.png"
+    },
+    {
+      "attachmentName": "motion-add-number-largest-dark-scrolled",
+      "sha256": "680022e2a332eab860e4469e0e223cd44d5ddfe51db9da2eaee1e8e2f046519b",
+      "exportedFileName": "9E9DBBF4-53DA-4AAD-B9AC-ACE0963AA281.png"
+    },
+    {
+      "attachmentName": "motion-add-number-largest-dark-top",
+      "sha256": "1168871a7db48289d83e546cbb380c783ced37e5d6c839029b4942c4ac7413fb",
+      "exportedFileName": "DCB869C5-7B26-4469-B28B-669DC2B2C3A8.png"
+    },
+    {
+      "attachmentName": "motion-alerts-off-largest-dark-scrolled",
+      "sha256": "a087bc62925af0a11f51bc861feda11002674b04148702d7b48dcb1cde920bc1",
+      "exportedFileName": "50907026-D2BB-4097-9F62-14AEDD6AAB8C.png"
+    },
+    {
+      "attachmentName": "motion-alerts-off-largest-dark-top",
+      "sha256": "e7c54191401ed6128aba2e11cc6089dbd366cf4897bf1a091b4d7fd854dc3f3c",
+      "exportedFileName": "9DDF8B4E-B647-4B04-92A3-673B91D4BB54.png"
+    },
+    {
+      "attachmentName": "motion-alerts-on-largest-dark-scrolled",
+      "sha256": "9da7711fa3bf4eef70bb3e6b1853213312c559a57c6e6bb511259e755a50db67",
+      "exportedFileName": "792A1782-ED8C-469D-AD27-B9024E2B832A.png"
+    },
+    {
+      "attachmentName": "motion-alerts-on-largest-dark-top",
+      "sha256": "c658c4c056a4296716c43d2c3879e1b9d25a9a2c3626a8cd0f0ed5e39dab1326",
+      "exportedFileName": "5EDD183D-E001-4ABF-B978-87CF343C8F3B.png"
+    },
+    {
+      "attachmentName": "motion-audio-largest-dark-scrolled",
+      "sha256": "254f76248a8b741f17486bdfac0c2e19c340da8bc72ea47cdfaf5f897c4a4822",
+      "exportedFileName": "72267E75-E0E8-4EE3-9E7E-38CC3853A467.png"
+    },
+    {
+      "attachmentName": "motion-audio-largest-dark-top",
+      "sha256": "dce09ca3a3693fa11dee04b9271c7ef1868e1fddadf62e58e17424f12b5fe132",
+      "exportedFileName": "5F617FA8-9594-4127-A3E8-12B7000FE80A.png"
+    },
+    {
+      "attachmentName": "motion-automatic-texts-largest-dark-scrolled",
+      "sha256": "9f52db795cc4bbc2b0e91a84e6e507540327e1b7ef0c4786791756abc3b12343",
+      "exportedFileName": "5B67DE50-B6A0-4736-83EE-6D364C3B6539.png"
+    },
+    {
+      "attachmentName": "motion-automatic-texts-largest-dark-top",
+      "sha256": "c2ab05261943ff5a018b86cc035911ccc47d667ea83599e280c0f019c592db03",
+      "exportedFileName": "E8C78824-AE60-4939-99BA-26DE4E46DFAD.png"
+    },
+    {
+      "attachmentName": "motion-blocked-largest-dark-scrolled",
+      "sha256": "2bffc20ad150937629510aef0da00f42314b4e3e4de76a3182402efe001bbed4",
+      "exportedFileName": "36A99121-A8F6-4708-80EC-702DE0515DA1.png"
+    },
+    {
+      "attachmentName": "motion-blocked-largest-dark-top",
+      "sha256": "bb735dbc38ef49ee19af2253a52480c966e9f6410f8c382c9e0918148cc37c95",
+      "exportedFileName": "8593EB3A-E460-4C1A-AD69-EAA7B4CFCA69.png"
+    },
+    {
+      "attachmentName": "motion-contact-alerts-largest-dark-scrolled",
+      "sha256": "9fd022534e6e612cf8792286a3d24a3a4b8ee94a27ff2b0b857d37e954960b5d",
+      "exportedFileName": "C7798903-4156-4782-ADE6-47182C9B6101.png"
+    },
+    {
+      "attachmentName": "motion-contact-alerts-largest-dark-top",
+      "sha256": "1c05542a3cbde63a66718e10573e721fab5b3abc3924e6544c19c45253f7175b",
+      "exportedFileName": "D1048CCB-BD94-49DB-AD0D-DFDB0EE43A13.png"
+    },
+    {
+      "attachmentName": "motion-contacts-largest-dark-scrolled",
+      "sha256": "034a2035be385e1aa0a72a9d29268d0f17bb126f5145a31bfe08e3ef7292a3ed",
+      "exportedFileName": "BF4BC264-6FE0-4B5B-AC29-DB926A4E75D3.png"
+    },
+    {
+      "attachmentName": "motion-contacts-largest-dark-top",
+      "sha256": "371d2d183f975541fcab8c695e2e82c3dd9623f7fb2775885b941f1c1e16c805",
+      "exportedFileName": "8AC2D15F-88F3-4883-B884-F4F20C21B3EF.png"
+    },
+    {
+      "attachmentName": "motion-help-largest-dark-scrolled",
+      "sha256": "0d3127a3d740161dc69649a1a936504493e88a16654440367753b79a2fb84b08",
+      "exportedFileName": "4DC05116-968B-4CA9-98FA-E71C9FD6249E.png"
+    },
+    {
+      "attachmentName": "motion-help-largest-dark-top",
+      "sha256": "f10339efe1ea76b1e9384b60d08165012843c956a47d67333200ad861dfa2a25",
+      "exportedFileName": "566886E3-8D7B-43EC-90CB-C62A0688FA63.png"
+    },
+    {
+      "attachmentName": "motion-join-largest-dark-scrolled",
+      "sha256": "4302c5080c020bcaeb8a0346332df6bff2a6c323b614062992739f1d89d3f326",
+      "exportedFileName": "014538AF-B80A-4FA4-9351-87A96541CB99.png"
+    },
+    {
+      "attachmentName": "motion-join-largest-dark-top",
+      "sha256": "9decaaa67ae36b2ba85c9496b916a9286b0d4daf8820802d6de25583c926ec25",
+      "exportedFileName": "2F3B3C2C-8FEB-46E1-9B62-A6FA579F8C52.png"
+    },
+    {
+      "attachmentName": "motion-numbers-largest-dark-scrolled",
+      "sha256": "0aacb93e0051e7e6c9c8c4ebe76945c3fdcfdeb763cacfd9685cd6244671a3b6",
+      "exportedFileName": "E3BCF27D-9900-4892-A386-4AADA6354298.png"
+    },
+    {
+      "attachmentName": "motion-numbers-largest-dark-top",
+      "sha256": "558908967ad96355590992e25ffbba5758226ca6d58b9e870112087bc482a9c2",
+      "exportedFileName": "DA5AB9E5-C5C2-43D3-9E8B-5076720CAED4.png"
+    },
+    {
+      "attachmentName": "motion-protection-largest-dark-scrolled",
+      "sha256": "6cd52bd2a8d7648b3380a03c6b7171288892f3cd25bc42e03ab2363ebf1c207b",
+      "exportedFileName": "3716DA67-7860-46BD-9EB5-EF419C4459E1.png"
+    },
+    {
+      "attachmentName": "motion-protection-largest-dark-top",
+      "sha256": "6ce2408e623dcfb85d416d116634d42a1b19b637a10765615652e3fcdfd229a6",
+      "exportedFileName": "9053AB5C-38FF-4CC2-B85C-8B3F11EA1D65.png"
+    },
+    {
+      "attachmentName": "motion-quiet-alerts-largest-dark-scrolled",
+      "sha256": "b42b28ec0e40b2b85042f44ce48e4758a2afe431df6ea84cc69a72246e077ea3",
+      "exportedFileName": "04EBB6F6-43E3-400E-9A11-4AC3D3EF5606.png"
+    },
+    {
+      "attachmentName": "motion-quiet-alerts-largest-dark-top",
+      "sha256": "0c8813ecb75e5002c1cc02eee9d790f58e5793429ec81b49f54a655bd991d245",
+      "exportedFileName": "7DBF986A-C377-4BDA-94B9-5EE6028EFD66.png"
+    },
+    {
+      "attachmentName": "motion-quiet-largest-dark-scrolled",
+      "sha256": "6f45b48adc074ea10817b034fbe89880923af7521b7bf7a4c058d4ed6192894c",
+      "exportedFileName": "F534D650-0EFB-4F10-AD81-1260F55E83B6.png"
+    },
+    {
+      "attachmentName": "motion-quiet-largest-dark-top",
+      "sha256": "f0a05451349a887e6f37ffe7665de7f4bafb4096fd8df638b2a70ec6f7ee9eab",
+      "exportedFileName": "210386BC-A1C9-4912-A837-1EAEE7733A48.png"
+    },
+    {
+      "attachmentName": "motion-setup-details-largest-dark-scrolled",
+      "sha256": "76ba617a50fd5852949e041c28e09bf824800fa39dec7cef50df35750e25f394",
+      "exportedFileName": "F42C3289-E2F9-4E0B-9B07-4C7BE20ABEA5.png"
+    },
+    {
+      "attachmentName": "motion-setup-details-largest-dark-top",
+      "sha256": "b533b10868b441266447d0f9e1190758817369e7a32d1750f50aa98dee6bfc07",
+      "exportedFileName": "CC7AAB79-204C-466F-90B9-E890D6FB399B.png"
+    },
+    {
+      "attachmentName": "motion-setup-largest-dark-scrolled",
+      "sha256": "8b6fec3004636d23f29556d6f7e2559d6a0bdb0875cf8bf92855048a36b4737b",
+      "exportedFileName": "674856CB-44E3-4890-989C-E9BE60234126.png"
+    },
+    {
+      "attachmentName": "motion-setup-largest-dark-top",
+      "sha256": "c35377d77778bad4d4643591abd948d7c4a5477fdb42084b38ba6a5f96e877c0",
+      "exportedFileName": "20FA9261-384D-4E6B-BA48-75701DF8514C.png"
+    },
+    {
+      "attachmentName": "motion-sharing-access-largest-dark-scrolled",
+      "sha256": "8ba5891562ceb9df43581e5aade42b04d2dea5fe36de100e6655efc9b317f4f5",
+      "exportedFileName": "3C6EE2E4-80FD-4043-A6D2-CFB05DE2C84D.png"
+    },
+    {
+      "attachmentName": "motion-sharing-access-largest-dark-top",
+      "sha256": "3c585b79635926a9209bc59978f808f22ae30f0ecb9947e9ad25e3c585756e90",
+      "exportedFileName": "E61A2C88-C99C-4BCF-A939-2310FA259C77.png"
+    },
+    {
+      "attachmentName": "motion-sharing-largest-dark-scrolled",
+      "sha256": "e88182ef94573447791cbb6433c482fa64e2f6eed6efc150b6010d67b3cc55f3",
+      "exportedFileName": "85556D8F-3F0F-4F0B-90FD-CBD6DFB1E8FD.png"
+    },
+    {
+      "attachmentName": "motion-sharing-largest-dark-top",
+      "sha256": "e88182ef94573447791cbb6433c482fa64e2f6eed6efc150b6010d67b3cc55f3",
+      "exportedFileName": "85556D8F-3F0F-4F0B-90FD-CBD6DFB1E8FD.png"
+    },
+    {
+      "attachmentName": "motion-trial-options-largest-dark-scrolled",
+      "sha256": "593485ac28eb9733176dee0369bbae81d990340e914d8ebee848613e572c4096",
+      "exportedFileName": "C949FE6C-9DA2-4444-9E45-85C61AA00A85.png"
+    },
+    {
+      "attachmentName": "motion-trial-options-largest-dark-top",
+      "sha256": "1b81a0ab31dbd848d7cdffd71c598ac48bdb2475e3f0b54e5f0eb777e96d9a4f",
+      "exportedFileName": "8C06EE05-5D6F-4229-A34C-FD957A1DA2D9.png"
+    },
+    {
+      "attachmentName": "motion-trusted-contacts-largest-dark-scrolled",
+      "sha256": "6687e98a1c94e4e2738ea026de8831f0507cac2d24e1db61d8e271865fa354da",
+      "exportedFileName": "5FCF4654-7DAA-46CF-9F24-2B8EAFDC7BEA.png"
+    },
+    {
+      "attachmentName": "motion-trusted-contacts-largest-dark-top",
+      "sha256": "fb4a04e854e97ba9bd9ef3008cccd9ebc7dcff55de30804d4de8d0db3fd5bfe7",
+      "exportedFileName": "FB6B837E-FDCD-4177-BBAD-71F69BB2E128.png"
+    }
+  ],
+  "exportedAttachments": "/tmp/shield-release-screen-matrices-attachments",
+  "testPassed": true
+}

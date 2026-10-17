@@ -1,0 +1,377 @@
+{
+  "date": "2026-10-17",
+  "releaseReady": false,
+  "appleSetupDeferred": true,
+  "backend": {
+    "check": {
+      "passed": 335,
+      "files": 34,
+      "typecheck": true,
+      "build": true
+    },
+    "firestore": {
+      "passed": 250,
+      "files": 12,
+      "environment": "local demo emulator"
+    },
+    "exactDeployedPackage": {
+      "passed": 58,
+      "files": 4,
+      "environment": "local demo emulator",
+      "manifest": "backend-scoped-manifest.json"
+    }
+  },
+  "broadSimulatorRun": {
+    "device": "iPhone 18 Pro",
+    "os": "iOS 27 simulator",
+    "resultBundle": "/tmp/shield-release-wide.xcresult",
+    "counts": {
+      "totalTestCount": 191,
+      "passedTests": 167,
+      "failedTests": 22,
+      "skippedTests": 2
+    },
+    "failures": [
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 67,
+        "testIdentifierString": "RedesignUITests/testCoreScreensAccessibilityAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/RedesignUITests/testCoreScreensAccessibilityAudit",
+        "testName": "testCoreScreensAccessibilityAudit()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 88,
+        "testIdentifierString": "SeniorAccessibilityUITests/testDarkToolbarActionsAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+        "testName": "testDarkToolbarActionsAudit()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 69,
+        "testIdentifierString": "RedesignUITests/testDetailSettingsAndSharingAccessibility()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/RedesignUITests/testDetailSettingsAndSharingAccessibility",
+        "testName": "testDetailSettingsAndSharingAccessibility()"
+      },
+      {
+        "failureText": "XCTAssertTrue failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 22,
+        "testIdentifierString": "ForwardingUITests/testDoneLeavesSetupAndRestorationRemainsSeparate()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/ForwardingUITests/testDoneLeavesSetupAndRestorationRemainsSeparate",
+        "testName": "testDoneLeavesSetupAndRestorationRemainsSeparate()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 89,
+        "testIdentifierString": "SeniorAccessibilityUITests/testEverydayScreensAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testEverydayScreensAudit",
+        "testName": "testEverydayScreensAudit()"
+      },
+      {
+        "failureText": "XCTAssertTrue failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 118,
+        "testIdentifierString": "SeniorPolishUITests/testFailedListsHaveRecoveryWithoutFalseEmptyClaims()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorPolishUITests/testFailedListsHaveRecoveryWithoutFalseEmptyClaims",
+        "testName": "testFailedListsHaveRecoveryWithoutFalseEmptyClaims()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 71,
+        "testIdentifierString": "RedesignUITests/testGuidedFlowsAccessibilityAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/RedesignUITests/testGuidedFlowsAccessibilityAudit",
+        "testName": "testGuidedFlowsAccessibilityAudit()"
+      },
+      {
+        "failureText": "XCTAssertTrue failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 123,
+        "testIdentifierString": "SeniorPolishUITests/testLargestTextCanChangePeopleAndReadFullCallMetadata()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorPolishUITests/testLargestTextCanChangePeopleAndReadFullCallMetadata",
+        "testName": "testLargestTextCanChangePeopleAndReadFullCallMetadata()"
+      },
+      {
+        "failureText": "Test exceeded execution time allowance of 3 minutes",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 103,
+        "testIdentifierString": "SeniorDesignUITests/testMotionAllSecondaryScreensAtLargestText()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorDesignUITests/testMotionAllSecondaryScreensAtLargestText",
+        "testName": "testMotionAllSecondaryScreensAtLargestText()"
+      },
+      {
+        "failureText": "Contrast nearly passed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 91,
+        "testIdentifierString": "SeniorAccessibilityUITests/testNativeControlDiagnosticIsolation()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testNativeControlDiagnosticIsolation",
+        "testName": "testNativeControlDiagnosticIsolation()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 92,
+        "testIdentifierString": "SeniorAccessibilityUITests/testNativeControlReferenceAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testNativeControlReferenceAudit",
+        "testName": "testNativeControlReferenceAudit()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 95,
+        "testIdentifierString": "SeniorAccessibilityUITests/testNativeNavigationLinkDiagnosticIsolation()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testNativeNavigationLinkDiagnosticIsolation",
+        "testName": "testNativeNavigationLinkDiagnosticIsolation()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 96,
+        "testIdentifierString": "SeniorAccessibilityUITests/testNativeStoppedCardDiagnosticIsolation()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testNativeStoppedCardDiagnosticIsolation",
+        "testName": "testNativeStoppedCardDiagnosticIsolation()"
+      },
+      {
+        "failureText": "Hit area is too small",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 98,
+        "testIdentifierString": "SeniorAccessibilityUITests/testOwnerSettingsScreensAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testOwnerSettingsScreensAudit",
+        "testName": "testOwnerSettingsScreensAudit()"
+      },
+      {
+        "failureText": "Failed to get matching snapshot: No matches found for Elements matching predicate '\"subscribe-month\" IN identifiers' from input {(\n    Button, identifier: 'house.fill', label: 'Home',\n    Button, identifier: 'phone.fill', label: 'Calls',\n    Button, identifier: 'tray.fill', label: 'Messages',\n    Button, identifier: 'ellipsis', label: 'More', Selected,\n    Button, identifier: 'BackButton', label: 'Settings',\n    Button, label: 'Check access again', Disabled\n)}",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 177,
+        "testIdentifierString": "SubscriptionUITests/testPendingPurchaseExplainsApproval()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SubscriptionUITests/testPendingPurchaseExplainsApproval",
+        "testName": "testPendingPurchaseExplainsApproval()"
+      },
+      {
+        "failureText": "Contrast failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 99,
+        "testIdentifierString": "SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit",
+        "testName": "testPhoneSetupAndDisconnectionAudit()"
+      },
+      {
+        "failureText": "XCTAssertTrue failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 179,
+        "testIdentifierString": "SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent",
+        "testName": "testPublicPlansShowAnnualTotalAndEquivalent()"
+      },
+      {
+        "failureText": "Test exceeded execution time allowance of 3 minutes",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 110,
+        "testIdentifierString": "SeniorDesignUITests/testSecondaryScreenVisualsInBothAppearances()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorDesignUITests/testSecondaryScreenVisualsInBothAppearances",
+        "testName": "testSecondaryScreenVisualsInBothAppearances()"
+      },
+      {
+        "failureText": "XCTAssertFalse failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 77,
+        "testIdentifierString": "RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail",
+        "testName": "testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail()"
+      },
+      {
+        "failureText": "XCTAssertTrue failed",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 56,
+        "testIdentifierString": "PhoneOnboardingUITests/testSignInOffersOnlyPhoneAndPrivacy()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/PhoneOnboardingUITests/testSignInOffersOnlyPhoneAndPrivacy",
+        "testName": "testSignInOffersOnlyPhoneAndPrivacy()"
+      },
+      {
+        "failureText": "failed: caught error: \"Error Domain=AXVoiceOverAutomationErrorDomain Code=3 \"Failed to send moveForward command\" UserInfo={NSLocalizedDescription=Failed to send moveForward command}\"",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 181,
+        "testIdentifierString": "VoiceOverUITests/testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/VoiceOverUITests/testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend",
+        "testName": "testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend()"
+      },
+      {
+        "failureText": "Failed to get matching snapshot: No matches found for first query match sequence: `Descendants matching type NavigationBar`, given input App element pid: 32257",
+        "targetName": "ShieldUITests",
+        "testIdentifier": 82,
+        "testIdentifierString": "RedesignUITests/testWelcomeAccessibilityAudit()",
+        "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/RedesignUITests/testWelcomeAccessibilityAudit",
+        "testName": "testWelcomeAccessibilityAudit()"
+      }
+    ],
+    "runtimeWarnings": [
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "    AVAudioSession_iOS.mm:978   This method can lead to UI unresponsiveness if called on the main thread. Consider using the asynchronous activate/deactivate API instead for calls from the main thread."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      },
+      {
+        "issueType": "Runtime Warning",
+        "message": "Invalid frame dimension (negative or non-finite)."
+      }
+    ],
+    "skips": [
+      "PhoneSettingsDeviceUITests/testPhoneSettingsOpensAndReturnsWithoutClaimingVerification",
+      "SeniorAccessibilityUITests/testExternalNativeBoundaryClippingReference"
+    ]
+  },
+  "focusedReruns": [
+    {
+      "resultBundle": "/tmp/shield-release-audit-followup.xcresult",
+      "passed": 5
+    },
+    {
+      "resultBundle": "/tmp/shield-release-number-target.xcresult",
+      "passed": 1
+    },
+    {
+      "resultBundle": "/tmp/shield-release-contact-recovery.xcresult",
+      "passed": 2
+    },
+    {
+      "resultBundle": "/tmp/shield-release-screen-matrices.xcresult",
+      "passed": 2,
+      "reviewedLargestTextCaptures": 42
+    },
+    {
+      "resultBundle": "/tmp/shield-release-integrated-ui.xcresult",
+      "passed": 7
+    },
+    {
+      "resultBundle": "/tmp/shield-release-final-ui-verified.xcresult",
+      "passed": 8,
+      "failed": 0,
+      "runtimeWarnings": 2,
+      "sourceManifestSha256": "11a5e6a7a8c5a85769cc3ee51cb9d211bd5a1e072d0652ebc65a71316c04a410",
+      "note": "Passed app interactions, with audio warning still present; audio follow-up tracked separately."
+    }
+  ],
+  "unresolvedLegacyFixture": {
+    "resultBundle": "/tmp/shield-release-voiceover-recovery.xcresult",
+    "test": "VoiceOverUITests/testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend",
+    "result": "failed",
+    "failure": "AXVoiceOverAutomationErrorDomain Code=3 after entering text",
+    "presentInRelease": false,
+    "experimentalHelperChange": "did not resolve; discarded",
+    "currentPhoneVoiceOver": "passed"
+  },
+  "deploymentEvidence": [
+    "backend-deployment-verified.json",
+    "worker-deployment-verified.json",
+    "backend-prerequisites-verified.json",
+    "hosting-deployment-verified.json",
+    "worker-execution-verified.json"
+  ],
+  "limitations": [
+    "Simulator tests are not real-phone or real-call evidence",
+    "Native contrast/clipping diagnostics remain recorded; no blanket accessibility pass",
+    "Apple distribution and purchase acceptance deferred",
+    "Caretaker delivery disabled",
+    "Live account erasure and provider failure recovery not exercised against real accounts",
+    "No call, SMS or phone/carrier setting change by this audit"
+  ],
+  "finalIntegratedRun": {
+    "resultBundle": "/tmp/shield-release-commit-ui.xcresult",
+    "counts": {
+      "totalTestCount": 10,
+      "passedTests": 10,
+      "failedTests": 0,
+      "skippedTests": 0
+    },
+    "runtimeWarnings": [],
+    "sourceManifestSha256": "3b6b9e11f4aed2b95349c2a0ff4748d033f8ed6a8f4d900f6174cd46932cd310",
+    "baseCommit": "77b2c3ced10db1dccdae590e7841a23aaf6cdcee",
+    "coverage": [
+      "saved audio relaunch",
+      "cold Home restoration",
+      "pause/resume/restart",
+      "background during download and preparation",
+      "revoked listening access",
+      "person switch",
+      "status update failure",
+      "pilot without monetary actions",
+      "VoiceOver playback and feedback"
+    ]
+  },
+  "iOS26Compatibility": {
+    "device": "iPhone 17e",
+    "os": "iOS 26.5 simulator",
+    "resultBundle": "/tmp/shield-release-audio-ios26.xcresult",
+    "passed": 2,
+    "failed": 0,
+    "runtimeWarnings": [],
+    "tests": [
+      "saved audio survives relaunch",
+      "backgrounding during preparation cancels playback and permits retry"
+    ]
+  }
+}

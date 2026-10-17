@@ -33,7 +33,12 @@ struct ContactAlertsView: View {
             response = .init(requests: [.init(id: UUID(uuidString: "00000000-0000-4000-8000-000000000001")!, name: "Margaret", status: "pending", textAlerts: false, appAlerts: false, ownerPaused: false)], textAvailable: true, appAvailable: true, textsStopped: false)
             return
         }
-        do { response = try await model.api.send("/api/contact-alerts") }
-        catch { self.error = error.localizedDescription }
+        let generation = model.sessionGeneration
+        do {
+            let loaded: ContactAlertsResponse = try await model.api.send("/api/contact-alerts")
+            guard generation == model.sessionGeneration else { return }
+            response = loaded
+        } catch is CancellationError { return }
+        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
     }
 }

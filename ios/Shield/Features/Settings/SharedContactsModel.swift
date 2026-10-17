@@ -9,10 +9,11 @@ final class SharedContactsModel {
     var message: String?
     var loading = false
     var loadError: String?
+    var sharedAt: Date?
     private var loadAttempts = 0
 
     private func key(_ person: UUID) -> String { "shared-phone-contacts-" + person.uuidString }
-    func hasShared(_ person: UUID?) -> Bool { person.map { UserDefaults.standard.bool(forKey: key($0)) } ?? false }
+    func hasShared(_ person: UUID?) -> Bool { sharedAt != nil || (person.map { UserDefaults.standard.bool(forKey: key($0)) } ?? false) }
 
     func load(_ app: AppState) async {
         loading = true
@@ -34,31 +35,38 @@ final class SharedContactsModel {
         catch { loadError = error.localizedDescription; app.handleSessionFailure(error) }
     }
     private func fetch(_ app: AppState, _ person: UUID) async throws {
+        let generation = app.sessionGeneration
         let result: APIResponses.Numbers = try await app.api.send("/api/trusted-numbers", participantID: person)
-        guard app.selectedPersonID == person else { throw CancellationError() }
+        guard generation == app.sessionGeneration, app.signedIn, app.selectedPersonID == person else { throw CancellationError() }
         items = result.items.sorted { $0.label.localizedStandardCompare($1.label) == .orderedAscending }
+        sharedAt = result.sharedAt
     }
     func share(_ app: AppState) async {
         guard let person = app.selectedPersonID, app.isOwner, !app.isPreview, !working else { return }
-        working = true; message = "Updating contacts…"; loadError = nil
+        let generation = app.sessionGeneration
+        working = true; message = "Sharing contacts…"; loadError = nil
         defer { working = false }
         do {
             let contacts = try await PhoneContacts.shared.all()
+            guard generation == app.sessionGeneration, app.selectedPersonID == person, app.isOwner, app.signedIn, !Task.isCancelled else { throw CancellationError() }
             let body = try JSONEncoder().encode(["contacts": contacts])
             let result: APIResponses.ContactSync = try await app.api.send("/api/trusted-numbers/sync", method: "POST", body: body, participantID: person)
-            guard app.selectedPersonID == person else { throw CancellationError() }
+            guard generation == app.sessionGeneration, app.signedIn, app.selectedPersonID == person else { throw CancellationError() }
             UserDefaults.standard.set(true, forKey: key(person))
             try await fetch(app, person)
-            message = "\(result.shared) contacts updated." + (result.skipped > 0 ? " \(result.skipped) couldn’t be added." : "")
-        } catch { message = nil; app.handle(error) }
+            message = "\(result.shared) contacts shared." + (result.skipped > 0 ? " \(result.skipped) couldn’t be added." : "")
+        } catch is CancellationError { message = nil }
+        catch { message = nil; app.handle(error) }
     }
     func change(_ enabled: Bool, item: SavedNumber, app: AppState) async -> Bool {
         guard let person = app.selectedPersonID, app.isOwner, !app.isPreview, !working else { return item.isEnabled }
+        let generation = app.sessionGeneration
         working = true; message = nil
         defer { working = false }
         do {
             try await PhoneContacts.shared.setEnabled(enabled, phone: item.phone, label: item.label, personID: person)
             do {
+                guard generation == app.sessionGeneration, app.selectedPersonID == person, app.isOwner else { throw CancellationError() }
                 let _: APIResponses.Empty = try await app.api.send("/api/trusted-numbers/\(item.id)", method: "PATCH",
                     body: APIClient.payload(["enabled": enabled]), participantID: person)
             } catch {
@@ -71,14 +79,6 @@ final class SharedContactsModel {
             message = enabled ? "\(item.label) can ring your phone." : "Calls from \(item.label) will be treated as unfamiliar."
             return enabled
         } catch { app.handle(error); await load(app); return items.first(where: { $0.id == item.id })?.isEnabled ?? item.isEnabled }
-    }
-    func restore(_ app: AppState) async {
-        guard let person = app.selectedPersonID, !app.isPreview, !working else { return }
-        working = true
-        do { try await PhoneContacts.shared.restoreAll(personID: person) }
-        catch { working = false; app.handle(error); return }
-        working = false
-        await share(app)
     }
     #if DEBUG
     /// Explicit developer launch command for this owner's supervised demonstration.

@@ -25,10 +25,10 @@ final class SeniorPolishUITests: XCTestCase {
     func testFailedListsHaveRecoveryWithoutFalseEmptyClaims() {
         let cases = [("numbers", "Numbers couldn’t load", "No numbers yet", "Sample clinic"),
                      ("blocked", "Blocked numbers couldn’t load", "No blocked numbers", "(312) 555-0199"),
-                     ("contacts", "Contacts couldn’t load", "No contacts shared yet", "Jamie"),
+                     ("contacts", "Contacts couldn’t load", "Your calling list is empty", "Jamie"),
                      ("quiet", "Quiet hours couldn’t load", "", "Quiet hours"),
                      ("setup", "Phone setup couldn’t load", "", "Phone setup is done with a helper, one step at a time."),
-                     ("sharing", "Your helpers couldn’t load", "No one has access yet.", "Sign in to manage sharing.")]
+                     ("sharing", "Call sharing couldn’t load", "No one has access yet.", "Sign in to manage sharing.")]
         for (screen, error, empty, recovered) in cases {
             let app = launch(screen, extra: ["--uitesting-load-failure"])
             let notice = app.staticTexts[error]
@@ -150,6 +150,20 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 8))
     }
 
+    func testBackgroundingDuringAudioPreparationDoesNotStartItLater() {
+        let app = launch("audio", extra: ["--uitesting-delayed-audio-preparation"])
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Getting message…"].appears(timeout: 2))
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.buttons["Listen to message"].appears(timeout: 5))
+        XCTAssertFalse(app.buttons["Pause message"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Start over"].exists)
+        app.buttons["Listen to message"].tap()
+        XCTAssertTrue(app.buttons["Pause message"].appears(timeout: 8))
+    }
+
     func testPersonContextChangeClosesThePreviousCallDetail() {
         let app = launch("audio", extra: ["--uitesting-detail-context-changes"])
         let open = app.buttons["Open sample call"]
@@ -217,14 +231,15 @@ final class SeniorPolishUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
-        let people = app.buttons["change-person"]
+        app.tabBars.buttons["More"].tap()
+        let people = app.buttons["Switch person"]
         XCTAssertTrue(people.appears(timeout: 5))
         XCTAssertTrue(people.isHittable); people.tap()
         let alex = app.buttons["person-Alex"]
         reveal(alex, in: app); alex.tap()
-        if app.navigationBars["Family & friends"].exists { app.navigationBars.buttons.firstMatch.tap() }
-        XCTAssertTrue(app.buttons["change-person"].appears(timeout: 5))
-        XCTAssertTrue(app.buttons["change-person"].label.contains("Alex"))
+        if app.navigationBars["Switch person"].exists { app.navigationBars.buttons.firstMatch.tap() }
+        app.buttons["Switch person"].tap()
+        XCTAssertTrue(app.buttons["person-Alex"].isSelected)
         app.tabBars.buttons["Calls"].tap()
         let filter = app.buttons["callFilter"]
         reveal(filter, in: app)
@@ -236,6 +251,9 @@ final class SeniorPolishUITests: XCTestCase {
         XCTAssertGreaterThanOrEqual(number.frame.height, 40)
         capture(app, "polish-helper-call-large-dark")
         app.tabBars.buttons["More"].tap()
+        XCTAssertTrue(app.navigationBars["Switch person"].exists, "Changing tabs preserves the person-picker navigation stack")
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["More"].appears(timeout: 5))
         let settings = app.staticTexts["Settings"].firstMatch
         reveal(settings, in: app); settings.tap()
         XCTAssertFalse(app.staticTexts["Checks while you talk"].exists)
@@ -382,7 +400,7 @@ final class SeniorPolishUITests: XCTestCase {
 
     func testSharingListsHelpersWithoutMakingInvitations() {
         let app = launch("sharing-access")
-        XCTAssertTrue(app.navigationBars["Your helpers"].appears(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Call sharing"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["Jamie"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["Calls and messages"].exists)
         XCTAssertFalse(app.textFields.firstMatch.exists)

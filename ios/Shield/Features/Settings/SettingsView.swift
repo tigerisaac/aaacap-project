@@ -19,11 +19,16 @@ struct SettingsView: View {
                 ShieldSection("People you trust") {
                     NavigationLink(value: AppRoute.trustedNumbers) { ActionRow(title: "Your contacts", symbol: "person.crop.square") }
                     NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Numbers you trust", symbol: "phone.badge.checkmark") }
+                    NavigationLink(value: AppRoute.trustedContacts) { ActionRow(title: "Caretakers", detail: "Optional protection alerts", symbol: "person.badge.shield.checkmark") }
+                        .accessibilityIdentifier("caretakers-settings")
+                    NavigationLink(value: AppRoute.sharing) { ActionRow(title: "Call sharing", symbol: "person.2.badge.gearshape") }
+                        .accessibilityIdentifier("call-sharing-settings")
                 }
             } else {
                 ShieldGroup { NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") } }
             }
             ShieldGroup {
+                NavigationLink(value: AppRoute.contactAlerts) { ActionRow(title: "Alerts for others", symbol: "bell") }
                 if model.service?.notificationsAvailable == true, !model.isDemo {
                     NavigationLink(value: AppRoute.messageAlerts) { ActionRow(title: "Message alerts", symbol: "bell") }
                 }
@@ -34,6 +39,12 @@ struct SettingsView: View {
             }
             ShieldGroup {
                 let leavesSample = model.isDemo && !model.isTestAccount
+                if model.subscription.showsAccess {
+                    NavigationLink { SubscriptionView() } label: {
+                        ActionRow(title: "Shield access", symbol: "checkmark.shield")
+                    }
+                    .accessibilityIdentifier("subscription-settings")
+                }
                 NavigationLink(value: AppRoute.deleteAccount) {
                     ActionRow(title: "Delete account", symbol: "person.badge.minus")
                 }

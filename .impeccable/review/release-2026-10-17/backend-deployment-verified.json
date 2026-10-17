@@ -1,0 +1,59 @@
+{
+  "verifiedAt": "2026-10-17T20:21:28.633Z",
+  "functions": [
+    {
+      "function": "cleanupShield",
+      "revision": "cleanupshield-00014-ruf",
+      "previousRevision": "cleanupshield-00013-guj",
+      "sourceVerified": true,
+      "settingsPreserved": true,
+      "invokerPolicyPreserved": true
+    },
+    {
+      "function": "shieldApi",
+      "revision": "shieldapi-00031-cif",
+      "previousRevision": "shieldapi-00030-haq",
+      "sourceVerified": true,
+      "settingsPreserved": true,
+      "invokerPolicyPreserved": true
+    },
+    {
+      "function": "sendShieldAlert",
+      "revision": "sendshieldalert-00005-biq",
+      "previousRevision": "sendshieldalert-00004-vef",
+      "sourceVerified": true,
+      "settingsPreserved": true,
+      "invokerPolicyPreserved": true
+    }
+  ],
+  "sourceManifestSha256": "6a93ba761913824a494e27a3de39e6acfc4b39a15afa55c1d24b5788d4e342c3",
+  "unrelatedFunctionsPreserved": true,
+  "publicReadiness": 200,
+  "phoneSignInAvailable": true,
+  "caretakerDeliveryAvailable": false,
+  "supportEmailPublished": true,
+  "guards": [
+    {
+      "method": "GET",
+      "path": "/api/access",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/access/refresh",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/account/deletion",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/public/revenuecat/webhook",
+      "status": 401
+    }
+  ],
+  "realCallsMade": 0,
+  "messagesSent": 0
+}

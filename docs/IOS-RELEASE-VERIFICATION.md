@@ -1,0 +1,84 @@
+# iOS release verification — October 17, 2026
+
+**Release decision: not ready for public submission.** This is an engineering audit and implementation record. Apple setup was explicitly deferred by the owner; public subscriptions and the ten-senior pilot remain requirements. The owner-approved scoped backend update is now deployed and verified; see [the rollout evidence](IOS-BACKEND-ROLLOUT.md). No real call, message to a phone, carrier change or App Store submission was made by this audit.
+
+The work uses the canonical `tigerisaac/aaacap-project` checkout on `main`. Concurrent phone-sign-in/disconnection changes were preserved. Code, deployed state and physical-call evidence are reported separately below.
+
+## Product decisions applied
+
+- People who use Shield independently do not see a family-management entry. **Switch person** appears only when more than one person is available.
+- **Settings → Your contacts** offers **Share contacts once** and an explicit **Update shared contacts** action. Opening, refreshing or foregrounding the screen does not upload the address book. Adding one contact sends only that contact. Server mutations are fenced against concurrent full synchronization and check ownership inside the transaction.
+- **Settings → Caretakers** is optional. A request confers no call-history/message/audio permission. The recipient must verify their number, accept, and choose notifications/texts; either side can stop. A single intervention cannot generate duplicate app alerts when someone is both a helper and caretaker.
+- Only **connected-call monitoring interventions** alert caretakers or opted-in helpers. Screening blocks, removed scam messages, voicemail, setup/forwarding problems, paused protection, repeated blocked callers and ordinary calls do not. The alert describes detected risk without claiming a hangup has already completed.
+- **Settings → Call sharing** remains the separate, explicit history/listening permission flow. It is not implied by caretaker consent.
+- RevenueCat handles public purchases; the app and backend implementation, exact saved configuration and remaining store work are in [RevenueCat and Shield access](REVENUECAT.md). Pilot accounts remain separate, including after expiry and failed/offline lookups.
+
+## Verification matrix
+
+| Area | Evidence in this audit | Limit / remaining acceptance |
+|---|---|---|
+| Backend compile, unit tests and build | Required `npm run check` passed: **335 tests**, 34 files; emulator-only tests skipped in this run | An initial restricted run could not open a local APNs test port; the successful unrestricted local-server run supersedes it |
+| Firestore integration | Final expanded suite: **250/250**, 12 files, including **15 service-access tests** | Local demo emulator; provider calls mocked |
+| Subscription verification | Pure tests: **14/14** for products, stores, cancellation, expiry, grace, refunds, sandbox/family sharing, malformed/stale responses and provider errors | Synthetic provider data; not Apple transactions |
+| Subscription app state | Swift harness passed pilot isolation, unavailable backend, eligibility refresh, cancellation/pending, rapid purchase/restore taps, deliberate retry, server authority, restore, offline retry, account-switch and late-response races | SDK adapter compilation plus mocks; store acceptance deferred |
+| Caretaker/contact/settings UI | Compact iPhone: **4/4 release-readiness tests**, including largest text/dark requests, cancellation and unavailable service | Notifications/SMS not enabled or delivered in production by this task |
+| Phone sign-in | Compact iPhone: **7/7** after fixing Privacy's accessibility locator and content scrolling above the numeric keyboard | Synthetic codes; owner phone sign-in evidence belongs to its separate dated release |
+| Navigation | Compact iPhone: **7/7** initial pass; final focused disconnection-code and manual-text-check navigation passed | Broad run complete; failures and focused reruns recorded below |
+| Saved messages/history/cache | Final Swift storage/cache tests passed, including durable audio/history, corruption, deletion and account/session races | Background delivery and other-device deletion still need physical acceptance |
+| Subscription/VoiceOver UI | All **8** subscription checks and **3** new VoiceOver checks passed; focused rechecks **5/5**, the saved-number touch-target check **1/1**, and contact/person-navigation recovery **2/2** | Synthetic fixtures; no store transaction, real message, call or charge |
+| Broader UI/accessibility | Full larger-iPhone suite: **191 tests — 167 passed, 22 failed, 2 skipped**; unfiltered diagnostics retained | Simulator results do not establish real carrier or older-adult usability |
+| Dependency/security checks | Production npm audit: **0 vulnerabilities** in the checked dependency lock; pinned RevenueCat version | Recheck before distribution; privacy/call-recording legal gates remain |
+| Release archive/manifests | Final unsigned Release archive passed; **2 arm64 bundles** and **3 privacy manifests** inspected; HTTPS API, no development networking exception, placeholder server or synthetic launch fixtures | Distribution signing/APNs/App Review deferred; unfinished automatic text filtering is excluded |
+| Backend package | `npm run firebase:package` passed assembled startup, worker exports, public policy and authentication guards with synthetic configuration | Whole-repository candidate passed; the separately scoped deployed overlay also passed startup guards and **58/58** compiled-package integration tests |
+
+The unfinished automatic text-filter extension and its placeholder associated domain are now excluded from Shield. Its Settings page explains that this version cannot filter the inbox and links to manual text checking; a remote flag cannot expose nonexistent setup. `ios:verify-archive` checks the actual archive for extension contents, privacy declarations, HTTPS, Release networking and test fixtures. The final source is committed base `77b2c3c` plus this audit’s overlays, with source-manifest digest `3b6b9e11f4aed2b95349c2a0ff4748d033f8ed6a8f4d900f6174cd46932cd310`. The Release binary SHA-256 is `12d7c6043a03cbd6bdf8f32d830d1277386fecbb0935c3bc048d36bd5c28348e`. It was not distribution-signed or installed on a physical phone by this audit. See the [archive evidence](../.impeccable/review/release-2026-10-17/archive-audit.json).
+
+The archive audit found a hardcoded development-only local-network exception despite the Release configuration saying otherwise. The plist now uses Xcode preprocessing, preserving XML URLs and removing the exception from Release while retaining it in Debug. The backend package audit also found the new commercial-policy JSON was missing from the packaging whitelist; the fix and an assembled-package startup check are now part of `firebase:package`. Account deletion reads the public/pilot classification directly from Shield so its Apple cancellation reminder survives a RevenueCat outage.
+
+The final Firestore pass supersedes two intermediate failures: one run overlapped source/test edits and a capacity test exceeded its existing timeout under compilation load; another exposed an inaccurate mock error type in the newly added outage test. The corrected test uses the real provider’s service-unavailable error, and the final full suite passed without increasing test timeouts.
+
+A concurrent-tap regression test reproduced multiple purchase sheets being queued before the serialized task set its busy state. Purchase and restore now claim the user action before yielding; the regression and deliberate-retry checks pass. The SDK adapter also translates login and offering failures into the app's recovery messages, consistently with purchase and restore failures.
+
+Accessibility follow-up found a real 18-point selectable-phone-number target; it is now at least 44 points and the focused hit-region audit passes. The reported Home/Calls/Settings labels pass a scoped contrast audit when fully revealed above the native bars. Unfiltered whole-screen audits retain edge-overlay, native toolbar, disabled-fixture and reference-control diagnostics. Unmodified toolbar screenshots contain sampled label/background contrast ratios of **7.18:1** in dark mode and **13.52:1** in light mode; this is supporting evidence, not a blanket accessibility pass. [Sampling method and captures](../.impeccable/review/release-2026-10-17/accessibility-color-observations.json).
+
+The follow-up also corrected test assumptions about a disclosure beneath the fixed bottom action, button-versus-link roles, a dismissed keyboard still present in the tree, and sign-in screens without a navigation bar. Contact previews no longer let the launch foreground event consume their simulated failure; the person-switching test explicitly returns from its preserved navigation stack before opening Settings. Those focused reruns passed.
+
+Both whole-screen visual matrices passed with a longer whole-test allowance: **21 screens at largest text/dark** (410 seconds) and **19 screens in both appearances plus four root tabs in each** (423 seconds). The broad run's original three-minute allowance interrupted both matrices while they were progressing; no per-action timeout was increased. All **42** largest-text top/scrolled captures were visually inspected, with [observations and attachment hashes retained](../.impeccable/review/release-2026-10-17/matrix-visual-review.json).
+
+Existing simulator-only email fixtures remain for historical regression coverage. They do not exist in a Release/device build and do not establish current phone-sign-in usability. VoiceOver automation verifies reported focus/speech and then uses direct actions; it is not certification of every native gesture or a substitute for a senior rehearsal.
+
+The broad run retained ten `Invalid frame dimension (negative or non-finite)` warnings in retired email fixtures and seven audio-session main-thread warnings. The later committed keyboard correction passed its direct UI check, and focused runs on that source report no frame warnings. The legacy email VoiceOver walk still fails with `AXVoiceOverAutomationErrorDomain Code=3` after text entry; disabling/re-enabling VoiceOver did not fix it and that experimental helper change was discarded. Current phone-sign-in VoiceOver passed. The retired email view is excluded from device/Release builds. A subsequent integrated **8/8** run still recorded two audio warnings. Temporary timestamped instrumentation located the issue in `AVAudioPlayer.prepareToPlay()` on the main thread (about 200 milliseconds), after asynchronous session activation had already returned. The fix prepares playback inside the existing serial audio-session queue, transfers the fresh player once, and checks cancellation before playback. Enqueuing before suspension also prevents a stop from deactivating the session ahead of preparation. The final integrated **10/10** tests passed with **zero runtime warnings**, including leaving during preparation, pause/resume/restart, revoked access, account switching, cold Home restoration, pilot presentation and VoiceOver playback. The same built app also passed **2/2** storage/preparation-cancellation checks on **iOS 26.5**, with zero runtime warnings. [Measured cause and final evidence](../.impeccable/review/release-2026-10-17/audio-preparation-diagnostic.json). Apple documents that [preparing a player activates its audio session](https://developer.apple.com/documentation/avfaudio/avaudioplayer/preparetoplay%28%29); explicit asynchronous activation alone did not remove that internal work.
+
+Reviewed synthetic screen captures are saved in [the release screenshot folder](../.impeccable/review/release-2026-10-17/manifest.json). They cover contact sharing, optional/pending caretakers, independent Settings, localized-plan layout, pilot large text, lookup failure and deletion guidance. Disabled sample purchase/contact buttons prevent charges or address-book changes.
+
+The broad run's 22 failures comprise 11 accessibility audits, eight test/fixture/navigation assertions corrected and rerun successfully, two whole-matrix timeouts subsequently passed, and the persistent legacy email VoiceOver automation failure. The accessibility audits include the real 18-point target corrected above; remaining native contrast/clipping diagnostics are not declared passing. The skipped tests were the physical Phone Settings return check and the external native-boundary reference check. A later integrated seven-test run passed Home cancellation/stability, phone-only sign-in, independent caretaker Settings, recovery, direct legacy keyboard dismissal and daily VoiceOver navigation.
+
+## Production observations
+
+Historical pre-rollout snapshot at **17:28 UTC / 12:28 Central** on October 17:
+
+| Surface | Observed |
+|---|---|
+| API | `shieldapi-00030-haq`, 100% traffic |
+| Live bridge | `shield-live-00017-qrw`, 100%; `/ready` returned 200 |
+| Alert worker | `sendshieldalert-00004-vef` |
+| Cleanup worker | `cleanupshield-00013-guj` |
+| Public configuration | Phone sign-in enabled; caretaker delivery/APNs/automatic message filtering unavailable; support email still null; older deployed consent version |
+| Policies | `/privacy` and `/service-info` returned 200, with older deployed copy |
+| Account deletion | Account-level `/api/account/deletion` returned 404 |
+| Data readiness | Three deployed composite indexes READY; no ERROR-level log entries in the sampled preceding hour |
+
+The correct **`finishaccountdeletions`** Cloud Run service was separately checked at **18:13:16 UTC / 13:13 Central** and returned **404**. That finding prompted the now-completed approved API/worker/index rollout. The initial check of a differently named service was not used as evidence.
+
+No new real-call evidence was collected. The separate October 17 phone-auth task records an owner SMS login and the later installed-app/session check in [Status](STATUS.md). Earlier carrier, bridge and monitoring calls remain dated historical evidence, not acceptance of this exact release. Zero errors in a one-hour sample is not a health guarantee.
+
+## Required release gates
+
+1. **Backend acceptance after the approved rollout:** deployed source, authentication guards, readiness, worker schedules, IAM, index and Hosting preservation are verified in [the rollout record](IOS-BACKEND-ROLLOUT.md). Live end-to-end account erasure, provider lifecycle and physical delivery remain unverified. Main still contains unreleased screening/privacy/consent work; do not deploy all of main as a shortcut.
+2. **Consent and recording:** resolve recording/processing before caller notice, refusal and monitored-call consent for US/Canadian jurisdictions; plan existing-user re-consent. Copy changes alone cannot solve this.
+3. **Apple and paid access:** all deferred items in [RevenueCat](REVENUECAT.md), distribution signing, TestFlight, product/receipt lifecycle and reviewer access. Purchases remain unavailable until configured and verified.
+4. **Carrier acceptance and capacity:** verify Canadian carriers before selling there. Repeat exact-release legitimate and harmful calls separately, press-1/decline/silence, voicemail, both audio directions, monitoring, failure/timeout/retry/concurrency and ordinary calls/voicemail after restoration. The 25 inbound reservation limit does not remove the ten-outbound-channel provider limit.
+5. **Physical app acceptance:** The unfinished automatic text-filter extension is excluded from this release candidate. Reintroducing it requires a real backend/domain, privacy review and physical verification. Remaining device checks include APNs registration/delivery/revocation, actual caretaker SMS consent/STOP/START, Contacts permissions/limited access/iCloud restoration, Call Directory, offline/background audio delivery, reinstall/account switch, other-device revocation/deletion, accessibility gestures and older-adult task rehearsal.
+6. **Operations and legal:** approved commercial/privacy/support documents, service limits/refund/incident procedures, expiry/restoration staffing, support recovery for Apple purchases bound to an old account, budget alerts, worker/backlog alarms and deletion/retention exceptions.
+
+The engineering work narrows these gates and gives each one evidence or an explicit reason it remains open. It does not turn untested or deferred items into passes. The current release checklist remains [APP-STORE-RELEASE.md](APP-STORE-RELEASE.md).

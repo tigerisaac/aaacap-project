@@ -17,15 +17,15 @@ struct TrustedContactOnboardingView: View {
                     if added.requestDelivery != "submitted" {
                         ShieldNotice(title: "Your contact is saved", detail: "We couldn’t confirm the request text was sent. They can open Shield and sign in with their number to review it.", symbol: "info.circle")
                     }
-                    Text("You can change this in Family & friends.")
+                    Text("You can change this in Settings → Caretakers.")
                         .foregroundStyle(ShieldTheme.secondaryText)
                     Button { Task { await finish(enabled: true) } } label: { ShieldActionLabel(title: "Continue", isWorking: working) }
                         .shieldPrimaryButton().disabled(working).accessibilityIdentifier("trusted-contact-finish")
                 } else {
-                    Text("Shield can alert someone you trust when it stops a suspicious call or protection needs attention.")
+                    Text("Shield can alert a caretaker if checks while you talk detect a possible scam request and intervene. Those checks must be on.")
                     VStack(spacing: ShieldTheme.Spacing.regular) {
                         NavigationLink { AddTrustedContactView(participantID: participantID) { added = $0 } } label: {
-                            ChoiceCard(title: "Add a trusted contact", detail: "Your calls and messages stay private.", symbol: "person.badge.plus")
+                            ChoiceCard(title: "Add a caretaker", detail: "Your calls and messages stay private.", symbol: "person.badge.plus")
                         }.buttonStyle(.plain).accessibilityIdentifier("trusted-contact-yes").disabled(working)
                         Button { Task { await finish(enabled: false) } } label: {
                             ChoiceCard(title: working ? "Saving…" : "Continue without one", detail: "You can add someone later.", symbol: "person")

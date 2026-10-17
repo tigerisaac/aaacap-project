@@ -55,7 +55,7 @@ final class RedesignUITests: XCTestCase {
             send.tap()
             let feedback = app.staticTexts["sign-in-error"]
             XCTAssertTrue(feedback.appears(timeout: 5))
-            XCTAssertFalse(app.keyboards.firstMatch.exists)
+            XCTAssertTrue(app.keyboards.firstMatch.wait(for: \.isHittable, toEqual: false, timeout: 5))
             XCTAssertTrue(feedback.isHittable)
             XCTAssertGreaterThanOrEqual(feedback.frame.minY, app.frame.minY)
             XCTAssertLessThanOrEqual(feedback.frame.maxY, app.frame.maxY)
@@ -243,7 +243,7 @@ final class RedesignUITests: XCTestCase {
 
     func testPeopleAndAccurateUnavailableSettings() {
         let app = launch(["--uitesting-preview"])
-        openMore(app, "Family & friends")
+        openMore(app, "Switch person")
         XCTAssertTrue(app.buttons["person-Pat"].appears(timeout: 5))
         capture(app, "Redesign People")
         app.buttons["person-Alex"].tap()
@@ -268,7 +268,7 @@ final class RedesignUITests: XCTestCase {
         openMore(app, "Check a text")
         XCTAssertTrue(app.textViews.firstMatch.appears(timeout: 5))
         capture(app, "Redesign Check large dark")
-        openMore(app, "Family & friends")
+        openMore(app, "Switch person")
         let person = app.buttons["person-Pat"]
         for _ in 0..<5 { if person.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(person.isHittable)
@@ -284,6 +284,44 @@ final class RedesignUITests: XCTestCase {
             app.tabBars.buttons[tab].tap()
             XCTAssertTrue(app.navigationBars[tab].appears(timeout: 5))
             try auditScreen(app, types: audit)
+        }
+    }
+
+    func testContrastOfReportedRowsWhenFullyVisible() throws {
+        let app = launch(["--uitesting-preview"])
+        XCTAssertTrue(app.navigationBars["Home"].appears(timeout: 5))
+        try auditRevealedText(app, labels: ["Prescription reminder"])
+        app.tabBars.buttons["Calls"].tap()
+        XCTAssertTrue(app.navigationBars["Calls"].appears(timeout: 5))
+        let checkedCall = app.historyRow("Check this call")
+        for _ in 0..<8 where !checkedCall.isHittable { app.swipeUp() }
+        try auditRevealedText(app, labels: ["Check this call", "Check first · (512) 555-0126"])
+        openMore(app, "Settings")
+        XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 5))
+        try auditRevealedText(app, labels: ["Numbers you trust"])
+    }
+
+    // Follow up on the exact labels reported beneath the native floating tab bar.
+    // The whole-screen audit above remains unfiltered and preserves its findings.
+    private func auditRevealedText(_ app: XCUIApplication, labels: [String]) throws {
+        let targets = labels.map { app.staticTexts[$0].firstMatch }
+        func isInsideContent(_ element: XCUIElement) -> Bool {
+            element.exists && element.isHittable
+                && element.frame.minY > app.navigationBars.firstMatch.frame.maxY + 12
+                && element.frame.maxY < app.tabBars.firstMatch.frame.minY - 24
+        }
+        for _ in 0..<10 {
+            if targets.allSatisfy(isInsideContent) { break }
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+            start.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.40)))
+        }
+        for target in targets { XCTAssertTrue(isInsideContent(target), "Reported text must be fully visible: \(target.label)") }
+        capture(app, "Contrast follow-up " + app.navigationBars.firstMatch.identifier)
+        try app.performAccessibilityAudit(for: .contrast) { issue in
+            guard let element = issue.element else { return false }
+            let relevant = labels.contains(element.label)
+            print("Shield revealed-text audit: \(issue.compactDescription); relevant=\(relevant); \(element.debugDescription)")
+            return !relevant
         }
     }
 
@@ -305,11 +343,11 @@ final class RedesignUITests: XCTestCase {
         openMore(app, "Settings")
         XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 5))
         try auditScreen(app, types: types)
-        openMore(app, "Family & friends")
-        let sharing = app.staticTexts["Your helpers"].firstMatch
+        openMore(app, "Settings")
+        let sharing = app.staticTexts["Call sharing"].firstMatch
         for _ in 0..<4 { if sharing.isHittable { break }; app.swipeUp() }
         sharing.tap()
-        XCTAssertTrue(app.navigationBars["Your helpers"].appears(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Call sharing"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["Make invitation"].exists)
         capture(app, "Redesign Sharing")
         try auditScreen(app, types: types)
@@ -344,11 +382,11 @@ final class RedesignUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["sign-in-error"].appears(timeout: 5))
 
         app = launch(large + ["--uitesting-preview"])
-        openMore(app, "Family & friends")
-        let sharing = app.staticTexts["Your helpers"].firstMatch
+        openMore(app, "Settings")
+        let sharing = app.staticTexts["Call sharing"].firstMatch
         for _ in 0..<10 { if sharing.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(sharing.isHittable); sharing.tap()
-        XCTAssertTrue(app.navigationBars["Your helpers"].appears(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Call sharing"].appears(timeout: 5))
         let sharedPerson = app.staticTexts["Sign in to manage sharing."]
         for _ in 0..<10 { if sharedPerson.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(sharedPerson.isHittable)
@@ -365,7 +403,8 @@ final class RedesignUITests: XCTestCase {
     }
 
     private func auditScreen(_ app: XCUIApplication, types: XCUIAccessibilityAuditType) throws {
-        capture(app, "audit-" + app.navigationBars.firstMatch.identifier)
+        let bar = app.navigationBars.firstMatch
+        capture(app, "audit-" + (bar.exists ? bar.identifier : "Sign in"))
         try app.performAccessibilityAudit(for: types) { issue in
             print("Shield audit: \(issue.compactDescription); \(issue.element?.debugDescription ?? "No associated element")")
             return false // Keep native edge/overlay diagnostics visible in the results.

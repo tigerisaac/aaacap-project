@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-17T20:28:52Z",
+  "environment": "iPhone 18 Pro / iOS 27 simulator, synthetic stored audio",
+  "finding": "AVAudioPlayer.prepareToPlay ran on the main thread and activated the audio session internally after the explicitly asynchronous activation had returned.",
+  "observations": [
+    {
+      "preparationStart": "15:28:47.731",
+      "preparationEnd": "15:28:47.951",
+      "milliseconds": 220
+    },
+    {
+      "preparationStart": "15:28:52.321",
+      "preparationEnd": "15:28:52.514",
+      "milliseconds": 193
+    }
+  ],
+  "sourceOfTiming": "Temporary diagnostic markers in an isolated source copy; no customer audio or data",
+  "diagnosticBundle": "/tmp/shield-release-audio-diagnostic.xcresult",
+  "prototypeBundle": "/tmp/shield-release-audio-fix.xcresult",
+  "prototypeResult": "Six playback/background/access tests passed without the prior warning; final queue ordering and cancellation regression are verified separately.",
+  "fix": "Prepare within the existing serial audio-session queue, enqueue before suspension, transfer the fresh player once to its UI owner, and recheck request generation before playing.",
+  "documentation": "https://developer.apple.com/documentation/avfaudio/avaudioplayer/preparetoplay%28%29",
+  "finalVerification": {
+    "resultBundle": "/tmp/shield-release-commit-ui.xcresult",
+    "passed": 10,
+    "failed": 0,
+    "runtimeWarnings": [],
+    "preparationCancellationRegression": "passed"
+  },
+  "iOS26Compatibility": {
+    "device": "iPhone 17e",
+    "os": "iOS 26.5 simulator",
+    "resultBundle": "/tmp/shield-release-audio-ios26.xcresult",
+    "passed": 2,
+    "failed": 0,
+    "runtimeWarnings": [],
+    "tests": [
+      "saved audio survives relaunch",
+      "backgrounding during preparation cancels playback and permits retry"
+    ]
+  }
+}

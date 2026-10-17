@@ -22,6 +22,47 @@ final class VoiceOverUITests: XCTestCase {
         walk.checkpoint("message-opened")
     }
 
+    func testVoiceOverPhoneSignInKeepsWrongCodeRecoverable() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "phone-sign-in", arguments: ["--uitesting-phone-sign-in"])
+        defer { walk.finish() }
+        try walk.find("Help with unfamiliar calls", where: { $0.localizedCaseInsensitiveContains("Heading") })
+        try walk.enter("Mobile number", text: "2025550102")
+        try walk.activate("Text me a code")
+        try walk.enter("Code", text: "000000")
+        try walk.activate("Sign in")
+        try walk.find("Couldn’t sign in")
+        try walk.activate("Change number")
+        XCTAssertEqual(walk.app.textFields["sign-in-phone"].value as? String, "2025550102")
+        walk.checkpoint("wrong-code-recovery")
+    }
+
+    func testVoiceOverCaretakerChoiceExplainsScopeAndAllowsDecline() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "caretaker-choice", arguments: ["--uitesting-screen", "contact-alerts"])
+        defer { walk.finish() }
+        try walk.find("Receive protection alerts?")
+        try walk.activate("About alerts")
+        try walk.find("Shield alerts you only")
+        XCTAssertTrue(walk.app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Calls, messages, and recordings stay private.")).firstMatch.exists)
+        try walk.activate("Decline request")
+        XCTAssertTrue(walk.app.staticTexts["No requests for this mobile number."].appears(timeout: 5))
+        walk.checkpoint("declined-without-permissions")
+    }
+
+    func testVoiceOverPilotAccessHasNoStoreActions() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "pilot-access", arguments: ["--uitesting-preview", "--uitesting-subscription", "pilot"], large: true)
+        defer { walk.finish() }
+        try walk.activate("More", where: { $0.localizedCaseInsensitiveContains("Tab") })
+        try walk.activate("Settings")
+        try walk.activate("Shield access")
+        try walk.find("Your pilot access is active.")
+        XCTAssertFalse(walk.app.buttons["Restore purchases"].exists)
+        XCTAssertFalse(walk.app.buttons["Manage subscription"].exists)
+        walk.checkpoint("pilot-access")
+    }
+
     func testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "sign-in", arguments: ["--uitesting-auth-error"])
@@ -64,25 +105,18 @@ final class VoiceOverUITests: XCTestCase {
 
     func testVoiceOverOnboardingChoicesAndSafeSaveRecovery() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
-        let walk = try VoiceOverWalkthrough(self, name: "onboarding", arguments: ["--uitesting-protection-onboarding", "--uitesting-helper-alerts-onboarding", "--protection-save-fails"], large: true)
+        let walk = try VoiceOverWalkthrough(self, name: "onboarding", arguments: ["--uitesting-protection-onboarding", "--protection-save-fails"], large: true)
         defer { walk.finish() }
         try walk.find("Help while you talk")
         try walk.activate("Check calls while I talk", where: { $0.localizedCaseInsensitiveContains("Switch") })
         XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "1")
-        try walk.activate("Next")
-        try walk.find("Let a helper know")
-        try walk.activate("Let my helpers know", where: { $0.localizedCaseInsensitiveContains("Switch") })
-        try walk.activate("What does the alert say?")
-        try walk.find("It includes your name")
-        try walk.activate("Back")
-        XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "1")
-        try walk.activate("Next")
-        XCTAssertEqual(walk.app.switches["onboarding-helper-alerts-toggle"].value as? String, "0")
         try walk.activate("Save my choice")
         try walk.find("Couldn’t save your choice")
-        try walk.activate("Cancel")
-        XCTAssertEqual(walk.app.switches["onboarding-helper-alerts-toggle"].value as? String, "0")
-        walk.checkpoint("retained-choices")
+        XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "1")
+        try walk.activate("Check calls while I talk", where: { $0.localizedCaseInsensitiveContains("Switch") })
+        XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "0")
+        XCTAssertFalse(walk.app.switches["onboarding-helper-alerts-toggle"].exists)
+        walk.checkpoint("retained-protection-choice")
     }
 
     func testVoiceOverDailyNavigationAndSampleMessage() throws {

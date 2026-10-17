@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-17",
+  "resultBundle": "/tmp/shield-release-wide.xcresult",
+  "device": "iPhone 18 Pro / iOS 27.0 Simulator",
+  "synthetic": true,
+  "unfiltered": true,
+  "testsWithFindings": 11,
+  "findings": [
+    {
+      "test": "RedesignUITests/testCoreScreensAccessibilityAudit()",
+      "diagnostics": [
+        "Shield audit: Contrast failed; Attributes: StaticText, <object>, {{82.0, 848.7}, {172.7, 20.3}}, label: 'Prescription reminder'",
+        "Shield audit: Contrast failed; Attributes: StaticText, <object>, {{82.0, 784.3}, {115.7, 20.3}}, label: 'Check this call'",
+        "Shield audit: Contrast failed; Attributes: StaticText, <object>, {{292.7, 786.3}, {55.3, 18.0}}, identifier: 'call-time-A6B098DC-C491-445C-A9B6-7BDEE6461356', label: '7:28 AM'",
+        "Shield audit: Contrast failed; Attributes: StaticText, <object>, {{82.0, 810.7}, {196.3, 18.0}}, label: 'Check first · (512) 555-0126'"
+      ]
+    },
+    {
+      "test": "RedesignUITests/testDetailSettingsAndSharingAccessibility()",
+      "diagnostics": [
+        "Shield audit: Contrast failed; Attributes: StaticText, <object>, {{82.0, 840.8}, {145.3, 20.3}}, label: 'Numbers you trust'"
+      ]
+    },
+    {
+      "test": "RedesignUITests/testGuidedFlowsAccessibilityAudit()",
+      "diagnostics": [
+        "Shield audit: Contrast failed; Attributes: Button, <object>, {{211.0, 66.0}, {67.0, 36.0}}, label: 'Close'",
+        "Shield audit: Contrast failed; Attributes: Button, <object>, {{315.0, 66.0}, {67.0, 36.0}}, label: 'Close'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testDarkToolbarActionsAudit()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-add-number-dark: Contrast failed; Attributes: Button, <object>, {{20.0, 118.0}, {76.7, 36.0}}, label: 'Cancel'",
+        "Shield accessibility: accessibility-add-contact-dark: Contrast failed; Attributes: Button, <object>, {{20.0, 118.0}, {76.7, 36.0}}, label: 'Cancel'",
+        "Shield accessibility: accessibility-phone-setup-dark: Contrast failed; Attributes: Button, <object>, {{211.0, 66.0}, {67.0, 36.0}}, label: 'Close'",
+        "Shield accessibility: accessibility-disconnection-dark: Contrast failed; Attributes: Button, <object>, {{315.0, 66.0}, {67.0, 36.0}}, label: 'Close'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testEverydayScreensAudit()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-home: Contrast failed; Attributes: StaticText, <object>, {{289.0, 850.7}, {59.0, 18.0}}, identifier: 'call-time-650ED76E-258F-4351-BCD3-DB9CC9CB4486', label: '12:17 PM'",
+        "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, <object>, {{82.0, 784.3}, {115.7, 20.3}}, label: 'Check this call'",
+        "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, <object>, {{292.3, 786.3}, {55.7, 18.0}}, identifier: 'call-time-80345A82-3140-4842-911D-F74523BA0793', label: '7:45 AM'",
+        "Shield accessibility: accessibility-calls: Contrast failed; Attributes: StaticText, <object>, {{82.0, 810.7}, {196.3, 18.0}}, label: 'Check first · (512) 555-0126'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{82.0, 84.3}, {100.0, 20.3}}, label: 'Call stopped'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{82.0, 110.7}, {107.7, 18.0}}, label: '(512) 555-0123'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{82.0, 178.7}, {172.7, 20.3}}, label: 'Prescription reminder'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{289.0, 180.7}, {59.0, 18.0}}, identifier: 'call-time-650ED76E-258F-4351-BCD3-DB9CC9CB4486', label: '12:17 PM'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast nearly passed; Attributes: StaticText, <object>, {{284.3, 275.0}, {63.7, 18.0}}, identifier: 'call-time-9400AE35-30C3-4D21-81BB-2C911BA905D5', label: '10:49 AM'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{82.0, 389.3}, {115.7, 20.3}}, label: 'Check this call'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{82.0, 672.0}, {179.7, 20.3}}, label: 'Appointment reminder'",
+        "Shield accessibility: accessibility-calls-row-exposed: Contrast failed; Attributes: StaticText, <object>, {{82.0, 792.7}, {103.0, 18.0}}, label: 'New voicemail'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testNativeControlDiagnosticIsolation()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-native-person-reference: Contrast nearly passed; Attributes: StaticText, <object>, {{325.0, 73.8}, {26.3, 20.3}}, label: 'Pat'",
+        "Shield accessibility: accessibility-native-person-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 819.0}, {102.7, 20.3}}, label: 'Native row 10'",
+        "Shield accessibility: accessibility-native-person-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 841.7}, {106.3, 18.0}}, label: 'Supporting text'",
+        "Shield accessibility: accessibility-native-marker-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 800.3}, {95.3, 20.3}}, label: 'Native row 9'",
+        "Shield accessibility: accessibility-native-marker-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 823.0}, {106.3, 18.0}}, label: 'Supporting text'",
+        "Shield accessibility: accessibility-native-style-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 827.0}, {102.7, 20.3}}, label: 'Native row 10'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testNativeControlReferenceAudit()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-native-control-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 819.0}, {102.7, 20.3}}, label: 'Native row 10'",
+        "Shield accessibility: accessibility-native-control-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 841.7}, {106.3, 18.0}}, label: 'Supporting text'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testNativeNavigationLinkDiagnosticIsolation()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-native-links-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 819.0}, {102.7, 20.3}}, label: 'Native row 10'",
+        "Shield accessibility: accessibility-native-links-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 841.7}, {106.3, 18.0}}, label: 'Supporting text'",
+        "Shield accessibility: accessibility-native-labeled-links-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 819.0}, {102.7, 20.3}}, label: 'Native row 10'",
+        "Shield accessibility: accessibility-native-labeled-links-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 841.7}, {106.3, 18.0}}, label: 'Supporting text'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testNativeStoppedCardDiagnosticIsolation()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-native-stopped-card-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 796.0}, {94.3, 20.3}}, label: 'Native row 7'",
+        "Shield accessibility: accessibility-native-stopped-card-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 818.7}, {106.3, 18.0}}, label: 'Supporting text'",
+        "Shield accessibility: accessibility-native-stopped-card-scrolled-reference: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "Shield accessibility: accessibility-native-stopped-card-scrolled-reference: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "Shield accessibility: accessibility-native-stopped-card-scrolled-reference: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "Shield accessibility: accessibility-native-stopped-card-scrolled-reference: Text clipped; No associated element; Details: Text of this element may be clipped at larger Dynamic Type sizes.",
+        "Shield accessibility: accessibility-native-stopped-card-scrolled-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 818.0}, {102.3, 20.3}}, label: 'Native row 21'",
+        "Shield accessibility: accessibility-native-stopped-card-scrolled-reference: Contrast failed; Attributes: StaticText, <object>, {{32.0, 840.7}, {106.3, 18.0}}, label: 'Supporting text'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testOwnerSettingsScreensAudit()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-numbers: Hit area is too small; Attributes: StaticText, <object>, {{32.0, 223.3}, {114.0, 18.0}}, label: '(312) 555-0148'",
+        "Shield accessibility: accessibility-add-number: Contrast failed; Attributes: Button, <object>, {{20.0, 118.0}, {76.7, 36.0}}, label: 'Cancel'",
+        "Shield accessibility: accessibility-contacts: Contrast nearly passed; Attributes: StaticText, <object>, {{82.0, 208.8}, {160.3, 20.3}}, label: 'Share contacts once', Disabled",
+        "Shield accessibility: accessibility-contacts: Contrast failed; Attributes: StaticText, <object>, {{79.7, 466.2}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+        "Shield accessibility: accessibility-contacts: Contrast failed; Attributes: StaticText, <object>, {{79.7, 640.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+        "Shield accessibility: accessibility-contacts: Contrast failed; Attributes: StaticText, <object>, {{32.7, 820.3}, {173.7, 22.7}}, label: 'Contacts settings'",
+        "Shield accessibility: accessibility-quiet: Contrast nearly passed; Attributes: StaticText, <object>, {{32.0, 386.0}, {312.3, 38.0}}, label: 'Calls that reach Shield go to voicemail during these hours.'",
+        "Shield accessibility: accessibility-quiet: Contrast nearly passed; Attributes: StaticText, <object>, {{32.0, 428.0}, {158.7, 18.0}}, label: 'Times are Central time.'",
+        "Shield accessibility: accessibility-protection: Contrast nearly passed; Attributes: StaticText, <object>, {{16.0, 258.0}, {370.0, 32.0}}, label: 'This setting doesn’t change in the sample app.'",
+        "Shield accessibility: accessibility-help: Contrast nearly passed; Attributes: StaticText, <object>, {{16.0, 648.0}, {370.0, 52.0}}, label: 'Need a hand? Ask the person who helped set up your phone.'"
+      ]
+    },
+    {
+      "test": "SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit()",
+      "diagnostics": [
+        "Shield accessibility: accessibility-phone-setup: Contrast failed; Attributes: Button, <object>, {{211.0, 66.0}, {67.0, 36.0}}, label: 'Close'",
+        "Shield accessibility: accessibility-disconnection: Contrast failed; Attributes: Button, <object>, {{315.0, 66.0}, {67.0, 36.0}}, label: 'Close'"
+      ]
+    }
+  ],
+  "followUp": [
+    "The 18-point selectable saved-number target was increased to at least 44 points; ReleaseReadinessUITests/testSavedNumberSelectionHasAComfortableTouchTarget passed its complete hit-region audit.",
+    "Exact Home/Calls/Settings labels passed a scoped contrast audit after scrolling them completely above native overlays. The full-screen audit remains unfiltered.",
+    "Native-reference controls also produced edge contrast and text-clipped diagnostics. This narrows attribution without certifying the actual app.",
+    "Unmodified toolbar image samples and their limits are recorded in accessibility-color-observations.json.",
+    "Disabled sample controls and unresolved native-bar diagnostics remain recorded; physical accessibility review is required."
+  ]
+}

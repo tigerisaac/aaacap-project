@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct DeleteAccountView: View {
     @Environment(AppState.self) private var app
@@ -9,12 +10,20 @@ struct DeleteAccountView: View {
     @State private var restoreContacts = true
     @State private var contactCopies: [UUID] = []
     @State private var disconnecting: AccountDeletionStatus.Phone?
+    @State private var managingSubscription = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
                 Text(status?.restorationRequired == true ? "First, bring back ordinary calls" : "Delete your account").shieldPageHeading()
                     .accessibilityAddTraits(.isHeader)
+                if status?.subscriptionAudience == "public" || app.subscription.access?.isPublic == true {
+                    Text(app.subscription.access?.hasSubscription == true
+                         ? "Deleting your Shield account does not cancel your Apple subscription. You can cancel it with Apple now; you don’t need to wait for it to expire before deleting your account."
+                         : "If you have an Apple subscription, deleting your Shield account does not cancel it. You can check or cancel it with Apple now; you don’t need to wait for it to expire before deleting your account.")
+                    Button("Manage subscription") { managingSubscription = true }
+                        .shieldSecondaryButton().disabled(app.isPreview)
+                }
                 if let status {
                     if status.restorationRequired {
                         Text("We’ll help you disconnect your phone before removing your account. This keeps your calls and voicemail from getting lost.").font(.title3)
@@ -26,7 +35,7 @@ struct DeleteAccountView: View {
                         Text("Your account will stay here until you finish the checks and confirm deletion.").foregroundStyle(ShieldTheme.secondaryText)
                     } else {
                         Text("Your Shield account, calls, saved messages and sharing permissions will be removed.").font(.title3)
-                        Text("People who shared with you keep their own accounts. You’ll stop receiving their trusted-contact alerts.")
+                        Text("People who shared with you keep their own accounts. You’ll stop receiving their caretaker alerts.")
                         if !contactCopies.isEmpty {
                             Toggle("Put removed numbers back in Contacts", isOn: $restoreContacts)
                             Text(restoreContacts ? "We’ll restore numbers Shield removed from this iPhone’s contacts before deleting the saved restore copies." : "The removed numbers will stay out of Contacts. Their saved restore copies will be deleted too.")
@@ -51,7 +60,11 @@ struct DeleteAccountView: View {
         }
         .background(ShieldTheme.surface)
         .navigationTitle("Delete account").navigationBarTitleDisplayMode(.inline)
-        .task { await load() }
+        .task {
+            await load()
+            if !app.isPreview && !app.isDemo { await app.subscription.load(api: app.api) }
+        }
+        .manageSubscriptionsSheet(isPresented: $managingSubscription)
         .navigationDestination(item: $disconnecting) { phone in DisconnectView(participantID: phone.id, forDeletion: true) }
         .onChange(of: disconnecting?.id) { _, id in if id == nil { Task { await load() } } }
         .alert("Delete your account?", isPresented: $confirming) {
@@ -65,6 +78,10 @@ struct DeleteAccountView: View {
         defer { working = false }
         if app.isDemo || app.isPreview {
             #if DEBUG && targetEnvironment(simulator)
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-deletion-public") {
+                status = .init(restorationRequired: false, phones: [], subscriptionAudience: "public")
+                return
+            }
             if ProcessInfo.processInfo.arguments.contains("--uitesting-deletion-restoration") {
                 let done = UserDefaults.standard.data(forKey: "shield-disconnect-fixture").flatMap { try? JSONDecoder().decode(RestorationStatus.self, from: $0) }?.completed == true
                 status = .init(restorationRequired: !done, phones: [.init(id: DemoData.participant.id, name: "Your", restorationRequired: !done)])

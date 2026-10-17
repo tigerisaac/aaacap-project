@@ -334,7 +334,7 @@ final class ShieldUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview"]
         app.launch()
-        openMore(app, "Family & friends")
+        openMore(app, "Switch person")
         XCTAssertTrue(app.buttons["person-Alex"].appears(timeout: 5))
         app.buttons["person-Alex"].tap()
         app.tabBars.buttons["Home"].tap()
@@ -361,11 +361,11 @@ final class ShieldUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview"]
         app.launch()
-        openMore(app, "Family & friends")
+        openMore(app, "Switch person")
         XCTAssertTrue(app.staticTexts["Pat"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["Alex"].exists)
         app.buttons["person-Alex"].tap()
         XCTAssertTrue(app.staticTexts["Only they can change their phone settings."].appears(timeout: 3))
-        XCTAssertFalse(app.staticTexts["Your helpers"].exists)
+        XCTAssertFalse(app.staticTexts["Call sharing"].exists)
     }
 }

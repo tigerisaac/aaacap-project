@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-17T19:58:16.440Z",
+  "readOnly": true,
+  "apiRevision": "shieldapi-00030-haq",
+  "traffic": [
+    {
+      "percent": 100
+    }
+  ],
+  "runtimeIdentity": "shield-runtime@shield-calls-isaac.iam.gserviceaccount.com",
+  "runtimeSecretVersions": [
+    {
+      "name": "SHIELD_RUNTIME",
+      "version": "8"
+    },
+    {
+      "name": "SHIELD_OPENAI_API_KEY",
+      "version": "2"
+    }
+  ],
+  "projectRoles": [
+    {
+      "role": "projects/shield-calls-isaac/roles/shieldAuthSessions",
+      "conditional": false,
+      "authPermissions": [
+        "firebaseauth.users.get",
+        "firebaseauth.users.update"
+      ]
+    },
+    {
+      "role": "projects/shield-calls-isaac/roles/shieldPhoneUsers",
+      "conditional": false,
+      "authPermissions": [
+        "firebaseauth.users.create"
+      ]
+    },
+    {
+      "role": "roles/datastore.user",
+      "conditional": false,
+      "authPermissions": []
+    },
+    {
+      "role": "roles/eventarc.eventReceiver",
+      "conditional": false,
+      "authPermissions": []
+    }
+  ],
+  "accountDeletionPermissionFound": false
+}

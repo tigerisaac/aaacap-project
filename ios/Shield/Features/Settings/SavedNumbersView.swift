@@ -43,7 +43,9 @@ struct SavedNumbersView: View {
                             Text(item.label).font(.headline).fixedSize(horizontal: false, vertical: true)
                             Text(PhoneDisplay.format(item.phone)).font(.subheadline).monospacedDigit()
                                 .foregroundStyle(ShieldTheme.secondaryText)
-                                .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                .contentShape(.rect).textSelection(.enabled)
                         }
                         if typeSize.isAccessibilitySize {
                             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) { numberActions(item) }

@@ -26,13 +26,17 @@ struct SharedContactsView: View {
         List {
             ShieldGroup {
                 Button { Task { await model.share(app) } } label: {
-                    ActionRow(title: model.working ? "Updating contacts…" : model.hasShared(app.selectedPersonID) ? "Update my contacts" : "Use my iPhone contacts", symbol: "person.2.badge.plus")
+                    ActionRow(title: model.working ? "Sharing contacts…" : model.hasShared(app.selectedPersonID) ? "Update shared contacts" : "Share contacts once", symbol: "person.2.badge.plus")
                 }
                 .disabled(model.working || app.isDemo)
                 .accessibilityIdentifier("share-all-contacts")
                 if let message = model.message { Text(message).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
+                if let sharedAt = model.sharedAt {
+                    Text("Last shared \(sharedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                }
             } footer: {
-                Text("Names and numbers go to Shield. Your saved contacts can ring you as usual.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                Text("Only names and numbers go to Shield. Contacts update only when you choose; there are no automatic uploads.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }
             if let error = model.loadError {
                 ShieldGroup { ShieldLoadFailure(title: "Contacts couldn’t load", detail: error) { Task { await model.load(app) } } }
@@ -42,7 +46,7 @@ struct SharedContactsView: View {
                 ShieldGroup {
                     if search.isEmpty {
                         ContentUnavailableView("Your calling list is empty", systemImage: "person.2",
-                            description: Text("Use your iPhone contacts to let Shield know who you already know."))
+                            description: Text("Share your contacts once, or add a contact with the Add button."))
                     } else {
                         ContentUnavailableView.search(text: search)
                     }
@@ -109,7 +113,7 @@ struct SharedContactsView: View {
         .toolbar { ToolbarItem(placement: .primaryAction) {
             Button("Add", systemImage: "plus") { showingAdd = true }
                 .labelStyle(.titleAndIcon).accessibilityLabel("Add contact")
-                .disabled(model.working || app.isDemo || !model.hasShared(app.selectedPersonID))
+                .disabled(model.working || app.isDemo)
         } }
         .sheet(isPresented: $showingAdd, onDismiss: { Task { await model.load(app) } }) { AddNumberView(kind: .trusted) }
         .task {
@@ -120,9 +124,11 @@ struct SharedContactsView: View {
             }
             #endif
         }
-        .refreshable { await app.api.invalidateNavigationCache(); if model.hasShared(app.selectedPersonID) { await model.share(app) } else { await model.load(app) } }
+        .refreshable { await app.api.invalidateNavigationCache(); await model.load(app) }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active, demoAction == nil, model.hasShared(app.selectedPersonID) { Task { await model.share(app) } }
+            // Preview data has no external changes to refresh. The launch activation
+            // must not consume its simulated failure before the user can retry.
+            if phase == .active, demoAction == nil, !app.isPreview { Task { await model.load(app) } }
         }
         .deferredLoading(model.loading && model.items.isEmpty, visible: $loadingVisible)
         .shieldListStyle()

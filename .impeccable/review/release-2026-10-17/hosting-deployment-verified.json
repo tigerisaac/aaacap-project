@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-10-17T20:22:13.636Z",
+  "version": "projects/562628621854/sites/shield-calls-isaac/versions/d62ef31f0f12c172",
+  "baselineVersion": "projects/562628621854/sites/shield-calls-isaac/versions/b1ed614a2305e3ca",
+  "existingFilesPreserved": 59,
+  "configPreserved": true,
+  "publishedFiles": [
+    {
+      "path": "/trusted-contacts.html",
+      "sha256": "9accaec835947a9ee980f6dccf1ba9a757e5fed5d0df19f817a9a5e553bd3582",
+      "status": 200
+    },
+    {
+      "path": "/trusted-contacts.js",
+      "sha256": "b40dfc4f51155800f32db7e377a851e66691ccb58f3e7f97333e5f0e200f2a4e",
+      "status": 200
+    },
+    {
+      "path": "/trusted-contacts.css",
+      "sha256": "56dcf3f895482f80af7df3338fc7aa3e8e69c1d792b47ea3c9ba85d644fe8dd2",
+      "status": 200
+    }
+  ],
+  "phoneCodeRequestsSent": 0
+}

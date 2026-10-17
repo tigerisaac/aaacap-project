@@ -1,0 +1,204 @@
+{
+  "preparedAt": "2026-10-17T19:54:43.565499+00:00",
+  "approved": true,
+  "deployed": true,
+  "baselineRevision": "shieldapi-00030-haq",
+  "baselineFilesVerified": 81,
+  "baselinePackage": "artifacts/private/phone-sign-in/api-guid",
+  "package": "artifacts/private/ios-release-review/scoped-functions",
+  "functions": [
+    "shieldApi",
+    "finishAccountDeletions",
+    "sendShieldAlert",
+    "cleanupShield",
+    "reviewServiceAccess"
+  ],
+  "runtimeChanges": [],
+  "purchasesEnabled": false,
+  "caretakerDeliveryEnabled": false,
+  "consentVersion": "shield-pilot-2026-09-v1",
+  "preservedPolicyFiles": [
+    "lib/cloud/monitoring.js",
+    "lib/cloud/voicemail-check.js",
+    "lib/live/policy.js"
+  ],
+  "policyParagraphs": "Deployed call processing, recording, voicemail and manual Check descriptions preserved; helper-alert scope narrowed to interventions",
+  "changedFiles": [
+    "lib/cloud/account-deletion.js",
+    "lib/cloud/alerts.js",
+    "lib/cloud/api.js",
+    "lib/cloud/app.js",
+    "lib/cloud/carriers.js",
+    "lib/cloud/commercial-policy.json",
+    "lib/cloud/config.js",
+    "lib/cloud/deletion-jobs.js",
+    "lib/cloud/forwarding-api.js",
+    "lib/cloud/index.js",
+    "lib/cloud/revenuecat.js",
+    "lib/cloud/service-access.js",
+    "lib/cloud/store.js",
+    "lib/cloud/trusted-contacts.js",
+    "lib/firebase-auth.js"
+  ],
+  "files": {
+    "lib/auth.js": "52d0f373883aec6b7d12ecd4ffdf259a5fe9fc8b7ed1c2970a4f3a046da07d2a",
+    "lib/cloud/account-deletion.js": "62514594065ee44824b6beb9471feb2dc0d250b8d360ca723d6a046c7f3e922d",
+    "lib/cloud/alerts.js": "7480820c0afa2b5bfb193aa35a877f79a7d757101d3a78c4f1de25fafccdb5d2",
+    "lib/cloud/announcement-audio/01-greeting.wav": "a247f9c47c615f6da7fb45cdb52bbb0ba41aeb33d3937934e6bff2542e656319",
+    "lib/cloud/announcement-audio/02-hold.wav": "05f7ee2e32709261f42261d43265476fd5f8ac0457133be1d1b8b0cc83ef654c",
+    "lib/cloud/announcement-audio/03-hold-monitoring.wav": "a796f1b3f8cfe910df155107a228c9acd62092e6671870d86bfc97b77b07b1b7",
+    "lib/cloud/announcement-audio/04-voicemail.wav": "f531c365de6bf5e758638a79382468fd926c3d23f5501679c8534ee71947eb30",
+    "lib/cloud/announcement-audio/05-voicemail-after-screening.wav": "f70aa3c06e126b7d6f6f0c60159a6ae96b11f0c2bd7563951327c8b6833fcf88",
+    "lib/cloud/announcement-audio/06-unavailable.wav": "4444a32a2232fc4a8cb22b95878fc1e247602a0c0a124a6331a007ecde12afcc",
+    "lib/cloud/announcement-audio/07-not-ready.wav": "24670cf2ffc8a246053da06c69679776cf5b640d71469a92d42eb503dead2523",
+    "lib/cloud/announcement-audio/08-cannot-connect.wav": "3449c74b02be6a62780f007aa911b41ddaf6f3c19d41ab229619b75f1f2d59fb",
+    "lib/cloud/announcement-audio/09-goodbye.wav": "07898af95a6393cc4111dc17ba7418cb97b8ac6abbad1bfed0726d93e4c3a4f6",
+    "lib/cloud/announcement-audio/10-sound-check.wav": "11bfb1ef76f9f95835a05e5ce73975d6da64b4d60b45eacc70a9abca0c133191",
+    "lib/cloud/announcement-audio/11-sound-check-passed.wav": "0ee72caf4dd4401c4094711990b618dfd84d7b129456c24ac1a2c499eb4ea77a",
+    "lib/cloud/announcement-audio/12-capture-greeting.wav": "d24cde5fb17665fd978329ec7fa45f73cf87021df4794fb019f99683873e46f1",
+    "lib/cloud/announcement-audio/13-capture-voicemail.wav": "30a8f4276f5938e2e260e1f203b1dcf99ced4357b36d77a6c4efcecb226f2bb6",
+    "lib/cloud/announcement-audio/14-setup-check.wav": "55eb212b81846b65f7c0d5e7f330c1eb15c9abfe8ce6c31a2b5cbceca6113ef4",
+    "lib/cloud/announcement-audio/15-routing-test.wav": "ef8ea7640fcfc9af5bf722328670ab32ea90a1a383f3434602eb3e71dbb9c2d3",
+    "lib/cloud/announcement-audio/16-routing-hold.wav": "1f004c5156b3dbbbad4dadc4b64c7c2e44bf41a00c1a531340a9aacfe30dac9f",
+    "lib/cloud/announcement-audio/manifest.json": "aaa45dbffaa823f39aa03757d03f59f6133225615cd0a9e4c2d87b6959988bcb",
+    "lib/cloud/announcement-audio/offer-appointment.wav": "7cf53fa03936a2cdd46b2b78b5dbb6046588f9f0905f0cfa696ce3551ea94fdb",
+    "lib/cloud/announcement-audio/offer-delivery.wav": "8124da9fd8a619199ca0bb8c6d145e8cb35557d652de011717fc7cf54c337fdf",
+    "lib/cloud/announcement-audio/offer-fallback.wav": "1f6a42817174d0d75ce798808ab23b00fff2090c1fb41f19ddbc19a4db13c493",
+    "lib/cloud/announcement-audio/offer-other.wav": "18c76fd0f176ebe024c3b1d61b3aa7d1c6e48a2ecbaf8e68f5b582adaf66733a",
+    "lib/cloud/announcement-audio/offer-personal.wav": "0f2cfc1675c077f0ae7d6545361d6c9bed6bb60470f4e4308cfe1e3c80615104",
+    "lib/cloud/announcement-audio/offer-prescription.wav": "7fa2f5bd64948446fb248e25b56647a56292282905232a2f018f7bc6c6fae7c3",
+    "lib/cloud/announcement-audio/offer-unknown.wav": "6899de94a730c2fb3b1e0d860d70f9c1109e5267f1849b5eddff0b61ed32a1ef",
+    "lib/cloud/announcement-audio/warning-code_or_password.wav": "c23754a76e3417313422484e58247c317fca9312badaa5749e7dda6a66fc4b2c",
+    "lib/cloud/announcement-audio/warning-fallback.wav": "4f47ad7f4a5ab766efc64bb2e4fe9b95e3326b75452749a835d8f3ecd4ccaf4f",
+    "lib/cloud/announcement-audio/warning-identity_numbers.wav": "ea360686600c4167d5a85afa1d35357cf870635521b0226e743193c4c953cde6",
+    "lib/cloud/announcement-audio/warning-investment.wav": "d9838e7577ea1a10f46d658391d0b12659efb00118d641b098e706d8f9b8007a",
+    "lib/cloud/announcement-audio/warning-payment_or_transfer.wav": "9647e51a2af511e5df9a029f3e32a64ef471ab6c3732c1a311442e345a865bd9",
+    "lib/cloud/announcement-audio/warning-remote_access.wav": "f95461cf036319aacf001ecd2485840005bcf6a2c1e2dee5dc95f4c1f2fc2ea5",
+    "lib/cloud/announcement-audio/warning-secrecy.wav": "f152ca11080985da7ba9a26e1df67e0ba601833f528ce85fe056dc34ecfb9aa9",
+    "lib/cloud/announcements.js": "75bd6d57bfc814f30912489aae79846f2dc0d973a7f9276f978b937d642ca98b",
+    "lib/cloud/api.js": "4b7e250a7ac1baee698b75ef4e8f83b202f8d890814b1256aae1e5d517a45f1c",
+    "lib/cloud/app.js": "9a3357f8307db1fe9dfbf1dc0ce771c3838e7c59dfc06ece5d5f698be35683b8",
+    "lib/cloud/audio-delivery.js": "c2c50457048d3a4f243c01e42e7b3a1d4e5e8a8d86012b85943b8f56646ee69a",
+    "lib/cloud/bridge-startup.js": "e358c3538535e1d45bbcd0f9718889a7c0ef6a44338d56c858d310d931520386",
+    "lib/cloud/call-control-provider.js": "fbbdbd47321bcd71a342cd14de356668617d2d439d74adb9f65c9d2f6fd7f847",
+    "lib/cloud/call-control.js": "74c3646da611de5a11be376196349839dd49300548cf00fcace9856dbdb6f009",
+    "lib/cloud/call-jobs.js": "b21d066d86945e2b939112007ea4a1f70e6bb3f4bd1ee75bc68e6807fc313b87",
+    "lib/cloud/carriers.js": "ec10743051da16ca82dd0c747f26aecbe9e6fd74dbe901cce91072caa2dc6436",
+    "lib/cloud/commercial-policy.json": "341402ff25763153e1011f1dc6373fdd960b3ab70bc644c75d2edfa077aa8273",
+    "lib/cloud/config.js": "81419bbb202184435a5e9ae0079d1a0e5a058d3962c76067f549714ee49aed35",
+    "lib/cloud/copy.js": "f7cbc60689fa8e9ff8104e6aeda9b0691ba59edddfd5fefb17d5d659e040a37c",
+    "lib/cloud/deletion-jobs.js": "00c86a202f00559a0f0ea15b6691d23018bc6bfaa361e415801e69eb990ec3a9",
+    "lib/cloud/form-body.js": "1b16851b68d5d8f038c2a8acecccd27c35492ad8c24c6b78f4faa9ec90fa4bb0",
+    "lib/cloud/forwarding-api.js": "c402e69128e604345b5201d00d43f6dde26693b6fc9b2907860ca03f8be5941a",
+    "lib/cloud/forwarding-live.js": "6bd5530b93b9fe2a9959132f88ab9b2fcd02c387165859b93aeff59345ded035",
+    "lib/cloud/forwarding-probes.js": "48b2f31492c3bcaafa1eba03f809d1f39746c70ca1f5f107c803f4c1030bbf68",
+    "lib/cloud/forwarding-provider.js": "81c7f5ddfdbab795509684091449114723f802ca02e7e18187b7e8524d501131",
+    "lib/cloud/forwarding-recordings.js": "46db1acffa91aa0e5eda4fed6e533a7eb358910816e2cd00d7316644e76882bb",
+    "lib/cloud/forwarding-store.js": "fc393c1f08a4642cebb4cad4ba9cdeaea8e885ae1ae51b557d64e926a5d8868e",
+    "lib/cloud/forwarding-voice.js": "db16d4d523c19aa764b82c39a417b5f86399dc4de5083382183bbf3d1f20ad14",
+    "lib/cloud/index.js": "44dd4d8b6a0793a9deff97d2a2eae49d2f3d159a8fac47aa32e2ee3611a3d3b5",
+    "lib/cloud/message-audio.js": "c024d424881a47e816b87b920be95a15055a366f56d67bcb24ae9bffa8d58834",
+    "lib/cloud/message-check.js": "01cf48eaa25e86077bae3691cfdd292c64b44b80583237942678809bb2771f74",
+    "lib/cloud/message-summary.js": "015cf0cd9b381ae204857704d917b11334d325ccb0114c8b9e75a545bd9afbbb",
+    "lib/cloud/monitor-cadence.js": "40055c84af31fdcc12d920b59ae0dccdcdd9a67ef4ed4f8814ec4cb43742a1f7",
+    "lib/cloud/monitor-queue.js": "e5b42aadea9120cdd132356abe1e15f05814b4fceb2974c2a2cfa03b8d059306",
+    "lib/cloud/monitoring.js": "fcab2aee22dfba831e523ba9ec8b1a2fd40754907259cabd80df8947bc2b4e7c",
+    "lib/cloud/numbers.js": "f0e3c6adf3494c69ea44786a986467410ad877b93aae045c0be59ca0dcd2035c",
+    "lib/cloud/phone-auth.js": "7a4ae3bc5baf6efb57e368d3d37c37d2c52b55618623de8008e06959503c34f7",
+    "lib/cloud/pilot-limits.json": "60fa4338e01396ea4a06ef849e98e37fb1bcf1f1e6c0c767c5d6051298c93d32",
+    "lib/cloud/restoration.js": "71d45105cfe109e5ccc4e9ed20277387a2415ff03bbbfad867d9d663549d6019",
+    "lib/cloud/revenuecat.js": "f4eeb91bc705f054735f15131d6124f8b4a3ce0c348ad309868f446f1d208368",
+    "lib/cloud/service-access.js": "834649abf41fe3940fff6adc4a3cb2ad8a70ed738254a2d817bb95405a01f3c6",
+    "lib/cloud/setup-check.js": "601087c7b652a0d6ca29bc0c23a489fe63207bf125cea3103a8b99112d9f2071",
+    "lib/cloud/shared-contacts.js": "5dfd4117cbee1157161df1b9bbd26335857011542f077cbc06f622a86a5d01bf",
+    "lib/cloud/shared-probes.js": "3f29974b416e2d8c40dc2ec18a649a31d8733526b867d38adce9eb8d02f562f4",
+    "lib/cloud/shared-routing.js": "496832d0378931732c187eb5902d1f5cb8d5f98a73c26fc74f5244897e6d877f",
+    "lib/cloud/stopped-total.js": "7cd0e434f9d55c5da65ec7ad911be112c43777b5728a3672e8beffe8b482b1be",
+    "lib/cloud/store.js": "56f19847200a8dfc5e840eecbd26df135d6ae52139c3402b51aabff16d1ae6cb",
+    "lib/cloud/texml.js": "2bc42b675779c600ce2cfb9d1841a478c472c3421eeea39288990e930a6e6ed5",
+    "lib/cloud/text-alerts.js": "0fd960288fbbce944f6562539d3cdfa96ffdcf60a95701a1bf5f15adfb68bc5c",
+    "lib/cloud/trusted-contacts.js": "bb5270d81104b1d2031df40e3a83e75aad15a2bb3292fe30b5c341209701f7d2",
+    "lib/cloud/voicemail-check.js": "125d6ff2746f74c6e1c679b0631444bc096d14428d496c02664d5e84249fa30d",
+    "lib/crypto.js": "c83830a62c60b2aee64b828bc944aa8a8152c02037bc52d95db7aa868d8473db",
+    "lib/firebase-auth.js": "2ab226760794c4c2ae630c3adbfc12c31b01e9b30a2c8390d7a43c7c7470c1a8",
+    "lib/live/evidence.js": "d86cc495c154dc8c44d3abbc269b6a781eebb4ed8381f2847f2817c3855068fe",
+    "lib/live/policy.js": "6d22867d024409e5fe16139e0f5ee8b2ea09d2cf0b6c77765c2340b5a414db82",
+    "lib/live/research.js": "40aff81e380fce843bbb866b3083d2b18ffa5216c5c7eaf1c4caba506d08d03d",
+    "lib/live/scam-resources.js": "0877e44df42106c4bba7178fc813e8b535a2d726351352fdef97f15ed814a2ed",
+    "package-lock.json": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+    "package.json": "b3cfc777501770e859c252766aa0990cd015b557c09b3a99a2d6f2794af753f8"
+  },
+  "indexes": [
+    {
+      "collectionGroup": "accountDeletions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueAt",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "hostingFiles": [
+    "trusted-contacts.html",
+    "trusted-contacts.js",
+    "trusted-contacts.css"
+  ],
+  "validation": {
+    "packagedStartup": "passed",
+    "providerRequestsDuringStartupCheck": 0,
+    "databaseRequestsDuringStartupCheck": 0,
+    "integrationTests": {
+      "passed": 58,
+      "failed": 0,
+      "files": 4,
+      "durationSeconds": 51.58,
+      "source": "Unchanged repository tests copied to isolated harness importing this exact compiled package; local demo emulator",
+      "suites": [
+        "cloud",
+        "alerts",
+        "phone-contacts",
+        "service-access"
+      ]
+    },
+    "sourceMapDiagnostics": "Vite reported absent optional source maps; production package contains JavaScript only. Tests completed successfully."
+  },
+  "releaseGates": [
+    "Physical delivery/call acceptance not established",
+    "Apple setup deferred; purchases disabled",
+    "Public consent/recording and commercial release gates remain"
+  ],
+  "sourceManifestSha256": "6a93ba761913824a494e27a3de39e6acfc4b39a15afa55c1d24b5788d4e342c3",
+  "iamChanges": [
+    {
+      "operation": "create custom role and bind to runtime identity",
+      "roleId": "shieldAccountDeletion",
+      "includedPermissions": [
+        "firebaseauth.users.delete"
+      ],
+      "member": "serviceAccount:shield-runtime@shield-calls-isaac.iam.gserviceaccount.com",
+      "reason": "Existing project roles grant users.get, users.update and users.create, but not users.delete."
+    }
+  ],
+  "prerequisiteEvidence": [
+    "scoped-prerequisites.json",
+    "runtime-iam-review.json"
+  ],
+  "hostingManifest": "hosting-scoped-manifest.json",
+  "approval": {
+    "recordedAt": "2026-10-17T20:10:13.432101+00:00",
+    "ownerAnswer": "Approve this scoped backend update",
+    "scope": "Five functions, account-deletion index and single-permission runtime role, caretaker HTML/JS and required CSS; preserve deployed call processing and existing Hosting files; purchases and alert delivery remain disabled."
+  },
+  "deploymentEvidence": [
+    "backend-deployment-verified.json",
+    "worker-deployment-verified.json",
+    "backend-prerequisites-verified.json",
+    "hosting-deployment-verified.json"
+  ]
+}

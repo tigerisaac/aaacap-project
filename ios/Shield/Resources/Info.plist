@@ -18,11 +18,13 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+#if SHIELD_ALLOW_LOCAL_NETWORKING
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+#endif
 	<key>NSContactsUsageDescription</key>
 	<string>Share your contact names and phone numbers with Shield so saved callers can ring. Changes to your shared list also update iPhone Contacts.</string>
 	<key>ShieldAPIHost</key>

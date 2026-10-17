@@ -115,6 +115,8 @@ struct AddNumberView: View {
     }
 
     private func save() async {
+        guard !saving, model.isOwner, let person = model.selectedPersonID else { return }
+        let generation = model.sessionGeneration
         saving = true
         error = nil
         defer { saving = false }
@@ -127,14 +129,16 @@ struct AddNumberView: View {
             }
             var body = ["label": label.trimmingCharacters(in: .whitespacesAndNewlines), "phone": phone]
             if kind == .destinations { body["provenance"] = provenance }
-            if kind == .trusted, let person = model.selectedPersonID {
+            if kind == .trusted {
                 try await PhoneContacts.shared.setEnabled(true, phone: phone, label: label, personID: person)
                 savedToContacts = true
-                let contacts = try await PhoneContacts.shared.all()
-                let _: APIResponses.ContactSync = try await model.api.send("/api/trusted-numbers/sync", method: "POST",
-                    body: JSONEncoder().encode(["contacts": contacts]), participantID: person)
+                guard generation == model.sessionGeneration, model.selectedPersonID == person else { throw CancellationError() }
+                // Adding one person must not share the rest of the address book.
+                // The server upserts by number so a lost response is safe to retry.
+                let _: APIResponses.Empty = try await model.api.send("/api/trusted-numbers", method: "POST",
+                    body: APIClient.payload(body), participantID: person)
             } else {
-                let _: APIResponses.Empty = try await model.api.send(kind.path, method: "POST", body: APIClient.payload(body), participantID: model.selectedPersonID)
+                let _: APIResponses.Empty = try await model.api.send(kind.path, method: "POST", body: APIClient.payload(body), participantID: person)
             }
             dismiss()
         } catch {

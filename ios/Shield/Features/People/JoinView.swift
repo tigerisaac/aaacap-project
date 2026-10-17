@@ -31,8 +31,13 @@ struct JoinView: View {
                     NavigationLink { ContactAlertsView() } label: {
                         ActionRow(title: "Alerts for others", symbol: "bell")
                     }
-                } footer: { Text("Someone added you as a trusted contact? Review it here.") }
+                } footer: { Text("Someone added you as a caretaker? Review it here.") }
                 ShieldGroup {
+                    if model.subscription.showsAccess {
+                        NavigationLink { SubscriptionView() } label: {
+                            ActionRow(title: "Shield access", symbol: "checkmark.shield")
+                        }
+                    }
                     NavigationLink { DeleteAccountView() } label: {
                         ActionRow(title: "Delete account", symbol: "person.badge.minus")
                     }

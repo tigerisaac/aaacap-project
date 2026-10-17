@@ -1,0 +1,28 @@
+{
+  "method": "Read-only sampling of unmodified screenshots. Compare the exact label tint present in the image against the most common native pill interior color using WCAG relative luminance. Antialiasing, native borders and other content are not a complete accessibility audit.",
+  "findings": [
+    {
+      "screens": [
+        "accessibility-cancel-dark.png",
+        "accessibility-close-dark.png"
+      ],
+      "foreground": "#b9cdf2",
+      "background": "#2c3a4e",
+      "sampledContrast": 7.18
+    },
+    {
+      "screens": [
+        "accessibility-close-light.png"
+      ],
+      "foreground": "#002664",
+      "background": "#f7f8f9",
+      "sampledContrast": 13.52
+    }
+  ],
+  "automatedFullScreenAudit": "Unfiltered contrast diagnostics retained; not reported as passed. Physical accessibility review remains required.",
+  "sha256": {
+    "accessibility-cancel-dark.png": "44a7e62f9a845558d4401886064c8253050f61669c20ffe48af12b2d85677c8e",
+    "accessibility-close-dark.png": "af3c32b6a5c78e5380e010f5dcc33d8e3dcb6578ef386569407adc97514a7603",
+    "accessibility-close-light.png": "7053dbf6eeb374e6444eb0b45c86cf6b57714dbe3a26e0230d238c0b2a311fee"
+  }
+}

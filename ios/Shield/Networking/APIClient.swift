@@ -307,3 +307,10 @@ actor APIClient {
         }
     }
 }
+
+extension APIClient: ServiceAccessAPI {
+    func serviceAccess(refresh: Bool) async throws -> ServiceAccessStatus {
+        if refresh { return try await send("/api/access/refresh", method: "POST", body: Self.payload([:])) }
+        return try await send("/api/access")
+    }
+}

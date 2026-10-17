@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-10-17T20:19:43.877Z",
+  "workers": [
+    {
+      "function": "finishAccountDeletions",
+      "revision": "finishaccountdeletions-00001-kif",
+      "schedule": "every 1 minutes",
+      "retryCount": 3,
+      "runtimeVersion": "8",
+      "sourceVerified": true,
+      "privateInvokerVerified": true,
+      "schedulerTargetVerified": true
+    },
+    {
+      "function": "reviewServiceAccess",
+      "revision": "reviewserviceaccess-00001-xey",
+      "schedule": "every 1 hours",
+      "retryCount": 0,
+      "runtimeVersion": "8",
+      "sourceVerified": true,
+      "privateInvokerVerified": true,
+      "schedulerTargetVerified": true
+    }
+  ],
+  "existingCleanupSchedulePreserved": true
+}

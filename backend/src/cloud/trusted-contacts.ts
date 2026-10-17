@@ -77,7 +77,7 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
     // Generic invitation: no owner name or call details are disclosed before the recipient verifies their number.
     if (textAvailable(store) && !optOut?.stopped) {
       await ref.update({ requestDelivery: 'sending' });
-      const result = await sender.send(phone, `Someone added you as a trusted contact in Shield. Choose whether to receive alerts: ${store.config.PUBLIC_BASE_URL}/trusted-contacts.html Reply STOP to stop texts.`);
+      const result = await sender.send(phone, `Someone added you as a caretaker in Shield. Choose whether to receive alerts: ${store.config.PUBLIC_BASE_URL}/trusted-contacts.html Reply STOP to stop texts.`);
       await ref.update({ requestDelivery: result });
     }
     return { contact: ownerDTO(ref.id, (await ref.get()).data()!) };

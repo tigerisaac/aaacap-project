@@ -20,13 +20,13 @@ struct ContactAlertChoiceView: View {
     var body: some View {
         ShieldSection(request.name) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(request.status == "accepted" ? "You’re a trusted contact." : "Receive protection alerts?").font(.headline)
+                Text(request.status == "accepted" ? "You’re a caretaker." : "Receive protection alerts?").font(.headline)
                 if request.ownerPaused { Text("\(request.name) has paused these alerts.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
             }.padding(.vertical, 6)
             Toggle("Text messages", isOn: $textAlerts).disabled(working || !textAvailable).accessibilityIdentifier("contact-text-alerts")
             Toggle("App notifications", isOn: $appAlerts).disabled(working || !appAvailable).accessibilityIdentifier("contact-app-alerts")
             ShieldDisclosure("About alerts") {
-                Text("Shield sends brief protection updates with their name. Calls, messages, and recordings stay private. Message frequency varies; message and data rates may apply.")
+                Text("Shield alerts you only when checks while they talk detect a possible scam request and intervene. Alerts include their name. Calls, messages, and recordings stay private. Message frequency varies; message and data rates may apply.")
                     .foregroundStyle(ShieldTheme.secondaryText)
             }
         } footer: {
@@ -56,6 +56,8 @@ struct ContactAlertChoiceView: View {
         }
     }
     private func save(accept: Bool) async {
+        guard !working else { return }
+        let generation = model.sessionGeneration
         working = true; error = nil; notificationsDenied = false
         defer { working = false }
         do {
@@ -66,13 +68,18 @@ struct ContactAlertChoiceView: View {
                     error = "Allow Shield notifications in Settings, or turn off App notifications and choose texts. Your alert choices haven’t been saved."
                     return
                 }
-                UIApplication.shared.registerForRemoteNotifications()
             }
             if !model.isPreview {
+                guard generation == model.sessionGeneration, model.signedIn else { return }
                 let _: APIResponses.Empty = try await model.api.send("/api/contact-alerts/\(request.id.uuidString.lowercased())", method: "POST",
                     body: APIClient.payload(["accept": accept, "textAlerts": accept && textAlerts, "appAlerts": accept && appAlerts]))
+                // A recipient without their own protected phone may register only
+                // after the server has accepted their caretaker relationship.
+                if accept && appAlerts { UIApplication.shared.registerForRemoteNotifications() }
             }
+            guard generation == model.sessionGeneration else { return }
             await onSaved(accept, accept && textAlerts, accept && appAlerts)
-        } catch { self.error = error.localizedDescription }
+        } catch is CancellationError { return }
+        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
     }
 }
