@@ -3,25 +3,38 @@ import { randomUUID } from 'node:crypto';
 
 // Deliberately persistent: restarting never refunds a submitted/uncertain attempt.
 export class LiveLedger {
-  constructor(path, now=Date.now) {
-    this.path=path; this.now=now;
+  constructor(path, now=Date.now, mode='sequential') {
+    if(!['sequential','overlap'].includes(mode))throw Error('invalid_run_mode');
+    this.path=path; this.now=now;this.mode=mode;
     try { this.data=JSON.parse(readFileSync(path,'utf8')); }
-    catch(e) { if(e.code!=='ENOENT')throw e; this.data={version:1,id:randomUUID(),createdAt:now(),attempts:[],credentials:[],stopped:false};this.save(); }
+    catch(e) { if(e.code!=='ENOENT')throw e; this.data={version:1,mode,id:randomUUID(),createdAt:now(),attempts:[],credentials:[],stopped:false};this.save(); }
     if(this.data.version!==1||!Array.isArray(this.data.attempts))throw Error('invalid_ledger');
+    if((this.data.mode??'sequential')!==mode)throw Error('run_mode_mismatch');
   }
   save() { writeFileSync(this.path+'.tmp',JSON.stringify(this.data,null,2),{mode:0o600});renameSync(this.path+'.tmp',this.path); }
-  reserve(kind) {
+  reserve(kind,alias='person-01') {
     if(!['accept','decline'].includes(kind))throw Error('unknown_case');
+    if(!['person-01',...(this.mode==='overlap'?['person-02']:[])].includes(alias))throw Error('unknown_test_recipient');
+    if(this.mode==='overlap'&&kind!=='accept')throw Error('overlap_requires_accept');
     if(this.data.stopped||this.now()-this.data.createdAt>1800000)throw Error('run_closed');
-    if(this.data.attempts.some(a=>!a.endedAt))throw Error('session_active');
+    if(this.activeAll().length>=(this.mode==='overlap'?2:1))throw Error('session_active');
+    if(this.mode==='overlap'&&this.data.attempts.some(a=>a.alias===alias))throw Error('recipient_already_reserved');
     if(this.data.attempts.length>=2)throw Error('attempt_budget_exhausted');
-    const a={id:randomUUID(),kind,startedAt:this.now(),deadline:this.now()+60000,sids:[],events:[],commands:[],mediaFrames:0};
+    const a={id:randomUUID(),kind,alias,startedAt:this.now(),deadline:this.now()+60000,sids:[],events:[],commands:[],mediaFrames:0};
     this.data.attempts.push(a);this.save();return a;
   }
   active() { return this.data.attempts.find(a=>!a.endedAt); }
+  activeAll() { return this.data.attempts.filter(a=>!a.endedAt); }
+  byCallId(id) { return id?this.data.attempts.find(a=>a.callId===id):undefined; }
+  byTicket(ticket) { return ticket?this.activeAll().find(a=>a.ticket===ticket):undefined; }
   known(sid) { return this.data.attempts.find(a=>a.sids.includes(sid)); }
   bind(a,sid) { if(typeof sid!=='string'||sid.length>512||!sid)throw Error('invalid_call_id');if(!a.sids.includes(sid)){a.sids.push(sid);this.save();} }
   remaining(a) { const seconds=Math.floor((a.deadline-this.now())/1000);if(seconds<1||a.endedAt||this.data.stopped)throw Error('session_expired');return Math.min(60,seconds); }
+}
+
+export function overlapReady(attempts) {
+  return attempts.length===2 && new Set(attempts.map(a=>a.alias)).size===2 &&
+    attempts.every(a=>!a.endedAt&&a.outcome==='connected'&&a.events.some(e=>e.type==='call.bridged'));
 }
 
 export function guardDial(body, {ledger,attempt,connection,phone,recipient,from}) {

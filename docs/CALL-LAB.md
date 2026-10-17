@@ -1,5 +1,23 @@
 # Browser call lab
 
+## Public-number overlap test — prepared, not executed
+
+The owner requested two people on the actual public number, connected together for about ten seconds. The next run is prepared with two different fictional recipients and four browser endpoints, all dialing **+1 507 473 1802**. The gateway waits for provider bridge evidence for both calls, then waits ten seconds and verifies all four controlled legs are still alive before ending them. Different synthetic tones in each conversation let the browser measurements detect swapped or mixed recipient audio. A pass requires at least five samples of the expected tone in both directions for each pair.
+
+This requires a separately approved brief **live number-assignment change** from production application `3069380298086024954` to test application `3072448854122038294`. Ordinary calls to the public number may fail during that window. The plan refuses an unexpected number binding or any active production calls, persists the original assignment before submitting a change, and restores it after the test. An independent watchdog attempts restoration after a stale heartbeat or a 90-second routing deadline; these local safeguards cannot guarantee restoration while the entire host/network is unavailable. A concurrent third-party routing change is never overwritten. Test application/browser limits temporarily become 2/2, and the test profile gets four outbound channels; cleanup returns them to 1/1 and two channels, disabled.
+
+No number purchase is needed. Expect a few cents; retain the existing conservative 13¢ planning allowance and 25¢ **outbound-only** threshold. Each of two attempts has a 60-second deadline; failed attempts consume the run. The public-number run uses a separate persisted directory (`artifacts/private/call-lab/public-overlap/`) and cannot reset or reuse the earlier completed run. The test does not call the owner's phone. Since both ends originate within Telnyx, dialing the actual DID does not prove ingress or forwarding from an outside mobile carrier. Screening remains a fixed test decision.
+
+`node scripts/call-lab/public-plan.mjs` is read-only. Starting the prepared gateway requires both the owner's test approval and public-number-window approval:
+
+```sh
+node scripts/call-lab/live.mjs --public-overlap --authorized-two-calls --authorized-public-number-window
+```
+
+The flags alone do not grant permission. Register both browser pairs before starting either call; open the second page with `#person-02`. The first reservation begins the routing window. Afterward use `live-report.mjs --public-overlap` and `live-audit.mjs --public-overlap` for provider evidence and restored-state verification. No live changes or calls have been made for this prepared run. Read-only preflight confirmed the current number binding, disabled lab resources and no active production calls.
+
+Preparation validation: typecheck, 306 unit tests and build passed; all 23 focused lab tests passed after the final changes. The usual Firestore port was occupied, so the required suite ran on a separate emulator: 228/229 passed, with one unrelated stopped-history-total transaction closed by the emulator. Its complete 16-test file passed on isolated rerun. Added tests cover explicit overlap mode, distinct-recipient limits, call/ticket correlation, delayed overlap timing, active-production-call refusal, verified restoration, and refusing to overwrite someone else's routing change. This is preparation evidence, not a successful public-number overlap call.
+
 ## Isolated real-call run — October 16, 2026, 23:20–23:23 Central
 
 The owner authorized building the isolated gateway and running the scoped tests. **Both real browser/SIP calls passed.** No physical phones, number purchases, production deployments or customer data were involved. The gateway executed the hash-locked deployed API package (`2933563`, `shieldapi-00025-wec`) against `demo-shield-call-live` on a separate local Firestore emulator, with synthetic tones and a deliberately fixed screening decision. It did not run Soniox or an AI model.

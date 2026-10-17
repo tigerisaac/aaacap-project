@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile,writeFile } from 'node:fs/promises';
 import { labRequest } from './live-provider.mjs';
-const root='artifacts/private/call-lab',read=async path=>JSON.parse(await readFile(path));
-const config=await read('artifacts/private/firebase-runtime.json'),ids=await read(root+'/telnyx/created.json'),before=await read(root+'/telnyx/before.json'),ledger=await read(root+'/live-ledger.json');
+const base='artifacts/private/call-lab',root=process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
+const config=await read('artifacts/private/firebase-runtime.json'),ids=await read(base+'/telnyx/created.json'),before=await read(base+'/telnyx/before.json'),ledger=await read(root+'/live-ledger.json');
 const api=path=>labRequest(config,path);
 const paths={app:'/call_control_applications',browser:'/credential_connections',profile:'/outbound_voice_profiles'};
 const stable=x=>{const y=structuredClone(x);delete y.updated_at;delete y.connections_count;return y;};

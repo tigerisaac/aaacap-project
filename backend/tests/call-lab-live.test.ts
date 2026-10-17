@@ -3,11 +3,30 @@ import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { LiveLedger, guardDial, operatorRequestAllowed } from '../../scripts/call-lab/live-guard.mjs';
+import { LiveLedger, guardDial, operatorRequestAllowed, overlapReady } from '../../scripts/call-lab/live-guard.mjs';
+import { restorePublicNumber, publicNumberSnapshot } from '../../scripts/call-lab/public-number.mjs';
 const dirs:string[]=[];
 const path=()=>{const dir=mkdtempSync(join(tmpdir(),'shield-live-'));dirs.push(dir);return join(dir,'ledger.json');};
 afterEach(()=>{for(const dir of dirs.splice(0))rmSync(dir,{recursive:true,force:true});});
 describe('live call lab spending and destination boundaries',()=>{
+  it('allows exactly two different recipients only in an explicitly selected overlap run',()=>{
+    const file=path(),ledger=new LiveLedger(file,Date.now,'overlap');
+    const a=ledger.reserve('accept','person-01');a.ticket='one';a.callId='first';
+    expect(()=>ledger.reserve('accept','person-01')).toThrow('recipient_already_reserved');
+    expect(()=>ledger.reserve('accept','person-03')).toThrow('unknown_test_recipient');
+    const b=ledger.reserve('accept','person-02');b.ticket='two';b.callId='second';ledger.save();
+    expect(ledger.byTicket('two')).toBe(b);expect(ledger.byCallId('first')).toBe(a);
+    expect(ledger.byTicket(undefined)).toBeUndefined();expect(ledger.byCallId(undefined)).toBeUndefined();
+    expect(()=>new LiveLedger(file)).toThrow('run_mode_mismatch');
+    expect(()=>ledger.reserve('accept','person-01')).toThrow('session_active');
+    a.endedAt=Date.now();b.endedAt=Date.now();ledger.save();
+    expect(()=>new LiveLedger(file,Date.now,'overlap').reserve('accept','person-01')).toThrow('recipient_already_reserved');
+  });
+  it('starts the overlap clock only after both distinct calls have provider bridge evidence',()=>{
+    const a={alias:'person-01',outcome:'connected',events:[{type:'call.bridged'}]},b={alias:'person-02',outcome:'connected',events:[]};
+    expect(overlapReady([a,b])).toBe(false);b.events.push({type:'call.bridged'});expect(overlapReady([a,b])).toBe(true);
+    expect(overlapReady([a,a])).toBe(false);expect(overlapReady([a,{...b,endedAt:1}])).toBe(false);
+  });
   it('persists attempts across restart and never refunds uncertain calls',()=>{
     const file=path(),first=new LiveLedger(file);const a=first.reserve('accept');
     expect(()=>new LiveLedger(file).reserve('decline')).toThrow('session_active');
@@ -61,5 +80,26 @@ describe('browser test operator recovery',()=>{
     await h.element('run').onclick();
     expect(runInNewContext('audioStats.caller.bytes',h.context)).toBe(0);
     expect(runInNewContext('recipientCall',h.context)).toBeUndefined();
+  });
+});
+
+describe('temporary public-number routing rollback',()=>{
+  const config={TELNYX_NUMBER:'+12025550198',TELNYX_SHARED_APPLICATION_ID:'production'};
+  const binding={id:'owned-did',phoneNumber:config.TELNYX_NUMBER,originalConnection:'production'};
+  it('refuses to prepare a window while any production call is active',async()=>{
+    const api=async(path:string)=>path.includes('active_calls')?{data:[{}]}:{data:[{id:binding.id,phone_number:config.TELNYX_NUMBER,connection_id:'production',status:'active'}]};
+    await expect(publicNumberSnapshot(config,api)).rejects.toThrow('production_calls_active');
+  });
+  it('restores only the expected public DID and verifies readback',async()=>{
+    const updates:any[]=[];let connection='lab';
+    const api=async(path:string,method='GET',body:any={})=>{expect(path).toBe('/phone_numbers/owned-did');if(method==='PATCH'){updates.push(body);connection=body.connection_id;}return {data:{phone_number:config.TELNYX_NUMBER,connection_id:connection}};};
+    expect(await restorePublicNumber(config,api,binding,'lab')).toBe(true);expect(updates).toEqual([{connection_id:'production'}]);
+    expect(await restorePublicNumber(config,api,binding,'lab')).toBe(true);expect(updates).toHaveLength(1);
+  });
+  it('does not overwrite a concurrent routing change or touch another phone',async()=>{
+    let writes=0;const api=async(_path:string,method='GET')=>{if(method!=='GET')writes++;return {data:{phone_number:config.TELNYX_NUMBER,connection_id:'other-agent'}};};
+    await expect(restorePublicNumber(config,api,binding,'lab')).rejects.toThrow('restore_connection_conflict');
+    await expect(restorePublicNumber(config,api,{...binding,phoneNumber:'+12025550199'},'lab')).rejects.toThrow('invalid_restore_binding');
+    expect(writes).toBe(0);
   });
 });
