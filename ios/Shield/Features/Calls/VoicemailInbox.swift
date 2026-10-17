@@ -35,6 +35,7 @@ final class VoicemailInbox {
             calls = Array(Dictionary((local + remote).map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest }).values)
                 .sorted { $0.occurredAt > $1.occurredAt }
             nextCursor = page.nextCursor
+            await app.saveOfflineHistory(page: page.calls)
             app.startAudioSync()
         } catch is CancellationError { return }
         catch {

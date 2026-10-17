@@ -7,6 +7,8 @@ actor APIClient {
     private var tokens: AuthTokens?
     private var refreshing: Task<AuthTokens, Error>?
     private var sessionGeneration = 0
+    private let navigationCache = NavigationCache()
+    private var cacheOwners: Set<UUID> = []
 
     init(configuration: BackendConfiguration) {
         self.configuration = configuration
@@ -57,9 +59,57 @@ actor APIClient {
         return decoder
     }
 
+    func invalidateNavigationCache() async {
+        await navigationCache.invalidate(preservingConfiguration: true)
+    }
+
+    /// Home reuses a recent check with its original timestamp; setup actions still read fresh.
+    func forwardingSnapshot(participantID: UUID) async throws -> (status: ForwardingStatus, checkedAt: Date) {
+        let generation = sessionGeneration
+        guard cacheOwners.contains(participantID) else {
+            let status: ForwardingStatus = try await send("/api/forwarding", participantID: participantID)
+            return (status, .now)
+        }
+        let response = try await navigationCache.response(for: .init(path: "/api/forwarding", participantID: participantID), lifetime: 60) {
+            try await self.data("/api/forwarding", participantID: participantID, expectedGeneration: generation)
+        }
+        guard generation == sessionGeneration else { throw CancellationError() }
+        do { return (try decoder().decode(ForwardingStatus.self, from: response.data), response.fetchedAt) }
+        catch { await navigationCache.invalidate(); throw error }
+    }
+
     func send<T: Decodable & Sendable>(_ path: String, method: String = "GET", body: Data? = nil, participantID: UUID? = nil, authenticated: Bool = true) async throws -> T {
-        let data = try await data(path, method: method, body: body, participantID: participantID, authenticated: authenticated)
-        return try decoder().decode(T.self, from: data)
+        let generation = sessionGeneration
+        let result: Data
+        let owner = participantID.map { cacheOwners.contains($0) } ?? false
+        if method == "GET", body == nil,
+           let lifetime = NavigationCache.lifetime(path: path, owner: owner, authenticated: authenticated) {
+            result = try await navigationCache.data(for: .init(path: path, participantID: participantID), lifetime: lifetime) {
+                try await self.data(path, participantID: participantID, authenticated: authenticated, expectedGeneration: generation)
+            }
+        } else {
+            // Even an uncertain write may have reached the server. Never reuse pre-write values.
+            let mutation = method != "GET" && !path.hasPrefix("/auth/") && path != "/api/devices"
+            if mutation { await navigationCache.invalidate(preservingConfiguration: true) }
+            do {
+                result = try await data(path, method: method, body: body, participantID: participantID, authenticated: authenticated, expectedGeneration: generation)
+            } catch {
+                if mutation { await navigationCache.invalidate(preservingConfiguration: true) }
+                throw error
+            }
+            if mutation { await navigationCache.invalidate(preservingConfiguration: true) }
+        }
+        guard generation == sessionGeneration else { throw CancellationError() }
+        let decoded: T
+        do { decoded = try decoder().decode(T.self, from: result) }
+        catch { await navigationCache.invalidate(); throw error }
+        if path == "/api/people", let people = decoded as? APIResponses.People {
+            let owners = Set(people.people.filter(\.isOwner).map(\.id))
+            if owners != cacheOwners { await navigationCache.invalidate() }
+            guard generation == sessionGeneration else { throw CancellationError() }
+            cacheOwners = owners
+        }
+        return decoded
     }
 
     func data(_ path: String, method: String = "GET", body: Data? = nil, participantID: UUID? = nil, authenticated: Bool = true, retried: Bool = false, expectedGeneration: Int? = nil) async throws -> Data {
@@ -81,6 +131,7 @@ actor APIClient {
         let responsePair: (Data, URLResponse)
         do { responsePair = try await session.data(for: request) }
         catch {
+            if Task.isCancelled { throw CancellationError() }
             if authenticated, generation != sessionGeneration { throw CancellationError() }
             throw error
         }
@@ -97,6 +148,10 @@ actor APIClient {
             return try await data(path, method: method, body: body, participantID: participantID, authenticated: true, retried: true, expectedGeneration: generation)
         }
         guard (200..<300).contains(http.statusCode) else {
+            if http.statusCode == 401 || http.statusCode == 403 {
+                cacheOwners = []
+                await navigationCache.invalidate()
+            }
             let code = (try? decoder().decode(APIResponses.ErrorEnvelope.self, from: result))?.error.code ?? "request_failed"
             throw APIError.service(code: code, status: http.statusCode)
         }
@@ -117,7 +172,9 @@ actor APIClient {
         guard generation == sessionGeneration else { throw CancellationError() }
         try keychain.write(result)
         sessionGeneration += 1
+        cacheOwners = []
         tokens = result
+        await navigationCache.invalidate()
     }
 
     func signIn(email: String, code: String) async throws {
@@ -126,7 +183,9 @@ actor APIClient {
         guard generation == sessionGeneration else { throw CancellationError() }
         try keychain.write(result)
         sessionGeneration += 1
+        cacheOwners = []
         tokens = result
+        await navigationCache.invalidate()
     }
 
     private func refreshSession(_ token: String) async throws {
@@ -159,10 +218,12 @@ actor APIClient {
     func signOut() async {
         let previous = tokens?.accessToken
         sessionGeneration += 1
+        cacheOwners = []
         refreshing?.cancel()
         refreshing = nil
         tokens = nil
         keychain.clear()
+        await navigationCache.invalidate()
         if let previous, let baseURL = configuration.baseURL {
             var request = URLRequest(url: baseURL.appending(path: "auth/logout"))
             request.httpMethod = "POST"

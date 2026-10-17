@@ -1,5 +1,17 @@
 # Local history and recordings
 
+## Navigation caching — October 16, repository implementation
+
+Owner call lists, message lists, call details and overview responses now share a bounded, session-local cache for 60 seconds. Trusted, saved and blocked numbers reuse responses for five minutes; public configuration lasts an hour. Keys include the participant and complete path (including filters and pagination). Only people freshly identified as owners by `/api/people` qualify; helper reads still check server access. Concurrent reads share one request. The cache holds at most 128 responses and 8 MB, with a 1 MB per-response limit.
+
+Home, its setup checklist and onboarding share a protection check for up to 60 seconds, retaining the original check time so navigation cannot make stale status appear current. Setup and settings workflows still fetch current status directly. Pull-to-refresh, foreground/full refresh, incoming audio-delivery notifications and mutations invalidate navigation data; public configuration survives ordinary refreshes. Sign-in, sign-out and authorization failures clear the whole cache. Invalidated in-flight requests cannot refill it, even if their transport finishes late. Failures are not cached.
+
+Message pages now also save their summaries to the existing protected owner history, including older pages browsed in Messages. History/audio persistence remains separate from the session-only response cache; saved-number responses are not persisted across app launches.
+
+This review found that the earlier device/Release playback branch still called the remote audio endpoint, while the debug simulator branch used the local library. Playback now has one common local-first path on both devices and simulators. Already-delivered owner audio plays from the verified local file; only missing audio needs delivery. The existing server acknowledgement/deletion contract is unchanged. This correction supersedes the earlier unverified claim that the installed physical-device UI played saved audio locally.
+
+Validation and installation status are recorded in [Status](STATUS.md). No cloud deployment is required for these client changes; physical airplane-mode playback still needs verification after installation.
+
 The iPhone app previously kept most call history only in memory. Reopening it required `/api/people`, public configuration, setup/contact checks and history requests before its normal screens had data. A temporary connection failure could therefore look like an unusable app, even though cloud call screening continued independently.
 
 The October 16 update loads the signed-in owner's protected local history before refreshing the service. It retains up to 500 previously loaded calls per owner, removes history older than 30 days, and supports Home, call filters and call details without a successful request. Message summaries in this history are available before the recording arrives. Saved audio has its separate durable library and plays locally. Newly loaded calls appear before optional setup/contact/notification checks finish; overlapping full refreshes are coalesced.

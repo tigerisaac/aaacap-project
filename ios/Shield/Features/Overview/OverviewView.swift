@@ -198,10 +198,11 @@ struct OverviewView: View {
         checkingStatus = true
         defer { checkingStatus = false }
         do {
-            let status: ForwardingStatus = try await model.api.send("/api/forwarding", participantID: id)
+            let snapshot = try await model.api.forwardingSnapshot(participantID: id)
             guard id == model.selectedPersonID else { return }
-            forwarding = status; checkedAt = .now
-        } catch { if id == model.selectedPersonID { forwarding = nil; checkedAt = nil } }
+            forwarding = snapshot.status; checkedAt = snapshot.checkedAt
+        } catch is CancellationError { return }
+        catch { if id == model.selectedPersonID { forwarding = nil; checkedAt = nil } }
     }
 
 }

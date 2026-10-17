@@ -74,7 +74,7 @@ struct SavedNumbersView: View {
         }
         .sheet(isPresented: $showingAdd, onDismiss: { Task { await load() } }) { AddNumberView(kind: kind) }
         .task { await load() }
-        .refreshable { await load() }
+        .refreshable { await model.api.invalidateNavigationCache(); await load() }
         .alert("Remove \(pendingRemoval?.label ?? "this saved number")?", isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } })) {
             Button("Remove number", role: .destructive) { if let item = pendingRemoval { Task { await remove(item) } } }
             Button("Keep number", role: .cancel) { pendingRemoval = nil }

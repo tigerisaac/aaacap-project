@@ -89,7 +89,10 @@ struct VoicemailView: View {
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task { await inbox.load(app) }
             .onChange(of: app.localMessages.map(\.call)) { _, _ in Task { await inbox.load(app) } }
-            .refreshable { await inbox.load(app) }
+            .refreshable {
+                await app.api.invalidateNavigationCache()
+                await inbox.load(app)
+            }
         }
     }
 

@@ -16,6 +16,8 @@ struct ShieldApp: App {
                     notificationDelegate.receiveMessages = {
                         guard model.signedIn, !model.isPreview else { return false }
                         let before = Set(model.localMessages.map { $0.call.id })
+                        // A delivery notification is new evidence; do not reuse a pre-push call list.
+                        await model.api.invalidateNavigationCache()
                         await model.syncMessageAudio()
                         return model.localMessages.contains { !before.contains($0.call.id) }
                     }

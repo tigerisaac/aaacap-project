@@ -85,7 +85,7 @@ struct BlockedNumbersView: View {
             Text("Shield can check future calls from this number. Only allow calls if you know who it belongs to.")
         }
         .task { await load() }
-        .refreshable { await load() }
+        .refreshable { await model.api.invalidateNavigationCache(); await load() }
     }
 
     private func detail(for item: BlockedNumber) -> String {

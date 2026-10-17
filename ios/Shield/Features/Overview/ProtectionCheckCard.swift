@@ -155,7 +155,7 @@ final class ProtectionCheckState {
         }
         #endif
         guard model.isOwner, !model.isDemo, let id = model.selectedPersonID, let status = model.overview?.status else { return }
-        let forwarding: ForwardingStatus? = try? await model.api.send("/api/forwarding", participantID: id)
+        let forwarding = try? await model.api.forwardingSnapshot(participantID: id).status
         guard model.selectedPersonID == id else { return }
         items = await ProtectionCheck.run(status: status, forwarding: forwarding, notificationsAvailable: model.service?.notificationsAvailable == true)
     }

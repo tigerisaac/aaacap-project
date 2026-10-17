@@ -322,18 +322,7 @@ struct CallDetailView: View {
         do {
             player.loading = true
             defer { if playbackRequest == request { player.loading = false } }
-            let data: Data
-            #if DEBUG && targetEnvironment(simulator)
-            if usesAudioFixture {
-                if ProcessInfo.processInfo.arguments.contains("--uitesting-delayed-audio") { try await Task.sleep(for: .seconds(4)) }
-                data = PreviewAudio.data
-            } else {
-                guard let person = model.person else { throw CancellationError() }
-                data = try await model.messageAudioData(call: call, person: person)
-            }
-            #else
-            data = try await model.api.data("/api/voicemails/\(voicemail.id)/audio", participantID: personID)
-            #endif
+            let data = try await playbackAudio()
             guard playbackRequest == request, model.selectedPersonID == personID else { return }
             guard isVisible, scenePhase == .active, model.signedIn, model.canListen else { return }
             try await player.play(data: data)
@@ -345,6 +334,18 @@ struct CallDetailView: View {
             return
         }
         await markPlayed(voicemail)
+    }
+
+    private func playbackAudio() async throws -> Data {
+        #if DEBUG && targetEnvironment(simulator)
+        if usesAudioFixture {
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-delayed-audio") { try await Task.sleep(for: .seconds(4)) }
+            return PreviewAudio.data
+        }
+        #endif
+        // The same local-first path runs on physical devices and in the simulator.
+        guard let person = model.person else { throw CancellationError() }
+        return try await model.messageAudioData(call: call, person: person)
     }
 
     private func markPlayed(_ voicemail: Voicemail) async {

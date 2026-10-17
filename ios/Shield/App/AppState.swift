@@ -174,6 +174,7 @@ final class AppState {
         let generation = sessionGeneration
         isLoading = true
         defer { isLoading = false }
+        await api.invalidateNavigationCache()
         do {
             let response: APIResponses.People = try await api.send("/api/people")
             guard generation == sessionGeneration, signedIn, !isPreview else { return }
@@ -214,7 +215,7 @@ final class AppState {
     private func loadProtectionOnboarding(generation: Int) async {
         guard let id = selectedPersonID, isOwner, !isDemo else { return }
         let choiceGeneration = protectionChoiceGeneration
-        guard let status: ForwardingStatus = try? await api.send("/api/forwarding", participantID: id),
+        guard let status = try? await api.forwardingSnapshot(participantID: id).status,
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
               signedIn, selectedPersonID == id else { return }
         // Offer optional contacts only when their request-delivery service is configured.
@@ -278,7 +279,8 @@ final class AppState {
             nextCursor = page.nextCursor
             showingSavedHistory = false
             await saveOfflineHistory(page: page.calls, overview: newOverview)
-        } catch { if generation == sessionGeneration, selectedPersonID == id { contextError = error.localizedDescription; handleSessionFailure(error) } }
+        } catch is CancellationError { return }
+        catch { if generation == sessionGeneration, selectedPersonID == id { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
     func loadCalls(more: Bool = false) async {
@@ -322,7 +324,8 @@ final class AppState {
             nextCursor = page.nextCursor
             showingSavedHistory = false
             await saveOfflineHistory(page: page.calls)
-        } catch { if generation == sessionGeneration, selectedPersonID == id, filter == requestedFilter { callsError = error.localizedDescription; handleSessionFailure(error) } }
+        } catch is CancellationError { return }
+        catch { if generation == sessionGeneration, selectedPersonID == id, filter == requestedFilter { callsError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
     func showCalls(_ selectedFilter: CallFilter) {

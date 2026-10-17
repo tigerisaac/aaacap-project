@@ -1,5 +1,13 @@
 # Status
 
+## October 16 — navigation caching and device local-audio correction (not installed)
+
+The iPhone client now reuses recent owner history/message/detail responses and saved/trusted/blocked numbers across navigation, shares overlapping reads, and keeps public configuration for an hour. Home shares a recent protection check with its original timestamp; setup workflows and helper authorization remain fresh. Refreshes, edits and session changes invalidate the appropriate cached data, and late requests cannot refill a cleared cache. Browsed message summaries now join the protected persistent history. Response caching itself is bounded and session-only.
+
+The review found a physical-device/Release playback branch still fetching remote audio despite the simulator using local storage. Both now use the same verified local-first library path. This corrects the earlier installed-app playback claim; physical offline playback remains unverified until the new app is installed and checked.
+
+Validation: `npm run check` passed (303 unit tests, typecheck/build); `npm run test:firebase` passed all 229 tests. Swift tests cover cache reuse/expiry, per-person/filter separation, concurrent reads, invalidation races, retry, retained check timestamps, and existing durable audio/history failure cases. The unsigned device Release build and the two focused simulator tests for offline history/filter/detail and audio playback after relaunch passed. No production deployment, phone installation, call or carrier change occurred. [Behavior and limits](IOS-OFFLINE.md#navigation-caching--october-16-repository-implementation).
+
 ## October 16 — isolated browser calls verified; production unchanged
 
 The owner-approved isolated gateway completed two real Telnyx browser/SIP calls using the hash-locked deployed API package (`2933563`, `shieldapi-00025-wec`) and a separate local database. Press 1 connected only after recording stopped; press 2 went to voicemail without bridging. Signed routing metadata, real audio transport, DTMF, recording download and cleanup passed. Both sessions ended in under 37 seconds. A third reservation was rejected. The displayed balance dropped 1¢; call-cost callbacks totaled $0.0072, subject to later billing. No numbers, PSTN calls, SMS or AI requests were added. Test connections/profile are disabled, temporary logins and provider recordings removed, and production settings/number bindings verified unchanged. Typecheck/build and 298 unit tests passed; all 229 emulator tests passed on rerun. Fixed decisions and synthetic tones do not certify AI screening, mobile forwarding, iPhone delivery or overflow behavior. [Evidence and remaining tests](CALL-LAB.md).

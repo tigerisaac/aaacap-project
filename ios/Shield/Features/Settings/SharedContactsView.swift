@@ -114,7 +114,7 @@ struct SharedContactsView: View {
             }
             #endif
         }
-        .refreshable { if model.hasShared(app.selectedPersonID) { await model.share(app) } else { await model.load(app) } }
+        .refreshable { await app.api.invalidateNavigationCache(); if model.hasShared(app.selectedPersonID) { await model.share(app) } else { await model.load(app) } }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active, demoAction == nil, model.hasShared(app.selectedPersonID) { Task { await model.share(app) } }
         }
