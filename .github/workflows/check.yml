@@ -5,6 +5,7 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -13,3 +14,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm run test:firebase
+      - run: npm run test:accounts

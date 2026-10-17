@@ -1,6 +1,6 @@
 # Guided disconnection and account deletion
 
-October 17, 2026 — the guided disconnection subset, including explicit cancellation, is deployed as `shieldapi-00027-xaw` with owner approval; the durable account-deletion and privacy rollout remains repository implementation only. The iPhone guide and saved carrier instructions are available locally. Explicit progress and final routing changes use the server. [Deployment evidence](STATUS.md#october-17--local-phone-setup-and-disconnection-guide-installed-guided-backend-deployed). No carrier change or real phone call was performed.
+October 17, 2026 — guided disconnection and cancellation were deployed with owner approval, followed by the approved durable account-deletion overlay on `shieldapi-00031-cif` and `finishaccountdeletions-00001-kif`. The deletion index, runtime deletion permission and minute schedule were verified; no production account was erased by this audit. Broader privacy/consent changes remain repository work. The iPhone guide and saved carrier instructions are available locally. Explicit progress and final routing changes use the server. [Exact rollout and verification limits](IOS-BACKEND-ROLLOUT.md). No carrier change or real phone call was performed.
 
 ## The senior's journey
 
@@ -38,7 +38,7 @@ Before the last confirmation, the backend rejects active calls and any forwarded
 
 The client rechecks all owned phones, cancels stale account loads, erases this iPhone's audio/history and clears its Call Directory list. A status-only receipt and initiating account namespace are saved before submitting the final request, allowing a dropped response to be recovered. The UI distinguishes an unconfirmed request from one accepted by the server; retry cannot submit against a different signed-in account.
 
-The server atomically fences owned participants and saves an encrypted account-deletion job. Other authenticated API operations are rejected for a deleting account. A two-minute settling period lets bounded in-flight requests drain. `finishAccountDeletions` runs every minute, claims due jobs with a lease and retries failures. It needs to be deployed with the API before the UI can promise background completion.
+The server atomically fences owned participants and saves an encrypted account-deletion job. Other authenticated API operations are rejected for a deleting account. A two-minute settling period lets bounded in-flight requests drain. `finishAccountDeletions` runs every minute, claims due jobs with a lease and retries failures. The matching API/worker/index rollout is deployed; observed scheduled HTTP success is not evidence that a real account completed erasure.
 
 Cleanup retains server-recorded participant IDs across retries, drains paginated records, removes sharing/contact relationships and route references, and deletes the Firebase identity last. A provider failure or lost completion write does not require the app to remain open. The unguessable receipt reveals only pending/complete, works after the login is deleted, and expires seven days after completion. The client can close an unavailable receipt without claiming successful erasure.
 
@@ -46,7 +46,7 @@ Provider recording-erasure jobs remain able to delete Telnyx copies. Pending job
 
 ## Rollout and acceptance gates
 
-- Deploy the receipt/job API, indexes, worker and client together after owner approval; no deployment was performed here.
+- The approved receipt/job API, index and worker rollout is complete. The matching distribution client and production erasure/retry acceptance remain release gates; do not infer them from backend readiness.
 - Save and review each line's original restoration instructions. `manage-forwarding-test.mjs prepare` accepts optional `codes` in its private restoration file and validates their format; omission means written instructions, not guessed codes. Preparing is still a production action requiring approval.
 - Verify pending-job monitoring, retry recovery and the expected few-minute completion on the chosen release before enabling the UI in production.
 - Run supervised real carrier restoration for unanswered, busy/declined and unreachable calls, and retrieve actual carrier voicemail. Use approved participants; never infer these results from simulators.
@@ -58,3 +58,7 @@ Apple requires accessible in-app initiation, clear completion information and ac
 ## Local validation
 
 Results are recorded in [Status](STATUS.md). Emulator tests exercise ordered/retried/stale confirmations, active-call and forwarded-call guards, no premature service shutdown, account isolation, write fencing, delayed worker cleanup and completion receipts. Simulator tests exercise the guided carrier/settings/call checks, restart, errors, large text and deletion handoff. They do not establish real-carrier restoration or novice usability.
+
+The separate `npm run test:accounts` suite passed **8/8** checks using Firebase's actual Auth and Firestore emulators in `demo-shield-accounts`. It covers never-enrolled accounts, helpers, alert-only recipients, owners and multiple owned phones; old ID/refresh-token rejection; unrelated-account preservation; a still-forwarding phone; simultaneous deletion workers; a lost response after identity deletion; and recreation of the same verified phone without restored history/access. Phone verification is synthetic and sends no SMS. Only the lost-response case wraps the real identity deletion to inject a failure; the Auth account lookup, creation, custom-token exchange, verification and removal use the emulator.
+
+The suite requires its dedicated loopback emulator hosts and demo project, and is now included in CI after the existing Firestore suite. It does not verify production IAM, signed production tokens, remote device erasure, Telnyx copies or RevenueCat/Apple erasure. Firebase documents the [Auth emulator's differences from production](https://firebase.google.com/docs/emulator-suite/connect_auth); these limits remain in the release checklist.

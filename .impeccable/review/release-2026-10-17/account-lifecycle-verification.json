@@ -1,0 +1,103 @@
+{
+  "recordedAt": "2026-10-17T21:25:04.626547+00:00",
+  "baseCommit": "e5597df4e0ca1013b60c2342ff0df159fefde900",
+  "scope": "Local account lifecycle and backend regressions; no production mutation or application implementation change",
+  "runtime": {
+    "node": "22.17.1",
+    "java": "21.0.1",
+    "firebaseAdmin": "14.4.0",
+    "firebaseTools": "15.10.1",
+    "vitest": "5.0.1"
+  },
+  "checks": [
+    {
+      "command": "npm run test:accounts",
+      "passed": 8,
+      "log": "artifacts/private/account-lifecycle-oct17/emulator.log",
+      "logSha256": "da4acb72416615fb092eaa5b6cc2ba72b317168ea497343df1dd59864b6d564a",
+      "durationSeconds": 24.03,
+      "metadataLookupWarnings": 1
+    },
+    {
+      "command": "npm run check",
+      "passed": 335,
+      "log": "artifacts/private/account-lifecycle-oct17/check.log",
+      "logSha256": "ece652e54d2187a94fef70f4ed9988ee29029734464d305050cd25174341f806",
+      "durationSeconds": 20.23,
+      "metadataLookupWarnings": 0
+    },
+    {
+      "command": "npm run test:firebase",
+      "passed": 250,
+      "log": "artifacts/private/account-lifecycle-oct17/firestore.log",
+      "logSha256": "45dea1ec237160f2e12341b902676a646869a18e7ffbb959191449ecaf48ccf4",
+      "durationSeconds": 158.4,
+      "metadataLookupWarnings": 6
+    }
+  ],
+  "accountCases": [
+    "never-enrolled",
+    "helper",
+    "alert-only",
+    "owner",
+    "multiple-owned-phones",
+    "any owned phone still forwarding",
+    "lost response after actual emulator identity deletion",
+    "same verified phone recreated with a new identity"
+  ],
+  "verifiedBoundaries": [
+    "Actual emulator Firebase account creation, custom-token exchange, ID-token verification and deletion",
+    "Old ID and refresh tokens rejected after deletion",
+    "Other account, phone, history and device registration preserved",
+    "Two simultaneous deletion workers with durable receipt",
+    "Lost identity-delete response completes on retry without sign-in",
+    "Recreated phone identity has no prior access or history"
+  ],
+  "excludedClaims": [
+    "Telnyx phone verification/SMS delivery",
+    "Production IAM or signed production token verification",
+    "Actual production account erasure or scheduled job completion",
+    "Other-device and offline data erasure",
+    "RevenueCat/Apple or Telnyx provider erasure",
+    "Real carrier restoration",
+    "A completed GitHub CI run"
+  ],
+  "ci": {
+    "workflow": ".github/workflows/check.yml",
+    "configuredCommands": [
+      "npm run test:accounts",
+      "npm run check",
+      "npm run test:firebase"
+    ],
+    "java": 21,
+    "node": 24,
+    "result": "not yet run for this change"
+  },
+  "backendSource": {
+    "files": 96,
+    "manifestSha256": "0992d4d5ab67a045a8c59ca6dadcc8570cd893fffcd3dffa95eed5e31a70affb"
+  },
+  "verificationFiles": [
+    {
+      "path": "backend/tests/account-lifecycle.test.ts",
+      "sha256": "f6adf5376ef8e2210dc7e2ae9ad985f0a1799d93f2eef174312f0062915ac215"
+    },
+    {
+      "path": "firebase.account-tests.json",
+      "sha256": "58919cc305cee038b8f487050420fcb011fdb44c71343f734e4499860bf2d0a6"
+    },
+    {
+      "path": "package.json",
+      "sha256": "407a5a636902b80d4775299ba5c88b08554f397d7abe154aa8e8b2b2701ed6f3"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "ea3fc4dc9785ab06144d1f43e5bf45ba33c39d9ec4d9c9252ec8beac77602a00"
+    },
+    {
+      "path": ".github/workflows/check.yml",
+      "sha256": "8fa20d8c4690bc139edc8eadc181f5982d7f1022d1992402d3469aa06feb65f8"
+    }
+  ],
+  "officialReference": "https://firebase.google.com/docs/emulator-suite/connect_auth"
+}

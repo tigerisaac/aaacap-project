@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — account lifecycle verified against Firebase Auth and Firestore emulators
+
+All **8/8** dedicated account-lifecycle checks passed with actual Firebase emulators: never-enrolled accounts, helpers, alert-only recipients, owners and multiple owned phones; old ID/refresh-token rejection; unrelated-account preservation; the forwarding guard; simultaneous deletion workers; a lost response after identity removal; and same-phone recreation with a new identity and no restored access. The existing adapter/API/worker needed no implementation change. Upstream phone verification is synthetic and no SMS is sent.
+
+Required regression checks passed **335 unit tests** plus typecheck/build and **250 Firestore integration tests**. The new opt-in suite uses dedicated loopback ports and a `demo-` project; both emulator suites are now configured in CI with Java 21, rather than being skipped by the previous unit-only workflow. The offboarding document now accurately records the approved deletion rollout. [Recorded local evidence](../.impeccable/review/release-2026-10-17/account-lifecycle-verification.json) does not claim production identity/IAM, other-device erasure, provider-copy deletion or carrier restoration. No additional backend deployment or phone operation occurred; the broader release gates remain open.
+
 ## October 17 — revised prices and real RevenueCat SDK verification
 
 The owner revised intended subscriptions to **USD $9.99 monthly / $99.99 annually**. With explicit approval, RevenueCat Test Store plan `c3c08559-41c0-471d-b249-d9a58301b575` created the two QA products; live store-state reads verified both prices. The QA offering and entitlement are separate from the unchanged public offering. Apple setup remains deferred; its revised desired state is saved without applying it.
