@@ -29,6 +29,8 @@ Full logs and source manifests are retained under ignored `artifacts/private/des
 
 Earlier results below continue to describe their original source snapshots. This follow-up does not certify physical VoiceOver gestures or screen-wide motion performance. No physical install, backend deployment, real call or owner-phone setting change is part of it.
 
+**Requested phone installation, October 17 at approximately 15:10 Central:** after the owner explicitly requested installation, the signed Debug app was built from the same combined checkout used for the simulator review, including design commit `30c60a9`. Every Shield Swift source matched the reviewed integrated manifest, and the installation source remained unchanged during the build. The package passed deep/strict signature verification and installed successfully on the owner's iPhone 12 Pro Max. A normal launch without test arguments was denied because the phone was locked; this records a successful installation, not a physical-screen walkthrough or confirmation of the signed-in state. The owner can unlock the phone and open Shield. Source/package hashes and installation/launch receipts are retained under `artifacts/private/design-refinement-2026-10-17/phone-install/`. No backend deployment, call, carrier or phone-setting change accompanied the installation.
+
 ## Scope and evidence
 
 The request is to inspect every app screen and animation, reproduce visual breakage, correct the causes, and validate the result. Shield targets iPhone and portrait orientation. The audit uses iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27 simulators, plus an isolated iPhone 12 Pro Max/iOS 27 simulator matching the owner's phone dimensions. The physical iPhone 12 Pro Max is available through iPhone Mirroring.
