@@ -141,6 +141,16 @@ The person controls sharing. Offer "Alert my helpers" during onboarding, selecte
 
 ## 5. Check the setup on every launch
 
+**Follow-up queued October 16, 2026 — current shared-number setup:**
+
+- [ ] Add an Allstate-style **Check my setup** test using a separate, unsaved caller number. The current ring/forwarding probes call from the saved Shield contact; they verify hearing/forwarding but do not establish unknown-caller silencing. The legacy `SetupChecks` implementation explicitly excludes shared-number mode.
+
+Acceptance: explicitly request the test in setup; correlate the returning call to the intended participant and exact attempt using authenticated routing evidence and the existing verification challenge; report success only for a verified return consistent with prompt silencing. A late return or an answered/unreturned call needs a bounded failure/recovery result, not an asserted diagnosis of the phone setting. Retain the independent sound check, consent, request limits, deadlines and forwarding qualification gate. No automatic calls to the owner's phones are authorized by this to-do. A shared check number must stay out of the saved Shield contact; number acquisition and live activation require owner approval.
+
+Product target: one combined carrier code where qualified, then one guided unknown-caller test. Read-only forwarding queries confirm reported configuration; a single test does not separately establish every busy/unanswered/unreachable condition or full AI-screening behavior. T-Mobile's combined-code result is pending the owner's separate-phone test; retain the existing three-code fallback until qualified. Allstate documents both the [unknown-call test and separate-code recovery](https://allstateidentityprotection.zendesk.com/hc/en-us/articles/11623105898509-What-do-I-do-if-Robocall-Blocker-isn-t-working-on-my-phone-or-my-test-call-failed).
+
+The October 11 notes below preserve the earlier plan; they are not a claim that the shared-number follow-up is implemented or deployed.
+
 **Status (October 11):** the app-side check is built and tested, not installed on the phone.
 - **The card:** a Today card for the person shows "Protection is on" or "Protection needs attention". It checks:
   - protection isn't paused or being turned off
