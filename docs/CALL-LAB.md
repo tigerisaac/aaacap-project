@@ -1,4 +1,31 @@
-# Automated call rehearsal and proposed live run
+# Browser call lab
+
+## Isolated real-call run — October 16, 2026, 23:20–23:23 Central
+
+The owner authorized building the isolated gateway and running the scoped tests. **Both real browser/SIP calls passed.** No physical phones, number purchases, production deployments or customer data were involved. The gateway executed the hash-locked deployed API package (`2933563`, `shieldapi-00025-wec`) against `demo-shield-call-live` on a separate local Firestore emulator, with synthetic tones and a deliberately fixed screening decision. It did not run Soniox or an AI model.
+
+| Real test | Observed evidence |
+|---|---|
+| Press 1 / connect | Signed browser recipient tag arrived intact; real inbound audio streamed; both browser endpoints received audio; Telnyx reported digit 1 and bridging. Recording stopped successfully before bridge. Session ended after 30.2 seconds; every known leg was confirmed inactive. |
+| Press 2 / voicemail | Telnyx reported digit 2; recipient ended, caller heard the voicemail prompt; no bridge command occurred. Session ended after 36.5 seconds. Recording readback/download succeeded: 34.6-second valid MP3, nonzero audio verified with ffmpeg. Every known leg was confirmed inactive. |
+| Run limit | A third reservation was rejected as `attempt_budget_exhausted`; it did not place a third call. |
+| Cleanup | Both test connections and their profile disabled; placeholder webhook restored; both temporary telephony credentials revoked; both synthetic provider recordings removed. Readback matched every pre-existing application/connection/profile and phone-number assignment against the original snapshot. |
+
+The displayed account balance changed from **$7.10 to $7.09**. The four Voice API call-cost callbacks sum to **$0.0072**. These are observed interim amounts, not a final itemized invoice; other usage can post later. No number rental, PSTN call, SMS, AI or paid cloud compute was added. The earlier 13¢ estimate was conservative.
+
+Implemented operator files: `scripts/call-lab/live.mjs`, `live-guard.mjs`, `live-watchdog.mjs`, `live-provider.mjs`, `live-report.mjs`, `live-audit.mjs`, `live-firebase.json`, and `web/live.html` / `live.js`. The rehearsal CLI stays separate. The gateway exposes only signed Telnyx events, authenticated media and minimal health through a temporary Cloudflare tunnel; browser credentials and controls remain on a separate loopback listener. Dependencies used: verified Cloudflare `cloudflared` 2026.10.1 binary and locally served `@telnyx/webrtc` 2.27.10. Their downloads and all runtime state stay in ignored `artifacts/private/call-lab/`.
+
+The two-attempt reservation is written before dialing and survives restart. Recipient dialing is restricted to the single software recipient, with `time_limit_secs` bounded to the remaining session budget. Browser-originated incoming legs do **not** have that provider-side duration control; server deadlines, a separate watchdog and browser cleanup enforce the 60-second target. A complete host/network failure can defeat those local controls. The 25¢ profile threshold prevents new outbound calls after its threshold; it cannot guarantee an all-services cap or terminate existing calls. Do not describe this as a provider-enforced hard billing cap.
+
+The completed ledger deliberately prevents silently restarting this run. Any new paid run needs owner approval and an operator-reviewed fresh ledger, fresh short-lived credentials and fresh gateway/tunnel. Do not delete the ledger to bypass approval. No number purchase is authorized. The start command requires an explicit `--authorized-two-calls` flag; that flag records operator intent, it is not permission by itself.
+
+Private evidence: `live-ledger.json`, `live-report.json`, `live-audit.json`, and the two synthetic MP3 files. The report verifies provider identity before fetching recording media. API keys, JWTs, provider call IDs and private URLs are never written into tracked reports. Synthetic recordings are not real-user content.
+
+Validation: `npm run check` passed typecheck, **298 unit tests**, and build. The required Firestore suite passed **229 tests**. An initial sandboxed check could not bind the APNs test server; its permitted rerun passed. One initial 25-client emulator transaction failed as invalid/closed; the isolated 58-test suite and subsequent full 229-test run passed. Gateway ingress returned 403 for unsigned webhooks and 404 for public credential access. New guard tests cover persistent budgets, expired sessions, immutable recipients, uncertain-dial retry prevention, and cross-origin controls. After the final browser fixes, all **18 focused lab tests** and typecheck passed, including three new checks for stop after local cleanup failure, initial status recovery and removal of stale audio counters. No additional real call was used for those UI fixes. The independent UI reviewer scored those three fixes resolved; the detector ran in degraded regex mode, so it did not verify computed contrast.
+
+Remaining pilot evidence: real AI speech decisions, human speech quality, mobile-carrier forwarding/restoration, voicemail filtering and iPhone delivery, provider-failure recovery, long accepted calls, and a separately planned 10-plus-1 capacity overflow run. These two calls verify transport/control behavior, not all pilot readiness. The browser counters originally kept a maximum across calls; that display bug was corrected after this run. The first call's audio evidence and provider recording readback remain valid; do not use the old combined counter to claim independent second-recipient audio measurements.
+
+The sections below retain the earlier local-delivery and staging history; statements that live testing had not yet happened apply to those earlier milestones.
 
 ## Delivered locally — October 16, 2026
 

@@ -1,0 +1,53 @@
+const $=id=>document.getElementById(id);
+let caller,recipient,callerCall,recipientCall,context,kind,ready=false,running=false,deadlineTimer,initialized=false,failed=false,stopping=false;
+const audioStats={caller:{bytes:0,energy:0},recipient:{bytes:0,energy:0}};
+const events=[];
+function note(message){$('status').textContent=message;}
+function event(message){events.push(message);const li=document.createElement('li');li.textContent=message;$('results').append(li);}
+async function post(path,data={}){const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw Error(out.error??'gateway_unavailable');return out;}
+function fixture(hz){const dest=context.createMediaStreamDestination(),osc=context.createOscillator(),gain=context.createGain();osc.frequency.value=hz;gain.gain.value=.035;osc.connect(gain).connect(dest);osc.start();return dest.stream;}
+async function stats(call,role){const peer=call?.peer?.instance;if(!peer)return;const report=await peer.getStats();report.forEach(r=>{if(r.type==='inbound-rtp'&&r.kind==='audio'){audioStats[role].bytes=Math.max(audioStats[role].bytes,r.bytesReceived??0);audioStats[role].energy=Math.max(audioStats[role].energy,r.totalAudioEnergy??0);}});}
+async function connect(role,token){return new Promise((resolve,reject)=>{
+  const client=new TelnyxWebRTC.TelnyxRTC({login_token:token});
+  const timer=setTimeout(()=>reject(Error('browser_registration_timeout')),20000);
+  client.on('telnyx.ready',()=>{clearTimeout(timer);event(`${role} endpoint ready`);resolve(client);});
+  client.on('telnyx.error',()=>{clearTimeout(timer);reject(Error('browser_connection_failed'));});
+  client.on('telnyx.notification',n=>{
+    if(n.type!=='callUpdate')return;const call=n.call;
+    if(role==='recipient')recipientCall=call;else callerCall=call;
+    event(`${role}: ${call.state}`);
+    if(role==='recipient'&&call.state==='ringing'){call.options.localStream=fixture(660);call.answer({remoteElement:$('recipient-audio')});}
+    if(role==='recipient'&&call.state==='active'&&!call.labDigitTimer){call.labDigitTimer=setTimeout(()=>{if(call.state==='active'){call.dtmf(kind==='accept'?'1':'2');event(`recipient sent ${kind==='accept'?'1':'2'}`);}},6000);}
+  });client.connect();
+});}
+$('prepare').onclick=async()=>{
+  $('prepare').disabled=true;note('Connecting the two browser endpoints…');
+  try{context=new AudioContext();await context.resume();const tokens=await post('/credentials');[caller,recipient]=await Promise.all([connect('caller',tokens.caller),connect('recipient',tokens.recipient)]);ready=true;$('run').disabled=false;note('Both endpoints are ready. Starting a test uses one paid attempt.');}
+  catch{failed=true;note('Browser registration failed. No call was placed. Stop testing before trying a new run.');}
+};
+$('run').onclick=async()=>{
+  if(!ready||running)return;running=true;$('run').disabled=true;$('scenario').disabled=true;kind=$('scenario').value;
+  failed=false;callerCall=undefined;recipientCall=undefined;
+  for(const role of ['caller','recipient'])audioStats[role]={bytes:0,energy:0};
+  event(`New attempt: ${kind==='accept'?'press 1 to connect':'press 2 for voicemail'}`);
+  try{await context.resume();const request=await post('/reserve',{kind});deadlineTimer=setTimeout(()=>{callerCall?.hangup();recipientCall?.hangup();void post('/finish');},Math.max(0,request.deadline-Date.now()));
+    callerCall=caller.newCall({...request,audio:true,video:false,localStream:fixture(440),remoteElement:$('caller-audio')});note('Test call running. The gateway will end it automatically.');
+  }catch{running=false;failed=true;note('The attempt could not start. It may have consumed an attempt. Stop testing and review the gateway before a new run.');}
+};
+$('stop').onclick=async()=>{
+  stopping=true;note('Stopping calls and disabling test connections…');clearTimeout(deadlineTimer);$('run').disabled=true;$('prepare').disabled=true;ready=false;
+  // Send the server stop even if a browser endpoint or AudioContext has failed.
+  const stopRequest=post('/stop');
+  void Promise.allSettled([()=>callerCall?.hangup(),()=>recipientCall?.hangup(),()=>caller?.disconnect(),()=>recipient?.disconnect(),()=>context?.close()].map(fn=>Promise.resolve().then(fn)));
+  try{const state=await stopRequest;note(state.resourcesDisabled?'Testing stopped; isolated Telnyx connections disabled.':'Calls stopped; connection cleanup needs verification. Check the gateway before leaving.');}
+  catch{failed=true;note('Stop could not be confirmed. The watchdog will retry; check gateway cleanup before leaving.');}
+};
+setInterval(async()=>{
+  try{await Promise.all([stats(callerCall,'caller'),stats(recipientCall,'recipient')]);const state=await(await fetch('/status')).json();window.labEvidence={audioStats,events,state};$('attempts').textContent=`${state.used} of ${state.limit}`;
+    $('media').textContent=`Received audio: caller ${audioStats.caller.bytes} bytes; recipient ${audioStats.recipient.bytes} bytes.`;
+    const a=state.attempts.at(-1);if(running&&a?.ended){running=false;clearTimeout(deadlineTimer);$('scenario').disabled=false;$('run').disabled=!state.ready||state.used>=2;note(`Call ended. ${state.used} of 2 attempts used. ${a.outcome??'No completed outcome'}.`);}
+    if(!initialized){initialized=true;if(!stopping&&!failed)note(state.ready?'Gateway ready. Connect the browser endpoints to begin.':'Testing is closed. A new run needs operator approval.');}
+    if(!state.ready){$('run').disabled=true;$('prepare').disabled=true;if(!stopping&&!failed)note(state.resourcesDisabled?'Testing stopped; isolated Telnyx connections disabled.':'Testing is unavailable. Check gateway cleanup before a new run.');}
+    else if(state.used>=state.limit){$('run').disabled=true;$('prepare').disabled=true;if(!running&&!stopping&&!failed)note('Both attempts are used. Stop and disable testing; a new run needs approval.');}
+  }catch{note('Gateway unavailable. The independent watchdog will stop testing.');$('run').disabled=true;}
+},1000);

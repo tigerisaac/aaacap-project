@@ -1,5 +1,9 @@
 # Status
 
+## October 16 — isolated browser calls verified; production unchanged
+
+The owner-approved isolated gateway completed two real Telnyx browser/SIP calls using the hash-locked deployed API package (`2933563`, `shieldapi-00025-wec`) and a separate local database. Press 1 connected only after recording stopped; press 2 went to voicemail without bridging. Signed routing metadata, real audio transport, DTMF, recording download and cleanup passed. Both sessions ended in under 37 seconds. A third reservation was rejected. The displayed balance dropped 1¢; call-cost callbacks totaled $0.0072, subject to later billing. No numbers, PSTN calls, SMS or AI requests were added. Test connections/profile are disabled, temporary logins and provider recordings removed, and production settings/number bindings verified unchanged. Typecheck/build and 298 unit tests passed; all 229 emulator tests passed on rerun. Fixed decisions and synthetic tones do not certify AI screening, mobile forwarding, iPhone delivery or overflow behavior. [Evidence and remaining tests](CALL-LAB.md).
+
 ## October 16 — guided disconnection and durable account deletion (not deployed)
 
 The [guided exit](ACCOUNT-OFFBOARDING.md) now follows onboarding: one carrier/phone task at a time, saved server progress, explicit confirmations, visible help and large-text layouts. Starting the guide preserves the current service. It only turns Shield routing off after the owner confirms ordinary calls and carrier voicemail, with backend checks for active or still-forwarded calls. Codes must come from the saved line-specific plan; no carrier reset is guessed. This is owner-confirmed evidence, not automatic verification of carrier settings.

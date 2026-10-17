@@ -1,8 +1,8 @@
 # Local call lab
 
-This operator tool lets Shield's owner exercise call-control behavior for a 25-user paid pilot without placing calls. The current deliverable is a local rehearsal and browser-routing preview. Real audio and live provider integration remain a separate approved phase.
+This operator tool lets Shield's owner exercise call-control behavior for a 25-user paid pilot. The rehearsal screen remains local and free. A separate approved live screen (`web/live.html`) uses isolated Telnyx resources, a separate local database and two software endpoints. Two real calls were authorized and completed October 16; another paid run requires fresh approval.
 
-The owner requested an automated test setup, a capped-run cost estimate, and a way to pass a simulated called recipient from the browser. They require approval before number purchases or real calls; production and the concurrently edited application must remain untouched.
+The owner requested an automated test setup, a small-run cost estimate, and a way to pass a simulated called recipient from the browser. They require approval before additional real calls or number purchases; production and the concurrently edited application must remain untouched.
 
 ## Surface contract
 
@@ -14,4 +14,4 @@ FORM: Existing-product utility extension; code-led form and results list. No vis
 
 ## Required states
 
-Unavailable server, ready, running, success, failure, routing preview. All data is synthetic. No live-call switch, credential input, microphone request or paid action. Two-column desktop layout becomes a single mobile column. Keyboard focus and status announcements must remain visible.
+Unavailable server, ready, running, success, failure, routing preview. All data is synthetic. The rehearsal screen has no live-call switch, credential input, microphone request or paid action. The separate live screen has endpoint connection, approved single-test start and stop/disable controls; it uses synthetic tones, no physical microphone, and a fixed screening decision. It shows two sequential attempts, a 60-second local deadline, the 13¢ conservative estimate and 25¢ outbound threshold with its billing limitation. Two-column desktop layout becomes a single mobile column. Keyboard focus and status announcements must remain visible. Results must distinguish provider transport/control evidence from AI quality, carrier forwarding and iPhone delivery.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T04:03:23.022256+00:00",
+  "generatedAt": "2026-10-17T04:26:21.096234+00:00",
   "title": "Design System: Shield Call Lab",
   "extensions": {
     "colorMeta": {
@@ -193,7 +193,7 @@
       "name": "Primary button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Local rehearsal action.",
+      "description": "Filled rehearsal, live endpoint connection and approved test-start actions; availability is state driven.",
       "html": "<button class=\"ds-button-primary\">Run local rehearsal</button>",
       "css": ".ds-button-primary{font:650 15px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;min-height:46px;padding:11px 17px;border:1px solid var(--accent,#21634c);border-radius:8px;cursor:pointer;background:var(--accent,#21634c);color:var(--white,#fff);border-color:var(--accent,#21634c);}.ds-button-primary:hover{background:#174d3a}.ds-button-primary:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}.ds-button-primary:disabled{opacity:.55;cursor:wait}@media(prefers-reduced-motion:no-preference){.ds-button-primary{transition:background-color .12s ease-out}}"
     },
@@ -201,7 +201,7 @@
       "name": "Secondary button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Routing preview and whole-sequence actions.",
+      "description": "Outlined routing preview, whole-sequence and live stop/disable actions.",
       "html": "<button class=\"ds-button-secondary\">Preview browser routing</button>",
       "css": ".ds-button-secondary{font:650 15px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;min-height:46px;padding:11px 17px;border:1px solid var(--accent,#21634c);border-radius:8px;cursor:pointer;background:transparent;color:var(--accent,#21634c);border-color:#a8b7ae;}.ds-button-secondary:hover{background:#e7eee7}.ds-button-secondary:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}.ds-button-secondary:disabled{opacity:.55;cursor:wait}@media(prefers-reduced-motion:no-preference){.ds-button-secondary{transition:background-color .12s ease-out}}"
     },
@@ -216,7 +216,7 @@
     {
       "name": "Header",
       "kind": "nav",
-      "description": "Plain home link and local mode indicator.",
+      "description": "Plain home link and explicit rehearsal or isolated-live mode indicator.",
       "html": "<header class=\"ds-header\"><a href=\"#\">Shield <span>/ Call lab</span></a><span class=\"ds-mode\">Local rehearsal</span></header>",
       "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line,#d6ddd5);padding-bottom:22px;font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}.ds-header a{font-size:21px;font-weight:700;text-decoration:none;color:var(--ink,#172924)}.ds-header a span{font-weight:400;color:var(--muted,#52625c)}.ds-mode{font-size:14px;color:var(--accent,#21634c);font-weight:650}.ds-header a:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}"
     },
@@ -224,13 +224,42 @@
       "name": "Passed result row",
       "kind": "custom",
       "description": "Synthetic outcome evidence with an explicit text status.",
-      "html": "<div class=\"ds-result\"><div class=\"ds-result-title\"><span>Ordinary caller \u00b7 press 1</span><span class=\"ds-pass\">Passed</span></div><p>person-01 \u00b7 connected \u00b7 8 simulated phone commands</p></div>",
+      "html": "<div class=\"ds-result\"><div class=\"ds-result-title\"><span>Ordinary caller · press 1</span><span class=\"ds-pass\">Passed</span></div><p>person-01 · connected · 8 simulated phone commands</p></div>",
       "css": ".ds-result{padding:15px 0;border-top:1px solid var(--line,#d6ddd5);color:var(--ink,#172924);font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}.ds-result-title{display:flex;justify-content:space-between;gap:12px;font-weight:600}.ds-pass{font-size:14px;color:var(--accent,#21634c)}.ds-result p{font-size:14px;color:var(--muted,#52625c);margin:4px 0 0;overflow-wrap:anywhere}"
+    },
+    {
+      "name": "Live header",
+      "kind": "nav",
+      "description": "The live screen identifies its isolated paid-test mode.",
+      "html": "<header class=\"ds-header\"><a href=\"#\">Shield <span>/ Call lab</span></a><span class=\"ds-mode\">Isolated live test</span></header>",
+      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line,#d6ddd5);padding-bottom:22px;font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}.ds-header a{font-size:21px;font-weight:700;text-decoration:none;color:var(--ink,#172924)}.ds-header a span{font-weight:400;color:var(--muted,#52625c)}.ds-mode{font-size:14px;color:var(--accent,#21634c);font-weight:650}.ds-header a:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}"
+    },
+    {
+      "name": "Live recipient response",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Native select chooses press 1 acceptance or press 2 message behavior; disabled during an attempt.",
+      "html": "<label class=\"ds-label\" for=\"ds-response\">Recipient response</label><select class=\"ds-select\" id=\"ds-response\"><option>Press 1 · connect the caller</option><option>Press 2 · leave a message</option></select>",
+      "css": ".ds-label{display:block;font:600 15px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;margin-bottom:8px;color:var(--ink,#172924)}.ds-select{width:100%;min-height:48px;border:1px solid #8e9e93;border-radius:8px;background:var(--white,#fff);color:var(--ink,#172924);font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;padding:10px 12px;margin-bottom:22px;caret-color:var(--accent,#21634c)}.ds-select:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}"
+    },
+    {
+      "name": "Approved test scope",
+      "kind": "custom",
+      "description": "The live limits stay visible alongside the controls; outbound spending is not an all-services bill cap.",
+      "html": "<aside class=\"ds-scope\"><h2>Approved test scope</h2><dl><div><dt>Attempts</dt><dd>2 of 2</dd></div><div><dt>Concurrency</dt><dd>One call</dd></div><div><dt>Session deadline</dt><dd>60 seconds</dd></div><div><dt>Planning estimate</dt><dd>About 13¢ total</dd></div><div><dt>Outbound spending limit</dt><dd>25¢</dd></div></dl><p>The provider limit blocks new outbound calls; it is not an all-services bill cap.</p></aside>",
+      "css": ".ds-scope{font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;color:var(--ink,#172924);border-left:1px solid var(--line,#d6ddd5);padding-left:32px}.ds-scope h2{font-size:22px;font-weight:650;letter-spacing:-.02em;margin:0 0 24px}.ds-scope dl{margin:0 0 23px;font-size:15px;font-variant-numeric:tabular-nums}.ds-scope dl>div{display:flex;justify-content:space-between;gap:18px;border-bottom:1px solid var(--line,#d6ddd5);padding:11px 0}.ds-scope dt,.ds-scope p{color:var(--muted,#52625c)}.ds-scope dd{margin:0;text-align:right;font-weight:600}.ds-scope p{font-size:14px;margin:0 0 16px}@media(max-width:700px){.ds-scope{border-left:0;border-top:1px solid var(--line,#d6ddd5);padding:26px 0 0}}"
+    },
+    {
+      "name": "Live status and events",
+      "kind": "custom",
+      "description": "Announced operational status, plain event rows and per-attempt audio counters preserve the boundary of observed provider evidence.",
+      "html": "<div class=\"ds-live-evidence\"><p class=\"ds-live-status\" role=\"status\" aria-live=\"polite\">Both attempts are used. Stop and disable testing; a new run needs approval.</p><h2>Observed call events</h2><ol><li>New attempt: press 2 for voicemail</li><li>recipient sent 2</li></ol><p class=\"ds-live-hint\">Audio counters reset for each attempt.</p></div>",
+      "css": ".ds-live-evidence{font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;color:var(--ink,#172924)}.ds-live-status{color:var(--muted,#52625c);margin:0 0 16px}.ds-live-evidence h2{font-size:22px;font-weight:650;letter-spacing:-.02em;margin:0 0 24px}.ds-live-evidence ol{padding:0;margin:0;list-style:none}.ds-live-evidence li{padding:15px 0;border-top:1px solid var(--line,#d6ddd5)}.ds-live-hint{font-size:14px;color:var(--muted,#52625c);margin:14px 0 16px}"
     }
   ],
   "narrative": {
     "northStar": "Local rehearsal",
-    "overview": "This record applies only to the local call-lab web utility. It extends Shield\u2019s restrained green and native-system typography for an operator workflow; it does not redefine the application brand. The implemented surface uses plain controls, spacious divisions and a visible distinction between local evidence and a proposed paid run.",
+    "overview": "This record applies to the local call-lab rehearsal and its separate, approved isolated live-test screen. Both extend Shield’s restrained green and native-system typography for an Operate workflow; they do not redefine the application brand. Plain controls, spacious divisions and explicit mode labels distinguish local simulation from paid provider evidence. The existing visual world remains unchanged.",
     "keyCharacteristics": [
       "Calm green-white field with dark readable text.",
       "Native forms and explicit operational states.",
@@ -238,14 +267,16 @@
     ],
     "rules": [],
     "dos": [
-      "Do keep local-only status and the limits of rehearsal evidence visible.",
+      "Do keep each screen’s mode and evidence limits visible: local rehearsal or isolated live test.",
       "Do use native labeled selects, visible keyboard focus and announced status text.",
-      "Do retain the single-column mobile order: controls, cost proposal, results, release context."
+      "Do retain the single-column mobile order: controls, cost proposal or approved scope, results, release context.",
+      "Do show paid-attempt exhaustion, cleanup uncertainty and per-attempt audio evidence explicitly on the live screen."
     ],
     "donts": [
-      "Don\u2019t imply that a passing rehearsal verifies real audio, carrier forwarding or iPhone delivery.",
-      "Don\u2019t add a live-call action, credential entry or microphone request to this utility.",
-      "Don\u2019t introduce decorative cards, imagery or a new brand identity."
+      "Don’t imply that a passing rehearsal verifies real audio, or that fixed-screening live tests verify AI quality, carrier forwarding or iPhone delivery.",
+      "Don’t add a paid action to the rehearsal screen; keep approved live controls on the separate isolated surface.",
+      "Don’t add credential entry or a physical microphone request to either screen.",
+      "Don’t introduce decorative cards, imagery or a new brand identity."
     ]
   }
 }
