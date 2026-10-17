@@ -22,5 +22,27 @@
     "Legacy checkout/setup-node actions run Node 20 and are forced onto Node 24",
     "ubuntu-latest announced migration to Ubuntu 26"
   ],
-  "followup": "Upgrade checkout/setup-node to v6 and pin ubuntu-24.04; verify the changed workflow separately."
+  "followup": "Resolved: checkout/setup-node v6 and ubuntu-24.04 passed the final workflow.",
+  "finalWorkflow": {
+    "runId": 39071353669,
+    "commit": "8c17d3963c133082ca1d3bad79bb8b4f2902d5a3",
+    "conclusion": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39071353669",
+    "annotationsCount": 0,
+    "checks": [
+      {
+        "command": "npm run check",
+        "passed": 335
+      },
+      {
+        "command": "npm run test:firebase",
+        "passed": 250
+      },
+      {
+        "command": "npm run test:accounts",
+        "passed": 8
+      }
+    ],
+    "logSha256": "044070a88be3a301d074abeb6e7272e0d8a0e1c4f237b617c2f259b1c4d994fe"
+  }
 }
