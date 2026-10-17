@@ -33,6 +33,7 @@ actor DeliveryStub: MessageDeliveryAPI {
         let call = CallRecord(id: id, occurredAt: .now, callerNumber: "Synthetic", title: "Message", outcome: .voicemail,
             reasonCode: "uncertain", detail: "", nextStep: "", acceptedAt: nil, endedAt: .now,
             voicemail: Voicemail(id: id, duration: 2, status: "ready", heardAt: nil))
+        try await testOfflineHistory(root: root, person: person, call: call)
         let data = Data("synthetic audio bytes".utf8)
         let delivery = MessageDelivery(audio: data, sha256: MessageAudioStore.digest(data), receipt: "synthetic receipt")
         let store = MessageAudioStore(root: root.appending(path: "files")), api = DeliveryStub(delivery)

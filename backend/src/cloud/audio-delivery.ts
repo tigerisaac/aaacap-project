@@ -30,7 +30,13 @@ export function registerAudioDelivery(app: FastifyInstance, s: CloudStore, auth:
     const uid = (await auth.identify(bearer(request))).subject;
     const body = z.object({ receipt: z.string().max(4096), sha256: z.string().regex(/^[a-f0-9]{64}$/) }).parse(request.body);
     let proof: z.infer<typeof receiptSchema>;
-    try { proof = receiptSchema.parse(JSON.parse(s.vault.open(body.receipt, `audio-delivery:${id}`))); }
+    try {
+      const parts = body.receipt.split('.');
+      // Node's base64 decoder ignores suffixes after padding. Require the exact sealed
+      // representation before decryption so malformed receipts cannot alias valid ones.
+      if (parts.length !== 4 || parts[0] !== 'v1' || parts.slice(1).some(part => !part || Buffer.from(part, 'base64').toString('base64') !== part)) throw new Error('invalid_receipt');
+      proof = receiptSchema.parse(JSON.parse(s.vault.open(body.receipt, `audio-delivery:${id}`)));
+    }
     catch { throw new HttpError(400, 'invalid_delivery_receipt'); }
     if (proof.uid !== uid || proof.sha256 !== body.sha256) throw new HttpError(403, 'invalid_delivery_receipt');
     await s.access(uid, proof.participantId, true);

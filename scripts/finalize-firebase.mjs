@@ -19,7 +19,7 @@ console.log('Shield Eventarc identity can invoke its private voicemail, voicemai
 // Address scheduled v2 functions by their Cloud Run URL, with an exactly matching OIDC audience.
 // The cloudfunctions.net alias rejected authenticated invocations for the new shared-call sweep.
 const scheduler = new Client({ urlPrefix: 'https://cloudscheduler.googleapis.com', apiVersion: 'v1' });
-for (const [functionName, serviceName] of [['cleanupShield', 'cleanupshield'], ['dailySetupChecks', 'dailysetupchecks'], ['expireSharedCalls', 'expiresharedcalls']]) {
+for (const [functionName, serviceName] of [['cleanupShield', 'cleanupshield'], ['dailySetupChecks', 'dailysetupchecks'], ['expireSharedCalls', 'expiresharedcalls'], ['expireMessageDeliveries', 'expiremessagedeliveries']]) {
   const path = `/projects/${project}/locations/us-central1/jobs/firebase-schedule-${functionName}-us-central1`;
   const job = (await scheduler.get(path)).body;
   const service = (await run.get(`/projects/${project}/locations/us-central1/services/${serviceName}`)).body;

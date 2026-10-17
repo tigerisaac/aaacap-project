@@ -60,7 +60,9 @@ extension AppState {
 
     func savedCalls(for person: Person) -> [CallRecord] {
         guard signedIn, person.isOwner, person.canListen else { return [] }
-        return localMessages.filter { $0.person.id == person.id }.map(\.call)
+        let saved = localMessages.filter { $0.person.id == person.id }.map(\.call)
+        let history = offlineHistories.first { $0.person.id == person.id }?.calls.filter { $0.voicemail != nil } ?? []
+        return Array(Dictionary((saved + history).map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest }).values)
     }
 
     func messageAudioData(call: CallRecord, person: Person) async throws -> Data {
@@ -87,6 +89,7 @@ extension AppState {
             guard case let APIError.service(code, status) = error, status == 404, code == "voicemail_not_found" else { throw error }
         }
         try await messageAudio.forget(account: account, id: id)
+        try await removeFromOfflineHistory(id, personID: personID, account: account)
         localMessages.removeAll { $0.call.id == id && $0.person.id == personID }
     }
 
@@ -94,6 +97,8 @@ extension AppState {
         guard let account = await api.localAccountID else { return }
         audioSyncTask?.cancel()
         try await messageAudio.removeAccount(account)
+        try await historyStore.remove(account: account)
+        offlineHistories = []
         localMessages = []
     }
 }

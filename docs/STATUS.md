@@ -1,10 +1,12 @@
 # Status
 
-## October 16 — phone audio delivery, tested but not deployed
+## October 16 — audio delivery deployed; app history works offline
 
-Implemented the owner's choice of a temporary delivery copy: verified local save before owner-only acknowledgement, transactional removal of all cloud chunks, 24-hour delivery expiry, provider deletion recovery, offline phone library, backup exclusion and retriable confirmation. Helpers cannot acknowledge the owner's copy. Minimum instances remain zero. Typecheck/build, 264 unit tests, 210 Firestore tests, Swift storage failure checks and simulator save/relaunch/playback passed. No real calls or physical-device verification.
+With owner approval, the audio release is live: API `shieldapi-00023-neb`, ingestion `ingestforwardingvoicemail-00009-goz`, checker `checkforwardingvoicemail-00003-hod`, alerts `sendshieldalert-00003-ves`, and expiry `expiremessagedeliveries-00002-nos`. The signed iPhone update is installed and launched. Cloud copies are deleted after verified local-save confirmation, with a 24-hour expiry and independent five-minute cleanup. The missing provider download-host configuration was corrected, with Telnyx’s S3 bucket checked explicitly. Both old provider jobs completed; the recent recording was removed by the unchanged message filter and the overdue one expired. Final inventory at 20:43 Central: **zero provider recordings, Firebase manifests and chunks**, no PITR or database backups.
 
-The read-only 20:09 Central inventory found zero Firebase audio manifests/chunks, disabled PITR and no database backups, but two Telnyx recordings with unfinished jobs (about five hours and eighteen days old). No audio was downloaded or deleted. Deployment, installation and existing provider-copy handling remain pending owner approval. [Details and rollout](AUDIO-DELIVERY.md).
+The app now restores owner history before server refresh, supports offline call filters/details, and plays saved recordings locally. It labels saved data with its update time; live status and account changes still need a connection. Shared helper history is not persisted. All cloud services retain zero minimum instances and request-based CPU. Screening v158 and deployed message policy v4 are preserved; unrelated candidates remain undeployed.
+
+Final typecheck/build and **273 unit tests**, **210 Firestore tests**, Swift storage failure checks, offline simulator relaunch/filter/detail, and audio playback/relaunch passed. Live synthetic download/confirmation/retry/deletion and scheduled expiry passed; production readiness, private cleanup access, empty call queue and no active reservations were verified. No owner phone call or carrier-setting change occurred. Physical background delivery and hardware encryption remain unverified. [Audio release evidence](AUDIO-DELIVERY.md) · [Offline behavior and limits](IOS-OFFLINE.md).
 
 ## October 16 — clearer carrier handoff and actual code counts
 

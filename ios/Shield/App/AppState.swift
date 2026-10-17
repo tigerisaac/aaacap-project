@@ -7,6 +7,10 @@ import UserNotifications
 @Observable
 final class AppState {
     let api: APIClient
+    let historyStore = OfflineHistoryStore()
+    var offlineHistories: [OfflineHistory] = []
+    var historySavedAt: Date?
+    var showingSavedHistory = false
     let messageAudio: MessageAudioDelivery
     var localMessages: [SavedMessageInfo] = []
     var audioSyncError: String?
@@ -50,6 +54,9 @@ final class AppState {
     var isTrial: Bool { service?.mode == "trial" && !isDemo }
 
     init(configuration: BackendConfiguration = .bundled) {
+        #if DEBUG && targetEnvironment(simulator)
+        let configuration = ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") ? BackendConfiguration(baseURL: nil) : configuration
+        #endif
         self.configuration = configuration
         self.api = APIClient(configuration: configuration)
         self.messageAudio = MessageAudioDelivery(api: self.api)
@@ -80,10 +87,14 @@ final class AppState {
 
     func restoreSession() async {
         guard !signedIn else { return }
+        #if DEBUG && targetEnvironment(simulator)
+        await seedOfflineHistoryFixture()
+        #endif
         let generation = sessionGeneration
         if await api.hasSession {
             guard generation == sessionGeneration, !signedIn else { return }
             signedIn = true
+            await loadOfflineHistory()
             await loadLocalMessages()
             await refresh()
         }
@@ -114,6 +125,7 @@ final class AppState {
         sessionGeneration += 1
         isPreview = false
         signedIn = true
+        await loadOfflineHistory()
         await loadLocalMessages()
         await refresh()
     }
@@ -131,8 +143,11 @@ final class AppState {
         contextError = nil
         isLoadingCalls = false
         if isPreview { loadPreview() } else {
-            await loadProtectionOnboarding(generation: sessionGeneration)
+            historySavedAt = nil
+            showingSavedHistory = false
+            showOfflineHistory()
             await loadContext()
+            await loadProtectionOnboarding(generation: sessionGeneration)
         }
     }
 
@@ -146,7 +161,7 @@ final class AppState {
         }
         #endif
         if isPreview { loadPreview(); return }
-        guard signedIn else { return }
+        guard signedIn, !isLoading else { return }
         let generation = sessionGeneration
         isLoading = true
         defer { isLoading = false }
@@ -160,10 +175,13 @@ final class AppState {
                 overview = nil
                 calls = []
             }
+            await reconcileOfflineOwners()
+            // Render calls before optional setup, contacts and notification checks.
+            await loadContext()
+            startAudioSync()
             let configuration: ServiceConfiguration = try await api.send("/public/config", authenticated: false)
             guard generation == sessionGeneration, signedIn, !isPreview else { return }
             service = configuration
-            contextError = nil
             if configuration.notificationsAvailable, !isDemo {
                 let settings = await UNUserNotificationCenter.current().notificationSettings()
                 guard generation == sessionGeneration, signedIn else { return }
@@ -172,8 +190,6 @@ final class AppState {
                 }
             }
             await loadProtectionOnboarding(generation: generation)
-            await loadContext()
-            startAudioSync()
             await syncCallDirectory(generation: generation)
         } catch { if generation == sessionGeneration { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
@@ -250,13 +266,16 @@ final class AppState {
             calls = page.calls
             callsFilter = requestedFilter
             nextCursor = page.nextCursor
+            showingSavedHistory = false
+            await saveOfflineHistory(page: page.calls, overview: newOverview)
         } catch { if generation == sessionGeneration, selectedPersonID == id { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
     func loadCalls(more: Bool = false) async {
         guard let id = selectedPersonID else { return }
         if callsFilter != filter {
-            calls = []
+            calls = offlineHistories.first { $0.person.id == id }?.calls.filter(filter.includes) ?? []
+            showingSavedHistory = !calls.isEmpty
             nextCursor = nil
             callsFilter = filter
         }
@@ -290,6 +309,8 @@ final class AppState {
             guard selectedPersonID == id, filter == requestedFilter, generation == sessionGeneration else { return }
             calls = more ? calls + page.calls : page.calls
             nextCursor = page.nextCursor
+            showingSavedHistory = false
+            await saveOfflineHistory(page: page.calls)
         } catch { if generation == sessionGeneration, selectedPersonID == id, filter == requestedFilter { callsError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
@@ -317,6 +338,10 @@ final class AppState {
         audioSyncTask = nil
         localMessages = []
         await messageAudio.activate(nil)
+        await historyStore.activate(nil)
+        offlineHistories = []
+        historySavedAt = nil
+        showingSavedHistory = false
         isPreview = false
         isDemo = false
         people = []
@@ -345,7 +370,9 @@ final class AppState {
         if case let APIError.service(code, status) = error {
             if status == 401 { signedIn = false; people = []; selectedPersonID = nil; overview = nil; calls = [] }
             if status == 403 && code == "access_denied" {
+                offlineHistories.removeAll { $0.person.id == selectedPersonID }
                 people.removeAll { $0.id == selectedPersonID }
+                Task { await reconcileOfflineOwners() }
                 selectedPersonID = people.first?.id
                 overview = nil
                 calls = []

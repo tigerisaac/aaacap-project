@@ -11,9 +11,13 @@ struct CallsView: View {
                 PersonContextSection()
                 ShieldGroup(background: .clear) { CallFilterPicker() }
                     .listRowInsets(EdgeInsets())
+                if model.showingSavedHistory || model.callsError != nil, let savedAt = model.historySavedAt {
+                    ShieldGroup { Text("Saved on this iPhone · Updated \(savedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .foregroundStyle(ShieldTheme.secondaryText) }
+                }
                 if let error = model.callsError {
                     ShieldGroup {
-                        ShieldLoadFailure(title: "Your calls couldn’t load", detail: error) { Task { await model.loadCalls() } }
+                        ShieldLoadFailure(title: model.calls.isEmpty ? "Your calls couldn’t load" : "New calls couldn’t update", detail: model.calls.isEmpty ? error : "You can still open the calls saved on this iPhone.") { Task { await model.loadCalls() } }
                     }
                 }
                 if model.calls.isEmpty && model.callsError == nil {

@@ -1,6 +1,6 @@
 # Phone audio with temporary delivery
 
-Repository implementation, October 16, 2026. **Not deployed or installed on the owner's phone.** The owner chose a temporary delivery copy followed by deletion. Production still runs the previous storage behavior.
+**Deployed with owner approval on October 16, 2026.** The matching signed iPhone app is installed and launched. Audio uses temporary delivery followed by deletion; cloud screening remains on demand. See also [offline call history](IOS-OFFLINE.md).
 
 ## Storage contract
 
@@ -14,7 +14,31 @@ Repository implementation, October 16, 2026. **Not deployed or installed on the 
 
 The server verifies the receipt and digest but relies on the official app to enforce durable-save-before-confirmation; it cannot remotely prove physical phone storage. No prompt or screening policy changed.
 
-## Production inventory
+## Approved deployment and final inventory
+
+Verification at **2026-10-17 01:42:33 UTC / October 16 20:42:33 Central**:
+
+| Service | Serving revision |
+| --- | --- |
+| Delivery API | `shieldapi-00023-neb` |
+| Recording ingestion | `ingestforwardingvoicemail-00009-goz` |
+| Message checking | `checkforwardingvoicemail-00003-hod` |
+| Notifications | `sendshieldalert-00003-ves` |
+| Audio expiry | `expiremessagedeliveries-00002-nos` |
+
+All functions remain ACTIVE, minimum instances zero, request-based CPU; changed services serve 100% traffic. The unchanged bridge is `shield-live-00015-qdd`, screening v158. Deployed post-call policy v4 was preserved; repository policy v10 and unrelated authentication/contact features were not released. Source packages were overlaid on each actual live package and verified after deployment. The five-minute cleanup job uses the private function and runtime identity. The recording index is installed. Call task queue is running with no pending tasks or active reservations at verification. A complete error-log query at 20:45 Central found zero new service errors since the final corrections at 20:42:30.
+
+Production inspection found `TELNYX_RECORDING_HOSTS` absent, so its empty default prevented ingestion. Only the ingester now references runtime secret version 7, which adds `s3.amazonaws.com`; the source also restricts that shared hostname to `/telephony-recorder-prod/`. Recording ID, call ID, application, completion and duration checks remain required before downloads, with HTTPS and redirects disabled. The origin matches authenticated provider metadata and [Telnyx’s documented storage](https://developers.telnyx.com/docs/voice/programmable-voice/storing-call-recordings). No real audio or summary was exposed to development tools.
+
+Both previously pending provider jobs completed and recorded deletion. The overdue recording was expired. The recent recording went through the existing production message assessment and was removed; it was not acknowledged as saved on the phone. **The 01:43:07 UTC / 20:43:07 Central inventory found zero Telnyx recordings, zero Firebase manifests and zero chunks**, with PITR disabled and no database backups. Read-only migration found nothing requiring a shorter expiry. Both temporary recovery schedules were deleted.
+
+The release exposed and corrected two verification issues: the new scheduled function initially inherited the call-expiry runtime target, and manually replayed Firestore events needed explicit routing/content-type fields. The final cleanup target is `expireMessageDeliveries`; a live expired synthetic manifest/chunk was deleted and its call marked expired. Replayed provider events then completed. These initial failed attempts are retained in the private release evidence, not described as successful runs.
+
+Live synthetic-account checks passed download without deletion, exact digest, no-store response, malformed receipt rejection, wrong digest rejection, confirmation deletion of manifest/all chunks, and repeat confirmation after a lost response. All synthetic identities/documents were removed. A regression also exposed permissive base64 suffix decoding; the API now requires canonical receipt encoding before authenticated decryption.
+
+Evidence directory: `artifacts/private/audio-delivery-release/` (`manifest.json`, per-service verified reports, `postflight.json`, `smoke-result.json`, `expiry-smoke-result.json`, `recovery-result.json`). Final inventory: `artifacts/private/audio-delivery/inventory.json`. No owner phone calls or carrier-setting changes were made. Physical-device audio save/background delivery and hardware Data Protection were not verified; simulator durable playback and production API deletion were verified separately.
+
+## Before-release inventory
 
 Read-only metadata audit at **2026-10-17 01:09:25 UTC / October 16 20:09:25 Central**:
 
@@ -29,7 +53,7 @@ Both provider recordings have pending ingestion jobs and no recorded deletion. O
 
 ## Coordinated rollout
 
-1. Obtain owner approval for this audio-storage release, provider cleanup and updated phone app. Earlier approval covered startup recovery. Preserve deployed screening/message policies and unrelated functions; do not deploy all repository candidates.
+1. Owner approval for this audio release, provider cleanup and matching phone app was received October 16. Preserve deployed screening/message policies and unrelated functions in future releases; do not deploy all repository candidates.
 2. Deploy only the delivery API/DTO, ingestion changes, deletion schedule, supporting index, notification payload and privacy copy. Verify event invocation identities and scheduler, with minimum instances zero. Install the compatible app in the same rollout: the old app cannot acknowledge a durable local save.
 3. Recheck inventory. Recover the recent provider recording through the bounded delivery flow if still eligible, without exposing its content to development tools. The overdue job must be deleted under the expiry policy. Do not discard the recent recording just to make the count zero.
 4. Existing Firebase recordings can use the new endpoint immediately. `node scripts/migrate-audio-delivery.mjs` is read-only by default. After the app is ready, `--apply` caps remaining legacy copies at 24 hours from migration. Manifest, chunks and call expiry metadata update atomically with revision preconditions; concurrent changes are skipped rather than recreated. No audio is read. Applying changes requires owner approval.
@@ -43,6 +67,6 @@ Physical-device background delivery and hardware Data Protection remain unverifi
 - `npm run test:firebase`: **210 tests passed**, including owner-only delivery, receipt/digest/revision rejection, lost-response retry, chunk deletion, expiry, restoration bounds, late callbacks and an unfinished call's overdue provider deletion and fair retries past failing jobs. One full rerun hit an existing stopped-call-history test’s “Transaction is invalid or closed” emulator error; the subsequent full 210-test rerun passed.
 - `node scripts/test-message-audio.mjs`: passed durable save, restart, backup exclusion, acknowledgement retry, account isolation, corruption, wrong digest, disk failure, account deletion, sign-out/sign-in race and delete race.
 - iPhone 18 Pro simulator: **one test passed** covering file persistence, backup exclusion and audio playback before/after app relaunch with no service dependency. The simulator omits hardware Data Protection metadata. Initial test attempts exposed that test assumption; the production file-protection setting remains required.
-- No production deployment, real calls, provider deletions or audio migration performed.
+- Final October 16 checks after origin hardening: typecheck/build and **273 unit tests** passed; **210 Firestore tests** passed. Swift audio/history storage tests passed. The real AppState offline simulator cold launch/relaunch/filter/detail test passed. Signed device build, installation and launch passed. Live synthetic delivery/deletion/expiry passed. No new real phone call was placed.
 
 Apple references: [backup exclusion](https://developer.apple.com/documentation/foundation/optimizing-your-app-s-data-for-icloud-backup) and [background updates](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app).

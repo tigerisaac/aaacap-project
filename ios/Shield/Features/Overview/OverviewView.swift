@@ -23,6 +23,10 @@ struct OverviewView: View {
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
                     ShieldGroup { ProtectionCheckCard(check: protectionCheck) }
                 }
+                if model.showingSavedHistory || model.contextError != nil, let savedAt = model.historySavedAt {
+                    ShieldGroup { Text("Saved on this iPhone · Updated \(savedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .foregroundStyle(ShieldTheme.secondaryText) }
+                }
                 if let overview = model.overview {
                     if model.contextError == nil {
                         ShieldGroup {
@@ -69,9 +73,9 @@ struct OverviewView: View {
                         }
                     }
                 }
-                if model.overview != nil, let error = model.contextError {
+                if model.overview != nil, model.contextError != nil {
                     ShieldGroup {
-                        ShieldLoadFailure(title: "These calls may be out of date", detail: error) { Task { await refresh() } }
+                        ShieldLoadFailure(title: "These calls may be out of date", detail: "Saved calls and messages are still available. Connect to get new calls.") { Task { await refresh() } }
                     }
                 }
             }
@@ -140,7 +144,7 @@ struct OverviewView: View {
     }
     private func summary(now: Date) -> Summary {
         if model.isDemo && !isStatusFixture { return .init(title: model.isOwner ? "Sample phone" : "\(model.person?.name ?? "Your person")’s sample calls", detail: "Try a message or call below.", symbol: "phone.badge.waveform") }
-        if model.contextError != nil { return .init(title: "Couldn’t check your phone", detail: "Please try again.", symbol: "wifi.exclamationmark", retry: true) }
+        if model.contextError != nil { return .init(title: "Couldn’t check your phone", detail: "Saved calls and messages still work. Shield can check incoming calls without this app being open; its current status needs a connection.", symbol: "wifi.exclamationmark", retry: true) }
         if !model.isOwner { return .init(title: "\(model.person?.name ?? "Your person")’s calls", detail: model.canListen ? "They’ve shared calls and voicemail with you." : "They’ve shared calls with you.", symbol: "person.2") }
         if checkingStatus && checkedAt == nil { return .init(title: "Checking your phone…", detail: "One moment.", symbol: "arrow.clockwise") }
         guard let status = forwarding, let checkedAt, now.timeIntervalSince(checkedAt) < 75 else {

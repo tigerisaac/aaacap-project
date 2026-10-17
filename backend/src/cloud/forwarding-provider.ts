@@ -8,6 +8,13 @@ export const validRecordingId = (value: string) => uuid.test(value);
 /** An E.164 caller number, or undefined when the network withheld it ("anonymous", "restricted", empty). Never store the raw value. */
 export const callerNumber = (value: string | undefined) => value && /^\+[1-9]\d{7,14}$/.test(value) ? value : undefined;
 
+/** S3's shared hostname must also name Telnyx's documented recording bucket. */
+export function recordingURLAllowed(url: URL, hosts: string[]): boolean {
+  return url.protocol === 'https:' && !url.username && !url.password && !url.port
+    && hosts.includes(url.hostname)
+    && (url.hostname !== 's3.amazonaws.com' || url.pathname.startsWith('/telephony-recorder-prod/'));
+}
+
 /** Telnyx signs timestamp|exact request bytes, not a reserialized form or JSON object. */
 export function verifyTelnyx(publicKey: string, signature: unknown, timestamp: unknown, raw: Buffer | undefined, now = Date.now()) {
   if (typeof signature !== 'string' || typeof timestamp !== 'string' || !/^\d{10,11}$/.test(timestamp)
@@ -73,7 +80,7 @@ export class TelnyxVoice {
     const url = new URL(r.media_url);
     // Origins are explicitly configured after reading an authenticated provider resource.
     // Never use a URL from a caller-controlled webhook or send the API key to media storage.
-    if (url.protocol !== 'https:' || url.username || url.password || url.port || !this.config.TELNYX_RECORDING_HOSTS.includes(url.hostname)) {
+    if (!recordingURLAllowed(url, this.config.TELNYX_RECORDING_HOSTS)) {
       throw new Error('unapproved_recording_origin');
     }
     return this.fetcher(url, { redirect: 'error', signal: AbortSignal.timeout(10000) });
@@ -92,7 +99,7 @@ export function recordingProvider(c: CloudConfig, transport?: string) {
       const r = await cc.request(`/recordings/${sid}`);
       if (r?.id !== sid || r.call_control_id !== parent || r.connection_id !== c.TELNYX_SHARED_APPLICATION_ID || !Number.isFinite(r.duration_millis) || r.status !== 'completed' || r.duration_millis > 245000 || r.duration_millis < 0) throw new Error('recording_mismatch');
       const url = new URL(r.download_urls?.mp3 ?? '');
-      if (url.protocol !== 'https:' || url.username || url.password || url.port || !c.TELNYX_RECORDING_HOSTS.includes(url.hostname)) throw new Error('unapproved_recording_origin');
+      if (!recordingURLAllowed(url, c.TELNYX_RECORDING_HOSTS)) throw new Error('unapproved_recording_origin');
       const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(10000) });
       const headers = new Headers(response.headers);
       headers.set('x-shield-recording-duration', String(Math.ceil(r.duration_millis / 1000)));

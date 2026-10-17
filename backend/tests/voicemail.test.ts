@@ -273,6 +273,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     for (const uid of ['helper', 'stranger']) expect((await acknowledge(callId, proof, uid)).statusCode).toBe(403);
     expect((await acknowledge(callId, { ...proof, sha256: '0'.repeat(64) })).statusCode).toBe(403);
     expect((await acknowledge(callId, { ...proof, receipt: proof.receipt + 'tampered' })).statusCode).toBe(400);
+    expect((await acknowledge(callId, { ...proof, receipt: proof.receipt + '.extra' })).statusCode).toBe(400);
     expect((await acknowledge(randomUUID(), proof)).statusCode).toBe(400);
     expect((await check.audioRef(callId).get()).exists).toBe(true);
   });

@@ -16,6 +16,13 @@ actor APIClient {
         self.session = URLSession(configuration: settings, delegate: NoRedirectDelegate(), delegateQueue: nil)
         self.keychain = KeychainStore(service: "org.shield.auth.\(configuration.baseURL?.absoluteString ?? "unconfigured")")
         self.tokens = try? keychain.read()
+        #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") {
+            // In-memory synthetic identity; no server or real Keychain account is used.
+            let payload = Data(#"{"sub":"offline-history-fixture"}"#.utf8).base64EncodedString()
+            self.tokens = AuthTokens(accessToken: "fixture.\(payload).fixture", refreshToken: "", expiresIn: 0)
+        }
+        #endif
     }
 
     var hasSession: Bool { tokens != nil }
