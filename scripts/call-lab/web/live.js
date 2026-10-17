@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);
 const alias=/^#person-0[1-5]$/.test(globalThis.location?.hash??'')?globalThis.location.hash.slice(1):'person-01';
 const index=Number(alias.slice(-2))-1,callerTone=440+index*440,recipientTone=660+index*440;
-let capacityMode=false,capacityReady=false;
+let warningMode=false,capacityMode=false,capacityReady=false;
 let caller,recipient,callerCall,recipientCall,context,kind,ready=false,running=false,deadlineTimer,initialized=false,failed=false,stopping=false;
 const audioStats={caller:{bytes:0,energy:0},recipient:{bytes:0,energy:0}};
 const events=[];
@@ -12,7 +12,13 @@ function fixture(hz){const dest=context.createMediaStreamDestination(),osc=conte
 async function stats(call,role){const peer=call?.peer?.instance;if(!peer)return;const report=await peer.getStats();report.forEach(r=>{if(r.type==='inbound-rtp'&&r.kind==='audio'){audioStats[role].bytes=Math.max(audioStats[role].bytes,r.bytesReceived??0);audioStats[role].energy=Math.max(audioStats[role].energy,r.totalAudioEnergy??0);}});}
 function receivedTone(call){
   if(!context||!call?.remoteStream)return null;
-  if(!call.labAnalyser){const source=context.createMediaStreamSource(call.remoteStream),analyser=context.createAnalyser();analyser.fftSize=4096;source.connect(analyser);call.labAnalyser=analyser;}
+  const signature=call.remoteStream.getAudioTracks().map(t=>t.id).join(',');
+  if(!call.labAnalyser||call.labTrackSignature!==signature){
+    call.labSource?.disconnect();const source=context.createMediaStreamSource(call.remoteStream),analyser=context.createAnalyser();analyser.fftSize=4096;source.connect(analyser);
+    if(call.labRecordingDestination)source.connect(call.labRecordingDestination);
+    if(call.labTrackSignature)event('Recipient audio track changed; capture reconnected');
+    call.labSource=source;call.labTrackSignature=signature;call.labAnalyser=analyser;
+  }
   const bins=new Float32Array(call.labAnalyser.frequencyBinCount);call.labAnalyser.getFloatFrequencyData(bins);
   let best=1;for(let i=2;i<bins.length;i++)if(bins[i]>bins[best])best=i;
   return {hz:best*context.sampleRate/call.labAnalyser.fftSize,db:Number.isFinite(bins[best])?bins[best]:-160};
@@ -27,6 +33,13 @@ async function connect(role,token){return new Promise((resolve,reject)=>{
     if(role==='recipient')recipientCall=call;else callerCall=call;
     event(`${role}: ${call.state}`);
     if(role==='recipient'&&call.state==='ringing'){call.options.localStream=fixture(recipientTone);call.answer({remoteElement:$('recipient-audio')});}
+    if(warningMode&&role==='recipient'&&call.state==='active'&&call.remoteStream&&!call.labRecorder){
+      call.labRecordingDestination=context.createMediaStreamDestination();receivedTone(call);call.labSource?.connect(call.labRecordingDestination);
+      const recorder=new MediaRecorder(call.labRecordingDestination.stream,{mimeType:'audio/webm;codecs=opus'});call.labRecorder=recorder;let sequence=0,tail=Promise.resolve();
+      recorder.ondataavailable=e=>{tail=tail.then(async()=>{if(!e.data.size)return;const bytes=new Uint8Array(await e.data.arrayBuffer());let binary='';for(const b of bytes)binary+=String.fromCharCode(b);await post('/warning-audio',{sequence:sequence++,audio:btoa(binary)});}).catch(()=>event('Audio evidence upload failed'));};
+      recorder.start(1000);
+    }
+    if(warningMode&&['hangup','destroy','purge'].includes(call.state)&&call.labRecorder?.state==='recording')call.labRecorder.stop();
     if(role==='recipient'&&call.state==='active'&&!call.labDigitTimer){call.labDigitTimer=setTimeout(()=>{if(call.state==='active'){call.dtmf(kind==='accept'?'1':'2');event(`recipient sent ${kind==='accept'?'1':'2'}`);}},6000);}
   });client.connect();
 });}
@@ -56,6 +69,11 @@ setInterval(async()=>{
   try{await Promise.all([stats(callerCall,'caller'),stats(recipientCall,'recipient')]);const state=await(await fetch('/status')).json();window.labEvidence={audioStats,events,state};$('attempts').textContent=`${state.used} of ${state.limit}`;
     $('media').textContent=`Received audio: caller ${audioStats.caller.bytes} bytes; recipient ${audioStats.recipient.bytes} bytes.`;
     const a=state.attempts.filter(a=>!a.alias||a.alias===alias).at(-1);if(running&&a?.ended){running=false;clearTimeout(deadlineTimer);$('scenario').disabled=false;$('run').disabled=!state.ready||state.used>=state.limit;note(`Call ended. ${state.used} of ${state.limit} attempts used. ${a.outcome??'No completed outcome'}.`);}
+    if(state.mode==='warning'){
+      warningMode=true;$('scenario').value='accept';$('scenario').disabled=true;
+      document.querySelector('[data-intro]').textContent='Two isolated warning-audio checks. The caller is removed after acceptance; synthetic recipient audio is captured to verify the explanation.';
+      if(running)await post('/evidence',{caller:receivedTone(callerCall),recipient:receivedTone(recipientCall),recipientEnergy:audioStats.recipient.energy,recipientBytes:audioStats.recipient.bytes});
+    }
     if(state.mode==='capacity'){
       capacityMode=true;capacityReady=state.capacityReady;
       $('scenario').value='accept';$('scenario').disabled=true;

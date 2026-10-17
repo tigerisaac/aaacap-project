@@ -81,6 +81,20 @@ describe('browser test operator recovery',()=>{
     expect(runInNewContext('audioStats.caller.bytes',h.context)).toBe(0);
     expect(runInNewContext('recipientCall',h.context)).toBeUndefined();
   });
+  it('reconnects synthetic capture when hold/resume replaces a remote audio track',()=>{
+    const h=harness();
+    runInNewContext(`
+      var sourceConnections=[],disconnected=0,track='before';
+      context={sampleRate:48000,createMediaStreamSource(){return {connect(x){sourceConnections.push(x)},disconnect(){disconnected++}}},
+        createAnalyser(){return {fftSize:0,frequencyBinCount:8,getFloatFrequencyData(b){b.fill(-30)}}}};
+      var destination={},testCall={remoteStream:{getAudioTracks(){return [{id:track}]}},labRecordingDestination:destination};
+      receivedTone(testCall);receivedTone(testCall);
+    `,h.context);
+    expect(runInNewContext('sourceConnections.filter(x=>x===destination).length',h.context)).toBe(1);
+    runInNewContext("track='after';receivedTone(testCall)",h.context);
+    expect(runInNewContext('disconnected',h.context)).toBe(1);
+    expect(runInNewContext('sourceConnections.filter(x=>x===destination).length',h.context)).toBe(2);
+  });
   it('keeps the fifth caller gated until four conversations are ready and displays the actual scope',async()=>{
     const state={mode:'capacity',ready:true,used:4,limit:5,capacityReady:false,attempts:[]};
     const h=harness(state,'#person-05');runInNewContext('ready=true',h.context);await h.poll();

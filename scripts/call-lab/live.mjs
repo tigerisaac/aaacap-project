@@ -1,4 +1,4 @@
-import { readFile,writeFile,mkdir } from 'node:fs/promises';
+import { readFile,writeFile,mkdir,appendFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomBytes,randomUUID } from 'node:crypto';
@@ -16,14 +16,16 @@ import { capacityPlan, connectedGroup, capacityComplete, overflowAlias, readCapa
 import { archiveSyntheticRecording } from './recording-evidence.mjs';
 
 const root=resolve('artifacts/private/call-lab');
+const warningFollowup=process.argv.includes('--warning-audio-followup');
+const warning=process.argv.includes('--warning-audio')||warningFollowup;
 const capacity=process.argv.includes('--capacity-overflow'),overlap=process.argv.includes('--public-overlap');
-if(capacity&&overlap)throw Error('conflicting_run_modes');
-const publicRun=capacity||overlap,runRoot=capacity?resolve(root,'capacity-overflow'):overlap?resolve(root,'public-overlap'):root;
+if((capacity&&overlap)||(warning&&(capacity||overlap)))throw Error('conflicting_run_modes');
+const publicRun=capacity||overlap,runRoot=capacity?resolve(root,'capacity-overflow'):overlap?resolve(root,'public-overlap'):warning?resolve(root,warningFollowup?'warning-audio-followup-2026-10-17':'warning-audio-2026-10-17'):root;
 await mkdir(runRoot,{recursive:true,mode:0o700});
 if(!process.argv.includes('--inside')) {
   if(!process.argv.includes(capacity?'--authorized-five-calls':'--authorized-two-calls'))throw Error('explicit_call_authorization_required');
   if(publicRun&&!process.argv.includes('--authorized-public-number-window'))throw Error('public_number_window_approval_required');
-  const child=spawn(process.execPath,['node_modules/firebase-tools/lib/bin/firebase.js','emulators:exec','--config','scripts/call-lab/live-firebase.json','--only','firestore','--project','demo-shield-call-live',`node scripts/call-lab/live.mjs --inside${capacity?' --capacity-overflow --authorized-five-calls --authorized-public-number-window':overlap?' --public-overlap --authorized-public-number-window':' --authorized-two-calls'}`],
+  const child=spawn(process.execPath,['node_modules/firebase-tools/lib/bin/firebase.js','emulators:exec','--config',warning?'scripts/call-lab/warning-firebase.json':'scripts/call-lab/live-firebase.json','--only','firestore','--project','demo-shield-call-live',`node scripts/call-lab/live.mjs --inside${capacity?' --capacity-overflow --authorized-five-calls --authorized-public-number-window':overlap?' --public-overlap --authorized-public-number-window':warning?` ${warningFollowup?'--warning-audio-followup':'--warning-audio'} --authorized-two-calls`:' --authorized-two-calls'}`],
     {stdio:'inherit',env:{...process.env,SHIELD_LAB_RUN_DIR:runRoot,GCLOUD_PROJECT:'demo-shield-call-live',METADATA_SERVER_DETECTION:'none'}});
   child.on('exit',code=>{process.exitCode=code??1;});
 } else {
@@ -34,11 +36,13 @@ if(!process.argv.includes('--inside')) {
 }
 
 async function start() {
-  if(capacity&&!process.argv.includes('--authorized-five-calls'))throw Error('explicit_call_authorization_required');
+  if(!process.argv.includes(capacity?'--authorized-five-calls':'--authorized-two-calls')&&!overlap)throw Error('explicit_call_authorization_required');
   if(publicRun&&!process.argv.includes('--authorized-public-number-window'))throw Error('public_number_window_approval_required');
-  if(process.env.FIRESTORE_EMULATOR_HOST!=='127.0.0.1:8098')throw Error('dedicated_emulator_required');
+  if(process.env.FIRESTORE_EMULATOR_HOST!==(warning?'127.0.0.1:8298':'127.0.0.1:8098'))throw Error('dedicated_emulator_required');
   const packagePath=resolve('artifacts/private/backend-reliability-release/api');
   const release=await verifyPackage(packagePath);
+  // Warning mode deliberately replays the current intervention commands on the frozen transport.
+  const warningURL='https://shield-calls-isaac.web.app/speech/soniox-grace-2026-10-12/warning-payment_or_transfer.wav';
   const runtime=JSON.parse(await readFile('artifacts/private/firebase-runtime.json'));
   const ids=JSON.parse(await readFile(root+'/telnyx/created.json'));
   const ledger=new LiveLedger(runRoot+'/live-ledger.json',Date.now,capacity?'capacity':overlap?'overlap':'sequential');
@@ -145,7 +149,7 @@ async function start() {
           if(!a?.dialSubmitted||state?.id!==a.callId||state?.phase!=='recipient')throw Error('unknown_event');
           ledger.bind(a,p.call_control_id);
         }
-        record(a,'events',{type:event.event_type,at:Date.now(),providerAt:event.occurred_at,...(event.event_type==='call.gather.ended'?{digits:p.digits}:{}),...(event.event_type==='call.hangup'?{cause:p.hangup_cause}:{}),...(provider.readState(p.client_state)?.phase?{phase:provider.readState(p.client_state).phase}:{}),...(event.event_type==='call.cost'?{cost:p.total_cost}:{} )});
+        record(a,'events',{type:event.event_type,at:Date.now(),providerAt:event.occurred_at,role:p.call_control_id===a.parentSid?'caller':'recipient',...(p.status?{status:p.status}:{}),...(event.event_type==='call.gather.ended'?{digits:p.digits}:{}),...(event.event_type==='call.hangup'?{cause:p.hangup_cause}:{}),...(provider.readState(p.client_state)?.phase?{phase:provider.readState(p.client_state).phase}:{}),...(event.event_type==='call.cost'?{cost:p.total_cost}:{} )});
         if(event.event_type==='call.recording.saved'&&/^[a-f0-9-]{36}$/i.test(p.recording_id)){a.recordings=[...new Set([...(a.recordings??[]),p.recording_id])];ledger.save();}
         await cc.handle(adapted);
         if(!a.callId){const c=await f.find(a.parentSid);if(c){a.callId=c.id;ledger.save();}}
@@ -183,8 +187,8 @@ async function start() {
     ||appReady.outbound.outbound_voice_profile_id!==ids.profile||browserReady.outbound.outbound_voice_profile_id!==ids.profile||appReady.inbound.sip_subdomain_receive_settings!=='only_my_connections'||browserReady.sip_uri_calling_preference!=='internal'
     ||profileReady.concurrent_call_limit!==profileOutbound||!profileReady.daily_spend_limit_enabled||Number(profileReady.daily_spend_limit)>.25)throw Error('lab_activation_readback_failed');
   armed=true;
-  const status=()=>({ready:armed,mode:ledger.mode,stopped:ledger.data.stopped,release:release.deployedApi,used:ledger.data.attempts.length,limit:capacity?5:2,secondsPerSession:capacity?90:60,capacityReady:capacity&&connectedGroup(ledger.activeAll()),capacityOverlapStartedAt:ledger.data.capacityOverlapStartedAt,capacityVerifiedAt:ledger.data.capacityVerifiedAt,overlapStartedAt:ledger.data.overlapStartedAt,overlapVerifiedAt:ledger.data.overlapVerifiedAt,publicNumberRestored:ledger.data.publicNumberRestored,
-    attempts:ledger.data.attempts.map(a=>({alias:a.alias,kind:a.kind,ended:!!a.endedAt,secondsRemaining:Math.max(0,Math.ceil((a.deadline-Date.now())/1000)),events:a.events,commands:a.commands,mediaFrames:a.mediaFrames,outcome:a.outcome,state:a.state,voicemailPromptCompletedAt:a.voicemailPromptCompletedAt,allLegsEnded:a.allLegsEnded,recordings:a.recordings?.length??0})),resourcesDisabled:ledger.data.resourcesDisabled});
+  const status=()=>({ready:armed,mode:warning?'warning':ledger.mode,stopped:ledger.data.stopped,release:release.deployedApi,used:ledger.data.attempts.length,limit:capacity?5:2,secondsPerSession:capacity?90:60,capacityReady:capacity&&connectedGroup(ledger.activeAll()),capacityOverlapStartedAt:ledger.data.capacityOverlapStartedAt,capacityVerifiedAt:ledger.data.capacityVerifiedAt,overlapStartedAt:ledger.data.overlapStartedAt,overlapVerifiedAt:ledger.data.overlapVerifiedAt,publicNumberRestored:ledger.data.publicNumberRestored,
+    attempts:ledger.data.attempts.map(a=>({alias:a.alias,kind:a.kind,ended:!!a.endedAt,secondsRemaining:Math.max(0,Math.ceil((a.deadline-Date.now())/1000)),events:a.events,commands:a.commands,mediaFrames:a.mediaFrames,outcome:a.outcome,state:a.state,warningAt:a.warningAt,warningPlaybackAt:a.warningPlaybackAt,warningVariant:a.warningVariant,voicemailPromptCompletedAt:a.voicemailPromptCompletedAt,allLegsEnded:a.allLegsEnded,recordings:a.recordings?.length??0})),resourcesDisabled:ledger.data.resourcesDisabled});
   operator=createServer(async(req,res)=>{
     const origin=`http://127.0.0.1:${operator.address().port}`;
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' wss://*.telnyx.com https://*.telnyx.com; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'");
@@ -204,7 +208,7 @@ async function start() {
       }
       if(req.url==='/reserve'){
         return await serial(async()=>{
-        if(!armed||!person)throw Error('not_armed');const a=ledger.reserve(data.kind,person.alias);a.ticket=tickets.issue(person.alias);ledger.save();
+        if(!armed||!person)throw Error('not_armed');if(warning&&data.kind!=='accept')throw Error('warning_requires_accept');const a=ledger.reserve(data.kind,person.alias);if(warning)a.warningVariant=(warningFollowup?['uncached-self','speech-self']:['baseline','after-park'])[ledger.data.attempts.length-1];a.ticket=tickets.issue(person.alias);ledger.save();
         if(publicRun&&!ledger.data.publicBinding){
           // Save rollback BEFORE submitting the live change. The watchdog also owns restoration.
           ledger.data.publicBinding={...await publicNumberSnapshot(runtime,api),restoreBy:Date.now()+(capacity?capacityPlan.routingWindowMs:90000)};ledger.save();
@@ -215,12 +219,17 @@ async function start() {
         });
       }
       if(req.url==='/finish'){const a=ledger.activeAll().find(a=>a.alias===person?.alias);if(a)await end(a);return json(res,200,status());}
+      if(req.url==='/warning-audio'){
+        const a=ledger.data.attempts.filter(a=>a.alias===person?.alias).at(-1);
+        if(!warning||!a||Date.now()>a.deadline+5000||!Number.isInteger(data.sequence)||data.sequence!==(a.audioChunks??0)||typeof data.audio!=='string'||data.audio.length>60000||data.sequence>=65)throw Error('audio_rejected');
+        const bytes=Buffer.from(data.audio,'base64');await appendFile(runRoot+`/recipient-${ledger.data.attempts.indexOf(a)+1}.webm`,bytes,{mode:0o600});a.audioChunks=(a.audioChunks??0)+1;ledger.save();return json(res,200,{});
+      }
       if(req.url==='/evidence'){
         const a=ledger.activeAll().find(a=>a.alias===person?.alias);
-        if(!publicRun||!person)throw Error('no_overlap');
-        if(!a||!(capacity?ledger.data.capacityOverlapStartedAt:ledger.data.overlapStartedAt))return json(res,200,{accepted:false});
+        if((!publicRun&&!warning)||!person)throw Error('no_overlap');
+        if(!a||(!warning&&!(capacity?ledger.data.capacityOverlapStartedAt:ledger.data.overlapStartedAt)))return json(res,200,{accepted:false});
         const tone=x=>x&&Number.isFinite(x.hz)&&x.hz>=0&&x.hz<=24000&&Number.isFinite(x.db)&&x.db>=-160&&x.db<=0?{hz:x.hz,db:x.db}:null;
-        a.browserEvidence??=[];if(a.browserEvidence.length<60)a.browserEvidence.push({at:Date.now(),caller:tone(data.caller),recipient:tone(data.recipient)});ledger.save();return json(res,200,{});
+        a.browserEvidence??=[];if(a.browserEvidence.length<60)a.browserEvidence.push({at:Date.now(),caller:tone(data.caller),recipient:tone(data.recipient),...(warning&&Number.isFinite(data.recipientEnergy)&&data.recipientEnergy>=0&&Number.isFinite(data.recipientBytes)&&data.recipientBytes>=0?{recipientEnergy:data.recipientEnergy,recipientBytes:data.recipientBytes}:{})});ledger.save();return json(res,200,{});
       }
       if(req.url==='/stop'){await stop();return json(res,200,status());}
       return json(res,404,{});
@@ -241,7 +250,24 @@ async function start() {
       if(!a.callId)continue;const c=await cc.call(a.callId);a.outcome=c.outcome;a.state=c.state;
       if(c.greetingCompletedAt&&Date.now()-c.greetingCompletedAt>=1500&&a.mediaFrames>20&&!a.decisionInjected){a.decisionInjected=true;ledger.save();await live.finish(c.id,{action:'approve',reason:'routine',purpose:'personal',evidence:'synthetic test fixture',hasName:true,hasReason:true});}
       if(c.outcome==='connected'&&!a.connectedAt)a.connectedAt=Date.now();
-      if(!publicRun&&a.connectedAt&&Date.now()-a.connectedAt>4000)await end(a);
+      if(warning&&a.connectedAt&&Date.now()-a.connectedAt>3000&&!a.warningAt){
+        a.warningAt=Date.now();ledger.save();
+        await s.callRef(c.id).update({monitorIntervenedAt:a.warningAt,monitorConcern:'payment_or_transfer',reason:'monitor_intervened'});
+        await provider.action(c.parentSid,'hangup',{command_id:s.vault.hash(`${c.id}:intervene`)});
+      }
+      if(warning&&a.warningAt&&!a.warningPlaybackAt){
+        const parked=a.events.find(e=>e.type==='call.hold'&&e.role==='recipient');
+        if(a.warningVariant==='baseline'||(parked&&Date.now()-parked.at>=750)){
+          a.warningPlaybackAt=Date.now();ledger.save();
+          if(a.warningVariant==='speech-self'){
+            const {warningText}=await load('monitoring');
+            await s.callRef(c.id).update({'announcementFallbacks.warning':true});
+            await provider.action(c.childSid,'speak',{payload:warningText('payment_or_transfer'),voice:'AWS.Polly.Joanna',target_legs:'self',client_state:provider.state(c.id,'warning-backup'),command_id:s.vault.hash(`${c.id}:warning-backup`)});
+          } else await provider.action(c.childSid,'playback_start',{audio_url:warningURL,audio_type:'wav',cache_audio:a.warningVariant!=='uncached-self',...(a.warningVariant==='uncached-self'?{target_legs:'self',stop:'all'}:{}),client_state:provider.state(c.id,'warning'),command_id:s.vault.hash(`${c.id}:warning`)});
+        }
+      }
+      if(warning&&((a.warningPlaybackAt&&Date.now()-a.warningPlaybackAt>16500)||c.state==='ended'))await end(a);
+      if(!publicRun&&!warning&&a.connectedAt&&Date.now()-a.connectedAt>4000)await end(a);
       if(c.state==='voicemail'&&!a.voicemailAt)a.voicemailAt=Date.now();
       if(!capacity&&a.voicemailAt&&Date.now()-a.voicemailAt>12000)await end(a);
       if(c.voicemailPromptCompletedAt)a.voicemailPromptCompletedAt=c.voicemailPromptCompletedAt;

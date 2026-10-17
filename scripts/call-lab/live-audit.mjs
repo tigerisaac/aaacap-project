@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile,writeFile } from 'node:fs/promises';
 import { labRequest } from './live-provider.mjs';
-const base='artifacts/private/call-lab',root=process.argv.includes('--capacity-overflow')?base+'/capacity-overflow':process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
+const base='artifacts/private/call-lab',root=process.argv.includes('--warning-audio-followup')?base+'/warning-audio-followup-2026-10-17':process.argv.includes('--warning-audio')?base+'/warning-audio-2026-10-17':process.argv.includes('--capacity-overflow')?base+'/capacity-overflow':process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
 const config=await read('artifacts/private/firebase-runtime.json'),ids=await read(base+'/telnyx/created.json'),before=await read(base+'/telnyx/before.json'),ledger=await read(root+'/live-ledger.json');
 const api=path=>labRequest(config,path);
 const paths={app:'/call_control_applications',browser:'/credential_connections',profile:'/outbound_voice_profiles'};
