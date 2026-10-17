@@ -57,7 +57,8 @@ struct CallDetailView: View {
                             Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
                         ])
                         .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        .textSelection(.enabled)
+                        // Not selectable: on iOS 26 a selectable line is an 18-point touch target,
+                        // and Shield asks people not to reuse a caller's number anyway.
                     }
                 }.padding(.top, 2).padding(.bottom, 4).fixedSize(horizontal: false, vertical: true)
             }

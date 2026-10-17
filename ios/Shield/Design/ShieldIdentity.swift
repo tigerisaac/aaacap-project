@@ -113,3 +113,30 @@ struct ShieldSection<Content: View, Footer: View>: View {
             .listRowBackground(ShieldTheme.card)
     }
 }
+
+extension View {
+    /// Done above the keyboard while a field is focused, for screens without a navigation bar.
+    /// SwiftUI's `.keyboard` toolbar placement reports "Invalid frame dimension", so this rides on the
+    /// bottom safe area instead, which the keyboard raises. Screens with a bar put Done there.
+    func shieldKeyboardDone(_ visible: Bool, done: @escaping () -> Void) -> some View {
+        safeAreaInset(edge: .bottom, spacing: 0) {
+            // The fade is scoped to the bar: animating the whole screen would carry focus
+            // changes into the transaction and can leave the keyboard up after sending.
+            ZStack {
+                if visible {
+                    HStack {
+                        Spacer()
+                        // Like the system bars, cap the size and offer the Large Content Viewer instead.
+                        Button("Done", action: done).font(.headline).buttonStyle(.glass)
+                            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                            .accessibilityShowsLargeContentViewer()
+                    }
+                    .padding(.horizontal, ShieldTheme.Spacing.content)
+                    .padding(.vertical, ShieldTheme.Spacing.compact)
+                    .transition(.opacity)
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: visible)
+        }
+    }
+}

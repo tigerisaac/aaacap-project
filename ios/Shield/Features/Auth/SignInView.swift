@@ -152,6 +152,7 @@ struct SignInView: View {
                     .accessibilityHidden(true)
             }
             .scrollDismissesKeyboard(.interactively)
+            .shieldKeyboardDone(!allowsDismissal && focusedField != nil) { focusedField = nil }
             .background(ShieldTheme.surface)
             .onChange(of: feedbackRevision) { _, _ in
                 if !keyboardVisible { revealFeedback(using: proxy) }
@@ -171,11 +172,8 @@ struct SignInView: View {
                 if allowsDismissal {
                     ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(working) }
                 }
-                if allowsDismissal {
-                    if focusedField != nil { ToolbarItem(placement: .confirmationAction) { Button("Done") { focusedField = nil } } }
-                } else {
-                    ToolbarSpacer(.flexible, placement: .keyboard)
-                    ToolbarItem(placement: .keyboard) { Button("Done") { focusedField = nil } }
+                if allowsDismissal, focusedField != nil {
+                    ToolbarItem(placement: .confirmationAction) { Button("Done") { focusedField = nil } }
                 }
             }
             }

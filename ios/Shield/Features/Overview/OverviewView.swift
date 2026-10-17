@@ -15,6 +15,8 @@ struct OverviewView: View {
     @State private var loadingVisible = false
     @State private var isCancellingDisconnection = false
     @State private var isContinuingDisconnection = false
+    /// The status card's action is a real button, so it opens its route here rather than as a list link.
+    @State private var statusRoute: AppRoute?
 
     var body: some View {
         NavigationShell {
@@ -25,6 +27,7 @@ struct OverviewView: View {
                         TimelineView(.periodic(from: .now, by: 30)) { context in
                             statusCard(now: context.date)
                         }
+                        .listRowBackground(HomeStatusBackground(tone: summary(now: .now).tone))
                     }
                 }
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
@@ -90,6 +93,11 @@ struct OverviewView: View {
             .navigationDestination(isPresented: $isCancellingDisconnection) {
                 if let id = model.selectedPersonID { DisconnectView(participantID: id, cancellationRequested: true) }
             }
+            .navigationDestination(item: $statusRoute) { route in
+                Group {
+                    if route == .forwardingSetup { ForwardingSetupView() } else { PhoneOptionsView() }
+                }.environment(\.shieldNavigationRoot, false)
+            }
             .navigationDestination(isPresented: $isContinuingDisconnection) {
                 if let id = model.selectedPersonID { DisconnectView(participantID: id) }
             }
@@ -108,54 +116,63 @@ struct OverviewView: View {
         }
     }
 
+    /// The status reads in one glance: a badge, a bold state and one line, then the card's one next
+    /// action as a real button. Checks on gets the teal card.
     @ViewBuilder private func statusCard(now: Date) -> some View {
         let presentation = summary(now: now)
-        let layout = typeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
-            : AnyLayout(HStackLayout(alignment: .center, spacing: 20))
-        layout {
-            Image(systemName: presentation.symbol)
-                .font(.system(size: 60, weight: .regular))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(presentation.enabled ? ShieldTheme.connected : ShieldTheme.secondaryText)
-                .frame(width: 72, height: 80)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 8) {
-                Text(presentation.title).font(.title3.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
-                Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                if presentation.isSaved, let checkedAt {
-                    Text("Last confirmed \(checkedAt.formatted(date: .abbreviated, time: .shortened)).")
-                        .font(.footnote).foregroundStyle(ShieldTheme.secondaryText)
-                        .accessibilityIdentifier("today-status-confirmed")
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+            HStack(alignment: .center, spacing: ShieldTheme.Spacing.content) {
+                if !typeSize.isAccessibilitySize {
+                    HomeStatusBadge(symbol: presentation.symbol, tone: presentation.tone)
                 }
-                if !model.isDemo || isStatusFixture, model.isOwner {
-                    if presentation.canCancelDisconnection, model.selectedPersonID != nil {
-                        Button("Keep using Shield") { isCancellingDisconnection = true }
-                            .buttonStyle(.plain)
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
-                            .accessibilityIdentifier("home-cancel-disconnection")
-                        Button("Finish disconnecting") { isContinuingDisconnection = true }
-                            .buttonStyle(.plain)
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
-                    } else if presentation.retry {
-                        Button(checkingStatus ? "Checking…" : "Try again") { Task { await refresh() } }
-                            .disabled(checkingStatus)
-                    } else if presentation.needsSetup {
-                        if model.isTrial && !presentation.useSetupMenu {
-                            NavigationLink(value: AppRoute.forwardingSetup) {
-                                Text(presentation.actionTitle)
-                            }
-                        } else {
-                            NavigationLink(presentation.actionTitle, value: AppRoute.phoneOptions)
-                        }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(presentation.title).font(.title2.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
+                    Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if presentation.isSaved, let checkedAt {
+                        Text("Last confirmed \(checkedAt.formatted(date: .abbreviated, time: .shortened)).")
+                            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, ShieldTheme.Spacing.compact)
+                            .accessibilityIdentifier("today-status-confirmed")
                     }
                 }
             }
+            if !model.isDemo || isStatusFixture, model.isOwner { statusActions(presentation) }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, ShieldTheme.Spacing.regular)
+    }
+
+    @ViewBuilder private func statusActions(_ presentation: HomeStatusPresentation) -> some View {
+        if presentation.canCancelDisconnection, model.selectedPersonID != nil {
+            VStack(spacing: ShieldTheme.Spacing.compact) {
+                Button { isCancellingDisconnection = true } label: { statusActionLabel("Keep using Shield") }
+                    .shieldSecondaryButton()
+                    .accessibilityIdentifier("home-cancel-disconnection")
+                Button { isContinuingDisconnection = true } label: { statusActionLabel("Finish disconnecting") }
+                    .shieldSecondaryButton()
+            }
+        } else if presentation.retry {
+            Button { Task { await refresh() } } label: { statusActionLabel(checkingStatus ? "Checking…" : "Try again") }
+                .shieldSecondaryButton().disabled(checkingStatus)
+        } else if presentation.needsSetup {
+            let route = model.isTrial && !presentation.useSetupMenu ? AppRoute.forwardingSetup : AppRoute.phoneOptions
+            if presentation.tone == .setup {
+                Button { statusRoute = route } label: { ShieldActionLabel(title: presentation.actionTitle) }
+                    .shieldPrimaryButton()
+            } else {
+                Button { statusRoute = route } label: { statusActionLabel(presentation.actionTitle) }
+                    .shieldSecondaryButton()
+            }
+        }
+    }
+
+    private func statusActionLabel(_ title: String) -> some View {
+        Text(title).font(.headline).multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
     }
 
     private func summary(now: Date) -> HomeStatusPresentation {
@@ -232,4 +249,56 @@ struct OverviewView: View {
         }
     }
 
+}
+
+/// The status symbol on a circle: solid teal with a white check when checks are on, navy for setup,
+/// a quiet tile otherwise. In Dark Mode the bright hues become tinted tiles with a coloured glyph,
+/// so the card pops without glowing. Decorative; the title says the state in words.
+private struct HomeStatusBadge: View {
+    let symbol: String
+    let tone: HomeStatusPresentation.Tone
+    @Environment(\.colorScheme) private var colorScheme
+    @ScaledMetric(relativeTo: .title2) private var size = 52.0
+
+    var body: some View {
+        Image(systemName: glyph)
+            .font(.system(size: size * 0.44, weight: .semibold))
+            .foregroundStyle(ink)
+            .frame(width: size, height: size)
+            .background(fill, in: .circle)
+            .accessibilityHidden(true)
+    }
+
+    private var hue: Color? {
+        switch tone {
+        case .on: ShieldTheme.connected
+        case .setup: ShieldTheme.action
+        case .neutral: nil
+        }
+    }
+
+    private var fill: Color {
+        guard let hue else { return ShieldTheme.quietSurface }
+        return colorScheme == .dark ? hue.opacity(0.18) : hue
+    }
+
+    private var ink: Color {
+        guard let hue else { return ShieldTheme.secondaryText }
+        return colorScheme == .dark ? hue : ShieldTheme.actionInk
+    }
+
+    /// The circle is already drawn, so "pause.circle" becomes "pause".
+    private var glyph: String { symbol.hasSuffix(".circle") ? String(symbol.dropLast(".circle".count)) : symbol }
+}
+
+/// Checks on reads as a calm teal card (fainter in Dark Mode); every other state keeps the Card surface.
+private struct HomeStatusBackground: View {
+    let tone: HomeStatusPresentation.Tone
+    @Environment(\.colorScheme) private var colorScheme
+    var body: some View {
+        ZStack {
+            ShieldTheme.card
+            if tone == .on { ShieldTheme.connected.opacity(colorScheme == .dark ? 0.06 : 0.1) }
+        }
+    }
 }
