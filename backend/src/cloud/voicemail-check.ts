@@ -150,7 +150,7 @@ export class VoicemailCheck {
       if (call?.voicemail?.status !== 'removed' || call.voicemailDeletedAt || !audio || audio.expiresAt <= now) return false;
       tx.update(callDoc!.ref, { 'voicemail.status': 'ready', 'voicemail.restoredAt': now, outcome: 'voicemail',
         events: [...call.events, { kind: 'voicemail_restored', at: now }] });
-      tx.update(audioDoc!.ref, { expiresAt: call.expiresAt });
+      // Restoring a message never extends its delivery window.
       return true;
     });
   }

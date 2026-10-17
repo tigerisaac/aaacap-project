@@ -15,6 +15,13 @@ struct VoicemailView: View {
         NavigationShell {
             List {
                 PersonContextSection()
+                if !app.isDemo, app.isOwner {
+                    ShieldGroup {
+                        Text("Recordings are saved on this iPhone. Open Shield within 24 hours of a call to receive its audio. Recordings aren’t included in iCloud backups.")
+                            .foregroundStyle(ShieldTheme.secondaryText)
+                        if let error = app.audioSyncError { Text(error).foregroundStyle(ShieldTheme.secondaryText) }
+                    }
+                }
                 if app.isDemo, app.isOwner, app.canListen {
                     ShieldGroup(background: .clear) {
                         if typeSize >= .xxxLarge {
@@ -81,6 +88,7 @@ struct VoicemailView: View {
             .shieldLargeTitle("Messages")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .task { await inbox.load(app) }
+            .onChange(of: app.localMessages.map(\.call)) { _, _ in Task { await inbox.load(app) } }
             .refreshable { await inbox.load(app) }
         }
     }

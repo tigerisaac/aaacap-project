@@ -65,6 +65,7 @@ struct TrialSetupView: View {
             defer { working = false }
             do {
                 let _: APIResponses.Empty = try await model.api.send("/api/account/delete", method: "POST", participantID: setup.participantId)
+                try await model.deleteLocalMessageLibrary()
                 await model.signOut()
             } catch { model.handle(error) }
         }

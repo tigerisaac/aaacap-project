@@ -20,6 +20,18 @@ actor APIClient {
 
     var hasSession: Bool { tokens != nil }
 
+    /// A local namespace only; the server verifies authorization for every remote operation.
+    var localAccountID: String? {
+        guard let token = tokens?.accessToken else { return nil }
+        let pieces = token.split(separator: ".")
+        guard pieces.count == 3 else { return nil }
+        var payload = String(pieces[1]).replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        payload += String(repeating: "=", count: (4 - payload.count % 4) % 4)
+        guard let bytes = Data(base64Encoded: payload), let claims = try? JSONSerialization.jsonObject(with: bytes) as? [String: Any],
+              let subject = claims["sub"] as? String, !subject.isEmpty else { return nil }
+        return "\(configuration.baseURL?.absoluteString ?? "unconfigured")|\(subject)"
+    }
+
     nonisolated static func payload(_ object: [String: Any]) throws -> Data {
         try JSONSerialization.data(withJSONObject: object)
     }
@@ -130,7 +142,9 @@ actor APIClient {
             try keychain.write(result)
             tokens = result
         } catch {
-            if generation == sessionGeneration { tokens = nil; keychain.clear() }
+            if generation == sessionGeneration, case let APIError.service(_, status) = error, status == 401 || status == 403 {
+                tokens = nil; keychain.clear()
+            }
             throw error
         }
     }

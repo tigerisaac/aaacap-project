@@ -1,5 +1,11 @@
 # Status
 
+## October 16 — phone audio delivery, tested but not deployed
+
+Implemented the owner's choice of a temporary delivery copy: verified local save before owner-only acknowledgement, transactional removal of all cloud chunks, 24-hour delivery expiry, provider deletion recovery, offline phone library, backup exclusion and retriable confirmation. Helpers cannot acknowledge the owner's copy. Minimum instances remain zero. Typecheck/build, 264 unit tests, 210 Firestore tests, Swift storage failure checks and simulator save/relaunch/playback passed. No real calls or physical-device verification.
+
+The read-only 20:09 Central inventory found zero Firebase audio manifests/chunks, disabled PITR and no database backups, but two Telnyx recordings with unfinished jobs (about five hours and eighteen days old). No audio was downloaded or deleted. Deployment, installation and existing provider-copy handling remain pending owner approval. [Details and rollout](AUDIO-DELIVERY.md).
+
 ## October 16 — clearer carrier handoff and actual code counts
 
 The carrier phase now explains **Connect calls to Shield**, with deliberate **Copy setup code** → **Open Phone** → explicit carrier confirmation after returning. Visible ready-to-paste feedback replaces automatic copying; Apple's native Phone banner still needs its own Open tap, and Keypad remains an explicit instruction when needed. The separate floating keypad reminder is shallower. Progress, Back and continuation follow the actual one-, two- or three-code list; empty-code recovery and the forwarding probe remain. T-Mobile's grouped-code candidate is documented, but its separate-phone test is deferred at the owner's request and the current carrier profile stays unchanged.

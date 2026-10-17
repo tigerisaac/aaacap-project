@@ -1,5 +1,9 @@
 # Architecture
 
+## Phone audio delivery — repository change, not deployed
+
+The owner selected temporary delivery followed by deletion. The new app saves and verifies audio on the phone before acknowledging; the server atomically deletes its copy on acknowledgement, with a 24-hour maximum delivery window and independent expiry cleanup. Local files are excluded from backups and remain playable offline. Summaries retain their existing 30-day server policy. See [storage contract, validation, live inventory and coordinated rollout](AUDIO-DELIVERY.md). The deployed saved-message behavior described below is unchanged until this release is approved.
+
 ## On-demand startup and durable recovery — deployed October 16
 
 New shared calls create a durable startup job at admission. The caller keeps ringing while an on-demand worker prepares the bridge/runtime database channel, then answers with recording and streaming enabled. The actual media session must process audio successfully before the existing greeting is played; successful greeting completion starts the caller’s silence/decision timers. The bridge saves outcomes atomically with durable jobs, so carrier work runs on retried workers after media closes. Scheduled phase deadlines and the minute sweep recover missing callbacks. The bridge and workers keep zero minimum instances and request-based CPU. Confirmed unconnected hangups bypass the executor lease and release only their own reservation. Current bridge `shield-live-00015-qdd` and API `shieldapi-00021-zug` serve all traffic; both new job functions and the scoped recovery/cleanup functions are active. Infrastructure and synthetic checks passed; real-carrier behavior remains unverified for this release. [Incident, bounds, tests and deployment evidence](INCIDENT-2026-10-16.md#approved-deployment--october-16-evening). [Running costs](ON-DEMAND-COSTS.md).

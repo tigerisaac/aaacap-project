@@ -12,6 +12,9 @@ struct Voicemail: Codable, Identifiable, Hashable, Sendable {
     var summary: String? = nil
     var summaryStatus: String? = nil
     var decision: String? = nil
+    var audioExpiresAt: Date? = nil
+    var audioDeliveredAt: Date? = nil
+    var audioExpiredAt: Date? = nil
     var isNotice: Bool { kind == "notice" }
     var kindLabel: String { isNotice ? "Saved notice" : "Voicemail" }
     var isRestorable: Bool { status == "removed" && (restorableUntil.map { $0 > .now } ?? false) }

@@ -5,10 +5,10 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema, RETENTION_MS } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
-import { ingestForwardingRecording } from '../src/cloud/forwarding-recordings.js';
+import { ingestForwardingRecording, expireProviderRecordings } from '../src/cloud/forwarding-recordings.js';
 import { VoicemailCheck, VOICEMAIL_LIMITS, type VoicemailModel } from '../src/cloud/voicemail-check.js';
 import { HttpError, type AuthProvider } from '../src/auth.js';
-import { readMessageAudio } from '../src/cloud/message-audio.js';
+import { readMessageAudio, writeMessageAudio, expireMessageAudio, MESSAGE_DELIVERY_MS } from '../src/cloud/message-audio.js';
 import { ForwardingLive } from '../src/cloud/forwarding-live.js';
 import { ForwardingStore } from '../src/cloud/forwarding-store.js';
 
@@ -237,5 +237,115 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     const provider = { fetch: vi.fn(), remove: vi.fn(async () => {}) };
     await expect(ingestForwardingRecording(s, recording, provider)).rejects.toThrow('capture_outcome_pending');
     expect(provider.fetch).not.toHaveBeenCalled(); expect(provider.remove).not.toHaveBeenCalled();
+  });
+
+  const delivery = async (callId: string, uid = 'owner') => app.inject({ url: `/api/voicemails/${callId}/delivery`, headers: headers(uid) });
+  const acknowledge = async (callId: string, proof: { receipt: string; sha256: string }, uid = 'owner') => app.inject({ method: 'POST',
+    url: `/api/voicemails/${callId}/delivered`, headers: headers(uid), payload: { receipt: proof.receipt, sha256: proof.sha256 } });
+
+  it('keeps a download until owner confirmation, deletes every chunk, and accepts a lost-response retry', async () => {
+    const callId = await seed(), bytes = Buffer.alloc(900_000, 57);
+    await db.runTransaction(async tx => { writeMessageAudio(s, tx, callId, id, now + RETENTION_MS, bytes); });
+    await check.check(callId, model('keep'));
+    const download = await delivery(callId), proof = download.json();
+    expect(download.headers['cache-control']).toBe('no-store');
+    expect(Buffer.from(proof.audio, 'base64')).toEqual(bytes);
+    expect((await check.audioRef(callId).get()).exists).toBe(true);
+    expect((await acknowledge(callId, proof)).statusCode).toBe(200);
+    expect((await check.audioRef(callId).get()).exists).toBe(false);
+    expect((await db.collection('forwardingAudioChunks').get()).empty).toBe(true);
+    expect((await acknowledge(callId, proof)).statusCode).toBe(200);
+    expect((await delivery(callId)).statusCode).toBe(404);
+    expect((await listed(callId)).voicemail).toMatchObject({ audioDeliveredAt: new Date(now).toISOString(), summary: 'The caller left a synthetic account notice.' });
+  });
+  it('does not hand off pending audio before its content check finishes', async () => {
+    const callId = await seed();
+    expect((await delivery(callId)).statusCode).toBe(409);
+    expect((await check.audioRef(callId).get()).exists).toBe(true);
+  });
+  it('does not let a listening helper, another account, or a tampered receipt delete the owner copy', async () => {
+    const callId = await seed(); await check.check(callId, model('keep'));
+    const grant = (await s.memberRef(id, 'helper').get()).data()!.grantId;
+    await db.collection('grants').doc(grant).update({ canListen: true });
+    const proof = (await delivery(callId)).json();
+    expect((await delivery(callId, 'helper')).statusCode).toBe(403);
+    expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers('helper') })).statusCode).toBe(200);
+    for (const uid of ['helper', 'stranger']) expect((await acknowledge(callId, proof, uid)).statusCode).toBe(403);
+    expect((await acknowledge(callId, { ...proof, sha256: '0'.repeat(64) })).statusCode).toBe(403);
+    expect((await acknowledge(callId, { ...proof, receipt: proof.receipt + 'tampered' })).statusCode).toBe(400);
+    expect((await acknowledge(randomUUID(), proof)).statusCode).toBe(400);
+    expect((await check.audioRef(callId).get()).exists).toBe(true);
+  });
+  it('refuses a receipt for an audio revision replaced during download', async () => {
+    const callId = await seed(); await check.check(callId, model('keep'));
+    const proof = (await delivery(callId)).json();
+    await db.runTransaction(async tx => { writeMessageAudio(s, tx, callId, id, now + RETENTION_MS, Buffer.from('replacement')); });
+    expect((await acknowledge(callId, proof)).statusCode).toBe(409);
+    expect((await check.audioRef(callId).get()).exists).toBe(true);
+  });
+  it.each(['deleted', 'offboarded'])('rejects confirmation after the account or message is %s', async state => {
+    const callId = await seed(); await check.check(callId, model('keep'));
+    const proof = (await delivery(callId)).json();
+    if (state === 'deleted') await app.inject({ method: 'DELETE', url: `/api/voicemails/${callId}`, headers: headers() });
+    else await s.personRef(id).update({ status: 'offboarded' });
+    expect((await acknowledge(callId, proof)).statusCode).toBe(state === 'deleted' ? 404 : 403);
+  });
+  it('expires delivery at 24 hours and physically removes audio while preserving its summary', async () => {
+    const callId = await seed();
+    await db.runTransaction(async tx => { writeMessageAudio(s, tx, callId, id, now + RETENTION_MS, Buffer.alloc(700_000)); });
+    expect((await check.audioRef(callId).get()).data()!.expiresAt).toBe(now + MESSAGE_DELIVERY_MS);
+    await check.check(callId, model('keep'));
+    now += MESSAGE_DELIVERY_MS;
+    expect((await delivery(callId)).statusCode).toBe(404);
+    expect((await app.inject({ url: `/api/voicemails/${callId}/audio`, headers: headers() })).statusCode).toBe(404);
+    await expireMessageAudio(s);
+    expect((await check.audioRef(callId).get()).exists).toBe(false);
+    expect((await db.collection('forwardingAudioChunks').get()).empty).toBe(true);
+    expect((await listed(callId)).voicemail.summary).toBe('The caller left a synthetic account notice.');
+    expect((await call(callId)).voicemail.audioExpiredAt).toBe(now);
+  });
+  it('never extends an existing delivery window when restoring a legacy removal', async () => {
+    const callId = await seed(), expiresAt = now + 60_000;
+    await check.audioRef(callId).update({ expiresAt });
+    await s.callRef(callId).update({ 'voicemail.status': 'removed' });
+    expect(await check.restore(callId)).toBe(true);
+    expect((await check.audioRef(callId).get()).data()!.expiresAt).toBe(expiresAt);
+  });
+  it.each(['delivered', 'expired'])('does not resurrect %s audio on a late provider callback', async state => {
+    const callId = await seed(); await check.check(callId, model('keep'));
+    if (state === 'delivered') await acknowledge(callId, (await delivery(callId)).json());
+    else {
+      await check.audioRef(callId).update({ expiresAt: now });
+      await expireMessageAudio(s);
+    }
+    const recording = randomUUID(), provider = { fetch: vi.fn(), remove: vi.fn(async () => {}) };
+    await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, provider: 'telnyx', parentSid: randomUUID(),
+      duration: 30, status: 'pending', createdAt: now, expiresAt: now + RETENTION_MS });
+    await ingestForwardingRecording(s, recording, provider);
+    expect(provider.fetch).not.toHaveBeenCalled(); expect(provider.remove).toHaveBeenCalledOnce();
+    expect((await check.audioRef(callId).get()).exists).toBe(false);
+  });
+  it('deletes an overdue provider copy even if startup or the call outcome never finished', async () => {
+    const callId = await seed(), recording = randomUUID();
+    await s.callRef(callId).update({ state: 'screening' });
+    await db.collection('forwardingRecordings').doc(recording).set({ callId, participantId: id, provider: 'telnyx', parentSid: randomUUID(), capture: true,
+      duration: 30, status: 'pending', createdAt: now - MESSAGE_DELIVERY_MS, expiresAt: now + RETENTION_MS });
+    const provider = { fetch: vi.fn(), remove: vi.fn(async () => {}) };
+    await ingestForwardingRecording(s, recording, provider);
+    expect(provider.fetch).not.toHaveBeenCalled(); expect(provider.remove).toHaveBeenCalledOnce();
+  });
+  it('advances past failing deletion jobs and wraps around to retry them', async () => {
+    const recordings = Array.from({ length: 21 }, (_, i) => `expired-${String(i).padStart(3, '0')}`);
+    const batch = db.batch();
+    for (const id of recordings) batch.set(db.collection('forwardingRecordings').doc(id), { status: 'pending', createdAt: now - MESSAGE_DELIVERY_MS });
+    await batch.commit();
+    const visited: string[] = [];
+    const retry = async (id: string) => { visited.push(id); throw new Error('provider unavailable'); };
+    await expect(expireProviderRecordings(s, retry)).rejects.toThrow('recording_deletion_incomplete');
+    expect(visited).toEqual(recordings.slice(0, 20));
+    await expect(expireProviderRecordings(s, retry)).rejects.toThrow('recording_deletion_incomplete');
+    expect(visited).toEqual(recordings);
+    await expect(expireProviderRecordings(s, retry)).rejects.toThrow('recording_deletion_incomplete');
+    expect(visited.slice(21)).toEqual(recordings.slice(0, 20));
   });
 });

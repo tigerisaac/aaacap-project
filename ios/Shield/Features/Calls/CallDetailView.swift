@@ -109,6 +109,13 @@ struct CallDetailView: View {
                 ShieldGroup {
                     if voicemail.status == "ready", model.canListen {
                         LabeledContent("Length", value: voicemail.durationLabel)
+                        if !model.isDemo {
+                            Text(model.localMessages.contains { $0.call.id == call.id } ? "Saved on this iPhone"
+                                : voicemail.audioDeliveredAt != nil ? "Saved on another phone. There is no cloud copy."
+                                : voicemail.audioExpiredAt != nil || (voicemail.audioExpiresAt.map { $0 <= .now } ?? false) ? "The audio expired before it reached this iPhone."
+                                : "Audio is available for delivery for up to 24 hours after the call.")
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                        }
                         if player.hasAudio {
                             MessagePlaybackProgress(player: player) {
                                 Task {
@@ -321,7 +328,8 @@ struct CallDetailView: View {
                 if ProcessInfo.processInfo.arguments.contains("--uitesting-delayed-audio") { try await Task.sleep(for: .seconds(4)) }
                 data = PreviewAudio.data
             } else {
-                data = try await model.api.data("/api/voicemails/\(voicemail.id)/audio", participantID: personID)
+                guard let person = model.person else { throw CancellationError() }
+                data = try await model.messageAudioData(call: call, person: person)
             }
             #else
             data = try await model.api.data("/api/voicemails/\(voicemail.id)/audio", participantID: personID)
@@ -389,9 +397,10 @@ struct CallDetailView: View {
         defer { deleting = false }
         stopPlayback()
         do {
-            let _: APIResponses.Empty = try await model.api.send("/api/voicemails/\(voicemail.id)", method: "DELETE", participantID: model.selectedPersonID)
-            await load()
+            guard let personID = model.selectedPersonID else { return }
+            try await model.deleteMessage(voicemail.id, personID: personID)
             await model.loadContext()
+            dismiss()
         } catch { model.handle(error) }
     }
 }

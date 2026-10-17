@@ -15,10 +15,12 @@ import { CallMonitor, MONITORING_CONSENT, monitoringEnabledFor } from './monitor
 import { queueAlert } from './alerts.js';
 import { VoicemailCheck } from './voicemail-check.js';
 import { deleteMessageAudio, readMessageAudio } from './message-audio.js';
+import { registerAudioDelivery } from './audio-delivery.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
 export async function registerForwardingAPI(app: FastifyInstance, store: CloudStore, auth: AuthProvider, deps: ProbeDependencies = {}) {
+  registerAudioDelivery(app, store, auth);
   const probes = new ForwardingProbes(store);
   const f = new ForwardingStore(store), consent = forwardingConsent;
   const monitoringAvailable = new CallMonitor(f).available;

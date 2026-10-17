@@ -30,7 +30,7 @@ describe('APNs sender', () => {
     expect(await sender.send(token, 'production', 'You have a new voicemail in Shield.', 'voicemail')).toBe('sent');
     const [{ headers, body }] = seen as [typeof seen[0]];
     expect(headers).toMatchObject({ ':method': 'POST', ':path': `/3/device/${token}`, 'apns-topic': 'org.isaaczhang.Shield', 'apns-push-type': 'alert', 'apns-priority': '10' });
-    expect(JSON.parse(body)).toEqual({ aps: { alert: { title: 'Shield', body: 'You have a new voicemail in Shield.' }, sound: 'default', 'thread-id': 'shield' }, shield: { kind: 'voicemail' } });
+    expect(JSON.parse(body)).toEqual({ aps: { alert: { title: 'Shield', body: 'You have a new voicemail in Shield.' }, sound: 'default', 'thread-id': 'shield', 'content-available': 1 }, shield: { kind: 'voicemail' } });
     const [header, claims, signature] = String(headers.authorization).replace('bearer ', '').split('.') as [string, string, string];
     expect(JSON.parse(Buffer.from(header, 'base64url').toString())).toEqual({ alg: 'ES256', kid: 'ABCDEF1234' });
     expect(JSON.parse(Buffer.from(claims, 'base64url').toString())).toMatchObject({ iss: '6R6HMW3DWN' });

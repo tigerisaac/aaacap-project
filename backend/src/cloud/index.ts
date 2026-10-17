@@ -108,6 +108,16 @@ export const expireSharedCalls = onSchedule({ ...options, maxInstances: 1, sched
   await new SharedCallControl(getStore()).sweep();
 });
 
+// Separate from call recovery so recording deletion cannot delay the next caller.
+export const expireMessageDeliveries = onSchedule({ ...options, maxInstances: 1, schedule: 'every 5 minutes', retryCount: 3, timeoutSeconds: 120 }, async () => {
+  const { expireMessageAudio } = await import('./message-audio.js');
+  const { expireProviderRecordings } = await import('./forwarding-recordings.js');
+  const s = getStore();
+  await expireMessageAudio(s);
+  // Never log provider response bodies or recording URLs. Failed jobs remain for the next sweep.
+  await expireProviderRecordings(s);
+});
+
 export const dispatchSharedCallJob = onDocumentCreated({ ...options, document: 'callControlJobs/{jobId}', retry: true, concurrency: 20 }, async event => {
   const { dispatchCallJob } = await import('./call-jobs.js');
   await dispatchCallJob(getStore(), event.params.jobId);

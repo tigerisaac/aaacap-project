@@ -80,7 +80,8 @@ export class APNsSender implements PushSender {
         let reason = ''; try { reason = JSON.parse(reply).reason ?? ''; } catch { /* empty body on success */ }
         done(status === 200 ? 'sent' : status === 410 || ['BadDeviceToken', 'DeviceTokenNotForTopic', 'Unregistered'].includes(reason) ? 'unregistered' : 'failed');
       });
-      request.end(JSON.stringify({ aps: { alert: { title: 'Shield', body }, sound: 'default', 'thread-id': 'shield' }, shield: { kind } }));
+      request.end(JSON.stringify({ aps: { alert: { title: 'Shield', body }, sound: 'default', 'thread-id': 'shield',
+        ...(kind === 'voicemail' ? { 'content-available': 1 } : {}) }, shield: { kind } }));
     });
   }
 }

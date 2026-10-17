@@ -54,7 +54,9 @@ struct RootView: View {
     @ViewBuilder private var mainContent: some View {
         Group {
             #if DEBUG && targetEnvironment(simulator)
-            if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-storage") {
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-audio-storage") {
+                MessageAudioStorageCheckView()
+            } else if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-storage") {
                 ContactStorageCheckView()
             } else {
                 content

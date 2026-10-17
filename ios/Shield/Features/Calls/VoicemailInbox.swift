@@ -24,13 +24,18 @@ final class VoicemailInbox {
             nextCursor = nil
             return
         }
+        let local = app.savedCalls(for: person)
+        if !more { calls = local.sorted { $0.occurredAt > $1.occurredAt } }
         var path = "/api/calls?filter=voicemail"
         if more, let nextCursor { path += "&cursor=\(nextCursor)" }
         do {
             let page: APIResponses.Calls = try await app.api.send(path, participantID: person.id)
             guard request == generation, app.sessionGeneration == session, app.signedIn, app.selectedPersonID == person.id, app.isPreview == preview else { return }
-            calls = more ? calls + page.calls : page.calls
+            let remote = more ? calls + page.calls : page.calls
+            calls = Array(Dictionary((local + remote).map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest }).values)
+                .sorted { $0.occurredAt > $1.occurredAt }
             nextCursor = page.nextCursor
+            app.startAudioSync()
         } catch is CancellationError { return }
         catch {
             guard request == generation, app.sessionGeneration == session, app.signedIn, app.selectedPersonID == person.id else { return }

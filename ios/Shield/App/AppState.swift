@@ -7,6 +7,10 @@ import UserNotifications
 @Observable
 final class AppState {
     let api: APIClient
+    let messageAudio: MessageAudioDelivery
+    var localMessages: [SavedMessageInfo] = []
+    var audioSyncError: String?
+    var audioSyncTask: Task<Void, Never>?
     let configuration: BackendConfiguration
     var signedIn = false
     var isPreview = false
@@ -48,6 +52,7 @@ final class AppState {
     init(configuration: BackendConfiguration = .bundled) {
         self.configuration = configuration
         self.api = APIClient(configuration: configuration)
+        self.messageAudio = MessageAudioDelivery(api: self.api)
         #if DEBUG
         #if targetEnvironment(simulator)
         if ScreenPreview.requested != nil { exploreDemo() }
@@ -79,6 +84,7 @@ final class AppState {
         if await api.hasSession {
             guard generation == sessionGeneration, !signedIn else { return }
             signedIn = true
+            await loadLocalMessages()
             await refresh()
         }
     }
@@ -108,6 +114,7 @@ final class AppState {
         sessionGeneration += 1
         isPreview = false
         signedIn = true
+        await loadLocalMessages()
         await refresh()
     }
 
@@ -166,6 +173,7 @@ final class AppState {
             }
             await loadProtectionOnboarding(generation: generation)
             await loadContext()
+            startAudioSync()
             await syncCallDirectory(generation: generation)
         } catch { if generation == sessionGeneration { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
@@ -305,6 +313,10 @@ final class AppState {
         sessionGeneration += 1
         demoKeptMessages = []
         signedIn = false
+        audioSyncTask?.cancel()
+        audioSyncTask = nil
+        localMessages = []
+        await messageAudio.activate(nil)
         isPreview = false
         isDemo = false
         people = []

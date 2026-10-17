@@ -12,7 +12,15 @@ struct ShieldApp: App {
             RootView()
                 .environment(model)
                 .tint(ShieldTheme.action)
-                .task { await model.restoreSession() }
+                .task {
+                    notificationDelegate.receiveMessages = {
+                        guard model.signedIn, !model.isPreview else { return false }
+                        let before = Set(model.localMessages.map { $0.call.id })
+                        await model.syncMessageAudio()
+                        return model.localMessages.contains { !before.contains($0.call.id) }
+                    }
+                    await model.restoreSession()
+                }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active, model.signedIn {
                         Task { await model.refresh() }

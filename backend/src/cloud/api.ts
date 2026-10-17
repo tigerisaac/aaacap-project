@@ -33,6 +33,7 @@ export function cloudCallDTO(store: CloudStore, call: Call, canListen = false) {
     nextStep: reason === 'routine' ? 'This result does not verify the caller’s identity.' : copy.action,
     monitored: !!call.monitoringStartedAt, acceptedAt: at(call.acceptedAt), endedAt: at(call.completedAt ?? (abandoned ? call.createdAt + (forwarding ? 450_000 : 120_000) : null)), voicemail: call.voicemail ? { id: call.voicemail.id, duration: call.voicemail.duration, status: call.voicemail.status, heardAt: at(call.voicemail.heardAt),
       kind: call.voicemail.kind ?? 'voicemail', decision: call.voicemail.decision ?? null,
+      audioExpiresAt: at(call.voicemail.audioExpiresAt), audioDeliveredAt: at(call.voicemail.audioDeliveredAt), audioExpiredAt: at(call.voicemail.audioExpiredAt),
       summaryStatus: call.voicemail.summaryStatus ?? (call.voicemail.summaryEnc ? 'ready' : 'unavailable'),
       ...(canListen && !removed && call.voicemail.status === 'ready' && !call.acceptedAt ? {
         summary: call.voicemail.summaryEnc ? store.vault.open(call.voicemail.summaryEnc, `message:${call.id}:summary`) : null } : {}),
