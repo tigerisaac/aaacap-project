@@ -1,5 +1,11 @@
 # Status
 
+## October 16 — 25-user paid-pilot capacity prepared locally
+
+The candidate supports 25 enrolled people and active incoming calls, isolated per-person daily allowances, and sign-in/contact quotas sized for the cohort. A simultaneous-admission database lock failure was repaired by queuing admission within each process while retaining transactional cross-instance limits. Call termination now releases only its own reservation. Proposed live settings are 30 inbound/outbound channels at every applicable level, a 30-second first-command timeout, four on-demand bridge instances, a $15/day outbound ceiling, and $20/$30 auto recharge targeting $50 credit. **None has been applied.**
+
+Validation passed typecheck/build, **276 unit tests and all 213 emulator tests**, including 25 admissions across independent clients and 25 isolated press-1 call lifecycles. Local API/bridge packages preserve deployed screening v158 and message policy v4. Live capacity, funding, Verify/messaging activation, deployment and real-carrier qualification remain gates; no calls or paid tests occurred. [Prepared changes, evidence and approval plan](PAID-PILOT-25.md).
+
 ## October 16 — audio delivery deployed; app history works offline
 
 With owner approval, the audio release is live: API `shieldapi-00023-neb`, ingestion `ingestforwardingvoicemail-00009-goz`, checker `checkforwardingvoicemail-00003-hod`, alerts `sendshieldalert-00003-ves`, and expiry `expiremessagedeliveries-00002-nos`. The signed iPhone update is installed and launched. Cloud copies are deleted after verified local-save confirmation, with a 24-hour expiry and independent five-minute cleanup. The missing provider download-host configuration was corrected, with Telnyx’s S3 bucket checked explicitly. Both old provider jobs completed; the recent recording was removed by the unchanged message filter and the overdue one expired. Final inventory at 20:43 Central: **zero provider recordings, Firebase manifests and chunks**, no PITR or database backups.

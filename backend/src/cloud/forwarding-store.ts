@@ -1,6 +1,7 @@
 import { sharedBinding, liveLeases, SHARED_CAPACITY } from './shared-routing.js';
+import pilotLimits from './pilot-limits.json' with { type: 'json' };
 import { randomUUID } from 'node:crypto';
-import { FieldValue, type DocumentData, type Transaction } from 'firebase-admin/firestore';
+import { FieldValue, type DocumentData, type Transaction, type Firestore } from 'firebase-admin/firestore';
 import { HttpError } from '../auth.js';
 import { CONSENT_VERSION, RETENTION_MS } from './config.js';
 import { queueAlert } from './alerts.js';
@@ -41,7 +42,23 @@ const CALL_RESERVATION_MS = (CONNECTED_CALL_SECONDS + 120) * 1000;
  * Per Central-time day: screened calls per person and across Shield, which bound model spend, then voicemail; and
  * all forwarded calls, past which Shield answers nothing so a flood can't run up carrier and storage costs.
  */
-export const DAILY_LIMITS = { screenedPerPerson: 30, screenedTotal: 200, callsTotal: 500 } as const;
+export const DAILY_LIMITS = { screenedPerPerson: pilotLimits.screenedPerPersonPerDay,
+  screenedTotal: pilotLimits.screenedTotalPerDay, callsTotal: pilotLimits.callsTotalPerDay,
+  callsPerPerson: pilotLimits.callsPerPersonPerDay } as const;
+// Admission alone touches the shared capacity and daily-budget documents. Queue
+// that short transaction within each process so a burst doesn't create dozens of
+// competing lock upgrades. Firestore still enforces the limits across instances;
+// screening, offers and existing calls never wait for this local queue.
+const admissionQueues = new WeakMap<Firestore, Promise<void>>();
+async function admitInOrder<T>(db: Firestore, admit: () => Promise<T>): Promise<T> {
+  const previous = admissionQueues.get(db) ?? Promise.resolve();
+  let release!: () => void;
+  const next = new Promise<void>(resolve => { release = resolve; });
+  admissionQueues.set(db, next);
+  await previous;
+  try { return await admit(); }
+  finally { release(); if (admissionQueues.get(db) === next) admissionQueues.delete(db); }
+}
 const central = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' });
 const centralHour = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', hour: 'numeric', hourCycle: 'h23' });
 /** The pilot's day runs on Central time, not UTC (which would roll over at 6 or 7 p.m. in Texas). */
@@ -89,7 +106,7 @@ export class ForwardingStore {
   async begin(sid: string, to: string, from: string | undefined, shared?: { diverted: string; legId: string }): Promise<ForwardingCall | undefined> {
     const s = this.store, now = s.now(), id = randomUUID(), day = centralDay(now), expiresAt = now + 2 * 86400_000;
     if (!isShieldNumber(to)) return;
-    return s.db.runTransaction(async tx => {
+    const admit = () => s.db.runTransaction(async tx => {
       const route = (await tx.get(numberRef(s, to))).data();
       const binding = shared && s.config.SHARED_NUMBER_ENABLED && route?.state === 'shared' ? await sharedBinding(s, tx, to, shared.diverted) : undefined;
       const participantId = shared ? binding?.participantId : assignedTo(route);
@@ -130,7 +147,7 @@ export class ForwardingStore {
         if (!(blockedDoc.data()!.lastAttemptAt > now - 3600_000)) queueAlert(s, tx, participantId, 'blocked_caller');
         return call;
       }
-      if ((total?.calls ?? 0) >= DAILY_LIMITS.callsTotal) return;
+      if ((total?.calls ?? 0) >= DAILY_LIMITS.callsTotal || (mine?.calls ?? 0) >= DAILY_LIMITS.callsPerPerson) return;
       const window = c.enabled === true && c.expiresAt > now && c.used < 10;
       const open = window || p.alwaysOn === true;
       // A supervised window can be scoped to one test caller; always-on screening takes any caller.
@@ -160,11 +177,12 @@ export class ForwardingStore {
       }
       tx.create(s.callRef(id), call); tx.create(s.keyRef(sid), { callId: id, expiresAt: now + RETENTION_MS });
       tx.set(totalDoc.ref, { calls: (total?.calls ?? 0) + 1, screened: (total?.screened ?? 0) + (eligible ? 1 : 0), blocked: total?.blocked ?? 0, expiresAt });
-      tx.set(mineDoc.ref, { participantId, screened: (mine?.screened ?? 0) + (eligible ? 1 : 0), expiresAt });
+      tx.set(mineDoc.ref, { participantId, calls: (mine?.calls ?? 0) + 1, screened: (mine?.screened ?? 0) + (eligible ? 1 : 0), expiresAt });
       if (shared) tx.set(capacityRef, { leases: { ...leases, [id]: now + CALL_RESERVATION_MS } });
       if (eligible || shared) tx.update(controlDoc.ref, { ...(window && eligible ? { used: c.used + 1 } : {}), activeCallId: id, activeUntil: now + CALL_RESERVATION_MS });
       return call;
     });
+    return shared ? admitInOrder(s.db, admit) : admit();
   }
   /** `effect` runs only when `update` changed the call, and its writes commit atomically with that change. */
   async transition(id: string, update: (call: ForwardingCall, control: DocumentData, person: DocumentData) => Partial<ForwardingCall> | undefined,
@@ -176,7 +194,6 @@ export class ForwardingStore {
       const controlRef = this.controlRef(call.participantId);
       const [ctrl, person] = await tx.getAll(controlRef, s.personRef(call.participantId));
       const capacityRef = s.db.doc('sharedCapacity/calls');
-      const capacity = call.transport === 'call-control' ? (await tx.get(capacityRef)).data() : undefined;
       const route = call.transport === 'call-control' && call.shieldNumber && call.routeKey ? (await tx.get(numberRef(s, call.shieldNumber).collection('routes').doc(call.routeKey))).data() : undefined;
       const patch = update(call, ctrl!.data() ?? {}, person!.data() ?? {});
       if (!patch) return;
@@ -188,7 +205,11 @@ export class ForwardingStore {
       if (Object.keys(patch).length) tx.update(doc!.ref, patch);
       if (patch.state === 'ended' && ctrl!.data()?.activeCallId === id) tx.update(controlRef, { activeCallId: FieldValue.delete() });
 
-      if (patch.state === 'ended' && capacity) { const leases = liveLeases(capacity); delete leases[id]; tx.set(capacityRef, { leases }); }
+      // Delete only this call's reservation. Reading/replacing the entire shared map
+      // makes unrelated offers and hangups contend with every admission.
+      if (patch.state === 'ended' && call.transport === 'call-control') {
+        tx.set(capacityRef, { leases: { [id]: FieldValue.delete() } }, { merge: true });
+      }
       const next = { ...call, ...patch };
       if (Object.keys(patch).length) effect?.(tx, next, person!.exists);
       return next;

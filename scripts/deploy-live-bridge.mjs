@@ -1,3 +1,4 @@
+import pilotLimits from '../backend/src/cloud/pilot-limits.json' with { type: 'json' };
 import { readFile, writeFile, mkdir, copyFile, readdir, rm } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -9,14 +10,15 @@ const buildClient = new Client({ urlPrefix: 'https://cloudbuild.googleapis.com',
 const run = new Client({ urlPrefix: 'https://run.googleapis.com', apiVersion: 'v2' });
 const secrets = new Client({ urlPrefix: 'https://secretmanager.googleapis.com', apiVersion: 'v1' });
 const runtimeIdentity = `shield-runtime@${project}.iam.gserviceaccount.com`;
-await connect();
 const command = process.argv[2] ?? 'status';
-if (command === 'build') {
+if (command !== 'package') await connect();
+if (command === 'build' || command === 'package') {
   // Start clean so modules deleted from the source never linger in the image.
   const stage = 'artifacts/live-bridge'; await rm(stage, { recursive: true, force: true });
   await mkdir(`${stage}/lib/live`, { recursive: true }); await mkdir(`${stage}/lib/cloud`, { recursive: true });
   for (const file of ['auth', 'crypto', 'firebase-auth']) await copyFile(`dist/${file}.js`, `${stage}/lib/${file}.js`);
   for (const dir of ['cloud','live']) for (const file of await readdir(`dist/${dir}`)) if (file.endsWith('.js')) await copyFile(`dist/${dir}/${file}`, `${stage}/lib/${dir}/${file}`);
+  await copyFile('dist/cloud/pilot-limits.json', `${stage}/lib/cloud/pilot-limits.json`);
   // Shared call playback and monitoring resolve prerecorded Grace URLs from the approved catalog.
   await mkdir(`${stage}/lib/cloud/announcement-audio`, { recursive: true });
   await copyFile('dist/cloud/announcement-audio/manifest.json', `${stage}/lib/cloud/announcement-audio/manifest.json`);
@@ -28,6 +30,9 @@ if (command === 'build') {
     dependencies:Object.fromEntries(names.map(name=>[name,root.dependencies[name]]))}));
   await writeFile(`${stage}/Dockerfile`, 'FROM node:22-slim\nWORKDIR /app\nCOPY package.json ./\nRUN npm install --omit=dev --ignore-scripts\nCOPY lib ./lib\nUSER node\nCMD ["node", "lib/live/server.js"]\n');
   execFileSync(process.execPath, ['scripts/check-live-package.mjs', stage], { stdio: 'inherit' });
+  execFileSync(process.execPath, ['scripts/check-live-package.mjs', stage, '--hybrid'], { stdio: 'inherit' });
+  // Offline packaging is reviewable before approving a billable Cloud Build or deployment.
+  if (command === 'package') { console.log('Local candidate packaged; no cloud build or deployment submitted.'); process.exit(0); }
   const tag = `demo-${Date.now()}`, object = `shield-live/${tag}.tgz`, bucket = 'gcf-v2-sources-562628621854-us-central1';
   const archive = '/tmp/shield-live-deploy.tgz'; execFileSync('/usr/bin/tar',['-czf',archive,'-C',stage,'package.json','Dockerfile','lib']);
   const upload = new Client({urlPrefix:'https://storage.googleapis.com',apiVersion:'upload/storage/v1'});
@@ -58,7 +63,7 @@ if (command === 'build') {
   const hybridEnv=(existing?.template?.containers?.[0]?.env??[]).filter(e=>['SHIELD_SCREENING_MODE','SONIOX_API_KEY'].includes(e.name));
   const body={name:name.slice(1),description:'Shield GPT Live screening with signed per-call streams; up to ten sessions per instance.',ingress:'INGRESS_TRAFFIC_ALL',
     // Prepare while ringing; durable workers finish carrier work after media ends.
-    template:{serviceAccount:runtimeIdentity,timeout:'120s',maxInstanceRequestConcurrency:10,scaling:{minInstanceCount:0,maxInstanceCount:2},
+    template:{serviceAccount:runtimeIdentity,timeout:'120s',maxInstanceRequestConcurrency:pilotLimits.bridgeSessionsPerInstance,scaling:{minInstanceCount:0,maxInstanceCount:pilotLimits.bridgeMaxInstances},
       containers:[{image:s.image,ports:[{containerPort:8080}],resources:{limits:{cpu:'1',memory:'512Mi'},cpuIdle:true,startupCpuBoost:true},
         env:[{name:'SHIELD_RUNTIME',valueSource:{secretKeyRef:{secret:'SHIELD_RUNTIME',version:'latest'}}},
           {name:'OPENAI_API_KEY',valueSource:{secretKeyRef:{secret:'SHIELD_OPENAI_API_KEY',version:'2'}}},...hybridEnv]}]}};

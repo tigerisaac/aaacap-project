@@ -1,3 +1,4 @@
+import limits from '../backend/src/cloud/pilot-limits.json' with { type: 'json' };
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
@@ -42,7 +43,7 @@ async function main() {
   }
   if (command === 'status') {
     console.log(JSON.stringify({ prepared: !!pool?.data.sharedPrepared, mode: pool?.data.state ?? 'legacy', enrolled: pool?.data.members?.length ?? 0,
-      capacity: 10, sharedApplicationId: stage.sharedApplicationId, deployedFlagInLocalConfig: c.SHARED_NUMBER_ENABLED === true })); return;
+      capacity: limits.activeCalls, enrollmentLimit: limits.enrolledUsers, sharedApplicationId: stage.sharedApplicationId, deployedFlagInLocalConfig: c.SHARED_NUMBER_ENABLED === true })); return;
   }
   if (command === 'enroll' || command === 'disable') {
     const id = arg('--participant'); if (!/^[a-f0-9-]{36}$/.test(id ?? '')) throw new Error('participant_required');
@@ -56,7 +57,7 @@ async function main() {
       await commit([{ path: routePath, existing: route, data: { enabled: false, disabledAt: now, version: randomUUID() } }]); return;
     }
     const carrier = arg('--carrier'); if (!['tello', 'tmobile', 'verizon'].includes(carrier)) throw new Error('carrier_required');
-    const members = new Set(pool.data.members ?? []); members.add(id); if (members.size > 10) throw new Error('pilot_full');
+    const members = new Set(pool.data.members ?? []); members.add(id); if (members.size > limits.enrolledUsers) throw new Error('pilot_full');
     if (person.data.shieldNumber && person.data.shieldNumber !== c.TELNYX_NUMBER) throw new Error('participant_has_another_number');
     if (route) { console.log('Already enrolled; qualification and enabled state preserved.'); return; }
     const controlPath = `${path}/forwarding/control`, control = await db.read(controlPath);
@@ -79,13 +80,13 @@ async function main() {
     if (!pool?.data.sharedPrepared || !pool.data.members?.length) throw new Error('enrollment_required');
     const ready = await fetch(`${c.PUBLIC_BASE_URL}/public/shared-ready`, { redirect: 'error', signal: AbortSignal.timeout(10000) });
     const body = await ready.json();
-    if (!ready.ok || !body.enabled || body.applicationId !== stage.sharedApplicationId || body.version !== 'shared-v1') throw new Error('shared_backend_not_deployed');
+    if (!ready.ok || !body.enabled || body.applicationId !== stage.sharedApplicationId || body.version !== 'shared-v1' || body.limitsVersion !== limits.version || body.capacity !== limits.activeCalls) throw new Error('shared_backend_not_deployed');
     if (!c.LIVE_BRIDGE_URL) throw new Error('shared_bridge_not_configured');
     const bridgeResponse = await fetch(`${c.LIVE_BRIDGE_URL}/ready`, { redirect: 'error', signal: AbortSignal.timeout(10000) });
     const bridge = await bridgeResponse.json();
-    if (!bridgeResponse.ok || bridge.sharedTransport !== 'call-control-v1' || bridge.maxSessions < 10) throw new Error('shared_bridge_not_deployed');
+    if (!bridgeResponse.ok || bridge.sharedTransport !== 'call-control-v1' || !(bridge.maxSessions >= limits.bridgeSessionsPerInstance) || bridge.limitsVersion !== limits.version) throw new Error('shared_bridge_not_deployed');
     const app = (await telnyxRequest(c, `/call_control_applications/${target}`)).data;
-    if (app.inbound?.channel_limit !== 10 || app.outbound?.channel_limit !== 10 || app.webhook_event_url !== `${c.PUBLIC_BASE_URL}/voice/shared`) throw new Error('shared_app_not_prepared');
+    if (!(app.inbound?.channel_limit >= limits.telnyxInboundChannels) || !(app.outbound?.channel_limit >= limits.telnyxOutboundChannels) || app.webhook_event_url !== `${c.PUBLIC_BASE_URL}/voice/shared`) throw new Error('shared_app_not_prepared');
   }
   console.log(JSON.stringify({ command, dryRun: !confirm, sharedNumber: c.TELNYX_NUMBER, targetApplicationId: target, activeCalls: 0 }));
   if (!confirm) return;

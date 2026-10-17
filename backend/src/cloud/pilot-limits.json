@@ -1,0 +1,22 @@
+{
+  "version": "paid-pilot-25-v1",
+  "enrolledUsers": 25,
+  "activeCalls": 25,
+  "screenedPerPersonPerDay": 30,
+  "callsPerPersonPerDay": 100,
+  "screenedTotalPerDay": 750,
+  "callsTotalPerDay": 2500,
+  "bridgeSessionsPerInstance": 10,
+  "bridgeMaxInstances": 4,
+  "telnyxInboundChannels": 30,
+  "telnyxOutboundChannels": 30,
+  "firstCommandTimeoutSeconds": 30,
+  "outboundDailySpendUSD": "15.00",
+  "rechargeThresholdUSD": 20,
+  "rechargeAmountUSD": 30,
+  "phoneCodeSendsPerIPPerDay": 125,
+  "phoneCodeSendsTotalPerDay": 250,
+  "phoneCodeChecksPerIPPerDay": 625,
+  "contactRequestsTotalPerDay": 250,
+  "contactAlertsTotalPerDay": 500
+}

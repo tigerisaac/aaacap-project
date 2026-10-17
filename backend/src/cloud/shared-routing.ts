@@ -2,8 +2,10 @@ import type { DocumentData, Transaction } from 'firebase-admin/firestore';
 import { HttpError } from '../auth.js';
 import type { CloudStore, Person } from './store.js';
 import { numberRef } from './numbers.js';
+import limits from './pilot-limits.json' with { type: 'json' };
 
-export const SHARED_CAPACITY = 10;
+export const SHARED_CAPACITY = limits.activeCalls;
+export const SHARED_ENROLLMENT_LIMIT = limits.enrolledUsers;
 export const normalizeForwardedNumber = (s: string) => {
   const n = s.replace(/^\+?1(?=\d{10}$)/, '');
   return /^[2-9]\d{9}$/.test(n) ? `+1${n}` : undefined;
@@ -48,7 +50,7 @@ export async function enrollSharedRoute(s: CloudStore, participantId: string, ev
     if (pool?.state !== 'shared' && !pool?.sharedPrepared) throw new HttpError(409, 'shared_pool_not_prepared');
     if (route && route.participantId !== participantId) throw new HttpError(409, 'route_quarantined');
     const members = new Set<string>(pool.members ?? []); members.add(participantId);
-    if (members.size > SHARED_CAPACITY) throw new HttpError(409, 'pilot_full');
+    if (members.size > SHARED_ENROLLMENT_LIMIT) throw new HttpError(409, 'pilot_full');
     if (person.shieldNumber && person.shieldNumber !== to) throw new HttpError(409, 'participant_has_another_number');
     tx.set(ref, { participantId, enabled: !!evidence.qualifiedAt, ...evidence });
     tx.update(poolDoc!.ref, { members: [...members] });

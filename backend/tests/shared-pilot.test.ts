@@ -26,14 +26,16 @@ it('accepts one normalized forwarding identity and rejects missing, malformed, c
     [{ name: 'From', value: '<tel:+12025550101>' }], [{ name: 'Diversion', value: '<tel:911>' }]]) expect(forwardingIdentity(headers)).toBeUndefined();
 });
 
-describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared number', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared number', () => {
   const project = 'demo-shield-shared', admin = initializeApp({ projectId: project }, 'shared-pilot'), db = getFirestore(admin);
+  // Independent client = independent admission queue, like a second API instance.
+  const otherAdmin = initializeApp({ projectId: project }, 'shared-pilot-other'), otherDB = getFirestore(otherAdmin);
   const keys = generateKeyPairSync('ed25519');
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app', TRIAL_PROXY_SECRET: 'a'.repeat(64), DATA_ENCRYPTION_KEY: 'b'.repeat(64),
     TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64'),
     TELNYX_ACCOUNT_ID: randomUUID(), TELNYX_APPLICATION_ID: '123456789', TELNYX_SHARED_APPLICATION_ID: '987654321', TELNYX_NUMBER: '+12025550999',
     LIVE_SCREENING_ENABLED: true, SHARED_NUMBER_ENABLED: true, LIVE_BRIDGE_URL: 'https://shield-test.a.run.app' });
-  const people = Array.from({ length: 11 }, (_, n) => ({ id: randomUUID(), uid: `senior-${n}`, phone: `+120255501${String(n).padStart(2, '0')}`, shieldNumber: config.TELNYX_NUMBER }));
+  const people = Array.from({ length: 26 }, (_, n) => ({ id: randomUUID(), uid: `senior-${n}`, phone: `+120255501${String(n).padStart(2, '0')}`, shieldNumber: config.TELNYX_NUMBER }));
   let now: number, s: CloudStore, f: ForwardingStore, cc: SharedCallControl, provider: CallControlProvider;
   const action = vi.fn(), request = vi.fn();
   const event = (sid: string, type: string, patch: Record<string, unknown> = {}) => ({ id: randomUUID(), event_type: type, occurred_at: new Date(now).toISOString(),
@@ -60,20 +62,21 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     now = Date.UTC(2026, 9, 12, 17); s = new CloudStore(db, config, () => now); f = new ForwardingStore(s);
     for (const p of people) await enroll(s, { ...p, now });
     await db.doc(`shieldNumbers/${config.TELNYX_NUMBER}`).set({ state: 'shared', members: [] });
-    for (const p of people.slice(0, 10)) await enrollSharedRoute(s, p.id, { version: randomUUID(), carrier: 'tmobile', qualifiedAt: now });
+    for (const p of people.slice(0, 25)) await enrollSharedRoute(s, p.id, { version: randomUUID(), carrier: 'tmobile', qualifiedAt: now });
     action.mockReset().mockResolvedValue({}); request.mockReset().mockImplementation(async () => ({ call_control_id: randomUUID() }));
     provider = new CallControlProvider(config); provider.action = action; provider.request = request; prepare.mockReset().mockResolvedValue(undefined); cc = new SharedCallControl(s, provider, prepare);
   });
-  afterAll(async () => { await db.terminate(); await deleteApp(admin); });
-  it('enforces the ten-person enrollment cap and never reassigns an existing forwarding identity', async () => {
-    await expect(enrollSharedRoute(s, people[10]!.id, { version: randomUUID(), carrier: 'verizon', qualifiedAt: now })).rejects.toThrow('pilot_full');
-    await s.personRef(people[10]!.id).update({ phoneEnc: s.vault.seal(people[0]!.phone, `person:${people[10]!.id}:phone`) });
-    await expect(enrollSharedRoute(s, people[10]!.id, { version: randomUUID(), carrier: 'verizon', qualifiedAt: now })).rejects.toThrow('route_quarantined');
+  afterAll(async () => { await db.terminate(); await otherDB.terminate(); await deleteApp(admin); await deleteApp(otherAdmin); });
+  it('enforces the 25-person enrollment cap and never reassigns an existing forwarding identity', async () => {
+    await expect(enrollSharedRoute(s, people[25]!.id, { version: randomUUID(), carrier: 'verizon', qualifiedAt: now })).rejects.toThrow('pilot_full');
+    await s.personRef(people[25]!.id).update({ phoneEnc: s.vault.seal(people[0]!.phone, `person:${people[25]!.id}:phone`) });
+    await expect(enrollSharedRoute(s, people[25]!.id, { version: randomUUID(), carrier: 'verizon', qualifiedAt: now })).rejects.toThrow('route_quarantined');
   });
-  it('admits ten simultaneous seniors from the same caller, then refuses an eleventh live leg', async () => {
-    const calls = await Promise.all(people.slice(0, 10).map((p, n) => f.begin(randomUUID(), config.TELNYX_NUMBER, '+12025550888', { diverted: p.phone, legId: `leg-${n}` })));
+  it('admits 25 simultaneous users across two independent clients, then refuses a duplicate live leg', async () => {
+    const other = new ForwardingStore(new CloudStore(otherDB, config, () => now));
+    const calls = await Promise.all(people.slice(0, 25).map((p, n) => (n % 2 ? other : f).begin(randomUUID(), config.TELNYX_NUMBER, '+12025550888', { diverted: p.phone, legId: `leg-${n}` })));
     expect(calls.every(c => c?.state === 'screening')).toBe(true);
-    expect(new Set(calls.map(c => c?.participantId)).size).toBe(10);
+    expect(new Set(calls.map(c => c?.participantId)).size).toBe(25);
     expect(await f.begin(randomUUID(), config.TELNYX_NUMBER, undefined, { diverted: people[0]!.phone, legId: 'extra' })).toBeUndefined();
     await f.ended(calls[0]!.parentSid);
     expect((await f.begin(randomUUID(), config.TELNYX_NUMBER, undefined, { diverted: people[0]!.phone, legId: 'replacement' }))?.participantId).toBe(people[0]!.id);
@@ -82,6 +85,35 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Ten seniors on one shared
     const sid = randomUUID(); await cc.handle(incoming(sid, 0, { from: people[0]!.phone, sip_headers: [] }));
     expect(await f.find(sid)).toBeUndefined(); expect(action).toHaveBeenCalledWith(sid, 'hangup', expect.anything());
     expect(action.mock.calls.some(c => c[1] === 'answer')).toBe(false);
+  });
+  it('isolates 25 concurrent offers, rejects cross-call acceptance, bridges only press 1 and releases all slots', async () => {
+    const calls = await Promise.all(people.slice(0, 25).map((_, n) => offer(n)));
+    expect(new Set(calls.map(c => c.childSid)).size).toBe(25);
+    await Promise.all(calls.map(c => cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }))));
+    await Promise.all(calls.map((c, n) => cc.handle(event(calls[(n + 1) % 25]!.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }))));
+    expect(action.mock.calls.filter(x => x[1] === 'bridge')).toHaveLength(0);
+    await Promise.all(calls.map(c => cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }))));
+    const bridges = action.mock.calls.filter(x => x[1] === 'bridge');
+    expect(bridges).toHaveLength(25);
+    for (const c of calls) {
+      expect(bridges.find(x => x[0] === c.childSid)?.[2].call_control_id).toBe(c.parentSid);
+      expect((await cc.call(c.id))?.state).toBe('accepted');
+      expect(f.callEndpoints(c)?.phone).toBe(people.find(p => p.id === c.participantId)?.phone);
+    }
+    await Promise.all(calls.map(c => cc.handle(event(c.parentSid, 'call.hangup'))));
+    expect(Object.keys((await db.doc('sharedCapacity/calls').get()).data()?.leases ?? {})).toHaveLength(0);
+    for (const c of calls) expect((await f.controlRef(c.participantId).get()).data()?.activeCallId).toBeUndefined();
+  }, 60_000);
+
+  it('keeps per-person screening and incoming-call quotas isolated at the larger pilot size', async () => {
+    const day = '2026-10-12';
+    await db.doc(`forwardingUsage/${day}-${people[0]!.id}`).set({ screened: 30, calls: 99 });
+    const voicemail = await arrive(0);
+    expect(voicemail.state).toBe('voicemail');
+    await f.ended(voicemail.parentSid);
+    expect(await f.begin(randomUUID(), config.TELNYX_NUMBER, undefined, { diverted: people[0]!.phone, legId: 'over-person-cap' })).toBeUndefined();
+    expect((await arrive(1)).state).toBe('screening');
+    expect((await db.doc(`forwardingUsage/${day}-${people[0]!.id}`).get()).data()?.calls).toBe(100);
   });
   it('pins the verified recipient even when the participant phone record later changes', async () => {
     const c = await arrive(); const ends = f.callEndpoints(c);

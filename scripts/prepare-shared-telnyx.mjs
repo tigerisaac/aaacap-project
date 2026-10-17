@@ -1,3 +1,4 @@
+import limits from '../backend/src/cloud/pilot-limits.json' with { type: 'json' };
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { telnyxRequest } from './telnyx-provider.mjs';
 
@@ -14,20 +15,20 @@ export async function prepareSharedTelnyx(c, { apply = false, request = telnyxRe
   const apps = (await request(c, '/call_control_applications?page[size]=100')).data.filter(a => a.application_name === name);
   if (apps.length > 1) throw new Error('ambiguous_shared_application');
   const settings = { application_name: name, active: false, webhook_event_url: `${c.PUBLIC_BASE_URL}/voice/shared`, webhook_api_version: '2',
-    first_command_timeout: true, first_command_timeout_secs: 10, redact_dtmf_debug_logging: true,
-    inbound: { channel_limit: 10, shaken_stir_enabled: true, sip_subdomain_receive_settings: 'only_my_connections' },
-    outbound: { channel_limit: 10, outbound_voice_profile_id: profileId } };
+    first_command_timeout: true, first_command_timeout_secs: limits.firstCommandTimeoutSeconds, redact_dtmf_debug_logging: true,
+    inbound: { channel_limit: limits.telnyxInboundChannels, shaken_stir_enabled: true, sip_subdomain_receive_settings: 'only_my_connections' },
+    outbound: { channel_limit: limits.telnyxOutboundChannels, outbound_voice_profile_id: profileId } };
   if (apps[0]?.active) throw new Error('shared_application_already_active');
-  if (!apply) return { operation: 'stage', inboundChannels: 10, outboundChannels: 10, profileChannels: 10,
+  if (!apply) return { operation: 'stage', inboundChannels: limits.telnyxInboundChannels, outboundChannels: limits.telnyxOutboundChannels, profileChannels: limits.telnyxOutboundChannels,
     preservesSpendLimit: true, assignsNumber: false, purchasesNumber: false };
-  await request(c, `/outbound_voice_profiles/${profileId}`, 'PATCH', { concurrent_call_limit: 10 });
+  await request(c, `/outbound_voice_profiles/${profileId}`, 'PATCH', { concurrent_call_limit: limits.telnyxOutboundChannels });
   const app = (await request(c, apps[0] ? `/call_control_applications/${apps[0].id}` : '/call_control_applications', apps[0] ? 'PATCH' : 'POST', settings)).data;
   const verified = (await request(c, `/call_control_applications/${app.id}`)).data;
   const updatedProfile = (await request(c, `/outbound_voice_profiles/${profileId}`)).data;
-  if (verified.active || verified.inbound?.channel_limit !== 10 || verified.outbound?.channel_limit !== 10 || updatedProfile.concurrent_call_limit !== 10
+  if (verified.active || verified.inbound?.channel_limit !== limits.telnyxInboundChannels || verified.outbound?.channel_limit !== limits.telnyxOutboundChannels || updatedProfile.concurrent_call_limit !== limits.telnyxOutboundChannels
     || verified.webhook_event_url !== settings.webhook_event_url || updatedProfile.daily_spend_limit !== profile.daily_spend_limit
     || updatedProfile.whitelisted_destinations?.join(',') !== 'US') throw new Error('settings_readback_failed');
-  return { sharedApplicationId: app.id, inboundChannels: 10, outboundChannels: 10, profileChannels: 10, active: false,
+  return { sharedApplicationId: app.id, inboundChannels: limits.telnyxInboundChannels, outboundChannels: limits.telnyxOutboundChannels, profileChannels: limits.telnyxOutboundChannels, active: false,
     preservesSpendLimit: true, assignsNumber: false, purchasesNumber: false };
 }
 if (process.argv[1]?.endsWith('/prepare-shared-telnyx.mjs')) {

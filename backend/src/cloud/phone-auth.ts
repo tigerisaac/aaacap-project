@@ -1,3 +1,4 @@
+import pilotLimits from './pilot-limits.json' with { type: 'json' };
 import { randomBytes } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -44,7 +45,7 @@ export function registerPhoneAuth(app: FastifyInstance, store: CloudStore, auth:
     const input = z.object({ phone: z.string().min(8).max(25) }).strict().parse(request.body);
     const phone = normalizePhone(input.phone);
     if (!phone) throw new HttpError(400, 'invalid_phone');
-    await store.quota([[`phone-auth-ip:${request.ip}`, 20], [`phone-auth:${phone}`, 5], ['phone-auth:global', 100]]);
+    await store.quota([[`phone-auth-ip:${request.ip}`, pilotLimits.phoneCodeSendsPerIPPerDay], [`phone-auth:${phone}`, 5], ['phone-auth:global', pilotLimits.phoneCodeSendsTotalPerDay]]);
     const lock = store.db.collection('phoneAuthLimits').doc(store.vault.hash(phone));
     await store.db.runTransaction(async tx => {
       if ((await tx.get(lock)).data()?.nextAt > store.now()) throw new HttpError(429, 'phone_code_wait');
@@ -58,7 +59,7 @@ export function registerPhoneAuth(app: FastifyInstance, store: CloudStore, auth:
   app.post('/auth/phone/verify', async request => {
     ready();
     const { challenge, code } = z.object({ challenge: z.string().regex(/^[a-f0-9]{64}$/), code: z.string().regex(/^\d{4,8}$/) }).strict().parse(request.body);
-    await store.quota([[`phone-verify-ip:${request.ip}`, 100]]);
+    await store.quota([[`phone-verify-ip:${request.ip}`, pilotLimits.phoneCodeChecksPerIPPerDay]]);
     const ref = store.db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge));
     const checkingID = randomBytes(16).toString('hex');
     const data = await store.db.runTransaction(async tx => {

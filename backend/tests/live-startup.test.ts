@@ -31,6 +31,23 @@ function hybrid() {
 }
 
 describe('Readiness before the invitation to speak', () => {
+  it('processes 25 independent synthetic audio sessions and contains individual disconnects', async () => {
+    const calls = Array.from({ length: 25 }, () => hybrid());
+    try {
+      for (const call of calls) { call.audio(); call.processed(); call.session.listen(); }
+      calls[0]!.provider.emit('close');
+      calls[1]!.provider.emit('error', new Error('synthetic_disconnect'));
+      for (const call of calls.slice(2)) {
+        expect(call.io.ready).toHaveBeenCalledTimes(1);
+        expect(call.io.finish).not.toHaveBeenCalled();
+        expect(call.session.ended).toBe(false);
+        call.advance(8000);
+        expect(call.io.finish).toHaveBeenCalledExactlyOnceWith('silent_caller');
+        expect(call.fetcher).not.toHaveBeenCalled();
+      }
+      for (const call of calls.slice(0, 2)) expect(call.io.finish).toHaveBeenCalledTimes(1);
+    } finally { for (const call of calls) { call.session.providerEnded(); call.clear(); } }
+  });
   it('requires successful audio processing, then gives a full silence budget after the greeting', () => {
     const h = hybrid();
     expect(h.io.ready).not.toHaveBeenCalled();

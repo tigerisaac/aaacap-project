@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:net';
 import { resolve } from 'node:path';
+import limits from '../backend/src/cloud/pilot-limits.json' with { type: 'json' };
 
 // Start the assembled artifact with synthetic credentials. No phone, database or model request is made.
 const stage = resolve(process.argv[2] ?? 'artifacts/live-bridge');
@@ -29,7 +30,8 @@ try {
   assert.equal(health?.status, 'ready', 'packaged bridge failed to start');
   assert.equal(health.sharedTransport, 'call-control-v1');
   assert.equal(health.startupProtocol, 1);
-  assert.equal(health.maxSessions, 10);
+  assert.equal(health.maxSessions, limits.bridgeSessionsPerInstance);
+  assert.equal(health.limitsVersion, limits.version);
   assert.equal(health.screeningMode, process.argv.includes('--hybrid') ? 'hybrid' : 'live');
   if (process.argv.includes('--hybrid')) assert.equal(health.transcriptionModel, 'stt-rt-v5');
   assert.equal(health.waitAcknowledgement, true);

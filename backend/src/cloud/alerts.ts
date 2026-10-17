@@ -1,3 +1,4 @@
+import pilotLimits from './pilot-limits.json' with { type: 'json' };
 import { connect } from 'node:http2';
 import { createPrivateKey, sign, type KeyObject } from 'node:crypto';
 import type { DocumentData, DocumentReference } from 'firebase-admin/firestore';
@@ -144,7 +145,7 @@ export class AlertDelivery {
       let textResult = 'not_requested';
       if (claimed.sms) {
         try {
-          await s.quota([[`contact-alerts:${claimed.phoneHash}`, 20], ['contact-alerts:global', 200]]);
+          await s.quota([[`contact-alerts:${claimed.phoneHash}`, 20], ['contact-alerts:global', pilotLimits.contactAlertsTotalPerDay]]);
           textResult = await this.textSender.send(s.vault.open(claimed.phoneEnc, `alert-contact:${contact.id}:phone`), `Shield: ${body} Reply STOP to stop texts.`);
         } catch { textResult = 'limited'; }
       }

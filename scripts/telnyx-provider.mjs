@@ -1,3 +1,4 @@
+import limits from '../backend/src/cloud/pilot-limits.json' with { type: 'json' };
 import { writeFile } from 'node:fs/promises';
 
 // Server-side operator utility; never expose the API key, request bodies, or webhook URLs in logs.
@@ -19,9 +20,10 @@ export async function verifyTelnyxSetup(c, number = c.TELNYX_NUMBER) {
     const [numbers, application] = await Promise.all([telnyxRequest(c, `/phone_numbers?filter[phone_number]=${encodeURIComponent(number)}`), telnyxRequest(c, `/call_control_applications/${c.TELNYX_SHARED_APPLICATION_ID}`)]);
     const matches = numbers.data?.filter(n => n.phone_number === number), a = application.data;
     if (matches?.length !== 1 || matches[0].connection_id !== c.TELNYX_SHARED_APPLICATION_ID || !a.active || a.webhook_event_url !== `${c.PUBLIC_BASE_URL}/voice/shared`
-      || a.inbound?.channel_limit !== 10 || a.outbound?.channel_limit !== 10) throw new Error('shared_telnyx_not_ready');
+      || !(a.inbound?.channel_limit >= limits.telnyxInboundChannels) || !(a.outbound?.channel_limit >= limits.telnyxOutboundChannels)
+      || !a.first_command_timeout || !(a.first_command_timeout_secs >= limits.firstCommandTimeoutSeconds)) throw new Error('shared_telnyx_not_ready');
     const profile = (await telnyxRequest(c, `/outbound_voice_profiles/${a.outbound.outbound_voice_profile_id}`)).data;
-    if (!profile.enabled || profile.concurrent_call_limit < 10 || !profile.daily_spend_limit_enabled || profile.whitelisted_destinations?.join(',') !== 'US' || profile.call_recording?.call_recording_type !== 'none') throw new Error('shared_outbound_not_ready');
+    if (!profile.enabled || !(profile.concurrent_call_limit >= limits.telnyxOutboundChannels) || !profile.daily_spend_limit_enabled || profile.whitelisted_destinations?.join(',') !== 'US' || profile.call_recording?.call_recording_type !== 'none') throw new Error('shared_outbound_not_ready');
     return { number: matches[0], application: a };
   }
   const [numbers, application, balance] = await Promise.all([

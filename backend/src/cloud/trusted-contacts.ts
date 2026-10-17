@@ -1,3 +1,4 @@
+import pilotLimits from './pilot-limits.json' with { type: 'json' };
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { bearer, HttpError, type AuthProvider, type Identity } from '../auth.js';
@@ -57,7 +58,7 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
       if (existing.ownerUid !== ctx.uid || existing.participantId !== ctx.participant.id || existing.phoneHash !== hash) throw new HttpError(409, 'trusted_contact_conflict');
       return { contact: ownerDTO(ref.id, existing) };
     }
-    await store.quota([[`contact-requests:${ctx.uid}`, 10], [`contact-recipient:${hash}`, 3], ['contact-requests:global', 100]]);
+    await store.quota([[`contact-requests:${ctx.uid}`, 10], [`contact-recipient:${hash}`, 3], ['contact-requests:global', pilotLimits.contactRequestsTotalPerDay]]);
     const optOut = (await store.db.collection('smsOptOuts').doc(hash).get()).data();
     const data = { participantId: ctx.participant.id, ownerUid: ctx.uid, nameEnc: store.vault.seal(input.name, `alert-contact:${ref.id}:name`),
       phoneEnc: store.vault.seal(phone, `alert-contact:${ref.id}:phone`), phoneHash: hash, status: 'pending', sms: false, push: false,

@@ -1,5 +1,9 @@
 # Architecture
 
+## 25-user capacity candidate — not deployed
+
+The current source uses shared limits for 25 enrolled people/active incoming calls, per-person and global daily quotas, and four maximum bridge instances with ten sessions each. Admission queues locally to reduce contention; Firestore remains authoritative across API instances. Call endings atomically remove only their own reservation. Readiness exposes the limits version. Live settings remain the ten-call configuration described below until an approved rollout. [Candidate, validation and activation gates](PAID-PILOT-25.md).
+
 ## Phone audio delivery and offline history — deployed October 16
 
 The owner selected temporary delivery followed by deletion. The app saves and verifies audio on the phone before acknowledging; the server atomically deletes its copy, with a 24-hour maximum delivery window and independent five-minute cleanup. Local files are excluded from backups and remain playable offline. Owner call history loads from a protected, account-scoped local copy before refreshing, bounded to 500 calls and 30 days. Shared helper history and current service status require fresh access. Summaries retain their existing 30-day server policy. The matching app is installed; all cloud services remain on demand. See [storage contract and deployment evidence](AUDIO-DELIVERY.md) and [offline behavior](IOS-OFFLINE.md).

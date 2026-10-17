@@ -34,6 +34,18 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
   const list = (uid = 'contact') => app.inject({ url: '/api/contact-alerts', headers: headers(uid, false) });
   const queue = async (kind: AlertKind = 'blocked_caller') => { const batch = db.batch(); queueAlert(store, batch, PERSON, kind); await batch.commit(); return (await db.collection('alerts').get()).docs[0]!.id; };
   const delivery = () => new AlertDelivery(store, { send: push }, { send: sms });
+  it('lets 25 different users request codes behind one proxy without trusting forwarded IPs', async () => {
+    for (let n = 0; n < 25; n++) {
+      const response = await app.inject({ method: 'POST', url: '/auth/phone/start',
+        payload: { phone: `+120255502${String(n).padStart(2, '0')}` } });
+      expect(response.statusCode).toBe(200);
+    }
+    expect(start).toHaveBeenCalledTimes(25);
+    const repeated = await app.inject({ method: 'POST', url: '/auth/phone/start',
+      headers: { 'x-forwarded-for': '192.0.2.25' }, payload: { phone: '+12025550200' } });
+    expect(repeated.statusCode).toBe(429);
+    expect(start).toHaveBeenCalledTimes(25);
+  });
   const hook = async (word: string, options: { valid?: boolean; at?: number; profile?: string } = {}) => {
     const timestamp = String(Math.floor(now / 1000));
     const payload = JSON.stringify({ data: { event_type: 'message.received', occurred_at: new Date(options.at ?? now).toISOString(), payload: {

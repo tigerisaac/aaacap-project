@@ -1,3 +1,4 @@
+import pilotLimits from '../cloud/pilot-limits.json' with { type: 'json' };
 import { SharedCallControl } from '../cloud/call-control.js';
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
@@ -53,12 +54,12 @@ const server = createServer(async (request, response) => {
   if (request.url !== '/ready') { response.writeHead(404).end(); return; }
   response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify({ status: 'ready', model: 'gpt-live-1', decisionModel: DECISION_MODEL, policyVersion: SCREENING_POLICY_VERSION,
-      timingLogs: true, startupProtocol: 1, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1',
+      limitsVersion: pilotLimits.version, timingLogs: true, startupProtocol: 1, waitAcknowledgement: !!acknowledgementAudio, maxSessions: MAX_SESSIONS, sharedTransport: 'call-control-v1',
       screeningMode, ...(screeningMode === 'hybrid' ? { hybridVersion: HYBRID_SCREENING_VERSION, transcriptionModel: 'stt-rt-v5' } : {}) }));
 });
 const sockets = new WebSocketServer({ noServer: true, maxPayload: 32_768, perMessageDeflate: false });
 // Each session only relays 8 kHz audio, so one instance can carry several people's screenings at once.
-const MAX_SESSIONS = Math.max(1, Math.min(10, Number(process.env.LIVE_SESSIONS_PER_INSTANCE) || 10));
+const MAX_SESSIONS = Math.max(1, Math.min(pilotLimits.bridgeSessionsPerInstance, Math.floor(Number(process.env.LIVE_SESSIONS_PER_INSTANCE)) || pilotLimits.bridgeSessionsPerInstance));
 let sessions = 0;
 /** No room on this instance: never connect the caller, and don't leave them on hold. Voicemail instead. */
 async function refuse(id: string) {

@@ -14,6 +14,7 @@ for (const file of ['auth', 'crypto', 'firebase-auth']) {
   await copyFile(`dist/${file}.js`, `${destination}/lib/${file}.js`);
 }
 for (const file of await readdir('dist/cloud')) if (file.endsWith('.js')) await copyFile(`dist/cloud/${file}`, `${destination}/lib/cloud/${file}`);
+await copyFile('dist/cloud/pilot-limits.json', `${destination}/lib/cloud/pilot-limits.json`);
 await mkdir(`${destination}/lib/cloud/announcement-audio`, { recursive: true });
 for (const file of await readdir('dist/cloud/announcement-audio')) {
   if (file.endsWith('.wav') || file === 'manifest.json') await copyFile(`dist/cloud/announcement-audio/${file}`, `${destination}/lib/cloud/announcement-audio/${file}`);
