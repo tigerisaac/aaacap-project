@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T00:09:31Z",
+  "generatedAt": "2026-10-17T04:04:29Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -828,6 +828,21 @@
         "section": "components"
       },
       {
+        "name": "The Saved Progress Rule",
+        "body": "Keep the current task, progress and recovery readable together; refreshing successfully clears stale errors, and returning from another app never substitutes for a saved confirmation.",
+        "section": "components"
+      },
+      {
+        "name": "The Separate Deletion Rule",
+        "body": "Finishing a prerequisite leads to a fresh deletion choice, with consequences and a safe cancellation action visible before removal begins.",
+        "section": "components"
+      },
+      {
+        "name": "The Honest Receipt Rule",
+        "body": "Distinguish request submission, server acceptance and completion; a missing response or closed status screen is not evidence that work finished or was cancelled.",
+        "section": "components"
+      },
+      {
         "name": "The Deliberate Carrier Handoff Rule",
         "body": "Name each carrier-code action in order: Copy setup code, Open Phone, then the carrier-result confirmation after return. A copy or an unrelated return does not satisfy the Phone visit, and each new code starts uncopied.",
         "section": "components"
@@ -849,7 +864,9 @@
       "Do retain explicit privacy, sharing, setup and disconnection confirmations, naming the affected entry and showing a safe choice.",
       "Do show historical totals, current phone status, sample state and message permission as separate readable facts.",
       "Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval.",
-      "Do keep shortcut-assisted setup's native import quiet, its current primary action clear and its accessibility-size action in the scrollable reading order."
+      "Do keep shortcut-assisted setup's native import quiet, its current primary action clear and its accessibility-size action in the scrollable reading order.",
+      "Do keep guided progress visible, give accessibility-size instructions the full text width and clear obsolete errors after successful recovery.",
+      "Do separate prerequisite completion, destructive confirmation and the receipt's unconfirmed, accepted and completed states."
     ],
     "donts": [
       "Don't restore the rejected bright-blue/public-library visual world or make all native navigation titles serif.",
@@ -863,7 +880,8 @@
       "Don't reintroduce paragraph excerpts into the daily inbox or repeated decorative headings above an existing purpose.",
       "Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.",
       "Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.",
-      "Don't treat helper readiness or app return as setting verification, or claim cross-device reliability or novice-user success from one-phone setup evidence."
+      "Don't treat helper readiness or app return as setting verification, or claim cross-device reliability or novice-user success from one-phone setup evidence.",
+      "Don't present a submitted request, lost response or closed status screen as confirmed completion or cancellation."
     ]
   }
 }

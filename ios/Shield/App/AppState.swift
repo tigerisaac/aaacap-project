@@ -18,6 +18,8 @@ final class AppState {
     let configuration: BackendConfiguration
     var signedIn = false
     var isDeletingAccount = false
+    var deletionReceipt: String?
+    var deletionSubmitted = false
     var isPreview = false
     var isDemo = false
     /// Debug-simulator-only sample account that also shows owner-only screens the demo hides. Never contacts the service.
@@ -61,6 +63,8 @@ final class AppState {
         self.configuration = configuration
         self.api = APIClient(configuration: configuration)
         self.messageAudio = MessageAudioDelivery(api: self.api)
+        self.deletionReceipt = UserDefaults.standard.string(forKey: "shield-account-deletion-" + (configuration.baseURL?.absoluteString ?? "unconfigured"))
+        self.deletionSubmitted = UserDefaults.standard.bool(forKey: "shield-account-deletion-" + (configuration.baseURL?.absoluteString ?? "unconfigured") + "-submitted")
         #if DEBUG
         #if targetEnvironment(simulator)
         if ScreenPreview.requested != nil { exploreDemo() }
@@ -77,6 +81,9 @@ final class AppState {
             trustedContactsOnboarding = true
         }
         #if targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-deletion-restoration") {
+            UserDefaults.standard.removeObject(forKey: "shield-disconnect-fixture")
+        }
         if ProcessInfo.processInfo.arguments.contains("--uitesting-account-error") {
             signedIn = true
             isPreview = true
@@ -87,7 +94,7 @@ final class AppState {
     }
 
     func restoreSession() async {
-        guard !signedIn else { return }
+        guard !signedIn, deletionReceipt == nil else { return }
         #if DEBUG && targetEnvironment(simulator)
         await seedOfflineHistoryFixture()
         #endif

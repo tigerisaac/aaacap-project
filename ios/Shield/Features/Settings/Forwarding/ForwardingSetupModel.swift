@@ -441,16 +441,7 @@ final class ForwardingSetupModel {
         } catch { reportError(error.localizedDescription) }
     }
     func restore(_ app: AppState) async {
-        guard let status, !working else { return }
-        working = true
-        defer { working = false }
-        do {
-            if !isUITest {
-                let _: APIResponses.Empty = try await app.api.send("/api/forwarding/restore", method: "POST", participantID: status.participantId)
-            }
-            UserDefaults.standard.set(0, forKey: "shield-restoration-step-" + status.participantId.uuidString)
-            step = .restore
-            await load(app)
-        } catch { reportError(error.localizedDescription) }
+        guard status != nil, !working else { return }
+        step = .restore
     }
 }

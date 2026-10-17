@@ -187,63 +187,49 @@ final class ForwardingUITests: XCTestCase {
     }
     func testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed() {
         let app = launch(["--forwarding-start-restore"], title: "Bring back ordinary calls")
-        app.buttons["See copied code"].tap()
-        XCTAssertTrue(app.staticTexts["forwarding-reset-code"].appears(timeout: 5))
-        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
-        XCTAssertEqual(app.buttons["forwarding-reset-continue"].label, "Tello confirmed this reset")
-        // Optional help sits below the action; scroll it clear of the home indicator first.
-        app.scrollViews.firstMatch.swipeUp()
-        app.buttons["Need help?"].tap()
-        app.buttons["forwarding-reset-copy"].tap()
-        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
-        app.buttons["forwarding-reset-continue"].tap()
-        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##67#")
-        XCTAssertEqual(app.buttons["forwarding-reset-continue"].label, "Tello confirmed this reset")
-        app.buttons["forwarding-reset-continue"].tap()
-        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##62#")
-        app.buttons["forwarding-reset-continue"].tap()
+        let next = app.buttons["disconnect-continue"]
+        next.tap()
+        for _ in 0..<3 {
+            XCTAssertEqual(next.label, "Copy phone code")
+            next.tap()
+            XCTAssertEqual(next.label, "My carrier confirmed the change")
+            capture(app, "Disconnect carrier confirmation")
+            next.tap()
+        }
         expect(app, "Let ordinary calls ring")
-        XCTAssertFalse(app.staticTexts["forwarding-reset-code"].exists)
-        XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
+        XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
     }
 
     func testRestorationGuidesAlreadyDoneSettingsAndPersistsChecks() {
-        var app = launch(["--forwarding-start-restore", "--restoration-start-settings"], title: "Bring back ordinary calls")
-        expect(app, "Let ordinary calls ring")
+        var app = launch(["--forwarding-start-restore", "--restoration-start-settings"], title: "Let ordinary calls ring")
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
         app.buttons["restoration-settings-open"].tap()
-        expect(app, "Let ordinary calls ring")
-        XCTAssertEqual(app.buttons["restoration-settings-confirm"].label, "I selected Never")
-        XCTAssertFalse(app.staticTexts["Restore iPhone voicemail"].exists)
-        app.buttons["restoration-settings-confirm"].tap()
-        expect(app, "Restore iPhone voicemail")
+        XCTAssertEqual(app.buttons["disconnect-continue"].label, "I selected Never")
+        app.buttons["disconnect-continue"].tap()
+        expect(app, "Check carrier voicemail next")
         app.terminate()
-        app = launch(["--forwarding-start-restore", "--restoration-resume"], title: "Bring back ordinary calls")
-        expect(app, "Restore iPhone voicemail")
-        XCTAssertEqual(app.buttons["restoration-settings-confirm"].label, "Live Voicemail is on")
-        app.buttons["restoration-settings-confirm"].tap()
+        app = launch(["--forwarding-start-restore", "--restoration-resume"], title: "Check carrier voicemail next")
+        XCTAssertEqual(app.buttons["disconnect-continue"].label, "Live Voicemail is off")
+        app.buttons["disconnect-continue"].tap()
         expect(app, "Check that calls reach you")
-        XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
-        app.buttons["restoration-call-confirm"].tap()
+        app.buttons["disconnect-continue"].tap()
         expect(app, "Check your normal voicemail")
         app.terminate()
-        app = launch(["--forwarding-start-restore", "--restoration-resume"], title: "Bring back ordinary calls")
-        expect(app, "Check your normal voicemail")
+        app = launch(["--forwarding-start-restore", "--restoration-resume"], title: "Check your normal voicemail")
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
-        app.buttons["restoration-call-confirm"].tap()
+        app.buttons["disconnect-continue"].tap()
         XCTAssertTrue(app.staticTexts["restoration-complete"].appears(timeout: 5))
-        XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
-        capture(app, "Restoration checklist complete")
+        capture(app, "Disconnect completed")
     }
 
     func testRestorationSettingsAtLargestTextInDarkMode() {
-        let app = launch(["--forwarding-start-restore", "--restoration-start-settings", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], title: "Bring back ordinary calls")
-        let confirm = app.buttons["restoration-settings-confirm"]
-        for _ in 0..<8 where !confirm.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        let app = launch(["--forwarding-start-restore", "--restoration-start-settings", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], title: "Let ordinary calls ring")
+        let confirm = app.buttons["disconnect-continue"]
+        for _ in 0..<12 where !confirm.isHittable { app.scrollViews.firstMatch.swipeUp() }
         XCTAssertTrue(confirm.isHittable)
-        capture(app, "Restoration settings largest text dark")
+        capture(app, "Disconnect settings largest text dark")
         confirm.tap()
-        expect(app, "Restore iPhone voicemail")
+        expect(app, "Check carrier voicemail next")
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
     }
 

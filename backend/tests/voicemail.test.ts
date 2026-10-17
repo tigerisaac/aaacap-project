@@ -1,3 +1,4 @@
+import { processAccountDeletions } from '../src/cloud/deletion-jobs.js';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
@@ -153,6 +154,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
   it('removes message content and legacy check jobs on account deletion', async () => {
     const callId = await seed();
     expect((await app.inject({ method: 'POST', url: '/api/account/delete', headers: headers() })).statusCode).toBe(200);
+    now += 120_001; await processAccountDeletions(s, auth);
     expect((await s.callRef(callId).get()).exists).toBe(false); expect((await check.audioRef(callId).get()).exists).toBe(false);
     expect((await check.jobRef(callId).get()).exists).toBe(false);
   });

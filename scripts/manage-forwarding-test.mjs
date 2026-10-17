@@ -60,7 +60,9 @@ async function main() {
     const guidePath = participantId === config.TRIAL_PARTICIPANT_ID ? 'artifacts/private/tello-restoration.json' : `artifacts/private/restoration-${participantId}.json`;
     const guide = JSON.parse(await readFile(guidePath, 'utf8'));
     if (!guide.originalSettingsRecorded || !Array.isArray(guide.steps) || guide.steps.length < 3 || guide.steps.some(s => typeof s !== 'string' || !s.trim())) throw new Error('restoration_guide_required');
-    await patch(controlPath, { provisioned: true, provider: 'telnyx', enabled: false, blocker: null, restorationGuide: guide.steps,
+    const restorationCodes = guide.codes ?? [];
+    if (!Array.isArray(restorationCodes) || restorationCodes.length > 5 || restorationCodes.some(code => typeof code !== 'string' || !/^[*#0-9]{2,40}$/.test(code))) throw new Error('invalid_restoration_codes');
+    await patch(controlPath, { restorationCodes, provisioned: true, provider: 'telnyx', enabled: false, blocker: null, restorationGuide: guide.steps,
       dataPlanConfirmed: !!control.dataPlanConfirmed, preparedAt: Date.now() });
     console.log('Regular voice number configured and read back. The callback window remains closed.'); return;
   }

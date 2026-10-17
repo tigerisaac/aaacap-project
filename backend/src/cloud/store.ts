@@ -71,7 +71,7 @@ export class CloudStore {
         cursor = page.docs.at(-1);
       }
     };
-    for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents', 'callControlJobs', 'callControlDeadlines', 'phoneAuthChallenges', 'phoneAuthLimits', 'alertDeliveries', 'alertContacts']) {
+    for (const collection of ['accountDeletions', 'callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents', 'callControlJobs', 'callControlDeadlines', 'phoneAuthChallenges', 'phoneAuthLimits', 'alertDeliveries', 'alertContacts']) {
       // Preserve recoverable historical stops before the first post-upgrade cleanup deletes their records.
       await drain(this.db.collection(collection), collection === 'callSessions' ? async docs => {
         for (const participantId of new Set(docs.map(doc => doc.data().participantId as string))) {

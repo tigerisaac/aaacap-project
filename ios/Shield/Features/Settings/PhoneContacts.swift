@@ -115,6 +115,16 @@ actor PhoneContacts {
         let add = CNSaveRequest(); add.add(contact, toContainerWithIdentifier: nil); try store.execute(add)
     }
 
+    func hasRestoreCopies(personID: UUID) throws -> Bool {
+        // A damaged restore copy must still offer the choice to discard it and
+        // delete the account; decoding belongs to the optional restore action.
+        FileManager.default.fileExists(atPath: try backupURL(personID).path)
+    }
+    func removeRestoreCopies(personID: UUID) throws {
+        let url = try backupURL(personID)
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+    }
+
     func restoreAll(personID: UUID) async throws {
         try await authorize()
         for (phone, entries) in try backups(personID) {
@@ -145,7 +155,11 @@ actor PhoneContacts {
         try await setEnabled(true, phone: phone, label: "Test", personID: person)
         try await setEnabled(true, phone: phone, label: "Test", personID: person)
         let restored = try store.unifiedContact(withIdentifier: contact.identifier, keysToFetch: keys)
-        return restored.phoneNumbers.count == 2 && restored.phoneNumbers.contains { Self.canonical($0.value.stringValue) == phone && $0.label == CNLabelPhoneNumberMobile }
+        guard restored.phoneNumbers.count == 2 && restored.phoneNumbers.contains(where: { Self.canonical($0.value.stringValue) == phone && $0.label == CNLabelPhoneNumberMobile }) else { return false }
+        try Data("damaged restore copy".utf8).write(to: backupURL(person))
+        guard try hasRestoreCopies(personID: person) else { return false }
+        try removeRestoreCopies(personID: person)
+        return try !hasRestoreCopies(personID: person)
     }
     #endif
 

@@ -16,6 +16,7 @@ import { queueAlert } from './alerts.js';
 import { VoicemailCheck } from './voicemail-check.js';
 import { deleteMessageAudio, readMessageAudio } from './message-audio.js';
 import { registerAudioDelivery } from './audio-delivery.js';
+import { startRestoration, confirmRestoration, restorationDTO } from './restoration.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
@@ -46,7 +47,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       voiceProvider: 'Telnyx',
       consentVersion: consent, consented: p.forwardingConsent === consent,
       phoneVerified: !!p.phoneVerifiedAt, stage: stages.includes(p.forwardingStage) ? p.forwardingStage : 'overview',
-      restorationRequested: p.status === 'restoring', lastTestAt: at(control?.lastTestAt),
+      restorationRequested: p.status === 'restoring' || !!p.restoration, lastTestAt: at(control?.lastTestAt),
       activationCodes: active ? activationCodes(p.carrier, p.shieldNumber) : [],
       restorationSteps: control?.restorationGuide ?? [],
       readiness: control?.blocker === 'provider_upgrade_required' ? 'Phone service needs an upgrade before setup can start.'
@@ -124,11 +125,17 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   });
   app.post('/api/forwarding/restore', async request => {
     const ctx = await owner(request);
-    const batch = store.db.batch(); batch.set(f.controlRef(ctx.participant.id), { enabled: false }, { merge: true });
-    batch.update(store.personRef(ctx.participant.id), { status: 'restoring', forwardingStage: 'restore' });
-    if (ctx.participant.status !== 'restoring') queueAlert(store, batch, ctx.participant.id, 'restoration_started');
-    await batch.commit();
-    return { requested: true };
+    const body = z.object({ restart: z.boolean().optional() }).strict().parse(request.body ?? {});
+    return startRestoration(store, ctx.uid, ctx.participant.id, body.restart);
+  });
+  app.get('/api/forwarding/restoration', async request => {
+    const ctx = await owner(request);
+    return restorationDTO(ctx.participant, (await f.controlRef(ctx.participant.id).get()).data());
+  });
+  app.post('/api/forwarding/restoration/confirm', async request => {
+    const ctx = await owner(request);
+    const body = z.object({ session: z.string().uuid(), step: z.string().min(1).max(40) }).strict().parse(request.body);
+    return confirmRestoration(store, ctx.uid, ctx.participant.id, body.session, body.step);
   });
   // Numbers Shield ended a scam from. Helpers can see the list; only the person can unblock.
   app.get('/api/blocked-numbers', async request => {

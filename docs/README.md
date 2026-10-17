@@ -2,7 +2,7 @@
 
 Start with [Architecture](ARCHITECTURE.md), then [Status](STATUS.md).
 
-For release work, use the single current [App Store release checklist](APP-STORE-RELEASE.md), including privacy, deletion, public subscriptions and the ten-person, two-month senior pilot.
+For release work, use the single current [App Store release checklist](APP-STORE-RELEASE.md) · [Guided disconnection and deletion](ACCOUNT-OFFBOARDING.md), including privacy, deletion, public subscriptions and the ten-person, two-month senior pilot.
 
 | Doc | What it covers |
 |---|---|

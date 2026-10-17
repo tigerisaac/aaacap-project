@@ -13,6 +13,13 @@ struct ForwardingSetupView: View {
     @AccessibilityFocusState private var errorFocused: Bool
 
     var body: some View {
+        Group {
+            if model.step == .restore, let id = model.status?.participantId {
+                DisconnectView(participantID: id)
+            } else { setupBody }
+        }.task { await model.load(app) }
+    }
+    private var setupBody: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
@@ -114,7 +121,6 @@ struct ForwardingSetupView: View {
                 .accessibilityInputLabels(["Options", "Setup options"])
             }
         }
-        .task { await model.load(app) }
         .onDisappear { model.guidePlayer.stop(); model.shortcutGuidePlayer.stop() }
         .task(id: model.step) {
             guard [.ring, .test, .checks].contains(model.step) else { return }
@@ -144,7 +150,7 @@ struct ForwardingSetupView: View {
             Button("Start disconnecting") { Task { await model.restore(app) } }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Shield stops ringing you. Follow the steps to bring back ordinary calls and voicemail. Ending a test alone won’t disconnect your phone.")
+            Text("We’ll guide you through restoring your phone settings, then checking calls and voicemail. Your account stays here unless you choose to delete it.")
         }
     }
 }

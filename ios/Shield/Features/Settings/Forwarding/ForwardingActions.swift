@@ -20,10 +20,7 @@ struct ForwardingActions: View {
                 .disabled(model.working || ((model.step == .ring || model.step == .test) && model.probeWaiting)
                     || (model.step == .save && model.status?.prepared != true))
                 .accessibilityIdentifier("forwarding-continue")
-            } else if let status = model.status {
-                RestorationConfirmationAction(status: status)
             }
-
         }
         .tint(ShieldTheme.action)
         // Pinned, the button's edges line up with the page's text column.
@@ -55,30 +52,6 @@ struct ForwardingActions: View {
             return model.step == .ring ? "Call me now" : "Check my calls"
         case .checks: return "Done"
         default: return "Continue"
-        }
-    }
-}
-
-/// Explicit confirmations stay visible while the restoration instructions scroll.
-private struct RestorationConfirmationAction: View {
-    @AppStorage private var index: Int
-    init(status: ForwardingStatus) {
-        _index = AppStorage(wrappedValue: 0, "shield-restoration-step-" + status.participantId.uuidString)
-    }
-    var body: some View {
-        if (3..<7).contains(index) {
-            Button { index += 1 } label: { ShieldActionLabel(title: title) }
-                .shieldPrimaryButton()
-                .accessibilityIdentifier(index < 5 ? "restoration-settings-confirm" : "restoration-call-confirm")
-                .id(index)
-        }
-    }
-    private var title: String {
-        switch index {
-        case 3: "I selected Never"
-        case 4: "Live Voicemail is on"
-        case 5: "I answered an ordinary call"
-        default: "My normal voicemail works"
         }
     }
 }

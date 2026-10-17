@@ -369,6 +369,22 @@ Returning from Phone or Settings changes guidance, not verification. Carrier res
 
 **The Visible Setup Help Rule.** Keep the remaining manual action visible during the helper handoff, and both adjacent actions visible in the manual guide. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.
 
+### Guided exits and completion receipts
+
+Guided exits extend the existing onboarding system: serif task headings, native sans instructions, adaptive page ground and Action controls. Show readable progress above the task heading after each advance. At accessibility sizes, place instruction numbers above full-width text and put the primary action after the instructions in the scrollable reading order; ordinary sizes retain the bottom safe-area action. Keep external handoffs separate from explicit confirmations and saved progress. A recovered refresh clears the stale failure notice, while a failed save leaves the task and its recovery action available.
+
+**The Saved Progress Rule.** Keep the current task, progress and recovery readable together; refreshing successfully clears stale errors, and returning from another app never substitutes for a saved confirmation.
+
+Consequential removal uses a neutral explanation and a separate native confirmation with a named safe choice. Use the existing adaptive Held color for the destructive label; restoration or another prerequisite finishing does not itself authorize deletion. Loading and working states remain visible, and repeated submissions are disabled while work is in progress.
+
+**The Separate Deletion Rule.** Finishing a prerequisite leads to a fresh deletion choice, with consequences and a safe cancellation action visible before removal begins.
+
+Background completion receipts distinguish an unconfirmed request, an accepted request still processing and confirmed completion in their headings and explanations. Keep Check progress and readable failure recovery available while completion is unknown. State local cleanup separately from server acceptance, and explain what closing the status screen does without claiming that closing cancels accepted work.
+
+**The Honest Receipt Rule.** Distinguish request submission, server acceptance and completion; a missing response or closed status screen is not evidence that work finished or was cancelled.
+
+The [guided-exit review](.impeccable/review/disconnect-2026-10-16/final-review.md) returned **ship** for six scored corrections after inspecting 56 simulator captures. This supports the recorded layout and state patterns within that scope; it does not establish whole-app quality, VoiceOver, physical carrier restoration, production deletion or senior usability. Flow-specific steps and acceptance gates remain in the [surface contract](.impeccable/surfaces/ios-disconnect.md) and [offboarding record](docs/ACCOUNT-OFFBOARDING.md).
+
 ### Carrier-code handoff
 
 The carrier step first names its purpose, Connect calls to Shield, and explains that missed calls go to Shield for checking. Its primary action is Copy setup code. The deliberate tap produces Ready to paste in Phone and native success feedback, then the primary action becomes Open Phone. Directions name Apple's extra Open button on the native Phone banner and say to tap Keypad if needed. Phone's landing tab remains system-owned. Returning after the requested handoff changes the purpose heading to Check [carrier]’s result and offers the explicit carrier-result confirmation; the return itself does not advance carrier progress or pass the forwarding probe.
@@ -418,6 +434,8 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 - Do show historical totals, current phone status, sample state and message permission as separate readable facts.
 - Do verify the running app with VoiceOver, Reduce Motion, large text, both appearances and increased contrast before claiming accessibility approval.
 - Do keep shortcut-assisted setup's native import quiet, its current primary action clear and its accessibility-size action in the scrollable reading order.
+- Do keep guided progress visible, give accessibility-size instructions the full text width and clear obsolete errors after successful recovery.
+- Do separate prerequisite completion, destructive confirmation and the receipt's unconfirmed, accepted and completed states.
 
 ### Don't:
 
@@ -433,6 +451,7 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 - Don't treat schematic sidecar HTML/CSS as a native pixel specification or its tonal ramps as app colors.
 - Don't extend a scoped fix verdict into whole-surface approval or claim a clean native audit, real VoiceOver approval, older-person usability, deployment or real-call evidence from source extraction or simulator captures.
 - Don't treat helper readiness or app return as setting verification, or claim cross-device reliability or novice-user success from one-phone setup evidence.
+- Don't present a submitted request, lost response or closed status screen as confirmed completion or cancellation.
 
 Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
 

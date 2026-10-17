@@ -8,6 +8,9 @@ struct SettingsView: View {
         List {
             if model.isOwner {
                 ShieldSection("Your phone") {
+                    if let id = model.selectedPersonID {
+                        NavigationLink { DisconnectView(participantID: id) } label: { ActionRow(title: "Disconnect Shield", symbol: "arrow.uturn.backward") }
+                    }
                     NavigationLink(value: AppRoute.setup) { ActionRow(title: "Phone setup", symbol: "phone") }
                     NavigationLink { CallProtectionView() } label: { ActionRow(title: "Checks while you talk", symbol: "waveform") }
                     NavigationLink { QuietHoursView() } label: { ActionRow(title: "Quiet hours", symbol: "moon") }

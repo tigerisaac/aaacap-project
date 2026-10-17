@@ -49,7 +49,7 @@ final class SeniorAccessibilityUITests: XCTestCase {
         XCTAssertTrue(app.buttons["forwarding-continue"].appears(timeout: 5))
         try audit(app, "accessibility-phone-setup")
         app = launch(["--uitesting-forwarding", "--forwarding-start-restore"])
-        XCTAssertTrue(app.buttons["forwarding-reset-continue"].appears(timeout: 5))
+        XCTAssertTrue(app.buttons["disconnect-continue"].appears(timeout: 5))
         try audit(app, "accessibility-disconnection")
     }
 

@@ -49,6 +49,14 @@ export const cleanupShield = onSchedule({ ...options, maxInstances: 1, schedule:
   await new VoicemailCheck(getStore()).releaseStale();
 });
 
+// Durable deletion works after the app closes, including lost Auth-provider responses.
+export const finishAccountDeletions = onSchedule({ ...options, maxInstances: 1, schedule: 'every 1 minutes', timeoutSeconds: 120,
+  retryCount: 3 }, async () => {
+  const [{ processAccountDeletions }, { FirebaseAuth }] = await Promise.all([import('./deletion-jobs.js'), import('../firebase-auth.js')]);
+  const s = getStore();
+  await processAccountDeletions(s, new FirebaseAuth(s.config));
+});
+
 export const ingestForwardingVoicemail = onDocumentCreated({ ...options, document: 'forwardingRecordings/{recordingId}', retry: true, concurrency: 2 }, async event => {
   const { ingestForwardingRecording } = await import('./forwarding-recordings.js');
   await ingestForwardingRecording(getStore(), event.params.recordingId);

@@ -316,7 +316,7 @@ final class RedesignUITests: XCTestCase {
         capture(app, "Redesign Setup")
         try auditScreen(app, types: [.contrast, .textClipped, .hitRegion, .sufficientElementDescription])
         app = launch(["--uitesting-forwarding", "--forwarding-start-restore"])
-        XCTAssertTrue(app.buttons["See copied code"].appears(timeout: 5)); app.buttons["See copied code"].tap()
+        XCTAssertTrue(app.buttons["disconnect-continue"].appears(timeout: 5))
         capture(app, "Redesign Restoration")
         try auditScreen(app, types: [.contrast, .textClipped, .hitRegion, .sufficientElementDescription])
     }

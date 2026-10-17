@@ -4,7 +4,7 @@ import type { CloudStore } from './store.js';
 import { contactPhoneHash } from './trusted-contacts.js';
 
 /** Account-wide deletion; selecting a shared person must never delete that person's account. */
-export async function deleteAccount(store: CloudStore, auth: AuthProvider, identity: Identity, selected?: string) {
+export async function deleteAccount(store: CloudStore, auth: AuthProvider, identity: Identity, selected?: string, rememberedIds: string[] = []) {
   const uid = identity.subject;
   // Fence the owned participants before any destructive work. Retain forwarding's existing
   // restoration guard until a verified offboarding flow can safely replace it.
@@ -15,7 +15,7 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
     if (target?.exists && target.data()?.ownerUid !== uid) throw new HttpError(403, 'owner_required');
     if (owned.docs.some(doc => doc.data().forwardingConsent)) throw new HttpError(409, 'restore_forwarding_before_deletion');
     for (const doc of owned.docs) tx.update(doc.ref, { status: 'offboarded' });
-    return owned.docs;
+    return [...new Set([...owned.docs.map(d => d.id), ...rememberedIds])].map(id => store.personRef(id));
   });
   const remove = async (query: Query) => {
     // Bounded batches, including accounts with more than 500 historical records.
@@ -40,12 +40,16 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
   };
   for (const person of people) {
     await removeGrants(store.db.collection('grants').where('participantId', '==', person.id));
+    await remove(store.db.collectionGroup('routes').where('participantId', '==', person.id));
     // Older worker jobs are keyed by call ID but have no participantId.
     const calls = await store.db.collection('callSessions').where('participantId', '==', person.id).select().get();
     for (const call of calls.docs) {
       const batch = store.db.batch();
       for (const collection of ['voicemailChecks', 'monitoredCalls', 'monitorChecks']) batch.delete(store.db.collection(collection).doc(call.id));
       await batch.commit();
+      for (const collection of ['callKeys', 'callControlJobs', 'callControlDeadlines', 'callControlCommands']) {
+        await remove(store.db.collection(collection).where('callId', '==', call.id));
+      }
     }
     for (const collection of ['callSessions', 'memberships', 'alertContacts', 'alertDeliveries', 'alerts',
       'forwardingAudio', 'forwardingAudioChunks', 'voicemailChecks', 'monitoredCalls', 'monitorChecks', 'forwardingProbes', 'setupChecks']) {
@@ -53,7 +57,7 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
     }
     // Keep provider recording-deletion jobs: workers must still erase Telnyx copies.
     // Missing/offboarded participants prevent those jobs from recreating saved audio.
-    await store.db.recursiveDelete(person.ref);
+    await store.db.recursiveDelete(person);
   }
   await removeGrants(store.db.collection('grants').where('granteeUid', '==', uid));
   await remove(store.db.collection('memberships').where('granteeUid', '==', uid));

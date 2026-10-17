@@ -112,14 +112,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
     const late = db.batch(); queueAlert(s, late, id, 'protection_paused'); await late.commit();
     now += 60 * 86400_000; await deliverAll(); expect(send).toHaveBeenCalledTimes(1);
   });
-  it('queues alerts when protection is paused or turned off, once each', async () => {
+  it('queues pause once and does not announce service stopped merely for opening restoration', async () => {
     const pause = (paused: boolean) => app.inject({ method: 'POST', url: '/api/setup/pause', headers: headers(), payload: { paused } });
     await pause(true); await pause(true); await pause(false);
     expect(await queued()).toEqual(['protection_paused']);
     await db.collection('forwarding').doc('control').set({ enabled: true });
     await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() });
     await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() });
-    expect((await queued()).sort()).toEqual(['protection_paused', 'restoration_started']);
+    expect((await queued()).sort()).toEqual(['protection_paused']);
   });
   it('queues nothing when push is not configured', async () => {
     await app.close(); await build(false);

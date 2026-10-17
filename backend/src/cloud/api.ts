@@ -13,7 +13,7 @@ import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from '.
 import { VOICEMAIL_LIMITS } from './voicemail-check.js';
 import { stoppedTotal } from './stopped-total.js';
 import { trustedContactsAvailable } from './trusted-contacts.js';
-import { deleteAccount } from './account-deletion.js';
+import { requestAccountDeletion, deletionReceipt } from './deletion-jobs.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -154,12 +154,18 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   app.post('/api/account/delete', async request => {
     const identity = await auth.identify(bearer(request));
     const selected = request.headers['x-shield-participant'];
-    return deleteAccount(store, auth, identity, selected === undefined ? undefined : uuid.parse(selected));
+    const { receipt } = z.object({ receipt: z.string().regex(/^[a-f0-9]{64}$/).optional() }).passthrough().parse(request.body ?? {});
+    return requestAccountDeletion(store, identity, selected === undefined ? undefined : uuid.parse(selected), receipt);
   });
   app.get('/api/account/deletion', async request => {
     const uid = await identify(request);
     const owned = await store.db.collection('participants').where('ownerUid', '==', uid).get();
-    return { restorationRequired: owned.docs.some(doc => !!doc.data().forwardingConsent) };
+    return { restorationRequired: owned.docs.some(doc => !!doc.data().forwardingConsent),
+      phones: owned.docs.map(doc => ({ id: doc.id, name: doc.data().nameEnc ? store.name(doc.data() as Person) : "Your phone", restorationRequired: !!doc.data().forwardingConsent })) };
+  });
+  app.post('/api/account/deletion/receipt', async request => {
+    const { receipt } = z.object({ receipt: z.string().regex(/^[a-f0-9]{64}$/) }).strict().parse(request.body);
+    return deletionReceipt(store, receipt);
   });
 
   app.post('/api/trusted-numbers/sync', async request => {

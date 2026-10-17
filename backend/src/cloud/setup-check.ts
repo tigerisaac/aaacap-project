@@ -29,7 +29,7 @@ export class SetupChecks {
 
   /** Whether a check may run for this person now: configured, always-on, set up, outside quiet hours, not done recently. */
   due(person: DocumentData | undefined, control: DocumentData | undefined, now: number, every: number = SETUP_CHECK_LIMITS.everyMs) {
-    return !this.store.config.SHARED_NUMBER_ENABLED && !!this.checkNumber && !!this.f.endpoints(person) && person!.alwaysOn === true && person!.status === 'setup'
+    return !this.store.config.SHARED_NUMBER_ENABLED && !!this.checkNumber && !!this.f.endpoints(person) && person!.alwaysOn === true && person!.status === 'setup' && !person!.restoration
       && !inQuietHours(person!, now) && !(control?.lastSetupCheck?.at > now - every) && !(control?.setupCheck?.startedAt > now - SETUP_CHECK_LIMITS.staleMs);
   }
 

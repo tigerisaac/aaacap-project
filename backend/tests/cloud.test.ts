@@ -9,6 +9,7 @@ import { HttpError, type AuthProvider } from '../src/auth.js';
 import { extractionSchema, type MessageChecker } from '../src/cloud/message-check.js';
 import { stoppedTotal } from '../src/cloud/stopped-total.js';
 import { deleteAccount } from '../src/cloud/account-deletion.js';
+import { processAccountDeletions, deletionRef } from '../src/cloud/deletion-jobs.js';
 import { contactPhoneHash } from '../src/cloud/trusted-contacts.js';
 
 const enabled = !!process.env.FIRESTORE_EMULATOR_HOST;
@@ -54,8 +55,9 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
 
   it('deletes a never-enrolled login without needing a participant or trusting a supplied UID', async () => {
     const h = { authorization: 'Bearer caregiver' };
-    expect((await app!.inject({ url: '/api/account/deletion', headers: h })).json()).toEqual({ restorationRequired: false });
+    expect((await app!.inject({ url: '/api/account/deletion', headers: h })).json()).toMatchObject({ restorationRequired: false });
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h, payload: { uid: 'owner' } })).statusCode).toBe(200);
+    now += 120_001; await processAccountDeletions(store, auth);
     expect(auth.deleteAccount).toHaveBeenCalledWith('caregiver');
     expect((await store.personRef(PERSON).get()).exists).toBe(true);
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete' })).statusCode).toBe(401);
@@ -72,6 +74,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: headers('caregiver') })).statusCode).toBe(403);
     expect(auth.deleteAccount).not.toHaveBeenCalled();
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: { authorization: 'Bearer caregiver' } })).statusCode).toBe(200);
+    now += 120_001; await processAccountDeletions(store, auth);
     expect((await db.collection('grants').get()).empty).toBe(true);
     expect((await db.collection('memberships').get()).empty).toBe(true);
     expect((await db.collection('alertContacts').get()).empty).toBe(true);
@@ -84,7 +87,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
   it('checks every owned phone before erasure, preserving all data if one still forwards', async () => {
     const second = randomUUID();
     await store.personRef(second).set({ id: second, ownerUid: 'owner', status: 'active', forwardingConsent: 'existing-consent' });
-    expect((await app!.inject({ url: '/api/account/deletion', headers: { authorization: 'Bearer owner' } })).json()).toEqual({ restorationRequired: true });
+    expect((await app!.inject({ url: '/api/account/deletion', headers: { authorization: 'Bearer owner' } })).json()).toMatchObject({ restorationRequired: true });
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: headers() })).statusCode).toBe(409);
     expect((await store.personRef(PERSON).get()).data()?.status).toBe('setup');
     expect((await store.personRef(second).get()).exists).toBe(true);
@@ -118,14 +121,35 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     vi.mocked(auth.deleteAccount).mockRejectedValueOnce(new HttpError(503, 'account_deletion_unavailable'));
     const h = { authorization: 'Bearer owner' };
     const first = await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h });
-    expect(first.statusCode).toBe(503);
+    expect(first.statusCode).toBe(200);
+    const receipt = first.json().receipt;
+    now += 120_001; await processAccountDeletions(store, auth);
     for (const collection of ['participants', 'callSessions', 'grants', 'inviteKeys', 'voicemailChecks', 'monitoredCalls', 'devices']) {
       expect((await db.collection(collection).get()).empty).toBe(true);
     }
     expect((await db.collection('forwardingRecordings').doc('pending-provider-erasure').get()).exists).toBe(true);
     expect((await db.collection('smsOptOuts').doc('minimal-stop-hash').get()).exists).toBe(true);
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h })).statusCode).toBe(200);
+    now += 60_001; await processAccountDeletions(store, auth);
     expect(auth.deleteAccount).toHaveBeenCalledTimes(2);
+    expect((await app!.inject({ method: 'POST', url: '/api/account/deletion/receipt', payload: { receipt } })).json()).toEqual({ state: 'complete' });
+    expect((await deletionRef(store, 'owner').get()).data()?.uidEnc).toBeUndefined();
+  });
+
+  it('persists an idempotent deletion receipt, fences writes, and waits for in-flight work before erasure', async () => {
+    const h = { authorization: 'Bearer owner' }, receipt = 'a'.repeat(64);
+    const first = await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h, payload: { receipt } });
+    expect(first.json().receipt).toBe(receipt);
+    const retry = await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h, payload: { receipt: 'b'.repeat(64) } });
+    expect(retry.json().receipt).toBe(receipt);
+    expect((await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers(), payload: { contacts: [] } })).statusCode).toBe(409);
+    await processAccountDeletions(store, auth);
+    expect(auth.deleteAccount).not.toHaveBeenCalled();
+    expect((await app!.inject({ method: 'POST', url: '/api/account/deletion/receipt', payload: { receipt } })).json()).toEqual({ state: 'pending' });
+    expect((await app!.inject({ method: 'POST', url: '/api/account/deletion/receipt', payload: { receipt: 'c'.repeat(64) } })).statusCode).toBe(404);
+    now += 120_001; await processAccountDeletions(store, auth);
+    expect(auth.deleteAccount).toHaveBeenCalledWith('owner');
+    expect((await app!.inject({ method: 'POST', url: '/api/account/deletion/receipt', payload: { receipt } })).json()).toEqual({ state: 'complete' });
   });
 
   it('shares only phone-list fields, deduplicates numbers and restricts the operation to the owner', async () => {
@@ -198,6 +222,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     expect(await stoppedTotal(store, PERSON)).toBe(1);
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: headers() })).statusCode).toBe(200);
     await expect(stoppedTotal(store, PERSON)).rejects.toMatchObject({ statusCode: 403 });
+    now += 120_001; await processAccountDeletions(store, auth);
     expect((await store.personRef(PERSON).collection('statistics').get()).empty).toBe(true);
   });
   it('backfills multiple pages and seeds expired history before its first cleanup', async () => {

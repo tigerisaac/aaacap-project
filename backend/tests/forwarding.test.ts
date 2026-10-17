@@ -137,6 +137,43 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await start('ring')).statusCode).toBe(409);
   });
 
+  it('saves ordered restoration progress, rejects stale/skipped steps and completes without a helper', async () => {
+    await f.controlRef(PERSON).update({ restorationCodes: ['##61#', '##67#', '##62#'] });
+    let progress = (await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() })).json();
+    expect(progress.steps).toHaveLength(7);
+    expect((await f.controlRef(PERSON).get()).data()!.enabled).toBe(true);
+    expect((await s.personRef(PERSON).get()).data()!.status).toBe('setup');
+    const confirm = (step: string, session = progress.id, uid = 'owner') => app.inject({ method: 'POST', url: '/api/forwarding/restoration/confirm', headers: headers(uid), payload: { session, step } });
+    expect((await confirm('voicemail')).statusCode).toBe(409);
+    expect((await confirm('carrier-0', progress.id, 'stranger')).statusCode).toBe(403);
+    for (const step of progress.steps) {
+      now += 1000;
+      const response = await confirm(step.id);
+      expect(response.statusCode).toBe(200);
+      progress = response.json();
+      expect((await confirm(step.id)).json().index).toBe(progress.index);
+    }
+    expect(progress.completed).toBe(true);
+    expect(progress.evidence).toBe('owner_confirmed');
+    expect((await s.personRef(PERSON).get()).data()!.forwardingConsent).toBeUndefined();
+    expect((await f.controlRef(PERSON).get()).data()!.enabled).toBe(false);
+    expect((await app.inject({ url: '/api/account/deletion', headers: headers() })).json().restorationRequired).toBe(false);
+  });
+  it('uses saved instructions without guessing codes and catches a forwarded call during the final checks', async () => {
+    let progress = (await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() })).json();
+    expect(progress.steps[0]).toEqual({ id: 'carrier', kind: 'carrier' });
+    const old = progress.id;
+    for (const step of progress.steps.slice(0, -1)) {
+      now += 1000;
+      progress = (await app.inject({ method: 'POST', url: '/api/forwarding/restoration/confirm', headers: headers(), payload: { session: progress.id, step: step.id } })).json();
+    }
+    await s.callRef('synthetic-forwarded').set({ participantId: PERSON, source: 'forwarding', state: 'ended', createdAt: now, expiresAt: now + 60000 });
+    expect((await app.inject({ method: 'POST', url: '/api/forwarding/restoration/confirm', headers: headers(), payload: { session: progress.id, step: 'voicemail' } })).json().error.code).toBe('forwarding_still_arriving');
+    progress = (await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers(), payload: { restart: true } })).json();
+    expect(progress.id).not.toBe(old);
+    expect((await app.inject({ method: 'POST', url: '/api/forwarding/restoration/confirm', headers: headers(), payload: { session: old, step: 'carrier' } })).statusCode).toBe(409);
+  });
+
   it('rejects a child without authenticated parent binding, wrong parent and wrong destination', async () => {
     const id = await offer(false);
     expect((await post(`whisper/${id}`, { CallSid: sid(2) })).body).toContain('<Hangup');
@@ -224,12 +261,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect(ended.body).toContain('<Record'); expect(ended.body).toContain('maxLength="60"');
     expect((await f.find(sid()))!.acceptedAt).toBeUndefined();
   });
-  it('stops acceptance immediately on restoration and handles unanswered callbacks', async () => {
+  it('does not start disconnection while a call is still being offered', async () => {
     const id = await offer(); await post(`whisper/${id}`, { CallSid: sid(2) });
-    expect((await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() })).statusCode).toBe(200);
-    expect((await post(`accept/${id}`, { CallSid: sid(2), Digits: '1' })).body).toContain('<Hangup');
+    expect((await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() })).statusCode).toBe(409);
+    expect((await s.personRef(PERSON).get()).data()!.restoration).toBeUndefined();
     expect((await post(`dial-ended/${id}`, { DialCallSid: sid(2), DialCallStatus: 'no-answer' })).body).toContain('<Record');
-    expect((await f.controlRef(PERSON).get()).data()!.enabled).toBe(false);
+    expect((await f.controlRef(PERSON).get()).data()!.enabled).toBe(true);
   });
   it('expires acceptance even if the callback started during the window', async () => {
     const id = await offer(); await post(`whisper/${id}`, { CallSid: sid(2) }); now += 1800_001;

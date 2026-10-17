@@ -52,7 +52,7 @@ struct ForwardingStepContent: View {
             case .checks:
                 ForwardingTestView(status: status)
             case .restore:
-                ForwardingRestoreView(status: status, showingPhoneLauncher: $model.showingPhoneLauncher, onStageChange: onRestorationStageChange)
+                EmptyView()
             default: EmptyView()
             }
         }

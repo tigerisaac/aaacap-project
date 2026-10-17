@@ -123,15 +123,15 @@ final class SetupGuideUITests: XCTestCase {
         XCTAssertFalse(app.buttons["setup-guide-float"].exists)
         XCTAssertTrue(app.buttons["restoration-settings-open"].isHittable)
         XCTAssertLessThanOrEqual(app.buttons["restoration-settings-open"].frame.maxY,
-                                 app.buttons["restoration-settings-confirm"].frame.minY)
+                                 app.buttons["disconnect-continue"].frame.minY)
         capture(app, "Restoration unknown callers action")
-        app.buttons["restoration-settings-confirm"].tap()
-        XCTAssertTrue(app.staticTexts["Restore iPhone voicemail"].waitForExistence(timeout: 5))
+        app.buttons["disconnect-continue"].tap()
+        XCTAssertTrue(app.staticTexts["Check carrier voicemail next"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
         XCTAssertTrue(app.buttons["restoration-settings-open"].isHittable)
         XCTAssertLessThanOrEqual(app.buttons["restoration-settings-open"].frame.maxY,
-                                 app.buttons["restoration-settings-confirm"].frame.minY)
+                                 app.buttons["disconnect-continue"].frame.minY)
         capture(app, "Restoration voicemail handcrafted GIF")
     }
 
@@ -181,7 +181,7 @@ final class SetupGuideUITests: XCTestCase {
         app.launchArguments = ["--uitesting-forwarding", "--forwarding-manual-settings"] + arguments
         app.launch()
         XCTAssertTrue(app.buttons["forwarding-continue"].waitForExistence(timeout: 10)
-            || app.buttons["restoration-settings-confirm"].waitForExistence(timeout: 5))
+            || app.buttons["disconnect-continue"].waitForExistence(timeout: 5))
         return app
     }
 
