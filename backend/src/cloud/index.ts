@@ -43,7 +43,7 @@ export const shieldApi = onRequest({ ...options, secrets: [runtime, openaiKey], 
   }
 });
 export const cleanupShield = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 04:00', timeZone: 'America/Chicago',
-  retryCount: 0 }, async () => {
+  retryCount: 3, timeoutSeconds: 120 }, async () => {
   await getStore().cleanup();
   const { VoicemailCheck } = await import('./voicemail-check.js');
   await new VoicemailCheck(getStore()).releaseStale();

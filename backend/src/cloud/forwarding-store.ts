@@ -18,6 +18,7 @@ export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx';
   childSid?: string; acceptedAt?: number; voicemail?: { id: string; duration: number; status: string; heardAt: number | null };
   captureFromAnswer?: boolean;
   startupVersion?: 1; answerRequestedAt?: number; screeningReadyAt?: number; greetingCompletedAt?: number;
+  voicemailPromptCompletedAt?: number;
   /** Set only by the authenticated hangup for the immutable inbound leg. */
   inboundEndedAt?: number;
   announcementFallbacks?: Record<string, boolean>;
@@ -203,6 +204,11 @@ export class ForwardingStore {
         Object.assign(patch, countStoppedCall(s, tx, call));
       }
       if (Object.keys(patch).length) tx.update(doc!.ref, patch);
+      // The offer job has already finished. Commit a fresh recovery job with the
+      // fallback state so a crash or failed announcement cannot strand the caller.
+      if (call.transport === 'call-control' && patch.state === 'voicemail' && ['offering', 'accepting'].includes(call.state)) {
+        queueCallJob(s, tx, id, 'voicemail');
+      }
       if (patch.state === 'ended' && ctrl!.data()?.activeCallId === id) tx.update(controlRef, { activeCallId: FieldValue.delete() });
 
       // Delete only this call's reservation. Reading/replacing the entire shared map

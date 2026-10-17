@@ -1,4 +1,4 @@
-import type { Firestore, DocumentData } from 'firebase-admin/firestore';
+import { FieldPath, type Firestore, type DocumentData, type Query, type QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { HttpError } from '../auth.js';
 import { Vault } from '../crypto.js';
 import type { CloudConfig } from './config.js';
@@ -46,22 +46,40 @@ export class CloudStore {
     }
     return { participant: person, uid, isOwner: false, canListen: !!grant.canListen };
   }
-  /** One bounded daily invocation; all reads hide expired data immediately. */
+  /** Drain a fixed expiry cutoff in bounded batches; committed pages survive an invocation retry. */
   async cleanup(): Promise<void> {
+    const cutoff = this.now();
+    const drain = async (query: Query, beforeDelete?: (docs: QueryDocumentSnapshot[]) => Promise<void>, preserveAccepted = false) => {
+      const ordered = query.where('expiresAt', '<=', cutoff).orderBy('expiresAt').orderBy(FieldPath.documentId()).limit(400);
+      let cursor: QueryDocumentSnapshot | undefined;
+      for (;;) {
+        const page = await (cursor ? ordered.startAfter(cursor) : ordered).get();
+        if (page.empty) return;
+        await beforeDelete?.(page.docs);
+        // Historical-total backfill updates call documents; use their fresh versions
+        // for deletion preconditions, and never delete a concurrently renewed row.
+        const candidates = beforeDelete ? await this.db.getAll(...page.docs.map(doc => doc.ref)) : page.docs;
+        const batch = this.db.batch();
+        for (const doc of candidates) {
+          const data = doc.data();
+          if (doc.exists && typeof data?.expiresAt === 'number' && data.expiresAt <= cutoff
+            && (!preserveAccepted || data.status !== 'accepted')) batch.delete(doc.ref, { lastUpdateTime: doc.updateTime! });
+        }
+        await batch.commit();
+        if (page.size < 400) return;
+        // Advance even if a whole page was retained (legacy accepted contacts).
+        cursor = page.docs.at(-1);
+      }
+    };
     for (const collection of ['callSessions', 'callKeys', 'usage', 'inviteKeys', 'forwardingAudio', 'forwardingAudioChunks', 'forwardingUsage', 'monitoredCalls', 'monitorChecks', 'alerts', 'devices', 'voicemailChecks', 'forwardingProbes', 'setupChecks', 'callControlLocks', 'callControlCommands', 'callControlEvents', 'callControlJobs', 'callControlDeadlines', 'phoneAuthChallenges', 'phoneAuthLimits', 'alertDeliveries', 'alertContacts']) {
-      const expired = await this.db.collection(collection).where('expiresAt', '<=', this.now()).limit(400).get();
       // Preserve recoverable historical stops before the first post-upgrade cleanup deletes their records.
-      if (collection === 'callSessions') {
-        for (const participantId of new Set(expired.docs.map(doc => doc.data().participantId as string))) {
+      await drain(this.db.collection(collection), collection === 'callSessions' ? async docs => {
+        for (const participantId of new Set(docs.map(doc => doc.data().participantId as string))) {
           const person = (await this.personRef(participantId).get()).data();
           if (person && person.status !== 'offboarded') await stoppedTotal(this, participantId);
         }
-      }
-      if (!expired.empty) { const batch = this.db.batch(); expired.docs.forEach(doc => {
-        if (collection !== 'alertContacts' || doc.data().status !== 'accepted') batch.delete(doc.ref);
-      }); await batch.commit(); }
+      } : undefined, collection === 'alertContacts');
     }
-    const blocked = await this.db.collectionGroup('blocked-numbers').where('expiresAt', '<=', this.now()).limit(400).get();
-    if (!blocked.empty) { const batch = this.db.batch(); blocked.docs.forEach(doc => batch.delete(doc.ref)); await batch.commit(); }
+    await drain(this.db.collectionGroup('blocked-numbers'));
   }
 }

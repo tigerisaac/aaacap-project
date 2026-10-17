@@ -22,7 +22,7 @@ const contactSchema = z.object({ label: z.string().trim().min(1).max(60), phone:
 
 export function cloudCallDTO(store: CloudStore, call: Call, canListen = false) {
   const forwarding = call.source === 'forwarding';
-  const abandoned = call.state !== 'ended' && store.now() - call.createdAt > (forwarding ? 450_000 : 120_000);
+  const abandoned = call.state !== 'ended' && !call.acceptedAt && store.now() - call.createdAt > (forwarding ? 450_000 : 120_000);
   const removed = call.voicemail?.status === 'removed';
   const reason = abandoned ? 'screening_unavailable' : removed ? `voicemail_removed_${call.voicemail.removedAs === 'scam' ? 'scam' : 'junk'}` : call.reason;
   const copy = reasonCopy[reason] ?? reasonCopy.uncertain!;

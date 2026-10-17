@@ -131,7 +131,7 @@ export class SharedCallControl {
     if (validRecordingId(result?.recording_id ?? '')) await this.f.recording(c.parentSid, result.recording_id, 0);
   }
   async voicemail(c: ForwardingCall) {
-    if (c.acceptedAt || c.inboundEndedAt || c.state !== 'voicemail') return;
+    if (c.acceptedAt || c.inboundEndedAt || c.state !== 'voicemail' || c.voicemailPromptCompletedAt) return;
     await this.deadline(c, 80);
     await this.play(c, 'voicemail');
   }
@@ -167,6 +167,10 @@ export class SharedCallControl {
     if (job.dueAt > this.store.now()) throw new Error('call_job_not_due');
     if (job.phase === 'start') await this.start(job.callId);
     else if (job.phase === 'outcome') await this.outcome(job.callId);
+    else if (job.phase === 'voicemail') await this.exclusive(job.callId, async () => {
+      const c = await this.call(job.callId);
+      if (c) await this.voicemail(c);
+    });
     else if (job.phase === 'greet') await this.exclusive(job.callId, async () => {
       const c = await this.call(job.callId);
       if (!c || c.state !== 'screening' || c.inboundEndedAt || !c.screeningReadyAt || c.greetingCompletedAt) return;
@@ -358,6 +362,8 @@ export class SharedCallControl {
           if (next) await this.voicemail(next);
         }
       } else if (promptPhase === 'voicemail' && c.state === 'voicemail' && !c.acceptedAt) {
+        await this.f.transition(c.id, current => current.state === 'voicemail' && !current.inboundEndedAt && !current.voicemailPromptCompletedAt
+          ? { voicemailPromptCompletedAt: s.now() } : undefined);
         await this.deadline(c, 65);
         if (!c.captureFromAnswer) await this.command(sid, 'record_start', { format: 'mp3', channels: 'single', recording_track: 'inbound', max_length: 60, timeout_secs: 0,
           play_beep: true, transcription: false }, 'voicemail-recording');

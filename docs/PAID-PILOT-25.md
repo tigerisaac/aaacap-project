@@ -46,6 +46,18 @@ This behavior is already present in deployed API `shieldapi-00024-lin`; the call
 
 Follow-up validation passed `npm run check` (typecheck, 276 unit tests, build) and the complete Firestore suite (215/215, including both new overflow cases). Only tests and documentation changed; no deployment, live settings, calls or messages were needed.
 
+### Backend reliability follow-up — prepared locally October 16
+
+Three follow-up fixes are implemented locally and **not deployed**:
+
+- Moving an offered call to voicemail now commits a dedicated recovery job in the same transaction. If the first announcement command fails, the private worker retries it independently of the original offer webhook. This covers dial rejection, recipient hangup and decline. Command receipts prevent another dial or duplicate successful playback; a completed voicemail prompt or ended call makes a late job harmless.
+- Daily expiry cleanup drains each configured collection in pages of 400, including blocked numbers. A fixed cutoff and document cursor let it advance past retained legacy accepted contacts. Deletion preconditions protect concurrent updates, and historical stopped-call totals are preserved before call records are deleted. The local schedule configuration allows 120 seconds and three retries; committed pages remain deleted if a later page fails.
+- Accepted conversations retain their connected history status beyond 7½ minutes. Abandoned calls that were never accepted still receive the existing missed-call fallback.
+
+Validation passed `npm run check` (typecheck, 283 unit tests, build) and the full Firestore emulator suite (226/226 across 11 files). Twelve new regression cases cover the three fixes, including retries from a fresh worker, duplicate callbacks, delayed jobs after prompt completion/hangup, and 805 expired rows in each of four cleanup collections. The first check needed local-server permission, and the first emulator run exposed a missing routing field in the synthetic hangup fixture; both final runs passed after those corrections.
+
+Deployment still requires the owner's approval. Upgrade the private call-job worker before any API/bridge code that can enqueue the new `voicemail` job phase; then deploy the scoped API, bridge and cleanup changes. Preserve the frozen screening/post-call policies and unrelated release work described below. These tests use simulated provider actions and establish no new real-call evidence.
+
 Before accepting the full paid cohort:
 
 1. **Get account outbound capacity approved for 30**, independently of application/profile settings. No support message has been sent. The read-only planner deliberately reports account capacity as unverified because resource GET responses do not establish it.
