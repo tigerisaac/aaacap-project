@@ -122,7 +122,7 @@ struct OverviewView: View {
                             .disabled(checkingStatus)
                     } else if presentation.needsSetup {
                         if model.isTrial && !presentation.useSetupMenu {
-                            NavigationLink { ForwardingSetupView() } label: {
+                            NavigationLink(value: AppRoute.forwardingSetup) {
                                 Text(presentation.actionTitle)
                             }
                         } else {

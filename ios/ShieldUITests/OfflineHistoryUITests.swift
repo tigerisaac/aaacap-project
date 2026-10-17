@@ -29,10 +29,16 @@ final class OfflineHistoryUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Calls"].appears(timeout: 20))
         app.tabBars.buttons["Calls"].tap()
         app.buttons["Answered"].tap()
-        XCTAssertTrue(app.staticTexts["Getting your calls…"].appears(timeout: 2), "Slow first loads still need feedback")
+        let progress = app.descendants(matching: .any)["calls-refresh-progress"].firstMatch
+        let loadingSnapshot = XCTAttachment(string: app.debugDescription)
+        loadingSnapshot.name = "Slow call refresh accessibility"
+        loadingSnapshot.lifetime = .keepAlways
+        add(loadingSnapshot)
+        XCTAssertTrue(progress.appears(timeout: 2), "Slow reads use compact toolbar feedback")
         XCTAssertTrue(app.staticTexts["No answered calls"].appears(timeout: 8))
         app.buttons["Stopped"].tap()
         app.buttons["Answered"].tap()
+        XCTAssertFalse(app.staticTexts.containing(NSPredicate(format: "label BEGINSWITH %@", "Saved on this iPhone")).firstMatch.exists)
         assertNoLoadingFlash(app, title: "Getting your calls…")
         XCTAssertTrue(app.staticTexts["No answered calls"].exists)
 

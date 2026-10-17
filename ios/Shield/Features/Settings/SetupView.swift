@@ -91,7 +91,7 @@ struct SetupView: View {
                             ForEach(Array(steps.enumerated()), id: \.offset) { index, step in Text("\(index + 1). \(step)").textSelection(.enabled) }
                         }
                     }
-                    NavigationLink("Disconnect Shield") { DisconnectView(participantID: setup.participantId) }
+                    NavigationLink("Disconnect Shield", value: AppRoute.disconnect(setup.participantId))
                         .disabled(model.isDemo || working)
                     if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Ask for setup help", destination: url) }
 

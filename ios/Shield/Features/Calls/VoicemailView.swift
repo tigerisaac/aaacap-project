@@ -5,22 +5,50 @@ struct VoicemailView: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     @State private var inbox = VoicemailInbox()
     @State private var keptOnly = false
+    @State private var filter = MessageFilter.all
     @State private var loadingVisible = false
+    private var showsKindFilter: Bool {
+        #if DEBUG && targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-message-filters") { return true }
+        #endif
+        return !app.isDemo
+    }
     private var initialLoading: Bool { inbox.loading && inbox.calls.isEmpty && !inbox.hasLoaded }
 
     private var messages: [CallRecord] {
-        inbox.calls.filter { $0.voicemail?.status != "removed" && (!keptOnly || app.demoKeptMessages.contains($0.id)) }
+        inbox.calls.filter { $0.voicemail?.status != "removed" && filter.includes($0) && (!keptOnly || app.demoKeptMessages.contains($0.id)) }
     }
-    private var removed: [CallRecord] { inbox.calls.filter { $0.voicemail?.status == "removed" } }
+    private var removed: [CallRecord] { inbox.calls.filter { $0.voicemail?.status == "removed" && filter.includes($0) } }
 
     var body: some View {
         NavigationShell {
             List {
                 PersonContextSection()
+                if showsKindFilter {
+                    ShieldGroup(background: .clear) {
+                        if typeSize >= .xxxLarge {
+                            Menu { kindPicker } label: {
+                                HStack {
+                                    Text(filter == .all ? "All messages" : filter.label)
+                                    Spacer()
+                                    Image(systemName: "chevron.down").accessibilityHidden(true)
+                                }
+                                .padding(ShieldTheme.Spacing.content)
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            }
+                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+                            .accessibilityLabel("Message type, \(filter.label)")
+                            .accessibilityIdentifier("message-filter")
+                        } else {
+                            kindPicker.pickerStyle(.segmented).controlSize(.large)
+                                .accessibilityIdentifier("message-filter")
+                        }
+                    }.listRowInsets(EdgeInsets())
+                }
                 if !app.isDemo, app.isOwner, let error = app.audioSyncError {
                     ShieldGroup { Text(error).foregroundStyle(ShieldTheme.secondaryText) }
                 }
-                if app.isDemo, app.isOwner, app.canListen {
+                if app.isDemo, !showsKindFilter, app.isOwner, app.canListen {
                     ShieldGroup(background: .clear) {
                         if typeSize >= .xxxLarge {
                             Menu {
@@ -52,10 +80,10 @@ struct VoicemailView: View {
                     }
                 }
                 if initialLoading {
-                    if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your messages…") } }
+                    // Progress stays in the toolbar without inserting a large placeholder row.
                 } else if messages.isEmpty, inbox.error == nil {
                     ShieldGroup {
-                        ContentUnavailableView(keptOnly ? "No kept messages yet" : "No messages yet", systemImage: "tray",
+                        ContentUnavailableView(keptOnly ? "No kept messages yet" : filter.emptyTitle, systemImage: "tray",
                             description: Text(keptOnly ? "Open a sample message and tap Keep this message." : "Voicemail and saved notices will appear here."))
                     }
                 } else {
@@ -82,16 +110,28 @@ struct VoicemailView: View {
                     }
                 }
             }
-            .deferredLoading(initialLoading, visible: $loadingVisible)
+            .deferredLoading(inbox.loading, visible: $loadingVisible)
             .shieldListStyle()
             .shieldLargeTitle("Messages")
-            .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if loadingVisible { ProgressView().accessibilityLabel("Updating messages").accessibilityIdentifier("messages-refresh-progress") }
+                }
+                if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
+            }
+            .sensoryFeedback(.selection, trigger: filter)
             .task { await inbox.load(app) }
             .onChange(of: app.localMessages.map(\.call)) { _, _ in Task { await inbox.load(app) } }
             .refreshable {
                 await app.api.invalidateNavigationCache()
                 await inbox.load(app)
             }
+        }
+    }
+
+    private var kindPicker: some View {
+        Picker("Message type", selection: $filter) {
+            ForEach(MessageFilter.allCases) { Text($0.label).tag($0) }
         }
     }
 

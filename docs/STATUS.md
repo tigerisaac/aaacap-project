@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — navigation, disclosure and inbox polish (installed)
+
+Settings routes now use the same value-based navigation stack, so Automatic text checks → Check a text yourself opens above the current page. Native navigation titles replace the custom large-title toolbar that leaked the previous heading into pushed pages; nested pages use inline titles. Shared disclosures resize without interpolating long text outside their cards. Calls no longer inserts the saved-data timestamp card, and Calls/Messages use delayed compact toolbar progress while retaining existing content. Messages adds local All, Voicemail and Notices filters, including the matching removed-message group, with a large-text menu fallback.
+
+Validation: typecheck/build and 316 unit tests passed, as did all 229 Firestore emulator tests. Three focused navigation/disclosure/message-filter UI tests passed on iPhone 17e/iOS 26.5; the five-second slow-load/empty-refresh test passed after correcting its toolbar accessibility query. The first phone pass exposed a remaining native heading beneath the removed custom title, prompting removal of the custom toolbar implementation. The final signed Debug build passed signature verification and was installed/launched on the owner's iPhone 12 Pro Max at 00:31 Central. iPhone Mirroring verified More → Settings and Back, the complete automatic-to-manual text-check route, disclosure expansion, all four Calls filters and all three Messages filters. This device build includes the concurrent local motion/feedback work; only this navigation/inbox change is committed here. No new backend deployment, call, text submission, carrier change or monitoring-setting change occurred. This is UI/device evidence, not real-call qualification.
+
 ## October 17 — local phone setup and disconnection guide (installed; guided backend deployed)
 
 Phone setup now opens from a protected, bounded owner snapshot on the iPhone. Home refresh warms it automatically, recent reads are reused for five minutes, and stale refreshes retain the form. The cache preserves approved carrier restoration text, isolates accounts/phones, expires freshness after writes, prunes removed owners and is erased during account deletion. Delete account is removed from both Phone setup variants and remains in account settings. Both setup variants use the same disconnect guide.

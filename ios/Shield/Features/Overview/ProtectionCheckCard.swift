@@ -88,6 +88,10 @@ struct ProtectionCheckCard: View {
                     .padding(.vertical, 4)
                     .accessibilityElement(children: .combine)
                 }
+                .transaction { transaction in
+                    transaction.animation = nil
+                    transaction.disablesAnimations = true
+                }
             }
         }
     }
@@ -97,7 +101,7 @@ struct ProtectionCheckCard: View {
         switch fix {
         case .setup:
             if model.isTrial {
-                NavigationLink { ForwardingSetupView() } label: { Text("Open setup") }
+                NavigationLink(value: AppRoute.forwardingSetup) { Text("Open setup") }
             } else {
                 NavigationLink(value: AppRoute.setup) { Text("Open setup") }
             }

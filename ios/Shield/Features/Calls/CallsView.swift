@@ -14,19 +14,13 @@ struct CallsView: View {
                 PersonContextSection()
                 ShieldGroup(background: .clear) { CallFilterPicker() }
                     .listRowInsets(EdgeInsets())
-                if model.showingSavedHistory || model.callsError != nil, let savedAt = model.historySavedAt {
-                    ShieldGroup { Text("Saved on this iPhone · Updated \(savedAt.formatted(date: .abbreviated, time: .shortened))")
-                        .foregroundStyle(ShieldTheme.secondaryText) }
-                }
                 if let error = model.callsError {
                     ShieldGroup {
                         ShieldLoadFailure(title: model.calls.isEmpty ? "Your calls couldn’t load" : "New calls couldn’t update", detail: model.calls.isEmpty ? error : "You can still open the calls saved on this iPhone.") { Task { await model.loadCalls() } }
                     }
                 }
                 if model.calls.isEmpty && model.callsError == nil {
-                    if initialLoading {
-                        if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your calls…") } }
-                    } else {
+                    if !initialLoading {
                         ShieldGroup {
                             ContentUnavailableView(model.filter == .all ? "No calls yet" : "No \(model.filter.label.lowercased()) calls", systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
                             if model.filter != .all { Button("Show all calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
@@ -51,9 +45,14 @@ struct CallsView: View {
                     }
                 }
             }
-            .deferredLoading(initialLoading, visible: $loadingVisible)
+            .deferredLoading(model.isLoadingCalls || model.isLoading, visible: $loadingVisible)
             .shieldLargeTitle("Calls")
-            .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if loadingVisible { ProgressView().accessibilityLabel("Updating calls").accessibilityIdentifier("calls-refresh-progress") }
+                }
+                if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
+            }
             .task(id: model.filter) { await model.loadCalls() }
             .sensoryFeedback(.selection, trigger: model.filter)
             .refreshable { await model.refresh() }

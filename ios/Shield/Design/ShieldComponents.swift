@@ -76,19 +76,9 @@ extension View {
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    /// Tab roots keep the native collapsing large title, drawn in the serif page voice.
-    /// The bar keeps the plain title for its inline state, Back and accessibility.
+    /// Tab roots use native collapsing titles; pushed pages use native inline titles.
     func shieldLargeTitle(_ title: String) -> some View {
-        navigationTitle(title)
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .largeTitle) {
-                    Text(title).shieldHeading(.display).foregroundStyle(ShieldTheme.ink)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
-                        .accessibilityAddTraits(.isHeader)
-                }
-            }
+        modifier(ShieldNavigationTitle(title: title))
     }
 
     /// Serif heading type with slightly tight tracking, scaled with Dynamic Type.
@@ -167,17 +157,29 @@ struct ShieldDisclosure<Content: View>: View {
     private let title: String
     private let isExpanded: Binding<Bool>?
     private let content: Content
+    @State private var expanded = false
 
     init(_ title: String, isExpanded: Binding<Bool>? = nil, @ViewBuilder content: () -> Content) {
         self.title = title; self.isExpanded = isExpanded; self.content = content()
     }
 
     var body: some View {
-        if let isExpanded {
-            DisclosureGroup(isExpanded: isExpanded) { content } label: { label }
-        } else {
-            DisclosureGroup { content } label: { label }
-        }
+        DisclosureGroup(isExpanded: expansion) { content } label: { label }
+            // List cells and long text must resize together; spring interpolation can
+            // temporarily draw the expanded text outside its old cell bounds.
+            .transaction { transaction in
+                transaction.animation = nil
+                transaction.disablesAnimations = true
+            }
+    }
+
+    private var expansion: Binding<Bool> {
+        let source = isExpanded ?? $expanded
+        return Binding(get: { source.wrappedValue }, set: { value in
+            var transaction = Transaction(animation: nil)
+            transaction.disablesAnimations = true
+            withTransaction(transaction) { source.wrappedValue = value }
+        })
     }
 
     // Stacked disclosures outside a List keep a full touch target each.

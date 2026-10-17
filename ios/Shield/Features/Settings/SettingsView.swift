@@ -9,11 +9,11 @@ struct SettingsView: View {
             if model.isOwner {
                 ShieldSection("Your phone") {
                     if let id = model.selectedPersonID {
-                        NavigationLink { DisconnectView(participantID: id) } label: { ActionRow(title: "Disconnect Shield", symbol: "arrow.uturn.backward") }
+                        NavigationLink(value: AppRoute.disconnect(id)) { ActionRow(title: "Disconnect Shield", symbol: "arrow.uturn.backward") }
                     }
                     NavigationLink(value: AppRoute.setup) { ActionRow(title: "Phone setup", symbol: "phone") }
-                    NavigationLink { CallProtectionView() } label: { ActionRow(title: "Checks while you talk", symbol: "waveform") }
-                    NavigationLink { QuietHoursView() } label: { ActionRow(title: "Quiet hours", symbol: "moon") }
+                    NavigationLink(value: AppRoute.callProtection) { ActionRow(title: "Checks while you talk", symbol: "waveform") }
+                    NavigationLink(value: AppRoute.quietHours) { ActionRow(title: "Quiet hours", symbol: "moon") }
                     NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") }
                 }
                 ShieldSection("People you trust") {
@@ -25,16 +25,16 @@ struct SettingsView: View {
             }
             ShieldGroup {
                 if model.service?.notificationsAvailable == true, !model.isDemo {
-                    NavigationLink { MessageAlertsView() } label: { ActionRow(title: "Message alerts", symbol: "bell") }
+                    NavigationLink(value: AppRoute.messageAlerts) { ActionRow(title: "Message alerts", symbol: "bell") }
                 }
-                NavigationLink { MessageFilterSetupView() } label: { ActionRow(title: "Automatic text checks", symbol: "text.badge.checkmark") }
+                NavigationLink(value: AppRoute.automaticTexts) { ActionRow(title: "Automatic text checks", symbol: "text.badge.checkmark") }
                 if let origin = model.configuration.baseURL {
                     Link(destination: origin.appending(path: "privacy")) { ActionRow(title: "Privacy", symbol: "lock.shield") }
                 }
             }
             ShieldGroup {
                 let leavesSample = model.isDemo && !model.isTestAccount
-                NavigationLink { DeleteAccountView() } label: {
+                NavigationLink(value: AppRoute.deleteAccount) {
                     ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
                 }
                 Button(leavesSample ? "Leave sample app" : "Sign out") { confirmSignOut = true }

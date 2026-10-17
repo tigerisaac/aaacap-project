@@ -9,10 +9,7 @@ struct TrialSetupView: View {
 
     var body: some View {
         ShieldGroup {
-            NavigationLink {
-                if setup.status == "restoring" { DisconnectView(participantID: setup.participantId) }
-                else { ForwardingSetupView() }
-            } label: {
+            NavigationLink(value: setup.status == "restoring" ? AppRoute.disconnect(setup.participantId) : AppRoute.forwardingSetup) {
                 ActionRow(title: setup.status == "restoring" ? "Finish disconnecting" : setup.phoneVerified ? "Open phone setup" : "Set up my phone", symbol: "phone.arrow.right")
             }
         }
