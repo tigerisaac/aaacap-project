@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { labRequest as telnyxRequest } from './live-provider.mjs';
+import { endWarningConference } from './warning-recovery.mjs';
 import { restorePublicNumber } from './public-number.mjs';
 const root=resolve('artifacts/private/call-lab'),config=JSON.parse(readFileSync('artifacts/private/firebase-runtime.json'));
 const ids=JSON.parse(readFileSync(root+'/telnyx/created.json'));
@@ -12,8 +13,11 @@ async function tick() {
     const d=JSON.parse(readFileSync(ledgerPath)),now=Date.now();
     const stale=!d.heartbeat||now-d.heartbeat>12000||!!(d.publicBinding&&now>=d.publicBinding.restoreBy);
     const expired=d.attempts.filter(a=>!a.endedAt&&(stale||d.stopped||a.deadline<=now));
-    for(const a of expired)for(const sid of a.sids) {
+    for(const a of expired){
+      try{await endWarningConference((path,method,body)=>telnyxRequest(config,path,method,body),a);}catch{}
+      for(const sid of a.sids) {
       try {await telnyxRequest(config,`/calls/${encodeURIComponent(sid)}/actions/hangup`,'POST',{});}catch{}
+    }
     }
     if(stale||d.stopped) {
       // Restore the live number before disabling the test receiver. On failure keep retrying.

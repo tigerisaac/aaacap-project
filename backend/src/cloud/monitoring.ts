@@ -1,5 +1,4 @@
 import { CallControlProvider } from './call-control-provider.js';
-import { ANNOUNCEMENT_BACKUP_VOICE, rejectedAudioCommand, requiredAnnouncementAudio } from './announcements.js';
 import { z } from 'zod';
 import type { DocumentData, Transaction } from 'firebase-admin/firestore';
 import { callerText, supportedEvidence } from '../live/evidence.js';
@@ -268,7 +267,7 @@ export class CallMonitor {
   async intervene(id: string, concern: Concern, evidenceAt?: number) {
     const s = this.store, c = s.config, now = s.now();
     const call = await this.forwarding.transition(id, current => current.state === 'accepted' && !current.monitorIntervenedAt
-      ? { monitorIntervenedAt: now, monitorConcern: concern, ...(evidenceAt ? { monitorEvidenceAt: evidenceAt } : {}), reason: 'monitor_intervened',
+      ? { monitorIntervenedAt: now, monitorConcern: concern, ...(current.transport === 'call-control' ? { monitorWarningWaitForPark: true } : {}), ...(evidenceAt ? { monitorEvidenceAt: evidenceAt } : {}), reason: 'monitor_intervened',
         events: [...current.events, { kind: 'monitor_intervened', at: now }] } : undefined,
       (tx, next, personExists) => {
         this.forwarding.rememberScam(tx, next, 'monitor_intervened', personExists);
@@ -287,15 +286,8 @@ export class CallMonitor {
       if (call.transport === 'call-control') {
         const cc = new CallControlProvider(c);
         await cc.action(call.parentSid, 'hangup', { command_id: s.vault.hash(`${id}:intervene`) });
-        try {
-          await cc.action(call.childSid, 'playback_start', { audio_url: requiredAnnouncementAudio(warningText(concern)).url,
-            audio_type: 'wav', cache_audio: true, client_state: cc.state(id, 'warning'), command_id: s.vault.hash(`${id}:warning`) });
-        } catch (error) {
-          if (!rejectedAudioCommand(error)) throw error;
-          await s.callRef(id).update({ 'announcementFallbacks.warning': true });
-          await cc.action(call.childSid, 'speak', { payload: warningText(concern), voice: ANNOUNCEMENT_BACKUP_VOICE,
-            client_state: cc.state(id, 'warning-backup'), command_id: s.vault.hash(`${call.childSid}:warning-backup`) });
-        }
+        // Caller-hangup and recipient-hold receipts queue the warning only after parking settles.
+        // The independent 30-second deadline still ends the recipient if either receipt is lost.
       } else await this.telnyx.update(call.childSid, { Url: `${c.PUBLIC_BASE_URL}/forwarding/${c.TRIAL_PROXY_SECRET}/monitor-warning/${id}`, Method: 'POST' });
       redirected = true;
     } catch {
@@ -303,10 +295,13 @@ export class CallMonitor {
       else await this.telnyx.update(call.parentSid, { Status: 'completed' }).catch(() => undefined);
     }
     const redirectedAt = s.now();
-    await s.callRef(id).update({ monitorRedirectedAt: redirectedAt }).catch(() => undefined);
+    if (call.transport !== 'call-control') await s.callRef(id).update({ monitorRedirectedAt: redirectedAt }).catch(() => undefined);
     // Includes cadence/queue/model delay after final text arrived, but not the carrier's ASR delay.
     console.info(JSON.stringify({ event: 'monitor_intervention', redirected, evidenceToDecisionMs: evidenceAt ? now - evidenceAt : null,
-      decisionToRedirectMs: redirectedAt - now, evidenceToRedirectMs: evidenceAt ? redirectedAt - evidenceAt : null }));
+      warningPending: call.transport === 'call-control' && redirected,
+      decisionToRedirectMs: call.transport === 'call-control' ? null : redirectedAt - now,
+      decisionToHangupRequestMs: call.transport === 'call-control' ? redirectedAt - now : null,
+      evidenceToRedirectMs: call.transport !== 'call-control' && evidenceAt ? redirectedAt - evidenceAt : null }));
     await this.end(id);
   }
 

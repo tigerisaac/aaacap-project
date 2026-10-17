@@ -176,9 +176,44 @@ export class SharedCallControl {
       if (!c || c.state !== 'screening' || c.inboundEndedAt || !c.screeningReadyAt || c.greetingCompletedAt) return;
       await this.play(c, 'greeting');
     });
+    else if (job.phase === 'warning') await this.warning(job.callId);
     else if (job.phase === 'deadline') await this.expire(job.callId, job.dueAt);
     else throw new Error('invalid_call_job');
     await ref.update({ done: true });
+  }
+  /** Both signed, bound-leg receipts are required; callback arrival order does not matter. */
+  async warningParked(id: string, field: 'monitorCallerEndedAt' | 'monitorRecipientParkedAt') {
+    const s = this.store;
+    await s.db.runTransaction(async tx => {
+      const c = (await tx.get(s.callRef(id))).data() as ForwardingCall | undefined;
+      if (!c || c.state !== 'accepted' || !c.monitorIntervenedAt || !c.monitorWarningWaitForPark || c.monitorWarningQueuedAt) return;
+      const next = { ...c, [field]: c[field] ?? s.now() };
+      const dueAt = next.monitorCallerEndedAt && next.monitorRecipientParkedAt
+        ? Math.max(s.now(), next.monitorRecipientParkedAt + 750) : undefined;
+      tx.update(s.callRef(id), { [field]: next[field], ...(dueAt ? { monitorWarningQueuedAt: dueAt } : {}) });
+      if (dueAt) queueCallJob(s, tx, id, 'warning', dueAt);
+    });
+  }
+  async warning(id: string) {
+    return this.exclusive(id, async () => {
+      const c = await this.call(id), now = this.store.now();
+      if (!c || c.transport !== 'call-control' || c.state !== 'accepted' || !c.childSid || !c.monitorIntervenedAt ||
+          !c.monitorWarningWaitForPark || !c.monitorCallerEndedAt || !c.monitorRecipientParkedAt || !c.monitorWarningQueuedAt ||
+          now < c.monitorWarningQueuedAt || now >= c.monitorIntervenedAt + 30_000) return;
+      if (c.announcementFallbacks?.warning) {
+        await this.fallback(c, 'warning');
+        await this.store.callRef(id).update({ monitorRedirectedAt: this.store.now() });
+        return;
+      }
+      try {
+        await this.command(c.childSid, 'playback_start', { audio_url: requiredAnnouncementAudio(warningText(c.monitorConcern ?? '')).url,
+          audio_type: 'wav', cache_audio: true, client_state: this.provider.state(id, 'warning') }, 'warning');
+      } catch (error) {
+        if (!rejectedAudioCommand(error)) throw error;
+        await this.fallback(c, 'warning');
+      }
+      await this.store.callRef(id).update({ monitorRedirectedAt: this.store.now() });
+    });
   }
   async outcome(id: string) {
     return this.exclusive(id, async () => {
@@ -207,6 +242,16 @@ export class SharedCallControl {
       const ended = await this.f.unconnectedHangup(c!.id, sid, p.call_leg_id);
       if (ended) {
         await new CallMonitor(this.f).end(ended.id);
+        await receipt.set({ expiresAt: s.now() + TTL });
+        return;
+      }
+    }
+    // These receipts must survive contention with the hangup executor. They only
+    // enqueue a durable job; no carrier command runs inside their transaction.
+    if (c?.monitorWarningWaitForPark && c.monitorIntervenedAt && Date.parse(e.occurred_at) >= c.monitorIntervenedAt) {
+      if (boundInbound && e.event_type === 'call.hangup') await this.warningParked(c.id, 'monitorCallerEndedAt');
+      if (c.childSid === sid && e.event_type === 'call.hold') {
+        await this.warningParked(c.id, 'monitorRecipientParkedAt');
         await receipt.set({ expiresAt: s.now() + TTL });
         return;
       }

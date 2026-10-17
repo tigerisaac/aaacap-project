@@ -1,5 +1,9 @@
 # Browser call lab
 
+## Warning recovery follow-up — October 17, 17:46–17:48 Central
+
+The owner approved two more isolated 60-second calls. Replacing parking with hold disconnected the recipient before playback; moving the already-bound recipient into a private conference accepted playback but still produced no measured warning speech. Both attempts are exhausted. The cleanup audit passed, including conference completion and unchanged production settings. Rounded balance moved by 1¢. No AI requests, owner-phone calls or production changes occurred. The `--warning-audio-recovery` ledger cannot be reused. Its helper only acts on the existing reserved recipient, fences room creation/playback, limits the room to one minute and includes watchdog cleanup. [Measurements and the local ordering correction](INCIDENT-2026-10-17-CALL-AUDIO.md#recovery-checks-prepared--october-17-1745-central).
+
 ## Warning audio investigation — October 17, 17:29–17:36 Central
 
 Two owner-approved pairs of isolated browser/SIP calls reproduced missing warning speech after the caller was removed. The baseline hangup → playback sequence left the recipient on hold and never completed its warning. Waiting until 750 ms after the hold callback produced unhold and completion, but the captured recipient audio remained quiet. A separately approved follow-up tested uncached playback targeting only the recipient with the audio queue cleared, then Joanna backup speech targeting only the recipient. Both completed at the provider while recipient audio still lacked the warning. The stronger follow-up capture used a stable Web Audio destination, followed track replacements and measured received WebRTC audio energy; no replacement occurred. Acceptance prompts and bridged tones were present before disconnect. **No verified audible-warning fix or production deployment resulted.** [Detailed measurements, limits and screening results](INCIDENT-2026-10-17-CALL-AUDIO.md).

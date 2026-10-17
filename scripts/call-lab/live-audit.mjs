@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile,writeFile } from 'node:fs/promises';
 import { labRequest } from './live-provider.mjs';
-const base='artifacts/private/call-lab',root=process.argv.includes('--warning-audio-followup')?base+'/warning-audio-followup-2026-10-17':process.argv.includes('--warning-audio')?base+'/warning-audio-2026-10-17':process.argv.includes('--capacity-overflow')?base+'/capacity-overflow':process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
+const base='artifacts/private/call-lab',root=process.argv.includes('--warning-audio-recovery')?base+'/warning-audio-recovery-2026-10-17':process.argv.includes('--warning-audio-followup')?base+'/warning-audio-followup-2026-10-17':process.argv.includes('--warning-audio')?base+'/warning-audio-2026-10-17':process.argv.includes('--capacity-overflow')?base+'/capacity-overflow':process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
 const config=await read('artifacts/private/firebase-runtime.json'),ids=await read(base+'/telnyx/created.json'),before=await read(base+'/telnyx/before.json'),ledger=await read(root+'/live-ledger.json');
 const api=path=>labRequest(config,path);
 const paths={app:'/call_control_applications',browser:'/credential_connections',profile:'/outbound_voice_profiles'};
@@ -19,6 +19,7 @@ assert.deepEqual(binding((await api('/phone_numbers?page[size]=250')).data),bind
 const missing=async path=>{try{await api(path);return false;}catch(e){if(e.message==='telnyx_http_404')return true;throw e;}};
 for(const id of ledger.credentials)assert.ok(await missing('/telephony_credentials/'+id),'credential_not_revoked');
 for(const a of ledger.attempts){
+  if(a.conferenceId)assert.equal((await api('/conferences/'+a.conferenceId)).data.status,'completed');
   for(const sid of a.sids)assert.equal((await api('/calls/'+encodeURIComponent(sid))).data.is_alive,false);
   for(const id of a.recordings??[])assert.ok(await missing('/recordings/'+id),'recording_not_removed');
 }

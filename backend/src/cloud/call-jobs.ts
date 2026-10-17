@@ -4,7 +4,7 @@ import { getApps } from 'firebase-admin/app';
 import type { Transaction } from 'firebase-admin/firestore';
 import type { CloudStore } from './store.js';
 
-export type CallJobPhase = 'start' | 'greet' | 'outcome' | 'voicemail' | 'deadline';
+export type CallJobPhase = 'start' | 'greet' | 'outcome' | 'voicemail' | 'deadline' | 'warning';
 export const CALL_JOB_FUNCTION = 'locations/us-central1/functions/runSharedCallJob';
 export const callJobId = (id: string, phase: CallJobPhase, dueAt?: number) => `${id}-${phase}${phase === 'deadline' ? `-${dueAt}` : ''}`;
 

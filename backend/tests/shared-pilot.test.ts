@@ -280,7 +280,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     const warningAction = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
     try {
       await new CallMonitor(f).intervene(c.id, 'secrecy');
-      expect(warningAction).toHaveBeenCalledWith(c.childSid, 'playback_start', expect.objectContaining({ audio_url: announcementAudio(warningText('secrecy'))!.url }));
+      expect(warningAction.mock.calls.some(x => x[1] === 'playback_start')).toBe(false);
+      await cc.handle(event(c.parentSid, 'call.hangup'));
+      await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
+      now += 750; await cc.runJob(callJobId(c.id, 'warning'));
+      expect(action).toHaveBeenCalledWith(c.childSid, 'playback_start', expect.objectContaining({ audio_url: announcementAudio(warningText('secrecy'))!.url }));
       expect(warningAction.mock.calls.some(x => x[1] === 'speak')).toBe(false);
       await cc.handle(event(c.childSid!, 'call.playback.ended', { client_state: provider.state(c.id, 'warning'), status: 'file_not_found' }));
       expect(action).toHaveBeenCalledWith(c.childSid, 'speak', expect.objectContaining({ payload: warningText('secrecy'), voice: ANNOUNCEMENT_BACKUP_VOICE }));
@@ -309,6 +313,43 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
         expect(action.mock.calls.filter(x => x[0] === c.childSid && x[1] === 'hangup')).toHaveLength(1);
       });
     } finally { warningAction.mockRestore(); }
+  });
+  it('queues one warning only after both bound legs confirm separation, even during executor contention', async () => {
+    const c = await offer(); await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    const hangup = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
+    try {
+      await new CallMonitor(f).intervene(c.id, 'secrecy'); action.mockClear();
+      expect(await cc.call(c.id)).toMatchObject({ state: 'accepted', monitorWarningWaitForPark: true });
+      await cc.handle(event(randomUUID(), 'call.hold', { client_state: provider.state(c.id, 'recipient') }));
+      expect((await cc.call(c.id))?.monitorRecipientParkedAt).toBeUndefined();
+      await cc.exclusive(c.id, async () => {
+        await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
+        await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
+      });
+      expect((await db.doc(`callControlJobs/${callJobId(c.id, 'warning')}`).get()).exists).toBe(false);
+      await cc.handle(event(c.parentSid, 'call.hangup'));
+      expect(await cc.call(c.id)).toMatchObject({ monitorCallerEndedAt: now, monitorRecipientParkedAt: now, monitorWarningQueuedAt: now + 750 });
+      const jobId = callJobId(c.id, 'warning');
+      await expect(cc.runJob(jobId)).rejects.toThrow('call_job_not_due');
+      now += 749; await expect(cc.runJob(jobId)).rejects.toThrow('call_job_not_due');
+      expect(action.mock.calls.some(x => x[1] === 'playback_start')).toBe(false);
+      now++; await cc.runJob(jobId); await cc.runJob(jobId);
+      expect(action.mock.calls.filter(x => x[1] === 'playback_start')).toHaveLength(1);
+    } finally { hangup.mockRestore(); }
+  });
+  it('does not resurrect warning playback after the recipient hangs up or its cleanup deadline passes', async () => {
+    for (const expired of [false, true]) {
+      const c = await offer(expired ? 1 : 0); await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+      await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+      const hangup = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
+      try { await new CallMonitor(f).intervene(c.id, 'secrecy'); } finally { hangup.mockRestore(); }
+      await cc.handle(event(c.parentSid, 'call.hangup')); await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
+      if (expired) now += 30_000;
+      else { await cc.handle(event(c.childSid!, 'call.hangup', { client_state: provider.state(c.id, 'accept') })); now += 750; }
+      action.mockClear(); await cc.runJob(callJobId(c.id, 'warning'));
+      expect(action.mock.calls.some(x => ['playback_start', 'speak', 'dial', 'bridge'].includes(x[1]))).toBe(false);
+    }
   });
   it('records interrupted warning playback without claiming completion or acting on another leg', async () => {
     const c = await offer();
@@ -342,7 +383,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     });
     try {
       await new CallMonitor(f).intervene(c.id, 'remote_access');
-      expect(warningAction).toHaveBeenCalledWith(c.childSid, 'speak', expect.objectContaining({ payload: warningText('remote_access'), voice: ANNOUNCEMENT_BACKUP_VOICE }));
+      action.mockImplementation(async (_sid, name) => { if (name === 'playback_start') throw new Error('telnyx_http_422'); return {}; });
+      await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
+      await cc.handle(event(c.parentSid, 'call.hangup'));
+      now += 750; await cc.runJob(callJobId(c.id, 'warning'));
+      expect(action).toHaveBeenCalledWith(c.childSid, 'speak', expect.objectContaining({ payload: warningText('remote_access'), voice: ANNOUNCEMENT_BACKUP_VOICE }));
       await cc.handle(event(c.childSid!, 'call.speak.ended', { client_state: provider.state(c.id, 'warning-backup'), status: 'completed' }));
       expect(action).toHaveBeenCalledWith(c.childSid, 'hangup', expect.anything());
     } finally { warningAction.mockRestore(); }

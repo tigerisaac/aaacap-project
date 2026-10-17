@@ -25,6 +25,7 @@ export type ForwardingCall = Call & { source: 'forwarding'; provider?: 'telnyx';
   monitoringStartedAt?: number; monitorPolicyVersion?: string; monitorIntervenedAt?: number; monitorConcern?: string;
   monitorEvidenceAt?: number; monitorRedirectedAt?: number;
   /** Carrier playback receipts; even completion is not proof of handset audibility. */
+  monitorWarningWaitForPark?: boolean; monitorCallerEndedAt?: number; monitorRecipientParkedAt?: number; monitorWarningQueuedAt?: number;
   monitorWarningStartedAt?: number; monitorWarningCompletedAt?: number; monitorWarningInterruptedAt?: number;
   /** How a screened call got in: a supervised test window, or the person's always-on screening. */
   transport?: 'call-control'; recipientEnc?: string; shieldNumber?: string; routeVersion?: string; routeKey?: string; parentLegId?: string;
