@@ -19,7 +19,7 @@ export function restorationSteps(control: DocumentData | undefined): Restoration
 }
 export function restorationDTO(person: DocumentData, control: DocumentData | undefined) {
   const progress = person.restoration;
-  return { id: progress?.id ?? null, index: progress?.index ?? 0, completed: !!progress?.completedAt,
+  return { id: progress?.id ?? null, settingsChanged: progress?.settingsChanged === true || (progress?.index ?? 0) > 0, index: progress?.index ?? 0, completed: !!progress?.completedAt,
     steps: progress?.steps ?? restorationSteps(control), instructions: control?.restorationGuide ?? [],
     carrier: person.carrier === 'tmobile' ? 'T-Mobile' : person.carrier === 'tello' ? 'Tello' : 'your carrier',
     required: !!person.forwardingConsent, evidence: progress?.completedAt ? 'owner_confirmed' : null };
@@ -34,7 +34,10 @@ export async function startRestoration(s: CloudStore, uid: string, id: string, r
     if (p.restoration && !restart) return restorationDTO(p, control!.data());
     const calls = await tx.get(s.db.collection('callSessions').where('participantId', '==', id));
     if (calls.docs.some(d => d.data().state !== 'ended' && d.data().expiresAt > s.now() && !d.data().inboundEndedAt)) throw new HttpError(409, 'call_still_active');
-    const restoration = { id: randomUUID(), index: 0, startedAt: s.now(), steps: restorationSteps(control!.data()) };
+    const restoration = { id: randomUUID(), index: 0, startedAt: s.now(),
+      previousStage: p.restoration?.previousStage ?? (p.forwardingStage === 'restore' ? 'overview' : p.forwardingStage ?? 'overview'),
+      // Restarting the guide must not erase confirmed changes when deciding whether cancellation needs setup.
+      settingsChanged: p.restoration?.settingsChanged === true || (p.restoration?.index ?? 0) > 0, steps: restorationSteps(control!.data()) };
     // Keep existing service available while the person changes their carrier settings.
     // Starting instructions is neither a carrier reset nor permission to stop calls.
     tx.update(ref, { restoration, forwardingStage: 'restore' });
@@ -77,4 +80,31 @@ export async function confirmRestoration(s: CloudStore, uid: string, id: string,
     // owner, corroborated against Shield's inbound records. It is not carrier telemetry.
     return restorationDTO({ ...p, restoration, ...(last ? { forwardingConsent: undefined } : {}) }, control!.data());
   });
+}
+
+/** Cancels intent only. It never enables routing or reverses a carrier setting. */
+export async function cancelRestoration(s: CloudStore, uid: string, id: string, session: string, settingsUnchanged: boolean) {
+  const f = new ForwardingStore(s), ref = s.personRef(id);
+  return s.db.runTransaction(async tx => {
+    const [doc, control] = await tx.getAll(ref, f.controlRef(id));
+    const p = doc!.data(), c = control!.data();
+    if (!p || p.ownerUid !== uid || p.status === 'offboarded') throw new HttpError(403, 'owner_required');
+    const r = p.restoration;
+    if (!r && p.restorationCancellation?.session === session) return p.restorationCancellation;
+    if (!r || r.id !== session) throw new HttpError(409, 'restoration_changed');
+    if (r.completedAt) throw new HttpError(409, 'restoration_completed');
+    if (settingsUnchanged && (r.index > 0 || r.settingsChanged)) throw new HttpError(409, 'restoration_settings_changed');
+    const needsReview = !settingsUnchanged || setupReviewRequired(c);
+    const receipt = { session, cancelled: true, setupReviewRequired: needsReview,
+      stage: needsReview ? 'overview' : r.previousStage ?? 'overview' };
+    tx.update(ref, { restoration: FieldValue.delete(), restorationCancellation: receipt, forwardingStage: receipt.stage });
+    // Fence callbacks from tests begun before disconnection. Fresh tests must establish readiness.
+    tx.set(f.controlRef(id), { probe: FieldValue.delete(), ...(!settingsUnchanged ? { setupReviewSince: s.now() } : {}) }, { merge: true });
+    return receipt;
+  });
+}
+
+export function setupReviewRequired(control: DocumentData | undefined): boolean {
+  const since = control?.setupReviewSince;
+  return typeof since === 'number' && !(control!.ringTestAt > since && control!.forwardingTestAt > since);
 }

@@ -1,5 +1,14 @@
 # Status
 
+## October 17 — explicit cancellation of disconnection (prepared; deployment approval pending)
+
+Disconnect now distinguishes **Close**, which keeps the saved session, from **Cancel disconnection**, which clears the owner's intent after server acknowledgement. Owners who have confirmed no changes may keep the current service configuration; after confirmed or uncertain changes, cancellation sends them back to Phone setup and Home requires fresh ring/forwarding evidence. Restarts preserve the fact that changes were confirmed. Cancellation never re-enables routing or changes carrier settings. Retries, concurrent confirmations and stale sessions are fenced. iOS UUID casing is normalized for both confirmation and cancellation.
+
+The app resumes saved guide progress on entry, patches acknowledged cancellation fields into its protected snapshot without renewing unrelated configuration age, and refreshes Home immediately. Completed disconnections cannot be cancelled. Lost responses remain unconfirmed until retry or refresh; the app does not claim that a failed response means the server made no change.
+
+The live baseline `shieldapi-00026-hiy` was verified read-only. A package changing exactly restoration and forwarding API modules is prepared under `artifacts/private/cancel-disconnection-release/`; account deletion, privacy, screening, bridge, IAM and routing configuration are outside this release. Deployment requires the owner's approval and has not occurred.
+
+
 ## October 17 — restored title typography and direct phone setup (installed)
 
 The shared native navigation appearance restores the serif large-title font and tracking for Home, Calls, Messages and More. Native destination titles and transitions remain responsible for push/pop and scrolling; inline navigation stays sans. Settings → Phone setup and Get help → Help with my phone now open the existing forwarding guide directly, resuming its saved step. The account pause/resume surface is explicitly named Phone options and keeps its separate route. The sample app does not fetch or change phone setup.

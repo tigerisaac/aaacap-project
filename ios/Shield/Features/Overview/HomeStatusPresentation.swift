@@ -30,7 +30,7 @@ struct HomeStatusPresentation {
             return .init(title: "Confirm your call settings", detail: "Connect to update Shield’s last confirmed setting.", symbol: "arrow.clockwise", retry: true, isSaved: true)
         }
         var result: Self
-        if !status.consented || !status.prepared || !status.phoneVerified {
+        if status.setupReviewRequired == true || !status.consented || !status.prepared || !status.phoneVerified {
             result = .init(title: "Your phone needs setup", detail: "We’ll help you one step at a time.", symbol: "phone.badge.checkmark", needsSetup: true)
         } else if status.alwaysOn == true, status.liveScreening == true {
             result = .init(title: "Call checks are on", detail: "Shield checks calls that reach it. Quiet hours and daily limits may send callers to voicemail.", symbol: "checkmark.shield.fill", enabled: true)

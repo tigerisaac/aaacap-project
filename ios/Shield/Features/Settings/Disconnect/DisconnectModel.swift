@@ -4,9 +4,12 @@ import Observation
 @MainActor @Observable
 final class DisconnectModel {
     var status: RestorationStatus?
+    var cancellation: RestorationStatus.Cancellation?
     var localInstructions: [String] = []
     var working = false
     var error: String?
+    var cancellationFailed = false
+    var cancelling = false
     var fixture: Bool {
         #if DEBUG && targetEnvironment(simulator)
         ProcessInfo.processInfo.arguments.contains("--uitesting-forwarding") || ProcessInfo.processInfo.arguments.contains("--uitesting-disconnect")
@@ -18,6 +21,7 @@ final class DisconnectModel {
         guard !working else { return }
         working = true
         error = nil
+        cancellationFailed = false
         defer { working = false }
         do {
             if fixture || app.isDemo || app.isPreview {
@@ -60,6 +64,7 @@ final class DisconnectModel {
         guard !working, let status else { return }
         working = true
         error = nil
+        cancellationFailed = false
         defer { working = false }
         do {
             if fixture {
@@ -106,6 +111,38 @@ final class DisconnectModel {
             if case APIError.service(_, 404) = error {
                 self.error = "Guided disconnect is temporarily unavailable. You can still read all the phone steps here. Shield’s service has not been turned off."
             } else { self.error = error.localizedDescription }
+        }
+    }
+    func cancel(_ app: AppState, id: UUID, settingsUnchanged: Bool) async {
+        guard !working, let restorationID = status?.id else { return }
+        working = true
+        cancelling = true
+        error = nil
+        cancellationFailed = false
+        defer { working = false; cancelling = false }
+        let generation = app.sessionGeneration
+        do {
+            let receipt: RestorationStatus.Cancellation
+            if fixture {
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--restoration-cancel-fails") {
+                    throw APIError.service(code: "request_failed", status: 503)
+                }
+                receipt = .init(session: restorationID, cancelled: true, setupReviewRequired: !settingsUnchanged, stage: "overview")
+                UserDefaults.standard.removeObject(forKey: "shield-disconnect-fixture")
+                #else
+                return
+                #endif
+            } else {
+                guard !app.isDemo, !app.isPreview else { return }
+                receipt = try await app.api.cancelRestoration(participantID: id, session: restorationID, settingsUnchanged: settingsUnchanged)
+            }
+            guard generation == app.sessionGeneration else { return }
+            cancellation = receipt
+            app.phoneSetupRevision += 1
+        } catch {
+            cancellationFailed = true
+            self.error = "We couldn’t confirm cancellation. Try again when you’re connected, or refresh progress if you continued on another device."
         }
     }
     #if DEBUG

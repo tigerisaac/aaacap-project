@@ -6,6 +6,13 @@ struct RestorationStatus: Codable, Sendable {
         let kind: String
         var code: String?
     }
+    struct Cancellation: Codable, Sendable {
+        let session: UUID
+        let cancelled: Bool
+        let setupReviewRequired: Bool
+        let stage: String
+    }
+    var settingsChanged: Bool? = nil
     var id: UUID?
     var index: Int
     var completed: Bool

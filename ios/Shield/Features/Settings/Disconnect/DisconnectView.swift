@@ -9,6 +9,7 @@ struct DisconnectView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var model = DisconnectModel()
     @State private var help = false
+    @State private var confirmCancellation = false
     @State private var prepared = false
     @State private var phoneBanner = false
     @State private var guide = SetupGuidePlayer()
@@ -34,7 +35,18 @@ struct DisconnectView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    if let status = model.status {
+                    if let cancellation = model.cancellation {
+                        Text("Disconnection cancelled").shieldPageHeading().accessibilityAddTraits(.isHeader)
+                            .id("disconnect-top").accessibilityFocused($headingFocused)
+                        Text(cancellation.setupReviewRequired
+                            ? "Let’s check your phone setup before relying on Shield again. Cancelling does not undo changes to your carrier or iPhone settings."
+                            : "You’re keeping Shield. Your existing call-check settings are unchanged.")
+                        if cancellation.setupReviewRequired {
+                            NavigationLink(value: AppRoute.forwardingSetup) { ShieldActionLabel(title: "Open phone setup") }
+                                .shieldPrimaryButton()
+                        }
+                        Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    } else if let status = model.status {
                         Color.clear.frame(height: 0).id("disconnect-top").accessibilityHidden(true)
                         if started && !finished { FlowProgress(title: "Disconnect Shield", current: status.index + 1, total: status.steps.count) }
                         Text(title).shieldPageHeading().id("disconnect-heading")
@@ -44,7 +56,7 @@ struct DisconnectView: View {
                         else if !started { introduction }
                         else { stepContent(status) }
                         if let error = model.error {
-                            ShieldNotice(title: started ? "This step isn’t saved yet" : "Couldn’t start guided disconnect", detail: error, symbol: "exclamationmark.circle")
+                            ShieldNotice(title: model.cancellationFailed ? "Couldn’t confirm cancellation" : started ? "This step isn’t saved yet" : "Couldn’t start guided disconnect", detail: error, symbol: "exclamationmark.circle")
                                 .id("disconnect-error").accessibilityFocused($errorFocused)
                             Button("Refresh progress") { Task { await model.load(app, id: participantID, refresh: true) } }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
@@ -53,7 +65,8 @@ struct DisconnectView: View {
                         if started && !finished {
                             Button("Something didn’t work", systemImage: "questionmark.circle") { help = true }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            Text("You can close this guide and continue here later. Keep Shield installed until the checks work.")
+                            cancelButton
+                            Text("Close saves your place to continue later. Cancel disconnection lets you keep using Shield.")
                                 .foregroundStyle(ShieldTheme.secondaryText)
                         }
                     } else {
@@ -69,6 +82,7 @@ struct DisconnectView: View {
                 prepared = false; phoneBanner = false; guide.stop()
                 proxy.scrollTo("disconnect-top", anchor: .top); headingFocused = true
             }
+            .onChange(of: model.cancellation?.session) { _, _ in proxy.scrollTo("disconnect-top", anchor: .top); headingFocused = true }
             .onChange(of: model.status?.id) { _, _ in proxy.scrollTo("disconnect-top", anchor: .top); headingFocused = true }
             .onChange(of: model.error) { _, value in
                 if value != nil { proxy.scrollTo("disconnect-error", anchor: .top); errorFocused = true }
@@ -76,14 +90,14 @@ struct DisconnectView: View {
         }
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
-            if model.status != nil && !typeSize.isAccessibilitySize {
+            if model.status != nil && model.cancellation == nil && !typeSize.isAccessibilitySize {
                 action.padding(.horizontal, 24).padding(.vertical, 12).background(ShieldTheme.surface)
             }
         }
         .navigationTitle("Disconnect Shield").navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Close") { dismiss() }.disabled(model.working) } }
         .phoneLauncherBanner(isPresented: $phoneBanner)
-        .task { await model.load(app, id: participantID) }
+        .task { await model.load(app, id: participantID, refresh: true) }
         .onDisappear { guide.stop() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { guide.returnedToShield(); phoneBanner = false }
@@ -105,6 +119,21 @@ struct DisconnectView: View {
                 .background(ShieldTheme.surface).navigationTitle("Live Voicemail")
         }
     }
+    private var cancelButton: some View {
+        Button(model.cancelling ? "Cancelling…" : "Cancel disconnection") { confirmCancellation = true }
+            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+            .accessibilityIdentifier("disconnect-cancel")
+            .confirmationDialog("Keep using Shield?", isPresented: $confirmCancellation, titleVisibility: .visible) {
+                if (model.status?.index ?? 0) == 0 && model.status?.settingsChanged != true {
+                    Button("I haven’t changed settings") { Task { await model.cancel(app, id: participantID, settingsUnchanged: true) } }
+                }
+                Button("Review my phone setup") { Task { await model.cancel(app, id: participantID, settingsUnchanged: false) } }
+                Button("Keep disconnecting", role: .cancel) { }
+            } message: {
+                Text("If you changed any carrier or iPhone settings, or aren’t sure, review your phone setup. Close only saves your place in this guide.")
+            }
+    }
+
     private var introduction: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("We’ll take this one step at a time.").font(.title3)
@@ -185,7 +214,7 @@ struct DisconnectView: View {
             if finished { dismiss(); if !forDeletion { Task { await app.refresh() } } }
             else if current?.kind == "code", started, !prepared { prepareCode() }
             else { Task { await model.advance(app, id: participantID) } }
-        } label: { ShieldActionLabel(title: actionTitle, isWorking: model.working) }
+        } label: { ShieldActionLabel(title: actionTitle, isWorking: model.working && !model.cancelling) }
             .shieldPrimaryButton().disabled(model.working || (app.isDemo && !model.fixture))
             .accessibilityIdentifier("disconnect-continue")
     }

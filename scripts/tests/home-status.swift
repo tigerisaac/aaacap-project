@@ -12,6 +12,9 @@ func testHomeStatusAndCallFilters() throws {
         .make(status: value, checkedAt: value == nil ? nil : now.addingTimeInterval(-age), accountStatus: account,
               checking: false, updateFailed: failed, now: now)
     }
+    var cancelledAfterChanges = status()
+    cancelledAfterChanges.setupReviewRequired = true
+    try require(!show(cancelledAfterChanges).enabled && show(cancelledAfterChanges).needsSetup, "cancelling after phone changes requires setup, never a false enabled state")
     let active = status()
     try require(show(active, age: 76).enabled, "75-second age must not turn known settings into a failure")
     try require(show(active, age: 120, failed: true).enabled, "transport failure must retain confirmed configuration")

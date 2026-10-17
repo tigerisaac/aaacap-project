@@ -15,6 +15,7 @@ struct ForwardingStatus: Decodable, Sendable {
         var choiceRecorded: Bool? = nil
     }
     struct QuietHours: Codable, Equatable, Sendable { var enabled: Bool; var start: Int; var end: Int }
+    var setupReviewRequired: Bool? = nil
     var quietHours: QuietHours? = nil
     var monitoring: Monitoring? = nil
     var probe: Probe? = nil

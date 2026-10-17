@@ -42,6 +42,7 @@ final class AppState {
     var errorMessage: String?
     var showingError = false
     var service: ServiceConfiguration?
+    var phoneSetupRevision = 0
     var selectedTab = 0
     /// These choices affect synthetic messages only; keeping real messages is a proposed feature.
     var demoKeptMessages: Set<UUID> = []
@@ -235,7 +236,7 @@ final class AppState {
             protectionOnboarding = nil
         }
         trustedContactsOnboarding = contacts?.available == true && contacts?.choiceRecorded == false
-            && status.ringTestAt != nil && status.forwardingTestAt != nil && status.stage == "checks" && !status.restorationRequested
+            && status.ringTestAt != nil && status.forwardingTestAt != nil && status.stage == "checks" && !status.restorationRequested && status.setupReviewRequired != true
         protectionParticipantID = protectionOnboarding != nil || trustedContactsOnboarding ? id : nil
     }
 

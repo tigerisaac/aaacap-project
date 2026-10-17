@@ -80,6 +80,18 @@ actor APIClient {
         try phoneSetupCache.remove(account: account)
     }
 
+    func cancelRestoration(participantID: UUID, session: UUID, settingsUnchanged: Bool) async throws -> RestorationStatus.Cancellation {
+        let generation = sessionGeneration
+        let receipt: RestorationStatus.Cancellation = try await send("/api/forwarding/restoration/cancel", method: "POST",
+            body: Self.payload(["session": session.uuidString, "settingsUnchanged": settingsUnchanged]), participantID: participantID)
+        guard generation == sessionGeneration else { throw CancellationError() }
+        guard receipt.cancelled, receipt.session == session else { throw APIError.invalidResponse }
+        if let account = localAccountID {
+            try phoneSetupCache.applyCancellation(receipt, participant: participantID, account: account)
+        }
+        return receipt
+    }
+
     func warmPhoneSetup(participantID: UUID) async {
         guard cacheOwners.contains(participantID) else { return }
         let saved: (value: SetupStatus, savedAt: Date, isFresh: Bool)? = savedPhoneSetup("/api/setup", participantID: participantID)

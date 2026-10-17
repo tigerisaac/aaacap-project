@@ -137,6 +137,68 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await start('ring')).statusCode).toBe(409);
   });
 
+  const beginRestoration = async (restart = false) => (await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers(), payload: { restart } })).json();
+  const cancelRestoration = (session: string, settingsUnchanged = true, uid = 'owner') => app.inject({ method: 'POST', url: '/api/forwarding/restoration/cancel', headers: headers(uid), payload: { session, settingsUnchanged } });
+  const confirmRestoration = (session: string, step: string) => app.inject({ method: 'POST', url: '/api/forwarding/restoration/confirm', headers: headers(), payload: { session, step } });
+  const forwardingState = async () => (await app.inject({ url: '/api/forwarding', headers: headers() })).json();
+
+  it('cancels unchanged restoration intent without changing service and survives lost-response retries', async () => {
+    await s.personRef(PERSON).update({ forwardingStage: 'checks', alwaysOn: true, callMonitoring: { enabled: true } });
+    const before = (await s.personRef(PERSON).get()).data()!;
+    const control = (await f.controlRef(PERSON).get()).data()!;
+    const progress = await beginRestoration();
+    expect((await cancelRestoration(progress.id, true, 'stranger')).statusCode).toBe(403);
+    const result = await cancelRestoration(progress.id.toUpperCase());
+    expect(result.statusCode).toBe(200);
+    expect(result.json()).toMatchObject({ cancelled: true, stage: 'checks', setupReviewRequired: false });
+    const after = (await s.personRef(PERSON).get()).data()!;
+    expect(after.restoration).toBeUndefined();
+    expect(after).toMatchObject(before);
+    expect((await f.controlRef(PERSON).get()).data()).toEqual(control);
+    expect((await cancelRestoration(progress.id)).json()).toEqual(result.json());
+    expect((await forwardingState()).restorationRequested).toBe(false);
+    expect((await confirmRestoration(progress.id, 'carrier')).statusCode).toBe(409);
+    const next = await beginRestoration();
+    expect((await cancelRestoration(progress.id)).statusCode).toBe(409);
+    expect((await s.personRef(PERSON).get()).data()!.restoration.id).toBe(next.id);
+  });
+  it('requires fresh setup evidence after cancellation with changed settings and fences pre-disconnection tests', async () => {
+    await f.controlRef(PERSON).update({ ringTestAt: now - 1000, forwardingTestAt: now - 1000 });
+    await start('ring'); const oldProbe = (await f.controlRef(PERSON).get()).data()!.probe;
+    await new ForwardingProbes(s).outbound(oldProbe.id, sid(8));
+    let progress = await beginRestoration();
+    expect((await confirmRestoration(progress.id.toUpperCase(), 'carrier')).statusCode).toBe(200);
+    expect((await cancelRestoration(progress.id)).statusCode).toBe(409);
+    progress = await beginRestoration(true);
+    expect(progress.settingsChanged).toBe(true);
+    expect((await cancelRestoration(progress.id)).statusCode).toBe(409);
+    expect((await cancelRestoration(progress.id, false)).json()).toMatchObject({ cancelled: true, setupReviewRequired: true, stage: 'overview' });
+    expect(await new ForwardingProbes(s).confirm(oldProbe.id, sid(8), '1')).toBeUndefined();
+    expect((await forwardingState()).setupReviewRequired).toBe(true);
+    await app.inject({ method: 'POST', url: '/api/forwarding/progress', headers: headers(), payload: { stage: 'checks' } });
+    expect((await forwardingState()).setupReviewRequired).toBe(true);
+    now += 1000;
+    await start('ring'); let probe = (await f.controlRef(PERSON).get()).data()!.probe;
+    await new ForwardingProbes(s).outbound(probe.id, sid(9));
+    await new ForwardingProbes(s).confirm(probe.id, sid(9), '1');
+    expect((await forwardingState()).setupReviewRequired).toBe(true);
+    await start('forwarding'); probe = (await f.controlRef(PERSON).get()).data()!.probe;
+    inboundFrom = number;
+    await post(`probe/${probe.id}`, { CallSid: sid(10), From: number, To: PHONE });
+    await post('inbound', { From: number });
+    await post(`probe-confirm/${probe.id}`, { Digits: probe.nonce });
+    expect((await forwardingState()).setupReviewRequired).toBe(false);
+  });
+  it('handles cancellation racing with a confirmation and supports old sessions without a saved stage', async () => {
+    const progress = await beginRestoration();
+    const [cancel, confirm] = await Promise.all([cancelRestoration(progress.id), confirmRestoration(progress.id, 'carrier')]);
+    expect([cancel.statusCode, confirm.statusCode].sort()).toEqual([200, 409]);
+    if (cancel.statusCode === 409) expect((await cancelRestoration(progress.id, false)).statusCode).toBe(200);
+    const old = await beginRestoration();
+    await s.personRef(PERSON).update({ restoration: { id: old.id, index: 0, steps: old.steps, startedAt: now } });
+    expect((await cancelRestoration(old.id)).json().stage).toBe('overview');
+  });
+
   it('saves ordered restoration progress, rejects stale/skipped steps and completes without a helper', async () => {
     await f.controlRef(PERSON).update({ restorationCodes: ['##61#', '##67#', '##62#'] });
     let progress = (await app.inject({ method: 'POST', url: '/api/forwarding/restore', headers: headers() })).json();
@@ -153,6 +215,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
       progress = response.json();
       expect((await confirm(step.id)).json().index).toBe(progress.index);
     }
+    expect((await cancelRestoration(progress.id, false)).statusCode).toBe(409);
     expect(progress.completed).toBe(true);
     expect(progress.evidence).toBe('owner_confirmed');
     expect((await s.personRef(PERSON).get()).data()!.forwardingConsent).toBeUndefined();

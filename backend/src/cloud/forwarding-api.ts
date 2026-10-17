@@ -16,7 +16,7 @@ import { queueAlert } from './alerts.js';
 import { VoicemailCheck } from './voicemail-check.js';
 import { deleteMessageAudio, readMessageAudio } from './message-audio.js';
 import { registerAudioDelivery } from './audio-delivery.js';
-import { startRestoration, confirmRestoration, restorationDTO } from './restoration.js';
+import { startRestoration, confirmRestoration, cancelRestoration, setupReviewRequired, restorationDTO } from './restoration.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
@@ -47,6 +47,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       voiceProvider: 'Telnyx',
       consentVersion: consent, consented: p.forwardingConsent === consent,
       phoneVerified: !!p.phoneVerifiedAt, stage: stages.includes(p.forwardingStage) ? p.forwardingStage : 'overview',
+      setupReviewRequired: setupReviewRequired(control),
       restorationRequested: p.status === 'restoring' || !!p.restoration, lastTestAt: at(control?.lastTestAt),
       activationCodes: active ? activationCodes(p.carrier, p.shieldNumber) : [],
       restorationSteps: control?.restorationGuide ?? [],
@@ -134,8 +135,13 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   });
   app.post('/api/forwarding/restoration/confirm', async request => {
     const ctx = await owner(request);
-    const body = z.object({ session: z.string().uuid(), step: z.string().min(1).max(40) }).strict().parse(request.body);
+    const body = z.object({ session: z.string().uuid().transform(value => value.toLowerCase()), step: z.string().min(1).max(40) }).strict().parse(request.body);
     return confirmRestoration(store, ctx.uid, ctx.participant.id, body.session, body.step);
+  });
+  app.post('/api/forwarding/restoration/cancel', async request => {
+    const ctx = await owner(request);
+    const body = z.object({ session: z.string().uuid().transform(value => value.toLowerCase()), settingsUnchanged: z.boolean() }).strict().parse(request.body);
+    return cancelRestoration(store, ctx.uid, ctx.participant.id, body.session, body.settingsUnchanged);
   });
   // Numbers Shield ended a scam from. Helpers can see the list; only the person can unblock.
   app.get('/api/blocked-numbers', async request => {

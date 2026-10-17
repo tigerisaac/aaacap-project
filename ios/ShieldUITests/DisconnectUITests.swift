@@ -2,6 +2,67 @@ import XCTest
 
 @MainActor
 final class DisconnectUITests: XCTestCase {
+    func testCancellationClearsSavedIntentAndCloseKeepsIt() {
+        var app = launch(["--restoration-manual", "--forwarding-navigation-test"])
+        next(app).tap()
+        app.buttons["Close"].tap()
+        XCTAssertTrue(app.buttons["forwarding-preview-home"].appears(timeout: 5))
+        app.terminate()
+        app = launch(["--restoration-resume", "--restoration-manual"])
+        XCTAssertEqual(next(app).label, "My carrier forwarding is restored")
+        reveal(app.buttons["disconnect-cancel"], app)
+        app.buttons["disconnect-cancel"].tap()
+        XCTAssertTrue(app.buttons["I haven’t changed settings"].appears(timeout: 5))
+        capture(app, "Cancel unchanged disconnection")
+        app.buttons["I haven’t changed settings"].tap()
+        XCTAssertTrue(app.staticTexts["Disconnection cancelled"].appears(timeout: 5))
+        XCTAssertFalse(next(app).exists)
+        XCTAssertFalse(app.buttons["Open phone setup"].exists)
+        capture(app, "Keeping Shield")
+        app.terminate()
+        app = launch(["--restoration-resume"])
+        XCTAssertEqual(next(app).label, "Start disconnecting")
+    }
+    func testCancellationAfterChangesOffersSetupAtLargestText() {
+        let app = launch(["--restoration-start-checks", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        reveal(app.buttons["disconnect-cancel"], app)
+        app.buttons["disconnect-cancel"].tap()
+        XCTAssertTrue(app.buttons["Review my phone setup"].appears(timeout: 5))
+        XCTAssertFalse(app.buttons["I haven’t changed settings"].exists)
+        app.buttons["Review my phone setup"].tap()
+        XCTAssertTrue(app.staticTexts["Disconnection cancelled"].appears(timeout: 5))
+        capture(app, "Cancellation after changes top")
+        reveal(app.buttons["Open phone setup"], app)
+        XCTAssertTrue(app.buttons["Open phone setup"].isHittable)
+        capture(app, "Cancellation after changes needs setup")
+    }
+    func testCancelledGuideOpensPhoneSetupAboveIt() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-disconnect", "--restoration-start-checks", "--uitesting-forwarding-route"]
+        app.launch()
+        app.tabBars.buttons["More"].tap()
+        app.buttons["Settings"].tap()
+        app.buttons["Disconnect Shield"].tap()
+        XCTAssertTrue(next(app).appears(timeout: 5))
+        reveal(app.buttons["disconnect-cancel"], app)
+        app.buttons["disconnect-cancel"].tap()
+        app.buttons["Review my phone setup"].tap()
+        XCTAssertTrue(app.buttons["Open phone setup"].appears(timeout: 5))
+        app.buttons["Open phone setup"].tap()
+        XCTAssertTrue(app.staticTexts["Save Shield"].appears(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Phone setup"].exists)
+        capture(app, "Cancelled disconnection opens setup")
+    }
+    func testFailedCancellationKeepsProgress() {
+        let app = launch(["--restoration-start-checks", "--restoration-cancel-fails"])
+        reveal(app.buttons["disconnect-cancel"], app)
+        app.buttons["disconnect-cancel"].tap()
+        app.buttons["Review my phone setup"].tap()
+        XCTAssertTrue(app.staticTexts["Couldn’t confirm cancellation"].appears(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Disconnection cancelled"].exists)
+        XCTAssertEqual(next(app).label, "The call worked")
+        capture(app, "Cancellation failure preserves progress")
+    }
     func testLocalGuideRemainsReadableWhenGuidedServiceIsUnavailable() {
         let app = launch(["--restoration-local-guide"])
         XCTAssertFalse(app.staticTexts["Steps couldn’t load"].exists)

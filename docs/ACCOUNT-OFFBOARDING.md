@@ -18,6 +18,12 @@ The guide uses onboarding's typography, generous buttons, demonstrations, Phone 
 
 The account deletion screen offers to restore phone numbers Shield previously removed from Contacts before deleting this device's saved restoration copies. The person can decline restoration while still deleting those copies. Contacts permission, a failed restore or a damaged backup does not force them to keep their account: they can choose not to restore and discard the saved copy. Existing contact cards and the saved Shield contact are not silently removed.
 
+## Cancelling disconnection
+
+**Close** retains the saved session. **Cancel disconnection** explicitly clears the owner's saved intent through a session-bound server transaction. If no step has been confirmed, the owner may confirm that they changed no phone settings and keep the existing service configuration. Otherwise, or when uncertain, cancellation opens a path back to Phone setup; Home requires fresh ring and forwarding checks before reporting readiness. Restarting the disconnect guide does not erase the fact that phone changes were confirmed.
+
+Cancellation never enables routing, renews consent, changes carrier settings or undoes a completed disconnection. Old probe callbacks are fenced, retries are idempotent, and a stale cancellation cannot clear a newer session. The iPhone applies the acknowledged fields to its saved snapshot without renewing the age of unrelated configuration. Session identifiers from iOS are normalized before comparison for both confirmation and cancellation. Deployment status is recorded in [Status](STATUS.md).
+
 ## What completion means
 
 Starting the guide preserves the current service configuration. It does not pause callbacks or claim carrier forwarding stopped. Active calls block starting/restarting restoration. New setup probes and setup mutations are unavailable during restoration, and old probe callbacks cannot qualify the line.

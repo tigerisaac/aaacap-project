@@ -10,6 +10,7 @@ struct OverviewView: View {
     @State private var checkingStatus = false
     @State private var statusParticipantID: UUID?
     @State private var statusSessionGeneration: Int?
+    @State private var statusRevision = 0
     @State private var statusUpdateFailed = false
     @State private var loadingVisible = false
 
@@ -86,7 +87,7 @@ struct OverviewView: View {
             .shieldLargeTitle("Home")
             .toolbar { if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } } }
             .refreshable { await refresh() }
-            .task(id: model.selectedPersonID) {
+            .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.phoneSetupRevision)") {
                 await loadStatus()
                 while !Task.isCancelled {
                     do { try await Task.sleep(for: .seconds(60)) } catch { return }
@@ -186,7 +187,8 @@ struct OverviewView: View {
             forwarding = nil; checkedAt = nil; statusParticipantID = nil; return
         }
         let generation = model.sessionGeneration
-        if statusParticipantID != id || statusSessionGeneration != generation {
+        if statusParticipantID != id || statusSessionGeneration != generation || statusRevision != model.phoneSetupRevision {
+            statusRevision = model.phoneSetupRevision
             forwarding = nil; checkedAt = nil; statusUpdateFailed = false
             statusParticipantID = id; statusSessionGeneration = generation
         }

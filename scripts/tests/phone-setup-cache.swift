@@ -14,6 +14,15 @@ func testPhoneSetupCache(root: URL) throws {
     try cache.invalidate(account: "one")
     let stale = cache.read("/api/setup", participant: participant, account: "one")
     try require(stale?.data == data && stale?.invalidated == true && stale?.savedAt == now, "refresh preserves readable instructions but expires status")
+    let forwarding = Data(#"{"restorationRequested":true,"stage":"restore","alwaysOn":true}"#.utf8)
+    try cache.save(forwarding, path: "/api/forwarding", participant: participant, account: "one", now: now)
+    try cache.applyCancellation(.init(session: UUID(), cancelled: true, setupReviewRequired: true, stage: "overview"), participant: participant, account: "one")
+    let cancelled = cache.read("/api/forwarding", participant: participant, account: "one")!
+    let object = try JSONSerialization.jsonObject(with: cancelled.data) as! [String: Any]
+    try require(object["restorationRequested"] as? Bool == false && object["setupReviewRequired"] as? Bool == true, "acknowledged cancellation replaces saved intent")
+    try require(object["alwaysOn"] as? Bool == true && cancelled.savedAt == now && cancelled.invalidated, "cancellation preserves other configuration and original age without claiming freshness")
+    try require(relaunched.read("/api/forwarding", participant: participant, account: "one")?.data == cancelled.data, "cancellation survives relaunch")
+    try require(cache.read("/api/forwarding", participant: participant, account: "two") == nil, "cancellation stays account-scoped")
     try cache.retain(participants: [other], account: "one")
     try require(cache.read("/api/setup", participant: participant, account: "one") == nil, "removed owner snapshots must be removed")
     try cache.save(data, path: "/api/setup", participant: participant, account: "one")

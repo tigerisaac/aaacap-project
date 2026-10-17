@@ -33,6 +33,18 @@ struct PhoneSetupCache {
         }
         try write(values, account: account)
     }
+    /// Apply only acknowledged fields, retaining the original age of all other configuration.
+    func applyCancellation(_ receipt: RestorationStatus.Cancellation, participant: UUID, account: String) throws {
+        var values = entries(account)
+        let entryKey = key("/api/forwarding", participant)
+        guard let entry = values[entryKey],
+              var object = try JSONSerialization.jsonObject(with: entry.data) as? [String: Any] else { return }
+        object["restorationRequested"] = false
+        object["setupReviewRequired"] = receipt.setupReviewRequired
+        object["stage"] = receipt.stage
+        values[entryKey] = Entry(data: try JSONSerialization.data(withJSONObject: object), savedAt: entry.savedAt, invalidated: true)
+        try write(values, account: account)
+    }
     func invalidate(account: String) throws {
         var values = entries(account)
         for key in values.keys { values[key]?.invalidated = true }
