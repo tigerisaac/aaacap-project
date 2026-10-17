@@ -22,6 +22,27 @@ npm run test:firebase
 
 `npm run check` runs the typecheck, the unit tests and the build. `npm run test:firebase` runs the Firestore emulator integration tests for the API, forwarding and monitoring. Neither proves carrier audio or screening accuracy. For those, see [Screening](SCREENING.md).
 
+## Deployment archive retention — October 17, 2026
+
+The owner authorized cleanup and shorter retention for the two deployment-only Cloud Storage buckets. These archives contain backend source packages, not call recordings. Message audio remains in Firestore under the separate [audio delivery contract](AUDIO-DELIVERY.md).
+
+| Bucket | Applied lifecycle rules |
+| --- | --- |
+| `gcf-v2-sources-562628621854-us-central1` | Preserve current function-source ZIPs. Delete noncurrent versions after one day or when two newer versions exist. Bridge archives under `shield-live/` become eligible for deletion after seven days; versioning first makes a deleted live archive noncurrent, then the one-day noncurrent rule removes it. |
+| `gcf-v2-uploads-562628621854.us-central1.cloudfunctions.appspot.com` | Delete upload archives after one day. |
+
+Soft delete is disabled on both buckets. Source-bucket versioning remains enabled. Current function sources have no age-based deletion rule. Running services use built container images in Artifact Registry; this cleanup does not change image retention, revisions, traffic, IAM, secrets, or service settings. Bridge source archives are temporary build inputs, so their eventual expiry does not remove running or rollback images.
+
+Lifecycle execution is asynchronous and configuration changes can take up to 24 hours to apply. Existing soft-deleted objects retain their original seven-day recovery period even after soft delete is disabled; that backlog cannot be purged early. See Google's [lifecycle behavior](https://docs.cloud.google.com/storage/docs/lifecycle) and [soft-delete disablement](https://docs.cloud.google.com/storage/docs/disable-soft-delete).
+
+Before deleting exact object generations, verify that every function is ACTIVE, Cloud Run services are reconciled, no regional/global Cloud Build is pending or running, and the source references have not changed. Preserve every current function source generation and identify the current bridge archive by matching its deployed image digest to the successful build. Wait at least 30 seconds after disabling soft delete before deleting objects. Use bucket metageneration and object generation preconditions; do not use an unqualified recursive bucket deletion.
+
+At **2026-10-17 14:18:22 UTC / 09:18:22 Central**, verification confirmed 52 obsolete objects permanently deleted (258,375,035 bytes). All 12 deployed function-source generations and the successful build archive matching bridge `shield-live-00017-qrw` remain: 13 objects, 110,985,914 bytes; the upload bucket is empty. Functions, service revisions, images and traffic matched the pre-cleanup snapshot, and bridge `/ready` and API `/public/ready` returned HTTP 200. This is infrastructure verification, not a real-call test.
+
+The pre-change inventory contained 459,798,652 bytes already soft-deleted, with the final expiry at **October 24, 00:14 Central**. After soft delete is disabled, the API rejects soft-deleted-object listing with HTTP 400; those backlog totals/deadlines come from the saved pre-change inventory. They are not reported as space already reclaimed.
+
+Private before/after inventories, the explicit deletion plan, policy readbacks and per-generation deletion receipts are under `artifacts/private/deployment-storage-cleanup/`. No source archive, recording, transcript or secret was opened for this maintenance.
+
 ## Deploy Firebase Functions
 
 The functions package is assembled from compiled code into `artifacts/firebase-functions/` (codebase `shield`).
