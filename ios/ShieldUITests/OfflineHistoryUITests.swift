@@ -2,6 +2,45 @@ import XCTest
 
 @MainActor
 final class OfflineHistoryUITests: XCTestCase {
+    func testColdLaunchRestoresHomeBeforeShowingAccountScreens() {
+        let app = XCUIApplication()
+        let launch = ["--uitesting-offline-history", "--uitesting-cold-launch", "--uitesting-slow-session-restore",
+                      "--uitesting-protection-check", "--protection-check-good"]
+        for (index, extra) in [["--uitesting-light", "--seed-offline-history"],
+                               ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]].enumerated() {
+            app.launchArguments = launch + extra
+            app.launch()
+            let opening = app.descendants(matching: .any)["session-restoring"].firstMatch
+            XCTAssertTrue(opening.appears(timeout: 3))
+            for _ in 0..<3 {
+                XCTAssertFalse(app.textFields["sign-in-phone"].exists)
+                XCTAssertFalse(app.staticTexts["Welcome to Shield"].exists)
+                XCTAssertFalse(app.staticTexts["Your account couldn’t load"].exists)
+                XCTAssertFalse(app.staticTexts["Connect to check your setup"].exists)
+                Thread.sleep(forTimeInterval: 0.3)
+            }
+            let openingImage = XCTAttachment(screenshot: app.screenshot())
+            openingImage.name = "Cold launch restoring \(index)"
+            openingImage.lifetime = .keepAlways
+            add(openingImage)
+
+            let title = app.staticTexts["today-status-title"]
+            XCTAssertTrue(title.appears(timeout: 10))
+            XCTAssertEqual(title.label, "Call checks are on")
+            XCTAssertFalse(opening.exists)
+            XCTAssertEqual(app.buttons["home-stopped-calls"].value as? String, "1 in total")
+            // The delayed service has not returned; Home came from the protected local data.
+            XCTAssertFalse(app.staticTexts["These calls may be out of date"].exists)
+            XCTAssertFalse(app.staticTexts["Getting your phone settings…"].exists)
+            XCTAssertFalse(app.staticTexts["Connect to check your setup"].exists)
+            let homeImage = XCTAttachment(screenshot: app.screenshot())
+            homeImage.name = "Cold launch restored Home \(index)"
+            homeImage.lifetime = .keepAlways
+            add(homeImage)
+            app.terminate()
+        }
+    }
+
     func testOwnerHistoryReopensAndFiltersWithoutService() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-offline-history", "--seed-offline-history"]

@@ -17,6 +17,8 @@ final class AppState {
     var audioSyncTask: Task<Void, Never>?
     let configuration: BackendConfiguration
     var signedIn = false
+    var isRestoringSession = true
+    var restoredPhoneSetup: (status: ForwardingStatus, checkedAt: Date)?
     var isDeletingAccount = false
     var deletionReceipt: String?
     var deletionSubmitted = false
@@ -102,16 +104,29 @@ final class AppState {
     }
 
     func restoreSession() async {
-        guard !signedIn, deletionReceipt == nil else { return }
+        guard !signedIn, deletionReceipt == nil else { isRestoringSession = false; return }
+        let generation = sessionGeneration
+        defer { if generation == sessionGeneration { isRestoringSession = false } }
         #if DEBUG && targetEnvironment(simulator)
         await seedOfflineHistoryFixture()
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-slow-session-restore") {
+            do { try await Task.sleep(for: .seconds(2)) } catch { return }
+        }
         #endif
-        let generation = sessionGeneration
         if await api.hasSession {
             guard generation == sessionGeneration, !signedIn else { return }
             signedIn = true
+            #if DEBUG && targetEnvironment(simulator)
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-slow-session-restore") {
+                do { try await Task.sleep(for: .seconds(4)) } catch { return }
+            }
+            #endif
             await loadOfflineHistory()
             await loadLocalMessages()
+            await restoreHomeStatus()
+            guard generation == sessionGeneration, signedIn else { return }
+            // A returning owner can use the complete local Home immediately, before networking.
+            if overview != nil { isRestoringSession = false }
             await refresh(force: false)
         }
     }
@@ -121,6 +136,8 @@ final class AppState {
     }
 
     private func startPreview(testAccount: Bool) {
+        isRestoringSession = false
+        restoredPhoneSetup = nil
         loadedCallFilters.removeAll()
         isTestAccount = testAccount
         protectionOnboarding = nil
@@ -141,10 +158,17 @@ final class AppState {
         trustedContactsOnboarding = false
         protectionParticipantID = nil
         sessionGeneration += 1
+        let generation = sessionGeneration
+        isRestoringSession = true
+        restoredPhoneSetup = nil
+        defer { if generation == sessionGeneration { isRestoringSession = false } }
         isPreview = false
         signedIn = true
         await loadOfflineHistory()
         await loadLocalMessages()
+        await restoreHomeStatus()
+        guard generation == sessionGeneration, signedIn else { return }
+        if overview != nil { isRestoringSession = false }
         await refresh()
     }
 
@@ -200,6 +224,11 @@ final class AppState {
             await reconcileOfflineOwners()
             // Render calls before optional setup, contacts and notification checks.
             await loadContext()
+            if isRestoringSession {
+                await restoreHomeStatus()
+                guard generation == sessionGeneration, signedIn else { return }
+                isRestoringSession = false
+            }
             startAudioSync()
             let configuration: ServiceConfiguration = try await api.send("/public/config", authenticated: false)
             guard generation == sessionGeneration, signedIn, !isPreview else { return }
@@ -367,6 +396,8 @@ final class AppState {
     #endif
 
     func signOut() async {
+        isRestoringSession = false
+        restoredPhoneSetup = nil
         isTestAccount = false
         sessionGeneration += 1
         demoKeptMessages = []
@@ -400,6 +431,8 @@ final class AppState {
     }
 
     func invalidateAccountLoads() {
+        isRestoringSession = false
+        restoredPhoneSetup = nil
         sessionGeneration += 1
         loadedCallFilters.removeAll()
         audioSyncTask?.cancel()

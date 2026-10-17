@@ -22,6 +22,8 @@ The history is account-scoped, atomically written, protected with iOS Data Prote
 
 Home keeps its last confirmed configuration and saved counts visible during refresh or a failed update, without inserting a timestamp line. It retains confirmation times internally and asks for reconfirmation after a day. It does not treat network failure or a 75-second-old response as evidence that checking stopped. Cached configuration is never proof of current cloud health or carrier forwarding. Calls and Home do not insert storage-timestamp banners during navigation. Initial sign-in, new calls/messages, shared access, account/settings changes and server-side message deletion require a connection. Live screening needs the cloud services and carrier connection, but the iPhone app does not need to remain open or maintain a continuous server connection.
 
+Cold launch restores the session, owner history, local recordings and saved phone-status snapshot behind the existing launch mark. Home receives the saved status on its first render, rather than first showing a connection prompt while its own task reads the cache. A returning owner can use local Home before a background refresh completes. Without saved Home data, the opening state lasts through the initial account/context request, then shows its actual result. Foreground refresh does not race session restoration; sign-out and account invalidation clear the restored status. Confirmation age, participant matching, account isolation and fresh authorization for shared history are unchanged.
+
 ## Evidence
 
 - Swift storage tests cover restart, account isolation, backup exclusion, 30-day expiry, stale-account writes, deletion and corrupt files, alongside durable audio delivery/failure tests.

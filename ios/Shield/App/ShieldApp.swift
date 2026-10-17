@@ -28,7 +28,7 @@ struct ShieldApp: App {
                     await model.restoreSession()
                 }
                 .onChange(of: scenePhase) { _, phase in
-                    if phase == .active, model.signedIn {
+                    if phase == .active, model.signedIn, !model.isRestoringSession {
                         Task { await model.refresh(force: false) }
                     }
                 }

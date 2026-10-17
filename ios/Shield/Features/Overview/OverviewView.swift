@@ -8,6 +8,7 @@ struct OverviewView: View {
     @State private var forwarding: ForwardingStatus?
     @State private var checkedAt: Date?
     @State private var checkingStatus = false
+    @State private var hasLoadedStatus = false
     @State private var statusParticipantID: UUID?
     @State private var statusSessionGeneration: Int?
     @State private var statusRevision = 0
@@ -169,8 +170,11 @@ struct OverviewView: View {
     private func summary(now: Date) -> HomeStatusPresentation {
         if model.isDemo && !isStatusFixture { return .init(title: model.isOwner ? "Sample phone" : "\(model.person?.name ?? "Your person")’s sample calls", detail: "Try a message or call below.", symbol: "phone.badge.waveform") }
         if !model.isOwner { return .init(title: "\(model.person?.name ?? "Your person")’s calls", detail: model.canListen ? "They’ve shared calls and voicemail with you." : "They’ve shared calls with you.", symbol: "person.2") }
-        return .make(status: forwarding, checkedAt: checkedAt, accountStatus: model.overview?.status,
-                     checking: checkingStatus, updateFailed: statusUpdateFailed, now: now)
+        let restored = !hasLoadedStatus && model.restoredPhoneSetup?.status.participantId == model.selectedPersonID
+            ? model.restoredPhoneSetup : nil
+        return .make(status: forwarding ?? restored?.status, checkedAt: checkedAt ?? restored?.checkedAt,
+                     accountStatus: model.overview?.status, checking: checkingStatus || !hasLoadedStatus,
+                     updateFailed: statusUpdateFailed, now: now)
     }
 
     private var isStatusFixture: Bool {
@@ -194,6 +198,7 @@ struct OverviewView: View {
         if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
     }
     private func loadStatus(force: Bool = false) async {
+        defer { hasLoadedStatus = true }
         #if DEBUG
         if isStatusFixture {
             let args = ProcessInfo.processInfo.arguments

@@ -4,6 +4,7 @@ import UIKit
 struct RootView: View {
     @Environment(AppState.self) private var model
     @State private var previewSetupPresented = true
+    @State private var startupProgressVisible = false
 
     private var contactDemoAction: String? {
         #if DEBUG
@@ -30,8 +31,25 @@ struct RootView: View {
     var body: some View {
         @Bindable var model = model
         Group {
-            if model.deletionReceipt != nil { DeletionProgressView() } else { mainContent }
+            if model.deletionReceipt != nil {
+                DeletionProgressView()
+            } else if model.isRestoringSession && !model.isPreview {
+                ZStack {
+                    ShieldTheme.surface.ignoresSafeArea()
+                    Image("LaunchMark").resizable().scaledToFit()
+                        .frame(width: 72, height: 72).accessibilityHidden(true)
+                    if startupProgressVisible { ProgressView().offset(y: 68) }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Opening Shield")
+                .accessibilityIdentifier("session-restoring")
+            } else {
+                mainContent
+            }
         }
+        .deferredLoading(model.isRestoringSession && !model.isPreview, visible: $startupProgressVisible)
         .disabled(model.isDeletingAccount)
         .preferredColorScheme(previewColorScheme)
         .toggleStyle(ShieldSwitchStyle())

@@ -12,6 +12,15 @@ extension AppState {
             counts: .init(total: 1, held: 1, connected: 0, messages: 0, stoppedTotal: 1), recent: [call])
         await historyStore.activate(account)
         try? await historyStore.save([OfflineHistory(person: person, overview: summary, calls: calls, updatedAt: .now)], account: account)
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-cold-launch") {
+            let status = try? APIClient.payload([
+                "participantId": person.id.uuidString, "carrier": "Synthetic", "phone": "Synthetic", "shieldNumber": "Synthetic",
+                "liveScreening": true, "alwaysOn": true, "prepared": true, "active": true, "remainingCalls": 0,
+                "consentVersion": "fixture", "consented": true, "phoneVerified": true, "stage": "checks",
+                "restorationRequested": false, "activationCodes": [], "restorationSteps": [], "readiness": "Synthetic", "latestEvents": []
+            ])
+            if let status { try? PhoneSetupCache().save(status, path: "/api/forwarding", participant: person.id, account: account) }
+        }
     }
 }
 

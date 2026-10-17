@@ -1,6 +1,17 @@
 import Foundation
 
 extension AppState {
+    /// Restore the status with the rest of the owner's local Home, before its first render.
+    func restoreHomeStatus() async {
+        let generation = sessionGeneration
+        guard signedIn, !isPreview, isOwner, let id = selectedPersonID else { return }
+        let saved: (value: ForwardingStatus, savedAt: Date, isFresh: Bool)? = await api.savedPhoneSetup("/api/forwarding", participantID: id)
+        guard signedIn, generation == sessionGeneration, selectedPersonID == id else { return }
+        if let saved, saved.value.participantId == id {
+            restoredPhoneSetup = (saved.value, saved.savedAt)
+        }
+    }
+
     func loadOfflineHistory() async {
         let generation = sessionGeneration
         guard signedIn, !isPreview, let account = await api.localAccountID, signedIn, generation == sessionGeneration else { return }

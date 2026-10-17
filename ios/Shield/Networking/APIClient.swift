@@ -174,6 +174,10 @@ actor APIClient {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-cold-launch"), path == "/api/people" {
+            // Keep the service pending so a real cached-owner launch must become usable first.
+            try await Task.sleep(for: .seconds(6))
+        }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-call-filter-parity"),
            let filter = CallFilter.allCases.first(where: { path == "/api/calls?filter=\($0.rawValue)" }) {
             if filter == .voicemail { try await Task.sleep(for: .seconds(3)) }
