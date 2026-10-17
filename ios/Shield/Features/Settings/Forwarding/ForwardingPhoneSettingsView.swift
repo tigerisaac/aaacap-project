@@ -22,12 +22,12 @@ struct ForwardingPhoneSettingsView: View {
                         .accessibilityIdentifier("phone-settings-navigation")
                     SetupGuideView(guide: model.settingsReturned && model.step == .settings ? .silence : .shortcutVoicemail,
                                    player: model.shortcutGuidePlayer, showingResult: model.settingsReturned)
-                }
-                ShieldDisclosure("Need help?") {
                     if model.settingsReturned {
                         helpAction("Open Phone settings again") { Task { await model.openPhoneSettings() } }
-                                .accessibilityIdentifier("phone-settings-reopen")
+                            .accessibilityIdentifier("phone-settings-reopen")
                     }
+                }
+                ShieldDisclosure("Need help?") {
                     Text("If the switch is already gray, leave it off. To return, tap the floating guide, then its Return to App button.")
                     helpAction("Add the helper again") { Task { await model.installPhoneHelper() } }
                     helpAction("Open the saved helper file") { importRequest = UUID() }

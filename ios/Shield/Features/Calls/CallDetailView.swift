@@ -79,9 +79,6 @@ struct CallDetailView: View {
                     }.padding(.vertical, 8)
                 }
             }
-            if inlineMessageActions, hasMessageAction, !playbackActionsInProgress {
-                messageActions().listRowInsets(EdgeInsets()).listRowBackground(ShieldTheme.surface)
-            }
             if let message = call.voicemail, model.canListen, !messageRemoved {
                 if let summary = message.summary {
                     if model.isDemo { VoicemailPreviewCard(call: call) }
@@ -93,7 +90,9 @@ struct CallDetailView: View {
                     } }
                 }
                 if message.summary == nil, message.status == "ready" {
-                    ShieldGroup { Text("A summary isn’t available for this message. You can still listen.")
+                    ShieldGroup { Text(audioUnavailableReason == nil
+                                       ? "A summary isn’t available for this message. You can still listen."
+                                       : "A summary isn’t available for this message.")
                         .foregroundStyle(ShieldTheme.secondaryText) }
                 }
                 if message.isNotice {
@@ -104,18 +103,18 @@ struct CallDetailView: View {
                     }
                 }
             }
-            if model.isDemo, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
+            if inlineMessageActions, hasMessageAction, !playbackActionsInProgress {
+                messageActions().listRowInsets(EdgeInsets()).listRowBackground(ShieldTheme.surface)
+            }
+            if model.isDemo, !usesAudioFixture, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
                 VoicemailPreviewCard(call: call)
             } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen || usesAudioFixture {
                 ShieldGroup {
                     if voicemail.status == "ready", model.canListen {
                         LabeledContent("Length", value: voicemail.durationLabel)
-                        if !model.isDemo {
-                            Text(model.localMessages.contains { $0.call.id == call.id } ? "Saved on this iPhone"
-                                : voicemail.audioDeliveredAt != nil ? "Saved on another phone. There is no cloud copy."
-                                : voicemail.audioExpiredAt != nil || (voicemail.audioExpiresAt.map { $0 <= .now } ?? false) ? "The audio expired before it reached this iPhone."
-                                : "Audio is available for delivery for up to 24 hours after the call.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
+                        if let audioUnavailableReason {
+                            ShieldNotice(title: "Recording unavailable", detail: audioUnavailableReason, symbol: "waveform.slash")
+                                .accessibilityIdentifier("message-audio-unavailable")
                         }
                         if player.hasAudio {
                             MessagePlaybackProgress(player: player) {
@@ -146,18 +145,19 @@ struct CallDetailView: View {
                             .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .disabled(updatingPlayedStatus)
                         }
-                        ShieldDisclosure("Can’t hear the message?") {
-                            Text("Turn up the volume with the buttons on the side of your iPhone.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
-                        }
-                        if model.isOwner {
-                            Button(deleting ? "Deleting…" : "Delete message", role: .destructive) { confirmDelete = true }
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                .disabled(deleting || model.isDemo)
-                                .alert("Delete this message?", isPresented: $confirmDelete) {
-                                    Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
-                                    Button("Keep message", role: .cancel) {}
-                                } message: { Text("You won’t be able to listen to it again.") }
+                        if audioUnavailableReason == nil {
+                            ShieldDisclosure("Can’t hear the message?") {
+                                Text("Turn up the volume with the buttons on the side of your iPhone.")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                            if !model.isDemo {
+                                ShieldDisclosure("About this recording") {
+                                    Text(model.localMessages.contains { $0.call.id == call.id }
+                                         ? "Saved on this iPhone. You can listen without an internet connection."
+                                         : "Audio is available for delivery for up to 24 hours after the call. Listening saves it on this iPhone.")
+                                        .foregroundStyle(ShieldTheme.secondaryText)
+                                }
+                            }
                         }
                     } else if !model.canListen {
                         Label("Message is private", systemImage: "lock")
@@ -181,6 +181,17 @@ struct CallDetailView: View {
                             ActionRow(title: "Find a trusted number", symbol: "phone")
                         }
                     }
+                }
+            }
+            if let voicemail = call.voicemail, voicemail.status == "ready", model.canListen, model.isOwner, !model.isDemo || usesAudioFixture {
+                ShieldGroup {
+                    Button(deleting ? "Deleting…" : "Delete message", role: .destructive) { confirmDelete = true }
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        .disabled(deleting || model.isDemo)
+                        .alert("Delete this message?", isPresented: $confirmDelete) {
+                            Button("Delete message", role: .destructive) { Task { await delete(voicemail) } }
+                            Button("Keep message", role: .cancel) {}
+                        } message: { Text("You won’t be able to listen to it again.") }
                 }
             }
             ShieldGroup {
@@ -241,12 +252,27 @@ struct CallDetailView: View {
         }
     }
 
+    private var audioUnavailableReason: String? {
+        guard let message = call.voicemail, message.status == "ready",
+              !player.hasAudio, !model.localMessages.contains(where: { $0.call.id == call.id }) else { return nil }
+        guard !model.isDemo || usesAudioFixture else { return nil }
+        if message.audioDeliveredAt != nil {
+            let remaining = message.summary == nil ? "Call details are still available." : "The summary is still here."
+            return "The recording isn’t on this iPhone, and Shield no longer has a copy. \(remaining)"
+        }
+        if message.audioExpiredAt != nil || (message.audioExpiresAt.map { $0 <= .now } ?? false) {
+            return message.summary == nil ? "The audio expired before it reached this iPhone. Call details are still available below."
+                : "The audio expired before it reached this iPhone. You can still read the summary."
+        }
+        return nil
+    }
+
     private var inlineMessageActions: Bool { typeSize.isAccessibilitySize || voiceOverEnabled }
 
     private var hasMessageAction: Bool {
         guard let voicemail = call.voicemail, model.canListen else { return false }
         if messageRemoved { return voicemail.isRestorable }
-        return (model.isDemo && !usesAudioFixture) || voicemail.status == "ready"
+        return ((model.isDemo && !usesAudioFixture) || voicemail.status == "ready") && audioUnavailableReason == nil
     }
 
     private func messageActions(on background: Color = ShieldTheme.surface) -> some View {
@@ -269,7 +295,7 @@ struct CallDetailView: View {
                         ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
                     }
                     .shieldPrimaryButton().padding(16).background(background)
-                } else if voicemail.status == "ready" {
+                } else if voicemail.status == "ready", audioUnavailableReason == nil {
                     Button { Task { await togglePlayback(voicemail) } } label: {
                         ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Pause message" : player.paused ? "Resume message" : "Listen to message", isWorking: player.loading)
                     }

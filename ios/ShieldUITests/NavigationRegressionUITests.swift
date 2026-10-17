@@ -68,23 +68,17 @@ final class NavigationRegressionUITests: XCTestCase {
         }
     }
 
-    func testTextCheckPushesAboveAutomaticChecksAndTitlesFollowTheStack() {
+    func testTextCheckOpensDirectlyFromSettingsAndTitlesFollowTheStack() {
         let app = launch()
         app.tabBars.buttons["More"].tap()
-        XCTAssertTrue(app.navigationBars["More"].appears(timeout: 5))
         app.buttons["Settings"].tap()
         XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
-        XCTAssertFalse(app.navigationBars["More"].exists)
-        reveal(app.buttons["Automatic text checks"], app)
-        app.buttons["Automatic text checks"].tap()
-        XCTAssertTrue(app.navigationBars["Automatic text checks"].appears(timeout: 3))
-        app.buttons["Check a text yourself"].tap()
+        XCTAssertFalse(app.buttons["Automatic text checks"].exists)
+        reveal(app.buttons["Check a text"], app)
+        app.buttons["Check a text"].tap()
         XCTAssertTrue(app.navigationBars["Check a text"].appears(timeout: 3))
         XCTAssertTrue(app.textViews.firstMatch.isHittable)
-        XCTAssertFalse(app.buttons["Check a text yourself"].isHittable)
-        capture(app, "Text check opens on top")
-        app.navigationBars.buttons.firstMatch.tap()
-        XCTAssertTrue(app.navigationBars["Automatic text checks"].appears(timeout: 3))
+        capture(app, "Text check opens directly")
         app.navigationBars.buttons.firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
         app.navigationBars.buttons.firstMatch.tap()
@@ -151,6 +145,7 @@ final class NavigationRegressionUITests: XCTestCase {
         XCTAssertTrue(element.isHittable)
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
+        Thread.sleep(forTimeInterval: 0.6)
         let image = XCTAttachment(screenshot: app.screenshot())
         image.name = name; image.lifetime = .keepAlways; add(image)
     }

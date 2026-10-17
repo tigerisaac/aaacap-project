@@ -14,6 +14,8 @@ struct ForwardingCodeView: View {
                 }
                 if returned {
                     PhoneCodeGuide(returned: true, carrier: model.carrier, showingHeading: false)
+                    helpAction("Open Phone again") { Task { await model.openCarrierPhone() } }
+                        .accessibilityIdentifier("forwarding-phone-reopen")
                 } else {
                     Text("This tells \(model.carrier) to send calls you miss to Shield for checking.")
                     if copied {
@@ -36,7 +38,7 @@ struct ForwardingCodeView: View {
                             .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")
                     }
                     ShieldDisclosure("Need help?", isExpanded: $model.showingHelp) {
-                        if copied {
+                        if copied && !returned {
                             helpAction("Open Phone again") { Task { await model.openCarrierPhone() } }
                                 .accessibilityIdentifier("forwarding-phone-reopen")
                         }

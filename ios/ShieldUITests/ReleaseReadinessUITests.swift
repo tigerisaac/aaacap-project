@@ -62,7 +62,7 @@ final class ReleaseReadinessUITests: XCTestCase {
         let app = launch(["--uitesting-single-person", "--uitesting-caretakers-unavailable"])
         app.tabBars.buttons["More"].tap(); app.buttons["Settings"].tap()
         let caretakers = app.buttons["caretakers-settings"]; reveal(caretakers, app); caretakers.tap()
-        XCTAssertTrue(app.staticTexts["Caretaker alerts aren’t available yet. You can use Shield without a caretaker."].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Caretaker alerts aren’t available yet"].appears(timeout: 5))
         XCTAssertFalse(app.buttons["Add caretaker"].exists)
         capture(app, "Release caretaker unavailable")
     }
@@ -87,13 +87,21 @@ final class ReleaseReadinessUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Home"].appears(timeout: 5)); return app
     }
     private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
-        for _ in 0..<12 where !element.isHittable { app.swipeUp() }
+        for _ in 0..<14 {
+            let top = app.navigationBars.firstMatch.frame.maxY
+            let bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY - 35
+            if element.exists, element.isHittable, element.frame.minY >= top, element.frame.maxY <= bottom { return }
+            let down = element.exists && !element.frame.isEmpty && element.frame.minY < top
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.35 : 0.72))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.7 : 0.35)))
+        }
     }
     private func done(_ app: XCUIApplication) {
         let button = app.buttons["Done"].firstMatch
         if button.wait(for: \.isHittable, toEqual: true, timeout: 3) { button.tap() }
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
+        Thread.sleep(forTimeInterval: 0.6)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }

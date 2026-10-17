@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContactAlertsView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dismiss) private var dismiss
     @State private var response: ContactAlertsResponse?
     @State private var error: String?
     @State private var loadingVisible = false
@@ -10,7 +11,19 @@ struct ContactAlertsView: View {
         List {
             if let response {
                 if response.textsStopped { ShieldGroup { Text("You stopped Shield texts. Reply START to Shield’s text number to resume them. App notifications can stay on.") } }
-                if response.requests.isEmpty { ShieldGroup { Text("No requests for this mobile number.") } }
+                if response.requests.isEmpty {
+                    ShieldGroup {
+                        ContentUnavailableView {
+                            Label {
+                                Text("No requests").lineLimit(nil).fixedSize(horizontal: false, vertical: true)
+                            } icon: { Image(systemName: "bell") }
+                        } description: {
+                            Text("When someone adds you as a caretaker, their request appears here. They need the mobile number you use to sign in.")
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    }
+                }
                 ForEach(response.requests) { request in
                     ContactAlertChoiceView(request: request, textAvailable: response.textAvailable && !response.textsStopped, appAvailable: response.appAvailable) { accept, texts, appAlerts in
                         if model.isPreview {
@@ -30,6 +43,12 @@ struct ContactAlertsView: View {
     private func load() async {
         error = nil
         if model.isPreview {
+            #if DEBUG && targetEnvironment(simulator)
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-alert-requests-empty") {
+                response = .init(requests: [], textAvailable: true, appAvailable: true, textsStopped: false)
+                return
+            }
+            #endif
             response = .init(requests: [.init(id: UUID(uuidString: "00000000-0000-4000-8000-000000000001")!, name: "Margaret", status: "pending", textAlerts: false, appAlerts: false, ownerPaused: false)], textAvailable: true, appAvailable: true, textsStopped: false)
             return
         }

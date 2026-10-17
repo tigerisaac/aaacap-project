@@ -46,7 +46,8 @@ final class VoiceOverUITests: XCTestCase {
         try walk.find("Shield alerts you only")
         XCTAssertTrue(walk.app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Calls, messages, and recordings stay private.")).firstMatch.exists)
         try walk.activate("Decline request")
-        XCTAssertTrue(walk.app.staticTexts["No requests for this mobile number."].appears(timeout: 5))
+        XCTAssertTrue(walk.app.staticTexts["No requests"].appears(timeout: 5))
+        try walk.find("No requests")
         walk.checkpoint("declined-without-permissions")
     }
 

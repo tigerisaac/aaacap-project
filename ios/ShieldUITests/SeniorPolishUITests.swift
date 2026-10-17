@@ -28,7 +28,7 @@ final class SeniorPolishUITests: XCTestCase {
                      ("contacts", "Contacts couldn’t load", "Your calling list is empty", "Jamie"),
                      ("quiet", "Quiet hours couldn’t load", "", "Quiet hours"),
                      ("setup", "Phone setup couldn’t load", "", "Phone setup is done with a helper, one step at a time."),
-                     ("sharing", "Call sharing couldn’t load", "No one has access yet.", "Sign in to manage sharing.")]
+                     ("sharing", "Call sharing couldn’t load", "Your calls are private", "Your calls are private")]
         for (screen, error, empty, recovered) in cases {
             let app = launch(screen, extra: ["--uitesting-load-failure"])
             let notice = app.staticTexts[error]
@@ -63,7 +63,7 @@ final class SeniorPolishUITests: XCTestCase {
         reveal(name, in: app, towardTop: true)
         XCTAssertEqual(name.value as? String, "My clinic")
         reveal(phone, in: app)
-        XCTAssertEqual(phone.value as? String, "3125550100")
+        XCTAssertEqual(phone.value as? String, "(312) 555-0100")
         XCTAssertTrue(app.buttons["Save number"].isEnabled)
         reveal(error, in: app)
         capture(app, "polish-add-number-error")
@@ -80,7 +80,7 @@ final class SeniorPolishUITests: XCTestCase {
         app.buttons["Done"].firstMatch.tap(); app.buttons["Save number"].tap()
         XCTAssertTrue(app.staticTexts["Save not confirmed"].appears(timeout: 5))
         XCTAssertTrue(app.staticTexts["The number is in iPhone Contacts. Try saving again to update Shield."].exists)
-        XCTAssertEqual(phone.value as? String, "3125550100")
+        XCTAssertEqual(phone.value as? String, "(312) 555-0100")
         XCTAssertTrue(app.buttons["Save number"].isEnabled)
         capture(app, "polish-contact-partial-save")
     }
@@ -192,9 +192,11 @@ final class SeniorPolishUITests: XCTestCase {
         app.buttons["Save number"].tap()
         expectVisible(app.staticTexts["Save not confirmed"], in: app)
         capture(app, "polish-number-save-error-large-dark")
-        app.collectionViews.firstMatch.swipeDown()
-        app.collectionViews.firstMatch.swipeDown()
-        app.buttons["Save number"].tap()
+        app.scrollViews.firstMatch.swipeDown()
+        app.scrollViews.firstMatch.swipeDown()
+        let saveAgain = app.buttons["Save number"]
+        for _ in 0..<8 where !saveAgain.isHittable { app.swipeUp() }
+        saveAgain.tap()
         expectVisible(app.staticTexts["Save not confirmed"], in: app)
         capture(app, "polish-number-repeated-error-large-dark")
 

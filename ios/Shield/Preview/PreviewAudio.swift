@@ -9,7 +9,10 @@ enum PreviewAudio {
     static let call = CallRecord(id: UUID(), occurredAt: .now, callerNumber: "+12025550100", title: "Sample audio message",
         outcome: .voicemail, reasonCode: "sample", detail: "Synthetic audio for checking playback controls.", nextStep: "No action is needed.",
         acceptedAt: nil, endedAt: .now, voicemail: Voicemail(id: UUID(), duration: duration, status: "ready", heardAt: nil,
-            summary: "Synthetic audio for checking pause and resume.", summaryStatus: "ready", decision: "keep"))
+            summary: ProcessInfo.processInfo.arguments.contains("--uitesting-audio-no-summary") ? nil : "Synthetic audio for checking pause and resume.",
+            summaryStatus: ProcessInfo.processInfo.arguments.contains("--uitesting-audio-no-summary") ? "unavailable" : "ready", decision: "keep",
+            audioExpiresAt: ProcessInfo.processInfo.arguments.contains("--uitesting-audio-expired") ? .now.addingTimeInterval(-60) : nil,
+            audioDeliveredAt: ProcessInfo.processInfo.arguments.contains("--uitesting-audio-other-phone") ? .now.addingTimeInterval(-60) : nil))
 
     /// A quiet test tone. A longer fixture leaves time for slow spoken-focus automation.
     /// Generated locally; no recording or external service.

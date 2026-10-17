@@ -26,82 +26,72 @@ struct AddNumberView: View {
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
-                Form {
-                    ShieldGroup {
-                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
                             Text("Name").font(.headline)
                             TextField("Name", text: $label, prompt: Text("For example, My clinic").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
-                                .lineLimit(1...3).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                .textContentType(.name).focused($field, equals: .name)
+                                .lineLimit(1...3).textContentType(.name).focused($field, equals: .name)
+                                .shieldField(focused: field == .name)
                                 .accessibilityLabel("Name")
                                 .submitLabel(.next).onSubmit { field = .phone }
-                        }.padding(.vertical, ShieldTheme.Spacing.compact)
-                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
-                            Text("Phone number").font(.headline)
-                            HStack(spacing: ShieldTheme.Spacing.regular) {
-                                TextField("Phone number", text: $phone, prompt: Text("Area code and number").foregroundStyle(ShieldTheme.secondaryText), axis: .vertical)
-                                    .lineLimit(1...2).frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                    .keyboardType(.phonePad).textContentType(.telephoneNumber)
-                                    .focused($field, equals: .phone)
-                                    .accessibilityLabel("Phone number")
-                                if !phone.isEmpty && field == .phone {
-                                    Button("Clear") { phone = "" }
-                                        .font(.subheadline).frame(minWidth: 52, minHeight: ShieldTheme.Layout.minimumTarget)
-                                        .accessibilityLabel("Clear phone number").accessibilityInputLabels(["Clear", "Clear phone number"])
-                                }
+                        }
+                        ShieldPhoneEntry(text: $phone, focus: $field, field: .phone,
+                                         title: "Phone number", identifier: "saved-number-phone", allowsClear: true)
+                        if kind == .destinations {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+                                Text("Number from").font(.headline)
+                                Picker("Number from", selection: $provenance) {
+                                    Text("A card").tag("card")
+                                    Text("A bill or statement").tag("statement")
+                                    Text("Official website").tag("official_website")
+                                    Text("Someone I know").tag("known_person")
+                                }.tint(ShieldTheme.action).frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                Text("Don’t use a number from an unexpected call or text.")
+                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             }
-                        }.padding(.vertical, ShieldTheme.Spacing.compact)
-                    } footer: {
-                        Text("Include the area code. US and Canadian numbers only.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                    }
-                    if kind == .destinations {
-                        ShieldGroup {
-                            Picker("Found on", selection: $provenance) {
-                                Text("A card").tag("card")
-                                Text("A bill or statement").tag("statement")
-                                Text("Official website").tag("official_website")
-                                Text("Someone I know").tag("known_person")
-                            }
-                        } footer: { Text("Don’t use a number from an unexpected call or text.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
-                    }
-                    if let error {
-                        ShieldGroup {
-                            ShieldNotice(title: "Save not confirmed", detail: error, symbol: "exclamationmark.circle")
-                                .id("number-save-error").accessibilityFocused($errorFocused)
-                            if let problemDetail {
-                                ShieldDisclosure("More about this problem") {
-                                    Text(problemDetail).foregroundStyle(ShieldTheme.secondaryText)
+                        }
+                        if let error {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+                                ShieldNotice(title: "Save not confirmed", detail: error, symbol: "exclamationmark.circle")
+                                    .id("number-save-error").accessibilityFocused($errorFocused)
+                                if let problemDetail {
+                                    ShieldDisclosure("More about this problem") {
+                                        Text(problemDetail).foregroundStyle(ShieldTheme.secondaryText)
+                                    }
                                 }
                             }
                         }
+                        Button { finishEditing(); Task { await save() } } label: {
+                            ShieldActionLabel(title: saving ? "Saving…" : "Save number", isWorking: saving)
+                        }
+                        .shieldPrimaryButton()
+                        .disabled(!canSave || (model.isDemo && !usesFixture))
                     }
+                    .padding(ShieldTheme.Spacing.page)
+                    .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
                 }
                 .disabled(saving)
-                .shieldListStyle()
+                .background(ShieldTheme.surface)
                 .scrollDismissesKeyboard(.interactively)
                 .onChange(of: label) { _, _ in error = nil }
-                .onChange(of: phone) { _, _ in error = nil; savedToContacts = false }
+                .onChange(of: phone) { old, new in
+                    if PhoneContacts.canonical(old) != PhoneContacts.canonical(new) {
+                        error = nil; savedToContacts = false
+                    }
+                }
                 .onChange(of: provenance) { _, _ in error = nil }
                 .onChange(of: errorRevision) { _, _ in
                     guard error != nil else { return }
                     proxy.scrollTo("number-save-error", anchor: .top)
                     errorFocused = true
                 }
-                .safeAreaInset(edge: .bottom) {
-                    Button {
-                        if field != nil { finishEditing() }
-                        else { Task { await save() } }
-                    } label: {
-                        ShieldActionLabel(title: field != nil ? "Done" : saving ? "Saving…" : "Save number", isWorking: saving)
-                    }
-                    .shieldPrimaryButton()
-                    .disabled(saving || (field == nil && (!canSave || (model.isDemo && !usesFixture))))
-                    .accessibilityHint(field != nil ? "Closes the keyboard" : "")
-                    .padding(ShieldTheme.Spacing.content).background(ShieldTheme.surface)
-                }
                 .navigationTitle("Add number")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    if field != nil {
+                        ToolbarItem(placement: .confirmationAction) { Button("Done") { finishEditing() } }
+                    }
                     ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(saving) }
                 }
             }
@@ -115,7 +105,7 @@ struct AddNumberView: View {
     }
 
     private func save() async {
-        guard !saving, model.isOwner, let person = model.selectedPersonID else { return }
+        guard canSave, model.isOwner, let person = model.selectedPersonID else { return }
         let generation = model.sessionGeneration
         saving = true
         error = nil

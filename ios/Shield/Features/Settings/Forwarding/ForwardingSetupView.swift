@@ -9,6 +9,7 @@ struct ForwardingSetupView: View {
     @State private var confirmRestore = false
     @State private var leftForPhone = false
     @State private var leftForGuide = false
+    @State private var loadingVisible = false
     @AccessibilityFocusState private var focusedStep: ForwardingStep?
     @AccessibilityFocusState private var errorFocused: Bool
 
@@ -27,7 +28,7 @@ struct ForwardingSetupView: View {
     private var setupBody: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
                     if let status = model.status {
                         Color.clear.frame(height: 0).id("forwarding-top").accessibilityHidden(true)
                         if model.step.progressIndex > 0 {
@@ -64,14 +65,14 @@ struct ForwardingSetupView: View {
                             ForwardingActions(model: model, app: app, inline: true)
                         }
                     } else if let error = model.error {
-                        ContentUnavailableView("Setup couldn’t load", systemImage: "wifi.exclamationmark", description: Text(error))
-                        Button("Try again") { Task { await model.load(app) } }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                    } else {
-                        ProgressView("Loading phone setup…").frame(maxWidth: .infinity, minHeight: 220)
+                        ShieldLoadFailure(title: "Setup couldn’t load", detail: error) { Task { await model.load(app) } }
+                    } else if loadingVisible {
+                        ShieldLoadingView(title: "Getting your phone setup…")
+                            .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(24)
-                .frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
+                .padding(ShieldTheme.Spacing.page)
+                .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }
             .onChange(of: model.error) { _, value in
                 guard value != nil, model.status != nil else { return }
@@ -93,6 +94,7 @@ struct ForwardingSetupView: View {
             }
         }
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
+        .deferredLoading(model.status == nil && model.error == nil, visible: $loadingVisible)
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
             if model.status != nil && !typeSize.isAccessibilitySize {

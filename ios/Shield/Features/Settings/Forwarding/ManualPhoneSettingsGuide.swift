@@ -23,13 +23,13 @@ struct ManualPhoneSettingsGuide: View {
                 }
             }
             SetupGuideView(guide: guide, player: model.guidePlayer, showingResult: model.settingsReturned)
+            if model.settingsReturned {
+                Button("Open Phone settings again", systemImage: "gearshape") { Task { await model.openPhoneSettings() } }
+                    .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("phone-settings-reopen")
+            }
             ShieldDisclosure("Read the steps") {
                 Text("Keep sliding up past Incoming Calls and Announce Calls. Live Voicemail comes before Screen Unknown Callers. Stop when you see the heading shown in the guide.")
                 Text(guide.instructions)
-                if model.settingsReturned {
-                    Button("Open Phone settings again", systemImage: "gearshape") { Task { await model.openPhoneSettings() } }
-                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).accessibilityIdentifier("phone-settings-reopen")
-                }
                 if !model.settingsReturned {
                     Button(combined ? "I already changed both" : "It’s already off") { model.acknowledgeManualSettingsVisit() }
                         .frame(minHeight: ShieldTheme.Layout.minimumTarget)

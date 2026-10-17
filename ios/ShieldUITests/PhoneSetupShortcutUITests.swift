@@ -91,6 +91,12 @@ final class PhoneSetupShortcutUITests: XCTestCase {
     func testPublicAddRouteInNormalSetupDoesNotRunOrConfirm() {
         let shortcuts = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
         shortcuts.terminate()
+        shortcuts.launch()
+        // A newly updated simulator can cover the import sheet with Apple's release notes.
+        if shortcuts.staticTexts["What’s New in Shortcuts"].appears(timeout: 3) {
+            shortcuts.buttons["Continue"].tap()
+        }
+        shortcuts.terminate()
         let app = launch(["--uitesting-system-settings"])
         primary(app).tap()
         XCTAssertTrue(shortcuts.buttons["Add Shortcut"].appears(timeout: 30))

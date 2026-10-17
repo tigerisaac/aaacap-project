@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PhoneSignInView: View {
     @Environment(AppState.self) private var model
-    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var phone = ""
     @State private var code = ""
     @State private var challenge: PhoneChallenge?
@@ -37,35 +36,8 @@ struct PhoneSignInView: View {
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
                             if challenge == nil {
-                                ViewThatFits(in: .horizontal) {
-                                    HStack(alignment: .firstTextBaseline) {
-                                        Text("Mobile number").font(.headline).fixedSize()
-                                        Spacer(minLength: ShieldTheme.Spacing.regular)
-                                        Text("US & Canada").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText).fixedSize()
-                                    }
-                                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
-                                        Text("Mobile number").font(.headline)
-                                        Text("US & Canada").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                                    }
-                                }
-                                TextField("Mobile number", text: $phone,
-                                          prompt: Text(typeSize.isAccessibilitySize ? "Number" : "(201) 555-0123").foregroundStyle(ShieldTheme.secondaryText))
-                                    .font(.title3.monospacedDigit())
-                                    .textContentType(.telephoneNumber).keyboardType(.phonePad)
-                                    .textInputAutocapitalization(.never).autocorrectionDisabled()
-                                    .focused($focus, equals: .phone)
-                                    .padding(.leading, typeSize.isAccessibilitySize ? 0 : ShieldTheme.Spacing.section)
-                                    .shieldField(focused: focus == .phone)
-                                    .overlay(alignment: .leading) {
-                                        if !typeSize.isAccessibilitySize {
-                                            Image(systemName: "phone").foregroundStyle(ShieldTheme.secondaryText)
-                                                .padding(.leading, ShieldTheme.Spacing.content)
-                                                .accessibilityHidden(true).allowsHitTesting(false)
-                                        }
-                                    }
-                                    .accessibilityIdentifier("sign-in-phone")
-                                    .accessibilityLabel("Mobile number")
-                                    .accessibilityHint("US or Canadian mobile number")
+                                ShieldPhoneEntry(text: $phone, focus: $focus, field: .phone,
+                                                 title: "Mobile number", identifier: "sign-in-phone", mobileOnly: true)
                             } else {
                                 Text("Verification code").font(.headline)
                                 TextField("Code", text: $code, prompt: Text("Code").foregroundStyle(ShieldTheme.secondaryText))
@@ -119,10 +91,6 @@ struct PhoneSignInView: View {
             }
             .background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
-            .onChange(of: focus) { old, new in
-                // Format after editing so native insertion, deletion and selection keep their caret.
-                if old == .phone, new != .phone, let number = normalizedPhone { phone = PhoneDisplay.format(number) }
-            }
         }
     }
 
@@ -136,6 +104,8 @@ struct PhoneSignInView: View {
 
     private func requestCode() async {
         guard let phone = normalizedPhone, !working else { return }
+        // The field leaves the hierarchy after a successful request, so commit its display value here.
+        self.phone = PhoneDisplay.format(phone)
         working = true; error = nil; focus = nil
         defer { working = false }
         do {

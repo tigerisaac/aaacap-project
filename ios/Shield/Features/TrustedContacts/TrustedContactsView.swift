@@ -2,9 +2,11 @@ import SwiftUI
 
 struct TrustedContactsView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dismiss) private var dismiss
     @State private var response: TrustedContactsResponse?
     @State private var error: String?
     @State private var loadingVisible = false
+    @State private var loading = false
     @State private var working = false
     @State private var removing: TrustedContact?
     @State private var confirmRemoval = false
@@ -12,14 +14,29 @@ struct TrustedContactsView: View {
     var body: some View {
         List {
             if let response {
-                if !response.available { ShieldGroup { Text("Caretaker alerts aren’t available yet. You can use Shield without a caretaker.") } }
+                if !response.available {
+                    ShieldGroup {
+                        ContentUnavailableView {
+                            Label {
+                                Text("Caretaker alerts aren’t available yet")
+                                    .lineLimit(nil).fixedSize(horizontal: false, vertical: true)
+                            } icon: { Image(systemName: "person.badge.shield.checkmark") }
+                        } description: {
+                            Text("You can keep using Shield without a caretaker.")
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Button(loading ? "Checking…" : "Check again") { Task { await load() } }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(loading)
+                        Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    }
+                }
                 if response.available, response.contacts.isEmpty {
-                    ShieldGroup { Text("A caretaker can receive an alert if checks while you talk detect a possible scam request and intervene. Your calls and messages stay private.") }
+                    ShieldGroup { Text("Alert someone you trust when checks while you talk detect a possible scam request and intervene.") }
                 }
                 if !response.contacts.isEmpty {
                     ShieldGroup {
                         Toggle("Send protection alerts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
-                            .disabled(working || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
+                            .disabled(working || !response.available || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
                     }
                 }
                 ForEach(response.contacts) { contact in
@@ -27,6 +44,9 @@ struct TrustedContactsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(PhoneDisplay.format(contact.phone)).monospacedDigit()
                             Text(contact.statusLabel).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            if contact.status == "accepted" {
+                                Text("Protection alerts only").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            }
                         }.padding(.vertical, 4)
                         if contact.status == "pending", contact.requestDelivery != "submitted" {
                             Text("The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
@@ -43,7 +63,19 @@ struct TrustedContactsView: View {
                         } } label: {
                             ActionRow(title: "Add caretaker", symbol: "person.badge.plus")
                         }
-                    } footer: { Text("They must accept first. Alerts are sent only when checks while you talk intervene, so those checks must be on.") }
+                    } footer: { Text("They must accept first. Calls and messages stay private.") }
+                }
+                if response.available {
+                    ShieldGroup {
+                        ShieldDisclosure("When are alerts sent?") {
+                            Text("Only when checks while you talk detect a possible scam request and intervene. Those checks must be on.")
+                            Text("They choose texts, app alerts, or both. You can pause alerts or remove a caretaker here.")
+                                .foregroundStyle(ShieldTheme.secondaryText)
+                        }
+                        NavigationLink(value: AppRoute.callProtection) {
+                            ActionRow(title: "Checks while you talk", symbol: "waveform")
+                        }
+                    }
                 }
             } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your caretakers…") } }
             if let error {
@@ -51,7 +83,7 @@ struct TrustedContactsView: View {
                     ShieldLoadFailure(title: response == nil ? "Caretakers couldn’t load" : "That didn’t finish", detail: error) { Task { await load() } }
                 }
             }
-        }.deferredLoading(response == nil && error == nil, visible: $loadingVisible)
+        }.deferredLoading(loading && response == nil && error == nil, visible: $loadingVisible)
             .shieldListStyle().navigationTitle("Caretakers").navigationBarTitleDisplayMode(.inline)
             .task { await load() }.refreshable { await load() }
             .alert("Remove this caretaker?", isPresented: $confirmRemoval) {
@@ -60,7 +92,10 @@ struct TrustedContactsView: View {
             } message: { Text("They will stop receiving alerts about your protection.") }
     }
     private func load() async {
+        guard !loading else { return }
+        loading = true
         error = nil
+        defer { loading = false }
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if response == nil {
@@ -69,7 +104,10 @@ struct TrustedContactsView: View {
             #endif
             return
         }
-        guard let id = model.selectedPersonID, model.isOwner else { return }
+        guard let id = model.selectedPersonID, model.isOwner else {
+            error = "Caretakers are managed by the person using the protected phone. Return to Settings to continue."
+            return
+        }
         let generation = model.sessionGeneration
         do {
             let loaded: TrustedContactsResponse = try await model.api.send("/api/trusted-contacts", participantID: id)

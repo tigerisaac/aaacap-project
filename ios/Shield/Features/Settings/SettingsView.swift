@@ -7,43 +7,45 @@ struct SettingsView: View {
     var body: some View {
         List {
             if model.isOwner {
-                ShieldSection("Your phone") {
-                    if let id = model.selectedPersonID {
-                        NavigationLink(value: AppRoute.disconnect(id)) { ActionRow(title: "Disconnect Shield", symbol: "arrow.uturn.backward") }
-                    }
-                    NavigationLink(value: AppRoute.forwardingSetup) { ActionRow(title: "Phone setup", symbol: "phone") }
+                ShieldSection("Call protection") {
                     NavigationLink(value: AppRoute.callProtection) { ActionRow(title: "Checks while you talk", symbol: "waveform") }
                     NavigationLink(value: AppRoute.quietHours) { ActionRow(title: "Quiet hours", symbol: "moon") }
                     NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") }
+                    NavigationLink(value: AppRoute.forwardingSetup) { ActionRow(title: "Phone setup", symbol: "phone") }
                 }
-                ShieldSection("People you trust") {
+                ShieldSection("Contacts & sharing") {
                     NavigationLink(value: AppRoute.trustedNumbers) { ActionRow(title: "Your contacts", symbol: "person.crop.square") }
                     NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Numbers you trust", symbol: "phone.badge.checkmark") }
                     NavigationLink(value: AppRoute.trustedContacts) { ActionRow(title: "Caretakers", detail: "Optional protection alerts", symbol: "person.badge.shield.checkmark") }
                         .accessibilityIdentifier("caretakers-settings")
-                    NavigationLink(value: AppRoute.sharing) { ActionRow(title: "Call sharing", symbol: "person.2.badge.gearshape") }
+                    NavigationLink(value: AppRoute.sharing) { ActionRow(title: "Call sharing", detail: "Who can see calls and messages", symbol: "person.2.badge.gearshape") }
                         .accessibilityIdentifier("call-sharing-settings")
                 }
             } else {
                 ShieldGroup { NavigationLink(value: AppRoute.blockedNumbers) { ActionRow(title: "Blocked numbers", symbol: "hand.raised") } }
             }
-            ShieldGroup {
+            ShieldSection("Alerts & messages") {
                 NavigationLink(value: AppRoute.contactAlerts) { ActionRow(title: "Alerts for others", symbol: "bell") }
                 if model.service?.notificationsAvailable == true, !model.isDemo {
                     NavigationLink(value: AppRoute.messageAlerts) { ActionRow(title: "Message alerts", symbol: "bell") }
                 }
-                NavigationLink(value: AppRoute.automaticTexts) { ActionRow(title: "Automatic text checks", symbol: "text.badge.checkmark") }
-                if let origin = model.configuration.baseURL {
-                    Link(destination: origin.appending(path: "privacy")) { ActionRow(title: "Privacy", symbol: "lock.shield") }
-                }
+                NavigationLink(value: AppRoute.check) { ActionRow(title: "Check a text", symbol: "text.magnifyingglass") }
             }
-            ShieldGroup {
+            ShieldSection("Account") {
                 let leavesSample = model.isDemo && !model.isTestAccount
                 if model.subscription.showsAccess {
                     NavigationLink { SubscriptionView() } label: {
                         ActionRow(title: "Shield access", symbol: "checkmark.shield")
                     }
                     .accessibilityIdentifier("subscription-settings")
+                }
+                if let origin = model.configuration.baseURL {
+                    Link(destination: origin.appending(path: "privacy")) { ActionRow(title: "Privacy", symbol: "lock.shield") }
+                }
+                if model.isOwner, let id = model.selectedPersonID {
+                    NavigationLink(value: AppRoute.disconnect(id)) {
+                        ActionRow(title: "Disconnect Shield", detail: "Restore ordinary calls", symbol: "arrow.uturn.backward")
+                    }
                 }
                 NavigationLink(value: AppRoute.deleteAccount) {
                     ActionRow(title: "Delete account", symbol: "person.badge.minus")

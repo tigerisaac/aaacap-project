@@ -17,21 +17,21 @@ struct AddTrustedContactView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                 Button { showingPicker = true } label: {
                     Label("Choose from Contacts", systemImage: "person.text.rectangle").shieldWrappingLabel()
                         .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
                 }
                 .shieldSecondaryButton().disabled(working)
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
-                    Text("Their name").font(.headline)
+                    Text("Name").font(.headline)
                     TextField("Name", text: $name, prompt: Text("Name").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.name).focused($field, equals: .name)
                         .shieldField(focused: field == .name).accessibilityIdentifier("trusted-contact-name")
-                    Text("Their mobile number").font(.headline).padding(.top, ShieldTheme.Spacing.regular)
-                    TextField("Mobile number", text: $phone, prompt: Text("Mobile number").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.telephoneNumber).keyboardType(.phonePad).focused($field, equals: .phone)
-                        .shieldField(focused: field == .phone).accessibilityIdentifier("trusted-contact-phone")
+                    ShieldPhoneEntry(text: $phone, focus: $field, field: .phone,
+                                     title: "Mobile number", identifier: "trusted-contact-phone", mobileOnly: true)
+                        .padding(.top, ShieldTheme.Spacing.regular)
                 }.disabled(working)
-                Text("With their permission, send a request. They choose texts, app alerts, or both.")
+                Text("Ask them first. They choose how to receive alerts.")
                     .foregroundStyle(ShieldTheme.secondaryText)
                 if let error { ShieldNotice(title: "Couldn’t add this contact", detail: error, symbol: "exclamationmark.circle") }
                 Button { Task { await save() } } label: {
