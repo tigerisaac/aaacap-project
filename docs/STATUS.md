@@ -1,5 +1,11 @@
 # Status
 
+## October 16 — three backend reliability fixes deployed
+
+With owner approval, source `2933563` was scoped onto the verified live packages: durable voicemail recovery after an unsuccessful recipient offer, paginated expiry cleanup, and correct history status for long accepted calls. Bridge `shield-live-00017-qrw`, API `shieldapi-00025-wec`, private worker `runsharedcalljob-00003-nog`, recovery sweep `expiresharedcalls-00005-rug`, and cleanup `cleanupshield-00013-guj` were verified at 22:40 Central. The worker was upgraded before new job producers. Cleanup now has a 120-second timeout and three scheduled retries. Other function revisions, IAM, secrets, scaling, screening v158 and message policy v4 are preserved. Concurrent account-deletion/privacy changes remain outside this deployment.
+
+The full source checks passed 283 unit and 226 emulator tests before approval; the exact scoped release passed 70 additional focused tests and API/both bridge-mode startup checks. Production readiness, source hashes, private-worker access controls, cleanup index queries and all five contentless job phases passed. One synthetic lock-contention error retried successfully; no unexpected errors appeared in the final log review. No real call, SMS, carrier/Telnyx or billing change occurred, and no manual customer-data cleanup was invoked. Real-call qualification remains outstanding. [Release scope and evidence](PAID-PILOT-25.md#backend-reliability-follow-up--deployed-october-16).
+
 ## October 16 — App Store privacy and deletion first pass (not deployed)
 
 [App Store release checklist](APP-STORE-RELEASE.md) is the single current release list. It separates implementation, legal/provider/Apple approval, production rollout and real-phone evidence. The proposed commercial model is a free download with public Apple subscriptions and two months of complimentary access for ten selected seniors, without sales screens or automatic conversion. Billing, pilot grants and App Review acceptance of that entitlement approach are still unimplemented/unconfirmed.

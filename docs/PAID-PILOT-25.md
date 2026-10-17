@@ -34,7 +34,7 @@ On metered calling, more concurrent calls produce more billable minutes without 
 
 The approved live readback confirmed **30 inbound / 30 outbound application channels**, **30-second first-command timeout**, **$15/day outbound profile ceiling**, and **$5/$10 auto recharge**. Other application/profile fields were preserved. The profile remains **10 simultaneous outbound calls**: requests for both 30 and 11 were rejected with Telnyx's account-level verification error. Raising application limits does not bypass this restriction. The owner deferred verification/support outreach; no support message was sent.
 
-Bridge **`shield-live-00016-xgr`** and API **`shieldapi-00024-lin`** are live, with workers **`runsharedcalljob-00002-yux`**, **`expiresharedcalls-00004-qew`**, **`cleanupshield-00012-xac`**, and **`sendshieldalert-00004-vef`**. Source hashes, IAM, existing secret versions, unrelated function revisions and policies were preserved. All affected services retain zero minimum instances and request-based CPU. The bridge has four maximum instances and ten sessions per instance. API readiness reports capacity 25 and `paid-pilot-25-v1`.
+After the approved reliability follow-up, bridge **`shield-live-00017-qrw`** and API **`shieldapi-00025-wec`** are live, with workers **`runsharedcalljob-00003-nog`**, **`expiresharedcalls-00005-rug`**, **`cleanupshield-00013-guj`**, and unchanged **`sendshieldalert-00004-vef`**. Source hashes, IAM, existing secret versions, unrelated function revisions and policies were preserved. All affected services retain zero minimum instances and request-based CPU. The bridge has four maximum instances and ten sessions per instance. API readiness reports capacity 25 and `paid-pilot-25-v1`.
 
 Phone sign-in and contact texts remain unconfigured: the runtime lacks `TELNYX_VERIFY_PROFILE_ID` and `SMS_ALERTS`, and the number has no messaging profile. Their deployed code does not establish provider activation or SMS delivery.
 
@@ -46,17 +46,19 @@ This behavior is already present in deployed API `shieldapi-00024-lin`; the call
 
 Follow-up validation passed `npm run check` (typecheck, 276 unit tests, build) and the complete Firestore suite (215/215, including both new overflow cases). Only tests and documentation changed; no deployment, live settings, calls or messages were needed.
 
-### Backend reliability follow-up — prepared locally October 16
+### Backend reliability follow-up — deployed October 16
 
-Three follow-up fixes are implemented locally and **not deployed**:
+The owner approved deployment of all three fixes from `2933563`; the scoped rollout was verified at 22:40 Central:
 
 - Moving an offered call to voicemail now commits a dedicated recovery job in the same transaction. If the first announcement command fails, the private worker retries it independently of the original offer webhook. This covers dial rejection, recipient hangup and decline. Command receipts prevent another dial or duplicate successful playback; a completed voicemail prompt or ended call makes a late job harmless.
-- Daily expiry cleanup drains each configured collection in pages of 400, including blocked numbers. A fixed cutoff and document cursor let it advance past retained legacy accepted contacts. Deletion preconditions protect concurrent updates, and historical stopped-call totals are preserved before call records are deleted. The local schedule configuration allows 120 seconds and three retries; committed pages remain deleted if a later page fails.
+- Daily expiry cleanup drains each configured collection in pages of 400, including blocked numbers. A fixed cutoff and document cursor let it advance past retained legacy accepted contacts. Deletion preconditions protect concurrent updates, and historical stopped-call totals are preserved before call records are deleted. The deployed function allows 120 seconds and its scheduler allows three retries; committed pages remain deleted if a later page fails.
 - Accepted conversations retain their connected history status beyond 7½ minutes. Abandoned calls that were never accepted still receive the existing missed-call fallback.
 
 Validation passed `npm run check` (typecheck, 283 unit tests, build) and the full Firestore emulator suite (226/226 across 11 files). Twelve new regression cases cover the three fixes, including retries from a fresh worker, duplicate callbacks, delayed jobs after prompt completion/hangup, and 805 expired rows in each of four cleanup collections. The first check needed local-server permission, and the first emulator run exposed a missing routing field in the synthetic hangup fixture; both final runs passed after those corrections.
 
-Deployment still requires the owner's approval. Upgrade the private call-job worker before any API/bridge code that can enqueue the new `voicemail` job phase; then deploy the scoped API, bridge and cleanup changes. Preserve the frozen screening/post-call policies and unrelated release work described below. These tests use simulated provider actions and establish no new real-call evidence.
+The exact release package passed another **70/70** focused tests plus API and both bridge-mode startup checks. Only five API modules and two bridge modules changed from the verified live packages. The other agent's account-deletion/privacy work and unreleased screening/message policies were excluded. The private worker was upgraded and verified before enabling new `voicemail` job producers; the bridge was checked at zero traffic before promotion. Cloud Build `798057e1-1e56-4dbc-87f7-5259ee0bbfc5` verified the bridge's source hashes inside the built image.
+
+Live verification confirmed source hashes, preserved IAM/configuration, private-worker rejection of unauthenticated requests, public readiness, all five contentless job phases (including voicemail), zero active reservations, and the expiry queries' production indexes. One concurrent synthetic job logged `call_busy`; its retry completed and all five jobs finished. The final log review found no unexpected errors. Cleanup's normal schedule is unchanged; no manual customer-data cleanup was invoked. No real call, SMS, Telnyx setting, billing setting, secret or policy changed. This is infrastructure/synthetic evidence, not real-call qualification. Private snapshots, manifests and results are in `artifacts/private/backend-reliability-release/`.
 
 Before accepting the full paid cohort:
 
