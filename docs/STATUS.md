@@ -1,5 +1,15 @@
 # Status
 
+## October 17 — phone-only iOS sign-in (installed; live activation awaiting approval)
+
+The iOS sign-in page now offers mobile-number verification and Privacy only. Sample entry and email sign-in are removed; the legacy email view is compiled only into Debug simulator fixtures. Home's top-right account/person control is removed, with person switching still available under More → Family & friends. The earlier scroll-content-margin fix for the returning More heading remains.
+
+The signed Debug build passed signature verification and was installed and launched on the owner's iPhone 12 Pro Max at approximately **12:00 Central**. Mirroring verified the simplified sign-in page. Five focused simulator checks passed across the final runs: no Home account control at normal/maximum text, person switching through More, repeated More/Settings returns, synthetic wrong-code recovery/success, and the phone-only page with its Privacy link. The first Privacy assertion incorrectly looked for a button; the corrected link assertion passed. Typecheck/build and all 316 unit tests passed; the initial sandboxed run could not open its loopback test server and the authorized rerun passed. All 232 Firestore emulator tests also passed.
+
+Live read-only diagnosis found no configured Telnyx Verify profile, no permission for the API identity to create Firebase Auth users or sign custom tokens, and no Firebase phone linked to the existing pilot owner. The Privacy URL returned HTTP 200. A Telnyx profile named **Shield phone sign-in** was created and read back with provider-generated six-digit codes, five-minute expiry, US/Canada destinations, and a **$2 daily spend cap**. No SMS was submitted.
+
+A runtime-only activation is prepared against `shieldapi-00027-xaw` and runtime version `6`. It changes only `TELNYX_VERIFY_PROFILE_ID`, grants `firebaseauth.users.create` to the API identity and `iam.serviceAccounts.signBlob` on that identity's own service-account resource, and links the enrolled owner phone to the existing Firebase UID after owner approval. Collision checks passed. Private baselines, candidate settings and guarded activation commands are under ignored `artifacts/private/phone-sign-in/`; no runtime version, IAM binding, Firebase account, live source, carrier setting or call was changed by this preparation. Production activation and one consenting handset OTP test remain pending; simulator success is not evidence of SMS delivery or live sign-in.
+
 ## October 17 — immediate More title and Home account shortcut (installed)
 
 List spacing now uses scroll-content margins instead of padding around the scroll view, keeping native large titles attached to the navigation transition. Home has an always-available account icon that opens Settings, including for a single-person account and at accessibility text sizes. The existing multi-person switcher remains available.

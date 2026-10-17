@@ -3,6 +3,15 @@ import XCTest
 @MainActor
 final class PhoneOnboardingUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
+    func testSignInOffersOnlyPhoneAndPrivacy() {
+        let app = launch([])
+        XCTAssertTrue(app.textFields["sign-in-phone"].appears(timeout: 5))
+        XCTAssertFalse(app.buttons["Try sample app"].exists)
+        XCTAssertFalse(app.buttons["Use email instead"].exists)
+        XCTAssertFalse(app.textFields["Email address"].exists)
+        XCTAssertTrue(app.links["Privacy"].exists)
+        capture(app, "Phone-only sign-in")
+    }
     func testPhoneCodeErrorAndSuccessfulSignIn() {
         let app = launch(["--uitesting-phone-sign-in"])
         let phone = app.textFields["sign-in-phone"], submit = app.buttons["phone-sign-in-submit"]

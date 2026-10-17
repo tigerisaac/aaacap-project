@@ -39,7 +39,7 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(remove.exists)
     }
 
-    func testWelcomeEmailValidationAndDemoEntry() {
+    func testWelcomeEmailValidationWithoutSampleEntry() {
         let app = XCUIApplication()
         app.launchArguments += ["--uitesting-email-sign-in"]
         app.launch()
@@ -55,10 +55,8 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(continueButton.isEnabled)
         capture(app, name: "Welcome with keyboard")
         app.swipeUp()
-        let demo = app.buttons["Try sample app"]
-        if !demo.isHittable { app.swipeUp() }
-        demo.tap()
-        XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
+        XCTAssertFalse(app.buttons["Try sample app"].exists)
+        XCTAssertFalse(app.staticTexts["demoBanner"].exists)
     }
 
     func testSimulatorTestAccountSequenceOpensSampleAccount() {
@@ -108,16 +106,11 @@ final class ShieldUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.textFields["Email address"].appears(timeout: 5))
         capture(app, name: "Welcome large text")
-        let demo = app.buttons["Try sample app"]
-        for _ in 0..<6 {
-            if demo.isHittable { break }
-            app.swipeUp()
-        }
-        XCTAssertTrue(demo.isHittable)
+        let submit = app.buttons["sign-in-submit"]
+        for _ in 0..<6 where !submit.isHittable { app.swipeUp() }
+        XCTAssertTrue(submit.isHittable)
+        XCTAssertFalse(app.buttons["Try sample app"].exists)
         capture(app, name: "Welcome large text controls")
-        demo.tap()
-        XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
-        capture(app, name: "Today large text")
     }
 
     func testProtectionOnboardingDefaultsOffAndContinues() {

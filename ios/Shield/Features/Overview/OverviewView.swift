@@ -85,16 +85,6 @@ struct OverviewView: View {
                 if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
             }
             .shieldLargeTitle("Home")
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    if !typeSize.isAccessibilitySize { PersonPicker() }
-                    NavigationLink(value: AppRoute.settings) {
-                        Label("Account settings", systemImage: "person.crop.circle")
-                    }
-                    .labelStyle(.iconOnly)
-                    .accessibilityIdentifier("home-account")
-                }
-            }
             .refreshable { await refresh() }
             .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.phoneSetupRevision)") {
                 await loadStatus()

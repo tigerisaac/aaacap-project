@@ -7,7 +7,7 @@ enum APIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unconfigured: "Shield isn’t ready yet. You can try the sample app."
+        case .unconfigured: "Shield isn’t ready yet. Please try again later."
         case .invalidResponse: "We couldn’t finish that. Please try again."
         case let .service(code, _):
             switch code {
@@ -17,7 +17,7 @@ enum APIError: LocalizedError {
             case "access_denied": "This person is no longer sharing with you."
             case "voicemail_not_shared": "Voicemail hasn’t been shared with you."
             case "recording_unavailable": "This recording isn’t available."
-            case "phone_verification_unavailable": "Phone sign-in isn’t available right now. Try again later, or use email for an existing account."
+            case "phone_verification_unavailable": "Phone sign-in isn’t available right now. Please try again later."
             case "phone_code_incorrect": "That code didn’t match. Check the text and try again."
             case "phone_code_expired": "That code has expired or was already used. Request a new code."
             case "phone_code_wait": "Please wait a minute before requesting another code."

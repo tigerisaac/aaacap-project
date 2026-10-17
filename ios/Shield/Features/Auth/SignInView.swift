@@ -1,5 +1,8 @@
 import SwiftUI
 
+// Retained only for simulator regression fixtures. iPhone builds use phone sign-in.
+#if DEBUG && targetEnvironment(simulator)
+
 struct SignInView: View {
     var incomingURL: URL? = nil
     var allowsDismissal = false
@@ -123,20 +126,12 @@ struct SignInView: View {
                                 .accessibilityFocused($statusFocused, equals: .error)
                         }
                         if model.configuration.baseURL == nil {
-                            Text("Sign-in isn’t ready. You can try the sample app.")
+                            Text("Sign-in isn’t ready. Please try again later.")
                                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                         }
                     }
 
                     VStack(alignment: .leading, spacing: 0) {
-                        if !codeSent {
-                            Button { model.exploreDemo() } label: {
-                                Text("Try sample app").font(.body.weight(.medium))
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
-                                    .contentShape(.rect)
-                            }
-                            .disabled(working)
-                        }
                         if let origin = model.configuration.baseURL {
                             Link(destination: origin.appending(path: "privacy")) {
                                 Text("Privacy").foregroundStyle(ShieldTheme.action)
@@ -313,3 +308,4 @@ struct SignInView: View {
         statusFocused = .error
     }
 }
+#endif

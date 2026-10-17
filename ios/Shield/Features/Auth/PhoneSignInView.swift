@@ -8,8 +8,6 @@ struct PhoneSignInView: View {
     @State private var resendAt = Date.distantPast
     @State private var working = false
     @State private var error: String?
-    @State private var showingEmail = false
-    @State private var emailLink: URL?
     @FocusState private var focus: Field?
     private enum Field { case phone, code }
     private var normalizedPhone: String? { MobileNumber.normalized(phone) }
@@ -69,9 +67,6 @@ struct PhoneSignInView: View {
                             }
                             secondaryButton("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
                                 .disabled(working)
-                        } else {
-                            secondaryButton("Try sample app") { model.exploreDemo() }.disabled(working)
-                            secondaryButton("Use email instead") { showingEmail = true }.disabled(working)
                         }
                         if let base = model.configuration.baseURL {
                             Link(destination: base.appending(path: "privacy")) {
@@ -91,8 +86,6 @@ struct PhoneSignInView: View {
                 ToolbarSpacer(.flexible, placement: .keyboard)
                 ToolbarItem(placement: .keyboard) { Button("Done") { focus = nil } }
             }
-            .sheet(isPresented: $showingEmail) { SignInView(incomingURL: emailLink, allowsDismissal: true) }
-            .onOpenURL { url in emailLink = url; showingEmail = true }
         }
     }
 

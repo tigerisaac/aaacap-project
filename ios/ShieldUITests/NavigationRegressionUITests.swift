@@ -2,20 +2,26 @@ import XCTest
 
 @MainActor
 final class NavigationRegressionUITests: XCTestCase {
-    func testHomeAccountRemainsAvailableWithOnePersonAndLargestText() {
+    func testHomeHasNoAccountButtonAtStandardAndLargestText() {
         for large in [false, true] {
             let app = launch(["--uitesting-single-person"] + (large
                 ? ["--uitesting-light", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
-            let account = app.navigationBars.buttons["home-account"]
-            XCTAssertTrue(account.isHittable)
-            XCTAssertEqual(account.label, "Account settings")
-            capture(app, "Home account \(large ? "largest-light" : "standard-dark")")
-            account.tap()
-            XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
-            app.navigationBars.buttons.firstMatch.tap()
             XCTAssertTrue(app.navigationBars["Home"].exists)
-            XCTAssertTrue(account.isHittable)
+            XCTAssertFalse(app.navigationBars.buttons["home-account"].exists)
+            XCTAssertFalse(app.navigationBars.buttons["Viewing Pat. Change person."].exists)
+            capture(app, "Home without account button \(large ? "largest-light" : "standard-dark")")
         }
+    }
+
+    func testPeopleRemainAvailableFromMore() {
+        let app = launch()
+        XCTAssertEqual(app.navigationBars.buttons.count, 0)
+        app.tabBars.buttons["More"].tap()
+        app.buttons["Family & friends"].tap()
+        app.buttons["person-Alex"].tap()
+        app.tabBars.buttons["Home"].tap()
+        XCTAssertTrue(app.navigationBars["Home"].exists)
+        XCTAssertEqual(app.navigationBars.buttons.count, 0)
     }
 
     func testMoreTitleReturnsWithThePageRepeatedly() {
