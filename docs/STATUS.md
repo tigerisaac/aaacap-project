@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — manual contact and caretaker name bounds corrected
+
+Saved-number, individual-contact and caretaker forms now reject names beyond the service limit before any local save or request. They show a correction message and restore the action after editing, while preserving the number. Caretakers also reject internal control characters. All **13 manual-name contract cases** pass against the actual backend label validator. The affected UI run passed six of seven checks; correcting the remaining test's unspecified cursor placement produced a **2/2** boundary-method rerun covering all three forms, completing seven distinct checks with zero runtime warnings. Six final screenshots were reviewed. The final unsigned archive passed with two arm64 bundles, three privacy manifests and excluded test markers. [Evidence](../.impeccable/review/release-2026-10-17/contact-names/verification.json).
+
+The earlier contact-sharing commit `213398b` independently passed [CI: **335 unit + 250 Firestore + 8 account-lifecycle tests**](https://github.com/tigerisaac/aaacap-project/actions/runs/39073658975). Concurrent backend work is preserved and not claimed verified by this client-only follow-up. The unfiltered accessibility diagnostics, physical acceptance and other release gates remain open. No backend deployment, Apple change, physical installation or phone operation occurred.
+
 ## October 17 — malformed saved contacts no longer reject the one-time upload
 
 The iPhone now skips structurally invalid saved number fields, supplies a label for blank names, and preserves complete Unicode characters within the API's name limit. Local and server skipped counts are combined; preparing the upload does not edit Contacts. The actual Swift-to-backend contract check passed, as did **2 native Contacts checks + 5 Settings/caretaker checks**, with **zero runtime warnings**. Eight synthetic screenshots were inspected on the latest committed UI plus this correction. The unsigned Release archive passed, including explicit exclusion of native Contacts test markers.

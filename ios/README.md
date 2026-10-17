@@ -19,7 +19,7 @@ For offline synthetic activity during development, launch the Debug simulator wi
 
 ## Run focused UI audits
 
-On macOS with Xcode installed, `npm run test:contacts` compiles the actual Swift contact-upload preparation and checks its synthetic JSON against the built backend schema. It covers blank names, number bounds, complete Unicode characters and combined local/server skipped counts. `ContactSyncUITests` separately exercises synthetic records in the simulator's native Contacts database, including unchanged source fields and duplicate-free restoration. Neither check uses the owner's address book or uploads contacts to the live service.
+On macOS with Xcode installed, `npm run test:contacts` compiles the actual Swift contact-upload preparation and checks its synthetic JSON against the built backend schema. It covers blank names, number bounds, complete Unicode characters, manual-name limits and combined local/server skipped counts. `ContactSyncUITests` separately exercises synthetic records in the simulator's native Contacts database, including unchanged source fields and duplicate-free restoration. `ContactNameValidationUITests` checks blocked overlong names and recovery in saved-number, contact and caretaker forms. These checks use synthetic data and do not upload contacts or send requests to the live service.
 
 Keep Device Hub's **Capture Keyboard** off while collaborating with the owner. It redirects the Mac's typing into the simulator; leaving it enabled interrupted the owner's keyboard on October 15. Use the existing UI-test tooling without enabling keyboard capture.
 

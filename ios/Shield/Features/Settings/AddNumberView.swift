@@ -20,7 +20,8 @@ struct AddNumberView: View {
         let number = PhoneContacts.canonical(phone)
         return number.hasPrefix("+1") && number.count == 12 && number.dropFirst().unicodeScalars.allSatisfy { (48...57).contains($0.value) }
     }
-    private var canSave: Bool { !saving && !label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && validPhone }
+    private var nameProblem: String? { ContactName.problem(label) }
+    private var canSave: Bool { !saving && nameProblem == nil && validPhone }
     private var usesFixture: Bool { PreviewScenario.requested(kind == .trusted ? "add-contact" : "add-number", preview: model.isPreview) }
 
     var body: some View {
@@ -35,6 +36,9 @@ struct AddNumberView: View {
                                 .shieldField(focused: field == .name)
                                 .accessibilityLabel("Name")
                                 .submitLabel(.next).onSubmit { field = .phone }
+                            if !label.isEmpty, let nameProblem {
+                                Text(nameProblem).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            }
                         }
                         ShieldPhoneEntry(text: $phone, focus: $field, field: .phone,
                                          title: "Phone number", identifier: "saved-number-phone", allowsClear: true)
@@ -117,10 +121,11 @@ struct AddNumberView: View {
                 #endif
                 throw APIError.invalidResponse
             }
-            var body = ["label": label.trimmingCharacters(in: .whitespacesAndNewlines), "phone": phone]
+            let savedName = ContactName.cleaned(label)
+            var body = ["label": savedName, "phone": phone]
             if kind == .destinations { body["provenance"] = provenance }
             if kind == .trusted {
-                try await PhoneContacts.shared.setEnabled(true, phone: phone, label: label, personID: person)
+                try await PhoneContacts.shared.setEnabled(true, phone: phone, label: savedName, personID: person)
                 savedToContacts = true
                 guard generation == model.sessionGeneration, model.selectedPersonID == person else { throw CancellationError() }
                 // Adding one person must not share the rest of the address book.

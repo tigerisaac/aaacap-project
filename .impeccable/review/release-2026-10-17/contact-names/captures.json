@@ -1,0 +1,48 @@
+{
+  "syntheticOnly": true,
+  "capturesReviewed": 6,
+  "captures": [
+    {
+      "file": "caretaker-name-corrected.png",
+      "title": "caretaker name corrected",
+      "sha256": "1c701ab4ace1860c51436c4df1f6424614c6a028c828495ed4ee52a5101bf8d6",
+      "test": "ContactNameValidationUITests/testCaretakerRejectsOverlongNameAndRecoversWithoutSendingARequest()",
+      "review": "Correction text is gone, the action is enabled and the phone number is preserved."
+    },
+    {
+      "file": "caretaker-long-name-blocked.png",
+      "title": "caretaker long name blocked",
+      "sha256": "0e793b011062df6325165e32cf1a06e037c311778372920e4c0a20160f87d5b4",
+      "test": "ContactNameValidationUITests/testCaretakerRejectsOverlongNameAndRecoversWithoutSendingARequest()",
+      "review": "Correction text is visible and the action is disabled."
+    },
+    {
+      "file": "add-contact-name-corrected.png",
+      "title": "add-contact name corrected",
+      "sha256": "90dc82916e97dee60515fa4ee43dede355fe5191978677ac25b413ac729fd08d",
+      "test": "ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()",
+      "review": "Correction text is gone, the action is enabled and the phone number is preserved."
+    },
+    {
+      "file": "add-contact-long-name-blocked.png",
+      "title": "add-contact long name blocked",
+      "sha256": "63cc652f0636741bb44e8c19bf1811554e5bf7b0ffbec1867be8ecbebe698ed3",
+      "test": "ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()",
+      "review": "Correction text is visible and the action is disabled."
+    },
+    {
+      "file": "add-number-name-corrected.png",
+      "title": "add-number name corrected",
+      "sha256": "d091af65f2d19a7280b5fc9cab7d1334d0583729058ce1305ad1ded3d84e555e",
+      "test": "ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()",
+      "review": "Correction text is gone, the action is enabled and the phone number is preserved."
+    },
+    {
+      "file": "add-number-long-name-blocked.png",
+      "title": "add-number long name blocked",
+      "sha256": "7a647e9709d0e15c149dc38d34da2ed861b9ca41ef960fc31f1e9f01805c7ea2",
+      "test": "ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()",
+      "review": "Correction text is visible and the action is disabled."
+    }
+  ]
+}

@@ -14,6 +14,8 @@ struct AddTrustedContactView: View {
     @State private var error: String?
     @FocusState private var field: Field?
     private enum Field { case name, phone }
+    private var nameProblem: String? { ContactName.problem(name, disallowControls: true) }
+    private var canSend: Bool { !working && nameProblem == nil && MobileNumber.normalized(phone) != nil }
 
     var body: some View {
         ScrollView {
@@ -27,6 +29,9 @@ struct AddTrustedContactView: View {
                     Text("Name").font(.headline)
                     TextField("Name", text: $name, prompt: Text("Name").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.name).focused($field, equals: .name)
                         .shieldField(focused: field == .name).accessibilityIdentifier("trusted-contact-name")
+                    if !name.isEmpty, let nameProblem {
+                        Text(nameProblem).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                    }
                     ShieldPhoneEntry(text: $phone, focus: $field, field: .phone,
                                      title: "Mobile number", identifier: "trusted-contact-phone", mobileOnly: true)
                         .padding(.top, ShieldTheme.Spacing.regular)
@@ -36,7 +41,7 @@ struct AddTrustedContactView: View {
                 if let error { ShieldNotice(title: "Couldn’t add this contact", detail: error, symbol: "exclamationmark.circle") }
                 Button { Task { await save() } } label: {
                     ShieldActionLabel(title: working ? "Sending…" : "Send request", isWorking: working)
-                }.shieldPrimaryButton().disabled(working || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || name.count > 60 || MobileNumber.normalized(phone) == nil)
+                }.shieldPrimaryButton().disabled(!canSend)
                     .accessibilityIdentifier("trusted-contact-send")
                 ShieldDisclosure("What is shared?") {
                     Text("They hear only when checks while you talk detect a possible scam request and intervene. Those checks must be on. Alerts include your name; calls, recordings, and messages stay private. Message and data rates may apply.")
@@ -55,10 +60,11 @@ struct AddTrustedContactView: View {
             }
     }
     private func save() async {
-        guard let phone = MobileNumber.normalized(phone), !working,
+        guard canSend, let phone = MobileNumber.normalized(phone),
               model.isOwner, model.selectedPersonID == participantID else { return }
         let generation = model.sessionGeneration
-        let details = name.trimmingCharacters(in: .whitespacesAndNewlines) + "\u{0}" + phone
+        let savedName = ContactName.cleaned(name)
+        let details = savedName + "\u{0}" + phone
         if let requestedDetails, requestedDetails != details { requestID = UUID() }
         requestedDetails = details
         working = true; error = nil; field = nil
@@ -66,10 +72,10 @@ struct AddTrustedContactView: View {
         do {
             let contact: TrustedContact
             if model.isPreview {
-                contact = TrustedContact(id: requestID, name: name, phone: phone, status: "pending", textAlerts: false, appAlerts: false, requestDelivery: "submitted")
+                contact = TrustedContact(id: requestID, name: savedName, phone: phone, status: "pending", textAlerts: false, appAlerts: false, requestDelivery: "submitted")
             } else {
                 let response: TrustedContactCreated = try await model.api.send("/api/trusted-contacts", method: "POST", body: APIClient.payload([
-                    "id": requestID.uuidString.lowercased(), "name": name.trimmingCharacters(in: .whitespacesAndNewlines), "phone": phone, "consent": true
+                    "id": requestID.uuidString.lowercased(), "name": savedName, "phone": phone, "consent": true
                 ]), participantID: participantID)
                 contact = response.contact
             }

@@ -1,0 +1,136 @@
+{
+  "recordedAt": "2026-10-17T22:17:20.429528+00:00",
+  "source": {
+    "baseRevision": "213398b19f2c36446fdbec1bf4f7ec1c3e6fd3f5",
+    "overlays": [
+      "ios/Shield/Models/ContactName.swift",
+      "ios/Shield/Models/SharedContact.swift",
+      "ios/Shield/Features/Settings/AddNumberView.swift",
+      "ios/Shield/Features/TrustedContacts/AddTrustedContactView.swift",
+      "ios/ShieldUITests/ContactNameValidationUITests.swift"
+    ],
+    "files": 267,
+    "manifestFileSha256": "66f8470d6f533a5e9150b04adc8c58ed2f058cb05f75583a77bf4a199b85aecb"
+  },
+  "scope": "Client-only manual contact/caretaker validation, with no deployment or phone operation",
+  "changes": [
+    "Shared trimmed 60-Unicode-scalar name bound",
+    "Guard before local Contacts write or service request",
+    "Caretaker control-character guard",
+    "Visible correction and restored Save/Send after editing",
+    "Normalized name used consistently for local and service writes"
+  ],
+  "contract": {
+    "command": "npm run test:contacts",
+    "passed": true,
+    "actualSwiftModels": true,
+    "actualBackendLabelValidator": true,
+    "manualNameCases": 13,
+    "bulkUnicodeCases": 5,
+    "logSha256": "03a0f34a839d393b6c22fa4bf2f4c283f0200d7f6abbaa652819af05019bccf2",
+    "caretakerSpecificChecks": 4
+  },
+  "runs": [
+    {
+      "bundle": "/tmp/shield-contact-names-oct17.xcresult",
+      "passed": 6,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792274979.259,
+      "finishTime": 1792275087.461,
+      "testFailures": [
+        {
+          "failureText": "XCTAssertFalse failed",
+          "targetName": "ShieldUITests",
+          "testIdentifier": 2,
+          "testIdentifierString": "ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()",
+          "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing",
+          "testName": "testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()"
+        }
+      ]
+    },
+    {
+      "bundle": "/tmp/shield-contact-names-final-oct17.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792275178.661,
+      "finishTime": 1792275221.168,
+      "testFailures": []
+    }
+  ],
+  "sevenDistinctChecks": [
+    "Manual saved-number/contact rejection and recovery",
+    "Caretaker rejection and recovery",
+    "Native Contacts upload preparation without mutation",
+    "Native contact restoration without duplication",
+    "Largest-text dark caretaker request with separate permissions",
+    "Interrupted saved-number save retains input",
+    "Local contact save followed by unconfirmed service update"
+  ],
+  "initialTestFailure": {
+    "applicationImplementationChangedAfterFailure": false,
+    "interaction": "The test dismissed editing, then tapped a wrapped field before deleting without establishing the insertion point.",
+    "correction": "Keep the focus established by typing; assert exactly 61 characters before rejection and 60 before recovery.",
+    "initialManifestFileSha256": "730b3cc1fa9d4ee7fc692972ccbb63ef7597c2d1a0c6ef0838f0c1dc56b03bdd",
+    "initialTestFileSha256": "668f3bb3d8e2e836436ef99597da589ece1efbca39ba67ca953ccab8f27b9e30"
+  },
+  "reviewedFinalScreenshots": 6,
+  "archive": {
+    "archive": "/tmp/shield-contact-names.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "075068c3ad716ccb7959022c00d5003e595c49602e93ec325fbe75d20792efa6"
+  },
+  "backendCI": {
+    "revision": "213398b19f2c36446fdbec1bf4f7ec1c3e6fd3f5",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39073658975",
+    "conclusion": "success",
+    "unit": 335,
+    "firestore": 250,
+    "accountLifecycle": 8,
+    "scopeNote": "Separate committed backend revision; concurrent unrelated backend working-tree edits are not covered."
+  },
+  "excludedClaims": [
+    "Live service request or address-book upload",
+    "Actual caretaker SMS/APNs delivery",
+    "Physical Contacts, iCloud or VoiceOver acceptance",
+    "App Store signing or purchase acceptance",
+    "Resolution of the separate 17 unfiltered accessibility reports"
+  ],
+  "verificationFiles": [
+    {
+      "path": "scripts/test-contact-sharing.mjs",
+      "sha256": "13b2b34e68e322b23b3d6c2cbe4ddef947098ee4cee8ac697835142109dfaec7"
+    },
+    {
+      "path": "scripts/tests/contact-sharing.swift",
+      "sha256": "d1eb2702bbf4acd7ead82a0d166219e463373e9d7631778d8c8c64ccca0d31df"
+    }
+  ]
+}

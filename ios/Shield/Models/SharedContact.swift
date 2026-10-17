@@ -10,13 +10,13 @@ struct SharedContact: Codable, Sendable {
         let whitespace = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "\u{FEFF}"))
         let phone = phone.trimmingCharacters(in: whitespace)
         guard (3...100).contains(phone.unicodeScalars.count) else { return nil }
-        let name = label.trimmingCharacters(in: whitespace)
+        let name = ContactName.cleaned(label)
         // The API counts Unicode scalars; Swift's prefix counts graphemes. Keep
         // complete graphemes while respecting the API limit for combined names.
         var label = "", scalarCount = 0
         for character in name.isEmpty ? phone : name {
             let count = character.unicodeScalars.count
-            guard scalarCount + count <= 60 else { break }
+            guard scalarCount + count <= ContactName.maximumLength else { break }
             label.append(character)
             scalarCount += count
         }

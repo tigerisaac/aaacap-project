@@ -42,8 +42,19 @@ private func require(_ value: Bool, _ message: String) throws {
         let contacts = raw.compactMap { SharedContact.forSharing(label: $0.label, phone: $0.phone) }
         try require(raw.count - contacts.count == 3, "local skipped count was lost")
         // Pass the actual Swift payload to the backend schema in the JS runner.
-        struct Result: Encodable { let contacts: [SharedContact]; let locallySkipped: Int; let labelCases: [SharedContact] }
-        let data = try JSONEncoder().encode(Result(contacts: contacts, locallySkipped: raw.count - contacts.count, labelCases: labels))
+        struct NameCase: Encodable { let raw: String; let cleaned: String; let accepted: Bool }
+        let names = ["", " \n\u{FEFF}", " \u{FEFF}Alex\n", String(repeating: "A", count: 60), String(repeating: "A", count: 61),
+                     String(repeating: "😀", count: 60), String(repeating: "😀", count: 61),
+                     String(repeating: family, count: 8), String(repeating: family, count: 9),
+                     String(repeating: combined, count: 30), String(repeating: combined, count: 31),
+                     "Alex\nSmith", "Alex\u{0}Smith"]
+        let manualNames = names.map { NameCase(raw: $0, cleaned: ContactName.cleaned($0), accepted: ContactName.problem($0) == nil) }
+        try require(ContactName.problem("Alex\nSmith", disallowControls: true) != nil, "caretaker name accepted an internal line break")
+        try require(ContactName.problem("Alex\u{0}Smith", disallowControls: true) != nil, "caretaker name accepted a hidden control")
+        try require(ContactName.problem(" \nAlex\n", disallowControls: true) == nil, "outer whitespace incorrectly blocked a caretaker")
+        try require(ContactName.problem(String(repeating: family, count: 9), disallowControls: true) != nil, "caretaker name used grapheme count")
+        struct Result: Encodable { let contacts: [SharedContact]; let locallySkipped: Int; let labelCases: [SharedContact]; let manualNames: [NameCase] }
+        let data = try JSONEncoder().encode(Result(contacts: contacts, locallySkipped: raw.count - contacts.count, labelCases: labels, manualNames: manualNames))
         print(String(decoding: data, as: UTF8.self))
     }
 }
