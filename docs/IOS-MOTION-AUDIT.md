@@ -2,6 +2,33 @@
 
 October 17, 2026. The bounded screen and motion audit is complete, with physical limits stated below. This record separates source review, synthetic simulator results, and physical iPhone observations. No call or carrier-setting test is part of this audit.
 
+## October 17 — design consistency follow-up
+
+The follow-up preserves the existing navy, serif headings, native navigation and explicit setup confirmations. During verification, the newer Home redesign in `6f3894a` arrived from main. Its teal status card, shorter owner-approved wording and native action buttons were retained; the changes below were integrated with it.
+
+| Finding | Correction |
+| --- | --- |
+| An empty Home inbox repeats “Messages” and loses the usual browse action | Show a short empty-state line and keep the same All messages row used by a populated inbox. |
+| Supporting text varies between native gray and Shield's accessible ink | Shared section footers use the existing adaptive supporting-text color in both appearances and Increase Contrast. |
+| Disclosures and action labels have inconsistent targets and wrapping | Shared disclosures use the app's 52-point minimum and keep wrapped lines aligned. Secondary labels, text-check results and restart actions use the shared wrapping behavior. |
+| Help resources repeat the nested-link pattern implicated in the original audit | Each external resource has its own explicit borderless style, full-width target and browser hint. Collapsing the parent remains a separate action. |
+| Calls can show “No messages calls”; timestamps can wrap mid-time | Empty-state titles are specific to each filter. Row timestamps retain one line; larger type already moves them beneath the title. |
+| The live Messages filter differs from its sample counterpart at large text | Its menu label wraps, aligns to the baseline, uses the full available width and names its purpose for assistive technology. Sample Keep filtering now has the same selection feedback as other filters. |
+| Audio restart can inherit its containing row's action area | Start over has an explicit, full-width native button target and a wrapping label. |
+| Long switch labels split words around the control at maximum text size | The shared switch keeps its horizontal layout when it fits; otherwise the label gets the full width and the native switch sits beneath it. The complete row remains one accessible toggle. |
+
+Verification on October 17, using synthetic sample data in the combined working checkout:
+
+- `npm run check`: typecheck and build passed, with **335 tests passed** and 249 emulator-only tests skipped.
+- `npm run test:firebase`: **247/250 passed** in the initial run. Two tests timed out and one reported an invalid/closed transaction while simulator/build work was also running. All **three affected tests passed unchanged in an isolated retry**; the original failure log remains part of the evidence.
+- The first focused simulator run passed **17/18**. Its maximum-text Help assertion queried an offscreen resource before scrolling it into view. The final integrated iPhone 17/iOS 27 run passed **13/13**, including all Home readability cases, status freshness, disconnection recovery and actual VoiceOver focus/reading for Quiet hours.
+- Compact iPhone 17e/iOS 26.5 verification passed **six of seven** initially. The remaining Help test assumed an accessibility `Link`; the recorded native element is a `Button` on that OS. A test-only query now accepts either native type while retaining target-size, expanded/collapsed, settled foreground and page assertions. The affected test then **passed at normal and maximum text sizes on both iOS 26.5 and iOS 27**, completing all seven compact checks. The app binary was unchanged for these reruns.
+- A fresh independent finish reviewer returned **ship** for the 14 owned files, 25 primary captures, 12 unchanged-component interaction captures and 10 final integrated interaction captures. The main agent also inspected 15 compact captures and four passing compact Help captures. The [finish-review record](../.impeccable/review/design-refinement-2026-10-17/finish-review.md) preserves the scope and committed visual references.
+
+Full logs and source manifests are retained under ignored `artifacts/private/design-refinement-2026-10-17/`. The integrated app is identified by `integrated-source.json`; the final test-only compatibility change is identified by `help-compatibility-source.json`. Final result bundles are `/private/tmp/shield-design-integrated.xcresult`, `/private/tmp/shield-design-compact.xcresult`, `/private/tmp/shield-design-compact-help.xcresult` and `/private/tmp/shield-design-integrated-help.xcresult`. Captures and hashes are in `.impeccable/review/design-refinement-2026-10-17/`.
+
+Earlier results below continue to describe their original source snapshots. This follow-up does not certify physical VoiceOver gestures or screen-wide motion performance. No physical install, backend deployment, real call or owner-phone setting change is part of it.
+
 ## Scope and evidence
 
 The request is to inspect every app screen and animation, reproduce visual breakage, correct the causes, and validate the result. Shield targets iPhone and portrait orientation. The audit uses iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27 simulators, plus an isolated iPhone 12 Pro Max/iOS 27 simulator matching the owner's phone dimensions. The physical iPhone 12 Pro Max is available through iPhone Mirroring.

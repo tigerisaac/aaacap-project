@@ -28,16 +28,19 @@ struct VoicemailView: View {
                     ShieldGroup(background: .clear) {
                         if typeSize >= .xxxLarge {
                             Menu { kindPicker } label: {
-                                HStack {
+                                HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.compact) {
                                     Text(filter == .all ? "All messages" : filter.label)
-                                    Spacer()
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    Spacer(minLength: ShieldTheme.Spacing.compact)
                                     Image(systemName: "chevron.down").accessibilityHidden(true)
                                 }
                                 .padding(ShieldTheme.Spacing.content)
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                .contentShape(.rect)
                             }
                             .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
                             .accessibilityLabel("Message type, \(filter.label)")
+                            .accessibilityHint("Choose which messages to show")
                             .accessibilityIdentifier("message-filter")
                         } else {
                             kindPicker.pickerStyle(.segmented).controlSize(.large)
@@ -120,6 +123,7 @@ struct VoicemailView: View {
                 if !typeSize.isAccessibilitySize { ToolbarItem(placement: .topBarTrailing) { PersonPicker() } }
             }
             .sensoryFeedback(.selection, trigger: filter)
+            .sensoryFeedback(.selection, trigger: keptOnly)
             .task { await inbox.load(app) }
             .onChange(of: app.localMessages.map(\.call)) { _, _ in Task { await inbox.load(app) } }
             .refreshable {

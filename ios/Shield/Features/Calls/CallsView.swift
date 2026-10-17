@@ -22,7 +22,7 @@ struct CallsView: View {
                 if model.calls.isEmpty && model.callsError == nil {
                     if !initialLoading {
                         ShieldGroup {
-                            ContentUnavailableView(model.filter == .all ? "No calls yet" : "No \(model.filter.label.lowercased()) calls", systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
+                            ContentUnavailableView(model.filter.emptyTitle, systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
                             if model.filter != .all { Button("Show all calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
                         }
                     }

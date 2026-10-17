@@ -75,6 +75,7 @@ struct ActionRow: View {
         }
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+        .contentShape(.rect)
         .opacity(isEnabled ? 1 : 0.5)
         .accessibilityElement(children: .combine)
     }
@@ -109,7 +110,7 @@ struct ShieldSection<Content: View, Footer: View>: View {
     }
     var body: some View {
         Section { content } header: { Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil).accessibilityAddTraits(.isHeader) }
-            footer: { footer.font(.subheadline) }
+            footer: { footer.font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
             .listRowBackground(ShieldTheme.card)
     }
 }

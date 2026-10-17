@@ -40,19 +40,17 @@ struct OverviewView: View {
                     let messages = overview.recent.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }
                     ShieldGroup {
                         if messages.isEmpty {
-                            Button { model.showCalls(.voicemail) } label: {
-                                ActionRow(title: "Messages", detail: "No recent messages", symbol: "tray")
-                            }.buttonStyle(.plain)
+                            Text("No recent messages").foregroundStyle(ShieldTheme.secondaryText)
                         } else {
                             ForEach(messages.prefix(1)) { call in
                                 MessageNavigationRow(call: call, kept: model.demoKeptMessages.contains(call.id))
                             }
-                            Button { model.showCalls(.voicemail) } label: {
-                                HistoryBrowseLabel(title: "All messages")
-                            }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
-                                .accessibilityLabel("All messages")
-                                .accessibilityIdentifier("today-messages")
                         }
+                        Button { model.showCalls(.voicemail) } label: {
+                            HistoryBrowseLabel(title: "All messages")
+                        }.buttonStyle(.plain).foregroundStyle(ShieldTheme.action)
+                            .accessibilityLabel("All messages")
+                            .accessibilityIdentifier("today-messages")
                     } header: { Text("Messages").shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil) }
                     ShieldGroup {
                         if overview.recent.filter({ $0.voicemail == nil }).isEmpty {

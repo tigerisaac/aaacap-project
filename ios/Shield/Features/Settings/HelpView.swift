@@ -19,8 +19,8 @@ struct HelpView: View {
                 }
                 ShieldDisclosure("I sent money or private information") {
                     Text("Call your bank or the company involved using a number you already know.")
-                    Link("What to do next", destination: URL(string: "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed")!)
-                    Link("Report a scam", destination: URL(string: "https://reportfraud.ftc.gov/")!)
+                    resourceLink("What to do next", url: "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed")
+                    resourceLink("Report a scam", url: "https://reportfraud.ftc.gov/")
                 }
             }
             ShieldGroup {
@@ -38,5 +38,17 @@ struct HelpView: View {
         .shieldListStyle()
         .contentMargins(.top, 0, for: .scrollContent)
         .navigationTitle("Get help").navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func resourceLink(_ title: String, url: String) -> some View {
+        Link(destination: URL(string: url)!) {
+            Text(title).font(.body.weight(.medium))
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                .contentShape(.rect)
+        }
+        // A disclosure's links must not take over its containing List row.
+        .buttonStyle(.borderless)
+        .accessibilityHint("Opens in your browser")
     }
 }

@@ -82,6 +82,7 @@ struct CheckView: View {
                                         .foregroundStyle(result.decision == "refuse" ? ShieldTheme.held : ShieldTheme.secondaryText)
                                 }
                                 .shieldHeading(.title)
+                                .shieldWrappingLabel()
                                 .accessibilityAddTraits(.isHeader)
                                 .accessibilityFocused($resultFocused)
                                 Text(result.detail)
@@ -90,7 +91,12 @@ struct CheckView: View {
                                 Text(result.nextStep)
                             }.padding(.vertical, 12)
                                 .id("check-result")
-                            Button("Check another text", systemImage: "plus.bubble") { text = ""; self.result = nil; editing = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            Button { text = ""; self.result = nil; editing = true } label: {
+                                Label("Check another text", systemImage: "plus.bubble")
+                                    .shieldWrappingLabel()
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                    .contentShape(.rect)
+                            }
                         } footer: { Text("This check can be wrong. It can’t prove who sent the text.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                         if model.isOwner {
                             ShieldGroup { NavigationLink(value: AppRoute.savedNumbers) { ActionRow(title: "Find a trusted number", symbol: "phone") } }

@@ -467,6 +467,12 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 
 Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
 
+Home follows the [October 17 Home status card rules](#october-17--home-status-card) for its leading decorative badge, teal checks-on surface and full-width native primary/secondary buttons. Title and supporting copy align within their text column; at accessibility sizes, the badge gives way to full-width text. The empty Home inbox retains the plain All messages browse action.
+
+Shared disclosures, browse rows and full-width button labels keep a 52-point minimum target and allow text to wrap, retaining the native style appropriate to each role. Status details, row metadata, playback time and section footers use the shared adaptive supporting-text color. Keep nested native buttons and links independently activatable: explicit borderless styling separates resource links from their disclosures and playback actions from neighboring controls.
+
+Switch rows preserve the familiar native switch and expose the entire labeled target as one accessible toggle. Available width determines the layout: keep the whole label beside the switch when it fits; otherwise give the wrapping label the full width and place the switch beneath it, aligned to the trailing edge. Keep the 52-point minimum target without shrinking text or splitting words around the switch. See the [October 17 follow-up](docs/IOS-MOTION-AUDIT.md#october-17--design-consistency-follow-up) for scope and verification.
+
 
 ## October 14 — phone sign-in and optional trusted contacts
 

@@ -80,6 +80,7 @@ struct CallRow: View {
     private var timeText: some View {
         Text(callTime)
             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            .fixedSize()
             .accessibilityIdentifier("call-time-\(call.id)")
     }
 

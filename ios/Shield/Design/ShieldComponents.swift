@@ -30,7 +30,9 @@ struct ShieldGroup<Content: View, Header: View, Footer: View>: View {
 
     var body: some View {
         // Footers default to the same supporting size used inside groups, not the smaller native footnote.
-        Section { content } header: { header } footer: { footer.font(.subheadline) }
+        Section { content } header: { header } footer: {
+            footer.font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+        }
             .listRowBackground(background)
     }
 }
@@ -83,6 +85,7 @@ extension View {
 
     func shieldSecondaryButton() -> some View {
         buttonStyle(.bordered)
+            .labelStyle(ShieldWrappingLabelStyle())
             .controlSize(.large)
             .buttonBorderShape(.capsule)
             .tint(ShieldTheme.action)
@@ -230,7 +233,9 @@ struct ShieldDisclosure<Content: View>: View {
     // Stacked disclosures outside a List keep a full touch target each.
     private var label: some View {
         Text(title).multilineTextAlignment(.leading)
-            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+            .contentShape(.rect)
     }
 }
 

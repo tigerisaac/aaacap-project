@@ -11,6 +11,14 @@ enum CallFilter: String, CaseIterable, Identifiable, Sendable {
         case .voicemail: "Messages"
         }
     }
+    var emptyTitle: String {
+        switch self {
+        case .all: "No calls yet"
+        case .held: "No stopped calls"
+        case .connected: "No answered calls"
+        case .voicemail: "No messages yet"
+        }
+    }
     func includes(_ call: CallRecord) -> Bool {
         switch self {
         case .all: true

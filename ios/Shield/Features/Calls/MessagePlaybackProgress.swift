@@ -13,8 +13,13 @@ struct MessagePlaybackProgress: View {
                 Text("\(time(player.elapsed)) of \(time(player.duration))")
                     .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     .monospacedDigit().accessibilityHidden(true)
-                Button("Start over", systemImage: "backward.end", action: restart)
-                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                Button(action: restart) {
+                    Label("Start over", systemImage: "backward.end")
+                        .shieldWrappingLabel()
+                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.borderless)
             }
         }
     }

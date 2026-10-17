@@ -4,6 +4,102 @@ import XCTest
 final class HomeReadabilityUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
 
+    func testLongSwitchLabelsKeepTheirWidthAndToggleFromTheRow() {
+        let app = launch(["--uitesting-screen", "contact-alerts", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        let toggle = app.switches["contact-app-alerts"]
+        reveal(toggle, in: app)
+        revealFully(toggle, above: app.tabBars.firstMatch, in: app)
+        XCTAssertTrue(toggle.isHittable)
+        XCTAssertGreaterThanOrEqual(toggle.frame.height, 52)
+        let before = toggle.value as? String
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.3)).tap()
+        XCTAssertNotEqual(toggle.value as? String, before)
+        capture("refinement-long-switch-largest")
+    }
+
+    func testEmptyHomeKeepsAFullWidthMessagesRoute() {
+        let app = launch(["--redesign-state", "empty"])
+        let action = app.buttons["today-messages"]
+        reveal(action, in: app)
+        revealFully(action, above: app.tabBars.firstMatch, in: app)
+        XCTAssertTrue(app.staticTexts["No recent messages"].exists)
+        XCTAssertGreaterThanOrEqual(action.frame.height, 52)
+        XCTAssertGreaterThan(action.frame.width, app.frame.width * 0.7)
+        capture("refinement-empty-home")
+        action.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        XCTAssertTrue(app.navigationBars["Messages"].appears(timeout: 5))
+    }
+
+    func testHomeStatusUsesTheReadingEdgeAndReachableRecovery() {
+        for extra in [[], ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]] {
+            let app = launch(["--redesign-state", "unavailable"] + extra)
+            let title = app.staticTexts["today-status-title"]
+            let detail = app.staticTexts["Your phone’s setup status will appear here."]
+            XCTAssertTrue(title.appears(timeout: 5))
+            XCTAssertEqual(title.frame.minX, detail.frame.minX, accuracy: 2)
+            let retry = app.buttons["Try again"].firstMatch
+            reveal(retry, in: app)
+            revealFully(retry, above: app.tabBars.firstMatch, in: app)
+            XCTAssertGreaterThanOrEqual(retry.frame.height, 52)
+            XCTAssertGreaterThan(retry.frame.width, app.frame.width * 0.7)
+            capture(extra.isEmpty ? "refinement-status-retry" : "refinement-status-retry-largest")
+            retry.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            XCTAssertTrue(app.navigationBars["Home"].exists)
+        }
+    }
+
+    func testHelpResourceDisclosureCollapsesWithoutOpeningTheBrowser() {
+        for extra in [[], ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]] {
+            let app = launch(extra)
+            app.tabBars.buttons["More"].tap()
+            app.staticTexts["Get help"].firstMatch.tap()
+            let disclosure = app.buttons["I sent money or private information"]
+            reveal(disclosure, in: app)
+            revealFully(disclosure, above: app.tabBars.firstMatch, in: app)
+            XCTAssertGreaterThanOrEqual(disclosure.frame.height, 52)
+            disclosure.tap()
+            // Supported iOS versions expose SwiftUI Link as either a link or a button.
+            let resource = app.descendants(matching: .any).matching(NSPredicate(
+                format: "label == %@ AND (elementType == %d OR elementType == %d)",
+                "What to do next", XCUIElement.ElementType.link.rawValue, XCUIElement.ElementType.button.rawValue
+            )).firstMatch
+            reveal(resource, in: app)
+            revealFully(resource, above: app.tabBars.firstMatch, in: app)
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = extra.isEmpty ? "help-resource-accessibility" : "help-resource-accessibility-largest"
+            tree.lifetime = .keepAlways
+            add(tree)
+            XCTAssertGreaterThanOrEqual(resource.frame.height, 52)
+            XCTAssertGreaterThan(resource.frame.width, app.frame.width * 0.7)
+            capture(extra.isEmpty ? "refinement-help-expanded" : "refinement-help-expanded-largest")
+            reveal(disclosure, in: app, scrollingUp: false)
+            revealFully(disclosure, above: app.tabBars.firstMatch, in: app)
+            XCTAssertTrue(disclosure.images["expanded"].exists)
+            disclosure.tap()
+            XCTAssertTrue(disclosure.images["collapsed"].appears(timeout: 5))
+            let disappeared = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: resource)
+            XCTAssertEqual(XCTWaiter.wait(for: [disappeared], timeout: 5), .completed)
+            // The earlier audit showed that disappearance alone can mean Safari opened.
+            Thread.sleep(forTimeInterval: 1)
+            XCTAssertEqual(app.state, .runningForeground)
+            XCTAssertTrue(app.navigationBars["Get help"].exists)
+            capture(extra.isEmpty ? "refinement-help-collapsed" : "refinement-help-collapsed-largest")
+        }
+    }
+
+    func testLargestMessageFilterRespondsAcrossItsWidth() {
+        let app = launch(["--uitesting-message-filters", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        app.tabBars.buttons["Messages"].tap()
+        let filter = app.buttons["message-filter"]
+        XCTAssertTrue(filter.appears(timeout: 5))
+        XCTAssertGreaterThanOrEqual(filter.frame.height, 52)
+        XCTAssertGreaterThan(filter.frame.width, app.frame.width * 0.8)
+        filter.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["Voicemail"].firstMatch.tap()
+        XCTAssertEqual(filter.label, "Message type, Voicemail")
+        capture("refinement-message-filter-largest")
+    }
+
     func testAllCallsRespondsAcrossTheRowAtStandardAndLargestText() {
         for extra in [[], ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]] {
             let app = launch(extra)
@@ -112,26 +208,28 @@ final class HomeReadabilityUITests: XCTestCase {
         app.launch(); return app
     }
 
-    private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
+    private func reveal(_ element: XCUIElement, in app: XCUIApplication, scrollingUp: Bool = true) {
         for _ in 0..<8 {
             if element.exists && element.isHittable { break }
-            app.collectionViews.firstMatch.swipeUp()
+            if scrollingUp { app.collectionViews.firstMatch.swipeUp() }
+            else { app.collectionViews.firstMatch.swipeDown() }
         }
         XCTAssertTrue(element.exists)
     }
 
     private func revealFully(_ element: XCUIElement, above action: XCUIElement, in app: XCUIApplication) {
         let list = app.collectionViews.firstMatch
+        let bottom = action.exists ? action.frame.minY : app.frame.maxY - 24
         for _ in 0..<30 {
             let top = app.navigationBars.firstMatch.frame.maxY
-            if element.exists && element.frame.minY >= top && element.frame.maxY <= action.frame.minY { break }
+            if element.exists && element.frame.minY >= top && element.frame.maxY <= bottom { break }
             let endY: CGFloat = element.frame.minY < top ? 0.67 : 0.43
             list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
                 .press(forDuration: 0.1, thenDragTo: list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: endY)))
         }
         XCTAssertTrue(element.exists)
         XCTAssertGreaterThanOrEqual(element.frame.minY, app.navigationBars.firstMatch.frame.maxY)
-        XCTAssertLessThanOrEqual(element.frame.maxY, action.frame.minY)
+        XCTAssertLessThanOrEqual(element.frame.maxY, bottom)
     }
 
     private func capture(_ name: String) {
