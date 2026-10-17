@@ -6,9 +6,9 @@ final class SubscriptionUITests: XCTestCase {
 
     func testPublicPlansShowAnnualTotalAndEquivalent() {
         let app = launch("offer")
-        XCTAssertTrue(app.staticTexts["$15.00 / month"].exists)
-        reveal(app.staticTexts["$120.00 / year"], app)
-        XCTAssertTrue(app.staticTexts["Equivalent to $10.00 per month. Billed in full once a year."].exists)
+        XCTAssertTrue(app.staticTexts["$9.99 / month"].exists)
+        reveal(app.staticTexts["$99.99 / year"], app)
+        XCTAssertTrue(app.staticTexts["Equivalent to $8.33 per month. Billed in full once a year."].exists)
         capture(app, "Subscription annual billing")
         reveal(app.buttons["Restore purchases"], app)
         XCTAssertTrue(app.buttons["Restore purchases"].exists)

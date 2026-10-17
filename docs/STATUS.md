@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — revised prices and real RevenueCat SDK verification
+
+The owner revised intended subscriptions to **USD $9.99 monthly / $99.99 annually**. With explicit approval, RevenueCat Test Store plan `c3c08559-41c0-471d-b249-d9a58301b575` created the two QA products; live store-state reads verified both prices. The QA offering and entitlement are separate from the unchanged public offering. Apple setup remains deferred; its revised desired state is saved without applying it.
+
+All **3/3 actual SDK checks** and **8/8 subscription UI checks** passed with **zero runtime warnings**, including cancellation, simulated failure, successful monthly/yearly purchases, restore, account switching and fresh-install recovery. RevenueCat independently confirmed sandbox purchases and an empty secondary account. The actual provider response was rejected by Shield's local verifier for ordinary and sandbox-review accounts. Required backend checks again passed **335 unit tests** and **250 emulator tests**; the subscription state-machine harness passed. A fresh unsigned Release archive passed exclusion checks for the QA code and products. The initial restore assertion failed on an unloaded List row; revealing it fixed the test without changing the adapter. No live backend deployment, real charge, phone operation or Apple update occurred in this follow-up. [Evidence and remaining gates](IOS-RELEASE-VERIFICATION.md) · [RevenueCat configuration](REVENUECAT.md).
+
 ## October 17 — app release audit, caretaker scope and RevenueCat (scoped backend deployed)
 
 The owner deferred Apple setup while retaining both public release and ten-senior-pilot requirements. Settings now separates explicit contact sharing, optional caretakers and call-history permissions; independent users do not see family management. Only connected-call monitoring interventions notify caretakers/helpers. RevenueCat app/server integration and operator-only pilot grants are implemented, with prices and business details recorded. The RevenueCat project/app/entitlement/offering exist; Apple products and credentials are deferred, and purchases remain disabled.

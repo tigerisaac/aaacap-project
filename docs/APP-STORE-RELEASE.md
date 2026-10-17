@@ -8,7 +8,7 @@ Updated October 17, 2026. Apple setup and uploads are deferred at the owner’s 
 
 Owner requirements: public customers can purchase and use Shield; ten seniors receive two months of access, with no monetary language or sales prompts in their pilot experience.
 
-Proposed model: one free-to-download iPhone app, public access through an Apple in-app subscription, and a separately assigned pilot entitlement for the ten verified pilot accounts. The recurring service has ongoing phone, model and hosting costs; a one-time paid download is not the proposed billing model. The owner selected RevenueCat, USD $15 monthly or $120 billed annually ($10/month equivalent), United States and Canada, Wheema Inc., and support at isaac.cw.zhang@gmail.com. Commercial/legal terms and verified carrier coverage remain release gates. See [billing implementation and configuration](REVENUECAT.md).
+Proposed model: one free-to-download iPhone app, public access through an Apple in-app subscription, and a separately assigned pilot entitlement for the ten verified pilot accounts. The recurring service has ongoing phone, model and hosting costs; a one-time paid download is not the proposed billing model. The owner selected RevenueCat, USD $9.99 monthly or $99.99 billed annually (approximately $8.33/month equivalent), United States and Canada, Wheema Inc., and support at isaac.cw.zhang@gmail.com. Commercial/legal terms and verified carrier coverage remain release gates. See [billing implementation and configuration](REVENUECAT.md).
 
 | Experience | Public customer | Enrolled senior |
 |---|---|---|

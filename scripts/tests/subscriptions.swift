@@ -37,8 +37,8 @@ private func state(_ audience: String = "public", active: Bool = false, eligible
     func plans(_ configuration: ServiceAccessStatus.RevenueCatConfiguration) async throws -> [SubscriptionPlan] {
         events.append("plans")
         if let failure { throw failure }
-        return [.init(id: "shield_monthly", title: "Monthly", price: "$15.00", billingPeriod: "month", monthlyEquivalent: nil),
-                .init(id: "shield_annual", title: "Yearly", price: "$120.00", billingPeriod: "year", monthlyEquivalent: "$10.00")]
+        return [.init(id: "shield_monthly", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil),
+                .init(id: "shield_annual", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33")]
     }
     func purchase(_ productID: String) async throws -> SubscriptionPurchaseResult {
         events.append("purchase:\(productID)")

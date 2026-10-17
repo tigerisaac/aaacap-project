@@ -1,0 +1,13 @@
+{
+  "verified": true,
+  "checkedAt": "2026-10-17T21:03:23.011Z",
+  "input": "Live RevenueCat v1 response for synthetic QA annual customer",
+  "store": "test_store",
+  "sandbox": true,
+  "providerEntitlementActive": true,
+  "standardAccountAccess": false,
+  "sandboxReviewAccountAccess": false,
+  "verifier": "subscriptionSnapshot",
+  "productionDatabaseUsed": false,
+  "providerBodySaved": false
+}

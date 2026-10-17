@@ -7,7 +7,14 @@ final class RevenueCatClient: SubscriptionClient {
     private var packages: [String: Package] = [:]
 
     func identify(_ configuration: ServiceAccessStatus.RevenueCatConfiguration) async throws {
-        guard configuration.publicSDKKey.hasPrefix("appl_"), UUID(uuidString: configuration.customerId) != nil else { throw APIError.invalidResponse }
+        #if SHIELD_REVENUECAT_TEST_STORE && DEBUG && targetEnvironment(simulator)
+        // Only the separate SDK verification build defines this flag. That build
+        // accepts Test Store keys exclusively, so it cannot make an Apple purchase.
+        let validKey = configuration.publicSDKKey.hasPrefix("test_")
+        #else
+        let validKey = configuration.publicSDKKey.hasPrefix("appl_")
+        #endif
+        guard validKey, UUID(uuidString: configuration.customerId) != nil else { throw APIError.invalidResponse }
         if !Purchases.isConfigured {
             Purchases.logLevel = .error
             Purchases.configure(withAPIKey: configuration.publicSDKKey, appUserID: configuration.customerId)

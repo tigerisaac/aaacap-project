@@ -1,0 +1,20 @@
+{
+  "baseRevision": "9a8c075bd6a43c868a9e14162ddf8c3c7ac04c3e",
+  "fileCount": 257,
+  "sourceManifestSha256": "fbb201055bc4b4c8893700c217b7948fa924304869c505aa99f7e0b21a84fb18",
+  "overrides": [
+    {
+      "path": "ios/Shield/Features/Subscription/RevenueCatClient.swift",
+      "sha256": "218c1eb85b471459e973fed1d1f12df3004acb935e56bda27d6ca33bde5873e9"
+    },
+    {
+      "path": "ios/Shield/Features/Subscription/SubscriptionModel.swift",
+      "sha256": "04f0bc42f81d412224a493e5f7975965d7e846d832c30d33fa158a97c75aaf64"
+    },
+    {
+      "path": "ios/ShieldUITests/SubscriptionUITests.swift",
+      "sha256": "1ea4ab09e49e3ed6ee1a9eacb7d8f51b3c6e33dc06f5ae46f2a6e98738f94f24"
+    }
+  ],
+  "additionalDiagnosticSourcesExcluded": true
+}

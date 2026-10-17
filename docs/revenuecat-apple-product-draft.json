@@ -1,0 +1,106 @@
+{
+  "note": "Unapplied Apple product draft. Owner deferred Apple setup. Prices revised October 17, 2026. Re-plan against current store state before requesting apply.",
+  "supersedesPlan": "c8a0b647-3b7a-4b52-bd46-da000fc2eb89",
+  "desired_states": [
+    {
+      "project_id": "proj34b083d4",
+      "product_id": null,
+      "create_revenuecat_product": {
+        "app_id": "app8cae3b0fbc",
+        "store_identifier": "shield_monthly",
+        "type": "subscription",
+        "display_name": "Shield Monthly",
+        "title": "Shield Monthly"
+      },
+      "store": "app_store",
+      "common": {
+        "pricing": {
+          "territory_prices": {
+            "US": {
+              "amount_micros": 9990000,
+              "currency": "USD"
+            }
+          },
+          "equalize_missing_subscription_prices": {
+            "base_territory": "US"
+          }
+        },
+        "availability": {
+          "territories": {
+            "CA": true,
+            "US": true
+          }
+        },
+        "localizations": {
+          "en-US": {
+            "name": "Shield Monthly",
+            "description": "Screen unfamiliar calls with Shield."
+          }
+        },
+        "title": "Shield Monthly",
+        "duration": "P1M"
+      },
+      "store_state": {
+        "subscription_group_localizations": null,
+        "subscription_group_name": "Shield",
+        "trial_offer": null,
+        "preserve_current_subscription_price": null,
+        "privacy_policy_url": "https://shield-calls-isaac.web.app/privacy",
+        "review_information": {
+          "screenshot": null,
+          "notes": "Monthly and yearly subscriptions provide the same call-screening access. Carrier-dependent activation is checked before purchase. The yearly price is billed in full each year. The complimentary senior pilot requires separate App Review documentation."
+        }
+      }
+    },
+    {
+      "project_id": "proj34b083d4",
+      "product_id": null,
+      "create_revenuecat_product": {
+        "app_id": "app8cae3b0fbc",
+        "store_identifier": "shield_annual",
+        "type": "subscription",
+        "display_name": "Shield Yearly",
+        "title": "Shield Yearly"
+      },
+      "store": "app_store",
+      "common": {
+        "pricing": {
+          "territory_prices": {
+            "US": {
+              "amount_micros": 99990000,
+              "currency": "USD"
+            }
+          },
+          "equalize_missing_subscription_prices": {
+            "base_territory": "US"
+          }
+        },
+        "availability": {
+          "territories": {
+            "CA": true,
+            "US": true
+          }
+        },
+        "localizations": {
+          "en-US": {
+            "name": "Shield Yearly",
+            "description": "Screen unfamiliar calls with Shield."
+          }
+        },
+        "title": "Shield Yearly",
+        "duration": "P1Y"
+      },
+      "store_state": {
+        "subscription_group_localizations": null,
+        "subscription_group_name": "Shield",
+        "trial_offer": null,
+        "preserve_current_subscription_price": null,
+        "privacy_policy_url": "https://shield-calls-isaac.web.app/privacy",
+        "review_information": {
+          "screenshot": null,
+          "notes": "Monthly and yearly subscriptions provide the same call-screening access. Carrier-dependent activation is checked before purchase. The yearly price is billed in full each year. The complimentary senior pilot requires separate App Review documentation."
+        }
+      }
+    }
+  ]
+}

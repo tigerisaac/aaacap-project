@@ -1,0 +1,119 @@
+{
+  "recordedAt": "2026-10-17T21:07:29.699467+00:00",
+  "intendedUSDPrices": {
+    "monthly": 9.99,
+    "annual": 99.99,
+    "annualMonthlyEquivalent": 8.33
+  },
+  "appleStoreConfigurationChanged": false,
+  "newBackendDeployment": false,
+  "realCharges": false,
+  "harnessBaseRevision": "8ec7d0a09ddd458c8d9b87a85447c83249f6ae1c",
+  "runs": [
+    {
+      "name": "Test Store purchase, cancellation, failure and account isolation",
+      "bundle": "/tmp/shield-revenuecat-purchases-verified.xcresult",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792270890.288,
+      "finishTime": 1792271021.222,
+      "devicesAndConfigurations": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "F8D78742-03B7-46CD-B5E3-95D0F1FF8815",
+            "deviceName": "Shield Release VoiceOver Oct17",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 2,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Store fresh-install restore",
+      "bundle": "/tmp/shield-revenuecat-restore.xcresult",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792271124.204,
+      "finishTime": 1792271181.835,
+      "devicesAndConfigurations": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "F8D78742-03B7-46CD-B5E3-95D0F1FF8815",
+            "deviceName": "Shield Release VoiceOver Oct17",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 1,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Production subscription UI fixtures",
+      "bundle": "/tmp/shield-rc-public-pricing.xcresult",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792270835.957,
+      "finishTime": 1792271091.829,
+      "devicesAndConfigurations": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "AFC89353-FF15-4B77-ACB9-5B79C9B061DF",
+            "deviceName": "iPhone 18 Pro",
+            "modelName": "iPhone 18 Pro",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 8,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ]
+    }
+  ],
+  "earlierAttempt": {
+    "bundle": "/tmp/shield-revenuecat-purchases.xcresult",
+    "passed": 1,
+    "failed": 1,
+    "cause": "Restore assertion read a status row unloaded by SwiftUI List after scrolling. Revealing the row fixed the test; the adapter and SDK were unchanged."
+  },
+  "purchaseErrorProbe": "Installed SDK NSError values bridge correctly to ErrorCode for cancellation, pending payment and cross-account errors; no production error mapping change needed.",
+  "limits": [
+    "No Apple receipt, StoreKit purchase, TestFlight, Ask to Buy, real billing renewal/refund, or cross-account store receipt transfer verified.",
+    "Test Store restore returns CustomerInfo for the same RevenueCat identity; this is not Apple receipt restoration.",
+    "No live Shield account was enrolled, charged, or granted service."
+  ]
+}

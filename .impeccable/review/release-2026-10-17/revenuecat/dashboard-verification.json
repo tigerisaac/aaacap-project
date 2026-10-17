@@ -1,0 +1,65 @@
+{
+  "observedOn": "2026-10-17",
+  "project": "proj34b083d4",
+  "testStoreApp": "appa6baf06f9d",
+  "approvedPlan": "c3c08559-41c0-471d-b249-d9a58301b575",
+  "planApplied": true,
+  "offering": {
+    "id": "ofrngbd4e5ce913",
+    "identifier": "shield_sdk_qa",
+    "isCurrent": false
+  },
+  "entitlement": {
+    "id": "entla206ea0c43",
+    "identifier": "shield_qa_access"
+  },
+  "products": [
+    {
+      "id": "prod8503e1c21c",
+      "identifier": "shield_qa_monthly",
+      "duration": "P1M",
+      "currency": "USD",
+      "amount": 9.99
+    },
+    {
+      "id": "prod26b7d138b3",
+      "identifier": "shield_qa_annual",
+      "duration": "P1Y",
+      "currency": "USD",
+      "amount": 99.99
+    }
+  ],
+  "customerVerification": {
+    "source": "RevenueCat list-subscriptions and get-customer, independently of the app",
+    "monthly": {
+      "store": "test_store",
+      "environment": "sandbox",
+      "status": "active",
+      "grossUSD": 9.99,
+      "onlyQAEntitlement": true
+    },
+    "annual": {
+      "store": "test_store",
+      "environment": "sandbox",
+      "status": "active",
+      "grossUSD": 99.99,
+      "onlyQAEntitlement": true
+    },
+    "secondary": {
+      "subscriptions": 0,
+      "activeEntitlements": 0
+    }
+  },
+  "production": {
+    "currentOffering": "default",
+    "offeringId": "ofrng45fa3c1328",
+    "packageProductsAttached": 0,
+    "entitlement": "shield_access",
+    "entitlementProductsAttached": 0,
+    "appleProductsCreated": 0
+  },
+  "notes": [
+    "The API returned position 1 for both QA packages despite the annual create request specifying 2. Shield orders the plans explicitly by configured product and validated period; SDK/UI checks confirm monthly then annual.",
+    "QA configuration does not enable production purchases."
+  ]
+}

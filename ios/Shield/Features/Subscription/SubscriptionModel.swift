@@ -159,8 +159,8 @@ final class SubscriptionModel {
             revenueCat: pilot ? nil : .init(customerId: "22fce9c6-5c0f-4c40-b600-73710aaad7a1", publicSDKKey: "appl_synthetic",
                 entitlementId: "shield_access", offeringId: "default", monthlyProductId: "shield_monthly", annualProductId: "shield_annual"))
         if access?.purchaseAllowed == true {
-            plans = [.init(id: "shield_monthly", title: "Monthly", price: "$15.00", billingPeriod: "month", monthlyEquivalent: nil),
-                .init(id: "shield_annual", title: "Yearly", price: "$120.00", billingPeriod: "year", monthlyEquivalent: "$10.00")]
+            plans = [.init(id: "shield_monthly", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil),
+                .init(id: "shield_annual", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33")]
         }
         if state == "pending" { pendingPurchase = true; message = "Your purchase is waiting for approval. You won’t need to buy it again." }
         if state == "error" { plans = []; error = "Your connection was interrupted. Please try again." }

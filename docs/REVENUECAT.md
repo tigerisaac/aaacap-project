@@ -4,7 +4,7 @@ Updated October 17, 2026. **App integration implemented and scoped server suppor
 
 ## Agreed product choices
 
-Wheema Inc. operates Shield; support is `isaac.cw.zhang@gmail.com`. The intended launch countries are the United States and Canada. The baseline prices are USD $15 monthly and $120 billed annually ($10/month equivalent). The app displays Apple's localized prices, including the full annual charge; it never assumes the Canadian price equals the USD price. Carrier eligibility is separate from storefront availability: only Tello and T-Mobile US have current verified carrier entries. No Canadian carrier is enabled for purchase.
+Wheema Inc. operates Shield; support is `isaac.cw.zhang@gmail.com`. The intended launch countries are the United States and Canada. The baseline prices are USD $9.99 monthly and $99.99 billed annually (approximately $8.33/month equivalent). The app displays Apple's localized prices, including the full annual charge; it never assumes the Canadian price equals the USD price. Carrier eligibility is separate from storefront availability: only Tello and T-Mobile US have current verified carrier entries. No Canadian carrier is enabled for purchase.
 
 Ten selected senior accounts receive two calendar months from successful setup, without automatic billing or conversion. This is a separate account classification, retained after expiry. Pilot screens never initialize RevenueCat, show a price or offer restore/manage/purchase actions. Apple's acceptance of this complimentary access model remains an external release gate.
 
@@ -21,12 +21,30 @@ Read back October 17 through the connected RevenueCat plugin:
 | Monthly package | `$rc_monthly` / `pkgef79b2036f0` | Position 1; product not attached |
 | Annual package | `$rc_annual` / `pkge2d3b42b35e` | Position 2; product not attached |
 | Planned products | `shield_monthly`, `shield_annual` | Not created in Apple or RevenueCat |
-| Store-state plan | `c8a0b647-3b7a-4b52-bd46-da000fc2eb89` | Unapplied; validation blocked by missing Apple credentials |
-| Built-in Test Store | `appa6baf06f9d` | Empty; never used to authorize live service |
+| Earlier Apple store-state plan | `c8a0b647-3b7a-4b52-bd46-da000fc2eb89` | Never applied; RevenueCat automatically discarded the failed plan when the Test Store draft was created |
+| Revised Apple product draft | [Saved desired state](revenuecat-apple-product-draft.json) | $9.99 monthly / $99.99 annually; unapplied, Apple work deferred |
+| Built-in Test Store | `appa6baf06f9d` | Two synthetic QA products; never used to authorize live service |
+| QA store-state plan | `c3c08559-41c0-471d-b249-d9a58301b575` | Owner approved corrected prices; both products applied October 17 at 20:54 UTC, no warnings |
+| QA entitlement | `shield_qa_access` / `entla206ea0c43` | Separate from production `shield_access` |
+| QA offering | `shield_sdk_qa` / `ofrngbd4e5ce913` | Not current; production `default` preserved |
+| QA monthly product | `shield_qa_monthly` / `prod8503e1c21c` | Test Store P1M, USD $9.99; live store-state read verified |
+| QA annual product | `shield_qa_annual` / `prod26b7d138b3` | Test Store P1Y, USD $99.99; live store-state read verified |
 
 [RevenueCat offering](https://app.revenuecat.com/projects/34b083d4/product-catalog/offerings/ofrng45fa3c1328) · [iOS connection](https://app.revenuecat.com/projects/34b083d4/apps/app8cae3b0fbc).
 
 The App Store Connect API key and In-App Purchase key are not attached. No Apple transaction, receipt, product price, renewal or refund has been exercised. The saved plan is not proof of an available subscription. Another pre-existing RevenueCat project was left untouched.
+
+The owner revised the intended prices from $15/$120 to $9.99/$99.99 before approving Test Store creation. Earlier release screenshots retain the old sample prices as historical evidence. Current preview fixtures and assertions use $9.99/month, $99.99/year and approximately $8.33/month equivalent. Real purchase prices continue to come from the selected store products.
+
+The optional [SDK verification harness](../ios/Diagnostics/RevenueCat/README.md) runs the actual pinned RevenueCat SDK and Shield adapter in a separately identified simulator app. Only that temporary Debug build defines `SHIELD_REVENUECAT_TEST_STORE`; it accepts `test_` keys exclusively. Normal Debug and all Release/device builds continue to require `appl_` keys. The harness never initializes Shield authentication, API, push registration or telephone service; its QA entitlement cannot authorize the live backend. No SDK key is committed or embedded in the app.
+
+## October 17 SDK verification
+
+The real **5.96.0** SDK and Shield adapter passed three iPhone 17e/iOS 27 Test Store checks: monthly/yearly product prices, successful purchase, cancellation without error, simulated failure with recovery, customer-info notifications, restore, account switching, stale-package rejection and recovery after uninstall/reinstall with the same annual customer. RevenueCat independently showed both synthetic purchasers as `test_store` / `sandbox`, active on `shield_qa_access`, with $9.99/$99.99 simulated revenue; the secondary identity had no subscriptions or entitlements. The production entitlement still has no products and `default` remains current.
+
+The actual v1 provider response was also checked in memory with Shield's subscription verifier, using matching QA product/entitlement identifiers to ensure rejection was due to the store. It rejected both ordinary and sandbox-review service access. No production database was involved and no provider body was saved. The final three SDK tests and eight revised-price UI tests all passed with no runtime warnings. Fresh-install removal was verified before reinstall. The earlier SDK restore assertion failure was a scrolled, unloaded List row; the corrected locator passed without changing restore behavior.
+
+The normal unsigned Release archive passed the expanded QA-marker exclusion check. [Evidence](../.impeccable/review/release-2026-10-17/revenuecat/verification.json) and [dashboard verification](../.impeccable/review/release-2026-10-17/revenuecat/dashboard-verification.json) distinguish this from deferred Apple acceptance. [RevenueCat documents Test Store](https://www.revenuecat.com/docs/test-and-launch/sandbox/test-store) as its simulated purchase environment. Its restore implementation returns customer information for the same RevenueCat identity; real Apple receipt restoration and transfer still require Apple's sandbox.
 
 ## App and server contract
 
