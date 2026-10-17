@@ -4,13 +4,17 @@ import XCTest
 final class PhoneOnboardingUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
     func testSignInOffersOnlyPhoneAndPrivacy() {
-        let app = launch([])
-        XCTAssertTrue(app.textFields["sign-in-phone"].appears(timeout: 5))
-        XCTAssertFalse(app.buttons["Try sample app"].exists)
-        XCTAssertFalse(app.buttons["Use email instead"].exists)
-        XCTAssertFalse(app.textFields["Email address"].exists)
-        XCTAssertTrue(app.buttons["Privacy"].exists || app.links["Privacy"].exists)
-        capture(app, "Phone-only sign-in")
+        for appearance in ["--uitesting-light", "--uitesting-dark"] {
+            let app = launch(["--uitesting-phone-sign-in", appearance])
+            XCTAssertTrue(app.textFields["sign-in-phone"].appears(timeout: 5))
+            XCTAssertFalse(app.buttons["Try sample app"].exists)
+            XCTAssertFalse(app.buttons["Use email instead"].exists)
+            XCTAssertFalse(app.textFields["Email address"].exists)
+            XCTAssertTrue(app.buttons["Privacy"].exists || app.links["Privacy"].exists)
+            XCTAssertGreaterThanOrEqual(app.textFields["sign-in-phone"].frame.height, 52)
+            XCTAssertGreaterThanOrEqual(app.buttons["phone-sign-in-submit"].frame.height, 52)
+            capture(app, "Phone-only sign-in \(appearance)")
+        }
     }
     func testPhoneCodeErrorAndSuccessfulSignIn() {
         let app = launch(["--uitesting-phone-sign-in"])
@@ -24,7 +28,13 @@ final class PhoneOnboardingUITests: XCTestCase {
         reveal(submit, app); submit.tap()
         XCTAssertTrue(app.descendants(matching: .any)["phone-sign-in-error"].appears(timeout: 5))
         XCTAssertTrue(code.exists); capture(app, "phone-code-error")
-        code.tap(); code.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 6) + "123456"); done(app)
+        let change = app.buttons["Change number"]
+        reveal(change, app); change.tap()
+        XCTAssertEqual(phone.value as? String, "(202) 555-0102")
+        capture(app, "Phone number retained after code error")
+        reveal(submit, app); XCTAssertTrue(submit.isEnabled); submit.tap()
+        XCTAssertTrue(code.appears(timeout: 5))
+        code.tap(); code.typeText("123456"); done(app)
         reveal(submit, app); submit.tap()
         XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
     }
@@ -48,6 +58,7 @@ final class PhoneOnboardingUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
         }
     }
+
     func testCanContinueIndependently() {
         let app = launch(["--uitesting-trusted-contacts"])
         XCTAssertTrue(app.buttons["trusted-contact-no"].appears(timeout: 5))
@@ -77,6 +88,9 @@ final class PhoneOnboardingUITests: XCTestCase {
         reveal(app.textFields["sign-in-phone"], app)
         XCTAssertTrue(app.textFields["sign-in-phone"].isHittable)
         capture(app, "phone-form-large-dark")
+        let submit = app.buttons["phone-sign-in-submit"]
+        reveal(submit, app); XCTAssertTrue(submit.isHittable)
+        capture(app, "phone-action-large-dark")
         app = launch(["--uitesting-trusted-contacts"] + large)
         capture(app, "optional-contacts-large-dark")
         let no = app.buttons["trusted-contact-no"]

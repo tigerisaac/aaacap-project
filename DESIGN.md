@@ -234,8 +234,8 @@ Like the America.gov reference, serif headings are set slightly tight: `shieldHe
 
 ### Hierarchy
 
-- **Hero** (display scaled by 1.2, about -1 point tracking): the first screen's headline only, Help with unfamiliar calls, with a `.title3` supporting explanation beneath it.
-- **Display** (`Font.system(.largeTitle, design: .serif)`): tab-root large titles and full Shield brand.
+- **Hero** (display scaled by 1.2, about -1 point tracking): full introductions; retained by the legacy email simulator fixture. Current phone sign-in uses Display.
+- **Display** (`Font.system(.largeTitle, design: .serif)`): tab-root large titles, phone sign-in's short welcome/code heading and full Shield brand.
 - **Title** (`Font.system(.title, design: .serif)`): page purpose, status and call-detail headings.
 - **Section** (`Font.system(.title3, design: .serif).weight(.medium)`): reusable section headings and focused introductions. Medium weight keeps 20-point serif headings from reading lighter than the semibold row titles beneath them.
 - **Headline** (native `.headline` or `.body.weight(.semibold)`): buttons, call/message titles and actionable labels.
@@ -560,3 +560,7 @@ The owner asked for a Home status that reads at a glance, like other call-protec
 - **One resolved launch.** Continue the existing 72-point launch mark on the same adaptive surface while restoring the local session, owner history, recordings and phone-status snapshot. A slow restore may show native progress beneath the mark. Do not expose sign-in, an empty account or an unknown phone status between those local reads. A returning owner's Home is usable before network refresh; an uncached account stays in the opening state until its first account/context request finishes. Genuine sign-in, connection failures and reconfirmation remain reachable.
 - **One real action.** Set up my phone is the primary button. Resume call checks, Phone options, Try again, and Keep using Shield / Finish disconnecting are bordered buttons. Because a List turns a NavigationLink into a plain row, they are Buttons that open their route with `navigationDestination(item:)`.
 - **Accessibility sizes.** The badge drops and the words take the full width, as rows already do. There is no continuous animation, so Reduce Motion needs nothing extra and UI tests can idle.
+
+## October 17 — simpler phone sign-in
+
+The entry screen keeps the compact Shield identity and uses a short Display-size “Welcome” with one sentence about receiving a sign-in code. The field label is “Mobile number”; “US & Canada” aligns opposite it when both fit and stacks below at larger sizes. The field keeps its adaptive Card fill, visible focus outline and native keypad, with monospaced digits and a decorative phone symbol that yields its space at accessibility sizes. Valid numbers format after focus leaves the field, preserving native caret behavior while typing. Message/data-rate disclosure stays beside the form. A compact native primary action and centered, full-width Privacy target form one group beneath it. The verification step shares the same type and spacing, retains one-time-code autofill, resend timing, wrong-code recovery and Change number, and preserves the entered number. No keyboard toolbar or entrance animation is added.

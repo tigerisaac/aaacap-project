@@ -139,3 +139,17 @@ The additional broad-run screenshot pass inspected 223 captures in 39 sheets: 58
 Full logs, videos, source manifests and test bundles are retained under ignored `artifacts/private/motion-audit-2026-10-17/`. Fresh synthetic captures and contact sheets are under `.impeccable/review/motion-audit-2026-10-17/`. Only captures from the named test run are used; older simulator screenshots are excluded by capture time or test-bundle identity.
 
 Independent review dispositions and committed synthetic Quiet hours references are in [the scoped finish-review record](../.impeccable/review/motion-audit-2026-10-17/finish-review.md). No deployment or real-call verification is part of completion.
+
+## Phone sign-in refinement — October 17, 2026
+
+The owner requested less text, a better number field and cleaner alignment. Phone sign-in now uses a compact “Welcome” heading and one sentence, an aligned Mobile number/US & Canada label, native monospaced phone entry with a decorative phone symbol, a shorter primary action and centered Privacy. At accessibility sizes the labels stack and the symbol yields its space. Valid numbers format when editing ends, preserving native caret behavior. Verification, autofill, resend, Change number and error recovery remain available.
+
+The first visual pass caught weak disabled-button text in both appearances; the final build uses native primary ink for that state. Two bounded visual rounds concluded with an independent **ship** review of all nine required final captures. The [review and synthetic light/dark references](../.impeccable/review/login-refinement-2026-10-17/finish-review.md) record the scope. No user screenshot or private phone number is included.
+
+- Initial selected UI checks: **5/5** on iOS 27 and **4/4** on iOS 26.5. Final confirmation after the disabled-ink correction: **3/3** on each OS. Coverage includes light/dark, minimum target size, largest text, native keyboard, incorrect-code recovery, retained number and simulator VoiceOver reading/focus. These results do not certify physical VoiceOver gestures or real SMS delivery.
+- `npm run check`: typecheck, build and **335 unit tests passed**. The first sandboxed attempt could not bind the local APNs test listener; the permitted local rerun passed.
+- `npm run test:firebase`: **249/250 passed**, with the unchanged stopped-total test reporting `Transaction is invalid or closed`. Its isolated emulator rerun passed **1/1**; the original failure and retry are retained. No backend source was changed for this refinement.
+- Final simulator and signed device builds passed. The signed package was frozen and its signature verified before installation. Its source manifest records base `8ec7d0a` plus this login refinement; concurrent subscription edits made after the build are excluded from that package and recorded separately.
+- **Installed on the owner's iPhone 12 Pro Max at 15:51 Central, October 17.** Normal launch at 15:53 was denied because the phone was locked. Installation is confirmed; opening or visually verifying this build on the physical phone is not claimed. No test launch arguments, real SMS, calls or backend deployment were used.
+
+Private evidence: `artifacts/private/login-refinement-2026-10-17/`, including final source hashes, UI results, package hashes, signature check and separate install/launch receipts. The committed provenance identifies the final simulator captures and source hashes without device identifiers.

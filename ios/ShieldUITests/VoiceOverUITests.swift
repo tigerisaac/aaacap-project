@@ -26,14 +26,14 @@ final class VoiceOverUITests: XCTestCase {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "phone-sign-in", arguments: ["--uitesting-phone-sign-in"])
         defer { walk.finish() }
-        try walk.find("Help with unfamiliar calls", where: { $0.localizedCaseInsensitiveContains("Heading") })
+        try walk.find("Welcome", where: { $0.localizedCaseInsensitiveContains("Heading") })
         try walk.enter("Mobile number", text: "2025550102")
         try walk.activate("Text me a code")
         try walk.enter("Code", text: "000000")
         try walk.activate("Sign in")
         try walk.find("Couldn’t sign in")
         try walk.activate("Change number")
-        XCTAssertEqual(walk.app.textFields["sign-in-phone"].value as? String, "2025550102")
+        XCTAssertEqual(walk.app.textFields["sign-in-phone"].value as? String, "(202) 555-0102")
         walk.checkpoint("wrong-code-recovery")
     }
 

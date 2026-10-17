@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-17",
+  "sourceBaseCommit": "8ec7d0a09ddd458c8d9b87a85447c83249f6ae1c",
+  "sourceRecordedAt": "2026-10-17T20:47:20.232578+00:00",
+  "sourceSHA256": {
+    "ios/Shield/Features/Auth/PhoneSignInView.swift": "819270b7f947eb300331a961d765cf639543ddd4d23dca21b7612c6b72e7fc11",
+    "ios/ShieldUITests/PhoneOnboardingUITests.swift": "0742e79626ee0e3f333ed43ba813f15a097d47556f1b54309068063219482158",
+    "ios/ShieldUITests/VoiceOverUITests.swift": "ef58e698490cc197b875347573d75cb83c39ec29f96601640a806cc29b70f680"
+  },
+  "captureSurface": "iPhone 12 Pro Max simulator, iOS 27, portrait, 428-point width",
+  "captureData": "Synthetic phone sign-in fixture; empty phone field with synthetic placeholder",
+  "captureSource": "Final confirmation simulator build, also tested on iPhone 17 and iPhone 17e",
+  "imagesSHA256": {
+    "phone-light.png": "4c1f3fff270225401323f09c0607ff32be9b675e13c3764d7212a116e1df8a63",
+    "phone-dark.png": "72aece5c530ec4d9b8dff63907ed63ab1733e231166685f6915d6a350b64882c",
+    "login-preview.jpg": "f5ecdc61dbde2598cc46f984a6931fb23d65bce924198b805a4daa9434a25450"
+  },
+  "reviewDisposition": "ship",
+  "deviceInstallation": "Signed Debug package installed successfully on 2026-10-17 at 15:51 America/Chicago; normal launch denied at 15:53 because the phone was locked.",
+  "privateEvidence": "artifacts/private/login-refinement-2026-10-17/"
+}

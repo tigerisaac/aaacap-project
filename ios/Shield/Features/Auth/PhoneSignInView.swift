@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PhoneSignInView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var phone = ""
     @State private var code = ""
     @State private var challenge: PhoneChallenge?
@@ -12,6 +13,7 @@ struct PhoneSignInView: View {
     private enum Field { case phone, code }
     private var normalizedPhone: String? { MobileNumber.normalized(phone) }
     private var validCode: Bool { (4...8).contains(code.count) && code.allSatisfy(\.isNumber) }
+    private var canSubmit: Bool { !working && normalizedPhone != nil && (challenge == nil || validCode) }
     private var fixture: Bool {
         #if DEBUG && targetEnvironment(simulator)
         ProcessInfo.processInfo.arguments.contains("--uitesting-phone-sign-in")
@@ -25,55 +27,90 @@ struct PhoneSignInView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
                     ShieldBrand(compact: true)
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
-                        Text(challenge == nil ? "Help with unfamiliar calls" : "Enter your code")
-                            .shieldHeading(.hero).accessibilityAddTraits(.isHeader)
-                        Text(challenge == nil ? "Shield asks why someone is calling. You choose whether to answer." : "Type the code we texted to \(PhoneDisplay.format(normalizedPhone ?? phone)).")
-                            .font(.title3).foregroundStyle(ShieldTheme.secondaryText)
-                    }
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
-                        Text(challenge == nil ? "Your mobile number" : "Verification code").font(.headline)
-                        if challenge == nil {
-                            TextField("Mobile number", text: $phone, prompt: Text("Mobile number").foregroundStyle(ShieldTheme.secondaryText))
-                                .textContentType(.telephoneNumber).keyboardType(.phonePad)
-                                .focused($focus, equals: .phone).accessibilityIdentifier("sign-in-phone")
-                                .shieldField(focused: focus == .phone)
-                        } else {
-                            TextField("Code", text: $code, prompt: Text("Code").foregroundStyle(ShieldTheme.secondaryText))
-                                .textContentType(.oneTimeCode).keyboardType(.numberPad)
-                                .focused($focus, equals: .code).accessibilityIdentifier("sign-in-phone-code")
-                                .shieldField(focused: focus == .code)
-                        }
-                        if challenge == nil {
-                            Text("US and Canadian mobile numbers. Message and data rates may apply.")
-                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }.disabled(working)
-                    if let error { ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle").accessibilityIdentifier("phone-sign-in-error") }
-                    Button { Task { await submit() } } label: {
-                        ShieldActionLabel(title: working ? "Please wait…" : challenge == nil ? "Text me a code" : "Sign in", isWorking: working)
+                        Text(challenge == nil ? "Welcome" : "Enter your code")
+                            .shieldHeading(.display).accessibilityAddTraits(.isHeader)
+                        Text(challenge == nil ? "We’ll text you a code to sign in." : "Code sent to \(PhoneDisplay.format(normalizedPhone ?? phone)).")
+                            .font(.body).foregroundStyle(ShieldTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .shieldPrimaryButton().disabled(working || normalizedPhone == nil || (challenge != nil && !validCode))
-                    .accessibilityIdentifier("phone-sign-in-submit")
-                    // Secondary choices stack as one quiet group of full-width targets below the action.
-                    VStack(alignment: .leading, spacing: 0) {
-                        if challenge != nil {
-                            TimelineView(.periodic(from: .now, by: 1)) { context in
-                                let seconds = max(0, Int(ceil(resendAt.timeIntervalSince(context.date))))
-                                secondaryButton(seconds > 0 ? "Resend code in \(seconds)s" : "Resend code") { Task { await requestCode() } }
-                                    .disabled(working || seconds > 0)
-                                    .accessibilityIdentifier("phone-sign-in-resend")
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+                            if challenge == nil {
+                                ViewThatFits(in: .horizontal) {
+                                    HStack(alignment: .firstTextBaseline) {
+                                        Text("Mobile number").font(.headline).fixedSize()
+                                        Spacer(minLength: ShieldTheme.Spacing.regular)
+                                        Text("US & Canada").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText).fixedSize()
+                                    }
+                                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                                        Text("Mobile number").font(.headline)
+                                        Text("US & Canada").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                    }
+                                }
+                                TextField("Mobile number", text: $phone,
+                                          prompt: Text(typeSize.isAccessibilitySize ? "Number" : "(201) 555-0123").foregroundStyle(ShieldTheme.secondaryText))
+                                    .font(.title3.monospacedDigit())
+                                    .textContentType(.telephoneNumber).keyboardType(.phonePad)
+                                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                                    .focused($focus, equals: .phone)
+                                    .padding(.leading, typeSize.isAccessibilitySize ? 0 : ShieldTheme.Spacing.section)
+                                    .shieldField(focused: focus == .phone)
+                                    .overlay(alignment: .leading) {
+                                        if !typeSize.isAccessibilitySize {
+                                            Image(systemName: "phone").foregroundStyle(ShieldTheme.secondaryText)
+                                                .padding(.leading, ShieldTheme.Spacing.content)
+                                                .accessibilityHidden(true).allowsHitTesting(false)
+                                        }
+                                    }
+                                    .accessibilityIdentifier("sign-in-phone")
+                                    .accessibilityLabel("Mobile number")
+                                    .accessibilityHint("US or Canadian mobile number")
+                            } else {
+                                Text("Verification code").font(.headline)
+                                TextField("Code", text: $code, prompt: Text("Code").foregroundStyle(ShieldTheme.secondaryText))
+                                    .font(.title3.monospacedDigit())
+                                    .textContentType(.oneTimeCode).keyboardType(.numberPad)
+                                    .focused($focus, equals: .code).accessibilityIdentifier("sign-in-phone-code")
+                                    .shieldField(focused: focus == .code)
                             }
-                            secondaryButton("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
-                                .disabled(working)
+                            if challenge == nil {
+                                Text("Message and data rates may apply.")
+                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }.disabled(working)
+                        if let error { ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle").accessibilityIdentifier("phone-sign-in-error") }
+                        Button { Task { await submit() } } label: {
+                            HStack(spacing: ShieldTheme.Spacing.regular) {
+                                if working { ProgressView().tint(.primary) }
+                                Text(working ? "Please wait…" : challenge == nil ? "Text me a code" : "Sign in")
+                                    .fixedSize(horizontal: false, vertical: true).multilineTextAlignment(.center)
+                            }
+                            .font(.headline).foregroundStyle(canSubmit ? ShieldTheme.actionInk : Color.primary)
+                            .frame(maxWidth: .infinity).padding(.vertical, ShieldTheme.Spacing.compact)
                         }
-                        if let base = model.configuration.baseURL {
-                            Link(destination: base.appending(path: "privacy")) {
-                                Text("Privacy").foregroundStyle(ShieldTheme.action)
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
-                                    .contentShape(.rect)
-                            }.buttonStyle(.plain)
+                        .shieldPrimaryButton().disabled(!canSubmit)
+                        .accessibilityIdentifier("phone-sign-in-submit")
+                        // Secondary choices stack as one quiet group of full-width targets below the action.
+                        VStack(alignment: .leading, spacing: 0) {
+                            if challenge != nil {
+                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                    let seconds = max(0, Int(ceil(resendAt.timeIntervalSince(context.date))))
+                                    secondaryButton(seconds > 0 ? "Resend code in \(seconds)s" : "Resend code") { Task { await requestCode() } }
+                                        .disabled(working || seconds > 0)
+                                        .accessibilityIdentifier("phone-sign-in-resend")
+                                }
+                                secondaryButton("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
+                                    .disabled(working)
+                            }
+                            if let base = model.configuration.baseURL {
+                                Link(destination: base.appending(path: "privacy")) {
+                                    Text("Privacy").font(.subheadline).foregroundStyle(ShieldTheme.action)
+                                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                        .contentShape(.rect)
+                                }.buttonStyle(.plain)
+                            }
                         }
                     }
                 }
@@ -82,6 +119,10 @@ struct PhoneSignInView: View {
             }
             .background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
+            .onChange(of: focus) { old, new in
+                // Format after editing so native insertion, deletion and selection keep their caret.
+                if old == .phone, new != .phone, let number = normalizedPhone { phone = PhoneDisplay.format(number) }
+            }
         }
     }
 
