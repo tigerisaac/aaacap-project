@@ -1,5 +1,9 @@
 # Status
 
+## October 16 — outbound-capacity voicemail fallback verified synthetically
+
+The existing deployed call-control handler sends an admitted caller to Shield voicemail when recipient dialing is rejected or its outbound leg ends before acceptance. New regressions hold ten conversations connected and exercise both an immediate HTTP rejection and a later rejection callback for the eleventh. Both preserve the existing conversations, keep the extra caller's capture correctly attributed, reject late acceptance/repeated dialing, release its reservation on hangup, and allow a later normal offer after capacity frees. Typecheck/build, 276 unit tests and all 215 emulator tests passed. The relevant runtime modules match the verified pilot deployment; only tests/docs changed. No live action or real-call test occurred. Incoming admission limits still apply. [Overflow behavior and limits](PAID-PILOT-25.md#overflow-at-ten-outbound-calls).
+
 ## October 16 — 25-user capacity release deployed; Telnyx outbound ceiling remains 10
 
 With owner approval, the scoped release is live on bridge **`shield-live-00016-xgr`**, API **`shieldapi-00024-lin`**, and updated call-job, expiry, cleanup and alert workers. It supports 25 enrolled people/active incoming calls with isolated quotas and reduced admission contention. The bridge allows four maximum instances; all affected services retain zero minimum instances and request-based CPU. Screening v158, message policy v4, secret versions, IAM and unrelated function revisions are preserved.

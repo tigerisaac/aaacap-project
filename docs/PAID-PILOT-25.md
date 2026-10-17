@@ -38,6 +38,14 @@ Bridge **`shield-live-00016-xgr`** and API **`shieldapi-00024-lin`** are live, w
 
 Phone sign-in and contact texts remain unconfigured: the runtime lacks `TELNYX_VERIFY_PROFILE_ID` and `SMS_ALERTS`, and the number has no messaging profile. Their deployed code does not establish provider activation or SMS delivery.
 
+### Overflow at ten outbound calls
+
+The ten-call Telnyx limit applies to outbound recipient legs, including ringing and private offers. An additional admitted inbound call can still be screened. If its recipient dial is rejected immediately, the existing call-control handler transitions it to voicemail and plays the existing message prompt; if Telnyx creates a recipient leg and then reports its hangup before acceptance, that path also offers voicemail. The inbound record-from-answer capture continues without opening another outbound channel. Existing connected calls are unaffected. Duplicate offers do not redial, and late press-1 callbacks cannot connect a call already sent to voicemail.
+
+This behavior is already present in deployed API `shieldapi-00024-lin`; the call-control, provider and forwarding-store modules match the verified deployment artifact. The October 16 follow-up adds explicit simulated ten-connected-plus-one-overflow coverage for immediate HTTP rejection and asynchronous recipient hangup, including capture ownership, reservation cleanup, and a subsequent normal offer after one existing call ends. This does not establish actual Telnyx saturation behavior. It also does not bypass inbound capacity, routing, daily quotas or the existing one-active-call-per-person admission rule: a call rejected before admission cannot use Shield's voicemail fallback.
+
+Follow-up validation passed `npm run check` (typecheck, 276 unit tests, build) and the complete Firestore suite (215/215, including both new overflow cases). Only tests and documentation changed; no deployment, live settings, calls or messages were needed.
+
 Before accepting the full paid cohort:
 
 1. **Get account outbound capacity approved for 30**, independently of application/profile settings. No support message has been sent. The read-only planner deliberately reports account capacity as unverified because resource GET responses do not establish it.

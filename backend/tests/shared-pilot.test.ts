@@ -115,6 +115,60 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     expect((await arrive(1)).state).toBe('screening');
     expect((await db.doc(`forwardingUsage/${day}-${people[0]!.id}`).get()).data()?.calls).toBe(100);
   });
+  it.each(['http-rejection', 'hangup-callback'] as const)('keeps ten connected calls intact and sends the eleventh to its own voicemail after %s', async failure => {
+    const connected = await Promise.all(people.slice(0, 10).map((_, n) => offer(n)));
+    await Promise.all(connected.map(async c => {
+      await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+      await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    }));
+    expect(action.mock.calls.filter(x => x[1] === 'bridge')).toHaveLength(10);
+    action.mockClear(); request.mockClear();
+    if (failure === 'http-rejection') {
+      // Exercise the actual HTTP adapter as well as the call-control fallback, without a network request.
+      const rejecting = new CallControlProvider(config, vi.fn(async () => Response.json({ errors: [{ title: 'User channel limit exceeded' }] }, { status: 403 })));
+      request.mockImplementationOnce((...args: Parameters<CallControlProvider['request']>) => rejecting.request(...args));
+    }
+    const overflow = await offer(10);
+    const rejectedChild = overflow.childSid ?? randomUUID();
+    const rejected = event(rejectedChild, 'call.hangup', {
+      client_state: provider.state(overflow.id, 'recipient'), from: config.TELNYX_NUMBER, to: people[10]!.phone,
+      hangup_cause: 'call_rejected', sip_hangup_cause: '403'
+    });
+    if (failure === 'hangup-callback') await cc.handle(rejected);
+    expect((await cc.call(overflow.id))!).toMatchObject({ state: 'voicemail', outcome: 'voicemail', captureFromAnswer: true });
+    expect(action).toHaveBeenCalledWith(overflow.parentSid, 'playback_start', expect.objectContaining({ audio_url: announcementAudio(CAPTURE_VOICEMAIL)!.url }));
+    expect(action.mock.calls.some(x => x[0] === overflow.parentSid && ['hangup', 'record_stop'].includes(x[1]))).toBe(false);
+
+    // Duplicate offer/failure callbacks and a late recipient acceptance cannot redial or connect this caller.
+    await cc.handle(event(overflow.parentSid, 'call.playback.ended', { client_state: provider.state(overflow.id, 'offer') }));
+    await cc.handle(rejected);
+    await cc.handle(event(rejectedChild, 'call.gather.ended', { client_state: provider.state(overflow.id, 'accept'), digits: '1' }));
+    expect(request.mock.calls.filter(x => x[0] === '/calls')).toHaveLength(1);
+    expect(action.mock.calls.some(x => x[1] === 'bridge' || x[1] === 'record_stop')).toBe(false);
+    expect(action.mock.calls.filter(x => x[0] === overflow.parentSid && x[1] === 'playback_start'
+      && x[2].audio_url === announcementAudio(CAPTURE_VOICEMAIL)!.url)).toHaveLength(1);
+
+    await cc.handle(event(overflow.parentSid, 'call.playback.ended', { client_state: provider.state(overflow.id, 'voicemail') }));
+    // Record-from-answer continues; no second recording is started and the capture is attributed to this caller.
+    expect(action.mock.calls.some(x => x[1] === 'record_start')).toBe(false);
+    const recording = randomUUID();
+    await cc.handle(event(overflow.parentSid, 'call.recording.saved', { recording_id: recording,
+      recording_started_at: new Date(now).toISOString(), recording_ended_at: new Date(now + 30_000).toISOString() }));
+    expect((await db.collection('forwardingRecordings').doc(recording).get()).data()).toMatchObject({ callId: overflow.id, capture: true, duration: 30 });
+    await cc.handle(event(overflow.parentSid, 'call.hangup'));
+    expect((await cc.call(overflow.id))!).toMatchObject({ state: 'ended', outcome: 'voicemail' });
+    expect((await f.controlRef(people[10]!.id).get()).data()?.activeCallId).toBeUndefined();
+    expect(Object.keys((await db.doc('sharedCapacity/calls').get()).data()?.leases ?? {})).toHaveLength(10);
+    for (const c of connected) {
+      expect((await cc.call(c.id))!.state).toBe('accepted');
+      expect(action.mock.calls.some(x => [c.parentSid, c.childSid].includes(x[0]))).toBe(false);
+    }
+
+    // Once an existing conversation ends, a later caller can be offered normally.
+    await cc.handle(event(connected[0]!.parentSid, 'call.hangup'));
+    const next = await offer(11);
+    expect(next.state).toBe('offering'); expect(next.childSid).toBeDefined();
+  }, 60_000);
   it('pins the verified recipient even when the participant phone record later changes', async () => {
     const c = await arrive(); const ends = f.callEndpoints(c);
     await s.personRef(c.participantId).update({ phoneEnc: s.vault.seal(people[1]!.phone, `person:${c.participantId}:phone`) });
