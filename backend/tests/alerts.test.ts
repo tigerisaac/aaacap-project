@@ -24,7 +24,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
   const tokens = { owner: 'aa'.repeat(32), helper: 'bb'.repeat(32), viewer: 'cc'.repeat(32) };
   const auth: AuthProvider = {
     async identify(token) { if (!['owner', 'helper', 'viewer', 'stranger'].includes(token)) throw new HttpError(401, 'sign_in_required'); return { subject: token }; },
-    async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}
+    async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {}
   };
   let now: number, s: CloudStore, app: Awaited<ReturnType<typeof buildCloudApp>>;
   const sent: { token: string; body: string }[] = [];

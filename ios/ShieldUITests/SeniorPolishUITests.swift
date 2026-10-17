@@ -286,7 +286,7 @@ final class SeniorPolishUITests: XCTestCase {
         reveal(completion, in: app); completion.tap()
         XCTAssertTrue(app.staticTexts["Couldn’t save your choice"].appears(timeout: 5))
         reveal(completion, in: app); XCTAssertTrue(completion.isEnabled)
-        reveal(protection, in: app); XCTAssertEqual(protection.value as? String, "0")
+        reveal(protection, in: app); XCTAssertEqual(protection.value as? String, "1")
         capture(app, "protection-save-recovery-large-dark")
     }
 

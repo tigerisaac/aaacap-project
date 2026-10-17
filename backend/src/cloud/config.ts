@@ -33,5 +33,5 @@ export const cloudSchema = z.object({
     privateKey: z.string().includes('PRIVATE KEY') }).strict().optional(),
 });
 export type CloudConfig = z.infer<typeof cloudSchema>;
-export const CONSENT_VERSION = 'shield-pilot-2026-09-v1';
+export const CONSENT_VERSION = 'shield-2026-10-16-privacy-v2';
 export const RETENTION_MS = 30 * 86400_000;

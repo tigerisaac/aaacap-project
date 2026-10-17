@@ -10,6 +10,8 @@ export interface AuthProvider {
   verifyCode(email: string, token: string): Promise<Record<string, unknown>>;
   refresh(token: string): Promise<Record<string, unknown>>;
   logout(token: string): Promise<void>;
+  /** Server-only, after account data cleanup. The UID must come from identify(), never a request body. */
+  deleteAccount(uid: string): Promise<void>;
   /** Server-only: called after the phone verification provider accepts a one-time challenge. */
   signInVerifiedPhone?(phone: string): Promise<Record<string, unknown>>;
 }

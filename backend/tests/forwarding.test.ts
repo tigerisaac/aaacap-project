@@ -28,7 +28,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
   let inboundFrom: string, inboundTo: string;
   const from = '+12025550102';
   let now: number, s: CloudStore, f: ForwardingStore, app: Awaited<ReturnType<typeof buildCloudApp>>;
-  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {} };
+  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {} };
   const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': PERSON });
   const approve = { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true } as const;
   const post = (step: string, extra: Record<string, string> = {}, signed = true) => {

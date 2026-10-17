@@ -16,7 +16,7 @@ extension AppState {
     }
 
     func startAudioSync() {
-        guard signedIn, !isPreview, !isDemo, audioSyncTask == nil else { return }
+        guard signedIn, !isDeletingAccount, !isPreview, !isDemo, audioSyncTask == nil else { return }
         audioSyncTask = Task { await syncMessageAudio(); audioSyncTask = nil }
     }
 

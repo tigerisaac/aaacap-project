@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { HttpError, type AuthProvider, type Identity } from './auth.js';
 import type { CloudConfig } from './cloud/config.js';
 
-type FirebaseAdmin = Pick<Auth, 'verifyIdToken' | 'revokeRefreshTokens'> & Partial<Pick<Auth, 'getUserByPhoneNumber' | 'createUser' | 'createCustomToken'>>;
+type FirebaseAdmin = Pick<Auth, 'verifyIdToken' | 'revokeRefreshTokens' | 'deleteUser'> & Partial<Pick<Auth, 'getUserByPhoneNumber' | 'createUser' | 'createCustomToken'>>;
 const sessionSchema = z.object({ idToken: z.string().min(1), refreshToken: z.string().min(1),
   expiresIn: z.coerce.number().int().positive().max(86400) });
 
@@ -97,6 +97,13 @@ export class FirebaseAuth implements AuthProvider {
     const identity = await this.identify(token);
     try { await this.service().revokeRefreshTokens(identity.subject); }
     catch { throw new HttpError(503, 'sign_in_unavailable'); }
+  }
+  async deleteAccount(uid: string): Promise<void> {
+    try { await this.service().deleteUser(uid); }
+    catch (error) {
+      // Cleanup can be retried after a lost provider response.
+      if ((error as { code?: string }).code !== 'auth/user-not-found') throw new HttpError(503, 'account_deletion_unavailable');
+    }
   }
   private async session(value: unknown): Promise<Record<string, unknown>> {
     const parsed = sessionSchema.safeParse(value);

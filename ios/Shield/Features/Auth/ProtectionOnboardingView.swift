@@ -4,7 +4,7 @@ struct ProtectionOnboardingView: View {
     @Environment(AppState.self) private var model
     let monitoring: ForwardingStatus.Monitoring?
     let participantID: UUID
-    @State private var enabled = true
+    @State private var enabled = false
     @State private var working = false
     @State private var error: String?
 

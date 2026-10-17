@@ -1,5 +1,15 @@
 # Status
 
+## October 16 — App Store privacy and deletion first pass (not deployed)
+
+[App Store release checklist](APP-STORE-RELEASE.md) is the single current release list. It separates implementation, legal/provider/Apple approval, production rollout and real-phone evidence. The proposed commercial model is a free download with public Apple subscriptions and two months of complimentary access for ten selected seniors, without sales screens or automatic conversion. Billing, pilot grants and App Review acceptance of that entitlement approach are still unimplemented/unconfirmed.
+
+Local changes name Telnyx, Soniox and OpenAI before forwarding consent, correct cloud/device retention wording, start optional connected-call monitoring off, and add the UserDefaults required-reason and Contacts manifest declarations. Consent versions changed: coordinate client/backend rollout and existing-user re-consent before deployment. The public policy remains a pilot policy pending the complete commercial/legal review.
+
+Account deletion is now reachable before enrollment and from Settings. The authenticated account determines deletion scope; helper deletion preserves other people's accounts. Cleanup handles multiple owned profiles, paginated records, sharing/contact relationships and legacy job records, then deletes the Firebase identity. This iPhone's message/history library is erased first and outstanding account loads are cancelled. Provider erasure jobs remain available. The existing forwarding restoration guard is deliberately retained: verified restoration, durable deletion/retry completion, concurrent worker/API behavior, other-device caches and contact restoration backups remain release blockers. Recording/notice timing is also unresolved; this pass changes disclosure, not recording order.
+
+Validation: `npm run check` passed (277 unit tests); the final `npm run test:firebase` passed all 220 tests. An earlier full emulator run hit a shared-capacity transaction failure and a subsequent count failure; the complete rerun passed. Swift audio/history storage failure tests and a Release simulator build passed. Seven focused consent/deletion UI tests passed on each of iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27 (14 executions), including largest text/dark mode and cancellation. Screenshot review caught and corrected an invisible destructive-button label; final screenshots confirm the native label is visible. A provider-disclosure test selector was corrected before the final passing run. These are local/synthetic checks, not a distribution archive, legal approval or real-call acceptance. No production deployment, phone call, message, enrollment, purchase or carrier-setting change occurred.
+
 ## October 16 — outbound-capacity voicemail fallback verified synthetically
 
 The existing deployed call-control handler sends an admitted caller to Shield voicemail when recipient dialing is rejected or its outbound leg ends before acceptance. New regressions hold ten conversations connected and exercise both an immediate HTTP rejection and a later rejection callback for the eleventh. Both preserve the existing conversations, keep the extra caller's capture correctly attributed, reject late acceptance/repeated dialing, release its reservation on hangup, and allow a later normal offer after capacity frees. Typecheck/build, 276 unit tests and all 215 emulator tests passed. The relevant runtime modules match the verified pilot deployment; only tests/docs changed. No live action or real-call test occurred. Incoming admission limits still apply. [Overflow behavior and limits](PAID-PILOT-25.md#overflow-at-ten-outbound-calls).
@@ -519,6 +529,8 @@ October 10 completion validation: the end-to-end guided setup and Done/later-res
 - **Two-way audio quality** on connected calls.
 
 ## Open work, in priority order
+
+**Historical list below.** The current release gates are maintained in [App Store release checklist](APP-STORE-RELEASE.md). Several tasks below were superseded by the dated October 13–16 releases above; do not treat this old ordering as the launch plan.
 
 1. **Supervised test calls.** Install a new iOS build on the enrolled iPhone, turn on connected-call protection in the app, and open a test window. Then cover:
    - an ordinary caller

@@ -5,7 +5,6 @@ struct TrialSetupView: View {
     let reload: () async -> Void
     @Environment(AppState.self) private var model
     @State private var working = false
-    @State private var confirmDeletion = false
     @State private var confirmPause = false
 
     var body: some View {
@@ -33,14 +32,9 @@ struct TrialSetupView: View {
         }
         }
         ShieldGroup {
-            Button("Delete my information", role: .destructive) { confirmDeletion = true }
-                .disabled(working || model.isDemo)
-                .alert("Delete your information?", isPresented: $confirmDeletion) {
-                    Button("Delete my information", role: .destructive, action: deleteData)
-                    Button("Keep my information", role: .cancel) {}
-                } message: {
-                    Text("Your calls, saved numbers, and sharing will be deleted. You’ll be signed out.")
-                }
+            NavigationLink { DeleteAccountView() } label: {
+                ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
+            }
         }
     }
 
@@ -58,16 +52,4 @@ struct TrialSetupView: View {
         }
     }
 
-    private func deleteData() {
-        guard !model.isPreview, !model.isDemo, !working else { return }
-        Task {
-            working = true
-            defer { working = false }
-            do {
-                let _: APIResponses.Empty = try await model.api.send("/api/account/delete", method: "POST", participantID: setup.participantId)
-                try await model.deleteLocalMessageLibrary()
-                await model.signOut()
-            } catch { model.handle(error) }
-        }
-    }
 }

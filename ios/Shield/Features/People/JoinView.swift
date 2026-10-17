@@ -37,6 +37,9 @@ struct JoinView: View {
                     }
                 } footer: { Text("Someone added you as a trusted contact? Review it here.") }
                 ShieldGroup {
+                    NavigationLink { DeleteAccountView() } label: {
+                        ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
+                    }
                     Button("Sign out") { confirmSignOut = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         .alert("Sign out?", isPresented: $confirmSignOut) {
                             Button("Sign out") { Task { await model.signOut() } }

@@ -7,7 +7,6 @@ struct SetupView: View {
     @State private var contactSaved = false
     @State private var confirmConsent = false
     @State private var confirmRestore = false
-    @State private var confirmDeletion = false
     @State private var confirmPause = false
     @State private var loadError: String?
     @State private var loading = true
@@ -63,7 +62,7 @@ struct SetupView: View {
                                 Button("I agree") { Task { await consent(setup) } }
                                 Button("Not now", role: .cancel) {}
                             } message: {
-                                Text("Your phone sends some calls to Shield. The caller’s words go to our phone and AI providers for a scam check. Shield captures messages from the start and saves voicemail and potentially useful notices with playable audio and a short summary. Full transcripts aren’t saved. Answered calls and clear scams aren’t saved. Calls and messages expire within 30 days. See Privacy for details.")
+                                Text(PrivacyCopy.screeningProviders + " " + PrivacyCopy.messageRetention + " " + PrivacyCopy.screeningConsent)
                             }
                     }
                     if let profile = setup.carrierProfile {
@@ -94,18 +93,14 @@ struct SetupView: View {
                     Button("Disconnect Shield") { confirmRestore = true }
                         .disabled(model.isDemo || working || setup.status == "restoring")
                         .alert("Disconnect Shield?", isPresented: $confirmRestore) {
-                            Button("Start disconnecting") { Task { await requestRestoration(deleting: false) } }
+                            Button("Start disconnecting") { Task { await requestRestoration() } }
                             Button("Cancel", role: .cancel) {}
                         } message: { Text("Shield stops ringing you. Ask your helper to finish restoring ordinary calls and voicemail. Keep the app until both work.") }
                     if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Ask for setup help", destination: url) }
-                    ShieldDisclosure("Delete my account") {
-                        Button("Delete my account", role: .destructive) { confirmDeletion = true }
-                            .disabled(model.isDemo || working)
-                            .alert("Delete your account?", isPresented: $confirmDeletion) {
-                                Button("Request deletion", role: .destructive) { Task { await requestRestoration(deleting: true) } }
-                                Button("Keep my account", role: .cancel) {}
-                            } message: { Text("First, your helper must bring back ordinary calls. Then your Shield information can be deleted.") }
+                    NavigationLink { DeleteAccountView() } label: {
+                        ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
                     }
+
                 } footer: { Text("Deleting the app alone won’t disconnect Shield.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
             } else if loading { ShieldGroup { ShieldLoadingView(title: "Getting your phone setup…") } }
         }
@@ -166,12 +161,12 @@ struct SetupView: View {
             await model.loadContext()
         } catch { model.handle(error) }
     }
-    private func requestRestoration(deleting: Bool) async {
+    private func requestRestoration() async {
         guard !model.isPreview, !model.isDemo, !working else { return }
         working = true
         defer { working = false }
         do {
-            let _: APIResponses.Empty = try await model.api.send(deleting ? "/api/account/delete" : "/api/setup/restore",
+            let _: APIResponses.Empty = try await model.api.send("/api/setup/restore",
                 method: "POST", participantID: model.selectedPersonID)
             await load()
             await model.loadContext()

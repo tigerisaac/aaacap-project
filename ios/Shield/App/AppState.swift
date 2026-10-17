@@ -17,6 +17,7 @@ final class AppState {
     var audioSyncTask: Task<Void, Never>?
     let configuration: BackendConfiguration
     var signedIn = false
+    var isDeletingAccount = false
     var isPreview = false
     var isDemo = false
     /// Debug-simulator-only sample account that also shows owner-only screens the demo hides. Never contacts the service.
@@ -131,6 +132,7 @@ final class AppState {
     }
 
     func select(_ person: Person) async {
+        guard !isDeletingAccount else { return }
         protectionOnboarding = nil
         trustedContactsOnboarding = false
         protectionParticipantID = nil
@@ -161,7 +163,7 @@ final class AppState {
         }
         #endif
         if isPreview { loadPreview(); return }
-        guard signedIn, !isLoading else { return }
+        guard signedIn, !isLoading, !isDeletingAccount else { return }
         let generation = sessionGeneration
         isLoading = true
         defer { isLoading = false }
@@ -251,6 +253,7 @@ final class AppState {
     }
 
     func loadContext() async {
+        guard !isDeletingAccount else { return }
         guard let id = selectedPersonID else { return }
         if isPreview { loadPreview(); return }
         let generation = sessionGeneration
@@ -272,6 +275,7 @@ final class AppState {
     }
 
     func loadCalls(more: Bool = false) async {
+        guard !isDeletingAccount else { return }
         guard let id = selectedPersonID else { return }
         if callsFilter != filter {
             calls = offlineHistories.first { $0.person.id == id }?.calls.filter(filter.includes) ?? []
@@ -359,6 +363,12 @@ final class AppState {
         errorMessage = nil
         showingError = false
         await api.signOut()
+    }
+
+    func invalidateAccountLoads() {
+        sessionGeneration += 1
+        audioSyncTask?.cancel()
+        audioSyncTask = nil
     }
 
     func handleSessionFailure(_ error: Error) {

@@ -2,6 +2,43 @@ import XCTest
 
 @MainActor
 final class ShieldUITests: XCTestCase {
+    func testAccountDeletionIsReachableBeforeEnrollmentAndCanBeCancelled() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-account-error"]
+        app.launch()
+        let entry = app.buttons["Delete account"]
+        XCTAssertTrue(entry.appears(timeout: 5))
+        entry.tap()
+        let remove = app.buttons["delete-account-confirm"]
+        for _ in 0..<5 where !remove.isHittable { app.swipeUp() }
+        XCTAssertTrue(remove.isHittable)
+        capture(app, name: "Account deletion before enrollment")
+        remove.tap()
+        XCTAssertTrue(app.alerts["Delete your account?"].appears(timeout: 5))
+        app.alerts.buttons["Keep my account"].tap()
+        XCTAssertTrue(remove.exists)
+        XCTAssertFalse(app.alerts["Delete your account?"].exists)
+    }
+
+    func testAccountDeletionLargestTextKeepsConfirmationReachable() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-account-error", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let entry = app.buttons["Delete account"]
+        for _ in 0..<8 where !entry.isHittable { app.swipeUp() }
+        XCTAssertTrue(entry.isHittable)
+        entry.tap()
+        capture(app, name: "Account deletion large dark top")
+        let remove = app.buttons["delete-account-confirm"]
+        for _ in 0..<8 where !remove.isHittable { app.swipeUp() }
+        XCTAssertTrue(remove.isHittable)
+        capture(app, name: "Account deletion large dark action")
+        remove.tap()
+        XCTAssertTrue(app.alerts["Delete your account?"].appears(timeout: 5))
+        app.alerts.buttons["Keep my account"].tap()
+        XCTAssertTrue(remove.exists)
+    }
+
     func testWelcomeEmailValidationAndDemoEntry() {
         let app = XCUIApplication()
         app.launchArguments += ["--uitesting-email-sign-in"]
@@ -83,27 +120,27 @@ final class ShieldUITests: XCTestCase {
         capture(app, name: "Today large text")
     }
 
-    func testProtectionOnboardingDefaultsOnAndContinues() {
+    func testProtectionOnboardingDefaultsOffAndContinues() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-protection-onboarding"]
         app.launch()
         let toggle = app.switches["onboarding-protection-toggle"]
         XCTAssertTrue(toggle.appears(timeout: 5))
-        XCTAssertEqual(toggle.value as? String, "1")
+        XCTAssertEqual(toggle.value as? String, "0")
         capture(app, name: "Onboarding protection default")
         app.buttons["onboarding-protection-continue"].tap()
         XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
         XCTAssertFalse(toggle.exists)
     }
 
-    func testProtectionOnboardingCanBeTurnedOff() {
+    func testProtectionOnboardingCanBeTurnedOn() {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-protection-onboarding"]
         app.launch()
         let toggle = app.switches["onboarding-protection-toggle"]
         XCTAssertTrue(toggle.appears(timeout: 5))
         toggle.tap()
-        XCTAssertEqual(toggle.value as? String, "0")
+        XCTAssertEqual(toggle.value as? String, "1")
         app.buttons["onboarding-protection-continue"].tap()
         XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
     }
@@ -129,7 +166,7 @@ final class ShieldUITests: XCTestCase {
         app.switches["onboarding-protection-toggle"].tap()
         app.buttons["onboarding-protection-continue"].tap()
         XCTAssertTrue(app.staticTexts["Couldn’t save your choice"].appears(timeout: 5))
-        XCTAssertEqual(app.switches["onboarding-protection-toggle"].value as? String, "0")
+        XCTAssertEqual(app.switches["onboarding-protection-toggle"].value as? String, "1")
         XCTAssertFalse(app.staticTexts["demoBanner"].exists)
         XCTAssertTrue(app.buttons["onboarding-protection-continue"].isEnabled)
     }
@@ -148,7 +185,7 @@ final class ShieldUITests: XCTestCase {
         }
         XCTAssertTrue(toggle.isHittable)
         toggle.tap()
-        XCTAssertEqual(toggle.value as? String, "0")
+        XCTAssertEqual(toggle.value as? String, "1")
         for _ in 0..<8 where !continueButton.isHittable { scroll.swipeUp() }
         XCTAssertGreaterThanOrEqual(continueButton.frame.minY, toggle.frame.maxY)
         XCTAssertTrue(app.buttons["onboarding-protection-continue"].isHittable)

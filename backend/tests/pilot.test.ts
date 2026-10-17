@@ -24,7 +24,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Several people on their o
   const admin = initializeApp({ projectId: project }, 'pilot-tests'), db = getFirestore(admin);
   const sid = (n: number) => `10123456-1234-4321-1234-${n.toString(16).padStart(12, '0')}`;
   const approve = { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true } as const;
-  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {} };
+  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {} };
   const startProbe = vi.fn<(id: string, from: string, to: string) => Promise<void>>();
   let now: number, s: CloudStore, f: ForwardingStore, app: Awaited<ReturnType<typeof buildCloudApp>>;
   const inbound = new Map<string, { from: string; to: string }>();

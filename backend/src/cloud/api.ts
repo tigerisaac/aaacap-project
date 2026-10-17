@@ -13,6 +13,7 @@ import { DEVICE_TTL_MS, forgetDevices, helperAlertsEnabled, queueAlert } from '.
 import { VOICEMAIL_LIMITS } from './voicemail-check.js';
 import { stoppedTotal } from './stopped-total.js';
 import { trustedContactsAvailable } from './trusted-contacts.js';
+import { deleteAccount } from './account-deletion.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -151,23 +152,14 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
     await access(request, true); throw new HttpError(409, 'trial_has_no_forwarding');
   });
   app.post('/api/account/delete', async request => {
-    const ctx = await access(request, true);
-    if (ctx.participant.forwardingConsent) throw new HttpError(409, 'restore_forwarding_before_deletion');
-    await store.personRef(ctx.participant.id).update({ status: 'offboarded' });
-    for (const collection of ['callSessions', 'grants', 'memberships', 'alertContacts', 'alertDeliveries', 'forwardingAudio', 'forwardingAudioChunks', 'voicemailChecks']) {
-      const docs = await store.db.collection(collection).where('participantId', '==', ctx.participant.id).get();
-      if (!docs.empty) {
-        const writer = store.db.bulkWriter(); docs.docs.forEach(doc => {
-          writer.delete(doc.ref);
-          // Older check jobs did not carry participantId.
-          if (collection === 'callSessions') writer.delete(store.db.collection('voicemailChecks').doc(doc.id));
-        }); await writer.close();
-      }
-    }
-    await store.db.recursiveDelete(store.personRef(ctx.participant.id));
-    await forgetDevices(store, ctx.uid);
-    await auth.logout(bearer(request));
-    return { deleted: true };
+    const identity = await auth.identify(bearer(request));
+    const selected = request.headers['x-shield-participant'];
+    return deleteAccount(store, auth, identity, selected === undefined ? undefined : uuid.parse(selected));
+  });
+  app.get('/api/account/deletion', async request => {
+    const uid = await identify(request);
+    const owned = await store.db.collection('participants').where('ownerUid', '==', uid).get();
+    return { restorationRequired: owned.docs.some(doc => !!doc.data().forwardingConsent) };
   });
 
   app.post('/api/trusted-numbers/sync', async request => {

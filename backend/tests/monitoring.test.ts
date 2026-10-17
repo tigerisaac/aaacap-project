@@ -28,7 +28,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   const from = '+12025550102';
   let now: number, s: CloudStore, f: ForwardingStore, monitor: CallMonitor, app: Awaited<ReturnType<typeof buildCloudApp>>;
   const update = vi.fn<(sid: string, body: Record<string, string>) => Promise<void>>();
-  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {} };
+  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {} };
   const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': PERSON });
   const post = (step: string, extra: Record<string, string> = {}, signed = true) => {
     const url = `/forwarding/${config.TRIAL_PROXY_SECRET}/${step}`;

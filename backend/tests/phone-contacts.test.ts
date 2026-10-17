@@ -22,7 +22,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
   const mint = vi.fn(async (_phone: string) => ({ accessToken: 'synthetic', refreshToken: 'refresh', expiresIn: 3600 }));
   const auth: AuthProvider = {
     async identify(token) { return { subject: token, ...(['contact', 'recycled'].includes(token) ? { verifiedPhone: PHONE } : token === 'other' ? { verifiedPhone: '+12025550103' } : {}) }; },
-    async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, signInVerifiedPhone: mint
+    async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {}, signInVerifiedPhone: mint
   };
   const sms = vi.fn(async (_phone: string, _body: string) => 'submitted' as const);
   const push = vi.fn(async () => 'sent' as const);

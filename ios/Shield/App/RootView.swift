@@ -32,6 +32,7 @@ struct RootView: View {
         Group {
             mainContent
         }
+        .disabled(model.isDeletingAccount)
         .preferredColorScheme(previewColorScheme)
         .toggleStyle(ShieldSwitchStyle())
         .onAppear {

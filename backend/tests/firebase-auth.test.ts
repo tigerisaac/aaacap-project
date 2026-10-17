@@ -5,9 +5,19 @@ import { cloudSchema } from '../src/cloud/config.js';
 
 const config = { FIREBASE_PROJECT_ID: 'shield-test-project', FIREBASE_WEB_API_KEY: 'synthetic-project-key', IOS_BUNDLE_ID: 'org.isaaczhang.Shield' };
 const claims = { uid: 'verified-user', email_verified: true } as DecodedIdToken;
-const admin = () => ({ verifyIdToken: vi.fn(async () => claims), revokeRefreshTokens: vi.fn(async () => {}) });
+const admin = () => ({ verifyIdToken: vi.fn(async () => claims), revokeRefreshTokens: vi.fn(async () => {}), deleteUser: vi.fn(async (_uid: string) => {}) });
 
 describe('Firebase authentication', () => {
+  it('deletes the verified account rather than merely signing it out, and sanitizes failures', async () => {
+    const service = admin(), auth = new FirebaseAuth(config, vi.fn(), service);
+    await auth.deleteAccount('verified-user');
+    expect(service.deleteUser).toHaveBeenCalledWith('verified-user');
+    expect(service.revokeRefreshTokens).not.toHaveBeenCalled();
+    service.deleteUser.mockRejectedValueOnce({ code: 'auth/user-not-found' });
+    await expect(auth.deleteAccount('verified-user')).resolves.toBeUndefined();
+    service.deleteUser.mockRejectedValueOnce(new Error('private provider detail'));
+    await expect(auth.deleteAccount('verified-user')).rejects.toMatchObject({ code: 'account_deletion_unavailable', statusCode: 503 });
+  });
   it('uses project-scoped email links and exchanges the opaque code without returning provider metadata', async () => {
     const service = admin();
     const request = vi.fn<typeof fetch>()

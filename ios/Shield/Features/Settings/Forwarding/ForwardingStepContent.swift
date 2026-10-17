@@ -23,12 +23,14 @@ struct ForwardingStepContent: View {
                 }
                 Text("To leave, choose Options → Disconnect Shield.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
+                Text(PrivacyCopy.screeningProviders)
+                Text(PrivacyCopy.screeningConsent)
                 ShieldDisclosure("More before you agree") {
                     Text(status.liveScreening == true
                          ? "Shield checks unfamiliar calls. Press 1 to take a call. Shield can’t prove who is calling."
                          : "Call checks are off. Callers can leave voicemail instead.")
-                    Text("Shield saves messages with audio and a short summary. Messages and call history are deleted after 30 days.")
-                    Text("Telnyx provides the phone service. OpenAI checks the caller’s speech. Shield may stop suspicious or silent calls and can make mistakes.")
+                    Text(PrivacyCopy.messageRetention)
+                    Text("Shield may stop suspicious or silent calls and can make mistakes.")
                     Text("Messages may be captured from the start of the call. Answered calls and clear scam messages aren’t saved. Full transcripts aren’t kept.")
                     Text("Calls you take aren’t recorded. Their words are checked only if you choose checks while you talk.")
                     Text("Your usual \(status.carrier) charges apply. Deleting the app won’t disconnect Shield.")

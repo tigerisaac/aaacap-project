@@ -24,7 +24,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
   const id = PERSON, caller = '+12025550102';
   const auth: AuthProvider = {
     async identify(token) { if (!['owner', 'helper', 'stranger'].includes(token)) throw new HttpError(401, 'sign_in_required'); return { subject: token }; },
-    async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}
+    async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {}
   };
   let now: number, s: CloudStore, app: Awaited<ReturnType<typeof buildCloudApp>>, check: VoicemailCheck;
   const headers = (uid = 'owner') => ({ authorization: `Bearer ${uid}`, 'x-shield-participant': id });

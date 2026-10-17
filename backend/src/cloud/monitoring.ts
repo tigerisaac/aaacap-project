@@ -12,7 +12,7 @@ import { MONITOR_CADENCE_VERSION, MONITOR_HOUR_MS, monitorWindow, nextMonitorChe
 
 // Opt-in protection for calls the recipient accepted: Telnyx transcribes both sides, Luna checks the
 // conversation, and a clear scam request ends the call with a spoken warning to her.
-export const MONITORING_CONSENT = 'shield-monitoring-2026-10-v1';
+export const MONITORING_CONSENT = 'shield-monitoring-2026-10-16-v2';
 /** Bump for every change to MONITOR_INSTRUCTIONS, the assessment schema or the warnings, as SCREENING_POLICY_VERSION is for screening. */
 export const MONITOR_POLICY_VERSION = '2026-10-11-monitor-v2';
 /** OpenAI Fast mode: the recipient may answer a scam request within seconds. `fast` is an alias, but some routes reject it. */

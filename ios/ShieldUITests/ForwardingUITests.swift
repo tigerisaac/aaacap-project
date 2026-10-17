@@ -2,6 +2,21 @@ import XCTest
 
 @MainActor
 final class ForwardingUITests: XCTestCase {
+    func testProvidersAreDisclosedBeforeForwardingConsent() {
+        let app = launch()
+        tapPrimary(app); expect(app, "Choose Shield for calls")
+        let providers = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Soniox transcribes the caller’s speech")).firstMatch
+        XCTAssertTrue(providers.exists)
+        // Provider disclosure is outside the optional details, before the agreement action.
+        XCTAssertTrue(app.staticTexts["I agree to send forwarded calls to Telnyx, Soniox and OpenAI for screening and message processing."].exists)
+        capture(app, "Forwarding provider consent")
+        app.buttons["More before you agree"].tap()
+        let retention = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "The cloud audio copy is deleted after delivery")).firstMatch
+        for _ in 0..<8 where !retention.isHittable { app.swipeUp() }
+        XCTAssertTrue(retention.exists)
+        capture(app, "Forwarding retention details")
+    }
+
     func testGuidedFlowRequiresRealCheckResultsAndPreparesEachCarrierCode() {
         let app = launch()
         capture(app, "Guided welcome")

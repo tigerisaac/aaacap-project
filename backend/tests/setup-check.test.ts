@@ -21,7 +21,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Daily setup check (Firest
     APNS: { keyId: 'ABCDEF1234', teamId: '6R6HMW3DWN', privateKey: generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }).toString() } };
   const A = { id: 'a0a7af93-72ad-431d-9708-f1d9564a2b36', uid: 'alice', phone: '+12025550101', shieldNumber: '+15125550111' };
   const admin = initializeApp({ projectId: project }, 'setup-check-tests'), db = getFirestore(admin);
-  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {} };
+  const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {} };
   const dial = vi.fn<(id: string, from: string, to: string) => Promise<string | undefined>>();
   let now: number, s: CloudStore, f: ForwardingStore, checks: SetupChecks, app: Awaited<ReturnType<typeof buildCloudApp>>;
   // Whole days keep every check at 10:30 a.m. Central, outside quiet hours.

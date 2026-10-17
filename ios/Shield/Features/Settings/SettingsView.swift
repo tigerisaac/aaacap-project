@@ -31,6 +31,9 @@ struct SettingsView: View {
             }
             ShieldGroup {
                 let leavesSample = model.isDemo && !model.isTestAccount
+                NavigationLink { DeleteAccountView() } label: {
+                    ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
+                }
                 Button(leavesSample ? "Leave sample app" : "Sign out") { confirmSignOut = true }
                     .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                     .alert(leavesSample ? "Leave the sample app?" : "Sign out?", isPresented: $confirmSignOut) {
