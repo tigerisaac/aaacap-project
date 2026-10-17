@@ -2,6 +2,41 @@ import XCTest
 
 @MainActor
 final class NavigationRegressionUITests: XCTestCase {
+    func testHomeAccountRemainsAvailableWithOnePersonAndLargestText() {
+        for large in [false, true] {
+            let app = launch(["--uitesting-single-person"] + (large
+                ? ["--uitesting-light", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+            let account = app.navigationBars.buttons["home-account"]
+            XCTAssertTrue(account.isHittable)
+            XCTAssertEqual(account.label, "Account settings")
+            capture(app, "Home account \(large ? "largest-light" : "standard-dark")")
+            account.tap()
+            XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
+            app.navigationBars.buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["Home"].exists)
+            XCTAssertTrue(account.isHittable)
+        }
+    }
+
+    func testMoreTitleReturnsWithThePageRepeatedly() {
+        let app = launch()
+        app.tabBars.buttons["More"].tap()
+        for attempt in 1...3 {
+            app.buttons["Settings"].tap()
+            XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 3))
+            if attempt == 2 {
+                app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
+                    .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)))
+            } else {
+                app.navigationBars.buttons.firstMatch.tap()
+            }
+            // No extra settle/wait: the heading must be visible when the pop finishes.
+            XCTAssertTrue(app.navigationBars["More"].staticTexts["More"].isHittable)
+            XCTAssertTrue(app.buttons["Settings"].isHittable)
+            capture(app, "More immediately after return \(attempt)")
+        }
+    }
+
     func testRootTypographyAndDirectPhoneSetupReturn() {
         for large in [false, true] {
             let app = launch(["--uitesting-forwarding-route"] + (large

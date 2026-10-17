@@ -45,7 +45,9 @@ extension View {
             .scrollEdgeEffectHidden(for: .all)
             .background(ShieldTheme.surface)
             .safeAreaPadding(.bottom, ShieldTheme.Spacing.content)
-            .padding(.vertical, ShieldTheme.Spacing.compact)
+            // Keep the scroll view flush with the navigation bar so native large
+            // titles participate in the push/pop transition. Space the content inside it.
+            .contentMargins(.vertical, ShieldTheme.Spacing.compact, for: .scrollContent)
             .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .vertical))
     }
 

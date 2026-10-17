@@ -86,6 +86,9 @@ final class AppState {
             trustedContactsOnboarding = true
         }
         #if targetEnvironment(simulator)
+        if isPreview, ProcessInfo.processInfo.arguments.contains("--uitesting-single-person") {
+            people = people.filter { $0.id == selectedPersonID }
+        }
         if ProcessInfo.processInfo.arguments.contains("--uitesting-deletion-restoration") {
             UserDefaults.standard.removeObject(forKey: "shield-disconnect-fixture")
         }

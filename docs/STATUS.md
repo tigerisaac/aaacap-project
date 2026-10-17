@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — immediate More title and Home account shortcut (installed)
+
+List spacing now uses scroll-content margins instead of padding around the scroll view, keeping native large titles attached to the navigation transition. Home has an always-available account icon that opens Settings, including for a single-person account and at accessibility text sizes. The existing multi-person switcher remains available.
+
+Validation: `npm run check` passed (316 unit tests, typecheck/build), and all 232 Firestore emulator tests passed. Three focused iOS 27 simulator tests passed, covering the single-person account shortcut at normal/largest text, repeated tap/swipe returns to More, all four root headings and direct phone-setup return. Screenshots were reviewed in dark/light appearance; recorded frames show More's title returning with the page. The signed Debug build passed signature verification and was installed/launched on the owner's iPhone 12 Pro Max at approximately **11:41 Central**. iPhone Mirroring confirmed the Home icon opens Settings and the More heading is visible on return from Settings. This is UI/install evidence; no backend deployment, real-call test, carrier change or phone-setting change occurred.
+
 ## October 17 — explicit cancellation of disconnection (deployed and installed)
 
 Disconnect now distinguishes **Close**, which keeps the saved session, from **Cancel disconnection**, which clears the owner's intent after server acknowledgement. Owners who have confirmed no changes may keep the current service configuration; after confirmed or uncertain changes, cancellation sends them back to Phone setup and Home requires fresh ring/forwarding evidence. Restarts preserve the fact that changes were confirmed. Cancellation never re-enables routing or changes carrier settings. Retries, concurrent confirmations and stale sessions are fenced. iOS UUID casing is normalized for both confirmation and cancellation.
