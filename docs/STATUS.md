@@ -8,6 +8,7 @@ The app resumes saved guide progress on entry, patches acknowledged cancellation
 
 The live baseline `shieldapi-00026-hiy` was verified read-only. A package changing exactly restoration and forwarding API modules is prepared under `artifacts/private/cancel-disconnection-release/`; account deletion, privacy, screening, bridge, IAM and routing configuration are outside this release. Deployment requires the owner's approval and has not occurred.
 
+Validation: typecheck/build and 316 unit tests passed; the final full Firestore emulator run passed all 232 tests. Six focused tests passed against the exact two-module staged API package. Swift storage/cache/Home checks passed. Nine guide tests passed on iPhone 17e/iOS 26.5; four cancellation/navigation checks passed on each of that simulator and iPhone 18 Pro/iOS 27. Two final compact-device checks confirmed large-text button contrast and uncertain-response wording. Screenshots were reviewed at normal and largest text sizes in light/dark appearance. The signed Debug iPhone build passed signature verification through macOS trust services after the sandboxed verification could not establish certificate trust. The paired phone was unavailable to Xcode, and iPhone Mirroring timed out; the generic device build succeeded, but this update has not been installed. No live backend update, owner cancellation, phone call, carrier change or phone-setting change occurred. Implementation is committed as `9c674e4`.
 
 ## October 17 — restored title typography and direct phone setup (installed)
 
