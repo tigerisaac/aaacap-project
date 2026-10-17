@@ -7,6 +7,7 @@ struct QuietHoursView: View {
     @State private var working = false
     @State private var savedHours: ForwardingStatus.QuietHours?
     @State private var loading = true
+    @State private var loadingVisible = false
     @State private var loadError: String?
     @State private var saveError: String?
     @State private var errorRevision = 0
@@ -25,26 +26,32 @@ struct QuietHoursView: View {
                 } else if model.isDemo && !usesFixture {
                     ShieldGroup { Text("Quiet hours don’t change in the sample app.").foregroundStyle(ShieldTheme.secondaryText) }
                 } else if loading {
-                    ShieldGroup { ShieldLoadingView(title: "Getting your quiet hours…") }
+                    if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your quiet hours…") } }
                 }
                 if loaded || (model.isDemo && !usesFixture) {
                     ShieldGroup {
                         Toggle("Quiet hours", isOn: $hours.enabled)
-                        if hours.enabled {
-                            Picker("From", selection: $hours.start) {
-                                ForEach(0..<24, id: \.self) { Text(label($0)).tag($0) }
-                            }
-                            Picker("Until", selection: $hours.end) {
-                                ForEach(0..<24, id: \.self) { Text(label($0)).tag($0) }
-                            }
+                        Picker("From", selection: $hours.start) {
+                            ForEach(0..<24, id: \.self) { Text(label($0)).tag($0) }
                         }
+                        .accessibilityIdentifier("quiet-start-time")
+                        .disabled(!hours.enabled)
+                        Picker("Until", selection: $hours.end) {
+                            ForEach(0..<24, id: \.self) { Text(label($0)).tag($0) }
+                        }
+                        .accessibilityIdentifier("quiet-end-time")
+                        .disabled(!hours.enabled)
                     } footer: {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Calls that reach Shield go to voicemail during these hours.")
                             Text("Times are Central time.")
-                            if changed { Text("Save below to use these hours.").fontWeight(.semibold) }
+                            Text("Save below to use these hours.")
+                                .fontWeight(.semibold)
+                                .opacity(changed ? 1 : 0)
+                                .accessibilityHidden(!changed)
                         }
-                    }.disabled(working || (model.isDemo && !usesFixture) || !loaded)
+                    }
+                    .disabled(working || (model.isDemo && !usesFixture) || !loaded)
                 }
                 if let saveError {
                     ShieldGroup {
@@ -53,11 +60,20 @@ struct QuietHoursView: View {
                     }
                 }
             }
+            .deferredLoading(loading && !loaded, visible: $loadingVisible)
             .shieldListStyle()
             .safeAreaInset(edge: .bottom) {
                 if loaded && (!model.isDemo || usesFixture) {
                     Button { Task { await save() } } label: {
-                        ShieldActionLabel(title: working ? "Saving…" : changed ? "Save quiet hours" : "Saved", isWorking: working)
+                        ZStack {
+                            // Retain the tallest native label at every text size so the
+                            // form viewport stays still as its save state changes.
+                            ShieldActionLabel(title: "Save quiet hours")
+                                .hidden().accessibilityHidden(true)
+                            ShieldActionLabel(title: "Saving…", isWorking: true)
+                                .hidden().accessibilityHidden(true)
+                            ShieldActionLabel(title: working ? "Saving…" : changed ? "Save quiet hours" : "Saved", isWorking: working)
+                        }
                     }
                     .shieldPrimaryButton().disabled(working || !changed)
                     .padding(ShieldTheme.Spacing.content).background(ShieldTheme.surface)
@@ -104,7 +120,14 @@ struct QuietHoursView: View {
         saveError = nil
         defer { working = false }
         do {
-            if model.isPreview { throw APIError.invalidResponse }
+            if model.isPreview {
+                #if DEBUG && targetEnvironment(simulator)
+                if ProcessInfo.processInfo.arguments.contains("--uitesting-slow-quiet-save") {
+                    try await Task.sleep(for: .seconds(4))
+                }
+                #endif
+                throw APIError.invalidResponse
+            }
             let _: APIResponses.Empty = try await model.api.send("/api/forwarding/quiet-hours", method: "POST",
                 body: APIClient.payload(["enabled": hours.enabled, "start": hours.start, "end": hours.end]), participantID: id)
             savedHours = hours

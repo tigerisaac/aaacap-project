@@ -4,6 +4,7 @@ struct ContactAlertsView: View {
     @Environment(AppState.self) private var model
     @State private var response: ContactAlertsResponse?
     @State private var error: String?
+    @State private var loadingVisible = false
 
     var body: some View {
         List {
@@ -18,9 +19,10 @@ struct ContactAlertsView: View {
                     }
                         .id("\(request.id)-\(request.status)-\(request.textAlerts)-\(request.appAlerts)")
                 }
-            } else if error == nil { ShieldGroup { ProgressView("Loading requests…") } }
+            } else if error == nil, loadingVisible { ShieldGroup { ProgressView("Loading requests…") } }
             if let error { ShieldGroup { Text(error); Button("Try again") { Task { await load() } }.frame(minHeight: 44) } }
-        }.shieldListStyle().navigationTitle("Alerts for others").navigationBarTitleDisplayMode(.inline)
+        }.deferredLoading(response == nil && error == nil, visible: $loadingVisible)
+            .shieldListStyle().navigationTitle("Alerts for others").navigationBarTitleDisplayMode(.inline)
             .task { await load() }.refreshable { await load() }
     }
     private func load() async {

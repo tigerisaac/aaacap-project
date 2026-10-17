@@ -11,6 +11,10 @@ struct CallProtectionExplanation: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Telnyx currently uses Soniox for transcription. No connected-call sound recording is saved. The temporary words are encrypted and deleted when the call ends, or within two hours. Provider security logs follow their separate policies.")
                     Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!)
+                        // A link inside a Form row must not adopt the whole row
+                        // as its target when the disclosure is collapsed.
+                        .buttonStyle(.borderless)
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
                 }.foregroundStyle(ShieldTheme.secondaryText).padding(.vertical, 8)
             }
         }.fixedSize(horizontal: false, vertical: true)

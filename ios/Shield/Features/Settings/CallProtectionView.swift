@@ -7,6 +7,7 @@ struct CallProtectionView: View {
     @State private var working = false
     @State private var confirmEnable = false
     @State private var loaded = false
+    @State private var loadingVisible = false
     @State private var loadFailed = false
     @State private var loadAttempts = 0
 
@@ -19,7 +20,7 @@ struct CallProtectionView: View {
                     Text("Couldn’t check this setting.")
                     Button("Try again") { Task { await load() } }
                 } else if !loaded, !model.isPreview, !model.isDemo {
-                    ProgressView("Checking your setting…")
+                    if loadingVisible { ProgressView("Checking your setting…") }
                 } else {
                 Toggle("Check calls while I talk", isOn: Binding(
                     get: { monitoring?.enabled == true },
@@ -34,6 +35,7 @@ struct CallProtectionView: View {
             }
             ShieldGroup { CallProtectionExplanation() }
         }
+        .deferredLoading(!loaded && !loadFailed && !model.isPreview && !model.isDemo, visible: $loadingVisible)
         .shieldListStyle()
         .navigationTitle("Checks while you talk")
         .navigationBarTitleDisplayMode(.inline)

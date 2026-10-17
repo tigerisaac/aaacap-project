@@ -8,6 +8,7 @@ struct MessageAlertsView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var typeSize
     @State private var authorization: UNAuthorizationStatus?
+    @State private var loadingVisible = false
     @State private var working = false
     @State private var error: String?
 
@@ -17,7 +18,7 @@ struct MessageAlertsView: View {
         List {
             ShieldGroup {
                 if authorization == nil {
-                    ShieldLoadingView(title: "Checking message alerts…")
+                    if loadingVisible { ShieldLoadingView(title: "Checking message alerts…") }
                 } else {
                     status
                 }
@@ -44,6 +45,7 @@ struct MessageAlertsView: View {
             }
             if let error { ShieldGroup { ShieldNotice(title: "Alerts couldn’t be changed", detail: error, symbol: "exclamationmark.circle") } }
         }
+        .deferredLoading(authorization == nil, visible: $loadingVisible)
         .shieldListStyle()
         .navigationTitle("Message alerts").navigationBarTitleDisplayMode(.inline)
         .task { await load() }

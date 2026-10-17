@@ -138,8 +138,12 @@ final class RedesignUITests: XCTestCase {
             let app = launch(["--uitesting-preview", "--uitesting-calls-state", state])
             XCTAssertTrue(app.navigationBars["Home"].appears(timeout: 5))
             app.tabBars.buttons["Calls"].tap()
-            let expected = state == "loading" ? "Getting your calls…" : state == "error" ? "Your calls couldn’t load" : "No calls yet"
-            XCTAssertTrue(app.staticTexts[expected].appears(timeout: 5))
+            if state == "loading" {
+                XCTAssertTrue(app.descendants(matching: .any)["calls-refresh-progress"].firstMatch.appears(timeout: 5))
+            } else {
+                let expected = state == "error" ? "Your calls couldn’t load" : "No calls yet"
+                XCTAssertTrue(app.staticTexts[expected].appears(timeout: 5))
+            }
             if state != "empty" { XCTAssertFalse(app.staticTexts["No calls yet"].exists) }
             if state == "error" { XCTAssertTrue(app.buttons["Try again"].exists); XCTAssertFalse(app.alerts.firstMatch.exists) }
             capture(app, "Redesign Calls \(state)")

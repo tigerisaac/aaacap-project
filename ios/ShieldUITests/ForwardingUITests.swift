@@ -84,8 +84,11 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Start disconnecting"].appears(timeout: 5))
         app.buttons["Start disconnecting"].tap()
         expect(app, "Bring back ordinary calls")
-        app.buttons["See copied code"].tap()
-        XCTAssertEqual(app.staticTexts["forwarding-reset-code"].label, "##61#")
+        XCTAssertFalse(app.buttons["Copy phone code"].exists)
+        app.buttons["disconnect-continue"].tap()
+        expect(app, "Bring calls back to your phone")
+        app.buttons["See the code"].tap()
+        XCTAssertTrue(app.staticTexts["##61#"].exists)
     }
 
     func testFailedSoundCheckShowsRetryAndDoesNotAdvance() {
@@ -145,7 +148,17 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "I selected Silence")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         app.buttons["Read the steps"].tap()
-        app.buttons["phone-settings-reopen"].tap()
+        let reopen = app.buttons["phone-settings-reopen"]
+        let primary = app.buttons["forwarding-continue"]
+        // Native hittability alone can include a row covered by the pinned action.
+        for _ in 0..<8 {
+            if reopen.exists && reopen.frame.maxY < primary.frame.minY && reopen.isHittable { break }
+            app.scrollViews.firstMatch.swipeUp()
+        }
+        XCTAssertLessThan(reopen.frame.maxY, primary.frame.minY)
+        reopen.tap()
+        XCTAssertEqual(primary.label, "I selected Silence")
+        for _ in 0..<8 where !app.staticTexts["Change Phone settings"].exists { app.scrollViews.firstMatch.swipeDown() }
         expect(app, "Change Phone settings")
         capture(app, "Phone setting return")
     }

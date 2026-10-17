@@ -13,6 +13,7 @@ struct SavedNumbersView: View {
     @State private var items: [SavedNumber] = []
     @State private var showingAdd = false
     @State private var loading = true
+    @State private var loadingVisible = false
     @State private var loadError: String?
     @State private var loadAttempts = 0
     @State private var pendingRemoval: SavedNumber?
@@ -26,7 +27,7 @@ struct SavedNumbersView: View {
                 }
             }
             if loading && items.isEmpty {
-                ShieldGroup { ShieldLoadingView(title: "Getting your numbers…") }
+                if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your numbers…") } }
             } else if items.isEmpty && loadError == nil {
                 ShieldGroup {
                     ContentUnavailableView("No numbers yet", systemImage: "phone",
@@ -62,6 +63,7 @@ struct SavedNumbersView: View {
                      : "Unanswered calls from these numbers go to voicemail. A displayed number can be faked.").foregroundStyle(ShieldTheme.secondaryText)
             }
         }
+        .deferredLoading(loading && items.isEmpty, visible: $loadingVisible)
         .shieldListStyle()
         .navigationTitle(kind.title)
         .navigationBarTitleDisplayMode(.inline)

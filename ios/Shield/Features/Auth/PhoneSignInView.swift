@@ -90,7 +90,7 @@ struct PhoneSignInView: View {
             .background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focus = nil } } }
-            .sheet(isPresented: $showingEmail) { SignInView(incomingURL: emailLink) }
+            .sheet(isPresented: $showingEmail) { SignInView(incomingURL: emailLink, allowsDismissal: true) }
             .onOpenURL { url in emailLink = url; showingEmail = true }
         }
     }

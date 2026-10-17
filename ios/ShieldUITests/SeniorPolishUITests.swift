@@ -339,21 +339,36 @@ final class SeniorPolishUITests: XCTestCase {
     }
 
     func testContactRemovalNamesItsScopeAndHasAFullRowTarget() {
-        let app = launch("contacts", extra: ["--uitesting-contact-removal"])
-        let remove = app.buttons["Remove Jamie from Contacts"]
-        reveal(remove, in: app)
-        XCTAssertTrue(remove.isEnabled)
-        XCTAssertGreaterThanOrEqual(remove.frame.height, 52)
-        XCTAssertGreaterThan(remove.frame.width, 250)
-        capture(app, "walkthrough-contact-removal-scope")
-        remove.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        XCTAssertTrue(app.buttons["Remove contact"].appears(timeout: 5))
-        capture(app, "walkthrough-contact-after-edge-tap")
-        XCTAssertTrue(app.buttons["Keep contact"].exists)
-        XCTAssertTrue(app.staticTexts["This can also remove the contact from your other devices through iCloud. A restore copy stays on this phone."].exists)
-        capture(app, "walkthrough-contact-removal-confirmation")
-        app.buttons["Keep contact"].tap()
-        XCTAssertTrue(app.staticTexts["Jamie"].exists)
+        for large in [false, true] {
+            let app = launch("contacts", extra: ["--uitesting-contact-removal"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+            let remove = app.buttons["Remove Jamie from Contacts"]
+            reveal(remove, in: app)
+            let search = app.searchFields.firstMatch
+            for _ in 0..<8 {
+                if !search.exists || remove.frame.maxY <= search.frame.minY { break }
+                // Move only past the floating search control; a full swipe can
+                // recycle the intended row above the visible list.
+                let distance = min(100, remove.frame.maxY - search.frame.minY + 12)
+                let origin = app.coordinate(withNormalizedOffset: .zero)
+                let start = origin.withOffset(CGVector(dx: app.frame.midX, dy: app.frame.midY))
+                start.press(forDuration: 0.1,
+                            thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: app.frame.midY - distance)),
+                            withVelocity: .slow, thenHoldForDuration: 0.2)
+            }
+            if search.exists { XCTAssertLessThanOrEqual(remove.frame.maxY, search.frame.minY) }
+            XCTAssertTrue(remove.isEnabled)
+            XCTAssertGreaterThanOrEqual(remove.frame.height, 52)
+            XCTAssertGreaterThan(remove.frame.width, 250)
+            capture(app, "walkthrough-contact-removal-scope-\(large ? "large" : "standard")")
+            remove.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            XCTAssertTrue(app.buttons["Remove contact"].appears(timeout: 5))
+            capture(app, "walkthrough-contact-after-edge-tap")
+            XCTAssertTrue(app.buttons["Keep contact"].exists)
+            XCTAssertTrue(app.staticTexts["This can also remove the contact from your other devices through iCloud. A restore copy stays on this phone."].exists)
+            capture(app, "walkthrough-contact-removal-confirmation")
+            app.buttons["Keep contact"].tap()
+            XCTAssertTrue(app.staticTexts["Jamie"].exists)
+        }
     }
 
     func testGetStartedAsksForHelpWithoutInvitations() {

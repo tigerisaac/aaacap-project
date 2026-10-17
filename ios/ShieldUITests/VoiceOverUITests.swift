@@ -176,8 +176,10 @@ final class VoiceOverUITests: XCTestCase {
             } else {
                 try walk.activate("Set up my phone")
                 try walk.find("Choose Shield for calls")
-                try walk.find("Deleting the app won’t disconnect it")
                 try walk.activate("More before you agree")
+                // The service returns only a 64-character speech excerpt.
+                try walk.find("Deleting the app")
+                XCTAssertTrue(walk.app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Deleting the app won’t disconnect Shield")).firstMatch.exists)
                 try walk.find("Privacy")
                 try walk.activate("More before you agree")
                 try walk.find("Agree and continue")

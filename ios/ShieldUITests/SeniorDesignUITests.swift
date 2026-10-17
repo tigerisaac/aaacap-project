@@ -74,7 +74,7 @@ final class SeniorDesignUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Sample clinic"].appears(timeout: 5))
         capture(app, "senior-trusted-numbers-light")
         app.navigationBars.buttons.firstMatch.tap()
-        tap(app.staticTexts["Checks while you talk"].firstMatch, in: app)
+        tap(app.staticTexts["Checks while you talk"].firstMatch, in: app, towardTop: true)
         capture(app, "senior-call-checks-light")
         app.navigationBars.buttons.firstMatch.tap()
         tap(app.staticTexts["Automatic text checks"].firstMatch, in: app)
@@ -132,6 +132,136 @@ final class SeniorDesignUITests: XCTestCase {
         }
     }
 
+    func testMotionNavigationReturnsToExpandedContentAndRetainsTabs() {
+        let app = launch()
+        openMore(app, "Get help")
+        app.buttons["How can I check a caller?"].tap()
+        app.buttons["Numbers you trust"].tap()
+        XCTAssertTrue(app.navigationBars["Numbers you trust"].appears(timeout: 5))
+        // Exercise the system edge gesture, including a cancelled interactive return.
+        let edge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
+        edge.press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.18, dy: 0.5)), withVelocity: .slow, thenHoldForDuration: 0.3)
+        if app.navigationBars["Numbers you trust"].exists {
+            edge.press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.5)))
+        }
+        XCTAssertTrue(app.navigationBars["Get help"].appears(timeout: 5))
+        XCTAssertTrue(app.buttons["Numbers you trust"].exists, "Returning must preserve the expanded disclosure")
+        capture(app, "motion-help-after-interactive-back")
+        app.tabBars.buttons["Calls"].tap()
+        app.historyRow("Call stopped").tap()
+        XCTAssertTrue(app.navigationBars["Call"].appears(timeout: 5))
+        app.tabBars.buttons["More"].tap()
+        XCTAssertTrue(app.navigationBars["Get help"].exists)
+        app.tabBars.buttons["Calls"].tap()
+        XCTAssertTrue(app.navigationBars["Call"].exists, "Changing tabs must preserve the navigation stack")
+        edge.press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.5)))
+        XCTAssertTrue(app.navigationBars["Calls"].appears(timeout: 5))
+        capture(app, "motion-calls-after-interactive-back")
+    }
+
+    func testMotionQuietHoursKeepsTimeRowsStableAndCanReverse() {
+        for large in [false, true] {
+            let app = launch(["--uitesting-screen", "quiet", "--uitesting-slow-quiet-save"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+            let toggle = app.switches["Quiet hours"]
+            XCTAssertTrue(toggle.appears(timeout: 5))
+            let start = app.descendants(matching: .any)["quiet-start-time"].firstMatch
+            let end = app.descendants(matching: .any)["quiet-end-time"].firstMatch
+            XCTAssertTrue(start.exists)
+            XCTAssertTrue(end.exists)
+            XCTAssertFalse(start.isEnabled)
+            let actionTop = app.buttons["Saved"].frame.minY
+            let initialFrame = start.frame
+            let initialValue = start.value as? String
+            // The label remains a full-row action, with no inserted rows.
+            toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5)).tap()
+            XCTAssertEqual(toggle.value as? String, "1")
+            XCTAssertTrue(start.isEnabled)
+            XCTAssertEqual(start.frame.minY, initialFrame.minY, accuracy: 1)
+            XCTAssertTrue(app.buttons["Save quiet hours"].isEnabled)
+            XCTAssertEqual(app.buttons["Save quiet hours"].frame.minY, actionTop, accuracy: 1)
+            capture(app, "motion-quiet-enabled-\(large ? "large" : "standard")")
+            toggle.tap()
+            XCTAssertEqual(toggle.value as? String, "0")
+            XCTAssertFalse(start.isEnabled)
+            XCTAssertEqual(start.frame.minY, initialFrame.minY, accuracy: 1)
+            XCTAssertEqual(start.value as? String, initialValue)
+            XCTAssertFalse(app.buttons["Saved"].isEnabled)
+            XCTAssertEqual(app.buttons["Saved"].frame.minY, actionTop, accuracy: 1)
+            toggle.tap()
+            XCTAssertEqual(toggle.value as? String, "1")
+            XCTAssertEqual(start.frame.minY, initialFrame.minY, accuracy: 1)
+            XCTAssertEqual(app.buttons["Save quiet hours"].frame.minY, actionTop, accuracy: 1)
+            capture(app, "motion-quiet-reversed-\(large ? "large" : "standard")")
+            app.buttons["Save quiet hours"].tap()
+            let saving = app.buttons["Saving…"]
+            XCTAssertTrue(saving.appears(timeout: 2))
+            XCTAssertEqual(saving.frame.minY, actionTop, accuracy: 1)
+            capture(app, "motion-quiet-saving-\(large ? "large" : "standard")")
+            XCTAssertTrue(app.staticTexts["Hours not confirmed"].appears(timeout: 6))
+        }
+    }
+
+    func testMotionEmailSheetHasAnExplicitExitWithKeyboardAndLargestText() {
+        for large in [false, true] {
+            let args = ["--uitesting-phone-sign-in", "--uitesting-dark"] + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
+            let app = launch(args, sample: false)
+            tap(app.buttons["Use email instead"], in: app)
+            let email = app.textFields["Email address"]
+            XCTAssertTrue(email.appears(timeout: 5))
+            tap(email, in: app)
+            email.typeText("synthetic@example.com")
+            XCTAssertTrue(app.buttons["Close"].isHittable)
+            capture(app, "motion-email-sheet-keyboard-\(large ? "large" : "standard")")
+            app.buttons["Close"].tap()
+            XCTAssertTrue(app.textFields["sign-in-phone"].appears(timeout: 5))
+            XCTAssertFalse(email.exists)
+        }
+    }
+
+    func testMotionAllSecondaryScreensAtLargestText() {
+        for screen in ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts", "contact-alerts", "trusted-contacts"] {
+            let app = launch(["--uitesting-screen", screen, "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+            XCTAssertTrue(app.navigationBars.firstMatch.appears(timeout: 5), screen)
+            capture(app, "motion-\(screen)-largest-dark-top")
+            app.swipeUp()
+            capture(app, "motion-\(screen)-largest-dark-scrolled")
+        }
+    }
+
+    func testMotionOptionalVoicemailGuideReturnsToCompletedDisconnect() {
+        let app = launch(["--uitesting-forwarding", "--forwarding-start-restore", "--restoration-start-checks"], sample: false)
+        let next = app.buttons["disconnect-continue"]
+        XCTAssertTrue(next.appears(timeout: 5))
+        next.tap(); next.tap()
+        XCTAssertTrue(app.staticTexts["restoration-complete"].appears(timeout: 5))
+        tap(app.buttons["Turn Live Voicemail back on (optional)"], in: app)
+        XCTAssertTrue(app.navigationBars["Live Voicemail"].appears(timeout: 5))
+        XCTAssertTrue(app.buttons["restoration-settings-open"].exists)
+        capture(app, "motion-optional-voicemail-guide")
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["restoration-complete"].appears(timeout: 5))
+    }
+
+    func testMotionNativePickersCancelBackToTheirForms() {
+        var app = launch(["--uitesting-trusted-contacts"], sample: false)
+        tap(app.buttons["trusted-contact-yes"], in: app)
+        app.buttons["Choose from Contacts"].tap()
+        // The native service may finish its first launch after the app is idle.
+        let closeContacts = app.buttons.matching(NSPredicate(format: "label IN %@", ["Cancel", "Close"])).firstMatch
+        XCTAssertTrue(closeContacts.appears(timeout: 10))
+        capture(app, "motion-native-contact-picker")
+        closeContacts.tap()
+        XCTAssertTrue(app.textFields["trusted-contact-name"].exists)
+
+        app = launch()
+        openMore(app, "Check a text")
+        app.buttons["Choose picture"].tap()
+        XCTAssertTrue(app.buttons["Cancel"].appears(timeout: 5))
+        capture(app, "motion-native-photo-picker")
+        app.buttons["Cancel"].tap()
+        XCTAssertTrue(app.textViews.firstMatch.isHittable)
+    }
+
     private func launch(_ args: [String] = [], sample: Bool = true) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = (sample ? ["--uitesting-preview"] : []) + args
@@ -139,7 +269,7 @@ final class SeniorDesignUITests: XCTestCase {
         return app
     }
 
-    private func tap(_ element: XCUIElement, in app: XCUIApplication) {
+    private func tap(_ element: XCUIElement, in app: XCUIApplication, towardTop: Bool = false) {
         _ = element.appears(timeout: 1)
         for _ in 0..<20 {
             let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
@@ -148,7 +278,7 @@ final class SeniorDesignUITests: XCTestCase {
             if actions.exists && actions.frame.height > 0 { bottom = min(bottom, actions.frame.minY) }
             if element.exists && element.isHittable && element.frame.minY >= top && element.frame.maxY <= bottom { break }
             if app.collectionViews.firstMatch.exists {
-                let downward = element.exists && element.frame.minY < top
+                let downward = towardTop || (element.exists && element.frame.minY < top)
                 let origin = app.coordinate(withNormalizedOffset: .zero)
                 let high = top + (bottom - top) * 0.25
                 let low = top + (bottom - top) * 0.75

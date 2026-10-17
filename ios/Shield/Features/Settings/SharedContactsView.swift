@@ -8,6 +8,7 @@ struct SharedContactsView: View {
     init(demoAction: String? = nil) { self.demoAction = demoAction }
     @State private var model = SharedContactsModel()
     @State private var search = ""
+    @State private var loadingVisible = false
     @State private var showingAdd = false
     @State private var pendingRemoval: SavedNumber?
     private var usesRemovalFixture: Bool {
@@ -36,7 +37,7 @@ struct SharedContactsView: View {
             if let error = model.loadError {
                 ShieldGroup { ShieldLoadFailure(title: "Contacts couldn’t load", detail: error) { Task { await model.load(app) } } }
             } else if model.loading && model.items.isEmpty {
-                ShieldGroup { ShieldLoadingView(title: "Getting your contacts…") }
+                if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your contacts…") } }
             } else if filtered.isEmpty {
                 ShieldGroup {
                     if search.isEmpty {
@@ -55,7 +56,12 @@ struct SharedContactsView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.bottom, 8)
                         Button(role: .destructive) { pendingRemoval = item } label: {
-                            Label("Remove from iPhone", systemImage: "minus.circle")
+                            HStack(alignment: .firstTextBaseline) {
+                                Image(systemName: "minus.circle")
+                                Text("Remove from iPhone")
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .multilineTextAlignment(.leading)
+                            }
                                 .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
                                 .contentShape(.rect)
                         }
@@ -118,6 +124,7 @@ struct SharedContactsView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active, demoAction == nil, model.hasShared(app.selectedPersonID) { Task { await model.share(app) } }
         }
+        .deferredLoading(model.loading && model.items.isEmpty, visible: $loadingVisible)
         .shieldListStyle()
     }
 }

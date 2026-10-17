@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T04:04:29Z",
+  "generatedAt": "2026-10-17T06:41:28Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -803,8 +803,18 @@
         "section": "components"
       },
       {
+        "name": "The Independent Row Action Rule",
+        "body": "Give embedded links their own explicit native button style and touch target so disclosure and other sibling interactions remain independent.",
+        "section": "components"
+      },
+      {
         "name": "The Historical Count Rule",
         "body": "Keep the persistent total distinct from current protection and retained recent history; unavailable data is never zero or a weekly fallback.",
+        "section": "components"
+      },
+      {
+        "name": "The Stable Layout Rule",
+        "body": "Keep the active control and surrounding viewport steady across local state changes; preserve view identity, reserve changing-label space where needed and keep hidden sizing content outside accessibility.",
         "section": "components"
       },
       {

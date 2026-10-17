@@ -4,6 +4,7 @@ struct TrustedContactsView: View {
     @Environment(AppState.self) private var model
     @State private var response: TrustedContactsResponse?
     @State private var error: String?
+    @State private var loadingVisible = false
     @State private var working = false
     @State private var removing: TrustedContact?
     @State private var confirmRemoval = false
@@ -39,9 +40,10 @@ struct TrustedContactsView: View {
                         }
                     } footer: { Text("They get alerts only after they accept. Your calls and messages stay private.") }
                 }
-            } else if error == nil { ShieldGroup { ProgressView("Loading contacts…") } }
+            } else if error == nil, loadingVisible { ShieldGroup { ProgressView("Loading contacts…") } }
             if let error { ShieldGroup { Text(error); Button("Try again") { Task { await load() } }.frame(minHeight: 44) } }
-        }.shieldListStyle().shieldLargeTitle("Trusted contacts")
+        }.deferredLoading(response == nil && error == nil, visible: $loadingVisible)
+            .shieldListStyle().shieldLargeTitle("Trusted contacts")
             .task { await load() }.refreshable { await load() }
             .alert("Remove this trusted contact?", isPresented: $confirmRemoval) {
                 Button("Remove contact", role: .destructive) { Task { await remove() } }

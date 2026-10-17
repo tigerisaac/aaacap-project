@@ -28,6 +28,7 @@ struct SetupTouchAnimation: UIViewRepresentable {
         private var frameBuffer: [Int: CGImage] = [:]
         private let bufferCapacity = 5
         private var started: CFTimeInterval = 0
+        private var pausedAt: CFTimeInterval?
         private var displayLink: CADisplayLink?
         private let clockTarget = ClockTarget()
         #if DEBUG
@@ -53,6 +54,7 @@ struct SetupTouchAnimation: UIViewRepresentable {
             displayed = -1
             frameBuffer.removeAll()
             started = CACurrentMediaTime()
+            pausedAt = displayLink == nil ? started : nil
             #if DEBUG
             metrics?.begin(guide: guide)
             #endif
@@ -61,6 +63,9 @@ struct SetupTouchAnimation: UIViewRepresentable {
         }
         func setRunning(_ running: Bool) {
             if running, displayLink == nil {
+                // Time in another app is not time spent watching the instructions.
+                if let pausedAt { started += CACurrentMediaTime() - pausedAt }
+                pausedAt = nil
                 let link = CADisplayLink(target: clockTarget, selector: #selector(ClockTarget.tick(_:)))
                 // 30 divides both 60 Hz and 120 Hz displays evenly.
                 let rate = Float(SetupGuide.animationFrameRate)
@@ -68,6 +73,7 @@ struct SetupTouchAnimation: UIViewRepresentable {
                 link.add(to: .main, forMode: .common)
                 displayLink = link
             } else if !running {
+                if displayLink != nil { pausedAt = CACurrentMediaTime() }
                 displayLink?.invalidate(); displayLink = nil
                 frameTask?.cancel(); frameTask = nil
                 #if DEBUG

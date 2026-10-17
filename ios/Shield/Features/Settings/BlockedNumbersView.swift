@@ -5,6 +5,7 @@ struct BlockedNumbersView: View {
     @Environment(AppState.self) private var model
     @State private var items: [BlockedNumber] = []
     @State private var loaded = false
+    @State private var loadingVisible = false
     @State private var pendingUnblock: BlockedNumber?
     @State private var phoneBlocking: Bool?
     @State private var loadError: String?
@@ -16,7 +17,7 @@ struct BlockedNumbersView: View {
             if let loadError {
                 ShieldGroup { ShieldLoadFailure(title: "Blocked numbers couldn’t load", detail: loadError) { Task { await load() } } }
             } else if !loaded {
-                ShieldGroup { ShieldLoadingView(title: "Getting blocked numbers…") }
+                if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting blocked numbers…") } }
             } else if items.isEmpty {
                 ShieldGroup {
                     ContentUnavailableView("No blocked numbers", systemImage: "hand.raised",
@@ -74,6 +75,7 @@ struct BlockedNumbersView: View {
                 }
             }
         }
+        .deferredLoading(!loaded && loadError == nil, visible: $loadingVisible)
         .shieldListStyle()
         .navigationTitle("Blocked numbers")
         .navigationBarTitleDisplayMode(.inline)

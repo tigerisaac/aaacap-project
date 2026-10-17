@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SignInView: View {
     var incomingURL: URL? = nil
+    var allowsDismissal = false
+    @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var model
     @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -172,8 +174,11 @@ struct SignInView: View {
                 keyboardVisible = false
                 revealFeedback(using: proxy)
             }
-            .toolbar(.hidden, for: .navigationBar)
+            .toolbar(allowsDismissal ? .visible : .hidden, for: .navigationBar)
             .toolbar {
+                if allowsDismissal {
+                    ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(working) }
+                }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") { focusedField = nil }

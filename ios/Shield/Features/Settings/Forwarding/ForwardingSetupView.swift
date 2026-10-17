@@ -24,6 +24,7 @@ struct ForwardingSetupView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     if let status = model.status {
+                        Color.clear.frame(height: 0).id("forwarding-top").accessibilityHidden(true)
                         if model.step.progressIndex > 0 {
                             FlowProgress(title: model.step.progressTitle, current: model.progressIndex, total: model.progressTotal)
                         }
@@ -41,7 +42,7 @@ struct ForwardingSetupView: View {
                             } else {
                                 ForwardingStepContent(step: model.step, status: status, model: model, onRestorationStageChange: { proxy.scrollTo("forwarding-heading", anchor: .top) })
                             }
-                        }
+                        }.id(model.step)
                         if let error = model.error {
                             VStack(alignment: .leading, spacing: 8) {
                                 ShieldNotice(title: "This step didn’t finish", detail: error, symbol: "exclamationmark.circle")
@@ -78,18 +79,20 @@ struct ForwardingSetupView: View {
                 errorFocused = true
             }
             .onChange(of: model.pageTitle) { _, _ in
-                proxy.scrollTo("forwarding-heading", anchor: .top)
+                proxy.scrollTo("forwarding-top", anchor: .top)
+                focusedStep = model.step
+            }
+            .onChange(of: model.step) { _, _ in
+                proxy.scrollTo("forwarding-top", anchor: .top)
                 focusedStep = model.step
             }
         }
-        .id(model.step)
         .phoneLauncherBanner(isPresented: $model.showingPhoneLauncher)
         .background(ShieldTheme.surface)
         .shieldNavigationSurface()
         .safeAreaInset(edge: .bottom) {
             if model.status != nil && !typeSize.isAccessibilitySize {
                 ForwardingActions(model: model, app: app)
-                    .id(model.step)
             }
         }
         .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)

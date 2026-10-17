@@ -27,22 +27,30 @@ final class NavigationRegressionUITests: XCTestCase {
     }
 
     func testDisclosureExpandsWithinItsCardAndCollapses() {
-        let app = launch()
-        app.tabBars.buttons["More"].tap()
-        app.buttons["Settings"].tap()
-        app.buttons["Checks while you talk"].tap()
-        let disclosure = app.buttons["What happens to my words?"]
-        reveal(disclosure, app)
-        disclosure.tap()
-        let details = app.staticTexts.containing(NSPredicate(format: "label BEGINSWITH %@", "Telnyx currently uses Soniox")).firstMatch
-        XCTAssertTrue(details.appears(timeout: 3))
-        XCTAssertGreaterThanOrEqual(details.frame.minX, disclosure.frame.minX - 2)
-        XCTAssertLessThanOrEqual(details.frame.maxX, app.frame.maxX - 12)
-        capture(app, "Disclosure expanded within card")
-        reveal(disclosure, app)
-        disclosure.tap()
-        XCTAssertTrue(details.waitForNonExistence(timeout: 3))
-        capture(app, "Disclosure collapsed")
+        for large in [false, true] {
+            let app = launch(large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
+            app.tabBars.buttons["More"].tap()
+            app.buttons["Settings"].tap()
+            reveal(app.buttons["Checks while you talk"], app)
+            app.buttons["Checks while you talk"].tap()
+            let disclosure = app.buttons["What happens to my words?"]
+            reveal(disclosure, app)
+            disclosure.tap()
+            let details = app.staticTexts.containing(NSPredicate(format: "label BEGINSWITH %@", "Telnyx currently uses Soniox")).firstMatch
+            XCTAssertTrue(details.appears(timeout: 3))
+            XCTAssertGreaterThanOrEqual(details.frame.minX, disclosure.frame.minX - 2)
+            XCTAssertLessThanOrEqual(details.frame.maxX, app.frame.maxX - 12)
+            capture(app, "Disclosure expanded within card \(large ? "large" : "standard")")
+            reveal(disclosure, app)
+            disclosure.tap()
+            XCTAssertTrue(details.waitForNonExistence(timeout: 3))
+            // Opening an external link can finish after the first accessibility
+            // snapshot, so check the settled foreground state as well.
+            Thread.sleep(forTimeInterval: 1)
+            XCTAssertEqual(app.state, .runningForeground)
+            XCTAssertTrue(app.navigationBars["Checks while you talk"].appears(timeout: 3))
+            capture(app, "Disclosure collapsed \(large ? "large" : "standard")")
+        }
     }
 
     func testMessageTypeFiltersReuseTheSameInbox() {

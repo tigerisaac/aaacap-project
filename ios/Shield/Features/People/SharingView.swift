@@ -5,6 +5,7 @@ struct SharingView: View {
     @State private var grants: [SharingGrant] = []
     @State private var revokeID: UUID?
     @State private var loading = true
+    @State private var loadingVisible = false
     @State private var loadError: String?
     @State private var loadAttempts = 0
     private var usesAccessFixture: Bool { PreviewScenario.requested("sharing-access", preview: model.isPreview) }
@@ -32,7 +33,7 @@ struct SharingView: View {
                 } else if model.isDemo && !usesAccessFixture {
                     Text("Sign in to manage sharing.").foregroundStyle(ShieldTheme.secondaryText)
                 } else if loading && grants.isEmpty {
-                    ShieldLoadingView(title: "Getting your helpers…")
+                    if loadingVisible { ShieldLoadingView(title: "Getting your helpers…") }
                 } else if grants.isEmpty {
                     Text("No one has access yet.").foregroundStyle(ShieldTheme.secondaryText)
                 }
@@ -56,6 +57,7 @@ struct SharingView: View {
                 }
             }
         }
+        .deferredLoading(loading && grants.isEmpty, visible: $loadingVisible)
         .shieldListStyle()
         .navigationTitle("Your helpers")
         .navigationBarTitleDisplayMode(.inline)
