@@ -59,12 +59,12 @@ describe('live call lab spending and destination boundaries',()=>{
 });
 
 describe('browser test operator recovery',()=>{
-  const harness=()=>{
+  const harness=(state:any={ready:true,used:0,limit:2,attempts:[]},hash='')=>{
     const elements=new Map<string,any>();const requests:string[]=[];
     const element=(id:string)=>{if(!elements.has(id))elements.set(id,{value:'accept',textContent:'',append:()=>{},disabled:false});return elements.get(id);};
     let poll:()=>Promise<void>=async()=>{};
-    const context:any={document:{getElementById:element,createElement:()=>({})},window:{},setInterval:(fn:()=>Promise<void>)=>{poll=fn;},clearTimeout:()=>{},setTimeout:()=>0,
-      fetch:async(path:string)=>{requests.push(path);return {ok:true,json:async()=>path==='/status'?{ready:true,used:0,limit:2,attempts:[]}:{resourcesDisabled:true}};}};
+    const context:any={document:{getElementById:element,querySelector:element,createElement:()=>({})},location:{hash},window:{},setInterval:(fn:()=>Promise<void>)=>{poll=fn;},clearTimeout:()=>{},setTimeout:()=>0,
+      fetch:async(path:string)=>{requests.push(path);return {ok:true,json:async()=>path==='/status'?state:{resourcesDisabled:true}};}};
     const code=readFileSync('scripts/call-lab/web/live.js','utf8');runInNewContext(code,context);
     return {element,requests,context,poll:()=>poll()};
   };
@@ -80,6 +80,17 @@ describe('browser test operator recovery',()=>{
     await h.element('run').onclick();
     expect(runInNewContext('audioStats.caller.bytes',h.context)).toBe(0);
     expect(runInNewContext('recipientCall',h.context)).toBeUndefined();
+  });
+  it('keeps the fifth caller gated until four conversations are ready and displays the actual scope',async()=>{
+    const state={mode:'capacity',ready:true,used:4,limit:5,capacityReady:false,attempts:[]};
+    const h=harness(state,'#person-05');runInNewContext('ready=true',h.context);await h.poll();
+    expect(h.element('run').disabled).toBe(true);
+    await h.element('run').onclick();expect(h.requests).not.toContain('/reserve');
+    expect(h.element('[data-concurrency]').textContent).toContain('Four connected');
+    expect(h.element('[data-deadline]').textContent).toBe('90 seconds');
+    state.capacityReady=true;await h.poll();expect(h.element('run').disabled).toBe(false);
+    expect(h.element('status').textContent).toContain('Start this caller');
+    state.ready=false;await h.poll();expect(h.element('run').disabled).toBe(true);
   });
 });
 

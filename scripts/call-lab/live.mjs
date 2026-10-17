@@ -12,14 +12,18 @@ import { Tickets,adaptInitiation,routes,shieldNumber } from './metadata.mjs';
 import { LiveLedger,guardDial,operatorRequestAllowed,overlapReady } from './live-guard.mjs';
 import { labRequest as telnyxRequest } from './live-provider.mjs';
 import { publicNumberSnapshot,restorePublicNumber } from './public-number.mjs';
+import { capacityPlan, connectedGroup, capacityComplete, overflowAlias, readCapacityRejection } from './capacity.mjs';
+import { archiveSyntheticRecording } from './recording-evidence.mjs';
 
 const root=resolve('artifacts/private/call-lab');
-const overlap=process.argv.includes('--public-overlap'),runRoot=overlap?resolve(root,'public-overlap'):root;
+const capacity=process.argv.includes('--capacity-overflow'),overlap=process.argv.includes('--public-overlap');
+if(capacity&&overlap)throw Error('conflicting_run_modes');
+const publicRun=capacity||overlap,runRoot=capacity?resolve(root,'capacity-overflow'):overlap?resolve(root,'public-overlap'):root;
 await mkdir(runRoot,{recursive:true,mode:0o700});
 if(!process.argv.includes('--inside')) {
-  if(!process.argv.includes('--authorized-two-calls'))throw Error('explicit_two_call_authorization_required');
-  if(overlap&&!process.argv.includes('--authorized-public-number-window'))throw Error('public_number_window_approval_required');
-  const child=spawn(process.execPath,['node_modules/firebase-tools/lib/bin/firebase.js','emulators:exec','--config','scripts/call-lab/live-firebase.json','--only','firestore','--project','demo-shield-call-live',`node scripts/call-lab/live.mjs --inside${overlap?' --public-overlap --authorized-public-number-window':''}`],
+  if(!process.argv.includes(capacity?'--authorized-five-calls':'--authorized-two-calls'))throw Error('explicit_call_authorization_required');
+  if(publicRun&&!process.argv.includes('--authorized-public-number-window'))throw Error('public_number_window_approval_required');
+  const child=spawn(process.execPath,['node_modules/firebase-tools/lib/bin/firebase.js','emulators:exec','--config','scripts/call-lab/live-firebase.json','--only','firestore','--project','demo-shield-call-live',`node scripts/call-lab/live.mjs --inside${capacity?' --capacity-overflow --authorized-five-calls --authorized-public-number-window':overlap?' --public-overlap --authorized-public-number-window':' --authorized-two-calls'}`],
     {stdio:'inherit',env:{...process.env,SHIELD_LAB_RUN_DIR:runRoot,GCLOUD_PROJECT:'demo-shield-call-live',METADATA_SERVER_DETECTION:'none'}});
   child.on('exit',code=>{process.exitCode=code??1;});
 } else {
@@ -30,13 +34,14 @@ if(!process.argv.includes('--inside')) {
 }
 
 async function start() {
-  if(overlap&&!process.argv.includes('--authorized-public-number-window'))throw Error('public_number_window_approval_required');
+  if(capacity&&!process.argv.includes('--authorized-five-calls'))throw Error('explicit_call_authorization_required');
+  if(publicRun&&!process.argv.includes('--authorized-public-number-window'))throw Error('public_number_window_approval_required');
   if(process.env.FIRESTORE_EMULATOR_HOST!=='127.0.0.1:8098')throw Error('dedicated_emulator_required');
   const packagePath=resolve('artifacts/private/backend-reliability-release/api');
   const release=await verifyPackage(packagePath);
   const runtime=JSON.parse(await readFile('artifacts/private/firebase-runtime.json'));
   const ids=JSON.parse(await readFile(root+'/telnyx/created.json'));
-  const ledger=new LiveLedger(runRoot+'/live-ledger.json',Date.now,overlap?'overlap':'sequential');
+  const ledger=new LiveLedger(runRoot+'/live-ledger.json',Date.now,capacity?'capacity':overlap?'overlap':'sequential');
   if(ledger.data.stopped||ledger.data.attempts.length)throw Error('existing_run_requires_review');
   const api=(path,method='GET',body)=>telnyxRequest(runtime,path,method,body);
   const [appBefore,browserBefore,profileBefore]=await Promise.all([
@@ -74,7 +79,9 @@ async function start() {
     ledger.data.resourcesDisabled=results.slice(0,3).every(r=>r.status==='fulfilled');
     ledger.data.credentialsRevoked=results.slice(3).every(r=>r.status==='fulfilled');
     try{ledger.data.balanceAfter=(await api('/balance')).data.balance;}catch{}
-    for(const a of ledger.data.attempts)for(const id of a.recordings??[])try{await api(`/recordings/${id}`,'DELETE');a.recordingsDeleted=(a.recordingsDeleted??0)+1;}catch{}
+    for(const a of ledger.data.attempts)for(const id of a.recordings??[])try{
+      if(capacity&&a.alias===overflowAlias){try{a.recordingEvidence=await archiveSyntheticRecording(api,id,a.parentSid,ids.app,runRoot+'/overflow-synthetic.mp3');}catch{a.recordingEvidenceError=true;}}
+      await api(`/recordings/${id}`,'DELETE');a.recordingsDeleted=(a.recordingsDeleted??0)+1;}catch{}
     ledger.save();clearInterval(beat);for(const ws of sockets)ws.close();tunnel?.kill();publicServer?.close();
   }
   process.once('SIGINT',()=>void stop());process.once('SIGTERM',()=>void stop());
@@ -87,7 +94,7 @@ async function start() {
     LIVE_SCREENING_ENABLED:true,SHARED_NUMBER_ENABLED:true,LIVE_BRIDGE_URL:'https://shield-call-lab.a.run.app',MESSAGE_CAPTURE_SECONDS:60});
   const db=getFirestore(initializeApp({projectId:'demo-shield-call-live'},'isolated-live-'+randomUUID()));
   s=new CloudStore(db,config);f=new ForwardingStore(s);live=new ForwardingLive(f);
-  const people=routes.slice(0,overlap?2:1).map(r=>({...r,id:randomUUID()}));
+  const people=routes.slice(0,capacity?5:overlap?2:1).map(r=>({...r,id:randomUUID()}));
   for(const person of people){const now=Date.now();await s.personRef(person.id).set({id:person.id,ownerUid:person.alias,status:'setup',phoneVerifiedAt:now,forwardingConsent,shieldNumber,carrier:'tello',nameEnc:s.vault.seal(person.alias,`person:${person.id}:name`),phoneEnc:s.vault.seal(person.phone,`person:${person.id}:phone`)});
   await f.controlRef(person.id).set({provisioned:true,enabled:true,dataPlanConfirmed:true,allowAnyCaller:true,used:0,expiresAt:now+1800000});}
   await db.doc(`shieldNumbers/${shieldNumber}`).set({state:'shared',members:[]});
@@ -107,7 +114,8 @@ async function start() {
       const person=people.find(p=>p.alias===a?.alias),recipient=person&&`sip:${credentials[person.alias]?.recipient.sip_username}@sip.telnyx.com`;
       if(!a||!person||!recipient||state?.phase!=='recipient')throw Error('no_session');
       const bounded=guardDial(body,{ledger,attempt:a,connection:ids.app,phone:person.phone,recipient,from:runtime.TELNYX_NUMBER});
-      const result=(await api(path,'POST',bounded)).data;ledger.bind(a,result.call_control_id);record(a,'commands','dial:ok');return result;
+      try{const result=(await api(path,'POST',bounded)).data;ledger.bind(a,result.call_control_id);record(a,'commands','dial:ok');return result;}
+      catch(e){a.dialError=e.provider??{status:null,capacityRejected:false};a.capacityRejected=e.provider?.capacityRejected===true;record(a,'commands','dial:rejected');throw e;}
     }
     const match=path.match(/^\/calls\/([^/]+)$/);if(method==='GET'&&match&&ledger.known(decodeURIComponent(match[1])))return (await api(path)).data;
     throw Error('provider_path_rejected');
@@ -127,8 +135,8 @@ async function start() {
         let a=ledger.known(p.call_control_id),adapted=event;
         if(!a&&event.event_type==='call.initiated'&&p.direction==='incoming') {
           a=ledger.byTicket(p.custom_headers?.find(h=>h.name?.toLowerCase()==='x-shield-lab-ticket')?.value);if(!armed||!a)throw Error('no_reservation');ledger.remaining(a);
-          if(overlap&&p.to!==runtime.TELNYX_NUMBER)throw Error('wrong_public_number');
-          if(overlap)a.publicNumberMatched=true;
+          if(publicRun&&p.to!==runtime.TELNYX_NUMBER)throw Error('wrong_public_number');
+          if(publicRun)a.publicNumberMatched=true;
           adapted=adaptInitiation(event,tickets,ids.app,true);if(a.parentSid&&a.parentSid!==p.call_control_id)throw Error('duplicate_parent');
           a.parentSid=p.call_control_id;ledger.bind(a,p.call_control_id);
         }
@@ -137,7 +145,7 @@ async function start() {
           if(!a?.dialSubmitted||state?.id!==a.callId||state?.phase!=='recipient')throw Error('unknown_event');
           ledger.bind(a,p.call_control_id);
         }
-        record(a,'events',{type:event.event_type,at:Date.now(),providerAt:event.occurred_at,...(event.event_type==='call.gather.ended'?{digits:p.digits}:{}),...(event.event_type==='call.hangup'?{cause:p.hangup_cause}:{}),...(event.event_type==='call.cost'?{cost:p.total_cost}:{} )});
+        record(a,'events',{type:event.event_type,at:Date.now(),providerAt:event.occurred_at,...(event.event_type==='call.gather.ended'?{digits:p.digits}:{}),...(event.event_type==='call.hangup'?{cause:p.hangup_cause}:{}),...(provider.readState(p.client_state)?.phase?{phase:provider.readState(p.client_state).phase}:{}),...(event.event_type==='call.cost'?{cost:p.total_cost}:{} )});
         if(event.event_type==='call.recording.saved'&&/^[a-f0-9-]{36}$/i.test(p.recording_id)){a.recordings=[...new Set([...(a.recordings??[]),p.recording_id])];ledger.save();}
         await cc.handle(adapted);
         if(!a.callId){const c=await f.find(a.parentSid);if(c){a.callId=c.id;ledger.save();}}
@@ -166,17 +174,17 @@ async function start() {
   }
   }
   // Only these three explicitly isolated resources are ever enabled or modified.
-  const channels=overlap?2:1;
-  await api(`/call_control_applications/${ids.app}`,'PATCH',{active:true,inbound:{channel_limit:channels},outbound:{channel_limit:channels,outbound_voice_profile_id:ids.profile},webhook_event_url:publicOrigin+'/telnyx/events'});
+  const channels=capacity?5:overlap?2:1,appOutbound=capacity?4:channels,profileOutbound=capacity?10:channels*2;
+  await api(`/call_control_applications/${ids.app}`,'PATCH',{active:true,inbound:{channel_limit:channels},outbound:{channel_limit:appOutbound,outbound_voice_profile_id:ids.profile},webhook_event_url:publicOrigin+'/telnyx/events'});
   await api(`/credential_connections/${ids.browser}`,'PATCH',{active:true,inbound:{channel_limit:channels},outbound:{channel_limit:channels,outbound_voice_profile_id:ids.profile}});
-  await api(`/outbound_voice_profiles/${ids.profile}`,'PATCH',{enabled:true,concurrent_call_limit:channels*2});
+  await api(`/outbound_voice_profiles/${ids.profile}`,'PATCH',{enabled:true,concurrent_call_limit:profileOutbound});
   const [appReady,browserReady,profileReady]=(await Promise.all([api(`/call_control_applications/${ids.app}`),api(`/credential_connections/${ids.browser}`),api(`/outbound_voice_profiles/${ids.profile}`)])).map(r=>r.data);
-  if(!appReady.active||!browserReady.active||!profileReady.enabled||appReady.inbound.channel_limit!==channels||appReady.outbound.channel_limit!==channels||browserReady.inbound.channel_limit!==channels||browserReady.outbound.channel_limit!==channels
+  if(!appReady.active||!browserReady.active||!profileReady.enabled||appReady.inbound.channel_limit!==channels||appReady.outbound.channel_limit!==appOutbound||browserReady.inbound.channel_limit!==channels||browserReady.outbound.channel_limit!==channels
     ||appReady.outbound.outbound_voice_profile_id!==ids.profile||browserReady.outbound.outbound_voice_profile_id!==ids.profile||appReady.inbound.sip_subdomain_receive_settings!=='only_my_connections'||browserReady.sip_uri_calling_preference!=='internal'
-    ||profileReady.concurrent_call_limit!==channels*2||!profileReady.daily_spend_limit_enabled||Number(profileReady.daily_spend_limit)>.25)throw Error('lab_activation_readback_failed');
+    ||profileReady.concurrent_call_limit!==profileOutbound||!profileReady.daily_spend_limit_enabled||Number(profileReady.daily_spend_limit)>.25)throw Error('lab_activation_readback_failed');
   armed=true;
-  const status=()=>({ready:armed,mode:ledger.mode,stopped:ledger.data.stopped,release:release.deployedApi,used:ledger.data.attempts.length,limit:2,overlapStartedAt:ledger.data.overlapStartedAt,overlapVerifiedAt:ledger.data.overlapVerifiedAt,publicNumberRestored:ledger.data.publicNumberRestored,
-    attempts:ledger.data.attempts.map(a=>({alias:a.alias,kind:a.kind,ended:!!a.endedAt,secondsRemaining:Math.max(0,Math.ceil((a.deadline-Date.now())/1000)),events:a.events,commands:a.commands,mediaFrames:a.mediaFrames,outcome:a.outcome,state:a.state,allLegsEnded:a.allLegsEnded,recordings:a.recordings?.length??0})),resourcesDisabled:ledger.data.resourcesDisabled});
+  const status=()=>({ready:armed,mode:ledger.mode,stopped:ledger.data.stopped,release:release.deployedApi,used:ledger.data.attempts.length,limit:capacity?5:2,secondsPerSession:capacity?90:60,capacityReady:capacity&&connectedGroup(ledger.activeAll()),capacityOverlapStartedAt:ledger.data.capacityOverlapStartedAt,capacityVerifiedAt:ledger.data.capacityVerifiedAt,overlapStartedAt:ledger.data.overlapStartedAt,overlapVerifiedAt:ledger.data.overlapVerifiedAt,publicNumberRestored:ledger.data.publicNumberRestored,
+    attempts:ledger.data.attempts.map(a=>({alias:a.alias,kind:a.kind,ended:!!a.endedAt,secondsRemaining:Math.max(0,Math.ceil((a.deadline-Date.now())/1000)),events:a.events,commands:a.commands,mediaFrames:a.mediaFrames,outcome:a.outcome,state:a.state,voicemailPromptCompletedAt:a.voicemailPromptCompletedAt,allLegsEnded:a.allLegsEnded,recordings:a.recordings?.length??0})),resourcesDisabled:ledger.data.resourcesDisabled});
   operator=createServer(async(req,res)=>{
     const origin=`http://127.0.0.1:${operator.address().port}`;
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' wss://*.telnyx.com https://*.telnyx.com; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'");
@@ -197,26 +205,26 @@ async function start() {
       if(req.url==='/reserve'){
         return await serial(async()=>{
         if(!armed||!person)throw Error('not_armed');const a=ledger.reserve(data.kind,person.alias);a.ticket=tickets.issue(person.alias);ledger.save();
-        if(overlap&&!ledger.data.publicBinding){
+        if(publicRun&&!ledger.data.publicBinding){
           // Save rollback BEFORE submitting the live change. The watchdog also owns restoration.
-          ledger.data.publicBinding={...await publicNumberSnapshot(runtime,api),restoreBy:Date.now()+90000};ledger.save();
+          ledger.data.publicBinding={...await publicNumberSnapshot(runtime,api),restoreBy:Date.now()+(capacity?capacityPlan.routingWindowMs:90000)};ledger.save();
           await api(`/phone_numbers/${ledger.data.publicBinding.id}`,'PATCH',{connection_id:ids.app});
           if((await api(`/phone_numbers/${ledger.data.publicBinding.id}`)).data.connection_id!==ids.app)throw Error('public_number_switch_unconfirmed');
         }
-        return json(res,200,{destinationNumber:overlap?runtime.TELNYX_NUMBER:`sip:shield@${appBefore.data.inbound.sip_subdomain}.sip.telnyx.com`,...(overlap?{callerNumber:runtime.TELNYX_NUMBER}:{}),customHeaders:[{name:'X-Shield-Lab-Ticket',value:a.ticket}],deadline:a.deadline});
+        return json(res,200,{destinationNumber:publicRun?runtime.TELNYX_NUMBER:`sip:shield@${appBefore.data.inbound.sip_subdomain}.sip.telnyx.com`,...(publicRun?{callerNumber:runtime.TELNYX_NUMBER}:{}),customHeaders:[{name:'X-Shield-Lab-Ticket',value:a.ticket}],deadline:a.deadline});
         });
       }
       if(req.url==='/finish'){const a=ledger.activeAll().find(a=>a.alias===person?.alias);if(a)await end(a);return json(res,200,status());}
       if(req.url==='/evidence'){
         const a=ledger.activeAll().find(a=>a.alias===person?.alias);
-        if(!overlap||!person)throw Error('no_overlap');
-        if(!a||!ledger.data.overlapStartedAt)return json(res,200,{accepted:false});
+        if(!publicRun||!person)throw Error('no_overlap');
+        if(!a||!(capacity?ledger.data.capacityOverlapStartedAt:ledger.data.overlapStartedAt))return json(res,200,{accepted:false});
         const tone=x=>x&&Number.isFinite(x.hz)&&x.hz>=0&&x.hz<=24000&&Number.isFinite(x.db)&&x.db>=-160&&x.db<=0?{hz:x.hz,db:x.db}:null;
         a.browserEvidence??=[];if(a.browserEvidence.length<60)a.browserEvidence.push({at:Date.now(),caller:tone(data.caller),recipient:tone(data.recipient)});ledger.save();return json(res,200,{});
       }
       if(req.url==='/stop'){await stop();return json(res,200,status());}
       return json(res,404,{});
-    }catch(e){if(ledger.data.publicBinding&&!['attempt_budget_exhausted','recipient_already_reserved','session_active'].includes(e.message))void fail(e);return json(res,400,{error:/^[a-z_]+$/.test(e.message)?e.message:'request_failed'});}
+    }catch(e){if(ledger.data.publicBinding&&!['attempt_budget_exhausted','recipient_already_reserved','session_active','four_connections_required'].includes(e.message))void fail(e);return json(res,400,{error:/^[a-z_]+$/.test(e.message)?e.message:'request_failed'});}
   });
   await new Promise(done=>operator.listen(0,'127.0.0.1',done));
   await writeFile(runRoot+'/gateway-address.json',JSON.stringify({operator:`http://127.0.0.1:${operator.address().port}`,publicOrigin}),{mode:0o600});
@@ -229,14 +237,36 @@ async function start() {
       const jobs=await db.collection('callControlJobs').get();
       for(const job of jobs.docs){const j=job.data();if(!j.done&&j.dueAt<=Date.now())await cc.runJob(job.id);}
       for(const a of active){
-      if(Date.now()>=a.deadline){await end(a);if(overlap)await stop();continue;}
+      if(Date.now()>=a.deadline){await end(a);if(publicRun)await stop();continue;}
       if(!a.callId)continue;const c=await cc.call(a.callId);a.outcome=c.outcome;a.state=c.state;
       if(c.greetingCompletedAt&&Date.now()-c.greetingCompletedAt>=1500&&a.mediaFrames>20&&!a.decisionInjected){a.decisionInjected=true;ledger.save();await live.finish(c.id,{action:'approve',reason:'routine',purpose:'personal',evidence:'synthetic test fixture',hasName:true,hasReason:true});}
       if(c.outcome==='connected'&&!a.connectedAt)a.connectedAt=Date.now();
-      if(!overlap&&a.connectedAt&&Date.now()-a.connectedAt>4000)await end(a);
+      if(!publicRun&&a.connectedAt&&Date.now()-a.connectedAt>4000)await end(a);
       if(c.state==='voicemail'&&!a.voicemailAt)a.voicemailAt=Date.now();
-      if(a.voicemailAt&&Date.now()-a.voicemailAt>12000)await end(a);
+      if(!capacity&&a.voicemailAt&&Date.now()-a.voicemailAt>12000)await end(a);
+      if(c.voicemailPromptCompletedAt)a.voicemailPromptCompletedAt=c.voicemailPromptCompletedAt;
       ledger.save();
+      }
+      if(capacity&&!ledger.data.capacityVerifiedAt){
+        const extra=ledger.activeAll().find(a=>a.alias===overflowAlias);
+        if(extra?.outcome==='connected')throw Error('overflow_connected_unexpectedly');
+        if(extra?.outcome==='voicemail'&&!extra.capacityRejected&&Date.now()-(extra.lastRejectionCheck??0)>2000){
+          extra.lastRejectionCheck=Date.now();
+          try{const evidence=await readCapacityRejection(api,extra,ids.app);if(evidence){extra.capacityRejectionEvidence=evidence;extra.capacityRejected=true;}}catch{extra.rejectionReadbackError=true;}
+          ledger.save();
+        }
+        if(extra?.voicemailPromptCompletedAt&&Date.now()-extra.voicemailPromptCompletedAt>=20000&&!extra.capacityRejected)throw Error('unverified_capacity_rejection');
+        if(connectedGroup(ledger.activeAll())&&!ledger.data.capacityOverlapStartedAt){ledger.data.capacityOverlapStartedAt=Date.now();ledger.save();}
+        if(ledger.data.capacityOverlapStartedAt&&!connectedGroup(ledger.activeAll()))throw Error('capacity_leg_ended_early');
+        if(capacityComplete(ledger.data)){
+          const accepted=ledger.activeAll().filter(a=>a.alias!==overflowAlias),extra=ledger.activeAll().find(a=>a.alias===overflowAlias);
+          const sids=[...accepted.flatMap(a=>a.sids),extra.parentSid];
+          const alive=await Promise.all(sids.map(async sid=>(await api(`/calls/${encodeURIComponent(sid)}`)).data.is_alive));
+          if(sids.length!==9||!alive.every(Boolean))throw Error('capacity_leg_ended_early');
+          ledger.data.capacityVerifiedAt=Date.now();ledger.save();
+          for(const a of ledger.activeAll())await end(a);
+          setTimeout(()=>void stop(),5000);
+        }
       }
       if(overlap&&overlapReady(ledger.activeAll())){
         if(!ledger.data.overlapStartedAt){ledger.data.overlapStartedAt=Date.now();ledger.save();}

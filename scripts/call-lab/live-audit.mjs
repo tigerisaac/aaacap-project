@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile,writeFile } from 'node:fs/promises';
 import { labRequest } from './live-provider.mjs';
-const base='artifacts/private/call-lab',root=process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
+const base='artifacts/private/call-lab',root=process.argv.includes('--capacity-overflow')?base+'/capacity-overflow':process.argv.includes('--public-overlap')?base+'/public-overlap':base,read=async path=>JSON.parse(await readFile(path));
 const config=await read('artifacts/private/firebase-runtime.json'),ids=await read(base+'/telnyx/created.json'),before=await read(base+'/telnyx/before.json'),ledger=await read(root+'/live-ledger.json');
 const api=path=>labRequest(config,path);
 const paths={app:'/call_control_applications',browser:'/credential_connections',profile:'/outbound_voice_profiles'};
@@ -10,6 +10,8 @@ for(const [kind,path] of Object.entries(paths)){
   const response=await api(path+'?page[size]=100');assert.ok(response.meta?.total_pages<=1);
   for(const original of before[kind])assert.deepEqual(stable(response.data.find(x=>x.id===original.id)),stable(original),'existing_resource_changed');
   const isolated=response.data.find(x=>x.id===ids[kind]);assert.equal(kind==='profile'?isolated.enabled:isolated.active,false);
+  if(kind==='profile')assert.equal(isolated.concurrent_call_limit,2);
+  else{assert.equal(isolated.inbound.channel_limit,1);assert.equal(isolated.outbound.channel_limit,1);}
   if(kind==='app')assert.equal(isolated.webhook_event_url,'https://shield-call-lab.invalid/telnyx/events');
 }
 const binding=xs=>xs.map(x=>({id:x.id,number:x.phone_number,connection:x.connection_id})).sort((a,b)=>a.id.localeCompare(b.id));
