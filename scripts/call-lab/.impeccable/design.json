@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T04:03:23.022256+00:00",
+  "title": "Design System: Shield Call Lab",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.02572 174.79)",
+          "oklch(26.43% 0.02572 174.79)",
+          "oklch(37.86% 0.02572 174.79)",
+          "oklch(49.29% 0.02572 174.79)",
+          "oklch(60.71% 0.02572 174.79)",
+          "oklch(72.14% 0.02572 174.79)",
+          "oklch(83.57% 0.02572 174.79)",
+          "oklch(95.00% 0.02572 174.79)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15.00% 0.02179 170.70)",
+          "oklch(26.43% 0.02179 170.70)",
+          "oklch(37.86% 0.02179 170.70)",
+          "oklch(49.29% 0.02179 170.70)",
+          "oklch(60.71% 0.02179 170.70)",
+          "oklch(72.14% 0.02179 170.70)",
+          "oklch(83.57% 0.02179 170.70)",
+          "oklch(95.00% 0.02179 170.70)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Accent",
+        "tonalRamp": [
+          "oklch(15.00% 0.07688 166.48)",
+          "oklch(26.43% 0.07688 166.48)",
+          "oklch(37.86% 0.07688 166.48)",
+          "oklch(49.29% 0.07688 166.48)",
+          "oklch(60.71% 0.07688 166.48)",
+          "oklch(72.14% 0.07688 166.48)",
+          "oklch(83.57% 0.07688 166.48)",
+          "oklch(95.00% 0.07688 166.48)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "tonalRamp": [
+          "oklch(15.00% 0.01316 141.81)",
+          "oklch(26.43% 0.01316 141.81)",
+          "oklch(37.86% 0.01316 141.81)",
+          "oklch(49.29% 0.01316 141.81)",
+          "oklch(60.71% 0.01316 141.81)",
+          "oklch(72.14% 0.01316 141.81)",
+          "oklch(83.57% 0.01316 141.81)",
+          "oklch(95.00% 0.01316 141.81)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "oklch(15.00% 0.00692 124.45)",
+          "oklch(26.43% 0.00692 124.45)",
+          "oklch(37.86% 0.00692 124.45)",
+          "oklch(49.29% 0.00692 124.45)",
+          "oklch(60.71% 0.00692 124.45)",
+          "oklch(72.14% 0.00692 124.45)",
+          "oklch(83.57% 0.00692 124.45)",
+          "oklch(95.00% 0.00692 124.45)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "tonalRamp": [
+          "oklch(15.00% 0.00000 89.88)",
+          "oklch(26.43% 0.00000 89.88)",
+          "oklch(37.86% 0.00000 89.88)",
+          "oklch(49.29% 0.00000 89.88)",
+          "oklch(60.71% 0.00000 89.88)",
+          "oklch(72.14% 0.00000 89.88)",
+          "oklch(83.57% 0.00000 89.88)",
+          "oklch(95.00% 0.00000 89.88)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Accent Hover",
+        "tonalRamp": [
+          "oklch(15.00% 0.06556 166.11)",
+          "oklch(26.43% 0.06556 166.11)",
+          "oklch(37.86% 0.06556 166.11)",
+          "oklch(49.29% 0.06556 166.11)",
+          "oklch(60.71% 0.06556 166.11)",
+          "oklch(72.14% 0.06556 166.11)",
+          "oklch(83.57% 0.06556 166.11)",
+          "oklch(95.00% 0.06556 166.11)"
+        ]
+      },
+      "secondary-hover": {
+        "role": "neutral",
+        "displayName": "Secondary Hover",
+        "tonalRamp": [
+          "oklch(15.00% 0.01191 145.48)",
+          "oklch(26.43% 0.01191 145.48)",
+          "oklch(37.86% 0.01191 145.48)",
+          "oklch(49.29% 0.01191 145.48)",
+          "oklch(60.71% 0.01191 145.48)",
+          "oklch(72.14% 0.01191 145.48)",
+          "oklch(83.57% 0.01191 145.48)",
+          "oklch(95.00% 0.01191 145.48)"
+        ]
+      },
+      "select-border": {
+        "role": "neutral",
+        "displayName": "Select Border",
+        "tonalRamp": [
+          "oklch(15.00% 0.02417 155.68)",
+          "oklch(26.43% 0.02417 155.68)",
+          "oklch(37.86% 0.02417 155.68)",
+          "oklch(49.29% 0.02417 155.68)",
+          "oklch(60.71% 0.02417 155.68)",
+          "oklch(72.14% 0.02417 155.68)",
+          "oklch(83.57% 0.02417 155.68)",
+          "oklch(95.00% 0.02417 155.68)"
+        ]
+      },
+      "secondary-border": {
+        "role": "neutral",
+        "displayName": "Secondary Border",
+        "tonalRamp": [
+          "oklch(15.00% 0.02090 159.59)",
+          "oklch(26.43% 0.02090 159.59)",
+          "oklch(37.86% 0.02090 159.59)",
+          "oklch(49.29% 0.02090 159.59)",
+          "oklch(60.71% 0.02090 159.59)",
+          "oklch(72.14% 0.02090 159.59)",
+          "oklch(83.57% 0.02090 159.59)",
+          "oklch(95.00% 0.02090 159.59)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Focus",
+        "tonalRamp": [
+          "oklch(15.00% 0.12707 51.68)",
+          "oklch(26.43% 0.12707 51.68)",
+          "oklch(37.86% 0.12707 51.68)",
+          "oklch(49.29% 0.12707 51.68)",
+          "oklch(60.71% 0.12707 51.68)",
+          "oklch(72.14% 0.12707 51.68)",
+          "oklch(83.57% 0.12707 51.68)",
+          "oklch(95.00% 0.12707 51.68)"
+        ]
+      },
+      "selection": {
+        "role": "neutral",
+        "displayName": "Selection",
+        "tonalRamp": [
+          "oklch(15.00% 0.02584 158.17)",
+          "oklch(26.43% 0.02584 158.17)",
+          "oklch(37.86% 0.02584 158.17)",
+          "oklch(49.29% 0.02584 158.17)",
+          "oklch(60.71% 0.02584 158.17)",
+          "oklch(72.14% 0.02584 158.17)",
+          "oklch(83.57% 0.02584 158.17)",
+          "oklch(95.00% 0.02584 158.17)"
+        ]
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "button-background",
+        "value": "background-color .12s ease-out",
+        "purpose": "Only enabled when prefers-reduced-motion is no-preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column",
+        "value": "700px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Local rehearsal action.",
+      "html": "<button class=\"ds-button-primary\">Run local rehearsal</button>",
+      "css": ".ds-button-primary{font:650 15px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;min-height:46px;padding:11px 17px;border:1px solid var(--accent,#21634c);border-radius:8px;cursor:pointer;background:var(--accent,#21634c);color:var(--white,#fff);border-color:var(--accent,#21634c);}.ds-button-primary:hover{background:#174d3a}.ds-button-primary:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}.ds-button-primary:disabled{opacity:.55;cursor:wait}@media(prefers-reduced-motion:no-preference){.ds-button-primary{transition:background-color .12s ease-out}}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Routing preview and whole-sequence actions.",
+      "html": "<button class=\"ds-button-secondary\">Preview browser routing</button>",
+      "css": ".ds-button-secondary{font:650 15px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;min-height:46px;padding:11px 17px;border:1px solid var(--accent,#21634c);border-radius:8px;cursor:pointer;background:transparent;color:var(--accent,#21634c);border-color:#a8b7ae;}.ds-button-secondary:hover{background:#e7eee7}.ds-button-secondary:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}.ds-button-secondary:disabled{opacity:.55;cursor:wait}@media(prefers-reduced-motion:no-preference){.ds-button-secondary{transition:background-color .12s ease-out}}"
+    },
+    {
+      "name": "Recipient select",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Native labeled synthetic-recipient control.",
+      "html": "<label class=\"ds-label\" for=\"ds-recipient\">Pretend this person was called</label><select class=\"ds-select\" id=\"ds-recipient\"><option>Test person 01</option><option>Test person 02</option></select>",
+      "css": ".ds-label{display:block;font:600 15px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;margin-bottom:8px;color:var(--ink,#172924)}.ds-select{width:100%;min-height:48px;border:1px solid #8e9e93;border-radius:8px;background:var(--white,#fff);color:var(--ink,#172924);font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;padding:10px 12px;margin-bottom:22px;caret-color:var(--accent,#21634c)}.ds-select:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "description": "Plain home link and local mode indicator.",
+      "html": "<header class=\"ds-header\"><a href=\"#\">Shield <span>/ Call lab</span></a><span class=\"ds-mode\">Local rehearsal</span></header>",
+      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line,#d6ddd5);padding-bottom:22px;font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}.ds-header a{font-size:21px;font-weight:700;text-decoration:none;color:var(--ink,#172924)}.ds-header a span{font-weight:400;color:var(--muted,#52625c)}.ds-mode{font-size:14px;color:var(--accent,#21634c);font-weight:650}.ds-header a:focus-visible{outline:3px solid #ae5c22;outline-offset:4px}"
+    },
+    {
+      "name": "Passed result row",
+      "kind": "custom",
+      "description": "Synthetic outcome evidence with an explicit text status.",
+      "html": "<div class=\"ds-result\"><div class=\"ds-result-title\"><span>Ordinary caller \u00b7 press 1</span><span class=\"ds-pass\">Passed</span></div><p>person-01 \u00b7 connected \u00b7 8 simulated phone commands</p></div>",
+      "css": ".ds-result{padding:15px 0;border-top:1px solid var(--line,#d6ddd5);color:var(--ink,#172924);font:17px/1.55 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}.ds-result-title{display:flex;justify-content:space-between;gap:12px;font-weight:600}.ds-pass{font-size:14px;color:var(--accent,#21634c)}.ds-result p{font-size:14px;color:var(--muted,#52625c);margin:4px 0 0;overflow-wrap:anywhere}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Local rehearsal",
+    "overview": "This record applies only to the local call-lab web utility. It extends Shield\u2019s restrained green and native-system typography for an operator workflow; it does not redefine the application brand. The implemented surface uses plain controls, spacious divisions and a visible distinction between local evidence and a proposed paid run.",
+    "keyCharacteristics": [
+      "Calm green-white field with dark readable text.",
+      "Native forms and explicit operational states.",
+      "Flat, divided sections with no decorative imagery."
+    ],
+    "rules": [],
+    "dos": [
+      "Do keep local-only status and the limits of rehearsal evidence visible.",
+      "Do use native labeled selects, visible keyboard focus and announced status text.",
+      "Do retain the single-column mobile order: controls, cost proposal, results, release context."
+    ],
+    "donts": [
+      "Don\u2019t imply that a passing rehearsal verifies real audio, carrier forwarding or iPhone delivery.",
+      "Don\u2019t add a live-call action, credential entry or microphone request to this utility.",
+      "Don\u2019t introduce decorative cards, imagery or a new brand identity."
+    ]
+  }
+}
