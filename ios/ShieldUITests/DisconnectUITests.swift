@@ -2,6 +2,22 @@ import XCTest
 
 @MainActor
 final class DisconnectUITests: XCTestCase {
+    func testHomeOffersDirectCancellationWithoutChangingSettings() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--redesign-state", "restoring", "--uitesting-disconnect", "--restoration-started"]
+        app.launch()
+        let keep = app.buttons["home-cancel-disconnection"]
+        XCTAssertTrue(keep.appears(timeout: 5))
+        XCTAssertTrue(keep.isHittable)
+        capture(app, "Home offers keep using Shield")
+        keep.tap()
+        XCTAssertTrue(app.buttons["I haven’t changed settings"].appears(timeout: 5))
+        app.buttons["I haven’t changed settings"].tap()
+        XCTAssertTrue(app.staticTexts["Disconnection cancelled"].appears(timeout: 5))
+        XCTAssertFalse(app.buttons["Open phone setup"].exists)
+        capture(app, "Home cancellation acknowledged")
+    }
+
     func testCancellationClearsSavedIntentAndCloseKeepsIt() {
         var app = launch(["--restoration-manual", "--forwarding-navigation-test"])
         next(app).tap()

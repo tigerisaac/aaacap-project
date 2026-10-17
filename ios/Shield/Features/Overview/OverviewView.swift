@@ -13,6 +13,8 @@ struct OverviewView: View {
     @State private var statusRevision = 0
     @State private var statusUpdateFailed = false
     @State private var loadingVisible = false
+    @State private var isCancellingDisconnection = false
+    @State private var isContinuingDisconnection = false
 
     var body: some View {
         NavigationShell {
@@ -85,6 +87,12 @@ struct OverviewView: View {
                 if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
             }
             .shieldLargeTitle("Home")
+            .navigationDestination(isPresented: $isCancellingDisconnection) {
+                if let id = model.selectedPersonID { DisconnectView(participantID: id, cancellationRequested: true) }
+            }
+            .navigationDestination(isPresented: $isContinuingDisconnection) {
+                if let id = model.selectedPersonID { DisconnectView(participantID: id) }
+            }
             .refreshable { await refresh() }
             .task(id: "\(model.selectedPersonID?.uuidString ?? "")-\(model.phoneSetupRevision)") {
                 await loadStatus()
@@ -123,8 +131,16 @@ struct OverviewView: View {
                         .font(.footnote).foregroundStyle(ShieldTheme.secondaryText)
                         .accessibilityIdentifier("today-status-confirmed")
                 }
-                if !model.isDemo, model.isOwner {
-                    if presentation.retry {
+                if !model.isDemo || isStatusFixture, model.isOwner {
+                    if presentation.canCancelDisconnection, model.selectedPersonID != nil {
+                        Button("Keep using Shield") { isCancellingDisconnection = true }
+                            .buttonStyle(.plain)
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                            .accessibilityIdentifier("home-cancel-disconnection")
+                        Button("Finish disconnecting") { isContinuingDisconnection = true }
+                            .buttonStyle(.plain)
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                    } else if presentation.retry {
                         Button(checkingStatus ? "Checking…" : "Try again") { Task { await refresh() } }
                             .disabled(checkingStatus)
                     } else if presentation.needsSetup {

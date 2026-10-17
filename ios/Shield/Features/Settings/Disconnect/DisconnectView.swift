@@ -3,6 +3,7 @@ import SwiftUI
 struct DisconnectView: View {
     let participantID: UUID
     var forDeletion = false
+    var cancellationRequested = false
     @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -46,12 +47,19 @@ struct DisconnectView: View {
                                 .shieldPrimaryButton()
                         }
                         Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                    } else if cancellationRequested {
+                        cancellationContent
                     } else if let status = model.status {
                         Color.clear.frame(height: 0).id("disconnect-top").accessibilityHidden(true)
                         if started && !finished { FlowProgress(title: "Disconnect Shield", current: status.index + 1, total: status.steps.count) }
                         Text(title).shieldPageHeading().id("disconnect-heading")
                             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
                             .accessibilityIdentifier(finished ? "restoration-complete" : "disconnect-heading")
+                        if started && !finished {
+                            cancelButton
+                            Text("Changed your mind? Cancel to keep using Shield. Close only saves your place.")
+                                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                        }
                         if finished { completion }
                         else if !started { introduction }
                         else { stepContent(status) }
@@ -65,9 +73,6 @@ struct DisconnectView: View {
                         if started && !finished {
                             Button("Something didn’t work", systemImage: "questionmark.circle") { help = true }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                            cancelButton
-                            Text("Close saves your place to continue later. Cancel disconnection lets you keep using Shield.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
                         }
                     } else {
                         if model.working { ProgressView("Getting your phone steps…") }
@@ -90,11 +95,11 @@ struct DisconnectView: View {
         }
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
-            if model.status != nil && model.cancellation == nil && !typeSize.isAccessibilitySize {
+            if !cancellationRequested && model.status != nil && model.cancellation == nil && !typeSize.isAccessibilitySize {
                 action.padding(.horizontal, 24).padding(.vertical, 12).background(ShieldTheme.surface)
             }
         }
-        .navigationTitle("Disconnect Shield").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(cancellationRequested ? "Keep using Shield" : "Disconnect Shield").navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Close") { dismiss() }.disabled(model.working) } }
         .phoneLauncherBanner(isPresented: $phoneBanner)
         .task { await model.load(app, id: participantID, refresh: true) }
@@ -119,6 +124,41 @@ struct DisconnectView: View {
                 .background(ShieldTheme.surface).navigationTitle("Live Voicemail")
         }
     }
+    private var cancellationContent: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            Text("Keep using Shield?").shieldPageHeading().accessibilityAddTraits(.isHeader)
+                .id("disconnect-top").accessibilityFocused($headingFocused)
+            Text("If you only opened the guide and haven’t changed any carrier or iPhone settings, cancel your disconnection here.")
+            if model.working {
+                ProgressView(model.cancelling ? "Cancelling disconnection…" : "Checking your saved progress…")
+            } else if started && !finished {
+                if model.status?.index == 0 && model.status?.settingsChanged != true {
+                    Button("I haven’t changed settings") {
+                        Task { await model.cancel(app, id: participantID, settingsUnchanged: true) }
+                    }.shieldPrimaryButton()
+                }
+                Button("Review my phone setup") {
+                    Task { await model.cancel(app, id: participantID, settingsUnchanged: false) }
+                }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                Text("Choose review if you changed any settings or aren’t sure. Cancelling cannot undo changes to your phone or carrier.")
+                    .foregroundStyle(ShieldTheme.secondaryText)
+            } else if model.error == nil {
+                Text(finished ? "You’ve already completed disconnection. Open phone setup to use Shield again." : "There’s no disconnection in progress.")
+                if finished {
+                    NavigationLink(value: AppRoute.forwardingSetup) { ShieldActionLabel(title: "Open phone setup") }
+                        .shieldPrimaryButton()
+                }
+                Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
+            }
+            if let error = model.error {
+                ShieldNotice(title: model.cancellationFailed ? "Couldn’t confirm cancellation" : "Couldn’t load your saved progress", detail: error, symbol: "exclamationmark.circle")
+                    .id("disconnect-error").accessibilityFocused($errorFocused)
+                Button("Refresh progress") { Task { await model.load(app, id: participantID, refresh: true) } }
+                    .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+            }
+        }
+    }
+
     private var cancelButton: some View {
         Button(model.cancelling ? "Cancelling…" : "Cancel disconnection") { confirmCancellation = true }
             .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)

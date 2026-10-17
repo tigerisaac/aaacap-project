@@ -28,6 +28,26 @@ final class PhoneOnboardingUITests: XCTestCase {
         reveal(submit, app); submit.tap()
         XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
     }
+    func testCodeKeyboardHasNoExtraDoneToolbar() {
+        for large in [false, true] {
+            let app = launch(["--uitesting-phone-sign-in", "--uitesting-dark"] + (large
+                ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+            let phone = app.textFields["sign-in-phone"], submit = app.buttons["phone-sign-in-submit"]
+            reveal(phone, app); phone.tap(); phone.typeText("2025550102")
+            reveal(submit, app); submit.tap()
+            let code = app.textFields["sign-in-phone-code"]
+            XCTAssertTrue(code.appears(timeout: 5))
+            code.tap()
+            XCTAssertTrue(app.keyboards.firstMatch.wait(for: \.isHittable, toEqual: true, timeout: 5))
+            XCTAssertFalse(app.buttons["Done"].exists)
+            capture(app, "Code keyboard without toolbar \(large ? "largest" : "standard")")
+            code.typeText("123456")
+            reveal(submit, app)
+            XCTAssertTrue(submit.isHittable)
+            submit.tap()
+            XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
+        }
+    }
     func testCanContinueIndependently() {
         let app = launch(["--uitesting-trusted-contacts"])
         XCTAssertTrue(app.buttons["trusted-contact-no"].appears(timeout: 5))

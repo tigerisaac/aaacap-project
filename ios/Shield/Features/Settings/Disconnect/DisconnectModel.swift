@@ -31,7 +31,8 @@ final class DisconnectModel {
                     var sample = Self.sample
                     if args.contains("--restoration-resume"), let data = UserDefaults.standard.data(forKey: "shield-disconnect-fixture") {
                         sample = (try? JSONDecoder().decode(RestorationStatus.self, from: data)) ?? sample
-                    } else if args.contains("--restoration-start-settings") { sample.id = UUID(); sample.index = 3 }
+                    } else if args.contains("--restoration-started") { sample.id = UUID(); sample.index = 0 }
+                    else if args.contains("--restoration-start-settings") { sample.id = UUID(); sample.index = 3 }
                     else if args.contains("--restoration-start-checks") { sample.id = UUID(); sample.index = 5 }
                     if args.contains("--restoration-manual") { sample.steps = [.init(id: "carrier", kind: "carrier")] + Array(sample.steps.suffix(4)) }
                     if args.contains("--restoration-local-guide") {

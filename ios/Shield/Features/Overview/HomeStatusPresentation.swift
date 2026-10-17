@@ -11,12 +11,13 @@ struct HomeStatusPresentation {
     var useSetupMenu = false
     var enabled = false
     var isSaved = false
+    var canCancelDisconnection = false
 
     static func make(status: ForwardingStatus?, checkedAt: Date?, accountStatus: String?,
                      checking: Bool, updateFailed: Bool, now: Date) -> Self {
         // Explicit known changes outrank a previously enabled forwarding snapshot.
         if status?.restorationRequested == true || accountStatus == "restoring" {
-            return .init(title: "Disconnecting Shield", detail: "Finish the steps to bring back ordinary calls.", symbol: "arrow.uturn.backward.circle", needsSetup: true, actionTitle: "Finish disconnecting")
+            return .init(title: "Disconnecting Shield", detail: "Continue disconnecting, or cancel to keep using Shield.", symbol: "arrow.uturn.backward.circle", needsSetup: true, actionTitle: "Finish disconnecting", canCancelDisconnection: true)
         }
         if accountStatus == "paused" {
             return .init(title: "Call checks are paused", detail: "Your phone may still send calls to Shield.", symbol: "pause.circle", needsSetup: true, actionTitle: "Resume call checks", useSetupMenu: true)

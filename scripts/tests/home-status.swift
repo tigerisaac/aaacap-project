@@ -23,6 +23,8 @@ func testHomeStatusAndCallFilters() throws {
     try require(!show(active, age: 86400).enabled, "day-old settings require reconfirmation")
     try require(!show(active, account: "paused").enabled, "known pause overrides cached enabled setting")
     try require(!show(active, account: "restoring").enabled, "known disconnection overrides cached enabled setting")
+    try require(show(active, account: "restoring").canCancelDisconnection, "a saved disconnection must offer a way to keep Shield")
+    try require(!show(active).canCancelDisconnection && !show(active, account: "paused").canCancelDisconnection, "only a disconnection offers cancellation")
     try require(!show(status(live: false)).enabled, "disabled live screening must not show enabled")
     try require(!show(status(alwaysOn: false, expiry: now.addingTimeInterval(-1))).enabled, "window expiry is evaluated locally")
     try require(!show(status(alwaysOn: false, expiry: now.addingTimeInterval(60), remaining: 0)).enabled, "exhausted window is not on")

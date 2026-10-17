@@ -82,10 +82,6 @@ struct PhoneSignInView: View {
             }
             .background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
-            .toolbar {
-                ToolbarSpacer(.flexible, placement: .keyboard)
-                ToolbarItem(placement: .keyboard) { Button("Done") { focus = nil } }
-            }
         }
     }
 
