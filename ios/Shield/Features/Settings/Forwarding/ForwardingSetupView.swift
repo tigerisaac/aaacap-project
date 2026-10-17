@@ -18,11 +18,11 @@ struct ForwardingSetupView: View {
                 VStack(alignment: .leading, spacing: 28) {
                     if let status = model.status {
                         if model.step.progressIndex > 0 {
-                            FlowProgress(title: model.step.progressTitle, current: model.step.progressIndex, total: 10)
+                            FlowProgress(title: model.step.progressTitle, current: model.progressIndex, total: model.progressTotal)
                         }
                         // The heading sits closer to its own content than to the progress above it.
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
-                            Text(model.isPhoneSettingsStep ? model.phoneSettingsTitle : model.step.title).shieldPageHeading().id("forwarding-heading")
+                            Text(model.pageTitle).shieldPageHeading().id("forwarding-heading")
                                 .accessibilityAddTraits(.isHeader).accessibilityFocused($focusedStep, equals: model.step)
                                 .task(id: model.step) { focusedStep = model.step }
                             if model.step == .ring || model.step == .test {
@@ -70,8 +70,7 @@ struct ForwardingSetupView: View {
                 proxy.scrollTo("forwarding-step-error", anchor: .top)
                 errorFocused = true
             }
-            .onChange(of: model.phoneSettingsTitle) { _, _ in
-                guard model.isPhoneSettingsStep else { return }
+            .onChange(of: model.pageTitle) { _, _ in
                 proxy.scrollTo("forwarding-heading", anchor: .top)
                 focusedStep = model.step
             }
@@ -90,15 +89,16 @@ struct ForwardingSetupView: View {
         .sensoryFeedback(.success, trigger: model.step) { old, new in
             (ForwardingStep.allCases.firstIndex(of: new) ?? 0) > (ForwardingStep.allCases.firstIndex(of: old) ?? 0)
         }
-        .navigationBarBackButtonHidden(model.step.previous != nil)
+        .navigationBarBackButtonHidden(model.previousStep != nil)
         .toolbar {
-            if let previous = model.step.previous {
+            if let previous = model.previousStep {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Back", systemImage: "chevron.left") {
                         Task { do { try await model.move(to: previous, app: app) } catch { model.reportError(error.localizedDescription) } }
                     }
                     .labelStyle(.titleAndIcon).disabled(model.working || model.probeWaiting)
                     .accessibilityLabel("Previous step")
+                    .accessibilityIdentifier("forwarding-previous")
                     .accessibilityInputLabels(["Back", "Previous step"])
                 }
             }

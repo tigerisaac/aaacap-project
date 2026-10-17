@@ -1,5 +1,11 @@
 # Status
 
+## October 16 — clearer carrier handoff and actual code counts
+
+The carrier phase now explains **Connect calls to Shield**, with deliberate **Copy setup code** → **Open Phone** → explicit carrier confirmation after returning. Visible ready-to-paste feedback replaces automatic copying; Apple's native Phone banner still needs its own Open tap, and Keypad remains an explicit instruction when needed. The separate floating keypad reminder is shallower. Progress, Back and continuation follow the actual one-, two- or three-code list; empty-code recovery and the forwarding probe remain. T-Mobile's grouped-code candidate is documented, but its separate-phone test is deferred at the owner's request and the current carrier profile stays unchanged.
+
+The final iPhone build is installed. Synthetic local hardware checks covered the native launcher, Keypad and compact guide on first/repeat visits, and an unconfirmed return; no code was pasted/dialed, setting changed or call placed. Final main/compact carrier suites passed **6/6** and **7/7**, including largest text. Required typecheck/build and **264 unit tests** passed, as did signed Debug device and unsigned Release builds. Three complete emulator runs each passed **197/198**, with existing backend transaction/timing failures; the historical-total file passed **10/10** in isolation afterward. This task has no clean full-emulator result, backend change, deployment or real-carrier qualification. Fresh scoped review, using a generalist fallback, inspected all 27 captures: **disposition: ship**. [Implementation, evidence and limits](IOS-SETUP-GUIDES.md#carrier-code-handoff--october-16-2026).
+
 ## October 16 — on-demand startup and recovery deployed
 
 With the owner's explicit approval, release `ddb8602` is live on bridge **`shield-live-00015-qdd`** and API **`shieldapi-00021-zug`**, both serving 100% of traffic. New workers `dispatchsharedcalljob-00001-gup` and `runsharedcalljob-00001-leq`, deadline recovery `expiresharedcalls-00003-lec`, and cleanup `cleanupshield-00011-giv` are active. **All services retain zero minimum instances and request-based CPU.** Screening v158, post-call v4, secret versions and unrelated function revisions are preserved.

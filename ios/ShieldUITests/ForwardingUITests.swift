@@ -31,15 +31,17 @@ final class ForwardingUITests: XCTestCase {
         app.buttons["Need help?"].tap()
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
         tapPrimary(app)
-        for title in ["When you don’t answer", "When you’re on a call", "When there’s no signal"] {
-            expect(app, title)
-            app.buttons["See copied code"].tap()
-            XCTAssertTrue(app.staticTexts["forwarding-code"].exists)
-            XCTAssertTrue(app.staticTexts["Code copied"].appears(timeout: 5))
-            app.buttons["See copied code"].tap()
-            XCTAssertTrue(app.buttons["Need help?"].isHittable)
-            XCTAssertTrue(app.buttons["forwarding-continue"].isHittable)
-            capture(app, "Guided \(title) light")
+        for index in 1...3 {
+            expect(app, "Connect calls to Shield")
+            XCTAssertEqual(app.staticTexts["forwarding-code-sequence"].label, "Code \(index) of 3")
+            XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy setup code")
+            tapPrimary(app)
+            XCTAssertTrue(app.staticTexts["forwarding-code-copied"].exists)
+            XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone")
+            capture(app, "Guided carrier code \(index) ready")
+            tapPrimary(app)
+            XCUIDevice.shared.press(.home); app.activate()
+            expect(app, "Check Tello’s result")
             tapPrimary(app)
         }
         expect(app, "Check that calls reach Shield")
@@ -147,22 +149,25 @@ final class ForwardingUITests: XCTestCase {
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
     }
     func testCopyRequiresCarrierConfirmationAndResetsForNextCode() {
-        let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
-        expect(app, "Code copied")
-        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
-        XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
-        app.buttons["Need help?"].tap()
-        app.buttons["forwarding-copy-code"].tap()
-        expect(app, "When you don’t answer")
+        let app = launch(["--forwarding-start-code"], title: "Connect calls to Shield")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy setup code")
         tapPrimary(app)
-        expect(app, "When you’re on a call")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone")
+        XCUIDevice.shared.press(.home); app.activate()
+        XCTAssertFalse(app.staticTexts["forwarding-carrier-result"].exists)
+        tapPrimary(app)
+        XCUIDevice.shared.press(.home); app.activate()
+        expect(app, "Check Tello’s result")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
-        XCTAssertTrue(app.staticTexts["forwarding-code-copied"].exists)
-        app.buttons["See copied code"].tap()
+        tapPrimary(app)
+        expect(app, "Connect calls to Shield")
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Copy setup code")
+        XCTAssertFalse(app.staticTexts["forwarding-code-copied"].exists)
+        app.buttons["See setup code"].tap()
         XCTAssertEqual(app.staticTexts["forwarding-code"].label, "**67*12025550100#")
         app.terminate()
-        let resumed = launch(["--forwarding-start-code"], title: "When you don’t answer")
-        expect(resumed, "Code copied")
+        let resumed = launch(["--forwarding-start-code"], title: "Connect calls to Shield")
+        XCTAssertEqual(resumed.buttons["forwarding-continue"].label, "Copy setup code")
         XCTAssertFalse(resumed.staticTexts["Check that calls reach Shield"].exists)
     }
     func testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed() {
@@ -228,28 +233,31 @@ final class ForwardingUITests: XCTestCase {
     }
 
     func testReturningChangesInstructionsButNeverConfirmsCarrierChange() {
-        let app = launch(["--forwarding-start-code"], title: "When you don’t answer")
-        XCUIDevice.shared.press(.home)
-        app.activate()
+        let app = launch(["--forwarding-start-code"], title: "Connect calls to Shield")
+        tapPrimary(app); tapPrimary(app)
+        XCUIDevice.shared.press(.home); app.activate()
         XCTAssertTrue(app.staticTexts["forwarding-carrier-result"].appears(timeout: 5))
-        XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
-        XCTAssertFalse(app.staticTexts["When you’re on a call"].exists)
+        XCTAssertTrue(app.staticTexts["Check Tello’s result"].exists)
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Tello confirmed the change")
         app.buttons["Need help?"].tap()
         app.buttons["forwarding-phone-reopen"].tap()
         XCTAssertFalse(app.staticTexts["forwarding-carrier-result"].exists)
-        XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
+        XCTAssertTrue(app.staticTexts["Connect calls to Shield"].exists)
+        XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone")
         capture(app, "Phone return and retry")
     }
 
     func testCarrierCodeAtLargestTextInDarkMode() {
-        let app = launch(["--forwarding-start-code", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], title: "When you don’t answer")
+        let app = launch(["--forwarding-start-code", "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], title: "Connect calls to Shield")
         for _ in 0..<12 where !app.buttons["forwarding-continue"].isHittable { app.scrollViews.firstMatch.swipeUp() }
         XCTAssertTrue(app.buttons["forwarding-continue"].isHittable)
+        app.buttons["forwarding-continue"].tap()
         app.scrollViews.firstMatch.swipeDown()
         app.scrollViews.firstMatch.swipeDown()
-        app.buttons["See copied code"].tap()
+        let codeDisclosure = app.buttons["See setup code"]
+        for _ in 0..<8 where !codeDisclosure.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        codeDisclosure.tap()
         XCTAssertEqual(app.staticTexts["forwarding-code"].label, "**61*12025550100#")
         let help = app.buttons["Need help?"]
         for _ in 0..<8 where !help.isHittable { app.scrollViews.firstMatch.swipeUp() }

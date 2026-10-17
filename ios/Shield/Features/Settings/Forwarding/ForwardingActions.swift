@@ -36,7 +36,9 @@ struct ForwardingActions: View {
     private var label: String {
         if model.step.codeIndex != nil {
             if model.code == nil { return "Get my code" }
-            return model.codePreparedStep == model.step ? "\(model.carrier) confirmed the change" : "Copy \(model.carrier) code"
+            if model.codePreparedStep != model.step { return "Copy setup code" }
+            if model.codeReturnedStep != model.step { return "Open Phone" }
+            return "\(model.carrier) confirmed the change"
         }
         if model.isPhoneSettingsStep && !model.usingManualPhoneSettings { return model.phoneSettingsAction }
         if model.isPhoneSettingsStep && !model.settingsReturned { return model.settingsReminderUnavailable ? "Open Settings anyway" : "Open Phone settings" }

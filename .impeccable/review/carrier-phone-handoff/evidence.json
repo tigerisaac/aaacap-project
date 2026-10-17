@@ -1,0 +1,279 @@
+{
+  "date": "2026-10-16",
+  "baseline": "26b6d04",
+  "concurrentHead": "ddb8602",
+  "scope": "Carrier handoff and variable code-count UI. T-Mobile line test explicitly deferred by owner. No backend source or carrier profile changes by this task.",
+  "captures": [
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-next-code-starts-fresh.png",
+      "sha256": "50ae3e913f7f6ea2acf222e5f9c6c48c2f0ddfa9724153f0f02735ee6c39a05a",
+      "bytes": 234128
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-unconfirmed-return.png",
+      "sha256": "fb06b131d9cd6be299c2849efb13870d2eb3922c000f300531f028f14770a9ca",
+      "bytes": 201380
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-ready-to-open-phone.png",
+      "sha256": "331534fa2bd6b2f6163460adec0c0831fc080c72b58e8649a3ca7b8ec0a1c3e5",
+      "bytes": 229944
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-explain-and-copy.png",
+      "sha256": "aeb7c8e1f81703fa405b459cc9e7ff3d628b69419e7139e9611516dfc94396bd",
+      "bytes": 233827
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-largest-text-confirmation.png",
+      "sha256": "57f3637298bb995ed90b6224244f390a6e9beab7e525798c317fad3b170a4034",
+      "bytes": 265020
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-largest-text-copy-action.png",
+      "sha256": "7f8088255a230987b80c0525453a6f110d10cd389fceda669a0f46fd9bfe4abc",
+      "bytes": 269854
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-largest-text-top.png",
+      "sha256": "0a414b7888750ebf2b9d3f269610a7e422cbf591a1ca4e8bd4e231b6c659f0d7",
+      "bytes": 262710
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-native-phone-launcher-directions.png",
+      "sha256": "b6326667c3977f529339fce975b22db85589ba6f345a88ab3ea84b100852ea16",
+      "bytes": 235243
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-one-code-confirmation-tones.png",
+      "sha256": "397fd397854cc5f6c0bba06686f3db1f06d21ad94127239f75c7ee2f72fbd0a7",
+      "bytes": 185710
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/main/carrier-one-code.png",
+      "sha256": "f46688583176401cd35eb742f1f43dc70bf7f13c9950d3fa299bcdca0da9dc3b",
+      "bytes": 232656
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-next-code-starts-fresh.png",
+      "sha256": "87ff00b1ded536c89a2837db24ac072e6bc71d09bded60ac8bf3d4a41c78cd7a",
+      "bytes": 227187
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-unconfirmed-return.png",
+      "sha256": "8efc02f8df6e11fbcb25898cfccb25c2bdf95106315739f6cc5d371dddf67449",
+      "bytes": 200341
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-ready-to-open-phone.png",
+      "sha256": "87c64dab11dd6383ac19236b4c50d756b2aa3731957c90141927d4bc06ee2398",
+      "bytes": 226957
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-explain-and-copy.png",
+      "sha256": "d76bf909b2b31f20a19b9541f289dc01946e0a92b1472d02513f6ec552d12447",
+      "bytes": 227318
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-largest-text-confirmation.png",
+      "sha256": "e0924c66ed326a4ee3e9bdd96e2a9b8f6a6a32877d847047152b9a45efe12d35",
+      "bytes": 261774
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-largest-text-copy-action.png",
+      "sha256": "42267d711445c90c1b19169c3b3d0842aa72109e99e0469bfe2de578ff644699",
+      "bytes": 256034
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-largest-text-top.png",
+      "sha256": "db045fc76978ee9f1eeadfec434b09859edf04da9389dee38efde84c29deacd2",
+      "bytes": 247290
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-native-phone-launcher-directions.png",
+      "sha256": "cc95b66f6d7aa916d0bf17d9304016c96fe0cc5c5fbc02a9bc1ec39421899a11",
+      "bytes": 230292
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-one-code-confirmation-tones.png",
+      "sha256": "32584930b175a927b170fa33928b4885a4d09c7c3dba084aa81faa0764b33a6b",
+      "bytes": 184153
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-one-code.png",
+      "sha256": "3ffcf03996affbafa42fdce9e1fe8417438c321eb84d3bbf12b42c17abbd952c",
+      "bytes": 231378
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-code-largest-text-dark.png",
+      "sha256": "b0f7599a2124ee304c9d77b8f7634b2365bb4487449430a98f1a446634f8bcac",
+      "bytes": 268102
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/physical/explain-and-copy.png",
+      "sha256": "3132ff46275a9c6defc5fd81d81a984b67b136a50a235eb9f3917536b046001b",
+      "bytes": 131043
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/physical/ready-to-open-phone.png",
+      "sha256": "3f68b72ae38126b123bc0d51e2397b685bb860ec571c189b2e9d88a9b77a24b1",
+      "bytes": 133279
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/physical/native-phone-launcher.png",
+      "sha256": "63efa6a6f4508d9ea991bceaf85af629b1e731028185e1c7a111587e02e9bce3",
+      "bytes": 149199
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/physical/keypad-with-compact-guide.png",
+      "sha256": "f875fba2c2a035f2e717a0d12358be17c354915d278b56b0e8b30c892503682f",
+      "bytes": 131098
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/physical/returned-unconfirmed.png",
+      "sha256": "4fc3342689268d67bce1e5c5614f018a4d4a7443171013bcd17503d3561b9a54",
+      "bytes": 109045
+    },
+    {
+      "path": ".impeccable/review/carrier-phone-handoff/physical/reopened-compact-guide.png",
+      "sha256": "751149847f337293553620c3e0aeb12923483b55ed632471a9c9da07f0b0a6b0",
+      "bytes": 131645
+    }
+  ],
+  "sources": [
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift",
+      "sha256": "cce9ac62dad2e6063a86053eb4dcbea88686bbec5b80832ae1d501dd372c7ad8",
+      "bytes": 3782
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingCodeView.swift",
+      "sha256": "3784e8c3a924fa86eb20af000e34e52e842abdc60a95974a36394a25f9e78397",
+      "bytes": 3638
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingFixture.swift",
+      "sha256": "72992896131ad9027468590df9bd424ceeec37758829834d40d203330fe88e0b",
+      "bytes": 2100
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingSetupModel.swift",
+      "sha256": "6ab50863d8885d8f1ac4c23f823b7902fc82ab553fcfb35e03c97d09436fa0c0",
+      "bytes": 20948
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift",
+      "sha256": "3557bf7e5bb546372c8ebd1b988cff7953e04e6e1aa6150943fb3bdc869a700b",
+      "bytes": 8237
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/PhoneCodeGuide.swift",
+      "sha256": "2a4447b5bad8b13c7b9e44d804daf079904c42216035cd63aadef88e4835cffa",
+      "bytes": 1522
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/PhoneAppLink.swift",
+      "sha256": "08aedd4af778a53e16b1b69727447336aadcf950aefb8d5571e58ebcfc5ec6d0",
+      "bytes": 269
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/PhoneLauncherBanner.swift",
+      "sha256": "64d1a124b174560266a106fd75ae68060794ae8676a2a3efc257f25ffccbf3da",
+      "bytes": 2667
+    },
+    {
+      "path": "ios/ShieldUITests/CarrierSetupUITests.swift",
+      "sha256": "a289e3cdf0c2009221ffbd32e5a00fb969db8017e9f2d0f95b7dea941d7f15ce",
+      "bytes": 7003
+    },
+    {
+      "path": "ios/ShieldUITests/ForwardingUITests.swift",
+      "sha256": "6ee71a4b3187c337fb419b2c69a5623ef70b42b69d96876575d7507c76b30205",
+      "bytes": 16996
+    },
+    {
+      "path": "ios/ShieldUITests/SetupGuideUITests.swift",
+      "sha256": "cfbfc9a88fb4e1a676446e3d9e4076b439ed3d519f13d58cde9806e5680fc953",
+      "bytes": 12224
+    },
+    {
+      "path": "ios/ShieldUITests/PhoneSetupShortcutUITests.swift",
+      "sha256": "9770b6e4aa675ebdf6627265c50b06725b02d95edeaf04911fb6d914478b4000",
+      "bytes": 7026
+    },
+    {
+      "path": "ios/ShieldUITests/PhoneSettingsDeviceUITests.swift",
+      "sha256": "698990a716cd80b1fe6d0be45c3a067caa05778c2d77dd77906790ec7db8b72f",
+      "bytes": 4543
+    },
+    {
+      "path": "ios/Shield.xcodeproj/project.pbxproj",
+      "sha256": "c7855802ba0cb0357f21ef61ebbe75dbcb100d94cb9cee89f21319142e57a83a",
+      "bytes": 101524
+    },
+    {
+      "path": "scripts/generate-setup-guides.swift",
+      "sha256": "c6cd440dbf32eb7ca119a7d9bf5e83c8a45d497ddc4a82287092a156610a0d39",
+      "bytes": 24338
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-keypad.mp4",
+      "sha256": "9529fcfdb26d54c75d28d11b0958ea1e4271efce42be40960fceb6b4681223e0",
+      "bytes": 102278
+    },
+    {
+      "path": "ios/Shield/Resources/SetupGuides/setup-keypad-still.mp4",
+      "sha256": "9fd34275a5e6f14e8e921d667a4eedfd378677348db5c43114245cf75481a6bd",
+      "bytes": 102278
+    }
+  ],
+  "checks": {
+    "mainFinal": "6/6 CarrierSetupUITests; /private/tmp/shield-carrier-main-final.xcresult",
+    "compactFinal": "7/7 (6 carrier + largest-text carrier recovery); /private/tmp/shield-carrier-compact-final.xcresult",
+    "earlierMain": "10/10 before native launcher finalization; then 7/7 including full synthetic guided journey before compact-media/back-identifier correction",
+    "earlierCompact": "24/26 before Back identifier and floating-point tolerance correction; retained helper/manual guide checks passed; two failing assertions corrected, final carrier suite passed",
+    "requiredCheck": "npm run check: typecheck/build and 264 tests passed, 197 expected emulator tests skipped; /private/tmp/shield-carrier-check.log",
+    "firebase": "Three full runs each 197/198. First and third: historical-total test, INVALID_ARGUMENT Transaction is invalid or closed. Second: ten simultaneous admissions timeout. The unchanged historical-total file passed 10/10 in isolation afterward (/private/tmp/shield-carrier-cloud-isolated.log). No backend source/test/config changes by this task; no clean full-emulator result.",
+    "builds": "Final signed Debug device and unsigned Release builds succeeded; local app installed.",
+    "provenance": "7 shipping rasters, no missing origins; inline GIF and poster unchanged; /private/tmp/shield-carrier-provenance.log"
+  },
+  "hardware": {
+    "device": "iPhone 12 Pro Max / iOS27.2",
+    "fixture": "Local --uitesting-forwarding --forwarding-start-code, synthetic codes; normal app components, no backend writes",
+    "observations": [
+      "Manual copy shows ready-to-paste feedback before Open Phone",
+      "Open Phone presents Apple native banner; native Open reaches Phone, observed Keypad selected",
+      "Compact guide visible on first and repeat Phone visits",
+      "System window was large/top from earlier manual reposition; position not controlled by app",
+      "Native Shield return stops guide and leaves carrier confirmation pending"
+    ],
+    "noActions": "No code pasted or dialed, no call or carrier/phone setting changed. No current native PiP restore-control or novice usability test.",
+    "cleanup": "Synthetic Shield fixture was terminated through the native app switcher after checks; no pending carrier confirmation accepted."
+  },
+  "experiments": [
+    "mobilephone-keypad:// and mobilephone:// rejected on physical phone",
+    "Empty tel:// raised Call confirmation, canceled without dialing; all calling URL experiments removed from shipping source",
+    "Initial immediate AX-label assertions failed while screen state was updating; waits added before reading the return label",
+    "Compact initial Back lookup and floating-point52pt equality failed; stable identifier and half-point tolerance corrected"
+  ],
+  "media": {
+    "dimensions": "960x400",
+    "fps": 30,
+    "videoFrames": 60,
+    "audio": "silent AAC",
+    "source": "Authored AppKit shapes/system symbols/text in scripts/generate-setup-guides.swift; keypad --video-only; no imported screenshot pixels",
+    "timingLimit": "No new hitch or scanout measurement; unchanged inline GIF playback"
+  },
+  "limits": [
+    "Native system Open tap remains; no one-tap app-owned or guaranteed Keypad deep link",
+    "T-Mobile retains current three codes until direct-line grouped-command qualification; owner deferred other phone",
+    "One-code Verizon UI fixture is not carrier qualification; backend Verizon verified flag unchanged",
+    "User-confirmed carrier response remains separate from required forwarding probe",
+    "No service/App Store deployment or real-call evidence established"
+  ],
+  "review": {
+    "disposition": "ship",
+    "report": ".impeccable/review/carrier-phone-handoff/finish-review.md",
+    "reviewer": "Fresh generalist fallback for unavailable specialist; all 27 required captures inspected; no material fixes."
+  }
+}

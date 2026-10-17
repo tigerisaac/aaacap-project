@@ -3,49 +3,46 @@ import SwiftUI
 struct ForwardingCodeView: View {
     @Bindable var model: ForwardingSetupModel
 
+    private var copied: Bool { model.codePreparedStep == model.step }
+    private var returned: Bool { model.codeReturnedStep == model.step }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             if let code = model.code {
-                if model.codePreparedStep == model.step {
-                    Label("Code copied", systemImage: "checkmark.circle.fill").font(.headline)
-                        .accessibilityIdentifier("forwarding-code-copied")
-                } else {
-                    Text("Your personal \(model.carrier) code").shieldHeading(.title)
+                if let sequence = model.codeSequence {
+                    Text(sequence).font(.headline).accessibilityIdentifier("forwarding-code-sequence")
                 }
-                if model.codePreparedStep == model.step {
-                    if model.codeReturnedStep == model.step {
-                        PhoneCodeGuide(returned: true, carrier: model.carrier)
+                if returned {
+                    PhoneCodeGuide(returned: true, carrier: model.carrier, showingHeading: false)
+                } else {
+                    Text("This tells \(model.carrier) to send calls you miss to Shield for checking.")
+                    if copied {
+                        Label("Ready to paste in Phone", systemImage: "checkmark.circle.fill")
+                            .font(.headline).accessibilityIdentifier("forwarding-code-copied")
+                        Text(model.phoneNeedsBanner ? "Tap Open on the Phone banner. Then tap Keypad if needed." : "In Phone, tap Keypad if needed.")
+                            .accessibilityIdentifier("forwarding-phone-navigation")
                     } else {
-                        SetupGuideView(guide: .keypad, player: model.guidePlayer)
+                        Text("Copy your setup code first. You won’t need to type it.")
                     }
-                } else {
-                    Text("Copy your code, then open Phone and paste it into Keypad.")
+                    SetupGuideView(guide: .keypad, player: model.guidePlayer)
                 }
-                // Optional help reads as one evenly spaced group under the main guidance.
                 VStack(alignment: .leading, spacing: 0) {
-                    if model.codePreparedStep == model.step {
-                        if model.codeReturnedStep == model.step {
-                            ShieldDisclosure("Watch the guide again") {
-                                SetupGuideView(guide: .keypad, player: model.guidePlayer)
-                            }
-                        } else {
-                            ShieldDisclosure("Read the steps") {
-                                PhoneCodeGuide(carrier: model.carrier)
-                            }
-                        }
+                    ShieldDisclosure(returned ? "Watch the guide again" : "Read the steps") {
+                        if returned { SetupGuideView(guide: .keypad, player: model.guidePlayer) }
+                        else { PhoneCodeGuide(carrier: model.carrier) }
                     }
-                    ShieldDisclosure("See copied code") {
+                    ShieldDisclosure("See setup code") {
                         Text(code).font(.body.monospaced()).textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("forwarding-code")
                     }
                     ShieldDisclosure("Need help?", isExpanded: $model.showingHelp) {
-                        Button("Copy code again", systemImage: "document.on.document") { model.copyCode(showPhoneLauncher: false) }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+                        if copied {
+                            helpAction("Open Phone again") { Task { await model.openCarrierPhone() } }
+                                .accessibilityIdentifier("forwarding-phone-reopen")
+                        }
+                        helpAction(copied ? "Copy code again" : "Copy setup code") { model.copyCode() }
                             .accessibilityIdentifier("forwarding-copy-code")
-                        Button("Show Phone again", systemImage: "phone") { model.copyCode() }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
-                            .accessibilityIdentifier("forwarding-phone-reopen")
-                        Text("No banner? Open the green Phone app. No Paste? Touch and hold above the keypad. If \(model.carrier) gives an error, stop and contact support.")
+                        Text("If Phone opens elsewhere, tap Keypad. No Paste? Touch and hold above the numbers. If \(model.carrier) gives an error, stop and contact support.")
                             .foregroundStyle(ForwardingStyle.secondaryText)
                     }
                 }
@@ -55,5 +52,14 @@ struct ForwardingCodeView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+        .sensoryFeedback(.success, trigger: copied) { _, new in new }
+    }
+
+    private func helpAction(_ title: String, action: @escaping @MainActor () -> Void) -> some View {
+        Button(action: action) {
+            Text(title).frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain).foregroundStyle(ShieldTheme.action).disabled(model.working)
     }
 }

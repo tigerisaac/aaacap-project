@@ -29,10 +29,10 @@ final class SetupGuideUITests: XCTestCase {
         app.buttons["forwarding-continue"].tap()
         XCTAssertTrue(app.staticTexts["Turn off Live Voicemail"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
-        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists, "A visit must not confirm either setting")
+        XCTAssertFalse(app.staticTexts["Connect calls to Shield"].exists, "A visit must not confirm either setting")
         capture(app, "Voicemail confirmation after the same Settings visit")
         app.buttons["forwarding-continue"].tap()
-        XCTAssertTrue(app.staticTexts["When you don’t answer"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Connect calls to Shield"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
     }
 
@@ -81,14 +81,16 @@ final class SetupGuideUITests: XCTestCase {
 
     func testReturnFromOtherAppRetainsCarrierStepAndWrittenRecovery() {
         let app = launch(["--forwarding-start-code"])
+        app.buttons["forwarding-continue"].tap()
+        app.buttons["forwarding-continue"].tap()
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(app.staticTexts["forwarding-carrier-result"].waitForExistence(timeout: 5))
         app.buttons["Watch the guide again"].tap()
         XCTAssertFalse(app.buttons["setup-guide-playback"].exists)
         XCTAssertFalse(app.buttons["setup-guide-float"].exists)
-        XCTAssertTrue(app.staticTexts["When you don’t answer"].exists)
-        XCTAssertFalse(app.staticTexts["When you’re on a call"].exists)
+        XCTAssertTrue(app.staticTexts["Check Tello’s result"].exists)
+        XCTAssertEqual(app.staticTexts["forwarding-code-sequence"].label, "Code 1 of 3")
         XCTAssertFalse(app.staticTexts["forwarding-probe-passed"].exists)
         capture(app, "Phone guide after return")
     }
@@ -146,7 +148,7 @@ final class SetupGuideUITests: XCTestCase {
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Open Phone settings")
         app.buttons["forwarding-continue"].tap()
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
-        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists)
+        XCTAssertFalse(app.staticTexts["Connect calls to Shield"].exists)
     }
 
     func testAlreadyChangedBothStillRequiresBothConfirmations() {
@@ -159,7 +161,7 @@ final class SetupGuideUITests: XCTestCase {
         app.buttons["forwarding-continue"].tap()
         XCTAssertTrue(app.staticTexts["Turn off Live Voicemail"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
-        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists)
+        XCTAssertFalse(app.staticTexts["Connect calls to Shield"].exists)
     }
 
     func testLargestTextSettingsInstructionsAndActionRemainReachable() {

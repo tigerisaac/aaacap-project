@@ -48,6 +48,12 @@ Evidence levels:
 
 Verizon describes no-answer forwarding after **3–6 rings**. Do not promise an exact timeout or powered-off behavior. Its FAQ says forwarding is available across plans, with plan-dependent minute charges and possible fees on older plans. Those statements do not validate every plan for Shield. [Verizon activation](https://www.verizon.com/support/knowledge-base-181139/), [FAQ](https://www.verizon.com/support/call-forwarding-faqs/)
 
+### T-Mobile single-code investigation — October 16, 2026
+
+Candidate for a supervised direct T-Mobile-line check: `**004*1N#`, where `N` is the assigned ten-digit destination. This is not enabled in Shield's carrier profile. The [3GPP/ETSI supplementary-service specification, §7.2](https://www.etsi.org/deliver/etsi_ts/122000_122099/122004/11.00.00_60/ts_122004v110000p.pdf) describes registration/activation of the all-conditional-forwarding group; this establishes the grouped concept, not current T-Mobile implementation. [Allstate's own Robocall Blocker activation instructions](https://allstateidentityprotection.zendesk.com/hc/en-us/articles/11623019851917-How-do-I-activate-Robocall-Blocker) publish an `**004*destination#` route for their T-Mobile subscribers. That is integration evidence, not a verified Shield result. T-Mobile's [current short-code table](https://www.t-mobile.com/support/plans-features/self-service-short-codes) still documents separate 61/67/62 activation and `##004#` reset; it does not establish that grouped registration works on every plan.
+
+The owner has a direct T-Mobile line on another phone and explicitly deferred building/testing on that phone. Do not infer its identity from the Mac's paired devices or run this on the current Tello line. Before promoting the candidate, preserve the original forwarding configuration, confirm all three registered destinations and exercise unanswered, busy/declined and unreachable behavior on that line, then verify restoration. A single success message is insufficient proof of all three conditions. Do not run an aggregate reset or change a timer as part of this candidate by default. The iPhone UI now supports one, two or three returned codes without empty screens; carrier qualification, consent, setup windows and real-call checks remain separate.
+
 ### T-Mobile setup card
 
 1. Confirm the line and original settings; save the assigned Shield contact.

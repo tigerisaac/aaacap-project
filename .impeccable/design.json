@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-16T23:30:15Z",
+  "generatedAt": "2026-10-17T00:09:31Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -825,6 +825,11 @@
       {
         "name": "The Visible Setup Help Rule",
         "body": "Keep the remaining manual action visible during the helper handoff, and both adjacent actions visible in the manual guide. A failed floating reminder leaves Shield open with a readable, scrollable explanation; only Open Settings anyway deliberately continues without it.",
+        "section": "components"
+      },
+      {
+        "name": "The Deliberate Carrier Handoff Rule",
+        "body": "Name each carrier-code action in order: Copy setup code, Open Phone, then the carrier-result confirmation after return. A copy or an unrelated return does not satisfy the Phone visit, and each new code starts uncopied.",
         "section": "components"
       },
       {

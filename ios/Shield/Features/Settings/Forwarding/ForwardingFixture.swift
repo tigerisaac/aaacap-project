@@ -3,11 +3,16 @@ import Foundation
 
 extension ForwardingStatus {
     static var uiTestFixture: Self {
-        Self(participantId: UUID(uuidString: "b0b7af93-72ad-431d-9708-f1d9564a2b36")!, carrier: "Tello",
+        let arguments = ProcessInfo.processInfo.arguments
+        let oneCode = arguments.contains("--forwarding-one-code")
+        let codes = oneCode ? ["*712025550100"] : arguments.contains("--forwarding-two-codes")
+            ? ["**61*12025550100#", "**67*12025550100#"]
+            : ["**61*12025550100#", "**67*12025550100#", "**62*12025550100#"]
+        return Self(participantId: UUID(uuidString: "b0b7af93-72ad-431d-9708-f1d9564a2b36")!, carrier: oneCode ? "Verizon" : "Tello",
              phone: "+12025550101", shieldNumber: "+12025550100", liveScreening: true, alwaysOn: true, voiceProvider: "Telnyx", prepared: true, active: true,
              expiresAt: Date.now.addingTimeInterval(1800), remainingCalls: 10, consentVersion: "ui-test",
              consented: false, phoneVerified: true, stage: "overview", restorationRequested: false, lastTestAt: nil,
-             activationCodes: ["**61*12025550100#", "**67*12025550100#", "**62*12025550100#"],
+             activationCodes: codes,
              restorationSteps: ["Enter the saved restoration codes in Phone.", "Check ordinary calls and carrier voicemail."],
              readiness: "Synthetic setup fixture", latestEvents: [])
     }

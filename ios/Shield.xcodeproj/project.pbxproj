@@ -1273,6 +1273,13 @@
 			"path" = "Shared/CallDirectoryList.swift";
 			"sourceTree" = "<group>";
 		};
+		"DDD9C8E6F6F9165B571A2EE6" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "CarrierSetupUITests.swift";
+			"path" = "ShieldUITests/CarrierSetupUITests.swift";
+			"sourceTree" = "<group>";
+		};
 		"8B0B6BF3B4417093ABE37537" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1791,6 +1798,7 @@
 			"isa" = "PBXGroup";
 			"name" = "Tests";
 			"children" = (
+				"DDD9C8E6F6F9165B571A2EE6",
 				"8B0B6BF3B4417093ABE37537",
 				"3640F22CE8E38A0235EE2F67",
 				"6AE064B5938732D2243500EB",
@@ -3085,6 +3093,10 @@
 			"defaultConfigurationIsVisible" = 0;
 			"defaultConfigurationName" = "Release";
 		};
+		"6573C5BE7F7FABB1E16CC140" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DDD9C8E6F6F9165B571A2EE6";
+		};
 		"402C2022F960E07033C486EC" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "8B0B6BF3B4417093ABE37537";
@@ -3153,6 +3165,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = 2147483647;
 			"files" = (
+				"6573C5BE7F7FABB1E16CC140",
 				"402C2022F960E07033C486EC",
 				"03A2C749BD7950CD137E4B23",
 				"76AA97AA30FA974FC9EF9A6B",

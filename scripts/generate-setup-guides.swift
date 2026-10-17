@@ -17,6 +17,7 @@ let requestedGuides = CommandLine.arguments.dropFirst().filter { !$0.hasPrefix("
 let guides = ["phoneSettings", "silence", "voicemailOff", "keypad", "never", "voicemailOn", "shortcutVoicemail"]
     .filter { requestedGuides.isEmpty || requestedGuides.contains($0) }
 let gifOnly = CommandLine.arguments.contains("--gif-only")
+let videoOnly = CommandLine.arguments.contains("--video-only")
 
 // Close-ups preserve the native labels, order, control shapes and outcomes.
 // The artwork contains no phone number, carrier code, or purported carrier result.
@@ -265,11 +266,11 @@ func reminder(_ guide: String) {
         return
     }
     if guide == "keypad" {
-        let lines = [("hand.draw", "Drag me to a clear corner"), ("circle.grid.3x3.fill", "Tap Keypad"), ("hand.tap", "Tap above numbers → Paste"), ("phone.fill", "Tap green Call; wait for result"), ("arrow.left", "When finished, tap ‹ Shield")]
+        let lines = [("hand.draw", "Drag to a clear corner"), ("hand.tap", "Keypad: paste above numbers"), ("phone.fill", "Tap Call. Wait for the result."), ("arrow.left", "Then tap ‹ Shield")]
         for (index, line) in lines.enumerated() {
-            let y = CGFloat(28 + index * 120)
-            symbol(line.0, rect: NSRect(x: 34, y: y + 12, width: 50, height: 50), color: .white)
-            text(line.1, NSRect(x: 114, y: y, width: 810, height: 112), size: 46, weight: .medium, color: .white)
+            let y = CGFloat(22 + index * 90)
+            symbol(line.0, rect: NSRect(x: 34, y: y + 8, width: 50, height: 50), color: .white)
+            text(line.1, NSRect(x: 114, y: y, width: 810, height: 78), size: 48, weight: .medium, color: .white)
         }
         return
     }
@@ -340,17 +341,18 @@ func draw(_ guide: String, time: Double, still: Bool) {
 }
 
 for guide in guides {
-    try makeGIF(guide)
+    if !videoOnly { try makeGIF(guide) }
     if gifOnly { continue }
     // Give the native PiP controls a stable item while the person reads and
     // returns. A two-second loop replaces its player item every two seconds.
     let seconds = guide == "shortcutVoicemail" ? 60 : 2
+    let videoHeight = guide == "keypad" ? 400 : height
     for still in [false, true] {
         let url = output.appendingPathComponent("setup-\(guide)\(still ? "-still" : "").mp4")
         try? FileManager.default.removeItem(at: url)
         let writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
         let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
-            AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: width, AVVideoHeightKey: height,
+            AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: width, AVVideoHeightKey: videoHeight,
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: 900_000,
                 // The steady reminder seeks only to zero. Avoid encoding the
@@ -361,7 +363,7 @@ for guide in guides {
         input.expectsMediaDataInRealTime = false
         let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32ARGB,
-            kCVPixelBufferWidthKey as String: width, kCVPixelBufferHeightKey as String: height,
+            kCVPixelBufferWidthKey as String: width, kCVPixelBufferHeightKey as String: videoHeight,
             kCVPixelBufferCGImageCompatibilityKey as String: true, kCVPixelBufferCGBitmapContextCompatibilityKey as String: true
         ])
         writer.add(input); writer.startWriting(); writer.startSession(atSourceTime: .zero)
@@ -372,10 +374,10 @@ for guide in guides {
                 CVPixelBufferPoolCreatePixelBuffer(nil, adaptor.pixelBufferPool!, &buffer)
                 let pixel = buffer!
                 CVPixelBufferLockBaseAddress(pixel, [])
-                let context = CGContext(data: CVPixelBufferGetBaseAddress(pixel), width: width, height: height,
+                let context = CGContext(data: CVPixelBufferGetBaseAddress(pixel), width: width, height: videoHeight,
                     bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixel), space: CGColorSpaceCreateDeviceRGB(),
                     bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)!
-                context.translateBy(x: 0, y: CGFloat(height)); context.scaleBy(x: 1, y: -1)
+                context.translateBy(x: 0, y: CGFloat(videoHeight)); context.scaleBy(x: 1, y: -1)
                 NSGraphicsContext.saveGraphicsState()
                 NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
                 draw(guide, time: Double(frame) / Double(fps), still: still)

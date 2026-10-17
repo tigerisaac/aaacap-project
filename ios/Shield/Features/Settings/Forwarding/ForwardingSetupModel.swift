@@ -28,6 +28,8 @@ final class ForwardingSetupModel {
     var codePreparedStep: ForwardingStep?
     var codeReturnedStep: ForwardingStep?
     private var pendingCodeReturn: ForwardingStep?
+    private var leftForCarrierPhone = false
+    var phoneNeedsBanner = false
     var showingPhoneLauncher = false
     var showingHelp = false
     var settingsDestination = PhoneSettingsLink.preferredDestination
@@ -57,6 +59,31 @@ final class ForwardingSetupModel {
         guard let status, let index = step.codeIndex, status.activationCodes.indices.contains(index) else { return nil }
         return status.activationCodes[index]
     }
+    // An empty list can mean the supervised window expired, rather than a
+    // carrier needing no setup. Keep its recovery step until codes are loaded.
+    private var carrierCodeCount: Int {
+        let count = status?.activationCodes.count ?? 0
+        return (1...3).contains(count) ? count : 3
+    }
+    private var setupSteps: [ForwardingStep] {
+        ForwardingStep.allCases.filter { $0 != .restore && ($0.codeIndex.map { $0 < carrierCodeCount } ?? true) }
+    }
+    var nextStep: ForwardingStep { setupSteps.drop { $0 != step }.dropFirst().first ?? step.next }
+    var previousStep: ForwardingStep? {
+        guard step != .restore, let index = setupSteps.firstIndex(of: step), index > 0 else { return nil }
+        return setupSteps[index - 1]
+    }
+    var progressIndex: Int { setupSteps.firstIndex(of: step) ?? 0 }
+    var progressTotal: Int { setupSteps.count - 1 }
+    var codeSequence: String? {
+        guard carrierCodeCount > 1, let index = step.codeIndex else { return nil }
+        return "Code \(index + 1) of \(carrierCodeCount)"
+    }
+    var pageTitle: String {
+        if isPhoneSettingsStep { return phoneSettingsTitle }
+        if step.codeIndex != nil { return codeReturnedStep == step ? "Check \(carrier)’s result" : "Connect calls to Shield" }
+        return step.title
+    }
 
     func reportError(_ message: String) {
         error = message
@@ -72,6 +99,7 @@ final class ForwardingSetupModel {
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-settings") { step = .settings }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-voicemail") { step = .liveVoicemail }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-code") { step = .forward0 }
+                if ProcessInfo.processInfo.arguments.contains("--forwarding-resume-extra-code") { step = .forward2 }
                 if ProcessInfo.processInfo.arguments.contains("--forwarding-start-checks") {
                     step = .checks
                     status?.ringTestAt = .now
@@ -86,7 +114,7 @@ final class ForwardingSetupModel {
                     }
                 }
             }
-            preparePhoneHandoff()
+            skipUnusedCarrierSteps()
             return
         }
         #endif
@@ -101,6 +129,7 @@ final class ForwardingSetupModel {
                 codePreparedStep = nil
                 codeReturnedStep = nil
                 pendingCodeReturn = nil
+                leftForCarrierPhone = false
                 showingPhoneLauncher = false
                 settingsReturned = UserDefaults.standard.string(forKey: "shield-phone-settings-visit-" + id.uuidString) == step.rawValue
                 combinedPhoneVisit = isPhoneSettingsStep && UserDefaults.standard.bool(forKey: "shield-phone-settings-visit-" + id.uuidString + "-both-v1")
@@ -108,7 +137,7 @@ final class ForwardingSetupModel {
             if status == nil { error = nil }
             status = result
             if result.restorationRequested { step = .restore }
-            preparePhoneHandoff()
+            skipUnusedCarrierSteps()
         } catch is CancellationError {} catch { self.error = error.localizedDescription }
     }
 
@@ -124,6 +153,10 @@ final class ForwardingSetupModel {
             guard code != nil else { await startWindow(app); return }
             if codePreparedStep != step {
                 copyCode()
+                return
+            }
+            if codeReturnedStep != step {
+                await openCarrierPhone()
                 return
             }
         }
@@ -148,7 +181,7 @@ final class ForwardingSetupModel {
                 if step == .save { try await SaveShieldContact.save(number: status.shieldNumber) }
                 if step == .liveVoicemail { try await openWindow(app, status: status) }
             }
-            try await move(to: step.next, app: app)
+            try await move(to: nextStep, app: app)
         } catch { reportError(error.localizedDescription) }
     }
 
@@ -166,6 +199,8 @@ final class ForwardingSetupModel {
         codePreparedStep = nil
         codeReturnedStep = nil
         pendingCodeReturn = nil
+        leftForCarrierPhone = false
+        phoneNeedsBanner = false
         showingPhoneLauncher = false
         // One guide now shows both adjacent controls. Carry only the visit,
         // never a setting confirmation; the next page still requires its own tap.
@@ -185,35 +220,63 @@ final class ForwardingSetupModel {
         await load(app)
     }
 
-    func copyCode(showPhoneLauncher: Bool = true) {
+    func copyCode() {
         guard let code, !working else { return }
-        prepareCode(code, showPhoneLauncher: showPhoneLauncher)
-    }
-
-    private func preparePhoneHandoff() {
-        guard codePreparedStep != step, let code else { return }
-        prepareCode(code, showPhoneLauncher: true)
-    }
-
-    private func prepareCode(_ code: String, showPhoneLauncher: Bool) {
         PhoneAppLink.copy(code: code)
-        if showPhoneLauncher { guidePlayer.resumeForHandoff() }
         codePreparedStep = step
-        if showPhoneLauncher { codeReturnedStep = nil }
-        #if DEBUG
-        showingPhoneLauncher = showPhoneLauncher && (!isUITest || ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone"))
-        #else
-        showingPhoneLauncher = showPhoneLauncher
-        #endif
+        codeReturnedStep = nil
+        pendingCodeReturn = nil
+        leftForCarrierPhone = false
+        showingPhoneLauncher = false
+        phoneNeedsBanner = false
         error = nil
-        // Copying never confirms a carrier change or advances the step.
+        // This explicit tap copies only. Open Phone is the next action.
+    }
+
+    private func skipUnusedCarrierSteps() {
+        guard let index = step.codeIndex, let codes = status?.activationCodes,
+              !codes.isEmpty, index >= codes.count else { return }
+        step = .test
+    }
+
+    func openCarrierPhone() async {
+        guard let code, !working else { return }
+        working = true
+        defer { working = false }
+        error = nil
+        PhoneAppLink.copy(code: code)
+        codePreparedStep = step
+        codeReturnedStep = nil
+        pendingCodeReturn = step
+        leftForCarrierPhone = false
+        phoneNeedsBanner = true
+        #if DEBUG && targetEnvironment(simulator)
+        if isUITest && !ProcessInfo.processInfo.arguments.contains("--uitesting-system-phone") {
+            return
+        }
+        #endif
+        // Apple's Open button launches Phone without a calling URL. Neither
+        // showing its banner nor leaving Shield proves a carrier change.
+        await guidePlayer.prepare(.keypad, reduceMotion: UIAccessibility.isReduceMotionEnabled)
+        // A repeat visit remounts the guide's source layer. Give that layer a
+        // bounded opportunity to become visible before requesting PiP.
+        for _ in 0..<20 where !guidePlayer.hasFrame {
+            do { try await Task.sleep(for: .milliseconds(50)) } catch { return }
+        }
+        guidePlayer.resumeForHandoff()
+        showingPhoneLauncher = true
     }
 
     func codeSceneChanged(isActive: Bool, isBackground: Bool) {
-        if isBackground, codePreparedStep == step, code != nil { pendingCodeReturn = step }
-        if isActive {
-            if pendingCodeReturn == step, code != nil { codeReturnedStep = step }
+        if isBackground, pendingCodeReturn == step { leftForCarrierPhone = true }
+        if isActive && leftForCarrierPhone {
+            if pendingCodeReturn == step, code != nil {
+                codeReturnedStep = step
+                showingPhoneLauncher = false
+                phoneNeedsBanner = false
+            }
             pendingCodeReturn = nil
+            leftForCarrierPhone = false
         }
         // A return changes the instructions, never carrier progress or verification.
     }

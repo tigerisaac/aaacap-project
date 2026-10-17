@@ -1,0 +1,149 @@
+[
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-next-code-starts-fresh.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "EE79835D-640B-4202-8149-DC909132C61A.png",
+    "captureName": "Carrier next code starts fresh"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-unconfirmed-return.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "FBD1BC24-16B6-402A-AAC0-A498F01CB7A4.png",
+    "captureName": "Carrier unconfirmed return"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-ready-to-open-phone.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "47C2753C-2D2A-49AC-A430-9826BDAFA0AD.png",
+    "captureName": "Carrier ready to open Phone"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-explain-and-copy.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "A076A612-D30E-45F4-90F2-F4D58202E071.png",
+    "captureName": "Carrier explain and copy"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-largest-text-confirmation.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()",
+    "exportedFileName": "B89D3D42-CEB7-47B6-B84F-07CCBBC0DB21.png",
+    "captureName": "Carrier largest text confirmation"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-largest-text-copy-action.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()",
+    "exportedFileName": "AACE533D-AB28-4699-9478-60F63E9CF377.png",
+    "captureName": "Carrier largest text copy action"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-largest-text-top.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()",
+    "exportedFileName": "AACA3CCB-77BF-44DF-962C-54BFAC93B66D.png",
+    "captureName": "Carrier largest text top"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-native-phone-launcher-directions.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testNativePhoneLauncherKeepsCodeAndManualRoute()",
+    "exportedFileName": "E07EFA71-A292-41F5-905C-A5D11D161221.png",
+    "captureName": "Carrier native Phone launcher directions"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-one-code-confirmation-tones.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testOneCodeSkipsUnusedStepsAndBackReturnsToItsCode()",
+    "exportedFileName": "41DCB429-A667-46B3-9203-D8421BCCB496.png",
+    "captureName": "Carrier one code confirmation tones"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/main/carrier-one-code.png",
+    "resultBundle": "/private/tmp/shield-carrier-main-final.xcresult",
+    "test": "CarrierSetupUITests/testOneCodeSkipsUnusedStepsAndBackReturnsToItsCode()",
+    "exportedFileName": "28E7AB9B-B388-4C29-B2A2-F5BED8E1FD06.png",
+    "captureName": "Carrier one code"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-next-code-starts-fresh.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "00CA5637-015A-4B68-8BDE-E79438CC90E6.png",
+    "captureName": "Carrier next code starts fresh"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-unconfirmed-return.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "7D84D7D2-DD55-4EB4-A6FD-2513F84BD4CD.png",
+    "captureName": "Carrier unconfirmed return"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-ready-to-open-phone.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "365D8C1D-32B7-41C1-A54A-CAAA2CC20700.png",
+    "captureName": "Carrier ready to open Phone"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-explain-and-copy.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()",
+    "exportedFileName": "AD05003B-A86C-4D80-8D87-5C22B4404971.png",
+    "captureName": "Carrier explain and copy"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-largest-text-confirmation.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()",
+    "exportedFileName": "14579669-951A-47E9-87B1-41E43689992E.png",
+    "captureName": "Carrier largest text confirmation"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-largest-text-copy-action.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()",
+    "exportedFileName": "9772A327-D194-4B80-965D-96E53F6FFA27.png",
+    "captureName": "Carrier largest text copy action"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-largest-text-top.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()",
+    "exportedFileName": "9743C14B-220D-4653-B667-099FEF7EA5B7.png",
+    "captureName": "Carrier largest text top"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-native-phone-launcher-directions.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testNativePhoneLauncherKeepsCodeAndManualRoute()",
+    "exportedFileName": "F4A69EA1-826C-4CE5-AD7B-9AFDF16FE44A.png",
+    "captureName": "Carrier native Phone launcher directions"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-one-code-confirmation-tones.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testOneCodeSkipsUnusedStepsAndBackReturnsToItsCode()",
+    "exportedFileName": "47F4664B-CA98-4985-BFB9-03A893BD7DE0.png",
+    "captureName": "Carrier one code confirmation tones"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-one-code.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "CarrierSetupUITests/testOneCodeSkipsUnusedStepsAndBackReturnsToItsCode()",
+    "exportedFileName": "5BAFFE7B-9E68-4FB6-86E6-829C1E3E500B.png",
+    "captureName": "Carrier one code"
+  },
+  {
+    "path": ".impeccable/review/carrier-phone-handoff/compact/carrier-code-largest-text-dark.png",
+    "resultBundle": "/private/tmp/shield-carrier-compact-final.xcresult",
+    "test": "ForwardingUITests/testCarrierCodeAtLargestTextInDarkMode()",
+    "exportedFileName": "71158942-3A47-463A-A119-D47B346D7D2A.png",
+    "captureName": "Carrier code largest text dark"
+  }
+]

@@ -4,19 +4,24 @@ struct PhoneCodeGuide: View {
     var restoring = false
     var returned = false
     var carrier = "your carrier"
+    var showingHeading = true
     @AccessibilityFocusState private var resultFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             if returned {
-                Text("Did \(carrier) say it worked?").shieldHeading(.title)
-                    .accessibilityIdentifier("forwarding-carrier-result")
-                    .accessibilityAddTraits(.isHeader).accessibilityFocused($resultFocused)
+                if showingHeading {
+                    Text("Did \(carrier) say it worked?").shieldHeading(.title)
+                        .accessibilityAddTraits(.isHeader).accessibilityFocused($resultFocused)
+                }
                 Text(restoring
                      ? "Continue only after \(carrier) says the reset worked."
-                     : "Look for “Setting Registration Succeeded” under “Voice Call Forwarding.”")
+                     : carrier == "Verizon"
+                        ? "Continue only if you heard \(carrier)’s confirmation tones."
+                        : "Continue only if Phone showed “Setting Registration Succeeded” for Voice Call Forwarding.")
+                    .accessibilityIdentifier("forwarding-carrier-result")
             } else {
-                SetupInstruction(number: 1, title: "Open Phone", detail: "Tap Open on the banner, then Keypad.")
+                SetupInstruction(number: 1, title: "Open Keypad", detail: "In Phone, tap Keypad if needed.")
                 SetupInstruction(number: 2, title: "Paste your code", detail: "Tap above the numbers, then Paste.")
                 SetupInstruction(number: 3, title: "Tap Call", detail: "Wait for \(carrier)’s result. Return to Shield.")
             }

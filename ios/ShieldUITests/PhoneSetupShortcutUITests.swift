@@ -17,7 +17,7 @@ final class PhoneSetupShortcutUITests: XCTestCase {
         primary(app).tap()
         XCTAssertTrue(app.staticTexts["Check Silence"].appears(timeout: 5))
         XCTAssertEqual(primary(app).label, "Silence has a checkmark")
-        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists)
+        XCTAssertFalse(app.staticTexts["Connect calls to Shield"].exists)
         capture(app, "Actual setup unconfirmed Silence")
         app.buttons["Need help?"].tap()
         app.buttons["phone-settings-reopen"].tap()
@@ -27,10 +27,10 @@ final class PhoneSetupShortcutUITests: XCTestCase {
         primary(app).tap()
         XCTAssertTrue(app.staticTexts["Confirm Live Voicemail"].appears(timeout: 5))
         XCTAssertEqual(primary(app).label, "Live Voicemail is off")
-        XCTAssertFalse(app.staticTexts["When you don’t answer"].exists)
+        XCTAssertFalse(app.staticTexts["Connect calls to Shield"].exists)
         capture(app, "Actual setup unconfirmed voicemail")
         primary(app).tap()
-        XCTAssertTrue(app.staticTexts["When you don’t answer"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Connect calls to Shield"].appears(timeout: 5))
     }
 
     func testAlreadyAddedDoesNotConfirmEitherSetting() {
