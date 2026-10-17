@@ -4,6 +4,7 @@ import Observation
 @MainActor @Observable
 final class DisconnectModel {
     var status: RestorationStatus?
+    var localInstructions: [String] = []
     var working = false
     var error: String?
     var fixture: Bool {
@@ -13,7 +14,7 @@ final class DisconnectModel {
         false
         #endif
     }
-    func load(_ app: AppState, id: UUID) async {
+    func load(_ app: AppState, id: UUID, refresh: Bool = false) async {
         guard !working else { return }
         working = true
         error = nil
@@ -29,12 +30,28 @@ final class DisconnectModel {
                     } else if args.contains("--restoration-start-settings") { sample.id = UUID(); sample.index = 3 }
                     else if args.contains("--restoration-start-checks") { sample.id = UUID(); sample.index = 5 }
                     if args.contains("--restoration-manual") { sample.steps = [.init(id: "carrier", kind: "carrier")] + Array(sample.steps.suffix(4)) }
+                    if args.contains("--restoration-local-guide") {
+                        sample = .localGuide(instructions: ["Synthetic saved carrier instructions"], carrier: "Example carrier")
+                    }
+                    localInstructions = sample.instructions
                     status = sample
                 }
                 #endif
                 return
             }
-            status = try await app.api.send("/api/forwarding/restoration", participantID: id)
+            let session = app.sessionGeneration
+            let setup: (value: SetupStatus, savedAt: Date, isFresh: Bool)? = await app.api.savedPhoneSetup("/api/setup", participantID: id)
+            let forwarding: (value: ForwardingStatus, savedAt: Date, isFresh: Bool)? = await app.api.savedPhoneSetup("/api/forwarding", participantID: id)
+            guard app.sessionGeneration == session else { return }
+            localInstructions = forwarding?.value.restorationSteps ?? setup?.value.carrierProfile?.restorationSteps ?? []
+            if refresh {
+                let fresh: RestorationStatus = try await app.api.send("/api/forwarding/restoration", participantID: id)
+                guard app.sessionGeneration == session else { return }
+                status = fresh
+            } else if status == nil {
+                status = .localGuide(instructions: localInstructions,
+                    carrier: forwarding?.value.carrier ?? setup?.value.carrierProfile?.name ?? "your carrier")
+            }
         } catch { self.error = error.localizedDescription }
     }
     func advance(_ app: AppState, id: UUID, restart: Bool = false) async {
@@ -45,6 +62,9 @@ final class DisconnectModel {
         do {
             if fixture {
                 #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--restoration-local-guide") {
+                    throw APIError.service(code: "request_failed", status: 404)
+                }
                 if ProcessInfo.processInfo.arguments.contains("--restoration-save-fails") {
                     throw APIError.service(code: "request_failed", status: 503)
                 }
@@ -57,13 +77,34 @@ final class DisconnectModel {
                 return
             }
             guard !app.isDemo, !app.isPreview else { return }
+            // Check the new protocol before any mutation: older deployments use different
+            // semantics for /restore and must never be used as a fallback.
+            let session = app.sessionGeneration
+            var fresh = status
             if restart || status.id == nil {
-                self.status = try await app.api.send("/api/forwarding/restore", method: "POST", body: APIClient.payload(["restart": restart]), participantID: id)
-            } else if let step = status.current {
-                self.status = try await app.api.send("/api/forwarding/restoration/confirm", method: "POST",
-                    body: APIClient.payload(["session": status.id!.uuidString, "step": step.id]), participantID: id)
+                fresh = try await app.api.send("/api/forwarding/restoration", participantID: id)
             }
-        } catch { self.error = error.localizedDescription }
+            guard app.sessionGeneration == session else { return }
+            if !restart, status.id == nil, fresh.id != nil {
+                self.status = fresh
+                return
+            }
+            let next: RestorationStatus
+            if restart || fresh.id == nil {
+                next = try await app.api.send("/api/forwarding/restore", method: "POST", body: APIClient.payload(["restart": restart]), participantID: id)
+            } else if fresh.id != status.id || fresh.index != status.index {
+                next = fresh
+            } else if let step = fresh.current {
+                next = try await app.api.send("/api/forwarding/restoration/confirm", method: "POST",
+                    body: APIClient.payload(["session": fresh.id!.uuidString, "step": step.id]), participantID: id)
+            } else { next = fresh }
+            guard app.sessionGeneration == session else { return }
+            self.status = next
+        } catch {
+            if case APIError.service(_, 404) = error {
+                self.error = "Guided disconnect is temporarily unavailable. You can still read all the phone steps here. Shield’s service has not been turned off."
+            } else { self.error = error.localizedDescription }
+        }
     }
     #if DEBUG
     static var sample: RestorationStatus {

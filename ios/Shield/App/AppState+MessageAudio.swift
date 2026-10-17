@@ -98,6 +98,7 @@ extension AppState {
         audioSyncTask?.cancel()
         try await messageAudio.removeAccount(account)
         try await historyStore.remove(account: account)
+        try await api.removeSavedPhoneSetup(account: account)
         offlineHistories = []
         localMessages = []
     }

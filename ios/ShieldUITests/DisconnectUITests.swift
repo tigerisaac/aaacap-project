@@ -2,6 +2,20 @@ import XCTest
 
 @MainActor
 final class DisconnectUITests: XCTestCase {
+    func testLocalGuideRemainsReadableWhenGuidedServiceIsUnavailable() {
+        let app = launch(["--restoration-local-guide"])
+        XCTAssertFalse(app.staticTexts["Steps couldn’t load"].exists)
+        app.buttons["Read all phone steps"].tap()
+        XCTAssertTrue(app.staticTexts["Synthetic saved carrier instructions"].appears(timeout: 5))
+        capture(app, "Saved disconnect instructions")
+        app.buttons["Read all phone steps"].tap()
+        next(app).tap()
+        XCTAssertTrue(app.staticTexts["Couldn’t start guided disconnect"].appears(timeout: 5))
+        XCTAssertFalse(app.staticTexts["restoration-complete"].exists)
+        XCTAssertFalse(app.buttons["Copy phone code"].exists)
+        capture(app, "Unavailable service retains local guide")
+    }
+
     func testOverviewExplainsSafeExitAndManualCarrierRecovery() {
         let app = launch(["--restoration-manual"])
         capture(app, "Disconnect overview")

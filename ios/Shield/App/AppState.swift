@@ -286,6 +286,7 @@ final class AppState {
             nextCursor = page.nextCursor
             showingSavedHistory = false
             await saveOfflineHistory(page: page.calls, overview: newOverview)
+            await api.warmPhoneSetup(participantID: id)
         } catch is CancellationError { return }
         catch { if generation == sessionGeneration, selectedPersonID == id { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }

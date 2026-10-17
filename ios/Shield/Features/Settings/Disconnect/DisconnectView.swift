@@ -44,9 +44,9 @@ struct DisconnectView: View {
                         else if !started { introduction }
                         else { stepContent(status) }
                         if let error = model.error {
-                            ShieldNotice(title: "This step isn’t saved yet", detail: error, symbol: "exclamationmark.circle")
+                            ShieldNotice(title: started ? "This step isn’t saved yet" : "Couldn’t start guided disconnect", detail: error, symbol: "exclamationmark.circle")
                                 .id("disconnect-error").accessibilityFocused($errorFocused)
-                            Button("Refresh progress") { Task { await model.load(app, id: participantID) } }
+                            Button("Refresh progress") { Task { await model.load(app, id: participantID, refresh: true) } }
                                 .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         }
                         if typeSize.isAccessibilitySize { action }
@@ -108,6 +108,25 @@ struct DisconnectView: View {
     private var introduction: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("We’ll take this one step at a time.").font(.title3)
+            ShieldDisclosure("Read all phone steps") {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Restore carrier forwarding").font(.headline)
+                    if model.localInstructions.isEmpty {
+                        Text("Ask your carrier to restore ordinary calls and voicemail for the line you connected to Shield, including busy, unanswered and unreachable calls. Use the instructions for your line; reset codes differ by carrier.")
+                    } else {
+                        ForEach(Array(model.localInstructions.enumerated()), id: \.offset) { index, text in
+                            DisconnectInstruction(number: index + 1, title: text, detail: "")
+                        }
+                    }
+                    RestorationSettingsGuide(index: .constant(3))
+                    RestorationSettingsGuide(index: .constant(4), checkingCarrier: true)
+                    Text("Check calls and voicemail").font(.headline)
+                    Text("From another phone, call your usual number and answer. Check that you can hear each other without a Shield greeting or request to press 1. End the call.")
+                    Text("Call again and leave it unanswered. Leave a message at your carrier’s voicemail, then open Phone and listen to it. Keep Live Voicemail off during this check.")
+                    Text("Reading these steps does not turn off Shield’s service. Continue the guided checks when you’re connected to finish disconnecting.")
+                        .foregroundStyle(ShieldTheme.secondaryText)
+                }
+            }
             DisconnectInstruction(number: 1, title: "Restore your phone settings", detail: "Use the instructions saved for your mobile line.")
             DisconnectInstruction(number: 2, title: "Check calls and voicemail", detail: "You’ll need another phone, or someone who can call you.")
             DisconnectInstruction(number: 3, title: forDeletion ? "Delete your account" : "Choose what to keep", detail: forDeletion ? "Return here to finish after your phone works normally." : "Disconnecting keeps your account and saved messages.")

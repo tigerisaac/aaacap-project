@@ -290,6 +290,17 @@ final class SeniorPolishUITests: XCTestCase {
         capture(app, "protection-save-recovery-large-dark")
     }
 
+    func testPhoneSetupExcludesAccountDeletion() {
+        for screen in ["setup-details", "trial-options"] {
+            let app = launch(screen)
+            XCTAssertTrue(app.navigationBars["Phone setup"].appears(timeout: 5))
+            for _ in 0..<3 { app.swipeUp() }
+            XCTAssertFalse(app.buttons["Delete account"].exists)
+            capture(app, "phone-setup-without-account-deletion-" + screen)
+            app.terminate()
+        }
+    }
+
     func testConfiguredSettingsAndSharingScopesStayReadable() {
         for large in [false, true] {
             let options = large ? ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []

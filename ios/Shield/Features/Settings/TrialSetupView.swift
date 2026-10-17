@@ -10,7 +10,8 @@ struct TrialSetupView: View {
     var body: some View {
         ShieldGroup {
             NavigationLink {
-                ForwardingSetupView()
+                if setup.status == "restoring" { DisconnectView(participantID: setup.participantId) }
+                else { ForwardingSetupView() }
             } label: {
                 ActionRow(title: setup.status == "restoring" ? "Finish disconnecting" : setup.phoneVerified ? "Open phone setup" : "Set up my phone", symbol: "phone.arrow.right")
             }
@@ -30,11 +31,6 @@ struct TrialSetupView: View {
         } footer: {
             Text("The call test still ends at the same time.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
         }
-        }
-        ShieldGroup {
-            NavigationLink { DeleteAccountView() } label: {
-                ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
-            }
         }
     }
 

@@ -63,8 +63,9 @@ actor NavigationCache {
         if path == "/public/config", !authenticated { return 3600 }
         guard owner, authenticated else { return nil }
         if path == "/api/overview" || path.hasPrefix("/api/calls?") || path.hasPrefix("/api/calls/") { return 60 }
+        if path == "/api/setup" { return 300 }
         if ["/api/trusted-numbers", "/api/destinations", "/api/blocked-numbers"].contains(path) { return 300 }
-        // Live protection, sharing permissions, setup and audio always use their own fresh checks.
+        // Live protection, sharing permissions, setup actions and audio always use their own fresh checks.
         return nil
     }
 }

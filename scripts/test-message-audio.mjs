@@ -7,6 +7,7 @@ try {
   const executable = path.join(directory, 'message-audio-tests');
   execFileSync('xcrun', ['swiftc', '-swift-version', '6', '-parse-as-library', '-o', executable,
     ...['CallRecord', 'CallOutcome', 'Voicemail', 'Person', 'Overview'].map(name => `ios/Shield/Models/${name}.swift`),
+    'ios/Shield/Networking/PhoneSetupCache.swift', 'ios/Shield/Models/RestorationStatus.swift', 'scripts/tests/phone-setup-cache.swift',
     'ios/Shield/Networking/APIError.swift', 'ios/Shield/Networking/NavigationCache.swift', 'scripts/tests/navigation-cache.swift', 'ios/Shield/Features/Calls/MessageAudioStore.swift',
     'ios/Shield/Features/Calls/MessageAudioDelivery.swift', 'ios/Shield/App/OfflineHistory.swift', 'scripts/tests/offline-history.swift', 'scripts/tests/message-audio.swift'], { stdio: 'inherit' });
   execFileSync(executable, [], { stdio: 'inherit' });

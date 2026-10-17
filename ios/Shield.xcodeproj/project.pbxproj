@@ -1014,6 +1014,13 @@
 			"path" = "Shield/Networking/NoRedirectDelegate.swift";
 			"sourceTree" = "<group>";
 		};
+		"C7DEE2DEF3BDFB390D20A162" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "PhoneSetupCache.swift";
+			"path" = "Shield/Networking/PhoneSetupCache.swift";
+			"sourceTree" = "<group>";
+		};
 		"F65B14DA24A36F67E7F10ACD" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1829,6 +1836,7 @@
 				"5B35BA11FCC4E58BBE1E24C8",
 				"4F2C7740CAA65EC6491689B0",
 				"21524F53DDCC1064398EC506",
+				"C7DEE2DEF3BDFB390D20A162",
 			);
 			"sourceTree" = "<group>";
 		};
@@ -2686,6 +2694,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "21524F53DDCC1064398EC506";
 		};
+		"FB116ED689D49BB1A29ACE6D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "C7DEE2DEF3BDFB390D20A162";
+		};
 		"CF3C4FE0175C9E4A47DCC772" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "F65B14DA24A36F67E7F10ACD";
@@ -2882,6 +2894,7 @@
 				"34C0C342E8284FC61552EF6F",
 				"B9ACB9326E4C329296FF6628",
 				"9D33D22BCCEC0BBFEFE6C475",
+				"FB116ED689D49BB1A29ACE6D",
 				"CF3C4FE0175C9E4A47DCC772",
 				"10A961AFFDB824898642489D",
 				"6DB4D6AE8DC79A76EF387158",

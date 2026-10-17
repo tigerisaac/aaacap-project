@@ -28,3 +28,13 @@ Saved screens show when their copy was updated. They never use a cached protecti
 - The real AppState/Calls/detail views passed a simulator cold-launch/relaunch/filter/detail test with an in-memory synthetic identity and an unavailable API. No real credentials or network service were used. The first attempt targeted a Home button below the lazy list's visible area; the corrected test uses the visible Calls tab and passed.
 - The separate audio simulator test passed playback before and after app restart, with backup exclusion checked.
 - A signed build was installed and launched on the owner's paired iPhone 12 Pro Max on October 16. No carrier settings were changed and no phone call was placed. Physical-device airplane-mode, background delivery timing and hardware encryption were not directly tested.
+
+## Phone setup and disconnect instructions — October 17
+
+Owner setup responses and the approved carrier restoration text are now saved in an account- and participant-scoped Application Support cache, excluded from backups and protected until the first device unlock. The cache is limited to setup/forwarding presentation data; it never stores a completed restoration as proof that service is off. Account deletion clears it, refreshed owner lists prune removed profiles, and session/generation checks prevent old requests from writing after invalidation.
+
+Home refresh warms Phone setup automatically. Phone setup immediately displays its saved response, reuses it for five minutes, and refreshes stale information while retaining the form. Writes and explicit refresh invalidate freshness without throwing away readable instructions. A saved timestamp distinguishes the displayed state from a live service check. Delete account remains in account settings and is removed from both Phone setup variants.
+
+Disconnect opens its bundled instructions and saved carrier text without a server request. “Read all phone steps” works offline; no carrier code is inferred from the carrier name. Starting or resuming the guided workflow first reads the restoration protocol, then uses explicit server-confirmed transitions. This prevents an older deployed `/restore` handler from being called as a fallback. Network failure cannot advance progress or claim that Shield service has stopped. Ordinary and trial setup now link to the same guide.
+
+Live call handling, authoritative account/routing changes, and new message delivery remain server responsibilities. Saved guides, already received audio, and cached presentation data remain readable locally. This change does not establish real-call or carrier-restoration verification.

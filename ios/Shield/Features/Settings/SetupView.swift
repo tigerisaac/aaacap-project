@@ -6,16 +6,17 @@ struct SetupView: View {
     @State private var working = false
     @State private var contactSaved = false
     @State private var confirmConsent = false
-    @State private var confirmRestore = false
     @State private var confirmPause = false
     @State private var loadError: String?
+    @State private var loadingVisible = false
+    @State private var savedAt: Date?
     @State private var loading = true
     @State private var loadAttempts = 0
     private var usesFixture: Bool { PreviewScenario.requested("setup-details", preview: model.isPreview) || PreviewScenario.requested("trial-options", preview: model.isPreview) }
 
     var body: some View {
         Form {
-            if let loadError {
+            if let loadError, setup == nil {
                 ShieldGroup {
                     ShieldLoadFailure(title: "Phone setup couldn’t load", detail: loadError) { Task { await load() } }
                 }
@@ -90,20 +91,22 @@ struct SetupView: View {
                             ForEach(Array(steps.enumerated()), id: \.offset) { index, step in Text("\(index + 1). \(step)").textSelection(.enabled) }
                         }
                     }
-                    Button("Disconnect Shield") { confirmRestore = true }
-                        .disabled(model.isDemo || working || setup.status == "restoring")
-                        .alert("Disconnect Shield?", isPresented: $confirmRestore) {
-                            Button("Start disconnecting") { Task { await requestRestoration() } }
-                            Button("Cancel", role: .cancel) {}
-                        } message: { Text("Shield stops ringing you. Ask your helper to finish restoring ordinary calls and voicemail. Keep the app until both work.") }
+                    NavigationLink("Disconnect Shield") { DisconnectView(participantID: setup.participantId) }
+                        .disabled(model.isDemo || working)
                     if let email = setup.supportEmail, let url = URL(string: "mailto:\(email)") { Link("Ask for setup help", destination: url) }
-                    NavigationLink { DeleteAccountView() } label: {
-                        ActionRow(title: "Delete account", symbol: "person.crop.circle.badge.minus")
-                    }
 
                 } footer: { Text("Deleting the app alone won’t disconnect Shield.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
-            } else if loading { ShieldGroup { ShieldLoadingView(title: "Getting your phone setup…") } }
+            } else if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your phone setup…") } }
+            if let savedAt, setup != nil {
+                ShieldGroup {
+                    Text("Last updated \(savedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                    if loadError != nil { Text("Connect to the internet to update phone setup.") }
+                }
+            }
         }
+        .deferredLoading(loading && setup == nil, visible: $loadingVisible)
+        .refreshable { await model.api.invalidateNavigationCache(); await load() }
         .shieldListStyle()
         .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -126,10 +129,18 @@ struct SetupView: View {
         }
         guard !model.isPreview, let person = model.selectedPersonID else { return }
         let session = model.sessionGeneration
+        let saved: (value: SetupStatus, savedAt: Date, isFresh: Bool)? = await model.api.savedPhoneSetup("/api/setup", participantID: person)
+        guard model.selectedPersonID == person, model.sessionGeneration == session else { return }
+        if let saved {
+            setup = saved.value
+            savedAt = saved.savedAt
+            if saved.isFresh { return }
+        }
         do {
             let response: SetupStatus = try await model.api.send("/api/setup", participantID: person)
             guard model.selectedPersonID == person, model.sessionGeneration == session else { return }
             setup = response
+            savedAt = .now
         } catch is CancellationError { return }
         catch { loadError = error.localizedDescription; model.handleSessionFailure(error) }
     }
@@ -157,17 +168,6 @@ struct SetupView: View {
         do {
             let _: APIResponses.Empty = try await model.api.send("/api/setup/pause", method: "POST",
                 body: APIClient.payload(["paused": paused]), participantID: model.selectedPersonID)
-            await load()
-            await model.loadContext()
-        } catch { model.handle(error) }
-    }
-    private func requestRestoration() async {
-        guard !model.isPreview, !model.isDemo, !working else { return }
-        working = true
-        defer { working = false }
-        do {
-            let _: APIResponses.Empty = try await model.api.send("/api/setup/restore",
-                method: "POST", participantID: model.selectedPersonID)
             await load()
             await model.loadContext()
         } catch { model.handle(error) }

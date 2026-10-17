@@ -8,6 +8,8 @@ actor APIClient {
     private var refreshing: Task<AuthTokens, Error>?
     private var sessionGeneration = 0
     private let navigationCache = NavigationCache()
+    private let phoneSetupCache = PhoneSetupCache()
+    private var phoneSetupGeneration = 0
     private var cacheOwners: Set<UUID> = []
 
     init(configuration: BackendConfiguration) {
@@ -60,12 +62,35 @@ actor APIClient {
     }
 
     func invalidateNavigationCache() async {
+        phoneSetupGeneration += 1
         await navigationCache.invalidate(preservingConfiguration: true)
+        if let account = localAccountID { try? phoneSetupCache.invalidate(account: account) }
+    }
+
+    /// Explicitly requested by presentation code; live actions always use send().
+    func savedPhoneSetup<T: Decodable & Sendable>(_ path: String, participantID: UUID) -> (value: T, savedAt: Date, isFresh: Bool)? {
+        guard let account = localAccountID,
+              let entry = phoneSetupCache.read(path, participant: participantID, account: account),
+              let value = try? decoder().decode(T.self, from: entry.data) else { return nil }
+        return (value, entry.savedAt, !entry.invalidated && Date.now.timeIntervalSince(entry.savedAt) < 300)
+    }
+
+    func removeSavedPhoneSetup(account: String) throws {
+        phoneSetupGeneration += 1
+        try phoneSetupCache.remove(account: account)
+    }
+
+    func warmPhoneSetup(participantID: UUID) async {
+        guard cacheOwners.contains(participantID) else { return }
+        let saved: (value: SetupStatus, savedAt: Date, isFresh: Bool)? = savedPhoneSetup("/api/setup", participantID: participantID)
+        guard saved?.isFresh != true else { return }
+        let _: SetupStatus? = try? await send("/api/setup", participantID: participantID)
     }
 
     /// Home reuses a recent check with its original timestamp; setup actions still read fresh.
     func forwardingSnapshot(participantID: UUID) async throws -> (status: ForwardingStatus, checkedAt: Date) {
         let generation = sessionGeneration
+        let setupGeneration = phoneSetupGeneration
         guard cacheOwners.contains(participantID) else {
             let status: ForwardingStatus = try await send("/api/forwarding", participantID: participantID)
             return (status, .now)
@@ -74,12 +99,19 @@ actor APIClient {
             try await self.data("/api/forwarding", participantID: participantID, expectedGeneration: generation)
         }
         guard generation == sessionGeneration else { throw CancellationError() }
-        do { return (try decoder().decode(ForwardingStatus.self, from: response.data), response.fetchedAt) }
+        do {
+            let status = try decoder().decode(ForwardingStatus.self, from: response.data)
+            if setupGeneration == phoneSetupGeneration, let account = localAccountID {
+                try? phoneSetupCache.save(response.data, path: "/api/forwarding", participant: participantID, account: account, now: response.fetchedAt)
+            }
+            return (status, response.fetchedAt)
+        }
         catch { await navigationCache.invalidate(); throw error }
     }
 
     func send<T: Decodable & Sendable>(_ path: String, method: String = "GET", body: Data? = nil, participantID: UUID? = nil, authenticated: Bool = true) async throws -> T {
         let generation = sessionGeneration
+        let setupGeneration = phoneSetupGeneration
         let result: Data
         let owner = participantID.map { cacheOwners.contains($0) } ?? false
         if method == "GET", body == nil,
@@ -90,14 +122,22 @@ actor APIClient {
         } else {
             // Even an uncertain write may have reached the server. Never reuse pre-write values.
             let mutation = method != "GET" && !path.hasPrefix("/auth/") && path != "/api/devices"
-            if mutation { await navigationCache.invalidate(preservingConfiguration: true) }
+            if mutation {
+                phoneSetupGeneration += 1
+                await navigationCache.invalidate(preservingConfiguration: true)
+                if let account = localAccountID { try? phoneSetupCache.invalidate(account: account) }
+            }
             do {
                 result = try await data(path, method: method, body: body, participantID: participantID, authenticated: authenticated, expectedGeneration: generation)
             } catch {
-                if mutation { await navigationCache.invalidate(preservingConfiguration: true) }
+                if mutation { await invalidateNavigationCache() }
                 throw error
             }
-            if mutation { await navigationCache.invalidate(preservingConfiguration: true) }
+            if mutation {
+                phoneSetupGeneration += 1
+                await navigationCache.invalidate(preservingConfiguration: true)
+                if let account = localAccountID { try? phoneSetupCache.invalidate(account: account) }
+            }
         }
         guard generation == sessionGeneration else { throw CancellationError() }
         let decoded: T
@@ -108,6 +148,10 @@ actor APIClient {
             if owners != cacheOwners { await navigationCache.invalidate() }
             guard generation == sessionGeneration else { throw CancellationError() }
             cacheOwners = owners
+            if let account = localAccountID { try? phoneSetupCache.retain(participants: owners, account: account) }
+        }
+        if method == "GET", setupGeneration == phoneSetupGeneration, owner, let participantID, let account = localAccountID {
+            try? phoneSetupCache.save(result, path: path, participant: participantID, account: account)
         }
         return decoded
     }
