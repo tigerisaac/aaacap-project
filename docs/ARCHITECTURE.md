@@ -59,7 +59,7 @@ This section describes the October 13 deployed release. Live synthetic message-w
 | Voicemail ingestion | Firebase Function `ingestForwardingVoicemail` | `backend/src/cloud/forwarding-recordings.ts` |
 | Cleanup | Firebase Function `cleanupShield`, daily at 04:00 Central | `backend/src/cloud/store.ts` |
 | Check tab (paste a text to check it) | `shieldApi` calling `gpt-6-luna`; the text isn't stored | `backend/src/cloud/message-check.ts` |
-| Data and sign-in | Firestore (default database, us-central1), Firebase Authentication email links | `backend/src/cloud/store.ts`, `forwarding-store.ts` |
+| Data and sign-in | Firestore (default database, us-central1), Telnyx Verify phone codes and Firebase Authentication sessions | `backend/src/cloud/store.ts`, `forwarding-store.ts` |
 | iPhone app | SwiftUI, iOS 26+ | `ios/` (see [ios/README.md](../ios/README.md)) |
 
 Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime configuration is one JSON secret, `SHIELD_RUNTIME`; the OpenAI key is a separate secret, `SHIELD_OPENAI_API_KEY`. See [Operations](OPERATIONS.md).
@@ -80,7 +80,7 @@ Everything lives in the Google Cloud project `shield-calls-isaac`. Runtime confi
 
 ### Connected-call protection
 
-This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has saved current consent in the app. After email sign-in, main onboarding selects protection by default and lets the owner turn it off before tapping Continue. Continue saves the choice; existing explicit opt-outs are preserved, and Settings can change it later. Helpers do not choose consent for someone else. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx transcription uses Soniox (`soniox/stt-rt-v4`) by default, with final speech from both sides delivered through signed Call Control events or the dedicated TeXML monitoring callback. Text is kept encrypted only while the call lasts.
+This only runs when the runtime flag `CALL_MONITORING_ENABLED` is on and the person has saved current consent in the app. After sign-in, main onboarding selects protection by default and lets the owner turn it off before tapping Continue. Continue saves the choice; existing explicit opt-outs are preserved, and Settings can change it later. Helpers do not choose consent for someone else. When a monitored call is offered, the caller is told the call will be transcribed. Telnyx transcription uses Soniox (`soniox/stt-rt-v4`) by default, with final speech from both sides delivered through signed Call Control events or the dedicated TeXML monitoring callback. Text is kept encrypted only while the call lasts.
 
 The October 13 deployed [cadence](MONITORING-CADENCE.md) coalesces that speech into 5/15/20-second windows across a connected hour (60/60/120 possible assessments). `monitorConnectedCall` dispatches contentless delayed Cloud Tasks; `monitorScheduledCall` atomically claims a window before invoking Luna. Quiet periods consume no successful repeated assessments, at most two checks run at once, and duplicate deliveries do not spend an extra attempt. Provider failures are retried in another reserved window. Model, ASR and infrastructure latency add to the scheduled wait; monitoring cannot guarantee a warning before someone acts. Interventions record the arrival and warning timestamps without storing quoted words on the call record.
 

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { HttpError, type AuthProvider } from '../auth.js';
 import { normalizePhone } from '../crypto.js';
 import type { CloudStore } from './store.js';
+import { telnyxVerifyIDSchema } from './config.js';
 
 export interface PhoneVerifier {
   start(phone: string): Promise<string>;
@@ -29,7 +30,7 @@ export class TelnyxPhoneVerifier implements PhoneVerifier {
   }
   async start(phone: string) {
     const result = await this.post('/verifications/sms', { phone_number: phone, verify_profile_id: this.store.config.TELNYX_VERIFY_PROFILE_ID, timeout_secs: 300 });
-    if (!result.data?.id || !z.string().uuid().safeParse(result.data.id).success) throw new HttpError(503, 'phone_verification_unavailable');
+    if (!result.data?.id || !telnyxVerifyIDSchema.safeParse(result.data.id).success) throw new HttpError(503, 'phone_verification_unavailable');
     return result.data.id;
   }
   async verify(id: string, code: string, phone: string) {

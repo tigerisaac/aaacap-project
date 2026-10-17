@@ -2,9 +2,21 @@ import { describe, it, expect, vi } from 'vitest';
 import { TelnyxPhoneVerifier } from '../src/cloud/phone-auth.js';
 import { TelnyxTextSender } from '../src/cloud/text-alerts.js';
 import type { CloudStore } from '../src/cloud/store.js';
+import { cloudSchema } from '../src/cloud/config.js';
 const phone = '+12025550101', id = 'b0b7af93-72ad-431d-9708-f1d9564a2b36';
 const store = { config: { TELNYX_API_KEY: 'synthetic-key', TELNYX_VERIFY_PROFILE_ID: id, SMS_ALERTS: { from: '+12025550109', messagingProfileId: id } } } as CloudStore;
 describe('Phone provider boundaries', () => {
+  it('accepts Telnyx hex GUIDs without RFC UUID version or variant bits', async () => {
+    const providerID = '12345678-1234-0123-6123-123456789abc';
+    expect(cloudSchema.shape.TELNYX_VERIFY_PROFILE_ID.parse(providerID)).toBe(providerID);
+    const request = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ data: { id: providerID } }));
+    expect(await new TelnyxPhoneVerifier(store, request).start(phone)).toBe(providerID);
+  });
+  it.each(['', 'not-an-id', '../actions/verify', '12345678-1234-0123-6123-123456789abz'])('rejects malformed Verify identifiers (%s)', async providerID => {
+    expect(cloudSchema.shape.TELNYX_VERIFY_PROFILE_ID.safeParse(providerID).success).toBe(false);
+    const request = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ data: { id: providerID } }));
+    await expect(new TelnyxPhoneVerifier(store, request).start(phone)).rejects.toMatchObject({ code: 'phone_verification_unavailable' });
+  });
   it('uses provider-generated codes and checks both acceptance and phone without custom-code bypass', async () => {
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json({ data: { id } }))
       .mockResolvedValueOnce(Response.json({ data: { response_code: 'accepted', phone_number: phone } }))

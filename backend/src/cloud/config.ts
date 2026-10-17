@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// Telnyx Verify returns hex GUIDs without RFC UUID version/variant bits.
+export const telnyxVerifyIDSchema = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+
 export const cloudSchema = z.object({
   FIREBASE_PROJECT_ID: z.string().default('shield-calls-isaac'),
   FIREBASE_WEB_API_KEY: z.string().min(1),
@@ -10,7 +13,7 @@ export const cloudSchema = z.object({
   TELNYX_ACCOUNT_ID: z.string().uuid(),
   TELNYX_API_KEY: z.string().min(16),
   // Absent until the owner configures verification and an approved messaging sender.
-  TELNYX_VERIFY_PROFILE_ID: z.string().uuid().optional(),
+  TELNYX_VERIFY_PROFILE_ID: telnyxVerifyIDSchema.optional(),
   SMS_ALERTS: z.object({ messagingProfileId: z.string().uuid(), from: z.string().regex(/^\+1[2-9]\d{9}$/) }).strict().optional(),
   TELNYX_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9+/]{43}=$/),
   TELNYX_APPLICATION_ID: z.string().regex(/^\d{6,30}$/),
