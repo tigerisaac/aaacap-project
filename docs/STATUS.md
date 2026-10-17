@@ -1,6 +1,6 @@
 # Status
 
-## October 17 — phone-only iOS sign-in (installed and activated; handset sign-in pending)
+## October 17 — phone-only iOS sign-in (installed, activated and verified on the phone)
 
 The iOS sign-in page now offers mobile-number verification and Privacy only. Sample entry and email sign-in are removed; the legacy email view is compiled only into Debug simulator fixtures. Home's top-right account/person control is removed, with person switching still available under More → Family & friends. The earlier scroll-content-margin fix for the returning More heading remains.
 
@@ -10,7 +10,7 @@ Owner-approved activation is live on **`shieldapi-00030-haq`**, pinned to **runt
 
 The initial runtime-only rollout exposed an existing validation bug: Telnyx returned a hex GUID whose version/variant bits do not satisfy strict RFC UUID validation. That caused the API's public checks to return 503. Runtime version `6` was restored and readiness returned 200 before retrying. The subsequent repair accepts the provider's hex GUID format for both Verify profiles and verification responses, while rejecting malformed identifiers. Only `lib/cloud/config.js` and `lib/cloud/phone-auth.js` were changed on top of the exact prior deployed package; its existing consent version and unrelated undeployed repository changes were preserved. `npm run check` passed all **321 unit tests** plus typecheck/build, and all **232 Firestore emulator tests** passed. Private baselines, rollout/rollback receipts and package manifests are under ignored `artifacts/private/phone-sign-in/`.
 
-One approved SMS was requested from the installed iPhone app at **12:15:50 Central**. The app reached Enter your code, and iOS displayed the received code in its Messages autofill suggestion, establishing handset delivery. Autofill did not populate the field through Mirroring; the owner was asked to enter it directly in Shield. The 12:18 read-only check found one challenge, zero verification attempts, and unchanged ownership. Successful live code verification, account loading and session persistence remain pending. No phone call, carrier change or phone-setting change was performed; this activation provides no real-call evidence.
+One approved SMS was requested from the installed iPhone app at **12:15:50 Central**. The app reached Enter your code, and iOS displayed the received code in its Messages autofill suggestion, establishing handset delivery. Autofill did not populate the field through Mirroring; the owner was asked to enter it directly in Shield. The owner subsequently confirmed that sign-in opened the account. The **12:20 Central** server check found two requested challenges, with the latest code consumed on its first verification attempt and a subsequent Firebase login on the same existing UID. Phone linkage and participant ownership were unchanged. This verifies real handset SMS delivery, code exchange and account opening end to end. Persistence after a fresh relaunch was not separately exercised. No phone call, carrier change or phone-setting change was performed; this activation provides no real-call evidence.
 
 ## October 17 — immediate More title and Home account shortcut (installed)
 
