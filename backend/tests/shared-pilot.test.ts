@@ -288,6 +288,38 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
       expect(action).toHaveBeenCalledWith(c.childSid, 'hangup', expect.anything());
     } finally { warningAction.mockRestore(); }
   });
+  it('preserves warning receipts and fallback while the caller hangup holds the call executor', async () => {
+    const c = await offer(); await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    const warningAction = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
+    try {
+      await new CallMonitor(f).intervene(c.id, 'secrecy');
+      expect((await db.doc(`callControlJobs/${callJobId(c.id, 'deadline', now + 30_000)}`).get()).exists).toBe(true);
+      await cc.exclusive(c.id, async () => {
+        await cc.handle(event(c.childSid!, 'call.playback.started', { client_state: provider.state(c.id, 'warning') }));
+        expect((await cc.call(c.id))?.monitorWarningStartedAt).toBe(now);
+        const failure = event(c.childSid!, 'call.playback.ended', { client_state: provider.state(c.id, 'warning'), status: 'file_not_found' });
+        await cc.handle(failure); await cc.handle(failure);
+        expect(action.mock.calls.filter(x => x[1] === 'speak')).toHaveLength(1);
+        const ended = event(c.childSid!, 'call.speak.ended', { client_state: provider.state(c.id, 'warning-backup'), status: 'completed' });
+        await cc.handle(event(c.childSid!, 'call.playback.ended', { client_state: provider.state(c.id, 'warning') }));
+        expect(action.mock.calls.filter(x => x[0] === c.childSid && x[1] === 'hangup')).toHaveLength(0);
+        await cc.handle(ended); await cc.handle(ended);
+        expect((await cc.call(c.id))?.monitorWarningCompletedAt).toBe(now);
+        expect(action.mock.calls.filter(x => x[0] === c.childSid && x[1] === 'hangup')).toHaveLength(1);
+      });
+    } finally { warningAction.mockRestore(); }
+  });
+  it('records interrupted warning playback without claiming completion or acting on another leg', async () => {
+    const c = await offer();
+    await s.callRef(c.id).update({ monitorIntervenedAt: now, monitorConcern: 'secrecy' });
+    await cc.handle(event(randomUUID(), 'call.playback.started', { client_state: provider.state(c.id, 'warning') }));
+    expect((await cc.call(c.id))?.monitorWarningStartedAt).toBeUndefined();
+    await s.callRef(c.id).update({ state: 'ended' });
+    await cc.handle(event(c.childSid!, 'call.playback.ended', { client_state: provider.state(c.id, 'warning'), status: 'call_hangup' }));
+    expect(await cc.call(c.id)).toMatchObject({ monitorWarningInterruptedAt: now });
+    expect((await cc.call(c.id))?.monitorWarningCompletedAt).toBeUndefined();
+  });
   it('defaults the sound check to Grace and only confirms the active backup gather after failure', async () => {
     const probe = (await new ForwardingProbes(s).reserve(people[0]!.id, 'ring'))!, child = randomUUID();
     await cc.handle(event(child, 'call.initiated', { from: config.TELNYX_NUMBER, to: people[0]!.phone, client_state: provider.state(probe.id, 'probe-ring') }));

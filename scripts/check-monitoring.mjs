@@ -5,7 +5,8 @@ try {
   await connect();
   const decode = v => 'mapValue' in v ? Object.fromEntries(Object.entries(v.mapValue.fields ?? {}).map(([k, x]) => [k, decode(x)]))
     : 'arrayValue' in v ? (v.arrayValue.values ?? []).map(decode) : 'integerValue' in v ? Number(v.integerValue) : v.stringValue ?? v.booleanValue ?? v.doubleValue ?? null;
-  const wanted = ['id', 'state', 'outcome', 'reason', 'createdAt', 'acceptedAt', 'monitoringStartedAt', 'monitorIntervenedAt', 'monitorConcern', 'events'];
+  const wanted = ['id', 'state', 'outcome', 'reason', 'createdAt', 'acceptedAt', 'monitoringStartedAt', 'monitorIntervenedAt', 'monitorConcern',
+    'monitorWarningStartedAt', 'monitorWarningCompletedAt', 'monitorWarningInterruptedAt', 'events'];
   const calls = (await firestore().post(`${documentRoot}:runQuery`, { structuredQuery: { from: [{ collectionId: 'callSessions' }],
     select: { fields: wanted.map(fieldPath => ({ fieldPath })) }, orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }], limit: 3 } })).body
     .filter(r => r.document).map(r => Object.fromEntries(Object.entries(r.document.fields).map(([k, v]) => [k, decode(v)])));
@@ -20,6 +21,7 @@ try {
     const at = n => n ? new Date(n).toISOString() : null;
     console.log(JSON.stringify({ call: call.id, state: call.state, outcome: call.outcome, reason: call.reason, created: at(call.createdAt),
       accepted: at(call.acceptedAt), monitored: at(call.monitoringStartedAt), intervened: at(call.monitorIntervenedAt), concern: call.monitorConcern ?? null,
+      warning: { started: at(call.monitorWarningStartedAt), completed: at(call.monitorWarningCompletedAt), interrupted: at(call.monitorWarningInterruptedAt) },
       transcript, events: (call.events ?? []).map(e => e.kind) }));
   }
   const pending = (await firestore().post(`${documentRoot}:runQuery`, { structuredQuery: { from: [{ collectionId: 'monitorChecks' }], limit: 20 } })).body.filter(r => r.document).length;

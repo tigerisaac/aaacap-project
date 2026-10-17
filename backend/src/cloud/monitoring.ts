@@ -9,6 +9,7 @@ import type { ForwardingCall, ForwardingStore } from './forwarding-store.js';
 import { queueAlert } from './alerts.js';
 import { randomUUID } from 'node:crypto';
 import { MONITOR_CADENCE_VERSION, MONITOR_HOUR_MS, monitorWindow, nextMonitorCheck } from './monitor-cadence.js';
+import { queueCallJob } from './call-jobs.js';
 
 // Opt-in protection for calls the recipient accepted: Telnyx transcribes both sides, Luna checks the
 // conversation, and a clear scam request ends the call with a spoken warning to her.
@@ -272,6 +273,11 @@ export class CallMonitor {
       (tx, next, personExists) => {
         this.forwarding.rememberScam(tx, next, 'monitor_intervened', personExists);
         if (personExists) queueAlert(s, tx, next.participantId, 'monitor_intervened');
+        if (next.transport === 'call-control') {
+          const dueAt = now + 30_000;
+          tx.set(s.db.collection('callControlDeadlines').doc(id), { callId: id, phaseSeconds: 30, dueAt, expiresAt: now + 2 * 3600_000 });
+          queueCallJob(s, tx, id, 'deadline', dueAt);
+        }
       });
     if (!call) return;
     let redirected = false;
@@ -280,7 +286,6 @@ export class CallMonitor {
       // Her leg leaves the bridge to hear the warning; that ends the caller's Dial, which hangs up on them.
       if (call.transport === 'call-control') {
         const cc = new CallControlProvider(c);
-        await s.db.collection('callControlDeadlines').doc(id).set({ callId: id, dueAt: now + 30_000, expiresAt: now + 2 * 3600_000 });
         await cc.action(call.parentSid, 'hangup', { command_id: s.vault.hash(`${id}:intervene`) });
         try {
           await cc.action(call.childSid, 'playback_start', { audio_url: requiredAnnouncementAudio(warningText(concern)).url,

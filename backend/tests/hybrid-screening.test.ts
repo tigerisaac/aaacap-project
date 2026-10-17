@@ -53,6 +53,26 @@ describe('Production hybrid screening', () => {
     expect(h.io.finish).not.toHaveBeenCalled();
     h.asr('', 20); h.session.tick(); expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(approve);
   });
+  it('checks a short settled utterance even when the endpoint event is no longer present', async () => {
+    const h = harness(); h.input();
+    h.stt.message({ final_audio_proc_ms: 20, tokens: [{ text: 'Hi.', is_final: true }] });
+    h.advance(799); await drain(); expect(h.fetcher).not.toHaveBeenCalled();
+    h.advance(1); await drain(); h.session.tick();
+    expect(h.fetcher).toHaveBeenCalledTimes(1);
+    expect(h.sockets.map(s => s.kind)).toEqual(['soniox', 'live']);
+    h.session.providerEnded();
+  });
+  it.each([false, true])('treats queued handoff audio as unheard speech only when audible: %s', async audible => {
+    const h = harness(); const voice = await h.handoff(); voice.open();
+    voice.message({ type: 'session.started', session: { model: 'gpt-live-1' } });
+    voice.message({ type: 'session.input_transcript.delta', delta: ' About lunch tomorrow.' }); h.advance(800);
+    voice.message({ type: 'session.delegation.created', delegation: { id: 'd' } });
+    // A media frame can arrive between the 20 ms drain and a model response.
+    h.input(audible);
+    voice.message({ type: 'response.event', delegation_id: 'd', event: {
+      type: 'response.output_item.done', item: { type: 'function_call', call_id: 'fresh', name: 'screen_call', arguments: JSON.stringify(approve) } } });
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(audible ? 'screening_unavailable' : approve);
+  });
   it('discards a response when a new caller turn changes its evidence', async () => {
     let now = 1000, resolve: (d: LiveDecision) => void = () => {};
     const applied = vi.fn(); const gate = new HybridScreeningGate({ assess: () => new Promise(r => { resolve = r; }), apply: applied, fail: vi.fn() }, () => now);

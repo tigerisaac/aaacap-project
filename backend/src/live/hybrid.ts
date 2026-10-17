@@ -7,7 +7,7 @@ import { handoffInput, initialAssessment } from './hybrid-policy.js';
 import { researchScamPattern, type ResearchResult, type ResearchTopic } from './research.js';
 import { responseUsage, type TimingPhase, type TimingMetrics } from './timing.js';
 
-export const HYBRID_SCREENING_VERSION = 'soniox-luna-live-v1';
+export const HYBRID_SCREENING_VERSION = 'soniox-luna-live-v2';
 type Kind = 'soniox' | 'live';
 type Dependencies = { now?: () => number; fetch?: typeof fetch; socket?: (kind: Kind, key: string) => WebSocket };
 type HybridIO = Omit<ScreeningIO, 'openai' | 'research'> & {
@@ -100,8 +100,9 @@ export class HybridScreeningSession {
   async stop(reason: StopReason) { await this.finish(reason); }
   private async finish(value: LiveDecision | StopReason) {
     if (this.terminal) return;
-    // Never act on a voice decision that preceded delivery of buffered caller audio.
-    if (typeof value !== 'string' && this.liveQueuedBytes) value = 'screening_unavailable';
+    // Carrier media is continuous: a frame of silence can arrive between the
+    // drain tick and a decision. Only unheard audible input invalidates it.
+    if (typeof value !== 'string' && this.liveQueue.some(audiblePCMU)) value = 'screening_unavailable';
     // A caller who already left words but cannot answer a clarification gets voicemail.
     if (value === 'silent_caller' && this.text.trim()) value = 'screening_timeout';
     this.terminal = true; this.timing('terminal_decision'); this.cleanup();

@@ -30,7 +30,10 @@ export class HybridScreeningGate {
     const periodicAt = Number.isFinite(this.checkAt) ? this.checkAt : (this.firstSpeechAt ?? this.now());
     if (this.provisional.trim() || (!this.endpoint && this.now() - this.speechAt < 600
       && this.now() - periodicAt < 6000) || (!this.endpoint && this.now() - this.lastTextAt < 300)) return;
-    if (!this.text.trim() || this.text === this.checked || (!this.endpoint && this.text.length - this.checked.length < 24)
+    // The recognizer's endpoint marker is transient. A short, finished turn still
+    // needs a question/decision after a pause, even if a later progress event cleared it.
+    if (!this.text.trim() || this.text === this.checked || (!this.endpoint && this.text.length - this.checked.length < 24
+      && this.now() - this.speechAt < LIVE_LIMITS.speechPauseMs)
       || this.now() - this.checkAt < 2500) return;
     if (this.checks >= 8) { this.closed = true; this.io.fail('screening_timeout'); return; }
     this.busy = true; this.checks++; this.checkAt = this.now(); this.checked = this.text;

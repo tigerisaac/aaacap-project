@@ -219,6 +219,12 @@ export class SharedCallControl {
     // These operations use transactional state and idempotent command IDs. They
     // must survive a stuck executor: preserve captures and recover failed media.
     if (boundInbound && ['call.recording.saved', 'streaming.failed', 'streaming.stopped'].includes(e.event_type)) return run();
+    // Warning playback can overlap the caller's hangup executor. These signed,
+    // bound-leg receipts and idempotent terminal commands must not lose all carrier retries.
+    const warningEvent = c?.transport === 'call-control' && c.childSid === sid && !!c.monitorIntervenedAt
+      && state?.id === c.id && ['warning', 'warning-backup'].includes(state.phase)
+      && ['call.playback.started', 'call.playback.ended', 'call.speak.started', 'call.speak.ended'].includes(e.event_type);
+    if (warningEvent) return run();
     return this.exclusive(lock, run);
   }
   async process(e: Event) {
@@ -300,10 +306,16 @@ export class SharedCallControl {
     const backup = phase?.phase.endsWith('-backup') ?? false;
     const promptPhase = backup ? phase!.phase.slice(0, -7) : phase?.phase;
     const promptEnded = (!backup && e.event_type === 'call.playback.ended') || (backup && e.event_type === 'call.speak.ended');
+    const promptStarted = (!backup && e.event_type === 'call.playback.started') || (backup && e.event_type === 'call.speak.started');
     const currentVoice = !!promptPhase && (!!c.announcementFallbacks?.[promptPhase] === backup);
-    if (promptEnded && !inbound && c.state !== 'ended' && phase?.id === c.id && promptPhase === 'warning' && c.monitorIntervenedAt) {
+    if ((promptStarted || promptEnded) && !inbound && phase?.id === c.id && promptPhase === 'warning' && c.monitorIntervenedAt) {
+      if (!currentVoice) return;
+      const field = promptStarted ? 'monitorWarningStartedAt' : p.status === 'completed'
+        ? 'monitorWarningCompletedAt' : 'monitorWarningInterruptedAt';
+      await s.callRef(c.id).update({ [field]: Date.parse(e.occurred_at) });
+      if (promptStarted || c.state === 'ended' || p.status === 'call_hangup') return;
       if (!backup && failedPlayback(p.status)) return this.fallback(c, 'warning');
-      if (currentVoice) await this.hangup(sid);
+      await this.hangup(sid);
       return;
     }
     if (c.state === 'ended') return;

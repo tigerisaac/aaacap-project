@@ -1,5 +1,9 @@
 # Status
 
+## October 17 — short-utterance and silent-buffer fixes (local, not deployed)
+
+Hybrid orchestration v2 fixes two reproduced defects: short settled speech can now trigger a check without a transient endpoint marker, and queued silent carrier frames no longer reject a valid voice decision. Unheard audible input still fails closed. Warning callbacks can survive contention with the caller hangup, playback receipts distinguish start/completion/interruption, and intervention queues its 30-second cleanup transactionally. Screening v158 and monitoring v2 remain unchanged. The owner's inaudible-warning report is **not yet resolved**; carrier playback-start is not proof of heard audio. [Incident, validation and remaining test gates](INCIDENT-2026-10-17-CALL-AUDIO.md).
+
 ## October 17 — manual contact and caretaker name bounds corrected
 
 Saved-number, individual-contact and caretaker forms now reject names beyond the service limit before any local save or request. They show a correction message and restore the action after editing, while preserving the number. Caretakers also reject internal control characters. All **13 manual-name contract cases** pass against the actual backend label validator. The affected UI run passed six of seven checks; correcting the remaining test's unspecified cursor placement produced a **2/2** boundary-method rerun covering all three forms, completing seven distinct checks with zero runtime warnings. Six final screenshots were reviewed. The final unsigned archive passed with two arm64 bundles, three privacy manifests and excluded test markers. [Evidence](../.impeccable/review/release-2026-10-17/contact-names/verification.json).
