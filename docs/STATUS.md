@@ -1,5 +1,15 @@
 # Status
 
+## October 17 — local phone setup and disconnection guide (installed; guided backend deployed)
+
+Phone setup now opens from a protected, bounded owner snapshot on the iPhone. Home refresh warms it automatically, recent reads are reused for five minutes, and stale refreshes retain the form. The cache preserves approved carrier restoration text, isolates accounts/phones, expires freshness after writes, prunes removed owners and is erased during account deletion. Delete account is removed from both Phone setup variants and remains in account settings. Both setup variants use the same disconnect guide.
+
+Disconnect renders its bundled guide before local reads and can show all phone steps without contacting the service. Carrier-specific text is saved from approved server responses; codes are never guessed. Starting/resuming the guided flow checks the server protocol, and explicit confirmations still require server acknowledgement. The initial production failure was an undeployed restoration route (404), rather than a failed local cache read.
+
+With the owner's explicit approval, the disconnection-only package was staged on verified API `shieldapi-00025-wec` and deployed as **`shieldapi-00026-hiy`**, verified at **00:16 Central**. Exactly five modules changed: restoration, forwarding API, forwarding probes, setup check and the restoration-only setup mutation guard in the app. The existing service configuration/IAM, unrelated function revisions, screening/message policies and bridge are preserved. Source archive hash, public readiness and unauthenticated registration checks for the two new restoration routes passed. Account-deletion/privacy changes remain outside this deployment. Private staging, approval manifest and verification evidence are under `artifacts/private/disconnect-release/`.
+
+Validation: 306 unit tests plus typecheck/build, all 229 Firestore emulator tests, protected Swift storage/cache tests, and four restoration tests against the exact scoped API package passed. Five focused scenario/device UI executions passed across iPhone 17e/iOS 26.5 and iPhone 18 Pro/iOS 27: local guide with unavailable service, unchanged step on save failure, manual carrier guide, and no account deletion in either setup variant. The final signed Debug build was verified, installed and launched on the paired iPhone 12 Pro Max; an initial device connection error succeeded on retry. No phone call, carrier-setting change or owner disconnection was performed. These checks do not constitute real-carrier restoration evidence.
+
 ## October 17 — stable navigation refresh and simpler Messages (installed)
 
 Call filters remember successful loads, including empty results, and owner inbox refreshes keep the existing list visible. Home, Calls and Messages defer first-load progress by 250 ms so fast cache reads cannot flash a loading card. The delay runs on the stable screen; an initial empty-section implementation failed the slow-load check and was replaced. The permanent Messages storage/delivery disclaimer is removed; actual delivery failures remain visible.

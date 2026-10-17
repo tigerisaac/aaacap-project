@@ -39,6 +39,8 @@ final class DisconnectModel {
                 #endif
                 return
             }
+            // The bundled guide is available before the first local disk read yields.
+            if status == nil { status = .localGuide(instructions: [], carrier: "your carrier") }
             let session = app.sessionGeneration
             let setup: (value: SetupStatus, savedAt: Date, isFresh: Bool)? = await app.api.savedPhoneSetup("/api/setup", participantID: id)
             let forwarding: (value: ForwardingStatus, savedAt: Date, isFresh: Bool)? = await app.api.savedPhoneSetup("/api/forwarding", participantID: id)
@@ -48,7 +50,7 @@ final class DisconnectModel {
                 let fresh: RestorationStatus = try await app.api.send("/api/forwarding/restoration", participantID: id)
                 guard app.sessionGeneration == session else { return }
                 status = fresh
-            } else if status == nil {
+            } else if status?.id == nil {
                 status = .localGuide(instructions: localInstructions,
                     carrier: forwarding?.value.carrier ?? setup?.value.carrierProfile?.name ?? "your carrier")
             }
