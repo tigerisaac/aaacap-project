@@ -95,10 +95,12 @@ actor APIClient {
             let status: ForwardingStatus = try await send("/api/forwarding", participantID: participantID)
             return (status, .now)
         }
-        let response = try await navigationCache.response(for: .init(path: "/api/forwarding", participantID: participantID), lifetime: 60) {
+        let saved: (value: ForwardingStatus, savedAt: Date, isFresh: Bool)? = savedPhoneSetup("/api/forwarding", participantID: participantID)
+        if let saved, saved.isFresh, saved.value.participantId == participantID { return (saved.value, saved.savedAt) }
+        let response = try await navigationCache.response(for: .init(path: "/api/forwarding", participantID: participantID), lifetime: 300) {
             try await self.data("/api/forwarding", participantID: participantID, expectedGeneration: generation)
         }
-        guard generation == sessionGeneration else { throw CancellationError() }
+        guard generation == sessionGeneration, setupGeneration == phoneSetupGeneration else { throw CancellationError() }
         do {
             let status = try decoder().decode(ForwardingStatus.self, from: response.data)
             if setupGeneration == phoneSetupGeneration, let account = localAccountID {
@@ -160,6 +162,11 @@ actor APIClient {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-call-filter-parity"),
+           let filter = CallFilter.allCases.first(where: { path == "/api/calls?filter=\($0.rawValue)" }) {
+            if filter == .voicemail { try await Task.sleep(for: .seconds(3)) }
+            return try CallFilterFixture.page(filter)
+        }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-navigation-loading"),
            path == "/api/calls?filter=connected" || path == "/api/calls?filter=voicemail" || path == "/api/calls?filter=all" {
             // Synthetic slow, successful empty pages exercise refresh presentation without a service.

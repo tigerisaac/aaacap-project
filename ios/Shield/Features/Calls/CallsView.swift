@@ -45,7 +45,7 @@ struct CallsView: View {
                     }
                 }
             }
-            .deferredLoading(model.isLoadingCalls || model.isLoading, visible: $loadingVisible)
+            .deferredLoading(initialLoading, visible: $loadingVisible)
             .shieldLargeTitle("Calls")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

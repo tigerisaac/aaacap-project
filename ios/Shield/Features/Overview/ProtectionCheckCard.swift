@@ -159,7 +159,8 @@ final class ProtectionCheckState {
         }
         #endif
         guard model.isOwner, !model.isDemo, let id = model.selectedPersonID, let status = model.overview?.status else { return }
-        let forwarding = try? await model.api.forwardingSnapshot(participantID: id).status
+        let saved: (value: ForwardingStatus, savedAt: Date, isFresh: Bool)? = await model.api.savedPhoneSetup("/api/forwarding", participantID: id)
+        let forwarding = (try? await model.api.forwardingSnapshot(participantID: id).status) ?? saved?.value
         guard model.selectedPersonID == id else { return }
         items = await ProtectionCheck.run(status: status, forwarding: forwarding, notificationsAvailable: model.service?.notificationsAvailable == true)
     }

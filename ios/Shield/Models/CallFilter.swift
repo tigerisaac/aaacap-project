@@ -16,7 +16,8 @@ enum CallFilter: String, CaseIterable, Identifiable, Sendable {
         case .all: true
         case .held: call.outcome == .held || call.outcome == .verification
         case .connected: call.outcome == .connected
-        case .voicemail: call.voicemail != nil
+        // Match /api/calls: stopped calls can retain removed-message metadata.
+        case .voicemail: call.outcome == .voicemail
         }
     }
 }

@@ -8,6 +8,9 @@ struct OverviewView: View {
     @State private var forwarding: ForwardingStatus?
     @State private var checkedAt: Date?
     @State private var checkingStatus = false
+    @State private var statusParticipantID: UUID?
+    @State private var statusSessionGeneration: Int?
+    @State private var statusUpdateFailed = false
     @State private var loadingVisible = false
 
     var body: some View {
@@ -15,8 +18,8 @@ struct OverviewView: View {
             List {
                 PersonContextSection()
                 if !model.isDemo || isStatusFixture {
-                    ShieldGroup {
-                        TimelineView(.periodic(from: .now, by: 15)) { context in
+                    ShieldGroup(background: .clear) {
+                        TimelineView(.periodic(from: .now, by: 30)) { context in
                             statusCard(now: context.date)
                         }
                     }
@@ -24,15 +27,9 @@ struct OverviewView: View {
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
                     ShieldGroup { ProtectionCheckCard(check: protectionCheck) }
                 }
-                if model.showingSavedHistory || model.contextError != nil, let savedAt = model.historySavedAt {
-                    ShieldGroup { Text("Saved on this iPhone · Updated \(savedAt.formatted(date: .abbreviated, time: .shortened))")
-                        .foregroundStyle(ShieldTheme.secondaryText) }
-                }
                 if let overview = model.overview {
-                    if model.contextError == nil {
-                        ShieldGroup {
-                            StoppedCallsCard(count: overview.counts.stoppedTotal) { model.showCalls(.held) }
-                        }
+                    ShieldGroup {
+                        StoppedCallsCard(count: overview.counts.stoppedTotal) { model.showCalls(.held) }
                     }
                     let messages = overview.recent.filter { $0.voicemail != nil && $0.voicemail?.status != "removed" }
                     ShieldGroup {
@@ -93,7 +90,7 @@ struct OverviewView: View {
                 await loadStatus()
                 while !Task.isCancelled {
                     do { try await Task.sleep(for: .seconds(60)) } catch { return }
-                    if scenePhase == .active { await refresh() }
+                    if scenePhase == .active { await refresh(force: false) }
                 }
             }
             .onChange(of: scenePhase) { _, phase in if phase == .active { Task {
@@ -105,17 +102,27 @@ struct OverviewView: View {
 
     @ViewBuilder private func statusCard(now: Date) -> some View {
         let presentation = summary(now: now)
-        // The tile matches the rows below, so the title, explanation and action start on their text column.
-        HStack(alignment: .top, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
-            if !typeSize.isAccessibilitySize {
-                ShieldRowSymbol(systemName: presentation.symbol)
-            }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(presentation.title).font(.headline).foregroundStyle(ShieldTheme.action)
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 20))
+        layout {
+            Image(systemName: presentation.symbol)
+                .font(.system(size: 60, weight: .regular))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(presentation.enabled ? ShieldTheme.connected : ShieldTheme.secondaryText)
+                .frame(width: 72, height: 80)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(presentation.title).font(.title3.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
                 Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
+                if presentation.isSaved, let checkedAt {
+                    Text("Last confirmed \(checkedAt.formatted(date: .abbreviated, time: .shortened)).")
+                        .font(.footnote).foregroundStyle(ShieldTheme.secondaryText)
+                        .accessibilityIdentifier("today-status-confirmed")
+                }
                 if !model.isDemo, model.isOwner {
                     if presentation.retry {
                         Button(checkingStatus ? "Checking…" : "Try again") { Task { await refresh() } }
@@ -135,33 +142,11 @@ struct OverviewView: View {
         .padding(.vertical, 8)
     }
 
-    private struct Summary {
-        let title: String
-        let detail: String
-        let symbol: String
-        var retry = false
-        var needsSetup = false
-        var actionTitle = "Set up my phone"
-        var useSetupMenu = false
-    }
-    private func summary(now: Date) -> Summary {
+    private func summary(now: Date) -> HomeStatusPresentation {
         if model.isDemo && !isStatusFixture { return .init(title: model.isOwner ? "Sample phone" : "\(model.person?.name ?? "Your person")’s sample calls", detail: "Try a message or call below.", symbol: "phone.badge.waveform") }
-        if model.contextError != nil { return .init(title: "Couldn’t check your phone", detail: "Saved calls and messages still work. Shield can check incoming calls without this app being open; its current status needs a connection.", symbol: "wifi.exclamationmark", retry: true) }
         if !model.isOwner { return .init(title: "\(model.person?.name ?? "Your person")’s calls", detail: model.canListen ? "They’ve shared calls and voicemail with you." : "They’ve shared calls with you.", symbol: "person.2") }
-        if checkingStatus && checkedAt == nil { return .init(title: "Checking your phone…", detail: "One moment.", symbol: "arrow.clockwise") }
-        guard let status = forwarding, let checkedAt, now.timeIntervalSince(checkedAt) < 75 else {
-            return .init(title: "Couldn’t check your phone", detail: "Please try again.", symbol: "wifi.exclamationmark", retry: true)
-        }
-        if status.restorationRequested || model.overview?.status == "restoring" { return .init(title: "Disconnecting Shield", detail: "Finish the steps to bring back ordinary calls.", symbol: "arrow.uturn.backward.circle", needsSetup: true, actionTitle: "Finish disconnecting") }
-        if model.overview?.status == "paused" { return .init(title: "Call checks are paused", detail: "Your phone may still send calls to Shield.", symbol: "pause.circle", needsSetup: true, actionTitle: "Resume call checks", useSetupMenu: true) }
-        if !status.consented || !status.prepared || !status.phoneVerified { return .init(title: "Your phone needs setup", detail: "We’ll help you one step at a time.", symbol: "phone.badge.checkmark", needsSetup: true) }
-        if status.alwaysOn == true, status.liveScreening == true {
-            return .init(title: "Call checks are on", detail: "Shield checks calls that reach it. During quiet hours or when the daily limit is reached, callers can leave a message.", symbol: "phone.badge.waveform")
-        }
-        if status.active, status.liveScreening == true, let expiry = status.expiresAt, expiry > now, status.remainingCalls > 0 {
-            return .init(title: "Call checks are on", detail: "Calls that reach Shield are checked until \(expiry.formatted(date: .omitted, time: .shortened)).", symbol: "phone.badge.waveform")
-        }
-        return .init(title: "Call checks are off", detail: "Calls that reach Shield may go to voicemail.", symbol: "clock", needsSetup: true, actionTitle: "Phone options", useSetupMenu: true)
+        return .make(status: forwarding, checkedAt: checkedAt, accountStatus: model.overview?.status,
+                     checking: checkingStatus, updateFailed: statusUpdateFailed, now: now)
     }
 
     private var isStatusFixture: Bool {
@@ -180,31 +165,54 @@ struct OverviewView: View {
         return !model.isDemo
     }
 
-    private func refresh() async {
-        await model.refresh(); await loadStatus()
+    private func refresh(force: Bool = true) async {
+        await model.refresh(force: force); await loadStatus(force: force)
         if model.isOwner, showsProtectionCheck { await protectionCheck.refresh(model) }
     }
-    private func loadStatus() async {
+    private func loadStatus(force: Bool = false) async {
         #if DEBUG
         if isStatusFixture {
             let args = ProcessInfo.processInfo.arguments
             if let i = args.firstIndex(of: "--redesign-state"), args.indices.contains(i + 1) {
                 let state = args[i + 1]
-                forwarding = state == "unavailable" ? nil : .redesignFixture(state: state)
-                checkedAt = state == "unavailable" ? nil : state == "stale" ? .now.addingTimeInterval(-120) : .now
+                forwarding = state == "unavailable" ? nil : .redesignFixture(state: ["stale", "refresh-failed"].contains(state) ? "always-on" : state)
+                checkedAt = state == "unavailable" ? nil : ["stale", "refresh-failed"].contains(state) ? .now.addingTimeInterval(-120) : .now
+                statusUpdateFailed = state == "refresh-failed"
                 return
             }
         }
         #endif
-        guard !model.isDemo, model.isOwner, let id = model.selectedPersonID else { forwarding = nil; checkedAt = nil; return }
+        guard !model.isDemo, model.isOwner, let id = model.selectedPersonID else {
+            forwarding = nil; checkedAt = nil; statusParticipantID = nil; return
+        }
+        let generation = model.sessionGeneration
+        if statusParticipantID != id || statusSessionGeneration != generation {
+            forwarding = nil; checkedAt = nil; statusUpdateFailed = false
+            statusParticipantID = id; statusSessionGeneration = generation
+        }
+        // Restore this owner's last confirmed settings before waiting for the service.
+        let saved: (value: ForwardingStatus, savedAt: Date, isFresh: Bool)? = await model.api.savedPhoneSetup("/api/forwarding", participantID: id)
+        guard id == model.selectedPersonID, generation == model.sessionGeneration, !Task.isCancelled else { return }
+        if let saved, saved.value.participantId == id {
+            if saved.savedAt > (checkedAt ?? .distantPast) {
+                forwarding = saved.value; checkedAt = saved.savedAt
+            }
+            if saved.isFresh && !force { statusUpdateFailed = false; return }
+        }
+        guard !checkingStatus else { return }
         checkingStatus = true
         defer { checkingStatus = false }
         do {
             let snapshot = try await model.api.forwardingSnapshot(participantID: id)
-            guard id == model.selectedPersonID else { return }
-            forwarding = snapshot.status; checkedAt = snapshot.checkedAt
+            guard id == model.selectedPersonID, generation == model.sessionGeneration, !Task.isCancelled else { return }
+            forwarding = snapshot.status; checkedAt = snapshot.checkedAt; statusUpdateFailed = false
         } catch is CancellationError { return }
-        catch { if id == model.selectedPersonID { forwarding = nil; checkedAt = nil } }
+        catch {
+            guard id == model.selectedPersonID, generation == model.sessionGeneration else { return }
+            // A transport error is not evidence that the confirmed setting changed.
+            statusUpdateFailed = true
+            model.handleSessionFailure(error)
+        }
     }
 
 }

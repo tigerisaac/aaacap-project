@@ -25,7 +25,7 @@ struct ShieldApp: App {
                 }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active, model.signedIn {
-                        Task { await model.refresh() }
+                        Task { await model.refresh(force: false) }
                     }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .shieldPushToken)) { notification in

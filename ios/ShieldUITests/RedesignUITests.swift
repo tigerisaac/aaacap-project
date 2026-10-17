@@ -109,7 +109,8 @@ final class RedesignUITests: XCTestCase {
         let cases = [("window", "Call checks are on"), ("expired", "Call checks are off"),
                      ("always-on", "Call checks are on"), ("always-on-disabled", "Call checks are off"),
                      ("paused", "Call checks are paused"), ("restoring", "Disconnecting Shield"),
-                     ("setup", "Your phone needs setup"), ("unavailable", "Couldn’t check your phone"), ("stale", "Couldn’t check your phone")]
+                     ("setup", "Your phone needs setup"), ("unavailable", "Connect to check your setup"),
+                     ("stale", "Call checks are on"), ("refresh-failed", "Call checks are on")]
         for (state, title) in cases {
             let app = launch(["--uitesting-preview", "--redesign-state", state])
             XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))

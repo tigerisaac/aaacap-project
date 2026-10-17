@@ -35,6 +35,7 @@ actor DeliveryStub: MessageDeliveryAPI {
             voicemail: Voicemail(id: id, duration: 2, status: "ready", heardAt: nil))
         try await testNavigationCache()
         try testPhoneSetupCache(root: root)
+        try testHomeStatusAndCallFilters()
         try await testOfflineHistory(root: root, person: person, call: call)
         let data = Data("synthetic audio bytes".utf8)
         let delivery = MessageDelivery(audio: data, sha256: MessageAudioStore.digest(data), receipt: "synthetic receipt")

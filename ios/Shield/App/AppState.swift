@@ -29,7 +29,9 @@ final class AppState {
     var overview: Overview?
     var calls: [CallRecord] = []
     var nextCursor: String?
-    var filter: CallFilter = .all
+    var filter: CallFilter = .all {
+        didSet { if oldValue != filter { prepareCallFilter() } }
+    }
     private var callsFilter: CallFilter = .all
     private var loadedCallFilters: Set<CallFilter> = []
     var hasLoadedCalls: Bool { loadedCallFilters.contains(filter) }
@@ -106,7 +108,7 @@ final class AppState {
             signedIn = true
             await loadOfflineHistory()
             await loadLocalMessages()
-            await refresh()
+            await refresh(force: false)
         }
     }
 
@@ -165,7 +167,7 @@ final class AppState {
         }
     }
 
-    func refresh() async {
+    func refresh(force: Bool = true) async {
         #if DEBUG && targetEnvironment(simulator)
         if isPreview, ProcessInfo.processInfo.arguments.contains("--uitesting-account-error") {
             // The app refreshes once on activation; leave the failed state for the explicit retry.
@@ -179,7 +181,7 @@ final class AppState {
         let generation = sessionGeneration
         isLoading = true
         defer { isLoading = false }
-        await api.invalidateNavigationCache()
+        if force { await api.invalidateNavigationCache() }
         do {
             let response: APIResponses.People = try await api.send("/api/people")
             guard generation == sessionGeneration, signedIn, !isPreview else { return }
@@ -291,15 +293,21 @@ final class AppState {
         catch { if generation == sessionGeneration, selectedPersonID == id { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
+    /// Change the selected rows in the same update as the picker, before its async task starts.
+    private func prepareCallFilter() {
+        guard callsFilter != filter else { return }
+        calls = isPreview ? (person.map(DemoData.overview)?.recent ?? []).filter(filter.includes)
+            : offlineHistories.first { $0.person.id == selectedPersonID }?.calls.filter(filter.includes) ?? []
+        showingSavedHistory = !isPreview && !calls.isEmpty
+        callsError = nil
+        nextCursor = nil
+        callsFilter = filter
+    }
+
     func loadCalls(more: Bool = false) async {
         guard !isDeletingAccount else { return }
         guard let id = selectedPersonID else { return }
-        if callsFilter != filter {
-            calls = offlineHistories.first { $0.person.id == id }?.calls.filter(filter.includes) ?? []
-            showingSavedHistory = !calls.isEmpty
-            nextCursor = nil
-            callsFilter = filter
-        }
+        prepareCallFilter()
         if isPreview {
             #if DEBUG
             let args = ProcessInfo.processInfo.arguments

@@ -7,7 +7,8 @@ final class OfflineHistoryUITests: XCTestCase {
         app.launchArguments = ["--uitesting-offline-history", "--seed-offline-history"]
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["Calls"].appears(timeout: 20))
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label BEGINSWITH %@", "Saved on this iPhone")).firstMatch.exists)
+        app.tabBars.buttons["Calls"].tap()
+        XCTAssertTrue(app.staticTexts["Offline saved call"].appears(timeout: 10))
         app.terminate()
         app.launchArguments = ["--uitesting-offline-history"]
         app.launch()
