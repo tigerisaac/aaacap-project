@@ -23,6 +23,7 @@
     "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts backend/tests/alerts.test.ts backend/tests/phone-contacts.test.ts backend/tests/voicemail.test.ts backend/tests/pilot.test.ts backend/tests/setup-check.test.ts backend/tests/shared-pilot.test.ts backend/tests/live-startup-emulator.test.ts backend/tests/backend-reliability.test.ts backend/tests/service-access.test.ts'",
     "check": "npm run typecheck && npm test && npm run build",
     "test:subscriptions": "node scripts/test-subscriptions.mjs",
+    "test:contacts": "npm run build && node scripts/test-contact-sharing.mjs",
     "test:accounts": "firebase emulators:exec --config firebase.account-tests.json --only firestore,auth --project demo-shield-accounts 'SHIELD_ACCOUNT_EMULATOR_TESTS=1 npx vitest run backend/tests/account-lifecycle.test.ts'"
   },
   "dependencies": {

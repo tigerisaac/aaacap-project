@@ -49,12 +49,13 @@ final class SharedContactsModel {
         do {
             let contacts = try await PhoneContacts.shared.all()
             guard generation == app.sessionGeneration, app.selectedPersonID == person, app.isOwner, app.signedIn, !Task.isCancelled else { throw CancellationError() }
-            let body = try JSONEncoder().encode(["contacts": contacts])
+            let body = try JSONEncoder().encode(["contacts": contacts.contacts])
             let result: APIResponses.ContactSync = try await app.api.send("/api/trusted-numbers/sync", method: "POST", body: body, participantID: person)
             guard generation == app.sessionGeneration, app.signedIn, app.selectedPersonID == person else { throw CancellationError() }
             UserDefaults.standard.set(true, forKey: key(person))
             try await fetch(app, person)
-            message = "\(result.shared) contacts shared." + (result.skipped > 0 ? " \(result.skipped) couldn’t be added." : "")
+            let skipped = contacts.skipped + result.skipped
+            message = "\(result.shared) contacts shared." + (skipped > 0 ? " \(skipped) couldn’t be added." : "")
         } catch is CancellationError { message = nil }
         catch { message = nil; app.handle(error) }
     }
@@ -93,7 +94,7 @@ final class SharedContactsModel {
             try await PhoneContacts.shared.setEnabled(action == "add", phone: phone, label: "Mom", personID: person)
             let contacts = try await PhoneContacts.shared.all()
             let _: APIResponses.ContactSync = try await app.api.send("/api/trusted-numbers/sync", method: "POST",
-                body: JSONEncoder().encode(["contacts": contacts]), participantID: person)
+                body: JSONEncoder().encode(["contacts": contacts.contacts]), participantID: person)
             UserDefaults.standard.set(true, forKey: key(person))
             try await fetch(app, person)
             message = action == "add" ? "Demo caller is on the shared list." : "Demo caller is off the shared list."

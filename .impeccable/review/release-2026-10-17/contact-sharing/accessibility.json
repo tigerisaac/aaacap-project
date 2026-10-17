@@ -1,0 +1,182 @@
+{
+  "bundle": "/tmp/shield-contact-accessibility-oct17.xcresult",
+  "result": "Failed",
+  "passed": 0,
+  "failed": 2,
+  "runtimeWarnings": [],
+  "durationSeconds": 107.567,
+  "summaryTestFailures": [
+    {
+      "failureText": "Contrast failed",
+      "targetName": "ShieldUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "SeniorAccessibilityUITests/testDarkToolbarActionsAudit()",
+      "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit",
+      "testName": "testDarkToolbarActionsAudit()"
+    },
+    {
+      "failureText": "Contrast failed",
+      "targetName": "ShieldUITests",
+      "testIdentifier": 2,
+      "testIdentifierString": "SeniorAccessibilityUITests/testOwnerSettingsScreensAudit()",
+      "testIdentifierURL": "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testOwnerSettingsScreensAudit",
+      "testName": "testOwnerSettingsScreensAudit()"
+    }
+  ],
+  "issues": [
+    {
+      "screen": "accessibility-disconnection-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "1",
+      "disabled": false,
+      "element": "StaticText, 0x108ec7840, {{24.0, 330.7}, {32.0, 32.0}}, label: '1'",
+      "attachmentSha256": "ab90f6eaf38e897ea09a2704afbd885ac2716adfa1884258a70dad2a914e51c0"
+    },
+    {
+      "screen": "accessibility-disconnection-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Close",
+      "disabled": false,
+      "element": "Button, 0x108ec70c0, {{303.0, 51.0}, {67.0, 36.0}}, label: 'Close'",
+      "attachmentSha256": "15a725066ee19f34e9da2bd0a6016a24d57d255e401af506d4c8ef2ac8742d75"
+    },
+    {
+      "screen": "accessibility-phone-setup-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Close",
+      "disabled": false,
+      "element": "Button, 0x108ec5180, {{199.0, 51.0}, {67.0, 36.0}}, label: 'Close'",
+      "attachmentSha256": "ce3367137b5ddcb0d860f5941e0d901a1d689cf54ef6f064ea330a48a790663c"
+    },
+    {
+      "screen": "accessibility-add-contact-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Save number",
+      "disabled": true,
+      "element": "StaticText, 0x108ec6d00, {{143.0, 456.5}, {104.0, 20.3}}, label: 'Save number', Disabled",
+      "attachmentSha256": "3dd299d29edcde83de7f8cadac1c1e92ccb3c823a204c37a3a3e7619eaee316c"
+    },
+    {
+      "screen": "accessibility-add-contact-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Cancel",
+      "disabled": false,
+      "element": "Button, 0x108ec5040, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'",
+      "attachmentSha256": "54b20a52afcada0444f8786b27c19faeb89c26d3703ca742941daf6414e0866e"
+    },
+    {
+      "screen": "accessibility-add-number-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Save number",
+      "disabled": true,
+      "element": "StaticText, 0x108ec75c0, {{143.0, 606.8}, {104.0, 20.3}}, label: 'Save number', Disabled",
+      "attachmentSha256": "1cfbd7c27c7149b375956131cad1b38c078ce9bc7822c703a514e2cb9b7490c9"
+    },
+    {
+      "screen": "accessibility-add-number-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Don\u2019t use a number from an unexpected call or text.",
+      "disabled": false,
+      "element": "StaticText, 0x108ec7200, {{24.0, 522.0}, {307.0, 38.0}}, label: 'Don\u2019t use a number from an unexpected call or text.'",
+      "attachmentSha256": "1dc35c7b49641c67e0f82e0bf42510cec8c4b7ba44e2831ea556483d16b887f6"
+    },
+    {
+      "screen": "accessibility-add-number-dark",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Cancel",
+      "disabled": false,
+      "element": "Button, 0x108ec52c0, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'",
+      "attachmentSha256": "8909cf57e487e373337c32eb7f678c3f3fe5628580b7388196033ad6c6fe8f07"
+    },
+    {
+      "screen": "accessibility-protection",
+      "kind": "Text clipped",
+      "details": "Text of this SwiftUI.AccessibilityNode may be clipped at larger Dynamic Type sizes.",
+      "label": "Check calls while I talk",
+      "disabled": true,
+      "element": "StaticText, 0x108f2d400, {{32.0, 179.8}, {171.0, 20.3}}, label: 'Check calls while I talk', Disabled",
+      "attachmentSha256": "0a2ea85710da8fe55aa450af7fb789c50ec7c7e68e9d6592935791f7be9b6ec9"
+    },
+    {
+      "screen": "accessibility-quiet",
+      "kind": "Text clipped",
+      "details": "Text of this SwiftUI.AccessibilityNode may be clipped at larger Dynamic Type sizes.",
+      "label": "Quiet hours",
+      "disabled": false,
+      "element": "StaticText, 0x108f2e580, {{32.0, 179.8}, {88.3, 20.3}}, label: 'Quiet hours'",
+      "attachmentSha256": "534be0b856e419beec8e918bda374f027e97546afec29aee3f009d8a8b74d2fd"
+    },
+    {
+      "screen": "accessibility-contacts",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "element": "StaticText, 0x108f3af80, {{79.7, 625.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+      "attachmentSha256": "5a48c842d4ea21ff512ac1703820d440edbad1306e3c4243415eb077ef1d5521"
+    },
+    {
+      "screen": "accessibility-contacts",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "element": "StaticText, 0x108f39f40, {{79.7, 451.2}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+      "attachmentSha256": "186db504977ab8964763776720a7c8240d284f5d0a8e59dfe5208e303679e3f7"
+    },
+    {
+      "screen": "accessibility-contacts",
+      "kind": "Contrast nearly passed",
+      "details": "Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.",
+      "label": "Share contacts once",
+      "disabled": true,
+      "element": "StaticText, 0x108f38500, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled",
+      "attachmentSha256": "262e095d32d1d89493bc5f4eea14642ed2ac56e212b2cb7627924762d3184785"
+    },
+    {
+      "screen": "accessibility-add-number",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Save number",
+      "disabled": true,
+      "element": "StaticText, 0x108ec7c00, {{143.0, 606.8}, {104.0, 20.3}}, label: 'Save number', Disabled",
+      "attachmentSha256": "435b88ba883d3bc875aa3a9ee19bd088af845e3e114098cb8e9b8722471348bc"
+    },
+    {
+      "screen": "accessibility-add-number",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Don\u2019t use a number from an unexpected call or text.",
+      "disabled": false,
+      "element": "StaticText, 0x108ec7840, {{24.0, 522.0}, {307.0, 38.0}}, label: 'Don\u2019t use a number from an unexpected call or text.'",
+      "attachmentSha256": "f541a32de4f9e98f2cc9b216b1c665908da211c3dc3b114b5f7e92f00a7aaff9"
+    },
+    {
+      "screen": "accessibility-add-number",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Cancel",
+      "disabled": false,
+      "element": "Button, 0x108ec5a40, {{20.0, 103.0}, {76.7, 36.0}}, label: 'Cancel'",
+      "attachmentSha256": "2464098d30121a795fe62fc62b3638408de9b857838d58b1272df4289035dfb4"
+    },
+    {
+      "screen": "accessibility-numbers",
+      "kind": "Contrast failed",
+      "details": "Contrast failed for SwiftUI.AccessibilityNode",
+      "label": "Call",
+      "disabled": true,
+      "element": "StaticText, 0x108f2c3c0, {{32.0, 272.3}, {96.3, 82.0}}, label: 'Call', Disabled",
+      "attachmentSha256": "355389115560d556788c515b30949ac56c3686cf7b33de403a37ce9a32af7aeb"
+    }
+  ],
+  "disposition": "All 17 unfiltered reports retained; no waiver or complete accessibility claim."
+}

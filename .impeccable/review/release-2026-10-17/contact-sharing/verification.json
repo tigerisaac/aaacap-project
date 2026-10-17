@@ -1,0 +1,181 @@
+{
+  "recordedAt": "2026-10-17T22:04:23.682191+00:00",
+  "scope": "One-time contact upload robustness; synthetic local checks only",
+  "source": {
+    "baseRevision": "f841d03d8a2edd0f844478d00b1e3d1fabeb1526",
+    "source": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/contact-sharing-oct17/source",
+    "overlays": [
+      "ios/Shield/Models/SharedContact.swift",
+      "ios/Shield/Features/Settings/PhoneContacts.swift",
+      "ios/Shield/Features/Settings/SharedContactsModel.swift",
+      "ios/Shield/Features/Settings/ContactStorageCheckView.swift",
+      "ios/ShieldUITests/ContactSyncUITests.swift"
+    ],
+    "files": 264,
+    "sourceDigest": "fdae0f77e8f7cb1cf063a105222df463666b5c2eff0b8bfad67906e4536e2463",
+    "manifestFileSha256": "4a630205ab90d97726a695525f0ed411798035862d2b021e825915ea789fb254"
+  },
+  "changes": [
+    "Skip saved phone fields outside the API structural bounds before encoding",
+    "Use a nonblank name and preserve complete Unicode graphemes within the API scalar limit",
+    "Keep the existing 5000 scanned-phone-field limit",
+    "Add locally skipped and server-skipped counts",
+    "Explicit sample-mode launch prevents native Contacts tests from restoring a real session"
+  ],
+  "contract": {
+    "command": "npm run test:contacts",
+    "actualSwiftModel": true,
+    "actualBackendSchema": true,
+    "passed": true,
+    "unicodeCases": 5,
+    "localSkipped": 3,
+    "serverSkipped": 1,
+    "shared": 2,
+    "logSha256": "e1090f7a346879e8db15c2c09c57459d22b2993cd48a635c2d605ca9cbb2d124"
+  },
+  "functionalUI": {
+    "bundle": "/tmp/shield-contact-sharing-oct17.xcresult",
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "runtimeWarnings": [],
+    "startTime": 1792273679.627,
+    "finishTime": 1792273782.506,
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "F8D78742-03B7-46CD-B5E3-95D0F1FF8815",
+          "deviceName": "Shield Release VoiceOver Oct17",
+          "modelName": "iPhone 17e",
+          "osBuildNumber": "24A434",
+          "osVersion": "27.0",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "passedTests": 7,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "nativeContactsChecks": 2,
+    "settingsChecks": 5,
+    "capturesReviewed": 8
+  },
+  "requiredChecks": [
+    {
+      "log": "artifacts/private/contact-sharing-oct17/check.log",
+      "sha256": "c8225e9701eab90da38e790fb3ebabd802c35f7c1a42839b0a0dc1ffebdcc954",
+      "passed": 335,
+      "failed": 0,
+      "durationSeconds": 34.58
+    },
+    {
+      "log": "artifacts/private/contact-sharing-oct17/firestore.log",
+      "sha256": "ce42353ae42cf127e35df2f4184d8c750cc1d921341fd0df57a16cda4e472d83",
+      "passed": 249,
+      "failed": 1,
+      "durationSeconds": 149.17
+    },
+    {
+      "log": "artifacts/private/contact-sharing-oct17/counter-isolated.log",
+      "sha256": "03a9a81e81af8231a9f251c2f9d7de515603a0508b9ae006ddadbc6ad356e765",
+      "passed": 1,
+      "failed": 0,
+      "durationSeconds": 8.49
+    },
+    {
+      "log": "artifacts/private/contact-sharing-oct17/firestore-rerun-authorized.log",
+      "sha256": "18f20d1be835180aef288b3970c5caaa7fe36c16e46000420cfc81cc1f7718b2",
+      "passed": 250,
+      "failed": 0,
+      "durationSeconds": 139.87
+    }
+  ],
+  "intermittentFailure": {
+    "test": "backend/tests/cloud.test.ts: preserves the total beyond seven days and cleanup, without duplicate backfills or another person\u2019s calls",
+    "error": "3 INVALID_ARGUMENT: Transaction is invalid or closed.",
+    "firstEmulatorDebugLogSha256": "39f092266f612240da72c6940ea63a1a77a017714fe2da6340eee0b9b899b2ec",
+    "isolatedAndFullRerunPassed": true,
+    "counterCodeOrTimeoutChanged": false,
+    "rootCauseProven": false,
+    "reference": "https://firebase.google.com/docs/emulator-suite/connect_firestore#how_the_cloud_firestore_emulator_differs_from_production"
+  },
+  "sandboxAttempt": {
+    "log": "artifacts/private/contact-sharing-oct17/firestore-rerun.log",
+    "sha256": "1432a19eb777bb7902368e05cf3dd632e8400ab45c7066479ea04d3529534ea9",
+    "testsRun": 0,
+    "reason": "EPERM opening loopback emulator ports; rerun with required server permissions"
+  },
+  "accessibility": {
+    "passed": 0,
+    "failed": 2,
+    "contrastReports": 15,
+    "clippingReports": 2,
+    "runtimeWarnings": [],
+    "details": "accessibility.json"
+  },
+  "archive": {
+    "archive": "/tmp/shield-contact-sharing.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "893cdc601645e9ae605a52d5e6fc80b360c4e764314f1bdb49eb72e1a8cd6e77"
+  },
+  "remainingSourceFindings": [
+    "Manual AddNumberView lacks label upper-bound validation before local contact mutation",
+    "AddTrustedContactView uses grapheme count instead of the API Unicode-scalar limit",
+    "Native phone input truncates at largest text; pending caretaker view wraps the full number"
+  ],
+  "excludedClaims": [
+    "Physical Contacts limited access and iCloud behavior",
+    "Live contact upload or caretaker request delivery",
+    "Distribution signing and App Store acceptance",
+    "Complete accessibility acceptance",
+    "Any backend deployment or real phone/carrier operation"
+  ],
+  "verificationFiles": [
+    {
+      "path": "scripts/test-contact-sharing.mjs",
+      "sha256": "1c29dcf6d34b220c0e689866be8a28b8bc1ac3c789df90514f74b2bd92b5131a"
+    },
+    {
+      "path": "scripts/tests/contact-sharing.swift",
+      "sha256": "f317f79c2e8202f45f18409f11beaf5c28ee571794563e7555b45173b7142842"
+    },
+    {
+      "path": "scripts/check-ios-archive.mjs",
+      "sha256": "71e01dab0731a00908a716ac18340c7884d37c761b1f31d63a2d1055709138e4"
+    },
+    {
+      "path": "package.json",
+      "sha256": "077e2583264e5b8650c4407aa96c0d2d32f4a14e964edd8cb26cccd89b6ee800"
+    }
+  ]
+}

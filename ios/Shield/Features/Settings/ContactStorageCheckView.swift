@@ -6,7 +6,13 @@ struct ContactStorageCheckView: View {
     var body: some View {
         Text(result).accessibilityIdentifier("contact-storage-result")
             .task {
-                do { result = try await PhoneContacts.shared.verifyStorageRoundTrip() ? "Contact restore passed" : "Contact restore failed" }
+                do {
+                    if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-sharing") {
+                        result = try await PhoneContacts.shared.verifySharingPreparation() ? "Contact sharing passed" : "Contact sharing failed"
+                    } else {
+                        result = try await PhoneContacts.shared.verifyStorageRoundTrip() ? "Contact restore passed" : "Contact restore failed"
+                    }
+                }
                 catch { result = error.localizedDescription }
             }
     }

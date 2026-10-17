@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — malformed saved contacts no longer reject the one-time upload
+
+The iPhone now skips structurally invalid saved number fields, supplies a label for blank names, and preserves complete Unicode characters within the API's name limit. Local and server skipped counts are combined; preparing the upload does not edit Contacts. The actual Swift-to-backend contract check passed, as did **2 native Contacts checks + 5 Settings/caretaker checks**, with **zero runtime warnings**. Eight synthetic screenshots were inspected on the latest committed UI plus this correction. The unsigned Release archive passed, including explicit exclusion of native Contacts test markers.
+
+Required typecheck/build and **335 unit tests** passed. The first Firestore run had one closed-transaction failure in the existing stopped-total concurrency test; that test passed in isolation and the full rerun passed **250/250**, with no counter implementation or timeout change. The original failure remains recorded. Two unfiltered accessibility methods still fail with **15 contrast + 2 clipping reports**. Manual saved-number/caretaker name validation also remains a separate source finding to correct. [Exact source, archive, checks and reviewed captures](../.impeccable/review/release-2026-10-17/contact-sharing/verification.json) · [Limits and open work](IOS-RELEASE-VERIFICATION.md#contact-sharing-follow-up). No backend deployment, physical installation or real phone operation occurred.
+
 ## October 17 — account lifecycle verified against Firebase Auth and Firestore emulators
 
 All **8/8** dedicated account-lifecycle checks passed with actual Firebase emulators: never-enrolled accounts, helpers, alert-only recipients, owners and multiple owned phones; old ID/refresh-token rejection; unrelated-account preservation; the forwarding guard; simultaneous deletion workers; a lost response after identity removal; and same-phone recreation with a new identity and no restored access. The existing adapter/API/worker needed no implementation change. Upstream phone verification is synthetic and no SMS is sent.

@@ -2,7 +2,7 @@
 
 Current release work: [iOS verification record](../docs/IOS-RELEASE-VERIFICATION.md) and [RevenueCat/pilot integration](../docs/REVENUECAT.md). Apple setup is deferred; no public paid release is enabled.
 
-Native SwiftUI, iOS 26+, Swift 6. No third-party app frameworks. The project contains the Shield app, a Message Filter extension, a Call Directory extension, and UI tests.
+Native SwiftUI, iOS 26+, Swift 6, with the pinned RevenueCat Purchases SDK. The project contains the Shield app, a Call Directory extension and UI tests. The unfinished Message Filter development target is excluded from the shipped app.
 
 ## Open and run
 
@@ -18,6 +18,8 @@ For offline synthetic activity during development, launch the Debug simulator wi
 `scripts/generate-xcode-project.mjs` deterministically recreates the project from the Swift/resource directories. Re-run it when adding files. Do not keep manual project-only edits; put build changes in the generator or xcconfig. On macOS, regenerate the app icon, sign-in mark and rounded launch mark with `node scripts/generate-ios-assets.mjs`. It uses the owner-selected rounded S-shield in [`artwork/identity`](../artwork/identity/manifest.json), verifies the source hash and leaves the adaptive color assets unchanged. The full-square icon is masked by iOS; the launch mark has continuous corners baked in. Sign-in keeps native, accessible “Shield” text beside the decorative image.
 
 ## Run focused UI audits
+
+On macOS with Xcode installed, `npm run test:contacts` compiles the actual Swift contact-upload preparation and checks its synthetic JSON against the built backend schema. It covers blank names, number bounds, complete Unicode characters and combined local/server skipped counts. `ContactSyncUITests` separately exercises synthetic records in the simulator's native Contacts database, including unchanged source fields and duplicate-free restoration. Neither check uses the owner's address book or uploads contacts to the live service.
 
 Keep Device Hub's **Capture Keyboard** off while collaborating with the owner. It redirects the Mac's typing into the simulator; leaving it enabled interrupted the owner's keyboard on October 15. Use the existing UI-test tooling without enabling keyboard capture.
 
@@ -61,8 +63,8 @@ On October 12, the app was simplified for older adults, with calls and voicemail
 - **Calls:** filters, history, short outcomes, and details on request. History includes only calls reaching Shield. Outcomes use everyday words such as Answered and Stopped.
 - **Messages:** voicemail and saved notices, readable summaries, authorized playback/deletion, and eligible legacy removed messages. Audio offers pause/resume, progress and Start over. Sample data also previews Keep this message; it does not change real-message storage or expiry.
 - **More → Check a text:** pasted text or local OCR of a picture. The person agrees before sending text for a scam check; the picture itself is not uploaded. Checks cannot prove who sent a message.
-- **More → Family & friends:** person switching, and for the owner a Your helpers list with each helper’s access and Stop sharing. The app does not create or accept invitations; helpers who are already linked keep working. Helpers can see shared calls; phone settings stay with the person using the phone.
-- **More → Settings:** guided phone setup and call checks, saved Shield contact, contact updates, checks while talking, trusted numbers, alerts, automatic text-check instructions, and disconnection/deletion requests. The setup menu now calls restoration **Disconnect Shield**.
+- **More → Switch person:** appears only when more than one person is available. Independently enrolled people see no family-management entry. Existing helpers retain only their explicit access; phone settings stay with the person using the phone.
+- **More → Settings:** guided phone setup and call checks, checks while talking, trusted numbers, alerts and disconnection/deletion requests. **Your contacts** offers explicit one-time sharing and deliberate updates. **Caretakers** is optional and limited to alerts when connected-call monitoring intervenes; recipients must accept first. **Call sharing** separately shows and revokes access to calls and messages. Purchases and caretaker delivery remain disabled pending their release requirements.
 
 The [senior design notes](../docs/IOS-SENIOR-DESIGN.md) preserve the earlier design history. The [current polish audit](../docs/IOS-POLISH-AUDIT.md) records onboarding, text scaling, controls and recovery corrections. Real summaries follow the service implementation below; permanent keeping remains a sample-only feature.
 

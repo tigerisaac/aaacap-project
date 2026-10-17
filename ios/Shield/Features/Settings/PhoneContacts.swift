@@ -31,20 +31,26 @@ actor PhoneContacts {
         return try matching(phone).contains { $0.phoneNumbers.contains { Self.canonical($0.value.stringValue) == Self.canonical(phone) } }
     }
 
-    func all() async throws -> [SharedContact] {
+    func all() async throws -> (contacts: [SharedContact], skipped: Int) {
         try await authorize()
         var result: [SharedContact] = []
+        var scanned = 0, skipped = 0
         let request = CNContactFetchRequest(keysToFetch: keys)
-        try store.enumerateContacts(with: request) { contact, _ in
-            let name = [contact.givenName, contact.familyName].filter { !$0.isEmpty }.joined(separator: " ")
+        try store.enumerateContacts(with: request) { contact, stop in
+            let name = [contact.givenName, contact.familyName]
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }.joined(separator: " ")
             let label = name.isEmpty ? contact.organizationName : name
             for number in contact.phoneNumbers {
-                let value = number.value.stringValue
-                result.append(SharedContact(label: String((label.isEmpty ? value : label).prefix(60)), phone: value))
+                scanned += 1
+                if scanned > 5000 { stop.pointee = true; break }
+                if let entry = SharedContact.forSharing(label: label, phone: number.value.stringValue) {
+                    result.append(entry)
+                } else { skipped += 1 }
             }
         }
-        guard result.count <= 5000 else { throw APIError.service(code: "contact_share_limit", status: 409) }
-        return result
+        guard scanned <= 5000 else { throw APIError.service(code: "contact_share_limit", status: 409) }
+        return (result, skipped)
     }
 
     private func matching(_ phone: String) throws -> [CNContact] {
@@ -133,6 +139,39 @@ actor PhoneContacts {
         }
     }
     #if DEBUG && targetEnvironment(simulator)
+    func verifySharingPreparation() async throws -> Bool {
+        try await authorize()
+        let unusual = CNMutableContact(), unnamed = CNMutableContact()
+        unusual.givenName = String(repeating: "👨‍👩‍👧‍👦", count: 60)
+        unusual.phoneNumbers = [
+            CNLabeledValue(label: CNLabelPhoneNumberMobile, value: CNPhoneNumber(stringValue: "+12025550183")),
+            CNLabeledValue(label: CNLabelOther, value: CNPhoneNumber(stringValue: "12")),
+            CNLabeledValue(label: CNLabelOther, value: CNPhoneNumber(stringValue: String(repeating: "9", count: 101)))
+        ]
+        unnamed.givenName = "   "
+        unnamed.phoneNumbers = [CNLabeledValue(label: CNLabelPhoneNumberMobile, value: CNPhoneNumber(stringValue: "+12025550184"))]
+        let add = CNSaveRequest()
+        add.add(unusual, toContainerWithIdentifier: nil); add.add(unnamed, toContainerWithIdentifier: nil)
+        try store.execute(add)
+        defer {
+            let remove = CNSaveRequest()
+            for contact in [unusual, unnamed] {
+                if let current = try? store.unifiedContact(withIdentifier: contact.identifier, keysToFetch: keys),
+                   let mutable = current.mutableCopy() as? CNMutableContact { remove.delete(mutable) }
+            }
+            try? store.execute(remove)
+        }
+        let prepared = try await all()
+        guard prepared.skipped >= 2,
+              let named = prepared.contacts.first(where: { Self.canonical($0.phone) == "+12025550183" }),
+              named.label == String(repeating: "👨‍👩‍👧‍👦", count: 8),
+              let fallback = prepared.contacts.first(where: { Self.canonical($0.phone) == "+12025550184" }),
+              fallback.label == "+12025550184" else { return false }
+        // Preparing an upload must never edit the address book.
+        let original = try store.unifiedContact(withIdentifier: unusual.identifier, keysToFetch: keys)
+        return original.givenName == unusual.givenName && original.phoneNumbers.count == 3
+    }
+
     func verifyStorageRoundTrip() async throws -> Bool {
         try await authorize()
         let person = UUID(), phone = "+12025550181", secondPhone = "+12025550182"

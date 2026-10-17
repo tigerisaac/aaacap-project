@@ -1,0 +1,61 @@
+{
+  "syntheticOnly": true,
+  "captures": [
+    {
+      "title": "Release pending caretaker largest dark",
+      "file": "release-pending-caretaker-largest-dark.png",
+      "sha256": "aa756d05ee921b35f958dcbdfe12d7f9d791897f11ef4a0e980b1b8c378aa1b3",
+      "test": "ReleaseReadinessUITests/testCaretakerRequestKeepsCallAccessSeparateAtLargestText()",
+      "review": "Pending status, full wrapped phone number and removal action remain readable at largest accessibility text; lower rows are scrollable."
+    },
+    {
+      "title": "Release caretaker form largest dark",
+      "file": "release-caretaker-form-largest-dark.png",
+      "sha256": "ad3b03c917d74eb51726c8dad5d44a256870a702695eab8acbabe0ac623b5837",
+      "test": "ReleaseReadinessUITests/testCaretakerRequestKeepsCallAccessSeparateAtLargestText()",
+      "review": "Send request remains fully visible after scrolling. The native one-line phone editor truncates at largest text; the saved pending view shows the complete wrapped number. No blanket large-text acceptance is claimed."
+    },
+    {
+      "title": "Release separate call permissions",
+      "file": "release-separate-call-permissions.png",
+      "sha256": "bf052f1b612aa7de2cb238c668e93c29b73b31fe34f5a0bddb5be230df090b7b",
+      "test": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate()",
+      "review": "History/message permissions and alert-only caretakers remain distinct."
+    },
+    {
+      "title": "Release explicit contact sharing",
+      "file": "release-explicit-contact-sharing.png",
+      "sha256": "7a2329b0870110fb4df3475a37b11f1cdac4c29e5cc7ef92eea1c85e5ac87686",
+      "test": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate()",
+      "review": "Explicit one-time sharing and no automatic uploads are visible; sample actions are disabled. Address-book removal scope is stated."
+    },
+    {
+      "title": "Release optional caretaker",
+      "file": "release-optional-caretaker.png",
+      "sha256": "4970612abf7ad783977a1b9775223bbabf57e5ba1b57ea0adac04eafbcf300dd",
+      "test": "ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings()",
+      "review": "Optional monitoring-intervention alerts, recipient acceptance and private calls/messages are stated."
+    },
+    {
+      "title": "Release independent Settings",
+      "file": "release-independent-settings.png",
+      "sha256": "34cd67d7e75ef782f64e69dcd85c6b7f42419b37c6dd70159629c4dc8fdd020a",
+      "test": "ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings()",
+      "review": "Contact sharing, saved numbers, caretakers and call sharing are distinct Settings entries."
+    },
+    {
+      "title": "Saved number selection target",
+      "file": "saved-number-selection-target.png",
+      "sha256": "faaf1ff5743d9f34a59df043c275c279fa849832bf463f88a8ef1e3f9f434731",
+      "test": "ReleaseReadinessUITests/testSavedNumberSelectionHasAComfortableTouchTarget()",
+      "review": "Saved number remains readable; automated height and hit-region assertions pass. Sample call action is disabled."
+    },
+    {
+      "title": "Release caretaker unavailable",
+      "file": "release-caretaker-unavailable.png",
+      "sha256": "538d1096f0ef9fc0fe94879e4c5ba1f4fc4efffada9b10b24be95594fc5e851b",
+      "test": "ReleaseReadinessUITests/testUnavailableCaretakerCannotSendRequests()",
+      "review": "Unavailable delivery has no Add action and retains Check again and Done."
+    }
+  ]
+}
