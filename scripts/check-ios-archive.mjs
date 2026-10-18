@@ -59,9 +59,19 @@ for (const file of files.filter(file => file.endsWith('.plist'))) {
   assert.ok(!JSON.stringify(plist(file)).includes('api.shield.example'), 'Placeholder server found in archived metadata');
 }
 const binary = await readFile(join(app, info.CFBundleExecutable));
+const phoneParser = JSON.parse(await readFile(join(app, 'libphonenumber-manifest.json'), 'utf8'));
+assert.equal(phoneParser.version, JSON.parse(await readFile(resolve(import.meta.dirname, '../package.json'), 'utf8')).dependencies['libphonenumber-js']);
+for (const [name, expected] of Object.entries(phoneParser.files)) {
+  assert.ok(['libphonenumber-min.js', 'libphonenumber-LICENSE.txt'].includes(name));
+  const archived = await readFile(join(app, name));
+  assert.deepEqual(archived, await readFile(resolve(import.meta.dirname, '../ios/Shield/Resources/PhoneNumbers', name)));
+  assert.equal(archived.length, expected.bytes);
+  assert.equal(createHash('sha256').update(archived).digest('hex'), expected.sha256);
+}
+assert.deepEqual(Object.keys(phoneParser.files).sort(), ['libphonenumber-LICENSE.txt', 'libphonenumber-min.js']);
 for (const marker of ['--uitesting', 'appl_synthetic', 'synthetic-server-credential', '--forwarding-start-checks',
   'RevenueCatSDKVerification', 'SHIELD_RC_TEST_KEY', 'shield_qa_monthly', 'shield_qa_annual',
-  'Contact sharing passed', 'Contact restore passed', 'Blocking storage passed', 'SyntheticCallDirectoryCheck',
+  'Contact sharing passed', 'Contact restore passed', 'ContactNumberIdentityCheck', 'Contact identity check finished', 'Shield number identity fixture', 'Blocking storage passed', 'SyntheticCallDirectoryCheck',
   'SyntheticBlockedPagination', 'blocked-pagination-fixture',
   'CaretakerRefreshFixture', 'CaretakerRefreshCheckView', 'Start held refresh', 'Release older response',
   'ContactRecoveryFixture', 'ContactRecoveryCheckView', 'contact-recovery-fixture', 'Restore test connection',
@@ -73,4 +83,5 @@ console.log(JSON.stringify({ archive, verified: true, distributionSigningVerifie
   apiHost: info.ShieldAPIHost, developmentNetworkingException: false, messageFilterEmbedded: false,
   bundles: bundleSummary, privacyManifests: privacyFiles.map(file => relative(app, file)).sort(),
   appBinarySha256: createHash('sha256').update(binary).digest('hex'),
+  contactPhoneParser: { version: phoneParser.version, verified: true, licenseIncluded: true },
 }, null, 2));

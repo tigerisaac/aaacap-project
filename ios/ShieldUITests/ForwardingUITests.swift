@@ -40,7 +40,9 @@ final class ForwardingUITests: XCTestCase {
         tapPrimary(app); expect(app, "Confirm Live Voicemail")
         capture(app, "Guided voicemail setting light")
         XCTAssertEqual(app.buttons["forwarding-continue"].label, "Live Voicemail is off")
-        XCTAssertFalse(app.buttons["phone-settings-reopen"].exists)
+        // Returning from Settings keeps the recovery action outside the help
+        // disclosure. Reopening help must not hide it or certify the setting.
+        XCTAssertTrue(app.buttons["phone-settings-reopen"].exists)
         app.buttons["Need help?"].tap()
         XCTAssertTrue(app.buttons["phone-settings-reopen"].exists)
         app.buttons["Need help?"].tap()

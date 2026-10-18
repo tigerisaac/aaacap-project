@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-18T22:06:14.857Z",
+  "recordedAt": "2026-10-18T22:44:33.811Z",
   "scope": "Owner-approved database client retry initialization only: fifteen functions and the pinned voice-bridge overlay. Each package preserves its own live baseline, including contact recovery.",
   "ownerApproval": {
     "questionId": "call_cab6914cf2144ef58a539120a13d40e5",
@@ -404,7 +404,7 @@
     "phoneOrMessageOperations": 0
   },
   "health": {
-    "readAt": "2026-10-18T22:01:05.675Z",
+    "readAt": "2026-10-18T22:25:23.072Z",
     "workers": [
       {
         "job": "finishAccountDeletions",
@@ -428,18 +428,13 @@
       },
       {
         "job": "reviewServiceAccess",
-        "accepted": false,
+        "accepted": true,
         "revision": "reviewserviceaccess-00003-nus",
         "nextNaturalRun": "2026-10-18T22:22:00.784855Z",
         "deadline": "2026-10-18T22:52:00.784Z",
-        "deadlineExceeded": false,
-        "state": {
-          "status": "complete",
-          "startedAt": 1792358524864,
-          "finishedAt": 1792358525656,
-          "lastSucceededAt": 1792358524864
-        },
-        "events": []
+        "startedAt": "2026-10-18T22:22:05.587Z",
+        "finishedAt": "2026-10-18T22:22:06.406Z",
+        "matchingLogAt": "2026-10-18T22:22:06.515114Z"
       },
       {
         "job": "cleanupShield",
@@ -457,9 +452,41 @@
         "events": []
       }
     ],
-    "healthyObservations": 7,
-    "lastHealthyObservation": "2026-10-18T22:00:36.617171Z",
+    "healthyObservations": 12,
+    "lastHealthyObservation": "2026-10-18T22:25:04.351539Z",
     "positiveCounterPoints": [
+      {
+        "interval": {
+          "startTime": "2026-10-18T22:20:00Z",
+          "endTime": "2026-10-18T22:21:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T22:20:07.064636Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T22:15:00Z",
+          "endTime": "2026-10-18T22:16:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T22:15:08.714862Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T22:10:00Z",
+          "endTime": "2026-10-18T22:11:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T22:10:08.672822Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T22:05:00Z",
+          "endTime": "2026-10-18T22:06:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T22:05:14.623970Z"
+      },
       {
         "interval": {
           "startTime": "2026-10-18T22:00:00Z",
@@ -597,6 +624,8 @@
     "health-1792360525436.json": "e3ee302a25f3a9ff5eaad9514c575df95b2e4dc2341d203453a0ffc4acc32007",
     "health-1792360648588.json": "f1d727c7db5453ee1d108e88713514a05e5e4f186193e1ed806c63002ec12b38",
     "health-1792360868261.json": "4873d1110e0e784107b44fa2ad4cc454d6478a8c652a19366d7655d97d990c4f",
+    "health-1792362135642.json": "c027e1e298ce28e3aa0feaa0d595b97e23eaf5e58069b8e955962bd3d11cf1ac",
+    "health-1792362325766.json": "5f44cb6f936bd33fdea272c53373f7714733c45f540fcfda8fa8ef751c8162d9",
     "health-failure-1792360002041.json": "bf6f21fd8746e355f65b495cfdaff0a4213bdbdbbc28bb5dffe7d27395b01adc",
     "health-failure-1792360005885.json": "bf6f21fd8746e355f65b495cfdaff0a4213bdbdbbc28bb5dffe7d27395b01adc",
     "health-failure-1792360316353.json": "48e72f9dedbf786d8189659fa3c18729e1e1d7c9bdaa017642ef8a9f3a6dba16",
@@ -611,6 +640,7 @@
     "monitorScheduledCall-verified.json": "cab284442b73faa1a598bbf29324af9a60e37293249ba31f31ace3533c993708",
     "observer-natural-accepted.json": "6bb9a2738b5acdd833f512b40d7b708ffff96de8d3a69835f2d6507799460a6d",
     "reviewServiceAccess-intent.json": "844dfdda95428a3f1c9be726ce9cb7604c3f610278c0a728ea871d3e1818e87d",
+    "reviewServiceAccess-natural-accepted.json": "afb036efa1fca852ed2f8853dec58f57ca9e0d63fded831b439f7c0fbab38d77",
     "reviewServiceAccess-submitted.json": "d093c4542691da7c36a7cc4dda680f50ff8f78188c9181a35729b36922dd7a67",
     "reviewServiceAccess-verified.json": "10c413f6f0c62e0bca923004c257cfae41712347d712c57662e84a200fdf0660",
     "runSharedCallJob-intent.json": "b75d86864b483a7736f1411134af81c0ec63490dd66c043bdadbc846d8465961",

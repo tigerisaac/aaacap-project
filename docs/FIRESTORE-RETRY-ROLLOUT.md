@@ -110,13 +110,13 @@ The immutable new bridge digest is **`aaf7e5f6fe7e7ea3d9675e7697d7a77332c5a4310e
 | `sendShieldAlert` | `sendshieldalert-00006-yiv` |
 | `checkBackgroundHealth` | `checkbackgroundhealth-00002-ziq` |
 
-Natural completion has been accepted for `finishAccountDeletions`, `expireMessageDeliveries`. Post-replacement completion is still pending for `reviewServiceAccess`, `cleanupShield`. Daily cleanup must run naturally at 04:00 Central October 19 and finish by its recorded 20-minute deadline; no worker is invoked manually. The new observer reports healthy results and positive counter data, but prior-version worker results cannot satisfy replacement acceptance. R5 and the broader public/pilot release remain open.
+Natural completion has been accepted for `finishAccountDeletions`, `expireMessageDeliveries` and `reviewServiceAccess`. The replacement subscription review completed at **17:22:06 Central October 18**, before its 17:52 deadline, and was accepted by the 17:25 read. Only `cleanupShield` remains pending. Daily cleanup must run naturally at 04:00 Central October 19 and finish by its recorded 20-minute deadline; no worker is invoked manually. The new observer reports healthy results and positive counter data, but prior-version worker results cannot satisfy replacement acceptance. R5 and the broader public/pilot release remain open.
 
 | Maintenance worker | Replacement acceptance |
 |---|---|
 | `finishAccountDeletions` | Completed naturally October 18, 16:48:08 Central, within its deadline. |
 | `expireMessageDeliveries` | Completed naturally October 18, 16:55:13 Central, within its deadline. |
-| `reviewServiceAccess` | Pending: next natural run October 18, 17:22:00 Central; completion deadline October 18, 17:52:00 Central. |
+| `reviewServiceAccess` | Completed naturally October 18, 17:22:06 Central, within its deadline; revision `reviewserviceaccess-00003-nus` and matching result log verified. |
 | `cleanupShield` | Pending: next natural run October 19, 04:00:02 Central; completion deadline October 19, 04:20:02 Central. |
 
 Bounded checks found zero error-level logs from the replacement revisions. Request metrics retain their exact per-service intervals, one-minute ingestion allowance, status counts and idle cases in the evidence; this does not establish real-call behavior or explain historical 503s. The bridge metric was initially pending ingestion. A separate read at **17:05 Central** resolves that gap: the fully post-promotion **17:00–17:04** window contains one 200 response and no 5xx; the recorded 17:01 readiness probe also returned 200 with unchanged readiness. The original pending result remains retained. The six authentication guards continue returning 401 without customer writes.

@@ -41,3 +41,7 @@ The initial VoiceOver run reached the production recovery controls, then failed 
 ## Remaining acceptance
 
 The [release checklist](APP-STORE-RELEASE.md) remains open. Verify signed-in recovery against the deployed server, then the matching signed app on physical iPhones: real permission denial/limited access and changes in Settings; duplicate/read-only contact sources; iCloud propagation; interruption/locking/reinstall; device/account deletion; VoiceOver gestures and complete spoken guidance; and actual call routing after removal/restoration. Apple work remains deferred by the owner. This correction supplies no real-call, carrier, purchase or caretaker-delivery evidence.
+
+## Number identity and backup lifecycle follow-up — October 18
+
+The [native number-identity correction](IOS-CONTACT-IDENTITY.md) fixes false absence/removal reports for accepted formatted numbers. Recovery reads now use the same pinned parser as the server. Successful restoration consumes its backup only after every original phone field is read back, preventing later Restore All from recreating already-restored cards the person deliberately deleted. The final recovery methods pass on iOS 26.5 and 27, including the iOS 27 VoiceOver service check. Full accessibility and physical/device acceptance remain separate gates.

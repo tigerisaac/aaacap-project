@@ -1,0 +1,57 @@
+[
+  {
+    "id": "ordinary",
+    "raw": "(202) 555-0181",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "country-code",
+    "raw": "+1 202 555 0181",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "extension-words",
+    "raw": "(202) 555-0181 ext. 23",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "extension-x",
+    "raw": "(202) 555-0181 x23",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "extension-rfc3966",
+    "raw": "tel:+1-202-555-0181;ext=23",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "extension-pause",
+    "raw": "(202) 555-0181,23",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "arabic-indic-digits",
+    "raw": "(٢٠٢) ٥٥٥-٠١٨١",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "fullwidth-digits",
+    "raw": "(２０２) ５５５-０１８１",
+    "normalized": "+12025550181"
+  },
+  {
+    "id": "international-prefix",
+    "raw": "011 44 20 7946 0182",
+    "normalized": "+442079460182"
+  },
+  {
+    "id": "international-trunk-prefix",
+    "raw": "+44 (0)20 7946 0182",
+    "normalized": "+442079460182"
+  },
+  {
+    "id": "international-plain",
+    "raw": "+44 20 7946 0182",
+    "normalized": "+442079460182"
+  }
+]

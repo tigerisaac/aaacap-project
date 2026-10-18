@@ -1,0 +1,15 @@
+{
+  "package": "libphonenumber-js",
+  "version": "1.13.13",
+  "upstream": "https://github.com/catamphetamine/libphonenumber-js",
+  "files": {
+    "libphonenumber-min.js": {
+      "bytes": 178787,
+      "sha256": "eec5b0adbd2f235a9681f0fac94dd1fa602babd10cbebabcc05f709eaf01c3bd"
+    },
+    "libphonenumber-LICENSE.txt": {
+      "bytes": 1108,
+      "sha256": "ea6fc5fe0f905c5fdedd8f160f1dd73ce739004fc5f35656b35258aea126dbde"
+    }
+  }
+}

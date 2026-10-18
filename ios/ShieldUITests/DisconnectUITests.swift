@@ -58,7 +58,9 @@ final class DisconnectUITests: XCTestCase {
         app.launch()
         app.tabBars.buttons["More"].tap()
         app.buttons["Settings"].tap()
-        app.buttons["Disconnect Shield"].tap()
+        let disconnect = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Disconnect Shield")).firstMatch
+        reveal(disconnect, app)
+        disconnect.tap()
         XCTAssertTrue(next(app).appears(timeout: 5))
         reveal(app.buttons["disconnect-cancel"], app)
         app.buttons["disconnect-cancel"].tap()
@@ -181,8 +183,10 @@ final class DisconnectUITests: XCTestCase {
     private func next(_ app: XCUIApplication) -> XCUIElement { app.buttons["disconnect-continue"] }
     private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
         for _ in 0..<15 {
-            let bounds = element.frame
-            if element.isHittable && bounds.minY >= 100 && bounds.maxY <= app.frame.maxY - 40 { break }
+            if element.exists {
+                let bounds = element.frame
+                if element.isHittable && bounds.minY >= 100 && bounds.maxY <= app.frame.maxY - 40 { break }
+            }
             app.swipeUp()
         }
         XCTAssertTrue(element.isHittable)

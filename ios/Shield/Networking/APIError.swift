@@ -62,6 +62,8 @@ enum APIError: LocalizedError {
             case "full_contacts_required": "Allow Full Access to Contacts in iPhone Settings to share your calling list with Shield."
             case "contact_share_limit": "There are too many contacts to update. Your contacts haven’t changed."
             case "contact_change_unconfirmed": "That number is still saved in iPhone Contacts. Check whether the contact is read-only before trying again."
+            case "contact_restore_unconfirmed": "Shield couldn’t confirm that the number was restored. Check iPhone Contacts before trying again."
+            case "contact_number_unavailable": "Shield couldn’t check this number against iPhone Contacts. Contact support before changing this number."
             case "contacts_sync_busy": "Your contacts are still updating. Try again in a moment."
             case "contact_sync_incomplete": "We couldn’t update this contact. Refresh the list before checking calls."
             case "contacts_changed", "contact_change_conflict": "Your shared contacts changed. Check the latest list before continuing."

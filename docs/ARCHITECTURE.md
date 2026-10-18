@@ -2,7 +2,7 @@
 
 ## Database retry initialization — deployed October 18
 
-All fifteen serving Functions and the voice bridge now use the shared Firestore factory with `gaxServerStreamingRetries: true`. This preserves `ABORTED` for the SDK’s bounded whole-transaction retry. Each package retains its own live dependency lock and all other source bytes, including contact recovery, screening v158 and post-call policy v4. The API is `shieldapi-00036-win`; the bridge is `shield-live-retry-352ba27e0a07`. Source/configuration acceptance is verified; fresh natural subscription-review and daily-cleanup completion remain separate gates. [Exact deployment and acceptance boundary](FIRESTORE-RETRY-ROLLOUT.md#approved-deployment--october-18).
+All fifteen serving Functions and the voice bridge now use the shared Firestore factory with `gaxServerStreamingRetries: true`. This preserves `ABORTED` for the SDK’s bounded whole-transaction retry. Each package retains its own live dependency lock and all other source bytes, including contact recovery, screening v158 and post-call policy v4. The API is `shieldapi-00036-win`; the bridge is `shield-live-retry-352ba27e0a07`. Source/configuration acceptance is verified; fresh natural subscription-review completion is accepted, while daily cleanup remains a separate gate. [Exact deployment and acceptance boundary](FIRESTORE-RETRY-ROLLOUT.md#approved-deployment--october-18).
 
 ## Connected-call warning delivery — deployed October 17
 
@@ -39,6 +39,8 @@ The October 18 [contact-recovery correction](IOS-CONTACT-RECOVERY.md) preserves 
 The repository's iPhone blocking handoff is account-scoped, expiring and excluded from backup, with durable reload retry and sign-out clearing. [Complete paged retrieval](IOS-BLOCKED-NUMBERS.md) now avoids the former 200-row limit and publishes no partial traversal. The matching API was deployed October 17 with source/configuration verification; signed-in production pagination, actual CallKit behavior and suspended-device expiry remain acceptance gates before client distribution.
 
 Public billing uses a pinned RevenueCat SDK and authenticated server lookups. Public/pilot account classification is operator-assigned; clients cannot create grants. A ten-grant pilot starts its two-calendar-month clock after consent and both setup checks, never shows a paywall and never auto-converts. Existing assisted accounts are not migrated automatically. Expiry gates new activation/resume and flags assisted restoration, without changing live phone routing. Account deletion erases the RevenueCat customer before Firebase Auth, with retries. The scoped API, account-deletion and access-review workers are deployed; purchases remain disabled. Live source/settings and schedule checks are recorded in [the rollout](IOS-BACKEND-ROLLOUT.md). See [RevenueCat](REVENUECAT.md) and [release verification](IOS-RELEASE-VERIFICATION.md).
+
+Native Contacts identity now uses the API's exact pinned offline phone parser, with complete local matching for extensions and international formats. Successful restoration verifies the saved fields before consuming their backup; an already-absent number creates no empty restore entry. This local iPhone correction leaves explicit sharing, caretaker permissions and the live API unchanged. [Native regression and release boundary](IOS-CONTACT-IDENTITY.md).
 
 ## Shared-number deployment (October 13, 2026)
 
