@@ -1,0 +1,102 @@
+Attributes: Application, 0x1087dfd40, pid: 81350, label: 'Shield'
+Element subtree:
+ →Application, 0x1087dfd40, pid: 81350, label: 'Shield'
+    Window (Main), 0x1087df200, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1087dc500, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x1087de300, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1087dd040, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1087ded00, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x1087df480, {{128.7, 55.0}, {132.7, 27.7}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+                StaticText, 0x1087de800, {{142.0, 60.3}, {107.3, 18.0}}, label: 'Sample app'
+                Image, 0x1087de580, {{142.0, 60.3}, {14.0, 17.0}}, identifier: 'sparkles', label: 'Sparkle'
+              Other, 0x1087dea80, {{0.0, 90.7}, {390.0, 753.3}}
+                NavigationBar, 0x1087dd680, {{0.0, 100.7}, {390.0, 54.0}}, identifier: 'Alerts for others'
+                  StaticText, 0x1087df840, {{130.3, 112.3}, {129.3, 20.7}}, label: 'Alerts for others'
+                Other, 0x1087dda40, {{0.0, 90.7}, {390.0, 753.3}}
+                  Other, 0x1087df980, {{0.0, 90.7}, {390.0, 753.3}}
+                    Other, 0x1087dc8c0, {{0.0, 90.7}, {390.0, 753.3}}
+                      Other, 0x1087dc280, {{0.0, 90.7}, {390.0, 753.3}}
+                        CollectionView, 0x1087dc640, {{0.0, 90.7}, {390.0, 753.3}}
+                          Other, 0x1087df340, {{-16.0, -1352.0}, {422.0, 1872.7}}
+                          Other, 0x1087dfac0, {{0.0, 90.7}, {390.0, 753.3}}
+                            Other, 0x1087dee40, {{0.0, 90.7}, {390.0, 104.0}}
+                          Other, 0x1087ddb80, {{0.0, 90.7}, {390.0, 753.3}}
+                          Cell, 0x1087dd7c0, {{16.0, 154.7}, {358.0, 44.0}}
+                            Other, 0x1087dca00, {{16.0, 154.7}, {358.0, 44.0}}
+                            Other, 0x1087df700, {{16.0, 154.7}, {358.0, 44.0}}
+                              Other, 0x1087dfe80, {{16.0, 154.7}, {358.0, 44.0}}
+                                Other, 0x1087df0c0, {{16.0, 154.7}, {358.0, 44.0}}
+                                  StaticText, 0x1087dd2c0, {{16.0, 154.7}, {358.0, 44.0}}, label: 'Margaret'
+                          Cell, 0x1087dcf00, {{16.0, 198.7}, {358.0, 58.3}}
+                            Other, 0x1087dc000, {{16.0, 198.7}, {358.0, 58.3}}
+                              Other, 0x1087dcb40, {{16.0, 198.7}, {358.0, 58.3}}
+                                Other, 0x1087dc3c0, {{16.0, 198.7}, {358.0, 58.3}}
+                                  Other, 0x1087dcdc0, {{16.0, 198.7}, {358.0, 58.3}}
+                            Other, 0x1087df5c0, {{16.0, 198.7}, {358.0, 58.3}}
+                              Other, 0x1087ddcc0, {{16.0, 198.7}, {358.0, 58.3}}
+                                Other, 0x1087de6c0, {{16.0, 198.7}, {358.0, 58.3}}
+                                  StaticText, 0x1087dd400, {{16.0, 198.7}, {358.0, 58.3}}, label: 'Receive protection alerts?'
+                          Cell, 0x1087dd540, {{16.0, 257.0}, {358.0, 82.0}}
+                            Other, 0x1087dcc80, {{16.0, 257.0}, {358.0, 82.0}}
+                              Other, 0x1087ddf40, {{16.0, 257.0}, {358.0, 82.0}}
+                                Other, 0x1087dde00, {{16.0, 257.0}, {358.0, 82.0}}
+                                  Other, 0x1087debc0, {{16.0, 257.0}, {358.0, 82.0}}
+                            Other, 0x1087dd180, {{16.0, 257.0}, {358.0, 82.0}}
+                              Other, 0x1087dd900, {{16.0, 257.0}, {358.0, 82.0}}
+                                Other, 0x1087dc140, {{16.0, 257.0}, {358.0, 82.0}}
+                                  Switch, 0x1087de940, {{16.0, 257.0}, {358.0, 82.0}}, identifier: 'contact-text-alerts', label: 'Text messages', value: 0
+                                    StaticText, 0x1087de080, {{32.0, 272.0}, {326.0, 52.0}}, label: 'Text messages'
+                                    Switch, 0x1087dfc00, {{297.0, 284.0}, {61.0, 28.0}}, value: 0
+                                      Switch, 0x1087de1c0, {{297.0, 284.0}, {63.0, 28.0}}, value: 0
+                          Other, 0x107ec3ac0, {{32.0, 256.0}, {326.0, 1.0}}
+                          Cell, 0x107ec3c00, {{16.0, 339.0}, {358.0, 82.0}}
+                            Other, 0x107ec3d40, {{16.0, 339.0}, {358.0, 82.0}}
+                              Other, 0x107ec2800, {{16.0, 339.0}, {358.0, 82.0}}
+                                Other, 0x107ec30c0, {{16.0, 339.0}, {358.0, 82.0}}
+                                  Other, 0x107ec1040, {{16.0, 339.0}, {358.0, 82.0}}
+                            Other, 0x107ec2bc0, {{16.0, 339.0}, {358.0, 82.0}}
+                              Other, 0x107ec2440, {{16.0, 339.0}, {358.0, 82.0}}
+                                Other, 0x107ec1a40, {{16.0, 339.0}, {358.0, 82.0}}
+                                  Switch, 0x107ec2300, {{16.0, 339.0}, {358.0, 82.0}}, identifier: 'contact-app-alerts', label: 'App notifications', value: 0
+                                    StaticText, 0x107ec2f80, {{32.0, 354.0}, {326.0, 52.0}}, label: 'App notifications'
+                                    Switch, 0x107ec0780, {{297.0, 366.0}, {61.0, 28.0}}, value: 0
+                                      Switch, 0x107ec3840, {{297.0, 366.0}, {63.0, 28.0}}, value: 0
+                          Other, 0x107ec2940, {{32.0, 338.0}, {326.0, 1.0}}
+                          Cell, 0x107ec12c0, {{16.0, 421.0}, {358.0, 82.0}}
+                            Other, 0x107ec0dc0, {{16.0, 421.0}, {358.0, 82.0}}
+                              Other, 0x107ec3700, {{16.0, 421.0}, {358.0, 82.0}}
+                                Other, 0x107ec3980, {{16.0, 421.0}, {358.0, 82.0}}
+                                  Other, 0x107ec21c0, {{16.0, 421.0}, {358.0, 82.0}}
+                            Other, 0x107ec1f40, {{16.0, 421.0}, {358.0, 82.0}}
+                              Other, 0x107ec1180, {{16.0, 421.0}, {358.0, 82.0}}
+                                Other, 0x107ec2e40, {{16.0, 421.0}, {358.0, 82.0}}
+                                  Button, 0x107ec2a80, {{16.0, 421.0}, {358.0, 82.0}}, label: 'About alerts'
+                                    StaticText, 0x107ec3200, {{32.0, 436.0}, {307.7, 52.0}}, label: 'About alerts'
+                                    Button, 0x107ec08c0, {{347.7, 455.0}, {10.3, 14.0}}
+                                      Image, 0x107ec3340, {{347.7, 455.0}, {10.3, 14.0}}, identifier: 'collapsed'
+                          Other, 0x107ec1400, {{32.0, 420.0}, {326.0, 1.0}}
+                          Other, 0x107ec2080, {{-16.0, 520.7}, {422.0, 1654.3}}
+                          Cell, 0x107ec1540, {{16.0, 538.0}, {358.0, 110.3}}
+                            Other, 0x107ec2580, {{16.0, 538.0}, {358.0, 110.3}}
+                              Other, 0x107ec35c0, {{16.0, 538.0}, {358.0, 110.3}}
+                                Other, 0x107ec1cc0, {{16.0, 538.0}, {358.0, 110.3}}
+                                  Other, 0x107ec3e80, {{16.0, 538.0}, {358.0, 110.3}}
+                            Other, 0x107ec1e00, {{16.0, 538.0}, {358.0, 110.3}}
+                              Other, 0x107ec2d00, {{16.0, 538.0}, {358.0, 110.3}}
+                                Other, 0x104e73840, {{16.0, 538.0}, {358.0, 110.3}}
+                                  Button, 0x104e730c0, {{16.0, 538.0}, {358.0, 50.3}}, identifier: 'contact-accept', label: 'Accept request', Disabled
+                                    StaticText, 0x104e73700, {{134.3, 553.0}, {121.3, 20.3}}, label: 'Accept request', Disabled
+                                  Button, 0x104e712c0, {{16.0, 596.3}, {358.0, 52.0}}, label: 'Decline request'
+                          Other, 0x104e73ac0, {{357.0, 154.7}, {30.0, 642.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x104e73980, {{384.0, 299.3}, {3.0, 494.3}}
+                          Other, 0x104e73c00, {{357.0, 154.7}, {30.0, 642.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1109c4000, {{384.0, 299.3}, {3.0, 494.3}}
+                Toolbar, 0x1109c4140, {{0.0, 90.7}, {390.0, 753.3}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x1109c4280, {{0.0, 90.7}, {390.0, 753.3}}
+Path to element:
+ →Application, 0x1087dfd40, pid: 81350, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x1109c43c0, pid: 81350, label: 'Shield'
+  }

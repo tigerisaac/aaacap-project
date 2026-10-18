@@ -1,0 +1,82 @@
+Attributes: Application, 0x1087dc8c0, pid: 80966, label: 'Shield'
+Element subtree:
+ →Application, 0x1087dc8c0, pid: 80966, label: 'Shield'
+    Window (Main), 0x1087dc140, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x1087dc280, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x1087dc3c0, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x1087dc500, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x1087dc640, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x1087dca00, {{98.3, 55.0}, {193.7, 41.0}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+                StaticText, 0x1087dcb40, {{112.7, 61.3}, {167.2, 30.3}}, label: 'Sample app'
+                Image, 0x1087dcc80, {{112.7, 61.3}, {23.3, 28.3}}, identifier: 'sparkles', label: 'Sparkle'
+              Other, 0x1087dcdc0, {{0.0, 104.0}, {390.0, 740.0}}
+                NavigationBar, 0x1087dd2c0, {{0.0, 114.0}, {390.0, 54.0}}, identifier: 'Your contacts'
+                  StaticText, 0x1087dfd40, {{128.7, 123.3}, {132.3, 25.3}}, label: 'Your contacts'
+                  Button, 0x1087dfe80, {{334.0, 118.0}, {36.0, 36.0}}, label: 'Add contact', Disabled
+                Other, 0x1087dd7c0, {{0.0, 104.0}, {390.0, 740.0}}
+                  Other, 0x1087dd900, {{0.0, 104.0}, {390.0, 740.0}}
+                    Other, 0x1087dda40, {{0.0, 104.0}, {390.0, 740.0}}
+                      Other, 0x1087ddb80, {{0.0, 104.0}, {390.0, 740.0}}
+                        CollectionView, 0x1087ddcc0, {{0.0, 104.0}, {390.0, 740.0}}
+                          Other, 0x1087dfac0, {{-16.0, -1977.0}, {422.0, 2265.0}}
+                          Cell, 0x1087dfc00, {{16.0, -306.7}, {358.0, 594.7}}
+                            Other, 0x1087df840, {{16.0, -306.7}, {358.0, 594.7}}
+                            Other, 0x1087df980, {{16.0, -306.7}, {358.0, 594.7}}
+                              Other, 0x1087df0c0, {{16.0, -306.7}, {358.0, 594.7}}
+                                Other, 0x1087df340, {{16.0, -306.7}, {358.0, 594.7}}
+                                  StaticText, 0x1087df480, {{16.0, -306.7}, {358.0, 594.7}}, label: 'Only names and numbers go to Shield. Contacts update only when you choose; there are no automatic uploads.'
+                          Other, 0x1087df5c0, {{0.0, 104.0}, {390.0, 740.0}}
+                            Other, 0x1087df700, {{0.0, 104.0}, {390.0, 104.0}}
+                            Other, 0x1087df200, {{0.0, 718.0}, {390.0, 126.0}}
+                          Other, 0x1087de580, {{0.0, 104.0}, {390.0, 740.0}}
+                            Other, 0x1087debc0, {{0.0, 104.0}, {390.0, 104.0}}
+                            Other, 0x1087ded00, {{0.0, 718.0}, {390.0, 126.0}}
+                          Other, 0x1087dee40, {{-16.0, 288.0}, {422.0, 938.0}}
+                          Cell, 0x1087def80, {{16.0, 305.7}, {358.0, 451.3}}
+                            Other, 0x1087de6c0, {{16.0, 305.7}, {358.0, 451.3}}
+                              Other, 0x1087de800, {{16.0, 305.7}, {358.0, 451.3}}
+                                Other, 0x1087de940, {{16.0, 305.7}, {358.0, 451.3}}
+                                  Other, 0x1087dea80, {{16.0, 305.7}, {358.0, 451.3}}
+                            Other, 0x1087de300, {{16.0, 305.7}, {358.0, 451.3}}
+                              Other, 0x1087de440, {{16.0, 305.7}, {358.0, 451.3}}
+                                Other, 0x1087ddf40, {{16.0, 305.7}, {358.0, 451.3}}
+                                  StaticText, 0x1087de1c0, {{32.0, 324.7}, {143.0, 63.3}}, label: 'Jamie'
+                                  StaticText, 0x1087de080, {{32.0, 392.0}, {231.3, 116.7}}, label: '(312) 555-0102'
+                                  Button, 0x1087dde00, {{32.0, 520.7}, {326.0, 217.3}}, label: 'Remove Jamie from Contacts', Disabled
+                                    StaticText, 0x1087dd400, {{119.3, 535.7}, {193.3, 187.3}}, label: 'Remove from iPhone', Disabled
+                                    Image, 0x1087dd680, {{65.7, 546.3}, {42.0, 42.0}}, identifier: 'minus.circle', label: 'Remove', Disabled
+                          Cell, 0x1087dd540, {{16.0, 757.0}, {358.0, 451.3}}
+                            Other, 0x1087dcf00, {{16.0, 757.0}, {358.0, 451.3}}
+                              Other, 0x1087dd180, {{16.0, 757.0}, {358.0, 451.3}}
+                                Other, 0x1087dd040, {{16.0, 757.0}, {358.0, 451.3}}
+                                  Other, 0x107ec3d40, {{16.0, 757.0}, {358.0, 451.3}}
+                            Other, 0x107ec3e80, {{16.0, 757.0}, {358.0, 451.3}}
+                              Other, 0x107ec08c0, {{16.0, 757.0}, {358.0, 451.3}}
+                                Other, 0x107ec0780, {{16.0, 757.0}, {358.0, 451.3}}
+                                  StaticText, 0x107ec12c0, {{32.0, 776.0}, {208.0, 63.3}}, label: 'My clinic'
+                                  StaticText, 0x107ec1400, {{32.0, 843.3}, {231.3, 116.7}}, label: '(312) 555-0103'
+                                  Button, 0x107ec1040, {{32.0, 972.0}, {326.0, 217.3}}, label: 'Remove My clinic from Contacts', Disabled
+                                    StaticText, 0x107ec1a40, {{119.3, 987.0}, {193.3, 187.3}}, label: 'Remove from iPhone', Disabled
+                                    Image, 0x107ec1540, {{65.7, 997.7}, {42.0, 42.0}}, identifier: 'minus.circle', label: 'Remove', Disabled
+                          Other, 0x107ec3c00, {{32.0, 756.0}, {326.0, 1.0}}
+                          Other, 0x107ec3980, {{357.0, 168.0}, {30.0, 628.7}}, label: 'Vertical scroll bar, 4 pages', value: 54%
+                            Other, 0x107ec3840, {{384.0, 381.3}, {3.0, 234.0}}
+                          Other, 0x107ec3ac0, {{357.0, 168.0}, {30.0, 628.7}}, label: 'Vertical scroll bar, 4 pages', value: 54%
+                            Other, 0x107ec3200, {{384.0, 381.3}, {3.0, 234.0}}
+                Toolbar, 0x107ec3340, {{0.0, 104.0}, {390.0, 740.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x107ec35c0, {{0.0, 104.0}, {390.0, 740.0}}
+                    Other, 0x107ec3700, {{0.0, 104.0}, {390.0, 740.0}}
+                      Other, 0x107ec3480, {{0.0, 104.0}, {390.0, 740.0}}
+                        Other, 0x107ec2f80, {{0.0, 104.0}, {0.0, 0.0}}
+                          Other, 0x107ec26c0, {{28.0, 768.0}, {334.0, 48.0}}
+                            Other, 0x107ec2d00, {{28.0, 768.0}, {334.0, 48.0}}
+                              Other, 0x107ec2a80, {{28.0, 775.7}, {334.0, 33.0}}
+                                SearchField, 0x107ec2e40, {{28.0, 775.7}, {334.0, 33.0}}, label: 'Name or number', placeholderValue: 'Name or number'
+                                  Image, 0x107ec30c0, {{40.0, 780.0}, {25.0, 24.0}}, identifier: 'magnifyingglass', label: 'Search'
+Path to element:
+ →Application, 0x1087dc8c0, pid: 80966, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x107ec2300, pid: 80966, label: 'Shield'
+  }

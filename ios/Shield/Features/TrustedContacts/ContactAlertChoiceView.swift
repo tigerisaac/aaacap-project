@@ -46,6 +46,7 @@ struct ContactAlertChoiceView: View {
                 .shieldPrimaryButton().disabled(working || (!textAlerts && !appAlerts)).accessibilityIdentifier("contact-accept")
                 Button(role: .destructive) { Task { await save(accept: false) } } label: {
                     Text(request.status == "accepted" ? "Stop these alerts" : "Decline request").font(.headline)
+                        .foregroundStyle(ShieldTheme.held)
                         .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
                         .contentShape(.rect)
                 }

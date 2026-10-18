@@ -1,0 +1,175 @@
+{
+  "method": "Unmodified native PNG captures; sRGB linearized relative luminance of predominant background and opaque text pixels within the accessibility button bounds. Edge antialiasing excluded. This is supporting visual evidence, not a full accessibility pass.",
+  "samples": [
+    {
+      "capture": "standard-light",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light.png",
+      "sha256": "8c620b68dfb4c172144aa178d1c29b8bd79cb4c823a382854d3fc6b03a94e2c9",
+      "imageSize": [
+        1170,
+        2532
+      ],
+      "pngInfoKeys": [
+        "XML:com.adobe.xmp",
+        "exif",
+        "srgb",
+        "xmp"
+      ],
+      "pixelBounds": [
+        48,
+        1789,
+        1122,
+        1945
+      ],
+      "sampledBackgroundRGB": [
+        242,
+        242,
+        247
+      ],
+      "sampledOpaqueTextRGB": [
+        215,
+        0,
+        21
+      ],
+      "opaqueTextPixelCount": 4047,
+      "backgroundPixelCount": 161431,
+      "contrast": 4.825181551810559,
+      "topColors": [
+        {
+          "rgb": [
+            242,
+            242,
+            247
+          ],
+          "pixels": 161431
+        },
+        {
+          "rgb": [
+            215,
+            0,
+            21
+          ],
+          "pixels": 4047
+        },
+        {
+          "rgb": [
+            216,
+            12,
+            33
+          ],
+          "pixels": 80
+        },
+        {
+          "rgb": [
+            227,
+            106,
+            120
+          ],
+          "pixels": 72
+        },
+        {
+          "rgb": [
+            237,
+            193,
+            201
+          ],
+          "pixels": 62
+        },
+        {
+          "rgb": [
+            236,
+            190,
+            198
+          ],
+          "pixels": 57
+        }
+      ],
+      "originalFile": "artifacts/private/contact-alert-contrast-oct17/attachments/D10C707C-30D4-4EC7-895D-4027DBA91D41.png"
+    },
+    {
+      "capture": "largest-dark-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-scrolled.png",
+      "sha256": "caefba1c68a3e4369c9b7bde386987fa895ba875d5973efb930f41da349de62c",
+      "imageSize": [
+        1170,
+        2532
+      ],
+      "pngInfoKeys": [
+        "XML:com.adobe.xmp",
+        "exif",
+        "srgb",
+        "xmp"
+      ],
+      "pixelBounds": [
+        48,
+        1994,
+        1122,
+        2370
+      ],
+      "sampledBackgroundRGB": [
+        0,
+        0,
+        0
+      ],
+      "sampledOpaqueTextRGB": [
+        255,
+        69,
+        58
+      ],
+      "opaqueTextPixelCount": 45266,
+      "backgroundPixelCount": 352240,
+      "contrast": 6.164346427619732,
+      "topColors": [
+        {
+          "rgb": [
+            0,
+            0,
+            0
+          ],
+          "pixels": 352240
+        },
+        {
+          "rgb": [
+            255,
+            69,
+            58
+          ],
+          "pixels": 45266
+        },
+        {
+          "rgb": [
+            152,
+            41,
+            35
+          ],
+          "pixels": 234
+        },
+        {
+          "rgb": [
+            28,
+            8,
+            6
+          ],
+          "pixels": 176
+        },
+        {
+          "rgb": [
+            82,
+            22,
+            19
+          ],
+          "pixels": 159
+        },
+        {
+          "rgb": [
+            80,
+            22,
+            18
+          ],
+          "pixels": 145
+        }
+      ],
+      "originalFile": "artifacts/private/contact-alert-contrast-oct17/attachments/F2FF6303-1D35-4DCE-AF20-2937616FB30A.png"
+    }
+  ]
+}

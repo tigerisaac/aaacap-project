@@ -4,6 +4,8 @@
 
 The owner-approved [background-health rollout](BACKGROUND-JOB-HEALTH-ROLLOUT.md) was deployed and configuration-verified at **23:24 Central**. Three workers have natural post-deployment completions; the private observer's first natural run succeeded at 23:25 and reported zero overdue counts, three fresh workers and the expected missing daily-cleanup completion. Two additional policies are staged disabled. Initial counter data exists, but acceptance still requires the 04:00 Central cleanup on October 18, a subsequent healthy observation, activation and a fresh positive counter signal after activation. Existing operational resources are preserved; no manual worker, phone or synthetic email test occurred.
 
+Independent CI on the later app/evidence commit `80a0e8d` failed one of 284 Firestore tests in two-client simultaneous call admission, with `Transaction is invalid or closed`; account tests were skipped. Backend source/dependencies/workflow were unchanged from the passing `a0619b2` run. This expands the retained concurrency evidence beyond the earlier stopped-history test, without establishing a common cause or production impact. [Failure and bounded SDK investigation](../.impeccable/review/release-2026-10-17/operations/backend-ci-80a0e8d.json). R5 and overall release acceptance remain open.
+
 ## Initial observed configuration — 20:21–20:33 Central
 
 | Check | Observation | Evidence limit |

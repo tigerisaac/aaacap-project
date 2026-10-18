@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-18T04:34:41.460927+00:00",
+  "baseCommit": "80a0e8d00890d6c59e62ed5b27d9236cd71fdb24",
+  "sourceScreenshot": "artifacts/private/contact-accessibility-oct17/after-27-attachments/1337F92E-FA66-436F-B5C4-1002D5C89201.png",
+  "screenshotSha256": "4d1f1375091e8a98df251ff0d4f265f4572c30567e06243ab8e86d69e0a78f7b",
+  "profile": "PNG sRGB chunk; unmodified native capture",
+  "buttonPointBounds": [
+    16,
+    596.3,
+    358,
+    52
+  ],
+  "imagePixelDimensions": [
+    1170,
+    2532
+  ],
+  "pixelBounds": [
+    48,
+    1789,
+    1122,
+    1945
+  ],
+  "predominantBackgroundRGB": [
+    242,
+    242,
+    247
+  ],
+  "predominantOpaqueTextRGB": [
+    255,
+    56,
+    60
+  ],
+  "sampledContrast": 3.198987428320965,
+  "existingHeldLightRGB": [
+    215,
+    0,
+    21
+  ],
+  "predictedHeldContrast": 4.825181551810559,
+  "limitation": "Representative opaque pixels only; the new capture and unfiltered audit must confirm actual rendering.",
+  "publicScreenshot": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/decline-before-standard-light.png"
+}

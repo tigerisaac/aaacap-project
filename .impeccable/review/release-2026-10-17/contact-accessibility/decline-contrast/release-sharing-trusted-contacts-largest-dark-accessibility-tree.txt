@@ -1,0 +1,57 @@
+Attributes: Application, 0x104e73700, pid: 81109, label: 'Shield'
+Element subtree:
+ →Application, 0x104e73700, pid: 81109, label: 'Shield'
+    Window (Main), 0x104e73ac0, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x104e73c00, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x104e70b40, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x104e73980, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x104e712c0, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x104e73840, {{98.3, 55.0}, {193.7, 41.0}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+                StaticText, 0x1087dc8c0, {{112.7, 61.3}, {167.2, 30.3}}, label: 'Sample app'
+                Image, 0x1087dc140, {{112.7, 61.3}, {23.3, 28.3}}, identifier: 'sparkles', label: 'Sparkle'
+              Other, 0x1087dc280, {{0.0, 104.0}, {390.0, 740.0}}
+                NavigationBar, 0x1087dc3c0, {{0.0, 114.0}, {390.0, 54.0}}, identifier: 'Caretakers'
+                  StaticText, 0x1087dc500, {{142.3, 123.3}, {105.0, 25.3}}, label: 'Caretakers'
+                Other, 0x1087dc640, {{0.0, 104.0}, {390.0, 740.0}}
+                  Other, 0x1087dcdc0, {{0.0, 104.0}, {390.0, 740.0}}
+                    Other, 0x1087dd7c0, {{0.0, 104.0}, {390.0, 740.0}}
+                      Other, 0x1087dd900, {{0.0, 104.0}, {390.0, 740.0}}
+                        CollectionView, 0x1087dda40, {{0.0, 104.0}, {390.0, 740.0}}
+                          Other, 0x1087ddb80, {{-16.0, -1312.0}, {422.0, 2060.0}}
+                          Other, 0x1087ddcc0, {{0.0, 104.0}, {390.0, 740.0}}
+                            Other, 0x1087dd540, {{0.0, 104.0}, {390.0, 104.0}}
+                          Other, 0x1087dcf00, {{0.0, 104.0}, {390.0, 740.0}}
+                          Cell, 0x1087dd180, {{16.0, 203.0}, {358.0, 527.3}}
+                            Other, 0x1087dd040, {{16.0, 203.0}, {358.0, 527.3}}
+                              Other, 0x1087def80, {{16.0, 203.0}, {358.0, 527.3}}
+                                Other, 0x1087de300, {{16.0, 203.0}, {358.0, 527.3}}
+                                  Other, 0x1087de440, {{16.0, 203.0}, {358.0, 527.3}}
+                            Other, 0x1087ddf40, {{16.0, 203.0}, {358.0, 527.3}}
+                              Other, 0x1087dde00, {{16.0, 203.0}, {358.0, 527.3}}
+                                Other, 0x1087dd680, {{16.0, 203.0}, {358.0, 527.3}}
+                                  StaticText, 0x1087dd400, {{16.0, 203.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'
+                          Other, 0x1087de080, {{-16.0, 748.0}, {422.0, 190.7}}
+                          Cell, 0x1087de1c0, {{16.0, 765.3}, {358.0, 155.3}}
+                            Other, 0x1087de6c0, {{16.0, 765.3}, {358.0, 155.3}}
+                              Other, 0x1087de800, {{16.0, 765.3}, {358.0, 155.3}}
+                                Other, 0x1087de940, {{16.0, 765.3}, {358.0, 155.3}}
+                                  Other, 0x1087dea80, {{16.0, 765.3}, {358.0, 155.3}}
+                            Other, 0x1087dee40, {{16.0, 765.3}, {358.0, 155.3}}
+                              Other, 0x1087de580, {{16.0, 765.3}, {358.0, 155.3}}
+                                Other, 0x1087ded00, {{16.0, 765.3}, {358.0, 155.3}}
+                                  Button, 0x1087debc0, {{16.0, 765.3}, {358.0, 155.3}}, label: 'Add caretaker'
+                                    StaticText, 0x1087df5c0, {{32.0, 780.3}, {273.3, 125.3}}, label: 'Add caretaker'
+                                    Image, 0x1087df200, {{327.7, 824.3}, {21.7, 37.3}}, identifier: 'chevron.forward'
+                          Other, 0x1087df700, {{357.0, 168.0}, {30.0, 628.7}}, label: 'Vertical scroll bar, 2 pages', value: 0%
+                            Other, 0x1087dfc00, {{384.0, 791.3}, {3.0, 7.0}}
+                          Other, 0x1087df980, {{357.0, 168.0}, {30.0, 628.7}}, label: 'Vertical scroll bar, 2 pages', value: 0%
+                            Other, 0x1087df0c0, {{384.0, 791.3}, {3.0, 7.0}}
+                Toolbar, 0x1087df340, {{0.0, 104.0}, {390.0, 740.0}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x1087df480, {{0.0, 104.0}, {390.0, 740.0}}
+Path to element:
+ →Application, 0x104e73700, pid: 81109, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x1087df840, pid: 81109, label: 'Shield'
+  }

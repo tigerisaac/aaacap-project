@@ -1,6 +1,6 @@
 # Caretaker failure recovery — October 17, 2026
 
-**The reproduced app defect is corrected in source. Physical acceptance and the wider accessibility audit remain open.** This focused pass covers Your contacts, Caretakers, incoming protection-alert requests and Call sharing, while preserving the owner-selected Apple-style theme. [Evidence, captures and source hashes](../.impeccable/review/release-2026-10-17/contact-accessibility/verification.json).
+**The reproduced recovery and decline-button contrast defects are corrected in source. Physical acceptance and the wider accessibility audit remain open.** This focused pass covers Your contacts, Caretakers, incoming protection-alert requests and Call sharing, while preserving the owner-selected Apple-style theme. [Recovery evidence](../.impeccable/review/release-2026-10-17/contact-accessibility/verification.json) and [subsequent contrast evidence](../.impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/verification.json) retain their separate source hashes and results.
 
 ## Reproduction and correction
 
@@ -29,12 +29,26 @@ Required typecheck/build and **376 unit tests** passed again. The unchanged back
 
 ## Unfiltered accessibility findings
 
-Both broad methods retain all diagnostics for contrast, clipping, touch area and element descriptions. The 16 captures cover the four screens at their initial and scrolled positions in standard Light Mode and largest-text Dark Mode. Each run reported **13 contrast diagnostics**, with no suppressions or passing-audit claim:
+Both broad methods retain all diagnostics for contrast, clipping, touch area and element descriptions. The 16 captures cover the four screens at their initial and scrolled positions in standard Light Mode and largest-text Dark Mode. Both recovery checkpoint runs, before the color correction below, reported **13 contrast diagnostics**, with no suppressions or passing-audit claim:
 
 - Five reports on disabled **Remove from iPhone** labels and two on disabled **Share contacts once** labels.
 - Four on text at native scrolling edges: **Contacts settings**, incoming-request **Text messages**, **Waiting for them to join**, and either the saved contact name in the first run or the contact-sharing disclosure in the second. The changed scroll-edge association is retained in both raw reports.
 - Two reports on **Decline request**, including its repeated unchanged scrolled capture.
 
 The raw evidence is authoritative; these groupings describe the observed locations, not waivers or proof that native rendering caused every diagnostic. The overall count includes repeat observations. The exact count breakdown is recorded in the evidence file. Full accessibility acceptance remains a release gate alongside the previously documented findings.
+
+## Decline-button contrast follow-up
+
+The initial Light Mode capture showed the enabled **Decline request** label at **3.20:1** against its grouped background. One line now applies the theme's existing adaptive `Held` color to that label, including its accepted-state **Stop these alerts** wording. The destructive role, action, disabling and permission behavior are unchanged. The new unmodified capture measures **4.83:1** in standard Light Mode and **6.16:1** at largest text in Dark Mode. Sampling uses opaque text/background pixels in the native sRGB PNGs; it is supporting evidence, not a full accessibility certification.
+
+The existing iOS 27 VoiceOver decline walkthrough passed, including the privacy explanation and return to **No requests**. The two unchanged, unfiltered audit methods still failed: **11 contrast reports** across the 16 captures, with zero runtime warnings. Neither standard-light incoming-alert capture reported an issue. Nine reports belong to Your contacts, one to the scrolled largest-dark incoming-alert screen and one to scrolled largest-dark Call sharing. All 11 lacked an associated element in this run, so earlier per-label classifications are not assigned to them. No audit threshold, issue handler, assertion or fixture changed.
+
+The final unsigned Release archive passed again: two arm64 bundles, three privacy manifests, no development networking exception and no UI-test markers. All 273 tracked iOS file hashes match the tested manifest. This focused color follow-up ran on iOS 27; the earlier iOS 26.5 recovery checks precede it. [Captures, raw diagnostics, sampling and archive receipt](../.impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/verification.json).
+
+## Independent backend CI failure retained
+
+The pushed recovery/deployment-evidence commit `80a0e8d` passed the required typecheck/unit/build step, but [its independent CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39097303655) failed **1 of 284 Firestore tests**: admission of 25 simultaneous users across two independent clients returned `3 INVALID_ARGUMENT: Transaction is invalid or closed.` The other 283 passed; account-lifecycle tests were skipped after that failure. Backend source, dependencies and workflow were unchanged from the passing `a0619b2` baseline.
+
+This is a different test from the earlier stopped-history failure, despite the matching error text. The installed Firestore SDK 9.2.0 retries code 3 only for the message `transaction has expired`; that explains propagation of this error, not its origin. Firebase documents [emulator transaction limitations](https://firebase.google.com/docs/emulator-suite/connect_firestore#how_the_cloud_firestore_emulator_differs_from_production) and [bounded contention retries](https://firebase.google.com/docs/firestore/transaction-data-contention), but neither establishes this failure's cause or proves production is unaffected. No retry, timeout, assertion or backend behavior was changed, and no unchanged rerun was requested. The original failure remains open. [Sanitized evidence](../.impeccable/review/release-2026-10-17/operations/backend-ci-80a0e8d.json).
 
 This app patch was not installed on the owner's phone. It provides no production caretaker delivery, Contacts/iCloud, real-call, Apple or App Store evidence. The separately owner-approved [background-health rollout](BACKGROUND-JOB-HEALTH-ROLLOUT.md) is tracked independently.

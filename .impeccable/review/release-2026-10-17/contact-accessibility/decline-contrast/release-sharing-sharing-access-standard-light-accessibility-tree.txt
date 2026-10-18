@@ -1,0 +1,93 @@
+Attributes: Application, 0x104e73980, pid: 81364, label: 'Shield'
+Element subtree:
+ →Application, 0x104e73980, pid: 81364, label: 'Shield'
+    Window (Main), 0x104e73840, {{0.0, 0.0}, {390.0, 844.0}}
+      Other, 0x104e712c0, {{0.0, 0.0}, {390.0, 844.0}}
+        Other, 0x104e730c0, {{0.0, 0.0}, {390.0, 844.0}}
+          Other, 0x104e73700, {{0.0, 0.0}, {390.0, 844.0}}
+            Other, 0x107ec1540, {{0.0, 0.0}, {390.0, 844.0}}
+              StaticText, 0x107ec1e00, {{128.7, 55.0}, {132.7, 27.7}}, identifier: 'demoBanner', label: 'Sample app, no real calls'
+                StaticText, 0x107ec2d00, {{142.0, 60.3}, {107.3, 18.0}}, label: 'Sample app'
+                Image, 0x107ec2580, {{142.0, 60.3}, {14.0, 17.0}}, identifier: 'sparkles', label: 'Sparkle'
+              Other, 0x107ec35c0, {{0.0, 90.7}, {390.0, 753.3}}
+                NavigationBar, 0x107ec1cc0, {{0.0, 100.7}, {390.0, 54.0}}, identifier: 'Call sharing'
+                  StaticText, 0x107ec3e80, {{148.0, 112.3}, {93.7, 20.7}}, label: 'Call sharing'
+                Other, 0x107ec2080, {{0.0, 90.7}, {390.0, 753.3}}
+                  Other, 0x107ec1400, {{0.0, 90.7}, {390.0, 753.3}}
+                    Other, 0x107ec12c0, {{0.0, 90.7}, {390.0, 753.3}}
+                      Other, 0x107ec1f40, {{0.0, 90.7}, {390.0, 753.3}}
+                        CollectionView, 0x107ec1180, {{0.0, 90.7}, {390.0, 753.3}}
+                          Other, 0x107ec2e40, {{-16.0, -1352.0}, {422.0, 1841.0}}
+                          Other, 0x107ec2a80, {{0.0, 90.7}, {390.0, 753.3}}
+                            Other, 0x107ec08c0, {{0.0, 90.7}, {390.0, 104.0}}
+                          Other, 0x107ec3340, {{0.0, 90.7}, {390.0, 753.3}}
+                          Cell, 0x107ec3200, {{16.0, 154.7}, {358.0, 44.0}}
+                            Other, 0x107ec0dc0, {{16.0, 154.7}, {358.0, 44.0}}
+                            Other, 0x107ec3700, {{16.0, 154.7}, {358.0, 44.0}}
+                              Other, 0x107ec3980, {{16.0, 154.7}, {358.0, 44.0}}
+                                Other, 0x107ec21c0, {{16.0, 154.7}, {358.0, 44.0}}
+                                  StaticText, 0x107ec2940, {{16.0, 154.7}, {358.0, 44.0}}, label: 'Who has access'
+                          Cell, 0x107ec3c00, {{16.0, 198.7}, {358.0, 136.3}}
+                            Other, 0x107ec2bc0, {{16.0, 198.7}, {358.0, 136.3}}
+                              Other, 0x107ec2440, {{16.0, 198.7}, {358.0, 136.3}}
+                                Other, 0x107ec1a40, {{16.0, 198.7}, {358.0, 136.3}}
+                                  Other, 0x107ec2300, {{16.0, 198.7}, {358.0, 136.3}}
+                            Other, 0x107ec0780, {{16.0, 198.7}, {358.0, 136.3}}
+                              Other, 0x107ec3840, {{16.0, 198.7}, {358.0, 136.3}}
+                                Other, 0x107ec2f80, {{16.0, 198.7}, {358.0, 136.3}}
+                                  StaticText, 0x107ec3d40, {{32.0, 213.7}, {47.7, 20.3}}, label: 'Jamie'
+                                  StaticText, 0x107ec2800, {{32.0, 242.0}, {136.0, 18.0}}, label: 'Calls and messages'
+                                  Button, 0x107ec30c0, {{32.0, 283.8}, {96.3, 20.3}}, label: 'Stop sharing with Jamie', Disabled
+                          Cell, 0x107ec1040, {{16.0, 335.0}, {358.0, 136.3}}
+                            Other, 0x107ec3ac0, {{16.0, 335.0}, {358.0, 136.3}}
+                              Other, 0x1087dfd40, {{16.0, 335.0}, {358.0, 136.3}}
+                                Other, 0x1087df200, {{16.0, 335.0}, {358.0, 136.3}}
+                                  Other, 0x1087dc500, {{16.0, 335.0}, {358.0, 136.3}}
+                            Other, 0x1087de300, {{16.0, 335.0}, {358.0, 136.3}}
+                              Other, 0x1087dd040, {{16.0, 335.0}, {358.0, 136.3}}
+                                Other, 0x1087ded00, {{16.0, 335.0}, {358.0, 136.3}}
+                                  StaticText, 0x1087dea80, {{32.0, 350.0}, {61.0, 20.3}}, label: 'Morgan'
+                                  StaticText, 0x1087dda40, {{32.0, 378.3}, {159.0, 18.0}}, label: 'Waiting for them to join'
+                                  Button, 0x1087df980, {{32.0, 420.2}, {96.3, 20.3}}, label: 'Stop sharing with Morgan', Disabled
+                          Other, 0x1087dc8c0, {{32.0, 334.0}, {326.0, 1.0}}
+                          Other, 0x1087dc280, {{-16.0, 489.0}, {422.0, 1706.7}}
+                          Cell, 0x1087dc640, {{16.0, 506.3}, {358.0, 82.0}}
+                            Other, 0x1087dd540, {{16.0, 506.3}, {358.0, 82.0}}
+                              Other, 0x1087dd180, {{16.0, 506.3}, {358.0, 82.0}}
+                                Other, 0x1087dd900, {{16.0, 506.3}, {358.0, 82.0}}
+                                  Other, 0x1087dc140, {{16.0, 506.3}, {358.0, 82.0}}
+                            Other, 0x1087de940, {{16.0, 506.3}, {358.0, 82.0}}
+                              Other, 0x1087dfc00, {{16.0, 506.3}, {358.0, 82.0}}
+                                Other, 0x1087de1c0, {{16.0, 506.3}, {358.0, 82.0}}
+                                  Button, 0x1087de080, {{16.0, 506.3}, {358.0, 82.0}}, label: 'About call access'
+                                    StaticText, 0x1087dcc80, {{32.0, 521.3}, {307.7, 52.0}}, label: 'About call access'
+                                    Button, 0x1087ddf40, {{347.7, 540.3}, {10.3, 14.0}}
+                                      Image, 0x1087dde00, {{347.7, 540.3}, {10.3, 14.0}}, identifier: 'collapsed'
+                          Cell, 0x1087debc0, {{16.0, 588.3}, {358.0, 80.3}}
+                            Other, 0x1087dcf00, {{16.0, 588.3}, {358.0, 80.3}}
+                              Other, 0x1087df5c0, {{16.0, 588.3}, {358.0, 80.3}}
+                                Other, 0x1087ddcc0, {{16.0, 588.3}, {358.0, 80.3}}
+                                  Other, 0x1087de6c0, {{16.0, 588.3}, {358.0, 80.3}}
+                            Other, 0x1087dd400, {{16.0, 588.3}, {358.0, 80.3}}
+                              Other, 0x1087dc000, {{16.0, 588.3}, {358.0, 80.3}}
+                                Other, 0x1087dcb40, {{16.0, 588.3}, {358.0, 80.3}}
+                                  Button, 0x1087dc3c0, {{16.0, 588.3}, {358.0, 80.3}}, label: 'Caretaker alerts, Alerts without call or message access'
+                                    StaticText, 0x1087dcdc0, {{32.0, 603.3}, {304.0, 50.3}}, label: 'Caretaker alerts, Alerts without call or message access'
+                                      Image, 0x1087dd7c0, {{32.0, 613.7}, {30.0, 30.0}}, identifier: 'person.badge.shield.checkmark', label: 'Person With A Shield Checkmark Badge'
+                                      StaticText, 0x1087df700, {{74.0, 607.3}, {121.0, 20.3}}, label: 'Caretaker alerts'
+                                      StaticText, 0x1087dfe80, {{74.0, 631.7}, {258.0, 18.0}}, label: 'Alerts without call or message access'
+                                    Image, 0x1087df0c0, {{348.7, 622.3}, {7.0, 12.0}}, identifier: 'chevron.forward'
+                          Other, 0x1087dd2c0, {{32.0, 587.3}, {326.0, 1.0}}
+                          Other, 0x1087dca00, {{357.0, 154.7}, {30.0, 642.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1087ddb80, {{384.0, 791.3}, {3.0, 7.0}}
+                          Other, 0x1087dfac0, {{357.0, 154.7}, {30.0, 642.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                            Other, 0x1087dee40, {{384.0, 791.3}, {3.0, 7.0}}
+                Toolbar, 0x1087df340, {{0.0, 90.7}, {390.0, 753.3}}, identifier: 'Toolbar', label: 'Toolbar'
+                  Other, 0x1087dd680, {{0.0, 90.7}, {390.0, 753.3}}
+Path to element:
+ →Application, 0x104e73980, pid: 81364, label: 'Shield'
+Query chain:
+ →Find: Target Application 'org.isaaczhang.Shield'
+  Output: {
+    Application, 0x1087df840, pid: 81364, label: 'Shield'
+  }

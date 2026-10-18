@@ -1,0 +1,326 @@
+{
+  "at": "2026-10-18T04:42:22.971890+00:00",
+  "baseCommit": "80a0e8d00890d6c59e62ed5b27d9236cd71fdb24",
+  "scope": "One-line application of existing adaptive Held theme color to the incoming caretaker decline/stop action; no behavior, permission, request, fixture or test changes.",
+  "sourceManifestVerified": true,
+  "sourceFiles": 273,
+  "screenshotsInspected": [
+    "decline-before-standard-light.png",
+    "release-sharing-contact-alerts-standard-light.png",
+    "release-sharing-contact-alerts-largest-dark-scrolled.png"
+  ],
+  "contrast": {
+    "beforeLight": 3.198987428320965,
+    "afterLight": 4.825181551810559,
+    "afterLargestDark": 6.164346427619732,
+    "methodFile": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/after-contrast.json",
+    "samplingIsFullAccessibilityAcceptance": false
+  },
+  "focusedRun": {
+    "totalTestCount": 3,
+    "passedTests": 1,
+    "failedTests": 2,
+    "skippedTests": 0,
+    "runtimeWarnings": []
+  },
+  "voiceOverDeclinePassed": true,
+  "audit": {
+    "passed": false,
+    "suppressed": false,
+    "screenshots": 16,
+    "reports": 11,
+    "reportsByScreen": {
+      "release-sharing-sharing-access-largest-dark-scrolled": 1,
+      "release-sharing-contact-alerts-largest-dark-scrolled": 1,
+      "release-sharing-contacts-largest-dark-scrolled": 2,
+      "release-sharing-contacts-standard-light-scrolled": 3,
+      "release-sharing-contacts-standard-light": 4
+    },
+    "standardLightIncomingAlertReports": 0,
+    "elementAssociationsAvailable": false,
+    "limitation": "All 11 diagnostics lack associated elements in this run. Their screens are known; earlier labels must not be assigned to them without evidence. Two methods remain failed."
+  },
+  "archive": {
+    "archive": "/tmp/shield-contact-alert-contrast-oct17.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "1d080439e66e6d414e585aafb7ca8d6fb10ed90c5824b8d953ef83171df02ddd"
+  },
+  "backend": "Unchanged since a0619b2. Required local checks previously passed 376 unit and 284 Firestore tests. Independent 80a0e8d CI now fails 1/284 Firestore tests in two-client admission; account checks skipped. Original failure retained separately.",
+  "backendCI": ".impeccable/review/release-2026-10-17/operations/backend-ci-80a0e8d.json",
+  "backendChanged": false,
+  "physicalInstallation": false,
+  "realCallOrNotificationTest": false,
+  "appleChanged": false,
+  "limits": [
+    "Focused iOS 27 simulator result only; prior iOS 26.5 functional results precede this color change.",
+    "Raw contrast findings remain open; no full accessibility or senior usability acceptance.",
+    "Unsigned release packaging only; distribution signing and App Store acceptance remain unverified.",
+    "No private account, real caretaker delivery, physical phone or carrier evidence."
+  ],
+  "captures": [
+    {
+      "name": "release-sharing-sharing-access-largest-dark-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark-scrolled-accessibility-tree.txt",
+      "sha256": "619a810e700042dfb489040be2a765327e3fdf1ce1e9ca8c11d8529e5638a95b",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-largest-dark-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark-scrolled.png",
+      "sha256": "a70b0c2a07fc73e292165a07da5e2a94a0d94d48420893a9feede20db80a9556",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-largest-dark-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark-accessibility-tree.txt",
+      "sha256": "7298a3e6581a2c8e7211cc58915df26863abbe07ed96a9eb3eb23416ad24e3a6",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-largest-dark",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark.png",
+      "sha256": "c885257598b12bc10730326251ea9ad3cde249fd14e9089d14de20db540ff262",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-largest-dark-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-scrolled-accessibility-tree.txt",
+      "sha256": "cffc9d5da88aaadf5df25bd2311d12a47d3df504710c1cf2f0526d7b25ca3765",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-largest-dark-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-scrolled.png",
+      "sha256": "caefba1c68a3e4369c9b7bde386987fa895ba875d5973efb930f41da349de62c",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-largest-dark-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-accessibility-tree.txt",
+      "sha256": "1633338f6ac4b7c6b5d2945c6dbde19ce4b65691ee2829fe373992ed7649d35b",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-largest-dark",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark.png",
+      "sha256": "b263ebbe111e02f2618c52c285052611091168ca7cda92c339a32239c8f00cc0",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-largest-dark-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark-scrolled-accessibility-tree.txt",
+      "sha256": "cce4fd4f6d2563dc2b739ae847c796a4d7e041d2483b7e96c7488966b49ad3c6",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-largest-dark-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark-scrolled.png",
+      "sha256": "6f4a50a79a9dc5e3f7f6e57699c86117f1a03d0b532386bbda25404e63ee919e",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-largest-dark-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark-accessibility-tree.txt",
+      "sha256": "d132e6a66ff904d5beac6736189e2ac0a559ec70c7fdc75feaeb70be7810f9d1",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-largest-dark",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark.png",
+      "sha256": "80834d591af3d7ba21a18346668cf6781dd904b88e85a2f5075fd7ab430e45db",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-largest-dark-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark-scrolled-accessibility-tree.txt",
+      "sha256": "008f3a7ca5823c05e9903417aced461d152f5e6246dc79d1473f6182acb2ab3b",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-largest-dark-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark-scrolled.png",
+      "sha256": "87e69365ecf59a9e94ca2d51869822896ba305c35a6985d31377dbb50d74fee3",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-largest-dark-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark-accessibility-tree.txt",
+      "sha256": "bb227eea27a4be01ad0eabf971f9daed830b1fe91dbe4bd2d6e34366fa633f26",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-largest-dark",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark.png",
+      "sha256": "07e5a8aeba7fa07a01b644862a57dc967e17a8d0884ad5fa9b356bb80cd09d00",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-standard-light-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light-scrolled-accessibility-tree.txt",
+      "sha256": "973fdb5ef8b05175a295cdb12b2f207493f71f7d9feb2fd7514303f9d9cb64c2",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-standard-light-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light-scrolled.png",
+      "sha256": "306b096f127f1e600d7c6e4fb84b2382c0d609ce6f92f826671c21d547a4fd43",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-standard-light-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light-accessibility-tree.txt",
+      "sha256": "647abe143ee0642934dd9d0799bd0b7d6b49e773fc69b93ce48a4c4a754bc403",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-sharing-access-standard-light",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light.png",
+      "sha256": "306b096f127f1e600d7c6e4fb84b2382c0d609ce6f92f826671c21d547a4fd43",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-standard-light-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light-scrolled-accessibility-tree.txt",
+      "sha256": "e624230af9970eb1bccc8d5a5b06ad3a826f0eb3f0e9f66193c698d05be4ee31",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-standard-light-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light-scrolled.png",
+      "sha256": "8c620b68dfb4c172144aa178d1c29b8bd79cb4c823a382854d3fc6b03a94e2c9",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-standard-light-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light-accessibility-tree.txt",
+      "sha256": "44f640d5c8f96e170ea2fc5375342f8e003b06e5b32ef246ebe9e76397ba4a6e",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contact-alerts-standard-light",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light.png",
+      "sha256": "8c620b68dfb4c172144aa178d1c29b8bd79cb4c823a382854d3fc6b03a94e2c9",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-standard-light-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light-scrolled-accessibility-tree.txt",
+      "sha256": "1113304ce891ee5b98d3bc9c06cc0a28ae40b6c011a6a24dd3591a5c8a152bb0",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-standard-light-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light-scrolled.png",
+      "sha256": "2d2cea6bf76240b88eb033301f684e4f099830663625640311dad837e19692f5",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-standard-light-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light-accessibility-tree.txt",
+      "sha256": "830cba9af847b44f3a6244e66d76d2addaf8c80002ffe4348817a991a630a641",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-trusted-contacts-standard-light",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light.png",
+      "sha256": "2d2cea6bf76240b88eb033301f684e4f099830663625640311dad837e19692f5",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-standard-light-scrolled-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light-scrolled-accessibility-tree.txt",
+      "sha256": "fdc8b065c6cbf81b378cf25cfb842a097319ba69895251e21361f0d9bf30091f",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-standard-light-scrolled",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light-scrolled.png",
+      "sha256": "bca56b27da433fbb77a804cdfbbafc779eea337b6dae2cfac346b07c5a42565d",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-standard-light-accessibility-tree",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light-accessibility-tree.txt",
+      "sha256": "9c945fb98da5a720a41750ff754c7b5952ee5039ad171696ecfa301be1d89331",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "name": "release-sharing-contacts-standard-light",
+      "file": ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light.png",
+      "sha256": "07f8ee128d69d5e05fb8e56dec50293a245144ab2b2341017c1c6706466ac103",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+    }
+  ],
+  "evidenceSha256": {
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/after-contrast.json": "f4f0d969e1664fe256671bc4cec28620ec5093ca4ea1c7595b77b31bdda1472b",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/archive-audit.json": "084154f7377223b0c04b5e6984a83b29c0dad476007e430614ba7e13f32a7abd",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/before-contrast.json": "fea5c778cbdad9a3c677b6d52ff2ed646b3c67f6b59d88ce9f034246b85eae24",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/decline-before-standard-light.png": "4d1f1375091e8a98df251ff0d4f265f4572c30567e06243ab8e86d69e0a78f7b",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/issues.json": "77db3b7d40d7b95d500b86f526b0e83cc3fde2299bec1788611e31a9efdfab0c",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-accessibility-tree.txt": "1633338f6ac4b7c6b5d2945c6dbde19ce4b65691ee2829fe373992ed7649d35b",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-scrolled-accessibility-tree.txt": "cffc9d5da88aaadf5df25bd2311d12a47d3df504710c1cf2f0526d7b25ca3765",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark-scrolled.png": "caefba1c68a3e4369c9b7bde386987fa895ba875d5973efb930f41da349de62c",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-largest-dark.png": "b263ebbe111e02f2618c52c285052611091168ca7cda92c339a32239c8f00cc0",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light-accessibility-tree.txt": "44f640d5c8f96e170ea2fc5375342f8e003b06e5b32ef246ebe9e76397ba4a6e",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light-scrolled-accessibility-tree.txt": "e624230af9970eb1bccc8d5a5b06ad3a826f0eb3f0e9f66193c698d05be4ee31",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light-scrolled.png": "8c620b68dfb4c172144aa178d1c29b8bd79cb4c823a382854d3fc6b03a94e2c9",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contact-alerts-standard-light.png": "8c620b68dfb4c172144aa178d1c29b8bd79cb4c823a382854d3fc6b03a94e2c9",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark-accessibility-tree.txt": "bb227eea27a4be01ad0eabf971f9daed830b1fe91dbe4bd2d6e34366fa633f26",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark-scrolled-accessibility-tree.txt": "008f3a7ca5823c05e9903417aced461d152f5e6246dc79d1473f6182acb2ab3b",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark-scrolled.png": "87e69365ecf59a9e94ca2d51869822896ba305c35a6985d31377dbb50d74fee3",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-largest-dark.png": "07e5a8aeba7fa07a01b644862a57dc967e17a8d0884ad5fa9b356bb80cd09d00",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light-accessibility-tree.txt": "9c945fb98da5a720a41750ff754c7b5952ee5039ad171696ecfa301be1d89331",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light-scrolled-accessibility-tree.txt": "fdc8b065c6cbf81b378cf25cfb842a097319ba69895251e21361f0d9bf30091f",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light-scrolled.png": "bca56b27da433fbb77a804cdfbbafc779eea337b6dae2cfac346b07c5a42565d",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-contacts-standard-light.png": "07f8ee128d69d5e05fb8e56dec50293a245144ab2b2341017c1c6706466ac103",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark-accessibility-tree.txt": "7298a3e6581a2c8e7211cc58915df26863abbe07ed96a9eb3eb23416ad24e3a6",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark-scrolled-accessibility-tree.txt": "619a810e700042dfb489040be2a765327e3fdf1ce1e9ca8c11d8529e5638a95b",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark-scrolled.png": "a70b0c2a07fc73e292165a07da5e2a94a0d94d48420893a9feede20db80a9556",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-largest-dark.png": "c885257598b12bc10730326251ea9ad3cde249fd14e9089d14de20db540ff262",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light-accessibility-tree.txt": "647abe143ee0642934dd9d0799bd0b7d6b49e773fc69b93ce48a4c4a754bc403",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light-scrolled-accessibility-tree.txt": "973fdb5ef8b05175a295cdb12b2f207493f71f7d9feb2fd7514303f9d9cb64c2",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light-scrolled.png": "306b096f127f1e600d7c6e4fb84b2382c0d609ce6f92f826671c21d547a4fd43",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-sharing-access-standard-light.png": "306b096f127f1e600d7c6e4fb84b2382c0d609ce6f92f826671c21d547a4fd43",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark-accessibility-tree.txt": "d132e6a66ff904d5beac6736189e2ac0a559ec70c7fdc75feaeb70be7810f9d1",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark-scrolled-accessibility-tree.txt": "cce4fd4f6d2563dc2b739ae847c796a4d7e041d2483b7e96c7488966b49ad3c6",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark-scrolled.png": "6f4a50a79a9dc5e3f7f6e57699c86117f1a03d0b532386bbda25404e63ee919e",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-largest-dark.png": "80834d591af3d7ba21a18346668cf6781dd904b88e85a2f5075fd7ab430e45db",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light-accessibility-tree.txt": "830cba9af847b44f3a6244e66d76d2addaf8c80002ffe4348817a991a630a641",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light-scrolled-accessibility-tree.txt": "1113304ce891ee5b98d3bc9c06cc0a28ae40b6c011a6a24dd3591a5c8a152bb0",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light-scrolled.png": "2d2cea6bf76240b88eb033301f684e4f099830663625640311dad837e19692f5",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/release-sharing-trusted-contacts-standard-light.png": "2d2cea6bf76240b88eb033301f684e4f099830663625640311dad837e19692f5",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/source.json": "3396ff7bd6b41ee0957006011b7674cbf7b3867053e9375d351314749ef48849",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/summary.json": "237da538d5ba01a8a4fe67e8a43a2dd2bda6b8695367e5e9d588856e0601ac11",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/decline-contrast/voiceover.json": "bd807ba58583ca5bd5017139d4243ecedc8449e6dcff62c1153e6b899149eb4b"
+  },
+  "privateLogSha256": {
+    "artifacts/private/contact-alert-contrast-oct17/build.log": "fa0320ad161f279f067a0efc7bf147389005801af9b13c7cd916a7296b79bb5e",
+    "artifacts/private/contact-alert-contrast-oct17/tests.log": "1190fe6033b80fd79aa146ccc3d42fbd73d651a9646a9641b422c0a29688e369",
+    "artifacts/private/contact-alert-contrast-oct17/archive.log": "454f95f7507bce6c35dedc551d88598640a4f43af94c6d583c2cb2aaea16fa63",
+    "artifacts/private/contact-alert-contrast-oct17/export.log": "d995508d80097c487420d02c75c6a6fbd9f46536018fe991e3d16d69cdbf0e21"
+  }
+}

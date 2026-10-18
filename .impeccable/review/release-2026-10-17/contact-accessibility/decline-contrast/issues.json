@@ -1,0 +1,46 @@
+[
+  {
+    "screen": "release-sharing-sharing-access-largest-dark-scrolled",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contact-alerts-largest-dark-scrolled",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-largest-dark-scrolled",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-largest-dark-scrolled",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light-scrolled",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light-scrolled",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light-scrolled",
+    "details": "Contrast nearly passed\nContrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast nearly passed\nContrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.\nNo associated element"
+  }
+]

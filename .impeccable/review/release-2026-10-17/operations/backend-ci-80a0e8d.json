@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-18T04:39:36.247124+00:00",
+  "headSha": "80a0e8d00890d6c59e62ed5b27d9236cd71fdb24",
+  "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39097303655",
+  "status": "completed",
+  "conclusion": "failure",
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-node@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm ci",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run check",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-java@v5",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run test:firebase",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Run npm run test:accounts",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Post Run actions/setup-java@v5",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-node@v6",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Post Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "firestore": {
+    "passed": 283,
+    "failed": 1,
+    "total": 284,
+    "failedTest": "shared-pilot.test.ts: admits 25 simultaneous users across two independent clients, then refuses a duplicate live leg",
+    "error": "3 INVALID_ARGUMENT: Transaction is invalid or closed."
+  },
+  "accounts": "Skipped after the Firestore step failed; no passing claim for this run.",
+  "unchangedBackendSince": "a0619b2634acf7c8baaf5a7ac39cc811dc97e049",
+  "previousPassingCI": "https://github.com/tigerisaac/aaacap-project/actions/runs/39094590443",
+  "localSdkInspection": {
+    "firestoreVersion": "9.2.0",
+    "firebaseAdminVersion": "14.4.0",
+    "firebaseToolsVersion": "15.10.1",
+    "transactionFileSha256": "2dc71b0d751c7fd34d010b1ba43de97034b2f2e889e4420406d1db69c7eed0f3",
+    "finding": "The installed SDK retries code 3 only when the error message matches transaction has expired. The observed invalid-or-closed message does not match. This explains why that error is returned, not why it arose."
+  },
+  "primaryReferences": [
+    "https://firebase.google.com/docs/emulator-suite/connect_firestore#how_the_cloud_firestore_emulator_differs_from_production",
+    "https://firebase.google.com/docs/firestore/transaction-data-contention"
+  ],
+  "causeEstablished": false,
+  "resolved": false,
+  "rerunRequested": false,
+  "limitations": [
+    "The earlier stopped-history failure and this admission failure share an error string; a shared cause is not established.",
+    "Official emulator contention limitations do not prove this error is emulator-only.",
+    "No transaction retry, timeout, admission policy or test assertion was changed.",
+    "No production concurrency or real-call proof."
+  ],
+  "privateEvidenceSha256": {
+    "artifacts/private/contact-accessibility-oct17/ci-80a0e8d.json": "e5d4be3e60ad7c235620c52de49e942eed7b04b18ddd1844303b5516eb5b66ff",
+    "artifacts/private/contact-accessibility-oct17/ci-80a0e8d-failure.log": "82eed7d989585cf8aa48a209a18f938168157680bdba77acf04c668328fa38b1"
+  }
+}
