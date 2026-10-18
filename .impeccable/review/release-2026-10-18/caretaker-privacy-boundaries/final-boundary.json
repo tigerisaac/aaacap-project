@@ -1,0 +1,9 @@
+{
+  "baseCommit": "a3c92135bd7f0d14792722ab0becf215ca43ca93",
+  "testFile": "backend/tests/account-lifecycle.test.ts",
+  "testSha256": "5ebc814fd5c5e1c90acc2ec1344fb3291ccfd1eaa6b2d2ec5a50ecedcb670ec4",
+  "runtimeFilesChanged": false,
+  "sourceChanges": [
+    "backend/tests/account-lifecycle.test.ts"
+  ]
+}

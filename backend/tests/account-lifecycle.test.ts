@@ -10,6 +10,7 @@ import { cloudSchema } from '../src/cloud/config.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { deletionRef, processAccountDeletions } from '../src/cloud/deletion-jobs.js';
 import { contactPhoneHash } from '../src/cloud/trusted-contacts.js';
+import { writeMessageAudio } from '../src/cloud/message-audio.js';
 
 const enabled = process.env.SHIELD_ACCOUNT_EMULATOR_TESTS === '1';
 const project = 'demo-shield-accounts';
@@ -82,6 +83,36 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
     expect((await app!.inject({ url: '/api/people', headers: headers(session) })).statusCode).toBe(401);
     expect((await app!.inject({ method: 'POST', url: '/auth/refresh', payload: { refreshToken: session.refresh } })).statusCode).toBe(401);
     await expect(identityProvider.getUser(session.uid)).rejects.toMatchObject({ code: 'auth/user-not-found' });
+  };
+  const acceptedCaretaker = async () => {
+    await app!.close();
+    store = new CloudStore(db, cloudSchema.parse({ ...config, TELNYX_VERIFY_PROFILE_ID: randomUUID(),
+      SMS_ALERTS: { from: '+12025550109', messagingProfileId: randomUUID() } }), () => now);
+    const invitations: string[] = [];
+    app = await buildCloudApp(store, { auth,
+      textSender: { async send(_phone, body) { invitations.push(body); return 'submitted'; } },
+      checker: { async extract() { throw new Error('No model call is allowed in identity lifecycle tests'); } } });
+    const protectedPerson = await person(other.uid, otherPhone), contactID = randomUUID();
+    await store.personRef(protectedPerson).update({ shieldNumber: '+12025550108' });
+    const ownerHeaders = { ...headers(other), 'x-shield-participant': protectedPerson };
+    const created = await app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: ownerHeaders,
+      payload: { id: contactID, name: 'Synthetic caretaker', phone, consent: true } });
+    expect(created.statusCode).toBe(200);
+    const accepted = await app.inject({ method: 'POST', url: `/api/contact-alerts/${contactID}`, headers: headers(),
+      payload: { accept: true, textAlerts: true, appAlerts: false } });
+    expect(accepted.statusCode).toBe(200); expect(invitations).toHaveLength(1);
+    expect((await db.collection('grants').get()).empty).toBe(true);
+    expect((await db.collection('memberships').get()).empty).toBe(true);
+    return { protectedPerson, contactID, ownerHeaders, invitations };
+  };
+  const savedMessage = async (participantId: string) => {
+    const id = randomUUID(), bytes = Buffer.from('Synthetic audio bytes; no person was recorded.');
+    await store.callRef(id).set({ id, participantId, state: 'ended', outcome: 'voicemail', reason: 'routine',
+      createdAt: now - 1000, completedAt: now, expiresAt: now + 86400_000, events: [],
+      callerEnc: store.vault.seal('+12025550103', `call:${id}:caller`),
+      voicemail: { id, status: 'ready', duration: 1, summaryEnc: store.vault.seal('Synthetic private summary', `message:${id}:summary`) } });
+    await db.runTransaction(async tx => { writeMessageAudio(store, tx, id, participantId, now + 86400_000, bytes); });
+    return { id, bytes };
   };
 
   beforeEach(async () => {
@@ -201,5 +232,115 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
     expect((await app!.inject({ url: '/api/calls', headers: { ...headers(replacement), 'x-shield-participant': oldPerson } })).statusCode).toBe(403);
     await expectOldSessionsRejected(old);
     expect(await receiptState(receipt)).toBe('complete');
+  });
+
+  it.each([false, true])('keeps an accepted caretaker out of protected history, audio and settings (own phone: %s)', async ownsPhone => {
+    const { protectedPerson, contactID, ownerHeaders } = await acceptedCaretaker();
+    const ownPerson = ownsPhone ? await person(current.uid) : undefined;
+    const { id, bytes } = await savedMessage(protectedPerson);
+    const privateHeaders = { ...headers(), 'x-shield-participant': protectedPerson };
+    const contact = await app!.inject({ method: 'POST', url: '/api/trusted-numbers', headers: ownerHeaders,
+      payload: { label: 'Synthetic private contact', phone: '+12025550104' } });
+    expect(contact.statusCode).toBe(200);
+    const destination = await app!.inject({ method: 'POST', url: '/api/destinations', headers: ownerHeaders,
+      payload: { label: 'Synthetic private number', phone: '+12025550105', provenance: 'card' } });
+    expect(destination.statusCode).toBe(200);
+    const reads = ['/api/overview', '/api/calls', '/api/calls?filter=voicemail', `/api/calls/${id}`,
+      '/api/trusted-numbers', '/api/destinations', '/api/blocked-numbers', '/api/sharing', '/api/setup',
+      '/api/forwarding', '/api/forwarding/monitoring', '/api/forwarding/restoration', '/api/helper-alerts', '/api/trusted-contacts',
+      `/api/voicemails/${id}/audio`, `/api/voicemails/${id}/delivery`];
+    for (const url of reads) {
+      // Prove that each route and its data exist before testing denial. A 404 is not an access-control pass.
+      expect((await app!.inject({ url, headers: ownerHeaders })).statusCode, `owner ${url}`).toBe(200);
+      const denied = await app!.inject({ url, headers: privateHeaders });
+      expect(denied.statusCode, `caretaker ${url}`).toBe(403);
+      expect(Object.keys(denied.json())).toEqual(['error']);
+    }
+    const ownerMessage = await app!.inject({ url: `/api/calls/${id}`, headers: ownerHeaders });
+    expect(ownerMessage.json().call.voicemail.summary).toBe('Synthetic private summary');
+    expect((await app!.inject({ url: `/api/voicemails/${id}/audio`, headers: ownerHeaders })).rawPayload).toEqual(bytes);
+    for (const suffix of ['audio', 'delivery']) {
+      // Resource-specific checks must not trust a missing or different selected-person header.
+      for (const selected of [undefined, ownPerson].filter((p, i, list) => list.indexOf(p) === i)) {
+        const response = await app!.inject({ url: `/api/voicemails/${id}/${suffix}`,
+          headers: { ...headers(), ...(selected ? { 'x-shield-participant': selected } : {}) } });
+        expect(response.statusCode, `resource-scoped ${suffix}`).toBe(403);
+      }
+    }
+    for (const url of [`/api/voicemails/${id}/heard`, `/api/voicemails/${id}/restore`]) {
+      expect((await app!.inject({ method: 'POST', url, headers: privateHeaders })).statusCode, url).toBe(403);
+    }
+    expect((await app!.inject({ method: 'DELETE', url: `/api/voicemails/${id}`, headers: privateHeaders })).statusCode).toBe(403);
+    expect((await app!.inject({ method: 'DELETE', url: `/api/trusted-contacts/${contactID}`, headers: privateHeaders })).statusCode).toBe(403);
+    expect((await app!.inject({ method: 'POST', url: '/api/trusted-contacts/choice', headers: privateHeaders, payload: { enabled: false } })).statusCode).toBe(403);
+    expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: privateHeaders })).statusCode).toBe(403);
+    expect((await store.callRef(id).get()).data()?.voicemail.heardAt).toBeUndefined();
+    expect((await db.collection('forwardingAudio').doc(id).get()).exists).toBe(true);
+    expect((await db.collection('alertContacts').doc(contactID).get()).data()?.status).toBe('accepted');
+    expect((await deletionRef(store, current.uid).get()).exists).toBe(false);
+    const people = (await app!.inject({ url: '/api/people', headers: headers() })).json().people;
+    expect(people.map((p: { id: string }) => p.id)).toEqual(ownPerson ? [ownPerson] : []);
+    const deletion = await app!.inject({ url: '/api/account/deletion', headers: privateHeaders });
+    expect(deletion.statusCode).toBe(200);
+    expect(deletion.json().phones.map((p: { id: string }) => p.id)).toEqual(ownPerson ? [ownPerson] : []);
+    const incoming = await app!.inject({ url: '/api/contact-alerts', headers: headers() });
+    expect(incoming.statusCode).toBe(200); expect(incoming.json().requests).toHaveLength(1);
+    expect(Object.keys(incoming.json().requests[0]).sort()).toEqual(['appAlerts', 'id', 'name', 'ownerPaused', 'status', 'textAlerts']);
+  });
+
+  it('keeps caretaker consent separate from explicit history and listening grants through revocation', async () => {
+    const { protectedPerson, contactID, ownerHeaders } = await acceptedCaretaker();
+    const { id, bytes } = await savedMessage(protectedPerson);
+    const selected = { ...headers(), 'x-shield-participant': protectedPerson };
+    const share = async (canListen: boolean) => {
+      const invitation = await app!.inject({ method: 'POST', url: '/api/sharing', headers: ownerHeaders,
+        payload: { label: 'Separate explicit access', canListen, consent: true } });
+      expect(invitation.statusCode).toBe(200);
+      const { code, id: grantID } = invitation.json();
+      expect((await app!.inject({ method: 'POST', url: '/api/sharing/accept', headers: headers(), payload: { code } })).statusCode).toBe(200);
+      return grantID as string;
+    };
+    const revoke = async (id: string) => {
+      expect((await app!.inject({ method: 'DELETE', url: `/api/sharing/${id}`, headers: ownerHeaders })).statusCode).toBe(200);
+    };
+    const historyGrant = await share(false);
+    const history = await app!.inject({ url: `/api/calls/${id}`, headers: selected });
+    expect(history.statusCode).toBe(200); expect(history.json().call.voicemail.summary).toBeUndefined();
+    expect((await app!.inject({ url: `/api/voicemails/${id}/audio`, headers: selected })).statusCode).toBe(403);
+    await revoke(historyGrant);
+    expect((await app!.inject({ url: '/api/calls', headers: selected })).statusCode).toBe(403);
+    expect((await app!.inject({ url: '/api/contact-alerts', headers: headers() })).json().requests).toMatchObject([{ id: contactID, status: 'accepted' }]);
+
+    const listeningGrant = await share(true);
+    const message = await app!.inject({ url: `/api/calls/${id}`, headers: selected });
+    expect(message.statusCode).toBe(200); expect(message.json().call.voicemail.summary).toBe('Synthetic private summary');
+    expect((await app!.inject({ url: `/api/voicemails/${id}/audio`, headers: selected })).rawPayload).toEqual(bytes);
+    // Durable delivery deletes the cloud copy and remains owner-only even with listening permission.
+    expect((await app!.inject({ url: `/api/voicemails/${id}/delivery`, headers: selected })).statusCode).toBe(403);
+    expect((await app!.inject({ method: 'POST', url: `/api/contact-alerts/${contactID}`, headers: headers(),
+      payload: { accept: false, textAlerts: false, appAlerts: false } })).statusCode).toBe(200);
+    expect((await app!.inject({ url: `/api/voicemails/${id}/audio`, headers: selected })).rawPayload).toEqual(bytes);
+    await revoke(listeningGrant);
+    expect((await app!.inject({ url: `/api/calls/${id}`, headers: selected })).statusCode).toBe(403);
+    expect((await app!.inject({ url: `/api/voicemails/${id}/audio`, headers: selected })).statusCode).toBe(403);
+  });
+
+  it('erases an API-created caretaker relationship without transferring it to a recreated phone account', async () => {
+    const { protectedPerson, contactID, invitations } = await acceptedCaretaker();
+    const { id } = await savedMessage(protectedPerson), old = current;
+    const receipt = await requestDeletion();
+    now += 120_001; await processAccountDeletions(store, auth);
+    expect(await receiptState(receipt)).toBe('complete');
+    await expectOldSessionsRejected(old);
+    expect((await db.collection('alertContacts').doc(contactID).get()).exists).toBe(false);
+    expect((await store.personRef(protectedPerson).get()).exists).toBe(true);
+    expect((await store.callRef(id).get()).exists).toBe(true);
+    const replacement = await signIn(phone);
+    expect(replacement.uid).not.toBe(old.uid);
+    expect((await app!.inject({ url: '/api/contact-alerts', headers: headers(replacement) })).json().requests).toEqual([]);
+    expect((await app!.inject({ method: 'POST', url: `/api/contact-alerts/${contactID}`, headers: headers(replacement),
+      payload: { accept: true, textAlerts: true, appAlerts: false } })).statusCode).toBe(404);
+    expect((await app!.inject({ url: `/api/voicemails/${id}/audio`, headers: headers(replacement) })).statusCode).toBe(403);
+    expect(invitations).toHaveLength(1);
   });
 });

@@ -1,0 +1,6 @@
+{
+  "baseCommit": "a3c92135bd7f0d14792722ab0becf215ca43ca93",
+  "testSha256": "cc5ad39d36104724c0cf1fd9142208e5b9e74e7283e68ce5edbba44f718fed26",
+  "result": "10 passed / 2 failed",
+  "failure": "The positive owner check returned 403 for /api/forwarding because the synthetic protected participant had no enrolled Shield number. No production change is indicated by this result."
+}

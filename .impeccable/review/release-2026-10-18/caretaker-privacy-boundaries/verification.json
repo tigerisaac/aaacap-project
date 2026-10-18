@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-18T19:12:46.962471+00:00",
+  "releaseReady": false,
+  "source": {
+    "baseCommit": "a3c92135bd7f0d14792722ab0becf215ca43ca93",
+    "testFile": "backend/tests/account-lifecycle.test.ts",
+    "testSha256": "5ebc814fd5c5e1c90acc2ec1344fb3291ccfd1eaa6b2d2ec5a50ecedcb670ec4",
+    "runtimeFilesChanged": false,
+    "sourceChanges": [
+      "backend/tests/account-lifecycle.test.ts"
+    ]
+  },
+  "productionBehaviorChanged": false,
+  "tests": [
+    {
+      "name": "check",
+      "description": "Initial typecheck/unit/build",
+      "passed": 382,
+      "failed": 0,
+      "startupFailed": false,
+      "logSha256": "ad3d10b87e642b5c0a1921a626b15886ec6a97a0aeeac4735f46919a4b9ab094",
+      "resultLines": [
+        "      Tests  382 passed | 287 skipped (669)"
+      ],
+      "metadataLookupWarnings": 0,
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/release-boundaries-oct18/check.log"
+    },
+    {
+      "name": "accounts-first",
+      "description": "Initial expanded account suite; incomplete enrolled-number fixture",
+      "passed": 10,
+      "failed": 2,
+      "startupFailed": false,
+      "logSha256": "05b3213568cc194bbc33715a5d09253d5399b0683152ac0ae07bba46e72b294e",
+      "resultLines": [
+        "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+        "      Tests  2 failed | 10 passed (12)"
+      ],
+      "metadataLookupWarnings": 1,
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/release-boundaries-oct18/accounts-first.log"
+    },
+    {
+      "name": "accounts-final",
+      "description": "Corrected expanded account suite",
+      "passed": 12,
+      "failed": 0,
+      "startupFailed": false,
+      "logSha256": "6f8932c1f75098b51dfd0239d0a540ca0967c9242852427b18aa118a64f21bac",
+      "resultLines": [
+        "      Tests  12 passed (12)"
+      ],
+      "metadataLookupWarnings": 1,
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/release-boundaries-oct18/accounts-final.log"
+    },
+    {
+      "name": "check-final",
+      "description": "Final typecheck/unit/build",
+      "passed": 382,
+      "failed": 0,
+      "startupFailed": false,
+      "logSha256": "41661f2675df4af72dd94beb599e5af45820635a25ddb4f647e4d460b6f1e22f",
+      "resultLines": [
+        "      Tests  382 passed | 287 skipped (669)"
+      ],
+      "metadataLookupWarnings": 0,
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/release-boundaries-oct18/check-final.log"
+    },
+    {
+      "name": "firestore-final",
+      "description": "Startup blocked by another process on port 8089; no tests executed",
+      "passed": 0,
+      "failed": 0,
+      "startupFailed": true,
+      "logSha256": "a11f00a88485ca6604849bbf10277b7736b818f21f9c8178bde4117086364832",
+      "resultLines": [],
+      "metadataLookupWarnings": 0,
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/release-boundaries-oct18/firestore-final.log"
+    },
+    {
+      "name": "firestore-isolated",
+      "description": "Unchanged full Firestore suite using separate emulator ports",
+      "passed": 284,
+      "failed": 0,
+      "startupFailed": false,
+      "logSha256": "1d5e2d850a76ffdc8a62eb7611c3521d492bb08fbb1e6622ad313f295cc95384",
+      "resultLines": [
+        "      Tests  284 passed (284)"
+      ],
+      "metadataLookupWarnings": 7,
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/release-boundaries-oct18/firestore-isolated.log"
+    }
+  ],
+  "coverage": {
+    "authentication": "Actual Firebase Auth/Firestore emulators and the existing FirebaseAuth implementation; upstream phone verification and SMS delivery are synthetic.",
+    "accountConfigurations": [
+      "Accepted caretaker without an owned phone",
+      "Accepted caretaker who also owns a different phone"
+    ],
+    "protectedReadCasesPerConfiguration": 16,
+    "ownerPositiveControlsPerConfiguration": 16,
+    "protectedMutationDenialsPerConfiguration": 6,
+    "resourceHeaderChecks": "Direct audio and durable delivery deny access with no selected-person header or with the caretaker own-person header.",
+    "dataProof": "The owner reads the exact synthetic private summary and audio bytes. Saved/shared contacts are created through the API.",
+    "separateConsent": "History-only and explicit listening access are granted and revoked through the API. Caretaker decline preserves an independent sharing grant; sharing revocation preserves caretaker consent.",
+    "deletion": "API-created accepted caretaker erased; former ID/refresh tokens rejected; same-phone recreation uses a new UID without old consent or audio access; protected owner and message preserved."
+  },
+  "retainedIssues": [
+    "Initial two account failures were positive-control failures: the synthetic owner lacked an enrolled Shield number. The fixture was completed; no production guard was weakened.",
+    "Default Firestore startup found port 8089 occupied by Java process 53288. That process was preserved; the same npm target and test selection ran using an ignored isolated configuration on port 8388, hub 8480 and logging 8481.",
+    "MetadataLookupWarning is retained in the account/database logs. The installed gcp-metadata source emits it from its metadata-service availability probe and returns unavailable. No warning was suppressed."
+  ],
+  "liveSnapshot": {
+    "file": "live-health.json",
+    "sha256": "865cc4149ad205e4fcce474d778176fae6aa2ecbd3588a087b2806f033ebee5b",
+    "at": "2026-10-18T19:00:06.503Z",
+    "readOnly": true,
+    "manualJobs": 0,
+    "messagesSent": 0
+  },
+  "limitations": [
+    "Emulator identities do not prove signed production-token validation, production IAM, actual SMS/APNs delivery or physical-device revocation.",
+    "This checkpoint changes tests and evidence only; live account erasure and vendor/other-device deletion remain unverified.",
+    "The six-hour healthy snapshot and policy enablement do not establish actual alert-condition delivery, failure recovery, all deployed package hashes or historical incident causes.",
+    "Native request metrics may arrive late; the six retained API 401 responses are not individually attributed.",
+    "The database retry rollout, Apple work, physical calls, full accessibility and other release gates remain open."
+  ]
+}

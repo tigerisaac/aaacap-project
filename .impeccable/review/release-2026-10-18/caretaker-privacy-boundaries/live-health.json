@@ -1,0 +1,1517 @@
+{
+  "at": "2026-10-18T19:00:06.503Z",
+  "readOnly": true,
+  "customerContentRetrieved": false,
+  "manualJobs": 0,
+  "messagesSent": 0,
+  "checks": {
+    "completionAndBacklog": {
+      "available": true,
+      "jobs": {
+        "cleanupShield": {
+          "status": "complete",
+          "lastSucceededAt": "2026-10-18T09:00:38.689Z",
+          "ageSeconds": 35967,
+          "fresh": true
+        },
+        "finishAccountDeletions": {
+          "status": "complete",
+          "lastSucceededAt": "2026-10-18T18:59:08.406Z",
+          "ageSeconds": 58,
+          "fresh": true
+        },
+        "reviewServiceAccess": {
+          "status": "complete",
+          "lastSucceededAt": "2026-10-18T18:22:08.060Z",
+          "ageSeconds": 2278,
+          "fresh": true
+        },
+        "expireMessageDeliveries": {
+          "status": "complete",
+          "lastSucceededAt": "2026-10-18T18:55:08.422Z",
+          "ageSeconds": 298,
+          "fresh": true
+        }
+      },
+      "overdue": {
+        "accountDeletions": 0,
+        "audioManifests": 0,
+        "audioChunks": 0,
+        "providerRecordings": 0,
+        "callDeadlines": 0,
+        "monitoringChecks": 0
+      }
+    },
+    "requests": {
+      "available": true,
+      "start": "2026-10-18T13:00:06.503Z",
+      "end": "2026-10-18T19:00:06.503Z",
+      "alignmentSeconds": 300,
+      "totals": {
+        "checkbackgroundhealth": {
+          "200": 72,
+          "403": 0
+        },
+        "dailysetupchecks": {
+          "200": 1
+        },
+        "expiremessagedeliveries": {
+          "200": 72
+        },
+        "expiresharedcalls": {
+          "200": 360
+        },
+        "finishaccountdeletions": {
+          "200": 359
+        },
+        "reviewserviceaccess": {
+          "200": 6
+        },
+        "shield-live": {
+          "200": 1
+        },
+        "shieldapi": {
+          "200": 109,
+          "401": 6
+        }
+      },
+      "limit": "Native metric buckets may arrive late; status counts do not prove individual job completion."
+    },
+    "structuredDiagnostics": {
+      "available": true,
+      "start": "2026-10-18T13:00:06.503Z",
+      "end": "2026-10-18T19:00:06.503Z",
+      "observations": [
+        {
+          "at": "2026-10-18T13:00:33.837418Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:05:13.206856Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:10:06.670510Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:15:13.074554Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:20:07.636399Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:25:05.987405Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:30:17.811035Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:35:08.709414Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:40:06.475035Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:45:15.487724Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:50:11.552489Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T13:55:14.055034Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:00:32.394890Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:05:07.286430Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:10:12.979267Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:15:11.942222Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:20:11.708401Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:25:18.246801Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:30:28.958935Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:35:06.790409Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:40:09.028920Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:45:11.448519Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:50:16.773594Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T14:55:04.585114Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:00:31.388334Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:05:05.908889Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:10:16.382648Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:15:19.587909Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:20:12.222042Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:25:07.392175Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:30:17.514616Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:35:12.896217Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:40:16.349211Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:45:04.504717Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:50:10.178541Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T15:55:09.318241Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:00:33.860789Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:05:05.408329Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:10:08.393255Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:15:11.579449Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:20:18.016246Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:25:04.824328Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:30:20.057356Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:35:06.779159Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:40:13.505214Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:45:07.056437Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:50:06.610712Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T16:55:09.427348Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:00:28.171006Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:05:07.483402Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:10:09.603712Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:15:08.571250Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:20:14.007082Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:25:04.883325Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:30:14.609983Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:35:11.191786Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:40:07.774330Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:45:14.796203Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:50:10.031494Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T17:55:15.866367Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:00:15.484864Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:05:07.156168Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:10:16.009830Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:15:12.386609Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:20:10.960571Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:25:16.055335Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:30:18.598728Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:35:16.068233Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:40:15.331832Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:45:17.430939Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:50:05.971322Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        },
+        {
+          "at": "2026-10-18T18:55:09.163155Z",
+          "available": true,
+          "healthy": true,
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioManifests": 0,
+            "audioChunks": 0,
+            "providerRecordings": 0,
+            "callDeadlines": 0,
+            "monitoringChecks": 0
+          }
+        }
+      ],
+      "apiFailures": [],
+      "limit": "Only fixed structured health/API categories are queried; no raw request or customer content is persisted."
+    },
+    "configuration": {
+      "available": true,
+      "policies": [
+        {
+          "name": "projects/shield-calls-isaac/alertPolicies/10651998082338058233",
+          "enabled": true
+        },
+        {
+          "name": "projects/shield-calls-isaac/alertPolicies/12538905973954350646",
+          "enabled": true
+        },
+        {
+          "name": "projects/shield-calls-isaac/alertPolicies/15304703142119724864",
+          "enabled": true
+        },
+        {
+          "name": "projects/shield-calls-isaac/alertPolicies/15304703142119725102",
+          "enabled": true
+        },
+        {
+          "name": "projects/shield-calls-isaac/alertPolicies/16606196736024174634",
+          "enabled": true
+        },
+        {
+          "name": "projects/shield-calls-isaac/alertPolicies/17616785553202268275",
+          "enabled": true
+        }
+      ],
+      "services": {
+        "shieldapi": {
+          "latestReadyRevision": "shieldapi-00034-yaw",
+          "traffic": [
+            {
+              "revision": "shieldapi-00034-yaw",
+              "percent": 100
+            }
+          ]
+        },
+        "shield-live": {
+          "latestReadyRevision": "shield-live-00017-qrw",
+          "traffic": [
+            {
+              "revision": "shield-live-00017-qrw",
+              "percent": 100
+            }
+          ]
+        },
+        "checkbackgroundhealth": {
+          "latestReadyRevision": "checkbackgroundhealth-00001-not",
+          "traffic": [
+            {
+              "revision": "checkbackgroundhealth-00001-not",
+              "percent": 100
+            }
+          ]
+        }
+      }
+    }
+  },
+  "limitation": "A bounded healthy snapshot is not failure/recovery delivery, physical-call acceptance or vendor-erasure verification."
+}

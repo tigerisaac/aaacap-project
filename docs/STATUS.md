@@ -1,5 +1,13 @@
 # Status
 
+## October 18 — caretaker permissions and deletion checked with emulator identities
+
+The expanded Auth/Firestore account suite passes **12/12**. New cases create and accept caretakers through the API, verify sixteen protected read cases against successful owner controls in two account setups, deny protected mutations, exercise independent history/listening consent and revocation, and delete/recreate the caretaker's verified phone without restoring its old relationship or access. The protected owner and saved message survive. The first two failures came from an incomplete synthetic enrollment fixture and remain recorded; the final correction changes no production guard.
+
+Final typecheck/build and **382 unit + 284 Firestore + 12 account checks** pass. The default Firestore startup was blocked by another process on port 8089, so the unchanged suite used isolated ports with the same rules/indexes. SDK metadata-availability warnings remain in the logs. This checkpoint changes tests and evidence only. [Exact cases, source boundary and limits](ACCOUNT-OFFBOARDING.md#caretaker-permissions-and-erasure--october-18).
+
+The independent **14:00 Central** live snapshot found four fresh worker completions, zero selected overdue backlogs, 72 healthy observer reports and no 5xx responses over six hours. Six API 401 responses are retained without attributing their cause. Six policies remain enabled and the checked API/bridge/observer revisions retain full traffic. This is bounded read-only health evidence; production erasure, real delivery/calls, failure recovery and the broader release gates remain open. [Operational record](OPERATIONAL-READINESS.md).
+
 ## October 18 — everyday empty-screen guidance and heading wrapping corrected
 
 Seven audited empty states now use readable guidance and fully wrapping native headings. Standard descriptions improve from **3.30–3.44:1 to 5.92–6.58:1**; inspected maximum-text dark descriptions measure **8.33–9.81:1**. Every target heading and explanation can be exposed on both 390×844 and smaller 375×667 simulator screens. Search audits pass, and the three selected error/filter recovery methods pass on iOS 27 and iOS 26.5. Whole-screen audits still retain findings, including three unexplained reports in the final iPhone SE run.
