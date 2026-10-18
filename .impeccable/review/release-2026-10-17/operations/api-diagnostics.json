@@ -1,8 +1,8 @@
 {
   "preparedAt": "2026-10-18T02:22:32.489Z",
   "sourceBaseline": "fe1615a",
-  "approved": false,
-  "deployed": false,
+  "approved": true,
+  "deployed": true,
   "functions": [
     "shieldApi"
   ],
@@ -168,6 +168,90 @@
         "lib/cloud/diagnostics.js",
         "lib/cloud/index.js"
       ]
+    },
+    "independentCI": {
+      "commit": "f67813fc29afdd8be55f66265ea116c36d7bdcf2",
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39090260090",
+      "attempts": [
+        {
+          "attempt": 1,
+          "conclusion": "failure",
+          "failure": "Concurrent stopped-history backfill: 3 INVALID_ARGUMENT: Transaction is invalid or closed",
+          "location": "backend/src/cloud/stopped-total.ts:33",
+          "accountsSuite": "skipped"
+        },
+        {
+          "attempt": 2,
+          "conclusion": "success",
+          "updatedAt": "2026-10-18T02:38:30Z",
+          "sourceUnchanged": true,
+          "check": true,
+          "firestore": true,
+          "accountLifecycle": true
+        }
+      ],
+      "transactionFailureResolved": false,
+      "testAssertionsWeakened": false
+    },
+    "deployment": {
+      "verifiedAt": "2026-10-18T02:49:59.312Z",
+      "approved": true,
+      "deployed": true,
+      "sourceManifestSha256": "8efeab82d3bcfe7a812bea8bd7947a91781d5a1bbb67b74690ba5fadc5d903f6",
+      "archiveSha256": "dff66bb824d4f4ae5718d1840bf956ff01c24d190950d357191b2c5a94513965",
+      "functions": [
+        {
+          "verifiedAt": "2026-10-18T02:49:53.525Z",
+          "function": "shieldApi",
+          "revision": "shieldapi-00034-yaw",
+          "previousRevision": "shieldapi-00033-nuk",
+          "sourceManifestSha256": "8efeab82d3bcfe7a812bea8bd7947a91781d5a1bbb67b74690ba5fadc5d903f6",
+          "archiveSha256": "dff66bb824d4f4ae5718d1840bf956ff01c24d190950d357191b2c5a94513965",
+          "sourceVerified": true,
+          "configurationPreserved": true,
+          "iamPreserved": true,
+          "trafficPercent": 100
+        }
+      ],
+      "unrelatedFunctionsPreserved": true,
+      "bridgePreserved": true,
+      "schedulesPreserved": true,
+      "hostingPreserved": true,
+      "publicConfigurationPreserved": true,
+      "publicReadiness": 200,
+      "privacyStatus": 200,
+      "privacyBytes": 8895,
+      "privacyPreserved": true,
+      "authenticationGuards": [
+        {
+          "path": "/api/blocked-numbers",
+          "status": 401
+        },
+        {
+          "path": "/api/blocked-numbers?cursor=invalid",
+          "status": 401
+        },
+        {
+          "path": "/api/access",
+          "status": 401
+        },
+        {
+          "path": "/api/account/deletion",
+          "status": 401
+        }
+      ],
+      "noCallsOrMessagesSent": true,
+      "cleanupManuallyInvoked": false,
+      "scope": "API diagnostics deployment only; the separately authorized notification test is recorded independently.",
+      "evidenceHashes": {
+        "approval.json": "20ef91fd1e404ff899df384b33c0d55d52ea82e26599311786642e2305820c34",
+        "before.json": "c97c266cc2db79f9bd83a8a6f54168ed5dd9ed7fd1126b85682a3d8802a9295a",
+        "shieldApi-intent.json": "8df090b25385a7d81910b6b665ea4f8afbfbf525158d11ad936f851bf380ee8b",
+        "shieldApi-submitted.json": "c69841da2035391455e146084eef8101f37fa88a6b5280e41ecc05d797bdae95",
+        "shieldApi-operation-status.json": "d9ec180e3afda822e7250d92c4d742762ca707e6c9b6c47aa90616f2390b8587",
+        "shieldApi-verified.json": "8da4ff60d91d0d7a0c2c93e2b6ce76cd22fc4caf2b28b5b136334363d7418c3c",
+        "verified.json": "4d6e1324fc3249e0af751673dd78ac52287d86628d47e1c497c77555230dc4ea"
+      }
     }
   },
   "earlierAttempts": {
@@ -207,12 +291,17 @@
     "api-diagnostics-current/scoped-tests.log": "188d296f1adc9d26c35631decea3541c47ca1a9ecd8e44de2b060dbb761ed0e1",
     "api-diagnostics-current/scoped-verification/scoped-results.json": "2ac47ee8166644211c1019edc745ab3ad5994bb900bbe77e39c72da19e6de911",
     "api-diagnostics-before.json": "cfe7254e67d700fed1658b002b906842ea338189e2661e1cd0b06b8d33860f85",
-    "api-diagnostics-after.json": "303353f8c2d0a0d5faf9ddc6cb40a1eb540f454a553170c70562c9acef98089e"
+    "api-diagnostics-after.json": "303353f8c2d0a0d5faf9ddc6cb40a1eb540f454a553170c70562c9acef98089e",
+    "ci-f67813f.json": "08c0ca9d16e537132fcab085e9e776d4d307d6e97a47fe2e5f8a477a5f313ff9",
+    "ci-f67813f-failed.log": "54b2cadfacbd0fda9af4ed4b3a3707283e5dd2f2c86c03a890edb76776a5be1d",
+    "ci-f67813f-retry.json": "c5a6b4359f2774894a71ae54af61ef942d19a665b397762e0b3d7ea14761925c",
+    "ci-f67813f-retry.log": "1a47bad669fc03a21211fab0ae3d4b63bb6e5b2c355b9d88661acce3deedf805"
   },
   "limitations": [
-    "Not approved or deployed",
     "Historical API failures remain unresolved",
     "Actual production structured-log emission is not yet verified",
-    "No customer request was forced to fail"
-  ]
+    "No customer request was forced to fail",
+    "Intermittent stopped-history transaction failure remains unresolved despite one passing unchanged CI rerun"
+  ],
+  "deploymentInProgress": false
 }

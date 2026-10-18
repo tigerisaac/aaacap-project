@@ -1,13 +1,66 @@
 {
-  "checkedAt": "2026-10-18T02:27:04.794Z",
+  "checkedAt": "2026-10-18T02:41:28.905Z",
   "readOnly": true,
   "start": "2026-10-18T02:16:51.174Z",
-  "end": "2026-10-18T02:27:04.794Z",
+  "end": "2026-10-18T02:41:28.905Z",
   "querySucceeded": true,
   "series": [
     {
+      "checkerLocation": "usa-virginia",
+      "samples": [
+        {
+          "at": "2026-10-18T02:32:00Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:31:50Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:31:40Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:31:30Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:31:20Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:31:10Z",
+          "passed": true
+        }
+      ]
+    },
+    {
       "checkerLocation": "usa-oregon",
       "samples": [
+        {
+          "at": "2026-10-18T02:37:30Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:37:20Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:37:10Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:37:00Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:36:50Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:36:40Z",
+          "passed": true
+        },
         {
           "at": "2026-10-18T02:22:30Z",
           "passed": true
@@ -33,11 +86,41 @@
           "passed": true
         }
       ]
+    },
+    {
+      "checkerLocation": "usa-iowa",
+      "samples": [
+        {
+          "at": "2026-10-18T02:28:40Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:28:30Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:28:20Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:28:10Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:28:00Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:27:50Z",
+          "passed": true
+        }
+      ]
     }
   ],
-  "samples": 6,
+  "samples": 24,
   "failedSamples": 0,
-  "locationsObserved": 1,
+  "locationsObserved": 3,
   "actualEmailReceiptVerified": false,
-  "syntheticAlertSent": false
+  "syntheticAlertSent": true,
+  "syntheticAlertEvidence": "A single separately authorized synthetic event was accepted and ingested; inbox receipt is pending."
 }

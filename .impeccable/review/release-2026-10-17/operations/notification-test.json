@@ -1,0 +1,129 @@
+{
+  "approved": true,
+  "approvalRecordedAt": "2026-10-18T02:40:23.181Z",
+  "recipient": "isaac.cw.zhang@gmail.com",
+  "subject": "Shield notification delivery test",
+  "notice": "This is the approved Shield notification delivery test. No service outage or customer call occurred. Please confirm receipt in the Shield release-audit chat.",
+  "maximumSyntheticEvents": 2,
+  "eventAccepted": true,
+  "eventsObserved": 2,
+  "eventTimestamps": [
+    "2026-10-18T02:40:59.913Z",
+    "2026-10-18T02:52:31.341Z"
+  ],
+  "receiveTimestamps": [
+    "2026-10-18T02:41:00.051143616Z",
+    "2026-10-18T02:52:31.478418924Z"
+  ],
+  "servicePoliciesPreserved": true,
+  "temporaryPolicyCreated": true,
+  "temporaryPolicyRemoved": true,
+  "openingNotificationOnly": true,
+  "inboxReceiptVerified": true,
+  "operatorAcknowledged": true,
+  "gmailConnectorAvailable": false,
+  "notificationChannelObservation": {
+    "checkedAt": "2026-10-18T02:44:43.689Z",
+    "start": "2026-10-18T02:40:59.913Z",
+    "projectNotificationChannelEntries": 0,
+    "errorEntries": 0,
+    "payloadsSaved": false,
+    "inboxReceiptProvedByThisQuery": false
+  },
+  "phoneCalls": false,
+  "sms": false,
+  "backendDeployment": false,
+  "initialHelperCorrection": "The API client mutates request options. Reusing a POST options object for a GET caused a local TypeError after successful policy creation and event ingestion. Fresh options fixed verification. No duplicate policy or event was submitted.",
+  "limitations": [
+    "Does not exercise actual service failures or budget thresholds",
+    "Does not establish full outage response or escalation coverage",
+    "First attempt produced no observed alert; the reason remains unconfirmed"
+  ],
+  "evidenceHashes": {
+    "notification-test-plan.json": "abe6ec39cb05f6eec1ab6c5bab40dae46c7dd230f5884f624e82add298948fcd",
+    "notification-delivery-test.mjs": "b5c2d02f46ac565a85d5c7f95214473c55a2394c10704d5ecd2498f02c79cc9d",
+    "notification-test/authorization.json": "54ebcae00e1f79605a000edf604bbc4ff0fe879c7117bbd27aa6f06c03f6aeca",
+    "notification-test/create-intent.json": "ec802dd140ab8b2f17a0cc99866feac1bbf7a7aa8edce665cca5773635c5b9d5",
+    "notification-test/create-response.json": "6bf313be5bc646d48bf41d65bf45c685b04d293cc24a1508c935086dba023645",
+    "notification-test/policy-readback.json": "f8da1d1aaaca01c2d3ac0033c08e05a106f495bf1fe113389c1fc26809e273e5",
+    "notification-test/event-intent.json": "58527cddeaae1a416392d70bef8b34e74fbc47e53d30b2248136039133166779",
+    "notification-test/event-response.json": "d1b9805cc96b36cc29c5c9269a499cd884bfdee40f75c66d8d573ff4c2b6878c",
+    "notification-test/event-observation.json": "397050e76597be8155656d02d47d66886c974a8b0f09979f7d9a12305761d157",
+    "notification-test/notification-channel-observation.json": "3feb4cc13caae3a64f7496501298a4b600bb1c43e7d3354d824c62c5a4ec1f0c",
+    "notification-test/alert-observation.json": "088fe9eeb8ec28a50fa26c8068bc41ee63ce06ec4e842fb3729a0e39afffe817",
+    "notification-test/configuration-observation.json": "3aee896f8ff45a03cc07e25cb6b68e2422dd5e271cf16b7ae6ddb75ae72682c4",
+    "notification-test/owner-status.json": "c88707b310d3556cd2b8d047b11d40a05dfc94f28886dbe39285db0299469aef",
+    "notification-test/retry-plan.json": "3dd69335d87efa8eb6a21455d962ca8911d12e7ba610d0f9b81758044724846c",
+    "notification-test/retry-authorization.json": "5137d21ade8e5dd508aaa87dd41ea5e0ffe5c35e73d7fe3730038ba4f5013e33",
+    "notification-test/retry-event-intent.json": "f3c50afa4f25a1877c75e21b43568fd9d4391f2a7f9c4cb991de960aeb1af308",
+    "notification-test/retry-event-response.json": "8b52ac119536164a5d8f3b685a65a75a2a6afea8b642a8a097e14eda5fffa777",
+    "notification-test/delivery-acceptance.json": "f61ad8474f1e1c26e203aa4dad6d4f56252316983f68a46ac88bedf2f0708ab4",
+    "notification-test/cleanup-intent.json": "a4d65274ec498db76f0c5c1f183f3a27c63973b29ca59993444cca42dde5e7c6",
+    "notification-test/cleanup-response.json": "182dd5145fccb40205082db77a3fb22b3f0f93977eef6ecc731d74411d3a65cd",
+    "notification-test/cleanup-verification.json": "94c96f23fcb83d47ae4a1f35d5f316a44f85631f89b0d76408effc283b6eebcc",
+    "notification-test/final-settings.json": "3eaa387865e67f9c6267abab281b235b8c4afa772f905f5905471a2b14d31238",
+    "final-operations-check.mjs": "cbf6b3c074bf2105edb783f538c7c44051651af077bf53223403049cc810c688"
+  },
+  "initiallyAuthorizedEvents": 1,
+  "separatelyAuthorizedAdditionalEvents": 1,
+  "inboxReceiptVerificationMethod": "owner confirmation",
+  "operatorAcknowledgementScope": "Receipt of synthetic notification test, not a full outage-response exercise",
+  "independentInboxInspection": false,
+  "alertObservation": {
+    "checkedAt": "2026-10-18T02:53:34.113Z",
+    "alertsExamined": 1,
+    "matchingTestAlerts": 1,
+    "matches": [
+      {
+        "state": "OPEN",
+        "openTime": "2026-10-18T02:52:52Z",
+        "closeTime": null,
+        "policyNameMatched": true,
+        "resourceType": "global"
+      }
+    ],
+    "inboxReceiptProvedByThisQuery": false
+  },
+  "ownerConfirmation": {
+    "recordedAt": "2026-10-18T02:54:07.238541+00:00",
+    "reply": "Received the test email"
+  },
+  "cleanup": {
+    "verifiedAt": "2026-10-18T02:54:11.373Z",
+    "temporaryPolicyRemoved": true,
+    "servicePoliciesPreserved": true,
+    "servicePolicyCount": 4,
+    "syntheticEventsSubmitted": 2,
+    "deliveryVerified": true,
+    "deliveryVerificationMethod": "owner",
+    "closedNotificationConfigured": false,
+    "phonesContacted": false
+  },
+  "finalSettings": {
+    "verifiedAt": "2026-10-18T02:54:46.727Z",
+    "readOnly": true,
+    "servicePolicies": 4,
+    "servicePoliciesPreserved": true,
+    "emailChannelPreserved": true,
+    "readinessCheckPreserved": true,
+    "budgetPreserved": true,
+    "monthlyBudgetUSD": 50,
+    "temporaryPolicyAbsent": true,
+    "notificationReceiptConfirmedByOwner": true,
+    "phonesContacted": false
+  },
+  "firstAttempt": {
+    "eventAccepted": true,
+    "eventIngested": true,
+    "alertObserved": false,
+    "ownerReportedReceipt": false,
+    "causeEstablished": false
+  },
+  "finalRetry": {
+    "explicitlyApproved": true,
+    "eventAccepted": true,
+    "eventIngested": true,
+    "alertOpenedAt": "2026-10-18T02:52:52Z",
+    "causeOfFirstAttemptFailureEstablished": false
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "verifiedAt": "2026-10-18T02:49:59.312Z",
+  "approved": true,
+  "deployed": true,
+  "sourceManifestSha256": "8efeab82d3bcfe7a812bea8bd7947a91781d5a1bbb67b74690ba5fadc5d903f6",
+  "archiveSha256": "dff66bb824d4f4ae5718d1840bf956ff01c24d190950d357191b2c5a94513965",
+  "functions": [
+    {
+      "verifiedAt": "2026-10-18T02:49:53.525Z",
+      "function": "shieldApi",
+      "revision": "shieldapi-00034-yaw",
+      "previousRevision": "shieldapi-00033-nuk",
+      "sourceManifestSha256": "8efeab82d3bcfe7a812bea8bd7947a91781d5a1bbb67b74690ba5fadc5d903f6",
+      "archiveSha256": "dff66bb824d4f4ae5718d1840bf956ff01c24d190950d357191b2c5a94513965",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    }
+  ],
+  "unrelatedFunctionsPreserved": true,
+  "bridgePreserved": true,
+  "schedulesPreserved": true,
+  "hostingPreserved": true,
+  "publicConfigurationPreserved": true,
+  "publicReadiness": 200,
+  "privacyStatus": 200,
+  "privacyBytes": 8895,
+  "privacyPreserved": true,
+  "authenticationGuards": [
+    {
+      "path": "/api/blocked-numbers",
+      "status": 401
+    },
+    {
+      "path": "/api/blocked-numbers?cursor=invalid",
+      "status": 401
+    },
+    {
+      "path": "/api/access",
+      "status": 401
+    },
+    {
+      "path": "/api/account/deletion",
+      "status": 401
+    }
+  ],
+  "noCallsOrMessagesSent": true,
+  "cleanupManuallyInvoked": false,
+  "scope": "API diagnostics deployment only; the separately authorized notification test is recorded independently.",
+  "evidenceHashes": {
+    "approval.json": "20ef91fd1e404ff899df384b33c0d55d52ea82e26599311786642e2305820c34",
+    "before.json": "c97c266cc2db79f9bd83a8a6f54168ed5dd9ed7fd1126b85682a3d8802a9295a",
+    "shieldApi-intent.json": "8df090b25385a7d81910b6b665ea4f8afbfbf525158d11ad936f851bf380ee8b",
+    "shieldApi-submitted.json": "c69841da2035391455e146084eef8101f37fa88a6b5280e41ecc05d797bdae95",
+    "shieldApi-operation-status.json": "d9ec180e3afda822e7250d92c4d742762ca707e6c9b6c47aa90616f2390b8587",
+    "shieldApi-verified.json": "8da4ff60d91d0d7a0c2c93e2b6ce76cd22fc4caf2b28b5b136334363d7418c3c",
+    "verified.json": "4d6e1324fc3249e0af751673dd78ac52287d86628d47e1c497c77555230dc4ea"
+  }
+}

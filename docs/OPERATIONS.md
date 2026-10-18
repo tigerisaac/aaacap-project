@@ -2,7 +2,7 @@
 
 How to deploy, switch features, run supervised test calls, and inspect what happened. Everything targets the Google Cloud and Firebase project `shield-calls-isaac`. It's the shared live project, not a sandbox.
 
-Following the [October 17 operational-readiness audit](OPERATIONAL-READINESS.md), the owner selected `isaac.cw.zhang@gmail.com` and a USD $50 monthly Google Cloud budget. [Four service alerts, an email channel, a readiness check and the Shield-only budget](OPERATIONAL-ALERT-SETUP.md) are now configured and read back. Actual notification receipt, overdue-job/freshness coverage, historical failure resolution and incident acceptance remain open. The [API diagnostics package](API-DIAGNOSTICS-ROLLOUT.md) is prepared separately and not deployed.
+Following the [October 17 operational-readiness audit](OPERATIONAL-READINESS.md), the owner selected `isaac.cw.zhang@gmail.com` and a USD $50 monthly Google Cloud budget. [Four service alerts, an email channel, a readiness check and the Shield-only budget](OPERATIONAL-ALERT-SETUP.md) are now configured and read back. The owner confirmed the authorized synthetic test email at 21:54; its temporary policy was removed with permanent settings preserved. Overdue-job/freshness coverage, historical failure resolution, individual service-condition/spending-alert acceptance and incident escalation remain open. The separately approved [API diagnostics package](API-DIAGNOSTICS-ROLLOUT.md) is deployed and verified on `shieldapi-00034-yaw` at 21:49 Central.
 
 ## Access and secrets
 

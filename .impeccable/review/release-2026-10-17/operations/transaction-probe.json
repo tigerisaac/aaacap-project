@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "f67813fc29afdd8be55f66265ea116c36d7bdcf2",
+  "plannedRepetitions": 20,
+  "completedPassedRepetitions": 20,
+  "failedRepetitions": 0,
+  "unselectedOtherTests": 17,
+  "success": true,
+  "applicationSourceUnchanged": true,
+  "assertionsUnchanged": true,
+  "isolatedLocalEmulator": true,
+  "liveDataAccess": false,
+  "transactionFailureReproduced": false,
+  "transactionFailureResolved": false,
+  "sourceAndResultHashes": {
+    "stopped-total-probe-plan.json": "516140886ea2a5d5d990f13ea31c4eccb9f5ddc1fcf6c29acaf9610c09617d7f",
+    "stopped-total-probe-results.json": "0f0f6e31ebe7442767d8552c442416dc382b3da8ff74f22834deda0af6beeb22",
+    "stopped-total-probe.log": "6a37a913a05b701943491a2bf32333edcbf86295ee48307ba881a7e41f0c7668"
+  },
+  "limit": "Twenty isolated repetitions passed. This does not erase the original CI failure or prove production cannot encounter the error.",
+  "upstreamContext": {
+    "url": "https://github.com/firebase/firebase-tools/issues/4473#issuecomment-1120291082",
+    "date": "2022-05-07",
+    "report": "A third-party commenter on the official emulator repository reported the same intermittent error wording on older emulator versions.",
+    "currentCauseEstablished": false
+  }
+}
