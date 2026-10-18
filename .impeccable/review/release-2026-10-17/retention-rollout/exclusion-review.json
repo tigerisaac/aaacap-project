@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-18T00:11:23.842Z",
+  "readOnly": true,
+  "exclusions": [
+    {
+      "disabled": false,
+      "filterSha256": "d58673fbf9b2c5d89b219fbf8bc1b975e4a839d5be0a0d68578d6887c9ee1258",
+      "allowlistedFilter": "resource.type=\"cloud_run_revision\" AND log_id(\"run.googleapis.com/requests\")",
+      "semanticsReviewable": true,
+      "rawCustomerValuesPrinted": false
+    }
+  ]
+}

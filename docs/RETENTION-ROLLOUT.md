@@ -29,7 +29,7 @@ The corrected source passed typecheck/build, **344 unit tests and 257 Firestore 
 
 [Verification record](../.impeccable/review/release-2026-10-17/retention-rollout/verification.json) · [frozen source manifest](../.impeccable/review/release-2026-10-17/retention-rollout/manifest.json) · [read-only production inventory](../.impeccable/review/release-2026-10-17/retention-rollout/live-inventory.json) · [preflight snapshot](../.impeccable/review/release-2026-10-17/retention-rollout/preflight.json). These records contain hashes and configuration/count summaries; credentials, customer content and full function/IAM responses remain outside the committed evidence.
 
-The preceding retention commit `33d8f85` independently passed [CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39080541791), including the account-lifecycle job. This proposal's price configuration is a subsequent correction; it is not claimed covered by that earlier commit's CI.
+The preceding retention commit `33d8f85` independently passed [CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39080541791), including the account-lifecycle job. The subsequent intended-price correction and proposal commit **`c7740e4` also passed [CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39081561143)**: required typecheck/unit/build, Firestore and account-lifecycle steps all succeeded. [Exact result](../.impeccable/review/release-2026-10-17/retention-rollout/ci-c7740e4.json). Later documentation/log-inventory evidence does not change the frozen source package or deployment scope.
 
 ## Deployment and rollback procedure
 

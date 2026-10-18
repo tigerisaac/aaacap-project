@@ -81,5 +81,19 @@
     "No Apple or RevenueCat change.",
     "No physical or legal release acceptance.",
     "Preflight must be repeated against its recorded baseline immediately before any approved deployment."
-  ]
+  ],
+  "sourceCorrectionCI": {
+    "commit": "c7740e45e25b890de1ac9f18225998bdfdb9755d",
+    "runId": 39081561143,
+    "result": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39081561143",
+    "report": "ci-c7740e4.json",
+    "scope": "Source includes the intended-price correction. Later changes in this checkpoint only add documentation and evidence."
+  },
+  "followupLogObservation": {
+    "report": "log-inventory.json",
+    "exclusionReview": "exclusion-review.json",
+    "readOnly": true,
+    "productionMutations": false
+  }
 }

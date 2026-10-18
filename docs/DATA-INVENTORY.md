@@ -16,6 +16,12 @@ The project’s active `_Default` log bucket retains entries for **30 days**; `_
 
 Daily cleanup, five-minute audio cleanup and minute account-deletion schedules are enabled and their last recorded statuses are successful. There are no pending/stored recording-erasure jobs, cloud audio manifests/chunks, monitored-call documents or account-deletion jobs in this snapshot. Six completed recording jobs have not reached expiry; four temporary sign-in challenges remain. These are counts, not content reads or erasure proofs. The source-hash and rollout evidence are recorded in the [retention rollout review](RETENTION-ROLLOUT.md).
 
+### Bounded logging follow-up — October 17, 19:09–19:11 Central
+
+A read-only query of API, bridge and the three cleanup services over the preceding 24 hours returned **220 stdout/stderr records**, all structured: 219 bridge records and one API record. All matched an account/call/provider identifier field category. None matched the checked phone/email, transcript/audio or credential field names. This is a field-name inventory, not a full content classifier or proof that all sensitive data is absent. The query did not reach its 1,000-entry limit. Raw records, identifiers and URLs were not saved or printed. [Counts, query window and limits](../.impeccable/review/release-2026-10-17/retention-rollout/log-inventory.json).
+
+The active `_Default` sink exclusion is exactly `resource.type="cloud_run_revision" AND log_id("run.googleapis.com/requests")`: it excludes Cloud Run request logs regardless of HTTP status. The bounded request query returned zero records, consistent with that rule. Consequently, absence of request-log errors cannot establish successful HTTP traffic. Application logs, separate service metrics, Cloud Audit Logs, organization sinks and vendor logs have different coverage. [Allowlisted rule readback](../.impeccable/review/release-2026-10-17/retention-rollout/exclusion-review.json); [Google query semantics](https://docs.cloud.google.com/logging/docs/view/logging-query-language). No logging setting was changed.
+
 ## Data held by Shield
 
 | Data and purpose | Processing/storage | Retention and deletion |
@@ -61,7 +67,7 @@ Apple asks for data collected by both the app and integrated partners, and treat
 
 The app currently declares no tracking and no tracking domains; it declares the app-only UserDefaults reason `CA92.1`. The Call Directory extension declares no collection; RevenueCat contributes its own bundled manifest. The unsigned archive check found all three manifests. [App manifest](../ios/Shield/Resources/PrivacyInfo.xcprivacy), [theme archive evidence](IOS-THEME-PORT.md).
 
-Before final answers, resolve whether operational call/use metrics and linked server diagnostics require additional **Product Interaction / Other Usage Data / Performance Data / Other Diagnostic Data** declarations and purposes. They are not currently listed in the app manifest. Verify provider/SDK collection of IP, device attributes, diagnostics, any geographic derivation and retention; absence of a custom analytics SDK does not settle those questions. No evidence here establishes ad tracking, advertising use, location permission or cross-app profiling.
+Before final answers, resolve whether operational call/use metrics and linked server diagnostics require additional **Product Interaction / Other Usage Data / Performance Data / Other Diagnostic Data** declarations and purposes. They are not currently listed in the app manifest; the bounded production sample above confirms identifier-bearing diagnostic records exist. Verify provider/SDK collection of IP, device attributes, diagnostics, any geographic derivation and retention; absence of a custom analytics SDK does not settle those questions. No evidence here establishes ad tracking, advertising use, location permission or cross-app profiling.
 
 ## Evidence and remaining work
 

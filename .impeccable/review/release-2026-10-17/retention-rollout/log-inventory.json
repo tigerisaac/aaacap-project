@@ -1,0 +1,104 @@
+{
+  "checkedAt": "2026-10-18T00:09:52.895Z",
+  "readOnly": true,
+  "window": {
+    "start": "2026-10-17T00:09:51.659Z",
+    "end": "2026-10-18T00:09:51.658Z"
+  },
+  "services": [
+    "shieldapi",
+    "shield-live",
+    "cleanupshield",
+    "expiremessagedeliveries",
+    "finishaccountdeletions"
+  ],
+  "samples": [
+    {
+      "name": "HTTP request metadata",
+      "maximumEntries": 1000,
+      "maximumPages": 6,
+      "entries": 0,
+      "pages": 1,
+      "truncated": false,
+      "services": {
+        "shieldapi": 0,
+        "shield-live": 0,
+        "cleanupshield": 0,
+        "expiremessagedeliveries": 0,
+        "finishaccountdeletions": 0
+      },
+      "severityErrorOrHigher": 0,
+      "httpRequests": 0,
+      "withRemoteIp": 0,
+      "withUserAgent": 0,
+      "withQueryString": 0,
+      "withCredentialNamedQueryParameter": 0,
+      "withUuidInPath": 0,
+      "structuredPayloads": 0,
+      "textPayloads": 0,
+      "structuredFieldCategoryEntries": {
+        "accountCallOrProviderIdentifier": 0,
+        "phoneOrEmail": 0,
+        "transcriptOrAudio": 0,
+        "authenticationValue": 0,
+        "encryptedValue": 0,
+        "arbitraryMessage": 0
+      },
+      "categoryDetectionLimit": "Field-name detection, not an exhaustive scan of free text or proof that data is absent."
+    },
+    {
+      "name": "Application stdout/stderr",
+      "maximumEntries": 1000,
+      "maximumPages": 6,
+      "entries": 220,
+      "pages": 1,
+      "truncated": false,
+      "services": {
+        "shieldapi": 1,
+        "shield-live": 219,
+        "cleanupshield": 0,
+        "expiremessagedeliveries": 0,
+        "finishaccountdeletions": 0
+      },
+      "severityErrorOrHigher": 0,
+      "httpRequests": 0,
+      "withRemoteIp": 0,
+      "withUserAgent": 0,
+      "withQueryString": 0,
+      "withCredentialNamedQueryParameter": 0,
+      "withUuidInPath": 0,
+      "structuredPayloads": 220,
+      "textPayloads": 0,
+      "structuredFieldCategoryEntries": {
+        "accountCallOrProviderIdentifier": 220,
+        "phoneOrEmail": 0,
+        "transcriptOrAudio": 0,
+        "authenticationValue": 0,
+        "encryptedValue": 0,
+        "arbitraryMessage": 0
+      },
+      "categoryDetectionLimit": "Field-name detection, not an exhaustive scan of free text or proof that data is absent."
+    }
+  ],
+  "defaultSinkExclusions": [
+    {
+      "disabled": false,
+      "filterSha256": "d58673fbf9b2c5d89b219fbf8bc1b975e4a839d5be0a0d68578d6887c9ee1258",
+      "terms": {
+        "cloudRunRevision": true,
+        "requestLog": true,
+        "requestStatus": false,
+        "severity": false
+      },
+      "semanticsVerified": false
+    }
+  ],
+  "rawEntriesSaved": false,
+  "rawValuesPrinted": false,
+  "limitations": [
+    "Bounded query; truncated results do not represent all entries in the window.",
+    "Field-name inspection does not classify arbitrary strings or prove absence of sensitive data.",
+    "Other services, Cloud Audit Logs, organization sinks, exports and vendor logs are outside this observation.",
+    "No retention, exclusion, routing or service settings were changed."
+  ]
+}
