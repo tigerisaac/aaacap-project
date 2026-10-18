@@ -11,6 +11,9 @@ actor APIClient {
     private let phoneSetupCache = PhoneSetupCache()
     private var phoneSetupGeneration = 0
     private var cacheOwners: Set<UUID> = []
+    #if DEBUG && targetEnvironment(simulator)
+    private var blockedPaginationFixture = BlockedPaginationFixture()
+    #endif
 
     init(configuration: BackendConfiguration) {
         self.configuration = configuration
@@ -24,6 +27,10 @@ actor APIClient {
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") {
             // In-memory synthetic identity; no server or real Keychain account is used.
             let payload = Data(#"{"sub":"offline-history-fixture"}"#.utf8).base64EncodedString()
+            self.tokens = AuthTokens(accessToken: "fixture.\(payload).fixture", refreshToken: "", expiresIn: 0)
+        }
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-blocked-pagination") {
+            let payload = Data(#"{"sub":"blocked-pagination-fixture"}"#.utf8).base64EncodedString()
             self.tokens = AuthTokens(accessToken: "fixture.\(payload).fixture", refreshToken: "", expiresIn: 0)
         }
         #endif
@@ -65,6 +72,25 @@ actor APIClient {
         phoneSetupGeneration += 1
         await navigationCache.invalidate(preservingConfiguration: true)
         if let account = localAccountID { try? phoneSetupCache.invalidate(account: account) }
+    }
+
+    func blockedNumbers(participantID: UUID) async throws -> [BlockedNumber] {
+        let generation = sessionGeneration, mutation = phoneSetupGeneration
+        do {
+            return try await BlockedNumbersLoader.load { cursor in
+                try await self.blockedNumbersPage(cursor: cursor, participantID: participantID,
+                                                 generation: generation, mutation: mutation)
+            }
+        } catch is URLError { throw APIError.connectionInterrupted }
+    }
+
+    private func blockedNumbersPage(cursor: String?, participantID: UUID, generation: Int, mutation: Int) async throws -> BlockedNumberPage {
+        guard generation == sessionGeneration, mutation == phoneSetupGeneration else { throw CancellationError() }
+        // The loader validates the opaque base64url cursor before it can reach this path.
+        let path = "/api/blocked-numbers" + (cursor.map { "?cursor=\($0)" } ?? "")
+        let page: BlockedNumberPage = try await send(path, participantID: participantID)
+        guard generation == sessionGeneration, mutation == phoneSetupGeneration else { throw CancellationError() }
+        return page
     }
 
     /// Explicitly requested by presentation code; live actions always use send().
@@ -174,6 +200,8 @@ actor APIClient {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-blocked-pagination"),
+           let result = try blockedPaginationFixture.response(path: path, method: method) { return result }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-cold-launch"), path == "/api/people" {
             // Keep the service pending so a real cached-owner launch must become usable first.
             try await Task.sleep(for: .seconds(6))

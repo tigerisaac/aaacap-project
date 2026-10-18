@@ -1,0 +1,304 @@
+{
+  "date": "2026-10-17",
+  "timezone": "America/Chicago",
+  "baseCommit": "57fac76596343cdf33e22ffa281bdebb0a997c6e",
+  "sourceOverlays": "source-overlays.json",
+  "scope": [
+    "Complete bounded, authorized blocked-number pagination beyond the old 200-row limit",
+    "Publish only complete traversals; preserve session/mutation fencing and retry interrupted loads",
+    "Keep all blocking pages fresh; readable connection recovery and older-entry unblock"
+  ],
+  "reproducedRegressions": {
+    "before": {
+      "failed": 5,
+      "skippedBySelection": 52
+    },
+    "after": {
+      "forwardingPassed": 57,
+      "failed": 0
+    }
+  },
+  "requiredChecks": {
+    "unit": {
+      "passed": 344,
+      "skippedBySuiteSelection": 269,
+      "typecheck": "passed",
+      "build": "passed"
+    },
+    "firestore": {
+      "passed": 262,
+      "failed": 0,
+      "suites": 12,
+      "project": "demo-shield",
+      "config": "artifacts/private/privacy-inventory-oct17/firebase.emulators.json",
+      "metadataServerDetection": "none"
+    }
+  },
+  "swiftHarness": {
+    "command": "npm run test:blocked-numbers",
+    "passed": 8,
+    "failed": 0,
+    "source": "scripts/tests/blocked-numbers.swift",
+    "coverage": [
+      "401 entries across three pages",
+      "empty intermediate and terminal pages",
+      "late failure publishes nothing; retry starts over",
+      "old or unknown version rejected",
+      "malformed and cyclic cursors",
+      "oversized and endless response bounds",
+      "overlap deduplication keeps newer block",
+      "cancellation after transport returns"
+    ]
+  },
+  "storageAndCache": {
+    "command": "npm run test:audio-storage",
+    "result": "passed",
+    "additionalAssertion": "Neither the first blocked-number page nor cursor pages use navigation caching"
+  },
+  "ui": {
+    "runs": [
+      {
+        "run": "ios-265",
+        "runtime": "26.5",
+        "passed": 7,
+        "failed": 0,
+        "runtimeWarnings": 0,
+        "summary": "ios-265-summary.json",
+        "resultBundle": "/tmp/shield-blocked-pagination-265-oct17.xcresult",
+        "sourceOverlays": "initial-source-overlays.json"
+      },
+      {
+        "run": "ios-265-final",
+        "runtime": "26.5",
+        "passed": 2,
+        "failed": 0,
+        "runtimeWarnings": 0,
+        "summary": "ios-265-final-summary.json",
+        "resultBundle": "/tmp/shield-blocked-pagination-265-final-oct17.xcresult",
+        "sourceOverlays": "cancellation-source-overlays.json"
+      },
+      {
+        "run": "ios-27",
+        "runtime": "27.0",
+        "passed": 8,
+        "failed": 0,
+        "runtimeWarnings": 0,
+        "summary": "ios-27-summary.json",
+        "resultBundle": "/tmp/shield-blocked-pagination-27-oct17.xcresult",
+        "sourceOverlays": "cancellation-source-overlays.json"
+      },
+      {
+        "run": "ios-27-copy",
+        "runtime": "27.0",
+        "passed": 2,
+        "failed": 0,
+        "runtimeWarnings": 0,
+        "summary": "ios-27-copy-summary.json",
+        "resultBundle": "/tmp/shield-blocked-pagination-27-copy-oct17.xcresult",
+        "sourceOverlays": "source-overlays.json"
+      },
+      {
+        "run": "ios-265-copy",
+        "runtime": "26.5",
+        "passed": 2,
+        "failed": 0,
+        "runtimeWarnings": 0,
+        "summary": "ios-265-copy-summary.json",
+        "resultBundle": "/tmp/shield-blocked-pagination-265-copy-oct17.xcresult",
+        "sourceOverlays": "source-overlays.json"
+      }
+    ],
+    "coverage": [
+      "Late-page failure displays no partial rows or empty-list claim",
+      "Retry traverses again from the beginning",
+      "Older entry can be unblocked while recent entry remains",
+      "Superseded second page offers retry instead of loading indefinitely",
+      "Broader Call Directory, offline history and role regression journeys before final connection-copy correction"
+    ],
+    "sourceDifferences": "Initial iOS 26.5 run precedes cancellation recovery. The next 26.5 and broader iOS 27 runs include cancellation recovery. Final two-method runs on each runtime and the archive include the readable connection-error correction.",
+    "limits": "Synthetic nil-backend fixture, isolated local file and injected successful reloader. No real CallKit operation, physical device, full accessibility audit or real call evidence."
+  },
+  "screenshots": [
+    {
+      "file": "failure-standard-light.png",
+      "sourceAttachment": "8A0B5246-1461-4635-AAF3-3AD186810DB2.png",
+      "runtime": "iOS 27",
+      "appearance": "light",
+      "textSize": "standard",
+      "reviewed": true,
+      "sha256": "e2119f17e0c25a2a89969968d38d204338c5e46a1621e8f4dd9446410f28cc58"
+    },
+    {
+      "file": "failure-largest-dark.png",
+      "sourceAttachment": "EC6F9657-848E-4872-A894-555AF97FFD17.png",
+      "runtime": "iOS 27",
+      "appearance": "dark",
+      "textSize": "accessibility XXXL",
+      "reviewed": true,
+      "sha256": "2ae59902f9ac42086f30040f3ec4994849dcc502baaba7ab3af86b7fee48abb0"
+    },
+    {
+      "file": "older-entry-standard-light.png",
+      "sourceAttachment": "690CA059-9277-48DF-86F1-7C01A229CB82.png",
+      "runtime": "iOS 27",
+      "appearance": "light",
+      "textSize": "standard",
+      "reviewed": true,
+      "sha256": "96dc404646e2629426e6b554b1e6d6e12d948a59dd26dea9124dd67778b885e7"
+    },
+    {
+      "file": "older-entry-largest-dark.png",
+      "sourceAttachment": "A45E89A6-3A24-47E2-A1CC-8C861F3B018C.png",
+      "runtime": "iOS 27",
+      "appearance": "dark",
+      "textSize": "accessibility XXXL",
+      "reviewed": true,
+      "sha256": "4a9a214f362363644c44f99a4eaf283b4a54b33e7478bcee9b1afb43a866dc9b"
+    }
+  ],
+  "archive": {
+    "archive": "/tmp/shield-blocked-pagination-oct17.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "452c8bf81d27bdd9c9a6c4c3d2026af8e404b9dcfd5bbb5e2c1b3bda81f1df9d"
+  },
+  "backendCandidate": {
+    "approved": false,
+    "deployed": false,
+    "files": 86,
+    "changedFromRecordedLiveBaseline": 5,
+    "additionalChangeFromRetention": [
+      "lib/cloud/forwarding-api.js"
+    ],
+    "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+    "parentManifestSha256": "5cd5d71609a1191faf0e4030d9fd306b20f2599889b6e6e1861b1f9080867577",
+    "parentPackageUnchanged": true,
+    "integrationPassed": 124,
+    "integrationSuites": 6,
+    "smoke": {
+      "packagedStartup": "passed",
+      "accountAndBillingWorkers": "present",
+      "policyVersion": "2026-10-17-v2",
+      "providerRequests": 0,
+      "databaseRequests": 0,
+      "deployed": false
+    },
+    "review": "docs/RETENTION-PAGINATION-ROLLOUT.md"
+  },
+  "readOnlyProductionChecks": {
+    "index": "live-index-check.json",
+    "preflight": "preflight.json",
+    "limits": "Index query targets a nonexistent synthetic participant and reads no customer content. Preflight observes the old live API and cleanup baseline; it does not verify deployment or production pagination."
+  },
+  "toolingNotes": [
+    "The first standalone Swift test compilation used an actor read inside a boolean autoclosure; corrected the assertion before passing runs.",
+    "Visual inspection of initial simulator captures exposed an NSURLErrorDomain code; the API client now maps connection failures to readable recovery text.",
+    "Exact package tests reported optional missing source maps from the copied production baseline; 124 tests passed.",
+    "Release archive reports AppIntents metadata extraction skipped for a target without that dependency; build and packaging checks passed."
+  ],
+  "privateLogs": [
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/regression-before.log",
+      "sha256": "78986b0ce9f3374c0840f598643fa64c9300121f15d96e8954a83d3738e84818"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/forwarding-after.log",
+      "sha256": "a7a46db166799f3e0b9fdfd81666a3cb86a938d516d3563236868bf729452b17"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/npm-check.log",
+      "sha256": "7606d028a3cfd8a9a4f0c550eb1507e5eacbbd9735a4a09f4252676055c16c48"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/firestore.log",
+      "sha256": "219c639b4390faa1fa84ebde0e00f51855935197a6009be86c3c7e41b5ac26c3"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/swift-first.log",
+      "sha256": "2537a15ff9597da4a2502aa16919890bbc1cbcc6db8bff6917722ca88dde8f56"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/swift-final.log",
+      "sha256": "a6f27980957baa1a5dadbbc65431f85294dbb33b3014f2de38af806bb7b04293"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/swift-complete.log",
+      "sha256": "a6f27980957baa1a5dadbbc65431f85294dbb33b3014f2de38af806bb7b04293"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/storage-cache.log",
+      "sha256": "c184448918c9a61ce01181fb82609a9ac144da2993e70e22f47bf1c3c15f2df3"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/scoped-tests.log",
+      "sha256": "3eff80207f5fbe0d2433c1c0f979f5ff98055f1946ea372fb6c7de6d8e5e8e38"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/scoped-smoke.log",
+      "sha256": "6541ed78c85667f485b29eb500eff40153067387fabc4ab80dbe4cc74ac0639a"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/ios-265.log",
+      "sha256": "0a7dd943d8e1a9b86a0428ba8711d794572dd17fd28d3b71770dd32952aebfe1"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/ios-265-final.log",
+      "sha256": "808aff80cba63e923d8a77f64c1a14bf931ea05c735816d28482a86935a50fbf"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/ios-27.log",
+      "sha256": "1f3beb2e9fc0120e4d7c16750c506aba6986fe5e96ca3ccbbddd60eab6ea0ee7"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/ios-27-copy.log",
+      "sha256": "ba477ed14e173999181f44828679af168f2af26431b7e2252ff352104bd6f087"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/ios-265-copy.log",
+      "sha256": "f767b3fc8fdae2e519a5d56f15ba6fab14d0bcc9252d1ac34418ca2697326700"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/archive-build.log",
+      "sha256": "174bb6e7365a83508a3a684b6319bbbfaa97ce80ab0b753b149afbe45933d6fa"
+    }
+  ],
+  "externalActions": {
+    "deployed": false,
+    "physicalPhoneInstalled": false,
+    "realCallsOrMessagesSent": false,
+    "phoneSettingsChanged": false,
+    "providerConfigurationChanged": false,
+    "appleSetupChanged": false
+  },
+  "remainingGates": [
+    "Approve, deploy and verify the matching backend before distributing this client",
+    "Traversal is not an immutable snapshot; new/renewed blocks and other-device writes require refresh",
+    "Real-device CallKit, expiry while suspended, signed App Group provisioning and backup/reinstall behavior",
+    "Wider accessibility and senior-task rehearsal",
+    "Apple, legal, carrier, recording, alert delivery and operational release gates in APP-STORE-RELEASE.md"
+  ],
+  "releaseApproved": false
+}

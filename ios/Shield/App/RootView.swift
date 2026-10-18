@@ -81,6 +81,8 @@ struct RootView: View {
                 ContactStorageCheckView()
             } else if ProcessInfo.processInfo.arguments.contains("--uitesting-call-directory") {
                 CallDirectoryStorageCheckView()
+            } else if ProcessInfo.processInfo.arguments.contains("--uitesting-blocked-pagination") {
+                BlockedPaginationCheckView()
             } else {
                 content
             }

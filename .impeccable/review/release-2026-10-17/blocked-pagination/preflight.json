@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-18T01:02:29.493Z",
+  "readOnly": true,
+  "approved": false,
+  "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+  "parentRetentionManifestSha256": "5cd5d71609a1191faf0e4030d9fd306b20f2599889b6e6e1861b1f9080867577",
+  "functions": [
+    {
+      "name": "shieldApi",
+      "revision": "shieldapi-00031-cif",
+      "state": "ACTIVE"
+    },
+    {
+      "name": "cleanupShield",
+      "revision": "cleanupshield-00014-ruf",
+      "state": "ACTIVE"
+    }
+  ],
+  "serviceSettingsUnchanged": true,
+  "sourceReferencesUnchanged": true,
+  "trafficVerified": true,
+  "cleanupScheduleUnchanged": true,
+  "activeCallReservations": 0,
+  "publicReadiness": 200
+}

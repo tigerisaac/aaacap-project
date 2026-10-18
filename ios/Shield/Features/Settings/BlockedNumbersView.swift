@@ -110,16 +110,21 @@ struct BlockedNumbersView: View {
         let generation = model.sessionGeneration
         let directoryGeneration = model.callDirectory.requestGeneration
         do {
-            let response: APIResponses.BlockedNumbers = try await model.api.send("/api/blocked-numbers", participantID: personID)
+            let response = try await model.api.blockedNumbers(participantID: personID)
             guard model.selectedPersonID == personID, model.sessionGeneration == generation, model.signedIn,
                   loadRevision == revision else { return }
-            items = response.items
+            items = response
             loaded = true
             if model.isOwner {
-                await model.updateCallDirectory(response.items, personID: personID, generation: generation, directoryGeneration: directoryGeneration)
+                await model.updateCallDirectory(response, personID: personID, generation: generation, directoryGeneration: directoryGeneration)
                 phoneBlocking = await CallDirectorySync.isEnabled()
             }
-        } catch is CancellationError { return }
+        } catch is CancellationError {
+            guard !Task.isCancelled, model.selectedPersonID == personID, model.sessionGeneration == generation,
+                  model.signedIn, loadRevision == revision else { return }
+            // A concurrent account mutation can invalidate pagination without dismissing this screen.
+            loadError = APIError.incompleteBlockedNumbers.localizedDescription
+        }
         catch {
             guard model.selectedPersonID == personID, model.sessionGeneration == generation, loadRevision == revision else { return }
             loadError = error.localizedDescription

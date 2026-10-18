@@ -506,6 +506,80 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     expect((await app.inject({ url: '/api/blocked-numbers', headers: headers() })).json().items).toEqual([]);
     await s.cleanup(); expect((await blocked().get()).exists).toBe(false);
   });
+  const seedBlockedPage = async (count: number, expiredFirst = 0) => {
+    const entries = Array.from({ length: count }, (_, index) => {
+      // Synthetic unassigned numbers, never sent to a telephone provider.
+      const phone = `+1000${index.toString().padStart(7, '0')}`, id = s.vault.hash(phone);
+      return { id, phone, createdAt: expiredFirst ? now - index : now };
+    });
+    for (let offset = 0; offset < entries.length; offset += 400) {
+      const batch = db.batch();
+      for (const [position, entry] of entries.slice(offset, offset + 400).entries()) {
+        batch.set(f.blockedRef(PERSON, entry.id), {
+          phoneEnc: s.vault.seal(entry.phone, `blocked:${PERSON}:${entry.id}`), createdAt: entry.createdAt,
+          expiresAt: offset + position < expiredFirst ? now : now + BLOCK_MS, reason: 'scam', attempts: 0
+        });
+      }
+      await batch.commit();
+    }
+    return entries;
+  };
+  const blockedPage = (cursor?: string, uid = 'owner') => app.inject({
+    url: '/api/blocked-numbers' + (cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''), headers: headers(uid)
+  });
+  it('paginates all blocked numbers beyond 200 with stable ordering for equal timestamps', async () => {
+    const entries = await seedBlockedPage(401);
+    const first = (await blockedPage()).json();
+    expect(first.paginationVersion).toBe(1);
+    expect(first.items).toHaveLength(200);
+    expect(first.nextCursor).toEqual(expect.any(String));
+    const second = (await blockedPage(first.nextCursor)).json();
+    expect(second.items).toHaveLength(200);
+    const third = (await blockedPage(second.nextCursor)).json();
+    expect(third.items).toHaveLength(1); expect(third.nextCursor).toBeNull();
+    expect([...first.items, ...second.items, ...third.items].map(item => item.id))
+      .toEqual(entries.map(item => item.id).sort().reverse());
+    const last = third.items[0];
+    expect((await app.inject({ method: 'DELETE', url: `/api/blocked-numbers/${last.id}`, headers: headers() })).statusCode).toBe(200);
+    expect((await f.blockedRef(PERSON, last.id).get()).exists).toBe(false);
+    expect((await blockedPage(second.nextCursor)).json()).toMatchObject({ items: [], nextCursor: null });
+  });
+  it('continues after a full page of expired blocks to return older active numbers', async () => {
+    const entries = await seedBlockedPage(201, 200);
+    const first = (await blockedPage()).json();
+    expect(first.items).toEqual([]); expect(first.nextCursor).toEqual(expect.any(String));
+    const last = (await blockedPage(first.nextCursor)).json();
+    expect(last).toMatchObject({ paginationVersion: 1, items: [{ id: entries[200]!.id, phone: entries[200]!.phone }], nextCursor: null });
+  });
+  it('continues from cursor values when the boundary document was deleted', async () => {
+    await seedBlockedPage(201);
+    const first = (await blockedPage()).json();
+    expect(first.nextCursor).toEqual(expect.any(String));
+    await f.blockedRef(PERSON, first.items.at(-1).id).delete();
+    const last = (await blockedPage(first.nextCursor)).json();
+    expect(last.items).toHaveLength(1); expect(last.nextCursor).toBeNull();
+    expect(first.items.map((item: { id: string }) => item.id)).not.toContain(last.items[0].id);
+  });
+  it('rechecks sharing on every blocked-number page and keeps unblocking owner-only', async () => {
+    await seedBlockedPage(201);
+    await db.collection('grants').doc('pagination-grant').set({ participantId: PERSON, granteeUid: 'helper', acceptedAt: now, canListen: false });
+    await s.memberRef(PERSON, 'helper').set({ grantId: 'pagination-grant' });
+    const first = (await blockedPage(undefined, 'helper')).json();
+    expect(first.nextCursor).toEqual(expect.any(String));
+    expect((await blockedPage(first.nextCursor, 'helper')).statusCode).toBe(200);
+    expect((await app.inject({ method: 'DELETE', url: `/api/blocked-numbers/${first.items[0].id}`, headers: headers('helper') })).statusCode).toBe(403);
+    await db.collection('grants').doc('pagination-grant').update({ revokedAt: now });
+    expect((await blockedPage(first.nextCursor, 'helper')).statusCode).toBe(403);
+    expect((await blockedPage(first.nextCursor, 'stranger')).statusCode).toBe(403);
+  });
+  it('rejects malformed and wrong-person blocked-number cursors', async () => {
+    const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
+    const valid = { person: PERSON, at: new Date(now).toISOString(), id: 'a'.repeat(64) };
+    for (const cursor of ['not-json', 'x'.repeat(501), encode({ ...valid, person: 'e0b7af93-72ad-431d-9708-f1d9564a2b36' }),
+      encode({ ...valid, at: 'yesterday' }), encode({ ...valid, id: '../another-document' })]) {
+      expect((await blockedPage(cursor)).statusCode).toBe(400);
+    }
+  });
   it('resumes an approved Live call through the existing private callback route', async () => {
     await post('inbound'); const c = (await f.find(sid()))!; const live = new ForwardingLive(f); await live.claim(c.id);
     await live.finish(c.id, approve);

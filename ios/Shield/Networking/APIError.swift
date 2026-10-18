@@ -3,12 +3,18 @@ import Foundation
 enum APIError: LocalizedError {
     case unconfigured
     case invalidResponse
+    case blockedNumbersUnsupported
+    case incompleteBlockedNumbers
+    case connectionInterrupted
     case service(code: String, status: Int)
 
     var errorDescription: String? {
         switch self {
         case .unconfigured: "Shield isn’t ready yet. Please try again later."
         case .invalidResponse: "We couldn’t finish that. Please try again."
+        case .blockedNumbersUnsupported: "Shield’s service needs an update before all blocked numbers can load. Please try again later."
+        case .incompleteBlockedNumbers: "The full blocked list couldn’t load. Please try again."
+        case .connectionInterrupted: "Your connection was interrupted. Check your internet connection and try again."
         case let .service(code, _):
             switch code {
             case "sign_in_required", "sign_in_failed": "Please sign in again."

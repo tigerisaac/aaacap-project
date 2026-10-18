@@ -1,5 +1,13 @@
 # Status
 
+## October 17 — complete blocked-number retrieval and retry recovery (local)
+
+The [pagination correction](IOS-BLOCKED-NUMBERS.md) replaces the silent 200-row limit with authorized, bounded pages. The app follows expired empty pages, publishes only complete results, fences account/mutation changes and lets the owner unblock older entries. Failed or interrupted later pages offer retry; legacy server responses are not accepted as a complete phone list.
+
+All five new backend regressions failed before the fix. Afterward, **57 forwarding tests**, required typecheck/build, **344 unit + 262 Firestore tests**, eight Swift pagination checks and the storage/cache suite passed. The actual screen and API client passed synthetic failure/retry/unblock journeys on iOS 26.5 and 27, with standard/light and largest/dark captures. [Final source, visual and archive evidence](../.impeccable/review/release-2026-10-17/blocked-pagination/verification.json) records the later cancellation and readable-error corrections separately from earlier runs.
+
+The [combined rollout](RETENTION-PAGINATION-ROLLOUT.md) adds one API file to the existing four-file retention proposal. Its exact package passed **124 tests** and smoke checks. At **20:02 Central**, read-only preflight confirmed unchanged live source/settings/traffic/schedule, readiness and zero active reservations. The earlier pending package remains untouched. Expanded deployment approval, backend-before-client release order and physical iPhone acceptance remain required. No deployment, phone operation, physical installation or Apple change occurred.
+
 ## October 17 — iPhone blocking-list lifecycle corrected (local)
 
 The Call Directory handoff now carries account/participant scope and per-number expiry, applies backup exclusion, and clears on sign-out/account change/confirmed ownership loss. Failed reloads remain pending across relaunch, expose a retry action, and cannot be acknowledged by an older completion. Stale list requests cannot undo an unblock, and authentication/server deletion do not stall on the optional iOS reload.

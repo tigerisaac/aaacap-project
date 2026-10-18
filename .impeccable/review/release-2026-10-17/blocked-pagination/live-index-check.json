@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-18T00:59:39.059Z",
+  "indexQueryAccepted": true,
+  "documentCount": 0,
+  "customerContentRead": false,
+  "mutation": false,
+  "note": "Synthetic participant and document-name projection only; does not verify authenticated API behavior or large-list contents in production."
+}

@@ -1,0 +1,85 @@
+{
+  "baseCommit": "57fac76596343cdf33e22ffa281bdebb0a997c6e",
+  "overlays": [
+    {
+      "path": "backend/src/cloud/forwarding-api.ts",
+      "sha256": "920498d93619ec834e2aaf31ab0ff1ab4e9ae4fe1e8dc6408a370dfa21365548"
+    },
+    {
+      "path": "backend/tests/forwarding.test.ts",
+      "sha256": "b283350df260377627aa619f105aa9912308f34d32d69be90146644e568a2a96"
+    },
+    {
+      "path": "ios/Shield.xcodeproj/project.pbxproj",
+      "sha256": "1e64c648f787128b26e3d0baad3ab47179df9d6b84206465a9843794a0adc9ac"
+    },
+    {
+      "path": "ios/Shield/App/AppState.swift",
+      "sha256": "77ec426b549ee36615e9a42e8d3620158e040b8fa61e4f9a9837f09c4ea21ee5"
+    },
+    {
+      "path": "ios/Shield/App/RootView.swift",
+      "sha256": "2604d26a887138b8a70a39145845d27155aed439f3a4d504dfc12dc1a77bc928"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/BlockedNumbersView.swift",
+      "sha256": "5a2528233a28d37802070ba5887248d47544cd9cb0c23bbaa1e95e3c12644bf7"
+    },
+    {
+      "path": "ios/Shield/Models/BlockedNumberPage.swift",
+      "sha256": "250e5b7473a6619c18f2202e6bff27c3bc923979ceb209d86ffab95572b0d2e5"
+    },
+    {
+      "path": "ios/Shield/Networking/APIClient.swift",
+      "sha256": "6dc83815dda797db0186a5bd825d813bd327518a5fecf49484881c23370a1068"
+    },
+    {
+      "path": "ios/Shield/Networking/APIError.swift",
+      "sha256": "981d65abcd352bab6ff3e9e8a37367fe10ce8dc48683285a4a781d081f4d25f8"
+    },
+    {
+      "path": "ios/Shield/Networking/APIResponses.swift",
+      "sha256": "12ddf7bcbae363dca456f06af41bd99145ed6ce3ec075a689c4cb9c5ec993282"
+    },
+    {
+      "path": "ios/Shield/Networking/BlockedNumbersLoader.swift",
+      "sha256": "afab96b116fcd6966db964150c757ac28c82c916e465bc7a4f6850cfd426eb65"
+    },
+    {
+      "path": "ios/Shield/Networking/NavigationCache.swift",
+      "sha256": "41f845cc8620b5b7665360e7a967a618c1405d887ca7084f4f807c68ed597fb7"
+    },
+    {
+      "path": "ios/Shield/Preview/BlockedPaginationCheckView.swift",
+      "sha256": "568335d56c446d26191229fdbb1777333f306ba076b75697cf580a185e3bf6d5"
+    },
+    {
+      "path": "ios/Shield/Preview/BlockedPaginationFixture.swift",
+      "sha256": "29343472b3a64adc03e52816cd384a254fa65a3c7ab1204e2e9a770e5fb81437"
+    },
+    {
+      "path": "ios/ShieldUITests/BlockedPaginationUITests.swift",
+      "sha256": "64a727f3b040919d341fe3a81f2f1cb81cc23d5af26c8580dd834d71143e2090"
+    },
+    {
+      "path": "package.json",
+      "sha256": "63c12ca606009649b8c00c13ae8708787ff44c1bf7f55215e835442c58120b03"
+    },
+    {
+      "path": "scripts/check-ios-archive.mjs",
+      "sha256": "2a2f2c7437e891c6ea9c00aab991e329c47c9a562856dfbf76299364d4a4947f"
+    },
+    {
+      "path": "scripts/test-blocked-numbers.mjs",
+      "sha256": "ae5f69b32f36c45364039d1c95fa1ac58948ea2a78ecdb8262f39426936c97f9"
+    },
+    {
+      "path": "scripts/tests/blocked-numbers.swift",
+      "sha256": "da006f1efd4f891aaf13cd386b2f46d0e0c133c03dbd2c0aabb6c7abef991e03"
+    },
+    {
+      "path": "scripts/tests/navigation-cache.swift",
+      "sha256": "0e88d186c1a63f737d5bd0376fe37532c483cb61670bb2a29cbfd0101c074dac"
+    }
+  ]
+}

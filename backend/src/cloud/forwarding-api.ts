@@ -1,6 +1,6 @@
 import { SharedProbes } from './shared-probes.js';
 import { z } from 'zod';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldPath, FieldValue } from 'firebase-admin/firestore';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { bearer, HttpError, type AuthProvider } from '../auth.js';
 import { CloudStore } from './store.js';
@@ -151,8 +151,22 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   app.get('/api/blocked-numbers', async request => {
     const selected = request.headers['x-shield-participant'];
     const ctx = await store.access((await auth.identify(bearer(request))).subject, selected === undefined ? undefined : z.string().uuid().parse(selected).toLowerCase());
-    const docs = await store.personRef(ctx.participant.id).collection('blocked-numbers').orderBy('createdAt', 'desc').limit(200).get();
-    return { items: docs.docs.filter(d => d.data().expiresAt > store.now()).map(d => ({ id: d.id, reason: d.data().reason,
+    const { cursor } = z.object({ cursor: z.string().min(1).max(500).regex(/^[A-Za-z0-9_-]+$/).optional() }).strict().parse(request.query);
+    let query = store.personRef(ctx.participant.id).collection('blocked-numbers')
+      .orderBy('createdAt', 'desc').orderBy(FieldPath.documentId(), 'desc');
+    if (cursor) {
+      try {
+        const position = z.object({ person: z.string().uuid(), at: z.string().datetime(), id: z.string().regex(/^[a-f0-9]{64}$/) })
+          .strict().parse(JSON.parse(Buffer.from(cursor, 'base64url').toString()));
+        if (position.person !== ctx.participant.id) throw new Error('Wrong participant');
+        query = query.startAfter(Date.parse(position.at), position.id);
+      } catch { throw new HttpError(400, 'invalid_cursor'); }
+    }
+    const docs = (await query.limit(201).get()).docs, page = docs.slice(0, 200), last = page.at(-1), now = store.now();
+    // Advance using scanned rows, even if every row in a page has expired. The boundary may later be deleted.
+    return { paginationVersion: 1, nextCursor: docs.length > 200 && last
+      ? Buffer.from(JSON.stringify({ person: ctx.participant.id, at: at(last.data().createdAt), id: last.id })).toString('base64url') : null,
+      items: page.filter(d => d.data().expiresAt > now).map(d => ({ id: d.id, reason: d.data().reason,
       phone: store.vault.open(d.data().phoneEnc, `blocked:${ctx.participant.id}:${d.id}`), blockedAt: at(d.data().createdAt),
       expiresAt: at(d.data().expiresAt), attempts: d.data().attempts ?? 0, lastAttemptAt: at(d.data().lastAttemptAt) })) };
   });

@@ -95,7 +95,7 @@ final class AppState {
             people = people.filter { $0.id == selectedPersonID }
         }
         let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("--uitesting-call-directory") {
+        if arguments.contains("--uitesting-call-directory") || arguments.contains("--uitesting-blocked-pagination") {
             isRestoringSession = false
             isPreview = true
             signedIn = true
@@ -279,9 +279,9 @@ final class AppState {
     private func syncCallDirectory(generation: Int) async {
         let directoryGeneration = callDirectory.requestGeneration
         guard isOwner, !isDemo, let id = selectedPersonID,
-              let response: APIResponses.BlockedNumbers = try? await api.send("/api/blocked-numbers", participantID: id),
+              let items = try? await api.blockedNumbers(participantID: id),
               generation == sessionGeneration, selectedPersonID == id else { return }
-        await updateCallDirectory(response.items, personID: id, generation: generation, directoryGeneration: directoryGeneration)
+        await updateCallDirectory(items, personID: id, generation: generation, directoryGeneration: directoryGeneration)
     }
 
     private func loadProtectionOnboarding(generation: Int) async {

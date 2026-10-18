@@ -90,11 +90,12 @@ The Messages tab combines voicemail and saved notices. Authorized users see a sh
 
 ## Call Directory extension
 
-`CallDirectory/` supplies the protected person's downloaded blocklist to iOS, including saved or recently dialed numbers that could otherwise ring directly. Real-device behavior still requires acceptance; the server list's current 200-row limit also prevents claiming complete synchronization for larger lists.
+`CallDirectory/` supplies the protected person's downloaded blocklist to iOS, including saved or recently dialed numbers that could otherwise ring directly. The repository now retrieves complete authorized pages before replacing the handoff. The matching API must be deployed before this client; it rejects the old server's silently truncated response. Real-device behavior still requires acceptance. [Pagination behavior and evidence](../docs/IOS-BLOCKED-NUMBERS.md).
 
 - **How it works:** the app writes the account-scoped, expiring list (`Shared/CallDirectoryList.swift`) to `group.$(SHIELD_APP_BUNDLE_ID)`, with file protection and backup exclusion. A serialized coordinator persists pending reloads, retries failures and fences stale requests. Refresh filters expiry before networking; sign-out/account change/confirmed ownership loss clear the handoff. Only an owner's list is published, never a helper's. A successful file write alone does not establish iOS's installed state.
 - **Turning it on:** the person enables Shield under Settings → Apps → Phone → Call Blocking & Identification. The Blocked numbers screen shows whether it's on and links there.
 - **Checks:** `npm run test:call-directory` runs 12 Swift storage/concurrency checks on macOS. `CallDirectoryStorageUITests` covers actual AppState sign-out with an injected reloader, visible failure, retry and relaunch. Both are synthetic and perform no phone operation. [Exact evidence and operating-system limits](../docs/IOS-CALL-DIRECTORY.md).
+- **Pagination checks:** `npm run test:blocked-numbers` runs eight Swift traversal/failure/cancellation checks. `BlockedPaginationUITests` exercises the actual screen and API client with synthetic pages, late-page failure, retry, older-entry unblocking and cancellation recovery. `npm run test:audio-storage` includes the cache rule that keeps all blocking pages fresh.
 
 **Signing (added October 11, not yet installed on the phone):**
 - **App ID:** the extension needs `org.isaaczhang.Shield.CallDirectory`.

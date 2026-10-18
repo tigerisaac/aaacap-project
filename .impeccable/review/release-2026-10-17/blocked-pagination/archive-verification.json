@@ -1,0 +1,29 @@
+{
+  "archive": "/tmp/shield-blocked-pagination-oct17.xcarchive",
+  "verified": true,
+  "distributionSigningVerified": false,
+  "version": "0.1.0",
+  "build": "1",
+  "minimumOS": "26.0",
+  "apiHost": "shield-calls-isaac.web.app",
+  "developmentNetworkingException": false,
+  "messageFilterEmbedded": false,
+  "bundles": [
+    {
+      "path": ".",
+      "identifier": "org.isaaczhang.Shield",
+      "architecture": "arm64"
+    },
+    {
+      "path": "PlugIns/ShieldCallDirectory.appex",
+      "identifier": "org.isaaczhang.Shield.CallDirectory",
+      "architecture": "arm64"
+    }
+  ],
+  "privacyManifests": [
+    "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+    "PrivacyInfo.xcprivacy",
+    "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+  ],
+  "appBinarySha256": "452c8bf81d27bdd9c9a6c4c3d2026af8e404b9dcfd5bbb5e2c1b3bda81f1df9d"
+}

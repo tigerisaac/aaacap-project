@@ -58,7 +58,8 @@ func testNavigationCache() async throws {
     _ = try await cache.data(for: key, lifetime: 60, fetch: fetch)
     try require(await source.requests == 8, "failed reads must remain retryable")
     try require(NavigationCache.lifetime(path: key.path, owner: false, authenticated: true) == nil, "helper access must stay fresh")
-    for path in ["/api/forwarding", "/api/people", "/api/sharing", "/api/voicemails/123/audio", "/api/forwarding/restore"] {
+    for path in ["/api/forwarding", "/api/people", "/api/sharing", "/api/voicemails/123/audio", "/api/forwarding/restore",
+                 "/api/blocked-numbers", "/api/blocked-numbers?cursor=example"] {
         try require(NavigationCache.lifetime(path: path, owner: true, authenticated: true) == nil, "sensitive endpoint cached: \(path)")
     }
     try require(NavigationCache.lifetime(path: "/public/config", owner: false, authenticated: false) == 3600, "public configuration cache")
