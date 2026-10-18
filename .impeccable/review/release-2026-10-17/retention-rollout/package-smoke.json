@@ -1,0 +1,8 @@
+{
+  "packagedStartup": "passed",
+  "accountAndBillingWorkers": "present",
+  "policyVersion": "2026-10-17-v2",
+  "providerRequests": 0,
+  "databaseRequests": 0,
+  "deployed": false
+}

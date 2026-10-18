@@ -1,0 +1,187 @@
+{
+  "checkedAt": "2026-10-17T23:54:02.150Z",
+  "readOnly": true,
+  "observations": {
+    "functions": [
+      {
+        "name": "shieldApi",
+        "state": "ACTIVE",
+        "revision": "shieldapi-00031-cif",
+        "traffic": [
+          {
+            "revision": "shieldapi-00031-cif",
+            "percent": 100
+          }
+        ],
+        "secrets": [
+          {
+            "key": "SHIELD_RUNTIME",
+            "version": "8"
+          },
+          {
+            "key": "SHIELD_OPENAI_API_KEY",
+            "version": "2"
+          }
+        ],
+        "maxInstances": 2,
+        "minInstances": 0
+      },
+      {
+        "name": "cleanupShield",
+        "state": "ACTIVE",
+        "revision": "cleanupshield-00014-ruf",
+        "traffic": [
+          {
+            "revision": "cleanupshield-00014-ruf",
+            "percent": 100
+          }
+        ],
+        "secrets": [
+          {
+            "key": "SHIELD_RUNTIME",
+            "version": "6"
+          }
+        ],
+        "maxInstances": 1,
+        "minInstances": 0
+      },
+      {
+        "name": "expireMessageDeliveries",
+        "state": "ACTIVE",
+        "revision": "expiremessagedeliveries-00002-nos",
+        "traffic": [
+          {
+            "revision": "expiremessagedeliveries-00002-nos",
+            "percent": 100
+          }
+        ],
+        "secrets": [
+          {
+            "key": "SHIELD_RUNTIME",
+            "version": "6"
+          }
+        ],
+        "maxInstances": 1,
+        "minInstances": 0
+      },
+      {
+        "name": "finishAccountDeletions",
+        "state": "ACTIVE",
+        "revision": "finishaccountdeletions-00001-kif",
+        "traffic": [
+          {
+            "revision": "finishaccountdeletions-00001-kif",
+            "percent": 100
+          }
+        ],
+        "secrets": [
+          {
+            "key": "SHIELD_RUNTIME",
+            "version": "8"
+          }
+        ],
+        "maxInstances": 1,
+        "minInstances": 0
+      }
+    ],
+    "database": {
+      "location": "us-central1",
+      "pointInTimeRecovery": "POINT_IN_TIME_RECOVERY_DISABLED",
+      "versionRetentionPeriod": "3600s"
+    },
+    "backupSchedules": [],
+    "backups": {
+      "count": 0
+    },
+    "ttlPolicies": [],
+    "logBuckets": [
+      {
+        "name": "_Default",
+        "location": "global",
+        "retentionDays": 30,
+        "locked": false,
+        "state": "ACTIVE"
+      },
+      {
+        "name": "_Required",
+        "location": "global",
+        "retentionDays": 400,
+        "locked": true,
+        "state": "ACTIVE"
+      }
+    ],
+    "logSinks": [
+      {
+        "name": "_Default",
+        "destinationType": "logging.googleapis.com",
+        "destinationSameProject": true,
+        "disabled": false,
+        "exclusionCount": 1
+      },
+      {
+        "name": "_Required",
+        "destinationType": "logging.googleapis.com",
+        "destinationSameProject": true,
+        "disabled": false,
+        "exclusionCount": 0
+      }
+    ],
+    "recordings": {
+      "counts": {
+        "pending": 0,
+        "stored": 0,
+        "done": 6,
+        "total": 6,
+        "expired": 0
+      },
+      "expiryQueryPassed": true,
+      "expiredStatusesSample": {},
+      "sampled": 0,
+      "completeSample": true
+    },
+    "counts": {
+      "forwardingAudio": 0,
+      "forwardingAudioChunks": 0,
+      "phoneAuthChallenges": 4,
+      "phoneAuthLimits": 2,
+      "accountDeletions": 0,
+      "monitoredCalls": 0
+    },
+    "schedules": [
+      {
+        "name": "cleanupShield",
+        "state": "ENABLED",
+        "schedule": "every day 04:00",
+        "timeZone": "America/Chicago",
+        "lastAttemptTime": "2026-10-17T09:00:00.276185Z",
+        "statusCode": 0,
+        "retryCount": 3
+      },
+      {
+        "name": "expireMessageDeliveries",
+        "state": "ENABLED",
+        "schedule": "*/5 * * * *",
+        "timeZone": "Etc/UTC",
+        "lastAttemptTime": "2026-10-17T23:50:10.078516Z",
+        "statusCode": 0,
+        "retryCount": 3
+      },
+      {
+        "name": "finishAccountDeletions",
+        "state": "ENABLED",
+        "schedule": "every 1 minutes",
+        "timeZone": "UTC",
+        "lastAttemptTime": "2026-10-17T23:53:02.262519Z",
+        "statusCode": 0,
+        "retryCount": 3
+      }
+    ],
+    "public": {
+      "status": 200,
+      "phoneSignInAvailable": true,
+      "caretakerAvailable": false,
+      "pushAvailable": false,
+      "messageFilteringAvailable": false
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "recordedAt": "2026-10-18T00:05:07.481220+00:00",
+  "approved": false,
+  "deployed": false,
+  "sourceCommit": "33d8f850363fc8d6ad9a1b4e042541f81946f728",
+  "sourceOverlay": {
+    "backend/src/cloud/commercial-policy.json": "949922ccf40f06b1911cb66bec5cbf06f5bc34a8808534693732e74acb8fd47b"
+  },
+  "sourceManifestSha256": "5cd5d71609a1191faf0e4030d9fd306b20f2599889b6e6e1861b1f9080867577",
+  "baselineFiles": 86,
+  "changedFiles": [
+    "lib/cloud/app.js",
+    "lib/cloud/commercial-policy.json",
+    "lib/cloud/phone-auth.js",
+    "lib/cloud/store.js"
+  ],
+  "candidateFileHashesVerified": true,
+  "baselineFileHashesVerified": true,
+  "compiledTestsUnmodified": true,
+  "testHelperSha256": "b20475b3f997ad2a012e787254c53e5f0453c5e9e747c9f74af88efe0f4a69af",
+  "testConfigurationSha256": "a88328dfc1581cc915023b9c13b1123de38011b461dc01febaaee6c059324d4a",
+  "emulatorProject": "demo-shield",
+  "emulatorConfigurationSha256": "9aa33a973189ecc5215925519bebaf0bcbe2a7049bd6359a65cf3caaaed272c1",
+  "checks": [
+    {
+      "name": "npm run check",
+      "result": "passed",
+      "unitPassed": 344,
+      "integrationSkippedInUnitRun": 264,
+      "typecheck": "passed",
+      "build": "passed",
+      "privateLog": "artifacts/private/retention-rollout-oct17/npm-check.log",
+      "logSha256": "c3833e29de40bf4788a02b1d716b12d464f3db99e0706385a43a9a8f08d1b823"
+    },
+    {
+      "name": "npm run test:firebase with isolated local ports",
+      "result": "passed",
+      "testsPassed": 257,
+      "testFilesPassed": 12,
+      "privateLog": "artifacts/private/retention-rollout-oct17/firestore-source.log",
+      "logSha256": "2022ef76604b9d9930182d0fcb1444cc27dbe912875b0b2579a870a3cfb0012d"
+    },
+    {
+      "name": "Exact frozen compiled package: six unchanged Firestore suites",
+      "result": "passed",
+      "testsPassed": 119,
+      "testFilesPassed": 6,
+      "privateLog": "artifacts/private/retention-rollout-oct17/scoped-tests.log",
+      "logSha256": "e44fe1a60842a6a5df8f71d8b6dfeb6e3bcef85c02a895874076f196215328fa",
+      "warnings": "Vite reported absent optional source maps in the downloaded production baseline; all six suites passed."
+    },
+    {
+      "name": "Packaged startup, exports, public policy and unauthenticated guards",
+      "result": "passed",
+      "providerRequests": 0,
+      "databaseRequests": 0,
+      "report": "package-smoke.json"
+    }
+  ],
+  "productionDependencyVersions": {
+    "fastify": "5.12.5",
+    "@fastify/helmet": "13.1.1",
+    "firebase-admin": "14.4.0",
+    "firebase-functions": "7.4.0",
+    "libphonenumber-js": "1.13.13",
+    "openai": "7.20.0",
+    "zod": "4.6.5"
+  },
+  "priorCommitCI": {
+    "commit": "33d8f850363fc8d6ad9a1b4e042541f81946f728",
+    "runId": 39080541791,
+    "result": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39080541791",
+    "scope": "Earlier retention source commit; excludes subsequent commercial configuration correction."
+  },
+  "productionObservation": "Read-only metadata, source hashes, collection counts, query validation and public endpoints. No document content, keys or phone numbers retained in these evidence files.",
+  "externalMutations": [],
+  "limits": [
+    "No live deployment or worker invocation.",
+    "No phone call, message, device installation, carrier or phone-setting change.",
+    "No Apple or RevenueCat change.",
+    "No physical or legal release acceptance.",
+    "Preflight must be repeated against its recorded baseline immediately before any approved deployment."
+  ]
+}

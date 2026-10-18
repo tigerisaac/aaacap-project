@@ -1,11 +1,11 @@
 {
-  "version": "2026-10-17-v1",
+  "version": "2026-10-17-v2",
   "operator": "Wheema Inc.",
   "supportEmail": "isaac.cw.zhang@gmail.com",
   "countries": ["US", "CA"],
   "baseCurrency": "USD",
-  "monthlyPrice": 15,
-  "annualPrice": 120,
+  "monthlyPrice": 9.99,
+  "annualPrice": 99.99,
   "pilotSeats": 10,
   "pilotCalendarMonths": 2
 }

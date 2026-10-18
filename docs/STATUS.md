@@ -1,5 +1,13 @@
 # Status
 
+## October 17 — retention rollout prepared and production configuration inventoried (not deployed)
+
+The two-function [retention/configuration rollout](RETENTION-ROLLOUT.md) is ready for owner review. It changes four files in the verified live source package: completed sign-in challenge scrubbing, completed recording-job expiry, three privacy sentences and intended-price metadata. The latter still held the superseded $15/$120 values; version `2026-10-17-v2` now records the approved **$9.99/month and $99.99/year**. Actual purchase screens continue using store prices. Screening, monitoring, call-control, consent versions and optional-feature availability remain outside this scope.
+
+Required typecheck/build and **344 unit + 257 Firestore tests** passed. The exact frozen package separately passed **119 tests across six unchanged integration suites**, plus startup/export/public-policy/authentication checks. Its 86 file hashes and copied tests were verified after the run. The prior retention commit `33d8f85` also passed [CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39080541791), including account lifecycle; that earlier CI does not cover the subsequent price correction. [Verification and manifests](../.impeccable/review/release-2026-10-17/retention-rollout/verification.json).
+
+Read-only checks at **18:54–18:59 Central** confirmed the recorded live source/settings, enabled cleanup schedules, readiness and zero active reservations. The database has no configured TTL policies, PITR or listed scheduled backups; its version-retention field is one hour. The project log buckets retain entries for 30 and 400 days. Six completed recording jobs were not yet expired; pending/stored jobs and cloud audio were absent in this snapshot. These observations do not prove provider erasure, log-content privacy, absence of manual exports or real-call behavior. [Inventory and limits](DATA-INVENTORY.md). No production mutation, phone operation, Apple change or device installation occurred. Owner approval of this new rollout is pending.
+
 ## October 17 — retention inventory and two cleanup corrections (local, not deployed)
 
 The [data inventory](DATA-INVENTORY.md) now traces identity, explicit contact sharing, caretaker consent, call content, device tokens, purchases, operational records and iPhone copies through storage and deletion. It identifies unresolved provider/log/backup retention, sharing-grant and SMS-suppression retention, diagnostic privacy categories and other-device acceptance. This is a source inventory and draft privacy mapping, not final Apple/legal approval.
