@@ -71,7 +71,8 @@ setInterval(async()=>{
     const a=state.attempts.filter(a=>!a.alias||a.alias===alias).at(-1);if(running&&a?.ended){running=false;clearTimeout(deadlineTimer);$('scenario').disabled=false;$('run').disabled=!state.ready||state.used>=state.limit;note(`Call ended. ${state.used} of ${state.limit} attempts used. ${a.outcome??'No completed outcome'}.`);}
     if(state.mode==='warning'){
       warningMode=true;$('scenario').value='accept';$('scenario').disabled=true;
-      document.querySelector('[data-intro]').textContent='Two isolated warning-audio checks. The caller is removed after acceptance; synthetic recipient audio is captured to verify the explanation.';
+      if(state.planningAllowanceUSD)document.querySelector('[data-estimate]').textContent=`${(state.planningAllowanceUSD*100).toFixed(1)}¢ allowance`;
+      document.querySelector('[data-intro]').textContent=`${state.limit} isolated warning-audio checks. The caller is removed after acceptance; synthetic recipient audio is captured to verify the explanation.`;
       if(running)await post('/evidence',{caller:receivedTone(callerCall),recipient:receivedTone(recipientCall),recipientEnergy:audioStats.recipient.energy,recipientBytes:audioStats.recipient.bytes});
     }
     if(state.mode==='capacity'){

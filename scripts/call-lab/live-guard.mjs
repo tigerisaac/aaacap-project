@@ -5,7 +5,7 @@ import { capacityAliases, capacityPlan, connectedGroup, overflowAlias } from './
 // Deliberately persistent: restarting never refunds a submitted/uncertain attempt.
 export class LiveLedger {
   constructor(path, now=Date.now, mode='sequential') {
-    if(!['sequential','overlap','capacity'].includes(mode))throw Error('invalid_run_mode');
+    if(!['single','sequential','overlap','capacity'].includes(mode))throw Error('invalid_run_mode');
     this.path=path; this.now=now;this.mode=mode;
     try { this.data=JSON.parse(readFileSync(path,'utf8')); }
     catch(e) { if(e.code!=='ENOENT')throw e; this.data={version:1,mode,id:randomUUID(),createdAt:now(),attempts:[],credentials:[],stopped:false};this.save(); }
@@ -22,7 +22,7 @@ export class LiveLedger {
     if(this.activeAll().length>=(this.mode==='capacity'?5:this.mode==='overlap'?2:1))throw Error('session_active');
     if(this.mode!=='sequential'&&this.data.attempts.some(a=>a.alias===alias))throw Error('recipient_already_reserved');
     if(this.mode==='capacity'&&alias===overflowAlias&&!connectedGroup(this.activeAll()))throw Error('four_connections_required');
-    if(this.data.attempts.length>=(this.mode==='capacity'?5:2))throw Error('attempt_budget_exhausted');
+    if(this.data.attempts.length>=(this.mode==='single'?1:this.mode==='capacity'?5:2))throw Error('attempt_budget_exhausted');
     const a={id:randomUUID(),kind,alias,startedAt:this.now(),deadline:this.now()+(this.mode==='capacity'?capacityPlan.secondsPerSession*1000:60000),sids:[],events:[],commands:[],mediaFrames:0};
     this.data.attempts.push(a);this.save();return a;
   }

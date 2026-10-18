@@ -9,6 +9,12 @@ const dirs:string[]=[];
 const path=()=>{const dir=mkdtempSync(join(tmpdir(),'shield-live-'));dirs.push(dir);return join(dir,'ledger.json');};
 afterEach(()=>{for(const dir of dirs.splice(0))rmSync(dir,{recursive:true,force:true});});
 describe('live call lab spending and destination boundaries',()=>{
+  it('persists the final one-attempt allowance across reloads',()=>{
+    const file=path(),ledger=new LiveLedger(file,Date.now,'single');
+    const a=ledger.reserve('accept');a.endedAt=Date.now();ledger.save();
+    expect(()=>new LiveLedger(file,Date.now,'single').reserve('accept')).toThrow();
+    expect(()=>new LiveLedger(file,Date.now,'sequential')).toThrow('run_mode_mismatch');
+  });
   it('allows exactly two different recipients only in an explicitly selected overlap run',()=>{
     const file=path(),ledger=new LiveLedger(file,Date.now,'overlap');
     const a=ledger.reserve('accept','person-01');a.ticket='one';a.callId='first';

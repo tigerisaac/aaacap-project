@@ -1,5 +1,17 @@
 # October 17 call silence and missing monitoring warning
 
+## Latest result — October 17, 20:49 Central
+
+**Matching warning audio has now reached an isolated synthetic recipient after caller removal.** A private conference established at acceptance, instead of the direct bridge/parking path, delivered the unchanged Soniox recording. Recipient capture contained six matching one-second sections in their expected order (waveform correlations 0.452–0.734), amplitude-envelope correlation 0.808, and warning-window RMS 0.12627 versus the earlier silent captures around 0.003–0.004. No recipient hold occurred. This demonstrates a working delivery path and strengthens bridge teardown/parking as the regression boundary; it does not identify every internal Telnyx failure mechanism or verify a physical handset.
+
+A smaller follow-up kept the normal conversation bridge and moved only the recipient into a private conference at intervention. Creating the room automatically disconnected the caller. A redundant caller-hangup request returned 422 before its callback was processed; the harness treated this as failure and cleaned up before submitting warning playback. That run therefore cannot establish whether the smaller handoff delivers audio. The corrected harness uses existing `SharedCallControl.hangup` logic, accepting a rejected hangup only when provider readback explicitly says `is_alive: false`. A new regression checks that an active or unknown caller still fails closed.
+
+Both new attempts ended and passed independent cleanup audits at 20:44:29 and 20:46:48. All controlled legs ended; temporary credentials and provider recordings were removed; production settings/number assignments were unchanged. Conference retrieval can return 422/90019 after expiry; the audit then requires its bound signed `conference.ended` receipt plus independent inactive readback for every call leg. No production fix was deployed.
+
+The owner's current monetary ceiling is 20¢ total. Known non-conference Telnyx subtotals are 4.24¢ for the six earlier tests and 1.29¢ for these two; the earlier synthetic voice evaluation estimate is 6.631¢. Conference usage records omit a monetary field and are **not** evidence of zero cost. Allowing 1¢ for the three experimental rooms so far puts the investigation allowance at 13.161¢; reserving another 3.4¢ for one corrected check would put it at 16.561¢. The corrected one-attempt run is prepared but **automatic approval review rejected its launch because the earlier plan allowed two attempts**. Fresh owner approval is pending; no third call was started. Both completed ledgers are stopped and immutable.
+
+Final local validation: typecheck, build and **350 unit tests passed**. The required Firestore suite passed **261/262**; its sole failure was the previously observed stopped-history invalid/closed transaction. Every call/warning suite passed. The final correction's focused tests also passed. This is diagnostic/harness work, not a verified production implementation. [Run design and authorization history](CALL-LAB.md#stable-media-warning-comparison--october-17-2039-central).
+
 ## Live observations
 
 Read-only inspection followed the owner's reports of silent screening and an inaudible warning after connected-call monitoring stopped a caller. No real caller audio or transcript was retrieved for evaluation. The warning failure has now been reproduced with isolated synthetic calls (see the approved diagnostic runs below), but its underlying carrier-media cause is **not yet resolved**.
