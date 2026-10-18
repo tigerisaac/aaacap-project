@@ -1,0 +1,163 @@
+{
+  "method": "Native diagnostic crops and full captures inspected; no image edited and no accessibility finding suppressed. These are classifications, not a whole-screen pass.",
+  "references": [
+    "https://www.w3.org/TR/WCAG22/#contrast-minimum",
+    "https://www.w3.org/TR/wcag2ict/",
+    "https://developer.apple.com/videos/play/wwdc2023/10035/"
+  ],
+  "findings": [
+    {
+      "run": "final-ios26",
+      "screen": "messages largest dark",
+      "target": "All messages",
+      "kind": "contrast",
+      "crop": "A032AC48-A2A6-4F56-A6B7-5BD6BE86550F.png",
+      "context": "693FBB5A-7250-4CBE-A68B-CAFD68F0E150.png",
+      "assessment": "The reported frame begins at y=-41. The exact crop contains top chrome, without the target words; the empty-state heading and complete guidance are visible in the full capture. This does not establish a contrast value for All messages."
+    },
+    {
+      "run": "final-ios26",
+      "screen": "numbers largest dark",
+      "target": "Add a number (disabled sample action)",
+      "kind": "textClipped",
+      "crop": "7610F33B-0BA6-42B2-89C4-A53A397FBEB4.png",
+      "context": "DFF194C3-B709-4C2F-8196-015F8B8069D3.png",
+      "assessment": "The crop cuts the start of the wrapped second line; the full capture shows the whole label. The native accessibility frame excludes some visible lettering. Keep the raw report; do not dismiss clipping because a control is disabled."
+    },
+    {
+      "run": "final-ios26",
+      "screen": "numbers largest dark",
+      "target": "No numbers yet",
+      "kind": "contrast",
+      "crop": "B1D33CBD-C7FF-46D6-B0C6-82E12850E442.png",
+      "context": "A87548CF-878C-4D46-B3E1-2B7A2D677AE6.png",
+      "assessment": "The audit-position title begins at y=-46.7 and is partially behind navigation. A separate fully exposed title capture shows all words wrapping without ellipsis."
+    },
+    {
+      "run": "final-ios26",
+      "screen": "contacts largest dark",
+      "target": "Your calling list is empty",
+      "kind": "contrast",
+      "crop": "6563CC8E-AD09-460E-ACFC-260C85849E7D.png",
+      "context": "ADD84DC6-4DE6-4158-8E44-7739E251BB0B.png",
+      "assessment": "The audit-position title begins at y=-159.7. The crop shows chrome and only bottom fragments of the title; the separately exposed title capture shows complete lettering."
+    },
+    {
+      "run": "final-ios26",
+      "screen": "contacts largest dark",
+      "target": "Removing a number here also removes it from iPhone Contacts.",
+      "kind": "contrast",
+      "crop": "D965FD4C-FADF-43E5-AFDB-304BE710D89B.png",
+      "context": "3CCAD792-F4E1-4E7D-A428-92FCD8C03425.png",
+      "assessment": "The footer continues behind the bottom search control and below the viewport. This capture does not verify the complete footer; the finding remains open."
+    },
+    {
+      "run": "final-ios26",
+      "screen": "numbers standard light",
+      "target": "Add a number (disabled sample action)",
+      "kind": "textClipped",
+      "crop": "DE94AFC0-D56A-4412-BF7D-6D23B0BCC903.png",
+      "context": null,
+      "assessment": "The native crop shows the complete standard-size label. This is not evidence that every larger size is accepted; the separate largest capture is retained."
+    },
+    {
+      "run": "final-ios26",
+      "screen": "contacts standard light",
+      "target": "Share contacts once (disabled sample action)",
+      "kind": "contrast nearly passed",
+      "crop": "55CA9D70-EAE3-4781-8AAC-6CA0D1E52AD9.png",
+      "context": "84D6943E-70A4-4922-BFC2-EED310048E37.png",
+      "assessment": "The exact crop shows a disabled sample action. WCAG contrast-minimum exempts inactive interface components. This exception is limited to this inactive control and does not apply to informative empty-state descriptions."
+    },
+    {
+      "run": "final-ios27",
+      "screen": "calls largest dark",
+      "target": "All calls",
+      "kind": "contrast",
+      "crop": "16C18EB9-DCDF-4B0E-B10C-5343DF1D1332.png",
+      "context": "1A35C0E7-6F8F-44D3-B605-22DC537766FE.png",
+      "assessment": "The audit crop shows the top half of All calls covered by the navigation bar. The separate title-position capture exposes the filter fully; this is not a contrast measurement of the obscured label."
+    },
+    {
+      "run": "final-ios27",
+      "screen": "numbers largest dark",
+      "target": "No numbers yet",
+      "kind": "contrast",
+      "crop": "07ACC4E7-9B5D-4F2E-A5BC-97B1B902FF18.png",
+      "context": "DA6ACA4F-113C-4E49-A9F2-7210D0C65214.png",
+      "assessment": "The audit-position frame begins at y=-72.7; only yet is visible below navigation. The fully exposed title capture shows every word without ellipsis."
+    },
+    {
+      "run": "final-ios27",
+      "screen": "contacts largest dark",
+      "target": "Your calling list is empty",
+      "kind": "contrast",
+      "crop": "05252E6D-669B-46F8-A0B3-138607CBE111.png",
+      "context": "0B763C88-2609-4CDE-885E-B071BE462ADC.png",
+      "assessment": "The audit-position frame begins at y=-87.7; only empty is visible below navigation. The separate title capture shows complete lettering."
+    },
+    {
+      "run": "final-ios27",
+      "screen": "numbers standard light",
+      "target": "Add a number (disabled sample action)",
+      "kind": "textClipped",
+      "crop": "07CF2626-D415-4B36-91AC-A33CD2260751.png",
+      "context": null,
+      "assessment": "The exact crop shows all standard-size lettering. The raw clipping report is retained and is not waived by disabled state."
+    },
+    {
+      "run": "final-ios27",
+      "screen": "contacts standard light",
+      "target": "Share contacts once (disabled sample action)",
+      "kind": "contrast nearly passed",
+      "crop": "2671B380-D6F7-477C-A430-0D5BF237A1A7.png",
+      "context": "18D48372-9A6F-43D2-B0E6-60430927C0C8.png",
+      "assessment": "The exact crop identifies an inactive sample action. The contrast-minimum inactive-control exception does not apply to the informative guidance that this change corrects."
+    },
+    {
+      "run": "final-smallest-ios26",
+      "screen": "messages largest dark",
+      "target": "No messages yet",
+      "kind": "contrast",
+      "crop": "376F72BB-9B1F-4209-B732-6501F13479FF.png",
+      "context": "001993BD-54D0-49E5-AFB1-C07C5CABA0C4.png",
+      "assessment": "The reported frame extends into navigation, but the exact crop and full capture show all heading words below it. The isolated text region measures 14.6884:1 (white on RGB 28,41,59); this does not explain or suppress the raw contrast failure."
+    },
+    {
+      "run": "final-smallest-ios26",
+      "screen": "numbers largest dark",
+      "target": "No numbers yet",
+      "kind": "contrast",
+      "crop": "7287C34B-6F5A-4EC1-8C56-0B547D3416C4.png",
+      "context": "03995BFF-44CC-4A34-872C-2F5D8291EF51.png",
+      "assessment": "At the audit position only the last word is visible below navigation. The separately exposed heading capture contains every word without ellipsis. The cropped position is not a valid measurement of the whole title."
+    },
+    {
+      "run": "final-smallest-ios26",
+      "screen": "blocked largest dark",
+      "target": "No blocked numbers",
+      "kind": "contrast",
+      "crop": "5E637FD0-0920-4D0D-8C57-1936C55EA368.png",
+      "context": "1BCDCA07-E0E2-46A9-991E-88765D139CE9.png",
+      "assessment": "The audit crop includes navigation covering the start of the heading. The separately exposed heading capture contains every word without ellipsis."
+    },
+    {
+      "run": "final-smallest-ios26",
+      "screen": "contacts largest dark",
+      "target": "Unassociated SwiftUI.AccessibilityNode, first report",
+      "kind": "contrast",
+      "crop": null,
+      "context": "ECD46468-5BBC-4EEB-9AD3-ABC9B6B2517F.png",
+      "assessment": "No stable element or diagnostic crop was supplied. The full screenshot shows readable complete guidance, a partly hidden preceding heading, and a footer below the search field. The specific reported element cannot be identified and remains unresolved."
+    },
+    {
+      "run": "final-smallest-ios26",
+      "screen": "contacts largest dark",
+      "target": "Unassociated SwiftUI.AccessibilityNode, second report",
+      "kind": "contrast",
+      "crop": null,
+      "context": "056E11DA-DED3-41AF-A802-100B14CFF662.png",
+      "assessment": "No stable element or diagnostic crop was supplied. The screenshot is visually the same position as the first unidentified report. Do not infer which element failed or treat this as a pass."
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+{
+  "method": "Dominant opaque colors measured on unmodified native sRGB screenshots. Seven guidance rectangles come from their corresponding accessibility frames at 2x scale; the explicitly specified heading region excludes navigation. WCAG relative luminance. These regional values do not waive other audit reports.",
+  "samples": [
+    {
+      "screen": "calls",
+      "run": "final-smallest-ios26",
+      "image": "BA9A0DFF-FB2B-4435-AE28-96592EB1D1B0.png",
+      "imageSha256": "c3d1c0dc4508b43d1e90d81133e971043727ac7890e9119c081e6c67eee62e4d",
+      "regionLTRB": [
+        108,
+        719,
+        642,
+        1184
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 28536,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 210332,
+      "contrastRatio": 8.326932906013663,
+      "elementFrame": [
+        54.0,
+        359.5,
+        267.0,
+        232.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "messages",
+      "run": "final-smallest-ios26",
+      "image": "001993BD-54D0-49E5-AFB1-C07C5CABA0C4.png",
+      "imageSha256": "4acc2bc84c1d4af6b70746379cf77c710a642c242b24e6ddf8e7b6ef3c488264",
+      "regionLTRB": [
+        116,
+        719,
+        634,
+        1184
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 31747,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 198336,
+      "contrastRatio": 8.326932906013663,
+      "elementFrame": [
+        58.2,
+        359.5,
+        258.5,
+        232.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "numbers",
+      "run": "final-smallest-ios26",
+      "image": "6ADFFB22-192C-491D-9313-8DB50DF8F8B3.png",
+      "imageSha256": "c3e5ef7e3733c5b603e661aaf4d7e2f0e2cc5c3ff064204252ad58f979e4a919",
+      "regionLTRB": [
+        98,
+        424,
+        652,
+        1005
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 33686,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 276857,
+      "contrastRatio": 8.326932906013663,
+      "elementFrame": [
+        49.0,
+        212.0,
+        277.0,
+        290.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "blocked",
+      "run": "final-smallest-ios26",
+      "image": "53F9AED0-15BA-4DFD-8EEB-48558B1BBD65.png",
+      "imageSha256": "011a3aeac478cd81d533b7a45c2678de6f8d2b7dbd1bbdcf31db7e022261a311",
+      "regionLTRB": [
+        116,
+        481,
+        634,
+        946
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 32437,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 197649,
+      "contrastRatio": 8.326932906013663,
+      "elementFrame": [
+        58.2,
+        240.5,
+        258.5,
+        232.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "contacts",
+      "run": "final-smallest-ios26",
+      "image": "0E007A3B-680C-4BA0-B33E-C28670673D6A.png",
+      "imageSha256": "87aaadeef95be28eb3046b9e1707268fbc58e58f23da92cf00729fe87511f62d",
+      "regionLTRB": [
+        102,
+        388,
+        648,
+        1085
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 42846,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 323389,
+      "contrastRatio": 8.326932906013663,
+      "elementFrame": [
+        51.2,
+        194.0,
+        272.5,
+        348.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "phone-setup",
+      "run": "final-smallest-ios26",
+      "image": "28B4F149-2250-4CDC-BBC8-761A470E7876.png",
+      "imageSha256": "f1e0891a92f1ba5f2ce4ec4316a1b3ab4a58c667372a10f170c15598fb692698",
+      "regionLTRB": [
+        39,
+        448,
+        711,
+        1261
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 66579,
+      "backgroundRGB": [
+        16,
+        27,
+        43
+      ],
+      "backgroundPixels": 457463,
+      "contrastRatio": 9.808980885085111,
+      "elementFrame": [
+        19.5,
+        224.0,
+        336.0,
+        406.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "contacts-search",
+      "run": "final-smallest-ios26",
+      "image": "9FB85496-0292-4E6F-A52E-BE7F73350751.png",
+      "imageSha256": "20463fbfb376b28005afb32401148f0705a6c11e9cd7b2421ad3e68cbadfce2a",
+      "regionLTRB": [
+        130,
+        332,
+        620,
+        681
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixels": 18720,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 146064,
+      "contrastRatio": 8.326932906013663,
+      "elementFrame": [
+        65.0,
+        166.0,
+        245.0,
+        174.5
+      ],
+      "region": "complete guidance"
+    },
+    {
+      "screen": "messages",
+      "run": "final-smallest-ios26",
+      "image": "376F72BB-9B1F-4209-B732-6501F13479FF.png",
+      "imageSha256": "b645a4810b7460ab94c53a9754b68aeecbc406932469c25d2b8a83e299c78c5c",
+      "regionLTRB": [
+        0,
+        200,
+        550,
+        632
+      ],
+      "foregroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "foregroundPixels": 27331,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixels": 205363,
+      "contrastRatio": 14.688356131975747,
+      "region": "fully visible heading text within native diagnostic crop; navigation excluded"
+    }
+  ]
+}

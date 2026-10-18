@@ -1,5 +1,11 @@
 # Status
 
+## October 18 — everyday empty-screen guidance and heading wrapping corrected
+
+Seven audited empty states now use readable guidance and fully wrapping native headings. Standard descriptions improve from **3.30–3.44:1 to 5.92–6.58:1**; inspected maximum-text dark descriptions measure **8.33–9.81:1**. Every target heading and explanation can be exposed on both 390×844 and smaller 375×667 simulator screens. Search audits pass, and the three selected error/filter recovery methods pass on iOS 27 and iOS 26.5. Whole-screen audits still retain findings, including three unexplained reports in the final iPhone SE run.
+
+The six-screen VoiceOver check reaches complete titles/descriptions on its first five screens, then fails because Phone setup speech readback stops at 64 characters. A separate native reference reproduces the same cutoff despite a complete accessibility label. This does not verify physical speech or establish the cause. Both failures remain recorded. Across nine completed runs, runtime warnings are zero; 109 capture files were inspected, all 282 final input hashes match, and the unchanged production candidate passes unsigned Release archive checks. No installation or deployment occurred. [Exact outcomes, measurements, source boundaries and remaining gates](IOS-RELEASE-VERIFICATION.md#everyday-empty-screen-readability--october-18).
+
 ## October 18 — family empty-state guidance contrast corrected
 
 Three standard-text descriptions in Call sharing, unavailable Caretakers and empty Alerts for others reproduced low contrast. Three production lines now apply the existing adaptive secondary color: native measurements improve from **3.44:1 to 6.58:1** in light mode, with **8.33:1** in the inspected dark guidance regions. Both standard-text audit methods pass on iOS 27 and iOS 26.5. The largest-text audit still reports two heading failures per runtime; these remain open.

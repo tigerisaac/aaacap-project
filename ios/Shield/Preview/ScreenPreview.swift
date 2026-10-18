@@ -10,7 +10,7 @@ struct ScreenPreview: View {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: "--uitesting-screen"), arguments.indices.contains(index + 1) else { return nil }
         let screen = arguments[index + 1]
-        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts", "contact-alerts", "trusted-contacts"].contains(screen) ? screen : nil
+        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts", "contact-alerts", "trusted-contacts", "calls", "messages", "phone-setup"].contains(screen) ? screen : nil
     }
 
     var body: some View {
@@ -19,6 +19,10 @@ struct ScreenPreview: View {
                 AddNumberView(kind: screen == "add-contact" ? .trusted : .destinations)
             } else if screen == "join" {
                 JoinView()
+            } else if screen == "calls" {
+                CallsView()
+            } else if screen == "messages" {
+                VoicemailView()
             } else {
                 NavigationShell {
                     switch screen {
@@ -30,6 +34,7 @@ struct ScreenPreview: View {
                     case "quiet": QuietHoursView()
                     case "blocked": BlockedNumbersView()
                     case "setup", "setup-details", "trial-options": PhoneOptionsView()
+                    case "phone-setup": ForwardingSetupView()
                     case "protection": CallProtectionView()
                     case "help": HelpView()
                     case "automatic-texts": MessageFilterSetupView()

@@ -16,8 +16,8 @@ struct ForwardingSetupView: View {
     var body: some View {
         Group {
             if app.isDemo && !model.isUITest {
-                ContentUnavailableView("Phone setup", systemImage: "phone",
-                    description: Text("Phone setup is done with a helper, one step at a time. The sample app doesn’t change your phone."))
+                ShieldEmptyState(title: "Phone setup", symbol: "phone",
+                                 detail: "Phone setup is done with a helper, one step at a time. The sample app doesn’t change your phone.")
                     .background(ShieldTheme.surface)
                     .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
             } else if model.step == .restore, let id = model.status?.participantId {

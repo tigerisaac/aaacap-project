@@ -1,0 +1,152 @@
+[
+  {
+    "name": "empty-guidance-edge-geometry_0_A9A98C0E-2EFF-4700-A1A3-DE10CD032FEE.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+    "timestamp": 1792348526.555,
+    "text": "Target: Try another name or number.\nFrame: (65.0, 133.0, 245.0, 174.5)\nEdge: whole paragraph\nUsable vertical bounds: 82.0...567.5"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_ABA7DF0B-1607-4FDF-844A-2B480A9DAEB3.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+    "timestamp": 1792348523.073,
+    "text": "Target: No matching contacts\nFrame: (60.25, 92.0, 254.5, 330.5)\nEdge: whole paragraph\nUsable vertical bounds: 82.0...567.5"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_ADF6EE6D-9252-4A54-B003-363867B0E40E.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348707.613,
+    "text": "Target: Phone setup is done with a helper, one step at a time. The sample app doesn\u2019t change your phone.\nFrame: (19.5, 224.0, 336.0, 406.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_0A07D889-B0DE-421A-8D34-09F94FD6C505.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348691.691,
+    "text": "Target: Phone setup is done with a helper, one step at a time. The sample app doesn\u2019t change your phone.\nFrame: (19.5, 224.0, 336.0, 406.5)\nEdge: start\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_D3D55A06-50F4-4DB0-9071-D6A50728EAE7.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348691.247,
+    "text": "Target: Phone setup\nFrame: (26.25, 154.0, 322.5, 67.0)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-everyday-contacts-largest-dark-audit-details_0_960A0889-35A7-4B61-97CB-967CCB16F861.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348684.787,
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "name": "empty-everyday-contacts-largest-dark-audit-details_0_F5184739-9454-45D0-9623-3249E6032FCE.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348678.491,
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_9659AD6D-33A0-488E-9C40-BB6123BD96DE.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348671.203,
+    "text": "Target: Share your contacts once, or add a contact with the Add button.\nFrame: (51.25, 185.5, 272.5, 348.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...567.5"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_C20C52BB-E8C5-4194-A65A-A675987848F3.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348665.813,
+    "text": "Target: Share your contacts once, or add a contact with the Add button.\nFrame: (51.25, 490.5, 272.5, 348.5)\nEdge: start\nUsable vertical bounds: 146.0...567.5"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_D86D4CB8-EAD0-4998-987A-2A87ADE1A3A8.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348664.491,
+    "text": "Target: Your calling list is empty\nFrame: (52.75, 156.0, 269.5, 331.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...567.5"
+  },
+  {
+    "name": "empty-everyday-blocked-largest-dark-audit-details_0_89046471-E3FD-436B-87AB-B8B52A610D4D.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348648.985,
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, 0x116444dc0, {{73.0, -117.0}, {229.0, 342.0}}, identifier: 'empty-state-title', label: 'No blocked numbers'\nElement subtree:\n \u2192StaticText, 0x116444dc0, {{73.0, -117.0}, {229.0, 342.0}}, identifier: 'empty-state-title', label: 'No blocked numbers'\nPath to element:\n \u2192Application, 0x116446580, pid: 82856, label: 'Shield'\n  \u21b3Window (Main), 0x116445b80, {{0.0, 0.0}, {375.0, 667.0}}\n   \u21b3Other, 0x116444c80, {{0.0, 0.0}, {375.0, 667.0}}\n    \u21b3Other, 0x116444f00, {{0.0, 0.0}, {375.0, 667.0}}\n     \u21b3Other, 0x116447700, {{0.0, 0.0}, {375.0, 667.0}}\n      \u21b3Other, 0x1164443c0, {{0.0, 0.0}, {375.0, 667.0}}\n       \u21b3Other, 0x116447ac0, {{0.0, 74.0}, {375.0, 593.0}}\n        \u21b3Other, 0x116445680, {{0.0, 74.0}, {375.0, 593.0}}\n         \u21b3Other, 0x116446800, {{0.0, 74.0}, {375.0, 593.0}}\n          \u21b3Other, 0x116445540, {{0.0, 74.0}, {375.0, 593.0}}\n           \u21b3Other, 0x116445900, {{0.0, 74.0}, {375.0, 593.0}}\n            \u21b3CollectionView, 0x116447840, {{0.0, 74.0}, {375.0, 593.0}}\n             \u21b3Cell, 0x1164475c0, {{16.0, -155.5}, {343.0, 667.0}}\n              \u21b3Other, 0x116447480, {{16.0, -155.5}, {343.0, 667.0}}\n               \u21b3Other, 0x116444000, {{16.0, -155.5}, {343.0, 667.0}}\n                \u21b3Other, 0x116444640, {{16.0, -155.5}, {343.0, 667.0}}\n                 \u21b3StaticText, 0x116444dc0, {{73.0, -117.0}, {229.0, 342.0}}, identifier: 'empty-state-title', label: 'No blocked numbers'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, 0x1164448c0, pid: 82856, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid: 82856, elementOrHash.elementID: 4354115328.34\n    Output: {\n      StaticText, 0x1167d75c0, {{73.0, -117.0}, {229.0, 342.0}}, identifier: 'empty-state-title', label: 'No blocked numbers'\n    }\n"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_660BB5AD-EEDD-4A2B-A57D-55011841D6DF.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348645.545,
+    "text": "Target: Numbers blocked by Shield will appear here.\nFrame: (58.25, 228.0, 258.5, 232.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_60634D26-F5B5-451D-9AD4-6351C21EF919.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348641.612,
+    "text": "Target: Numbers blocked by Shield will appear here.\nFrame: (58.25, 529.5, 258.5, 232.5)\nEdge: start\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_7E6F54AF-F1CD-45F2-BE44-26008A4F86E0.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348640.852,
+    "text": "Target: No blocked numbers\nFrame: (73.0, 184.5, 229.0, 342.0)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-everyday-numbers-largest-dark-audit-details_0_B9C577ED-957B-4916-A00F-4866A6DAC1A5.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348635.369,
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, 0x116446800, {{67.2, -120.5}, {240.5, 329.5}}, identifier: 'empty-state-title', label: 'No numbers yet'\nElement subtree:\n \u2192StaticText, 0x116446800, {{67.2, -120.5}, {240.5, 329.5}}, identifier: 'empty-state-title', label: 'No numbers yet'\nPath to element:\n \u2192Application, 0x116446a80, pid: 82834, label: 'Shield'\n  \u21b3Window (Main), 0x116444280, {{0.0, 0.0}, {375.0, 667.0}}\n   \u21b3Other, 0x116445f40, {{0.0, 0.0}, {375.0, 667.0}}\n    \u21b3Other, 0x116447ac0, {{0.0, 0.0}, {375.0, 667.0}}\n     \u21b3Other, 0x116446940, {{0.0, 0.0}, {375.0, 667.0}}\n      \u21b3Other, 0x116444780, {{0.0, 0.0}, {375.0, 667.0}}\n       \u21b3Other, 0x116445b80, {{0.0, 74.0}, {375.0, 593.0}}\n        \u21b3Other, 0x116444c80, {{0.0, 74.0}, {375.0, 593.0}}\n         \u21b3Other, 0x116444f00, {{0.0, 74.0}, {375.0, 593.0}}\n          \u21b3Other, 0x116447700, {{0.0, 74.0}, {375.0, 593.0}}\n           \u21b3Other, 0x116445400, {{0.0, 74.0}, {375.0, 593.0}}\n            \u21b3CollectionView, 0x1164443c0, {{0.0, 74.0}, {375.0, 593.0}}\n             \u21b3Cell, 0x116444b40, {{16.0, -159.0}, {343.0, 712.5}}\n              \u21b3Other, 0x116446080, {{16.0, -159.0}, {343.0, 712.5}}\n               \u21b3Other, 0x116445a40, {{16.0, -159.0}, {343.0, 712.5}}\n                \u21b3Other, 0x116446580, {{16.0, -159.0}, {343.0, 712.5}}\n                 \u21b3StaticText, 0x116446800, {{67.2, -120.5}, {240.5, 329.5}}, identifier: 'empty-state-title', label: 'No numbers yet'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, 0x116444140, pid: 82834, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid: 82834, elementOrHash.elementID: 4396090240.35\n    Output: {\n      StaticText, 0x1167d75c0, {{67.2, -120.5}, {240.5, 329.5}}, identifier: 'empty-state-title', label: 'No numbers yet'\n    }\n"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_78CA0F23-97C3-496D-88F8-4B4BBF9CEBF4.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348631.454,
+    "text": "Target: Save a number from a card, bill, or official website.\nFrame: (49.0, 212.0, 277.0, 290.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_DAEDE581-F8ED-4340-9CF7-9CAE029BB28E.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348626.751,
+    "text": "Target: Save a number from a card, bill, or official website.\nFrame: (49.0, 517.0, 277.0, 290.5)\nEdge: start\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_1649349E-2FE8-439C-AAC6-EED02F011F85.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348625.951,
+    "text": "Target: No numbers yet\nFrame: (67.25, 184.5, 240.5, 329.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-everyday-messages-largest-dark-audit-details_0_977D089F-E96A-4E29-BBFA-F348E30064C8.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348621.213,
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, 0x11647d900, {{50.0, 40.5}, {275.0, 316.0}}, identifier: 'empty-state-title', label: 'No messages yet'\nElement subtree:\n \u2192StaticText, 0x11647d900, {{50.0, 40.5}, {275.0, 316.0}}, identifier: 'empty-state-title', label: 'No messages yet'\nPath to element:\n \u2192Application, 0x11647f200, pid: 82802, label: 'Shield'\n  \u21b3Window (Main), 0x11647df40, {{0.0, 0.0}, {375.0, 667.0}}\n   \u21b3Other, 0x11647c140, {{0.0, 0.0}, {375.0, 667.0}}\n    \u21b3Other, 0x11647d7c0, {{0.0, 0.0}, {375.0, 667.0}}\n     \u21b3Other, 0x11647d540, {{0.0, 0.0}, {375.0, 667.0}}\n      \u21b3Other, 0x11647e800, {{0.0, 0.0}, {375.0, 667.0}}\n       \u21b3Other, 0x11647e080, {{0.0, 74.0}, {375.0, 593.0}}\n        \u21b3Other, 0x11647e440, {{0.0, 74.0}, {375.0, 593.0}}\n         \u21b3Other, 0x11647f700, {{0.0, 74.0}, {375.0, 593.0}}\n          \u21b3Other, 0x11647c8c0, {{0.0, 74.0}, {375.0, 593.0}}\n           \u21b3Other, 0x11647ca00, {{0.0, 74.0}, {375.0, 593.0}}\n            \u21b3CollectionView, 0x11647ef80, {{0.0, 74.0}, {375.0, 593.0}}\n             \u21b3Cell, 0x11647e300, {{16.0, 2.0}, {343.0, 641.0}}\n              \u21b3Other, 0x11647c500, {{16.0, 2.0}, {343.0, 641.0}}\n               \u21b3Other, 0x11647c640, {{16.0, 2.0}, {343.0, 641.0}}\n                \u21b3Other, 0x11647fd40, {{16.0, 2.0}, {343.0, 641.0}}\n                 \u21b3StaticText, 0x11647d900, {{50.0, 40.5}, {275.0, 316.0}}, identifier: 'empty-state-title', label: 'No messages yet'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, 0x1167d4dc0, pid: 82802, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid: 82802, elementOrHash.elementID: 4387762880.43\n    Output: {\n      StaticText, 0x1167d4000, {{50.0, 40.5}, {275.0, 316.0}}, identifier: 'empty-state-title', label: 'No messages yet'\n    }\n"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_8D903808-140C-4976-A9BB-811D85428277.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348617.975,
+    "text": "Target: Voicemail and saved notices will appear here.\nFrame: (58.25, 359.5, 258.5, 232.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_CC4D2F39-BE38-456E-A11E-B948626D2CB8.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348615.49,
+    "text": "Target: Voicemail and saved notices will appear here.\nFrame: (58.25, 524.5, 258.5, 232.5)\nEdge: start\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_75D78E87-7C2C-442D-8020-40A496540DC7.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348614.788,
+    "text": "Target: No messages yet\nFrame: (50.0, 205.5, 275.0, 316.0)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_DB153ED0-4BB4-4E30-9D35-2C0FA39276EF.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348601.339,
+    "text": "Target: Calls that reach Shield will appear here.\nFrame: (54.0, 359.5, 267.0, 232.5)\nEdge: whole paragraph\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_2A5C846C-8589-47E1-BAAC-EC8FDE75BE97.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348600.608,
+    "text": "Target: Calls that reach Shield will appear here.\nFrame: (54.0, 359.5, 267.0, 232.5)\nEdge: start\nUsable vertical bounds: 146.0...625.0"
+  },
+  {
+    "name": "empty-guidance-edge-geometry_0_8CF69B47-2A35-4E55-A3EC-9FEE7CAE4014.txt",
+    "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+    "timestamp": 1792348597.251,
+    "text": "Target: No calls yet\nFrame: (80.25, 371.0, 214.5, 263.5)\nEdge: whole paragraph\nUsable vertical bounds: 209.0...625.0"
+  }
+]

@@ -45,10 +45,11 @@ struct SharedContactsView: View {
             } else if filtered.isEmpty {
                 ShieldGroup {
                     if search.isEmpty {
-                        ContentUnavailableView("Your calling list is empty", systemImage: "person.2",
-                            description: Text("Share your contacts once, or add a contact with the Add button."))
+                        ShieldEmptyState(title: "Your calling list is empty", symbol: "person.2",
+                                         detail: "Share your contacts once, or add a contact with the Add button.")
                     } else {
-                        ContentUnavailableView.search(text: search)
+                        ShieldEmptyState(title: "No matching contacts", symbol: "magnifyingglass",
+                                         detail: "Try another name or number.")
                     }
                 }
             }

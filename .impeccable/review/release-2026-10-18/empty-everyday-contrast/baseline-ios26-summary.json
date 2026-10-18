@@ -1,0 +1,61 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "4E5B0E5C-582E-4939-A9CA-F71342045F44",
+        "deviceName" : "iPhone 17e",
+        "modelName" : "iPhone 17e",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 1,
+      "passedTests" : 1,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "Shield · Built with macOS 27.0",
+  "expectedFailures" : 0,
+  "failedTests" : 1,
+  "finishTime" : 1792346564.452,
+  "passedTests" : 1,
+  "result" : "Failed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1792346490.123,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+    {
+      "failureText" : "Contrast nearly passed",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 2,
+      "testIdentifierString" : "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit",
+      "testName" : "testEmptyEverydayGuidanceAtStandardTextAudit()"
+    }
+  ],
+  "title" : "Test - Shield",
+  "topInsights" : [
+    {
+      "category" : "Common Failures",
+      "impact" : "100% of failures",
+      "text" : "7 runs of 1 test failed with Contrast nearly passed"
+    },
+    {
+      "category" : "Common Failures",
+      "impact" : "100% of failures",
+      "text" : "6 runs of 1 test failed with Text clipped"
+    }
+  ],
+  "totalTestCount" : 2
+}

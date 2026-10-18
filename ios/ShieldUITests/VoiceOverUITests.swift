@@ -22,6 +22,27 @@ final class VoiceOverUITests: XCTestCase {
         walk.checkpoint("message-opened")
     }
 
+    func testVoiceOverReadsEmptyScreenTitlesAndGuidance() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver testing service requires iOS 27.") }
+        for (screen, title, detail) in [
+            ("calls", "No calls yet", "Calls that reach Shield will appear here."),
+            ("messages", "No messages yet", "Voicemail and saved notices will appear here."),
+            ("numbers", "No numbers yet", "Save a number from a card, bill, or official website."),
+            ("blocked", "No blocked numbers", "Numbers blocked by Shield will appear here."),
+            ("contacts", "Your calling list is empty", "Share your contacts once, or add a contact with the Add button."),
+            ("phone-setup", "Phone setup", "Phone setup is done with a helper, one step at a time. The sample app doesn’t change your phone.")
+        ] {
+            let walk = try VoiceOverWalkthrough(self, name: "empty-everyday-\(screen)", arguments: [
+                "--uitesting-screen", screen, "--uitesting-empty-data", "--uitesting-single-person",
+                "--uitesting-calls-state", "empty", "--uitesting-message-filters"
+            ], large: true)
+            defer { walk.finish() }
+            try walk.find(title)
+            try walk.find(detail)
+            walk.checkpoint("title-and-guidance-readable")
+        }
+    }
+
     func testVoiceOverPhoneSignInKeepsWrongCodeRecoverable() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "phone-sign-in", arguments: ["--uitesting-phone-sign-in"])
@@ -176,6 +197,23 @@ final class VoiceOverUITests: XCTestCase {
         try walk.find("Allow sample alerts", where: { $0.contains("on") })
         try walk.activate("Allow sample alerts")
         XCTAssertEqual(walk.app.switches["Allow sample alerts"].value as? String, "0")
+    }
+
+    func testVoiceOverNativeLongLabelReadback() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "native-long-label", arguments: ["--uitesting-native-reference", "--native-labeled-links"])
+        defer { walk.finish() }
+        let expected = "Native row 1. Supporting text. Tuesday, October 13, 2026 at 5:00 PM."
+        let label = walk.app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", expected)).firstMatch
+        XCTAssertTrue(label.appears(timeout: 5))
+        try walk.find("Native row 1.")
+        let initial = try XCUIDevice.shared.voiceOverService.currentSpeech().utterance
+        Thread.sleep(forTimeInterval: 2)
+        let settled = try XCUIDevice.shared.voiceOverService.currentSpeech().utterance
+        let evidence = XCTAttachment(string: "Expected label: \(expected)\nAccessibility label: \(label.label)\nInitial speech (\(initial.count)): \(initial)\nAfter two seconds (\(settled.count)): \(settled)")
+        evidence.name = "native-long-label-speech-readback"; evidence.lifetime = .keepAlways; add(evidence)
+        walk.checkpoint("native-long-label")
+        XCTAssertTrue(settled.contains(expected), "VoiceOver readback must include the complete native label.")
     }
 
     func testVoiceOverOnboardingChoicesAndSafeSaveRecovery() throws {

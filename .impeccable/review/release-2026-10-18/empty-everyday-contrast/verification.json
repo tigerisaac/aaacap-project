@@ -1,0 +1,1284 @@
+{
+  "recordedAt": "2026-10-18T18:49:14.282396+00:00",
+  "scope": "Seven empty states: calls, messages, saved numbers, blocked numbers, calling list, sample phone setup, contact search. Native heading wrapping and adaptive secondary guidance; no live data, routing or permission changes.",
+  "releaseReady": false,
+  "runs": [
+    {
+      "name": "baseline-ios26",
+      "sourceInventory": "baseline-source.json",
+      "result": "Failed",
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792346490.123,
+      "finishTime": 1792346564.452,
+      "auditObservationCount": 13,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-calls-standard-light: Contrast nearly passed; Attributes: StaticText, 0x115850c80, {{103.5, 429.0}, {183.0, 38.0}}, label: 'Calls that reach Shield will appear here.'",
+        "Shield accessibility: empty-everyday-calls-standard-light: Text clipped; Attributes: StaticText, 0x115850c80, {{136.0, 335.3}, {118.0, 90.7}}, label: 'No calls yet'",
+        "Shield accessibility: empty-everyday-messages-standard-light: Contrast nearly passed; Attributes: StaticText, 0x115850c80, {{83.3, 423.5}, {223.3, 38.0}}, label: 'Voicemail and saved notices will appear here.'",
+        "Shield accessibility: empty-everyday-messages-standard-light: Text clipped; Attributes: StaticText, 0x115850b40, {{107.3, 335.3}, {175.3, 85.2}}, label: 'No messages yet'",
+        "Shield accessibility: empty-everyday-numbers-standard-light: Contrast nearly passed; Attributes: StaticText, 0x1158508c0, {{75.8, 289.0}, {238.3, 38.0}}, label: 'Save a number from a card, bill, or official website.'",
+        "Shield accessibility: empty-everyday-numbers-standard-light: Text clipped; Attributes: StaticText, 0x115851680, {{35.3, 408.8}, {143.7, 20.3}}, label: 'Add a number', Disabled",
+        "Shield accessibility: empty-everyday-numbers-standard-light: Text clipped; Attributes: StaticText, 0x115850780, {{114.0, 195.3}, {162.0, 90.7}}, label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-blocked-standard-light: Contrast nearly passed; Attributes: StaticText, 0x115850000, {{86.2, 294.3}, {217.7, 38.0}}, label: 'Numbers blocked by Shield will appear here.'",
+        "Shield accessibility: empty-everyday-blocked-standard-light: Text clipped; Attributes: StaticText, 0x115c22f80, {{89.5, 195.3}, {211.0, 96.0}}, label: 'No blocked numbers'",
+        "Shield accessibility: empty-everyday-contacts-standard-light: Contrast nearly passed; Attributes: StaticText, 0x115c243c0, {{73.3, 475.8}, {243.3, 38.0}}, label: 'Share your contacts once, or add a contact with the Add button.'",
+        "Shield accessibility: empty-everyday-contacts-standard-light: Contrast nearly passed; No associated element; Details: Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.",
+        "Shield accessibility: empty-everyday-contacts-standard-light: Text clipped; Attributes: StaticText, 0x115c24280, {{71.5, 381.3}, {247.0, 91.5}}, label: 'Your calling list is empty'",
+        "Shield accessibility: empty-everyday-phone-setup-standard-light: Contrast nearly passed; Attributes: StaticText, 0x115c22940, {{35.3, 491.0}, {319.3, 58.0}}, label: 'Phone setup is done with a helper, one step at a time. The sample app doesn\u2019t change your phone.'"
+      ],
+      "tests": [
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 9.318
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 41.837
+        }
+      ],
+      "logSha256": "3f7e9231d3eedc1c050f06e038afdec7a33d660bdcb46a0193e2c827e1e82633",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/baseline-ios26.xcresult"
+    },
+    {
+      "name": "largest-baseline-ios26",
+      "sourceInventory": "largest-baseline-source.json",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792346714.331,
+      "finishTime": 1792346839.753,
+      "auditObservationCount": 5,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-calls-largest-dark: Text clipped; Attributes: StaticText, 0x1127fc780, {{54.0, 268.7}, {282.0, 197.7}}, label: 'No calls yet'",
+        "Shield accessibility: empty-everyday-messages-largest-dark: Text clipped; Attributes: StaticText, 0x1127fca00, {{58.7, 216.0}, {272.7, 250.2}}, label: 'No messages yet'",
+        "Shield accessibility: empty-everyday-messages-largest-dark: Contrast failed; Attributes: StaticText, 0x1067f6940, {{16.0, -41.0}, {358.0, 157.3}}, label: 'All messages'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Text clipped; Attributes: StaticText, 0x1125efac0, {{61.3, 210.3}, {267.3, 263.7}}, label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-blocked-largest-dark: Text clipped; Attributes: StaticText, 0x1067f61c0, {{48.2, 244.7}, {293.7, 210.0}}, label: 'No blocked numbers'"
+      ],
+      "tests": [
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 108.047
+        }
+      ],
+      "logSha256": "d07e449edb81c994d3394374aade1d996a1ee1a9a7f68ffb023decc2bc690266",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/largest-baseline-ios26.xcresult"
+    },
+    {
+      "name": "navigation-baseline-ios26",
+      "sourceInventory": "navigation-baseline-source.json",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792346953.824,
+      "finishTime": 1792347029.557,
+      "auditObservationCount": 6,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-calls-largest-dark: Text clipped; Attributes: StaticText, 0x1164f8780, {{54.0, 268.7}, {282.0, 197.7}}, label: 'No calls yet'",
+        "Shield accessibility: empty-everyday-messages-largest-dark: Text clipped; Attributes: StaticText, 0x1164f8a00, {{58.7, 216.0}, {272.7, 250.2}}, label: 'No messages yet'",
+        "Shield accessibility: empty-everyday-messages-largest-dark: Contrast failed; Attributes: StaticText, 0x11600c140, {{16.0, -41.0}, {358.0, 157.3}}, label: 'All messages'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Contrast failed; Attributes: StaticText, 0x1164f8280, {{61.3, -68.7}, {267.3, 263.7}}, label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-blocked-largest-dark: Text clipped; Attributes: StaticText, 0x11600dcc0, {{48.2, 244.7}, {293.7, 210.0}}, label: 'No blocked numbers'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; Attributes: StaticText, 0x1164f83c0, {{60.3, -139.0}, {269.3, 331.7}}, label: 'Your calling list is empty'"
+      ],
+      "tests": [
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 57.932
+        }
+      ],
+      "logSha256": "529336964b3b20a34e8503da5f5689127771c7e310437c5a226c382f53846e60",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/navigation-baseline-ios26.xcresult"
+    },
+    {
+      "name": "candidate-ios26",
+      "sourceInventory": "candidate-source.json",
+      "result": "Failed",
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792347221.639,
+      "finishTime": 1792347569.16,
+      "auditObservationCount": 6,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-messages-largest-dark: Contrast failed; Attributes: StaticText, 0x113bba1c0, {{16.0, -41.0}, {358.0, 157.3}}, label: 'All messages'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Contrast failed; Attributes: StaticText, 0x113bba940, {{74.8, -99.0}, {240.3, 329.7}}, identifier: 'empty-state-title', label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "Shield accessibility: empty-everyday-numbers-standard-light: Text clipped; Attributes: StaticText, 0x1146bc280, {{35.3, 408.8}, {143.7, 20.3}}, label: 'Add a number', Disabled",
+        "Shield accessibility: empty-everyday-contacts-standard-light: Contrast nearly passed; No associated element; Details: Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger."
+      ],
+      "tests": [
+        {
+          "class": "RedesignUITests",
+          "method": "testCallsUnavailableIsNotAnEmptyHistory",
+          "result": "passed",
+          "seconds": 18.328
+        },
+        {
+          "class": "RedesignUITests",
+          "method": "testLargestTextMessageFilterPreservesKeptState",
+          "result": "passed",
+          "seconds": 32.116
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 8.51
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 8.691
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 175.56
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 38.197
+        },
+        {
+          "class": "SeniorPolishUITests",
+          "method": "testFailedListsHaveRecoveryWithoutFalseEmptyClaims",
+          "result": "passed",
+          "seconds": 37.552
+        }
+      ],
+      "logSha256": "e64f095b932b1eccf73694a511852f74c6d794479f807445332cd831a3417593",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/candidate-ios26.xcresult"
+    },
+    {
+      "name": "final-ios26",
+      "sourceInventory": "final-source.json",
+      "result": "Failed",
+      "passed": 2,
+      "failed": 2,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792347692.423,
+      "finishTime": 1792347852.976,
+      "auditObservationCount": 7,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-messages-largest-dark: Contrast failed; Attributes: StaticText, 0x115857ac0, {{16.0, -41.0}, {358.0, 157.3}}, label: 'All messages'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Text clipped; Attributes: StaticText, 0x115b75a40, {{48.7, 642.7}, {209.3, 125.3}}, label: 'Add a number', Disabled",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Contrast failed; Attributes: StaticText, 0x115b74780, {{74.8, -46.7}, {240.3, 329.7}}, identifier: 'empty-state-title', label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; Attributes: StaticText, 0x115b748c0, {{60.3, -159.7}, {269.3, 331.7}}, identifier: 'empty-state-title', label: 'Your calling list is empty'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; Attributes: StaticText, 0x115b757c0, {{16.0, 602.7}, {358.0, 304.7}}, label: 'Removing a number here also removes it from iPhone Contacts.'",
+        "Shield accessibility: empty-everyday-numbers-standard-light: Text clipped; Attributes: StaticText, 0x115b76300, {{35.3, 408.8}, {143.7, 20.3}}, label: 'Add a number', Disabled",
+        "Shield accessibility: empty-everyday-contacts-standard-light: Contrast nearly passed; Attributes: StaticText, 0x115b74dc0, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled"
+      ],
+      "tests": [
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtLargestTextAudit",
+          "result": "passed",
+          "seconds": 18.315
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 10.136
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 72.155
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 39.813
+        }
+      ],
+      "logSha256": "9b5fa85d6f2b33e137ee0722bc0be7a4db9d8d8f8a943867c253032bd03ef00d",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/final-ios26.xcresult"
+    },
+    {
+      "name": "final-ios27",
+      "sourceInventory": "voiceover-source.json",
+      "result": "Failed",
+      "passed": 5,
+      "failed": 3,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792347873.323,
+      "finishTime": 1792348384.048,
+      "auditObservationCount": 5,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-calls-largest-dark: Contrast failed; Attributes: StaticText, 0x108e92440, {{32.0, 131.0}, {168.7, 63.3}}, label: 'All calls'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Contrast failed; Attributes: StaticText, 0x108e92080, {{77.0, -72.7}, {236.0, 313.7}}, identifier: 'empty-state-title', label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; Attributes: StaticText, 0x108e92800, {{48.0, -87.7}, {294.0, 315.3}}, identifier: 'empty-state-title', label: 'Your calling list is empty'",
+        "Shield accessibility: empty-everyday-numbers-standard-light: Text clipped; Attributes: StaticText, 0x108ee8640, {{35.3, 424.8}, {143.7, 20.3}}, label: 'Add a number', Disabled",
+        "Shield accessibility: empty-everyday-contacts-standard-light: Contrast nearly passed; Attributes: StaticText, 0x108ee9e00, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled"
+      ],
+      "tests": [
+        {
+          "class": "RedesignUITests",
+          "method": "testCallsUnavailableIsNotAnEmptyHistory",
+          "result": "passed",
+          "seconds": 29.023
+        },
+        {
+          "class": "RedesignUITests",
+          "method": "testLargestTextMessageFilterPreservesKeptState",
+          "result": "passed",
+          "seconds": 36.391
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtLargestTextAudit",
+          "result": "passed",
+          "seconds": 23.558
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 13.899
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 93.386
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 50.398
+        },
+        {
+          "class": "SeniorPolishUITests",
+          "method": "testFailedListsHaveRecoveryWithoutFalseEmptyClaims",
+          "result": "passed",
+          "seconds": 46.969
+        },
+        {
+          "class": "VoiceOverUITests",
+          "method": "testVoiceOverReadsEmptyScreenTitlesAndGuidance",
+          "result": "failed",
+          "seconds": 180.778
+        }
+      ],
+      "logSha256": "16f505c12d64b7f2e0404f0300da85102471915092d513c155bfcacbf9d69d28",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/final-ios27.xcresult"
+    },
+    {
+      "name": "smallest-ios26",
+      "sourceInventory": "voiceover-source.json",
+      "result": "Failed",
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792348456.693,
+      "finishTime": 1792348710.938,
+      "auditObservationCount": 5,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-messages-largest-dark: Contrast failed; Attributes: StaticText, 0x11647ef80, {{50.0, 40.5}, {275.0, 316.0}}, identifier: 'empty-state-title', label: 'No messages yet'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Contrast failed; Attributes: StaticText, 0x116446a80, {{67.2, -120.5}, {240.5, 329.5}}, identifier: 'empty-state-title', label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-blocked-largest-dark: Contrast failed; Attributes: StaticText, 0x116446580, {{73.0, -117.0}, {229.0, 342.0}}, identifier: 'empty-state-title', label: 'No blocked numbers'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+      ],
+      "tests": [
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtLargestTextAudit",
+          "result": "passed",
+          "seconds": 27.31
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 180.989
+        }
+      ],
+      "logSha256": "c3c8c4b349a78973f8d77c6dda9629a05018fdf1d8c1c7ace86149932e42e4ee",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/smallest-ios26.xcresult"
+    },
+    {
+      "name": "native-voiceover-ios27",
+      "sourceInventory": "native-voiceover-source.json",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792348736.959,
+      "finishTime": 1792348829.588,
+      "auditObservationCount": 0,
+      "auditObservations": [],
+      "tests": [
+        {
+          "class": "VoiceOverUITests",
+          "method": "testVoiceOverNativeLongLabelReadback",
+          "result": "failed",
+          "seconds": 27.052
+        }
+      ],
+      "logSha256": "fadaad63e6033136814dd53f6e3d4487962757e61678ee238dad7f3708e628c8",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/native-voiceover-ios27.xcresult"
+    },
+    {
+      "name": "final-smallest-ios26",
+      "sourceInventory": "final-small-screen-source.json",
+      "result": "Failed",
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792349016.164,
+      "finishTime": 1792349174.522,
+      "auditObservationCount": 5,
+      "auditObservations": [
+        "Shield accessibility: empty-everyday-messages-largest-dark: Contrast failed; Attributes: StaticText, 0x11384c640, {{50.0, 40.5}, {275.0, 316.0}}, identifier: 'empty-state-title', label: 'No messages yet'",
+        "Shield accessibility: empty-everyday-numbers-largest-dark: Contrast failed; Attributes: StaticText, 0x113802a80, {{67.2, -120.5}, {240.5, 329.5}}, identifier: 'empty-state-title', label: 'No numbers yet'",
+        "Shield accessibility: empty-everyday-blocked-largest-dark: Contrast failed; Attributes: StaticText, 0x113803840, {{73.0, -104.5}, {229.0, 342.0}}, identifier: 'empty-state-title', label: 'No blocked numbers'",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode",
+        "Shield accessibility: empty-everyday-contacts-largest-dark: Contrast failed; No associated element; Details: Contrast failed for SwiftUI.AccessibilityNode"
+      ],
+      "tests": [
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyContactSearchAtLargestTextAudit",
+          "result": "passed",
+          "seconds": 24.049
+        },
+        {
+          "class": "SeniorAccessibilityUITests",
+          "method": "testEmptyEverydayGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 105.688
+        }
+      ],
+      "logSha256": "6a2a12112a25e5663cd7077064170ddb5bedb7e19edaf293c891c494f7a06f73",
+      "retainedResultBundle": "artifacts/private/empty-everyday-contrast-oct18/final-smallest-ios26.xcresult"
+    }
+  ],
+  "source": {
+    "trackedInputs": 282,
+    "allFinalHashesMatch": true,
+    "archiveDifferencesAreTestOnly": [
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift",
+      "ios/ShieldUITests/VoiceOverUITests.swift"
+    ],
+    "archiveInventory": "candidate-source.json",
+    "finalInventory": "final-small-screen-source.json"
+  },
+  "reviewedImages": [
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/5305527F-5AF9-466E-8DBA-EB58FD4471CF.png",
+      "attachmentName": "empty-everyday-calls-standard-light_0_B552F7FE-2F3A-48C7-A189-701D5012A5FC.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "298bfa16084cd400d8d220693b6080c87b8b93a9cfd9094fdb8ff7fe512813cb",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/F94BA5D0-57A4-4284-9550-E32979F954AE.png",
+      "attachmentName": "empty-everyday-messages-standard-light_0_37B69F5B-630F-4869-B3DF-5B004508CB75.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "fdbf5484861c31ee415c7f164350677d776cb96e30becd7145a3c7355da9c2b3",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/E4AC8373-C9E7-4D60-AE9A-2BAE06F158AA.png",
+      "attachmentName": "empty-everyday-numbers-standard-light_0_8E8665DE-40CA-41F1-846E-367CDF538E0A.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "6be9360314b3a503c737e83fca7658ec0ad7dba9ceb5ecd50d1b7f31312d82b6",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/74890A41-0C79-4796-8C15-CC870798CA20.png",
+      "attachmentName": "empty-everyday-blocked-standard-light_0_4E79BAAB-808A-4C63-A418-100777F71709.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "d175ac1263763db6fdc8c430a04d299b97383175aaa2fef2e929e96d75e059e9",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/E38B86E1-9924-4355-94EF-808539F60B8F.png",
+      "attachmentName": "empty-everyday-contacts-standard-light_0_714466F3-9A18-4650-B01B-AEF1290022AD.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "0c9e9c66c0148031226689520fd0478df6647d290f06659d5d18d849e17a882d",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/E4F14255-7B46-4683-8764-A691C0097C59.png",
+      "attachmentName": "empty-everyday-phone-setup-standard-light_0_89D48F11-B70C-48E5-A53F-D54F1983B03E.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "d93478bd0f884aa9121d245b42530e290a51563484585a651b804747deb1982d",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/80DC30D3-2F35-4C5B-AE64-82A4FC6AE0B5.png",
+      "attachmentName": "empty-everyday-contacts-search-standard-light_0_3E7B9E15-997F-4BD2-B300-E3CA6DBC4B23.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtStandardTextAudit()",
+      "sha256": "ea22b4b839b3119644435fdb68f8b206fe4f1ad6b3f7a4dbdbb99911ea907c18",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/1AF7EA78-965C-468E-9B8C-418A571CE5BA.png",
+      "attachmentName": "Element Screenshot_1_9F5B7281-2BE4-4D4B-823F-A958D9CB6F6D.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "edd6d15d5d69961aea996bc483f2e5994d133e4dd9d1d5266c8d5523c7adfc63",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/ED0E3F25-3C28-43D0-B893-FC09E3A1A247.png",
+      "attachmentName": "Element Screenshot_1_319D2521-2BBE-4663-9A1A-8841F7143722.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "f41ec1052b4601ee30ffa5bc1a80c6484faca696d80165810b179d73335c3020",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/26C146A7-9F48-40F8-92E5-0E14774C8707.png",
+      "attachmentName": "Element Screenshot_1_C8885545-EEF3-484D-B7E9-D61B79951990.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "8b9b32f0f1a60f39760c0d0210db921d827be29b658a3652f82829295424561d",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/1BC016F6-F0EE-492D-8B42-C0BA6F80E011.png",
+      "attachmentName": "Element Screenshot_1_932CF85E-D24E-4115-AE80-9C569BA7E684.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "72ac158b3509da70f21bc06f81980795b12c9f1198b0ce8520e65d3cfabd36a2",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/36D45CD0-A06D-4614-B36E-0C12719F5F9A.png",
+      "attachmentName": "Element Screenshot_1_E3617CD2-8419-46AD-8531-866390F03F10.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "36ea90db7aa4fd382c15fb326a36c6537c553651a8278d2a542f1ad06cade973",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/79F0AAAD-0EC5-473F-ACA6-82B38961BF2F.png",
+      "attachmentName": "Element Screenshot_1_28B3EF29-AD11-49E5-9904-F82BBBA6C362.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "3bbb2fe2dae54747edf71fe3e2320070d1d6fb3a78d8f1253fd91f199ed2c686",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/3D89EDD3-D1CB-4F64-BF1D-A90E812D3BD6.png",
+      "attachmentName": "Element Screenshot_1_866E5615-2E73-42BE-8CE5-44DF3CEEF5EE.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "5f3206351e340fb096e0abe46af4717f3fdfd59c1dd94daa1735b3345250ab91",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/18BB88C6-D7FA-4C0B-AEA0-7548B175032D.png",
+      "attachmentName": "Element Screenshot_1_E6976009-F750-4636-87AD-C7EEF9B6A061.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "9d1422f8da991325f2d1d9804e012fc07fd86bc66f89fed968576dd91137fb98",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/7598F847-78F9-41E2-AD83-0F6DC069C6A1.png",
+      "attachmentName": "Element Screenshot_1_98982F56-C77C-4C69-9696-CE11CB55FE4F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "890879e7200be66f95b143814ce845f09d41cd6f4ccb6e54c5257bded549597e",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/17DBC625-3AE2-463A-88CC-F396AB652555.png",
+      "attachmentName": "Element Screenshot_1_3F4D12D5-A1A4-4F53-B928-D5A1AF0DD88D.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "7b31396dc3852922bbe260cdaa5a7b5d3ae8e07f1edfc944dde7bcadb063d3e2",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/4D0342B2-BC2F-475E-ACC7-AB6D8C87DBE1.png",
+      "attachmentName": "Element Screenshot_1_A6C1A183-94A2-4857-8515-260FF77A4CA1.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "2f3009160841f352970ed5085a16d7fca0ce82473490ca77e95058a87abc3a4b",
+      "visuallyInspected": true
+    },
+    {
+      "run": "baseline-ios26",
+      "file": "baseline-ios26/56F24E71-73D1-4060-9D88-4EAA0E22C534.png",
+      "attachmentName": "Element Screenshot_1_8F4ED427-DB47-461C-B0A3-F5B5E7AFA416.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "b4855d2c1859213ffa241dbda5cb8ff3cd2a05ad80227420a818c51a28846e19",
+      "visuallyInspected": true
+    },
+    {
+      "run": "largest-baseline-ios26",
+      "file": "largest-baseline-ios26/6015B718-291F-4071-BCED-2481AD1353EF.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark_0_03FB3C9E-193B-4CE7-89ED-8537D88EC281.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "f77e215db2fa7bee32071f5135aa94be859fb08ccfcb95d0912afa6fd9201013",
+      "visuallyInspected": true
+    },
+    {
+      "run": "largest-baseline-ios26",
+      "file": "largest-baseline-ios26/025802A3-5435-4341-98D4-4B354E8BE56E.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark_0_86FE9DCE-CB47-4BED-8FA4-AC9CF779029E.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "c317778e8d86f44ae4d41fcc26bd952b1d85e17f0f8635060fac64f074aac2b6",
+      "visuallyInspected": true
+    },
+    {
+      "run": "largest-baseline-ios26",
+      "file": "largest-baseline-ios26/B58F34C8-4B70-48B9-9FAC-6EB063399067.png",
+      "attachmentName": "empty-everyday-messages-largest-dark_0_4C6EED54-EC18-49B2-AC35-8D2B1DAB219B.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "e47e748db194c17d3d576913a4e19569e9f6bd3c3c725d38ba9a3e91c420ff93",
+      "visuallyInspected": true
+    },
+    {
+      "run": "largest-baseline-ios26",
+      "file": "largest-baseline-ios26/6928AB9A-18B7-45C6-9FBB-388C6A041D1C.png",
+      "attachmentName": "empty-everyday-calls-largest-dark_0_C29D63BD-AE8B-4E7F-80D9-4CAE8F8EED36.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "7196f86f197619b44b7894b807baf6cbe8f43fca1a0e762cb2908115759df5af",
+      "visuallyInspected": true
+    },
+    {
+      "run": "navigation-baseline-ios26",
+      "file": "navigation-baseline-ios26/DDF648CC-B72F-411D-8475-5764D5CE2CD6.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark_0_AE076CC0-B2EC-4D10-B4BC-689FF7EAA772.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "1c6da2ec7c51229f3973b81bdd4a810c0df1292db93c486d92f7da7cf437bd0f",
+      "visuallyInspected": true
+    },
+    {
+      "run": "navigation-baseline-ios26",
+      "file": "navigation-baseline-ios26/0BF4D678-B066-44C2-BBC6-2FB52A570FA6.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark_0_648D208D-DA55-4261-894A-AFCC62F06F27.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a7daa9ecd10b0d02cf2102b1347aa999a9272964b58ac189e8c473135f0c5f10",
+      "visuallyInspected": true
+    },
+    {
+      "run": "navigation-baseline-ios26",
+      "file": "navigation-baseline-ios26/1BA0BDE1-468F-4FFD-A49B-9DB7E2A885DF.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark_0_F9EC9D06-F8E8-4E0F-99D0-548FA423A092.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "1a2a2fca4be09b97d7d10fce8bd6ac6ea2846cfb965a1208d079a73feec42ce3",
+      "visuallyInspected": true
+    },
+    {
+      "run": "navigation-baseline-ios26",
+      "file": "navigation-baseline-ios26/F80FBDDE-5312-40D5-82E3-AF14A9CC5B2D.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark_0_45453DE9-4B24-4E4F-80C2-56EAC29847C4.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a3ba4950fdfc0be87885364f4d422c89b692cf9ee7f59dbb5f26e84ed87f3355",
+      "visuallyInspected": true
+    },
+    {
+      "run": "navigation-baseline-ios26",
+      "file": "navigation-baseline-ios26/25F6F9D5-E9FB-4D55-AB1B-BA2FC44965D1.png",
+      "attachmentName": "empty-everyday-messages-largest-dark_0_C3671190-63AD-48F5-A119-C50035D3DE0F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a51026216b9829a86bff8f677bd10416ce5172c8dfa33020f2e516e4bef79524",
+      "visuallyInspected": true
+    },
+    {
+      "run": "navigation-baseline-ios26",
+      "file": "navigation-baseline-ios26/FB676397-728F-4F78-9ADF-9E42356850DA.png",
+      "attachmentName": "empty-everyday-calls-largest-dark_0_6CADB772-A22A-4FCA-93B6-F9F34A14D0FE.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "ee4f482dc17559bcfc77a44df82abe56e64884d54b19d812e941786bb8d5639b",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/ABD88780-272D-49D8-A0A3-C6D960941E45.png",
+      "attachmentName": "empty-everyday-calls-largest-dark-title_0_B6D462BD-9BAE-4C67-8758-DE2D9E6499DF.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "44eddc31f4b8dca0a370941f26f75b3005bca99c206f61afd2a26ce9325a033b",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/BD14C686-5718-4BA7-9DD7-7CA298A6E73D.png",
+      "attachmentName": "empty-everyday-messages-largest-dark-title_0_FEF5D2D3-3E53-412F-BC88-AAD369FB73CE.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "21a584dbbc7321b248225b6c0628d0d0e428a6ccfe318a6ff105bfa0729f44ba",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/1859ACBC-014F-4572-8F52-544CA6E0CE8A.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark-title_0_D1B813AD-BBA4-4175-9718-6A9763615C59.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "b3c1c6193c0dc0be80926ed2bb39caa374ee4efaa55371d14300dfe813b57558",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/BD5A4812-39E7-46F0-880C-742A7AFE72D5.png",
+      "attachmentName": "empty-everyday-calls-standard-light_0_9789275B-0923-4D8D-AADA-2F6565729F1F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "0da0e69067b8209ea2e2c16718ac5fc7ff13e4f1c7a0c806230bfdab962a76bd",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/578D18A5-9479-4A11-85FC-AC0E666B0228.png",
+      "attachmentName": "empty-everyday-messages-standard-light_0_B0F8A3C4-E92B-4172-9971-5697D53CFC0F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "953e186673d4ccdef3107d8b3d9ed7f73a10bcce0bbbf51da3de0fc3d19a1704",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/0D33E505-A161-489F-A0D0-023A0A529EBC.png",
+      "attachmentName": "empty-everyday-numbers-standard-light_0_06EBF811-3E42-466E-ACA0-F3ABF05B85FA.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "2c9f5f0388743269ccc23be1aa7085f1d28a21ef23f125551ec452d703730da2",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/81AAE528-5C8E-49B5-86BF-4F46E7285839.png",
+      "attachmentName": "empty-everyday-blocked-standard-light_0_6831F759-A6B2-45EE-8638-60244F017297.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "2c50f9bf58aebd735d53ca24ca44ecd51e512daf597b3917b54cbab6ff191acf",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/5738B9E6-540D-453E-B5EC-763244D0FAEB.png",
+      "attachmentName": "empty-everyday-contacts-standard-light_0_302B50DD-D49E-447E-8A11-E6F01F25AB39.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "7b183cc6d10c6cf1932e734f8a70e749281288643dda5e56d5cc028420724920",
+      "visuallyInspected": true
+    },
+    {
+      "run": "candidate-ios26",
+      "file": "candidate-ios26/1A6C60EB-00E0-4028-8BA9-626158DDAF67.png",
+      "attachmentName": "empty-everyday-phone-setup-standard-light_0_59724FFA-7002-4E36-9D90-C9A1F8A48E6B.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "3e2943062294ccbea224162e4e4161f8593c6118b3ada1f565b513df18cda4d8",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/07E7B1EA-C6FD-43A7-9714-E9375347A2EE.png",
+      "attachmentName": "empty-everyday-contacts-search-largest-dark_0_5B497C82-9AE8-4F35-A79D-D1BEAAA0AB1B.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+      "sha256": "61edb4c3a86e315460aec1e16585535f1a92ef2d7703156682373ed26171054b",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/591F31E6-7654-45D5-BEE0-306FB404301B.png",
+      "attachmentName": "empty-everyday-contacts-search-largest-dark-title_0_EFF96583-4979-467B-96CC-8A210FA9F62E.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+      "sha256": "669378dea0c40ba698f24db3da3fc3ebc433dc97a58c28182c98b75669a77bde",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/7A7487E9-15DB-4D63-9736-382AD5B6DE1E.png",
+      "attachmentName": "empty-everyday-contacts-search-standard-light_0_9945110A-9B9F-44AF-A923-D41C0FA2CF0C.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtStandardTextAudit()",
+      "sha256": "1dfd735e846ebbfa5bff77a24e2ad1d3a7ce9c7d2addd19ca556d4730db743ee",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/F52B0E16-93A3-4588-AA83-695358BCDFE3.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark_0_3A10E763-6D8A-461C-8EFA-481352F10D6D.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a39a85829795a1bdcfaf08183d311334be6ce5f9b3a3b779c33e4abe8619a336",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/306BF267-09DD-430D-B452-8F9B48315AA4.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark-title_0_4DEDBD35-C1DB-4395-A848-DA0FAF2FAB7D.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a39a85829795a1bdcfaf08183d311334be6ce5f9b3a3b779c33e4abe8619a336",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/3CCAD792-F4E1-4E7D-A428-92FCD8C03425.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark_0_1EE9E260-B5C4-4E44-97D9-651927DF6419.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "44d3b3e9786edbc73a339455fc130421907e7f10f5d2130b9f3d45192295b4e8",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/ADD84DC6-4DE6-4158-8E44-7739E251BB0B.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark-title_0_5B617FB4-6CD7-4C9A-8389-0457B0877C51.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "e18cb9cb13ea54fc87a10fa686de0e7f54b69c1aac5f35c0775a59ec42b109a1",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/8258BC17-4487-4EDD-88D5-989B20C89D5F.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark_0_6D81F073-D658-44E2-9B7E-A0C87D7AA30F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "5a7fb8d9aead3274667afd712390bb8cd1b2fee549b740e924fa44b26a731524",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/C2D596B9-800D-4BC4-9C3C-42D5606B9EF3.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark-title_0_4F7E90B9-B407-496B-93D1-D02C3AE70D03.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "5a7fb8d9aead3274667afd712390bb8cd1b2fee549b740e924fa44b26a731524",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/DFF194C3-B709-4C2F-8196-015F8B8069D3.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark_0_F2B01BDF-47D2-40E5-91B6-7ACAF67E5AFC.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "0843cb5622de53f46bfd482194d2906079c2b428e95a98f7d4d50456b7812fde",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/A87548CF-878C-4D46-B3E1-2B7A2D677AE6.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark-title_0_85AA8518-1BD8-447D-9284-F2A87ADCA676.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "2d4c11250530d2080411e0b846c05274f7d7136c98ff640d906bd3a3b6ed79d3",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/693FBB5A-7250-4CBE-A68B-CAFD68F0E150.png",
+      "attachmentName": "empty-everyday-messages-largest-dark_0_0B14F503-4862-4784-8AE5-8049E0BFFA3E.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "f507dca00bb0c7f0d00349a6b95103a9f1abbcfb381debf5eedc694f0f835305",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/2306517A-24DB-4BB1-8790-A68708F09176.png",
+      "attachmentName": "empty-everyday-messages-largest-dark-title_0_EF397095-F804-42F0-A589-61BAC8F2884F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "f99354d5487f24da102636ee470cca42a15e8e157ba2dd61d736e47281d0fcf2",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/F652AD99-CE73-4F3F-A303-B3AE6DED0D74.png",
+      "attachmentName": "empty-everyday-calls-largest-dark_0_059D46D5-9F27-47B8-9201-0EC16B879DF7.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "4c0d00c6e49131279c3c1e72bad9287370259b216d41bf950fcf454930107ba7",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/674ADF13-EC1C-4920-A13C-B331BA973DF7.png",
+      "attachmentName": "empty-everyday-calls-largest-dark-title_0_1B3116C4-2642-4713-A297-10D81A0456A3.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "84f80f4048ebdb2c9d4257354ba550a9ac9adc1896d33112718ee559853916d3",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/A032AC48-A2A6-4F56-A6B7-5BD6BE86550F.png",
+      "attachmentName": "Element Screenshot_1_FD574253-A94F-4F2D-A301-A7BE8785EDED.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "ca7ef03015328606d2747aaff0d071a9a8a0545e1b94943c0719e6c84a4cf2f5",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/7610F33B-0BA6-42B2-89C4-A53A397FBEB4.png",
+      "attachmentName": "Element Screenshot_1_EFF408A3-2C41-4E9D-A166-41751FCEA046.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "7c612ede12087b95aa2a3451ff446a68ee49a41ec34d2c0b3b7794c1705b712b",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/B1D33CBD-C7FF-46D6-B0C6-82E12850E442.png",
+      "attachmentName": "Element Screenshot_1_1789F5ED-AF49-4CC1-8D7C-A0E6CE3EEA08.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a2845fbbe6d2a85a81e74a9c2c846f3b0adb1a3e6cfcc6589918dd9cf21f7def",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/6563CC8E-AD09-460E-ACFC-260C85849E7D.png",
+      "attachmentName": "Element Screenshot_1_BDB4CB21-39C3-4A48-B0CF-19E60B19F50B.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "79e3a2bcccf77489fdb1ee7b448aa79e4d7ab0d9c225eb12fc865bf1330df7ee",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/D965FD4C-FADF-43E5-AFDB-304BE710D89B.png",
+      "attachmentName": "Element Screenshot_1_9605E196-E9CB-42B7-8FE6-61CF3C2A48A6.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "6007c87c881a4230d47181030cb1a183234737533c40eda071bea459101e3696",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/84D6943E-70A4-4922-BFC2-EED310048E37.png",
+      "attachmentName": "empty-everyday-contacts-standard-light_0_1E4C36CB-EE4F-44C7-8EBB-DFD4CF29E4E8.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "2b388eb9d673cc20d4e32ad52d1ed91ed9b278ec646107b107a690b914a61443",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/DE94AFC0-D56A-4412-BF7D-6D23B0BCC903.png",
+      "attachmentName": "Element Screenshot_1_0652A304-F018-4F95-B5F6-181CF71D0E4D.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "3bbb2fe2dae54747edf71fe3e2320070d1d6fb3a78d8f1253fd91f199ed2c686",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios26",
+      "file": "final-ios26/55CA9D70-EAE3-4781-8AAC-6CA0D1E52AD9.png",
+      "attachmentName": "Element Screenshot_1_355E52B3-A57E-46B1-BDE6-B5AAA8E5BB49.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "99b79601e6b71889fd3769c14b14f60bf05634e52c84e05b37a4e734a38e51ae",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/2B5F0330-D99B-4CDE-BA14-2D1AF748FE15.png",
+      "attachmentName": "empty-everyday-contacts-search-largest-dark_0_E3B26A34-BAA9-4B27-A24E-32E939FAEBA1.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+      "sha256": "f9d6292eb08dc96bf4c4f688469e0991a6547330172f505d51f7e5716f89e756",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/0D61FC1E-DEDA-4776-8A38-18370AAC8873.png",
+      "attachmentName": "empty-everyday-contacts-search-largest-dark-title_0_69743E70-BD0B-472F-BD52-71B63483FC35.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+      "sha256": "3d18015f15b32bfac5d1e37f8cf6e39c05e82cb1a4cf8a4720cae3a4b96f1b15",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/6F04B2E8-3BCD-4EF0-A12E-AF9029607CF6.png",
+      "attachmentName": "empty-everyday-contacts-search-standard-light_0_B68528BD-87D5-4FAC-955F-3E70E0651919.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtStandardTextAudit()",
+      "sha256": "e78c8388282c4e84678c784f56cfc9ad6a38687815812fd6ef6991068ff3a8d0",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/EBA7CBBC-0031-472D-92BD-F6C99D6D71CE.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark_0_FBB1EFED-8AAB-46C3-8C8D-8FE037E2F046.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "504875bda2f4b9f3234b6e2b7b20bc4fa23207e78f0a9833b8ae95b8ee72fbce",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/54B61567-19F8-4CF4-845A-F58179D005E8.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark-title_0_9C09D5C7-F570-4879-866B-EC5674C8B2FF.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "504875bda2f4b9f3234b6e2b7b20bc4fa23207e78f0a9833b8ae95b8ee72fbce",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/F32F2423-F7D5-4C87-8F62-43DDA93F3CDF.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark_0_96942EB9-A992-4624-BC75-67F4B89C3B53.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "bb15618b582fa8b4eeec4eacaa1da0d7c73a27ed73e410b372203b48f24caaa6",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/0B763C88-2609-4CDE-885E-B071BE462ADC.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark-title_0_FB7D5047-6A3D-46FD-A3CC-B634940D716B.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "ebf436f8ec0ebfea38970536ea4a19967f7def89fde6275b52433ee78c061e10",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/D705E3C5-7CBD-49D8-9982-97AC7A6BBEEE.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark_0_C4DB66E7-8393-47A7-8882-9A1A9597EE28.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "162a4a98a23cdf94335c610aef33f68e63eee52302f3c229894ba9eddf305567",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/D254294B-41FA-4BD8-BD49-A4FF8D81F6F6.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark-title_0_543B1210-E02D-44C6-B4F3-74D335C425C8.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "162a4a98a23cdf94335c610aef33f68e63eee52302f3c229894ba9eddf305567",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/D6C79063-A91A-4B94-9FAD-17129E6EEAA1.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark_0_D39822B9-97DA-4D6B-BE63-4FFC2EDB5B79.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "2b07ba89ff99083647fee65bb7abed5130fb58ecdc95f7ef4fdfe60b6cf82d79",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/DA6ACA4F-113C-4E49-A9F2-7210D0C65214.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark-title_0_A612F4B0-1F23-4BAF-9026-016CADFFE77D.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "3621564439ad8ab2dc80789de83c4ab7d0ee91c360dc824762ee1e4c45199237",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/1C3EC90B-FA57-4CB0-A6DD-63B8AD7A791F.png",
+      "attachmentName": "empty-everyday-messages-largest-dark_0_0FAC4DCE-B3E3-4A9D-A495-E037C0FB5F4A.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "5718591cf9bff25e7528a6a0870b3c40074a89c57dc8e4824f7175000bc1eec3",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/6E3CCD73-F2B6-40BD-88C6-F11BFE201F4D.png",
+      "attachmentName": "empty-everyday-messages-largest-dark-title_0_2BF4B6DF-3E33-4FB5-A711-009E4A541F70.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "34fe0229471ce20998ef12b681da0c2f552d211687396446322834fd176a8252",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/1A35C0E7-6F8F-44D3-B605-22DC537766FE.png",
+      "attachmentName": "empty-everyday-calls-largest-dark_0_776EA300-6B1E-4BD2-9ED4-8DFB7A154ACF.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "43da1bc01d602fecf6acd1bfab5da61db2802cff4d650bba6799570a07806c7d",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/3BC59398-8343-4871-AD87-D1A4EA4ED5FD.png",
+      "attachmentName": "empty-everyday-calls-largest-dark-title_0_184351D6-BF6F-4C71-973D-A425B4F7CAD9.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "d3da838233e04dc8a8cbeed3b81a2b6a86424541d328cf0733eed8a727a452d3",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/16C18EB9-DCDF-4B0E-B10C-5343DF1D1332.png",
+      "attachmentName": "Element Screenshot_1_69D7E4B5-0486-4563-985D-975EC668C266.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "83586a199d7a67e9445b06259560ebb37144bc62419bc6fb28e23aed3a0e1284",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/07ACC4E7-9B5D-4F2E-A5BC-97B1B902FF18.png",
+      "attachmentName": "Element Screenshot_1_4156676B-CBEC-43EC-A8EF-86CB4BAE3620.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "9b1026ceb3c92f14b04fa437410ed3bac01050b8be25ab77d321dd0a2d21cdc8",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/05252E6D-669B-46F8-A0B3-138607CBE111.png",
+      "attachmentName": "Element Screenshot_1_A0990034-16EC-4F79-AB28-8AC228EC7D67.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "f9d90474cc1e2ac352175dc52072138bd7e98236ec14e18a74aadf180ecafdc8",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/18D48372-9A6F-43D2-B0E6-60430927C0C8.png",
+      "attachmentName": "empty-everyday-contacts-standard-light_0_3ED67726-BA29-47CA-8B60-D98F2A320C86.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "b484be43871262e7dc8aa11e056d99b609b97b1f94189b61e3a25da62565c654",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/07CF2626-D415-4B36-91AC-A33CD2260751.png",
+      "attachmentName": "Element Screenshot_1_1B6085B6-9EE0-4AC9-8690-904E5AF68488.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "95d90edd4ee64a632e26ce990c5cd03882720f7834d77e9ed38e74b8dc8bd3ba",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/2671B380-D6F7-477C-A430-0D5BF237A1A7.png",
+      "attachmentName": "Element Screenshot_1_28CCCA27-358E-40C2-9888-98ACE172A326.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtStandardTextAudit()",
+      "sha256": "5a030527c710ae6ac8b9b279a7b758a41ad7dfd7aa03d7979a888505a0734df0",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/9A253302-DD19-4FF4-930A-EE36DFFBACF4.png",
+      "attachmentName": "voiceover-empty-everyday-calls-title-and-guidance-readable_0_86F7D96C-F400-483A-942C-82885B9F43C7.png",
+      "test": "VoiceOverUITests/testVoiceOverReadsEmptyScreenTitlesAndGuidance()",
+      "sha256": "b7dced9da66d35fcc76c76dc47d295ad6b7e2ede53e253e036a4af1e351ef72f",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/B3F5221C-83DA-4241-AF49-B7789EFCEB5A.png",
+      "attachmentName": "voiceover-empty-everyday-messages-title-and-guidance-readable_0_127962EB-FC7A-420E-9EBD-0C6D4FCF7152.png",
+      "test": "VoiceOverUITests/testVoiceOverReadsEmptyScreenTitlesAndGuidance()",
+      "sha256": "4c68e2d9adc53132139c86cb2cdf88307d7f51de6613aa655b3c4508b7451054",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/E1F4E867-D204-45D6-B240-BD89CCB75B60.png",
+      "attachmentName": "voiceover-empty-everyday-numbers-title-and-guidance-readable_0_2B37BC0D-4430-4F90-8601-3870479950B6.png",
+      "test": "VoiceOverUITests/testVoiceOverReadsEmptyScreenTitlesAndGuidance()",
+      "sha256": "ca0466d335522fb630140df8379118aeb7be063502bf87a06cf1c1ed39b768bc",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/7B2F5051-7763-40BB-917A-DA419AFBF11D.png",
+      "attachmentName": "voiceover-empty-everyday-blocked-title-and-guidance-readable_0_D2297D54-1D19-4EAB-86AA-9960A07BC2B4.png",
+      "test": "VoiceOverUITests/testVoiceOverReadsEmptyScreenTitlesAndGuidance()",
+      "sha256": "45a3e8b24fb71c1803802c4d0db90e6d290f2387c4cd93ef94dca58585a25895",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-ios27",
+      "file": "final-ios27/7E9929E8-AAA7-47F2-87B6-37FDC139E77A.png",
+      "attachmentName": "voiceover-empty-everyday-contacts-title-and-guidance-readable_0_F847A439-A409-4A17-85BC-8648156FEF14.png",
+      "test": "VoiceOverUITests/testVoiceOverReadsEmptyScreenTitlesAndGuidance()",
+      "sha256": "f2440d901cde2f6f8387fec253964233b5e2eed2b649ef6ea06461900ec9e0e8",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26",
+      "file": "smallest-ios26/A19C80F8-3D45-4CF7-B2FE-0B262D9B5474.png",
+      "attachmentName": "empty-everyday-calls-largest-dark-title_0_4F3AB136-C3B5-45BC-875E-3FF99B40F6DE.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "3ee7f7849fccfae79bab3b2d2d731ac1bb650edd640ca3d8614633fb8f4d81fa",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26",
+      "file": "smallest-ios26/737969F5-E3DE-4125-9CC6-8F76594DF365.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark_0_AC03AFCF-9C8F-46AC-8004-82ED9FBF965F.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "0e5c38cb8899b8cddd474017a881a5a5d946e6ff2000a8f563ac7bc3de97596a",
+      "visuallyInspected": true
+    },
+    {
+      "run": "native-voiceover-ios27",
+      "file": "native-voiceover-ios27/5AE39970-5226-44D5-B306-04937B79D9A3.png",
+      "attachmentName": "voiceover-native-long-label-native-long-label_0_C55705C2-D65C-4CCF-BA9C-12B597D4B03C.png",
+      "test": "VoiceOverUITests/testVoiceOverNativeLongLabelReadback()",
+      "sha256": "b44ef9ffd1ac2bbf263a77d7ad72fbfbc44cc43dbc157252c75dd3dc28bd30a0",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/9FB85496-0292-4E6F-A52E-BE7F73350751.png",
+      "attachmentName": "empty-everyday-contacts-search-largest-dark_0_5609344A-90CF-4EE5-9189-0EE6F6341CFB.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+      "sha256": "20463fbfb376b28005afb32401148f0705a6c11e9cd7b2421ad3e68cbadfce2a",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/0277F34E-38B3-47AF-9234-295E2897FD6B.png",
+      "attachmentName": "empty-everyday-contacts-search-largest-dark-title_0_E9A8C3B7-C235-487F-95C1-DCABDF4B1291.png",
+      "test": "SeniorAccessibilityUITests/testEmptyContactSearchAtLargestTextAudit()",
+      "sha256": "7fb4945d76ff90913dc574227ba0c8030a1aa876bc9cafe554d14406c08db87a",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/28B4F149-2250-4CDC-BBC8-761A470E7876.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark_0_41E0CCFB-89D5-4997-9DA1-D521FC8FF213.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "f1e0891a92f1ba5f2ce4ec4316a1b3ab4a58c667372a10f170c15598fb692698",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/50F3952A-5236-4BCB-81C9-8CFAE304F824.png",
+      "attachmentName": "empty-everyday-phone-setup-largest-dark-title_0_44359E49-7694-410F-811E-FCA6357F7ADC.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "f1e0891a92f1ba5f2ce4ec4316a1b3ab4a58c667372a10f170c15598fb692698",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/0E007A3B-680C-4BA0-B33E-C28670673D6A.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark_0_5BD48A3A-745B-49AA-9F2D-D21C7AB7F2B7.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "87aaadeef95be28eb3046b9e1707268fbc58e58f23da92cf00729fe87511f62d",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/1F08DD0C-C75E-47A0-9A9F-CC1749120C5E.png",
+      "attachmentName": "empty-everyday-contacts-largest-dark-title_0_80151D77-8644-4D1B-9683-AE1607B75C42.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "90530bc524d9138a5fdc5584cc2cda58059f3834f60ef153b626b188f90f4cc6",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/53F9AED0-15BA-4DFD-8EEB-48558B1BBD65.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark_0_84313BD6-60D8-41FC-B921-B2C659703046.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "011a3aeac478cd81d533b7a45c2678de6f8d2b7dbd1bbdcf31db7e022261a311",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/1BCDCA07-E0E2-46A9-991E-88765D139CE9.png",
+      "attachmentName": "empty-everyday-blocked-largest-dark-title_0_252587C8-7ABB-44A2-8888-6AB79521AA39.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "0c42c4cb3fa639c23832280cde7c3a3333326302cfd80faac79b0239c7dad6a7",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/6ADFFB22-192C-491D-9313-8DB50DF8F8B3.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark_0_0AE15CA0-E239-4F6F-B432-05181AEC32F4.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "c3e5ef7e3733c5b603e661aaf4d7e2f0e2cc5c3ff064204252ad58f979e4a919",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/03995BFF-44CC-4A34-872C-2F5D8291EF51.png",
+      "attachmentName": "empty-everyday-numbers-largest-dark-title_0_28390B0B-26F8-4EB5-A5F1-3B3C587BBA3E.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "809fa4265cd28bcd557d92d2c193ed23d65693bd6e5dba266e4b05ed8e997bf6",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/001993BD-54D0-49E5-AFB1-C07C5CABA0C4.png",
+      "attachmentName": "empty-everyday-messages-largest-dark_0_71D28EC3-5674-46E4-A59B-4763BB1FD1DF.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "4acc2bc84c1d4af6b70746379cf77c710a642c242b24e6ddf8e7b6ef3c488264",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/8A3A9426-E442-478A-B880-B81ACF2DE58D.png",
+      "attachmentName": "empty-everyday-messages-largest-dark-title_0_D3F707A7-647C-4DCB-ABEC-B334FE2EA202.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "929f68f422349b71d92ffa1f95577f1164fee6e7ffd271b30f924d97b1a82ae5",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/BA9A0DFF-FB2B-4435-AE28-96592EB1D1B0.png",
+      "attachmentName": "empty-everyday-calls-largest-dark_0_88A1B662-0ECE-45EF-AD19-53E3A283239C.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "c3d1c0dc4508b43d1e90d81133e971043727ac7890e9119c081e6c67eee62e4d",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/29CACE79-C78A-42BE-9908-32E6EB9D6C53.png",
+      "attachmentName": "empty-everyday-calls-largest-dark-title_0_70EFF71A-30EF-4848-976A-6725BE41ACD7.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "92d4baa840031024cc72c613a38c47a834ec6cd19f816de7991dbe656c57fee6",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/376F72BB-9B1F-4209-B732-6501F13479FF.png",
+      "attachmentName": "Element Screenshot_1_95257781-0CB0-4C42-9AF9-A2D0C15AC829.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "b645a4810b7460ab94c53a9754b68aeecbc406932469c25d2b8a83e299c78c5c",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/7287C34B-6F5A-4EC1-8C56-0B547D3416C4.png",
+      "attachmentName": "Element Screenshot_1_F1035C36-2F4D-420C-BB90-7503C3510BB1.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "a8205c811a73fefc5bbede41deec988baedcb02cd798dd6b689cb40c1e48fdf2",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/5E637FD0-0920-4D0D-8C57-1936C55EA368.png",
+      "attachmentName": "Element Screenshot_1_BA5DFECD-682F-4498-A378-5A80D8AEC616.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "8e95f8f1c8ced603bac5c679d61bf237531de674352f9e89c675411ab4168204",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/ECD46468-5BBC-4EEB-9AD3-ABC9B6B2517F.png",
+      "attachmentName": "App Screenshot_0_A3E9FBD4-83AA-4748-9144-580B4E8EAE77.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "754f6d632e98e0fad32bf79d8d0c106acf8e7804f6a85574384dbe7172400229",
+      "visuallyInspected": true
+    },
+    {
+      "run": "final-smallest-ios26",
+      "file": "final-smallest-ios26/056E11DA-DED3-41AF-A802-100B14CFF662.png",
+      "attachmentName": "App Screenshot_0_C8F53D61-147C-4571-8279-33EC60F47E3C.png",
+      "test": "SeniorAccessibilityUITests/testEmptyEverydayGuidanceAtLargestTextAudit()",
+      "sha256": "754f6d632e98e0fad32bf79d8d0c106acf8e7804f6a85574384dbe7172400229",
+      "visuallyInspected": true
+    }
+  ],
+  "reviewedImageCount": 109,
+  "limitations": [
+    "Unfiltered screen audits retain failures; passing description measurements are not a whole-app accessibility certification.",
+    "First largest baseline stopped after four screens; contact lookup/scroll assertions failed and phone setup was not reached. The subsequent unchanged-production baseline reached all six screens.",
+    "First candidate search audits failed in test navigation because search hides the navigation bar. Four additional geometry assertions used stale/arbitrary viewport bounds. All original failures are retained.",
+    "Final navigation measures current list/navigation/search/tab geometry. The 375x667 physical-Home-button fixture reserves no nonexistent in-app home indicator; the initial two overly conservative geometry failures remain recorded. No audit types or issue handlers were weakened.",
+    "VoiceOver service is available only on iOS 27. Its helper temporarily disables VoiceOver for direct page scrolling. Physical gestures and audio acceptance remain unverified.",
+    "The six-screen VoiceOver method fails on the complete Phone setup description. A separate native-label probe without ShieldEmptyState or the optional Shield list style also returns only 64 characters despite a complete 68-character accessibility label, before and after waiting two seconds. This narrows the boundary but does not prove the physical announcement or identify the root cause.",
+    "The native VoiceOver diagnostic log reports a runner restart after the failed method. Its result bundle records one failed test and no passing tests; the empty restarted suite is not counted as a pass.",
+    "The archive is unsigned; device installation, distribution signing, Apple acceptance and real calls remain open.",
+    "Independent CI receipt is for base 048272b; it checks the unchanged backend, not Swift."
+  ]
+}

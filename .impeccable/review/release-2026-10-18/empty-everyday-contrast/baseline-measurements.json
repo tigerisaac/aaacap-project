@@ -1,0 +1,173 @@
+{
+  "method": "Opaque dominant text/background pixels from native unmodified sRGB screenshot regions. WCAG relative luminance. Diagnostic crop for six descriptions; manually selected visible description region for native search, whose audit reported no issues.",
+  "samples": [
+    {
+      "screen": "calls",
+      "image": "1AF7EA78-965C-468E-9B8C-418A571CE5BA.png",
+      "imageSha256": "edd6d15d5d69961aea996bc483f2e5994d133e4dd9d1d5266c8d5523c7adfc63",
+      "regionLTRB": [
+        0,
+        0,
+        548,
+        114
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixels": 3729,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixels": 51649,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "screen": "messages",
+      "image": "26C146A7-9F48-40F8-92E5-0E14774C8707.png",
+      "imageSha256": "8b9b32f0f1a60f39760c0d0210db921d827be29b658a3652f82829295424561d",
+      "regionLTRB": [
+        0,
+        0,
+        668,
+        114
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixels": 4501,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixels": 64356,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "screen": "numbers",
+      "image": "36D45CD0-A06D-4614-B36E-0C12719F5F9A.png",
+      "imageSha256": "36ea90db7aa4fd382c15fb326a36c6537c553651a8278d2a542f1ad06cade973",
+      "regionLTRB": [
+        0,
+        0,
+        715,
+        114
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixels": 4325,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixels": 68561,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "screen": "blocked",
+      "image": "18BB88C6-D7FA-4C0B-AEA0-7548B175032D.png",
+      "imageSha256": "9d1422f8da991325f2d1d9804e012fc07fd86bc66f89fed968576dd91137fb98",
+      "regionLTRB": [
+        0,
+        0,
+        652,
+        114
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixels": 4178,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixels": 61952,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "screen": "contacts",
+      "image": "17DBC625-3AE2-463A-88CC-F396AB652555.png",
+      "imageSha256": "7b31396dc3852922bbe260cdaa5a7b5d3ae8e07f1edfc944dde7bcadb063d3e2",
+      "regionLTRB": [
+        0,
+        0,
+        728,
+        112
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixels": 6097,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixels": 65723,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "screen": "phone-setup",
+      "image": "56F24E71-73D1-4060-9D88-4EAA0E22C534.png",
+      "imageSha256": "b4855d2c1859213ffa241dbda5cb8ff3cd2a05ad80227420a818c51a28846e19",
+      "regionLTRB": [
+        0,
+        0,
+        958,
+        174
+      ],
+      "foregroundRGB": [
+        133,
+        133,
+        138
+      ],
+      "foregroundPixels": 11894,
+      "backgroundRGB": [
+        242,
+        243,
+        244
+      ],
+      "backgroundPixels": 144405,
+      "contrastRatio": 3.3049434432686233
+    },
+    {
+      "screen": "search",
+      "image": "80DC30D3-2F35-4C5B-AE64-82A4FC6AE0B5.png",
+      "imageSha256": "ea22b4b839b3119644435fdb68f8b206fe4f1ad6b3f7a4dbdbb99911ea907c18",
+      "regionLTRB": [
+        310,
+        1345,
+        865,
+        1455
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixels": 4654,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixels": 52256,
+      "contrastRatio": 3.4388767891778884
+    }
+  ]
+}

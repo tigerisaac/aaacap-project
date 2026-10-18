@@ -30,8 +30,8 @@ struct SavedNumbersView: View {
                 if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your numbers…") } }
             } else if items.isEmpty && loadError == nil {
                 ShieldGroup {
-                    ContentUnavailableView("No numbers yet", systemImage: "phone",
-                        description: Text("Save a number from a card, bill, or official website."))
+                    ShieldEmptyState(title: "No numbers yet", symbol: "phone",
+                                     detail: "Save a number from a card, bill, or official website.")
                     Button("Add a number", systemImage: "plus") { showingAdd = true }
                         .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
                 }
@@ -113,7 +113,7 @@ struct SavedNumbersView: View {
             return
         }
         if model.isPreview {
-            items = [SavedNumber(id: UUID(), label: "Sample clinic", phone: "+13125550148", provenance: "card", createdAt: .now)]
+            items = PreviewScenario.emptyData("numbers", preview: model.isPreview) ? [] : [SavedNumber(id: UUID(), label: "Sample clinic", phone: "+13125550148", provenance: "card", createdAt: .now)]
             return
         }
         guard let personID = model.selectedPersonID else { return }

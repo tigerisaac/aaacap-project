@@ -296,6 +296,25 @@ struct ShieldNotice: View {
     }
 }
 
+/// Native empty-state layout with fully wrapping headings and readable guidance.
+struct ShieldEmptyState: View {
+    let title: String
+    let symbol: String
+    let detail: String
+
+    var body: some View {
+        ContentUnavailableView {
+            Label {
+                Text(title).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("empty-state-title")
+            } icon: { Image(systemName: symbol) }
+        } description: {
+            Text(detail).foregroundStyle(ShieldTheme.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
 struct ShieldLoadingView: View {
     let title: String
 

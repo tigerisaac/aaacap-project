@@ -68,6 +68,136 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try auditEmptyFamilyGuidance(largestDark: false)
     }
 
+    func testEmptyEverydayGuidanceAtStandardTextAudit() throws {
+        try auditEmptyEverydayGuidance(largestDark: false)
+    }
+
+    func testEmptyEverydayGuidanceAtLargestTextAudit() throws {
+        try auditEmptyEverydayGuidance(largestDark: true)
+    }
+
+    private func auditEmptyEverydayGuidance(largestDark: Bool) throws {
+        for (screen, detail) in [
+            ("calls", "Calls that reach Shield will appear here."),
+            ("messages", "Voicemail and saved notices will appear here."),
+            ("numbers", "Save a number from a card, bill, or official website."),
+            ("blocked", "Numbers blocked by Shield will appear here."),
+            ("contacts", "Share your contacts once, or add a contact with the Add button."),
+            ("phone-setup", "Phone setup is done with a helper, one step at a time. The sample app doesn’t change your phone.")
+        ] {
+            let app = launch(["--uitesting-screen", screen, "--uitesting-empty-data", "--uitesting-single-person",
+                              "--uitesting-calls-state", "empty", "--uitesting-message-filters",
+                              "-UIPreferredContentSizeCategoryName",
+                              largestDark ? "UICTContentSizeCategoryAccessibilityXXXL" : "UICTContentSizeCategoryL"], dark: largestDark)
+            if largestDark {
+                let title = app.staticTexts["empty-state-title"].firstMatch
+                exposeEverydayGuidance(title, in: app)
+                let capture = XCTAttachment(screenshot: app.screenshot())
+                capture.name = "empty-everyday-\(screen)-largest-dark-title"; capture.lifetime = .keepAlways; add(capture)
+            }
+            let guidance = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", detail)).firstMatch
+            exposeEverydayGuidance(guidance, in: app, bottomEdge: largestDark ? false : nil)
+            guard guidance.exists else { continue }
+            let name = "empty-everyday-\(screen)-\(largestDark ? "largest-dark" : "standard-light")"
+            let bounds = everydayGuidanceBounds(in: app)
+            if largestDark && guidance.frame.height > bounds.upperBound - bounds.lowerBound {
+                try audit(app, name + "-start")
+                exposeEverydayGuidance(guidance, in: app, bottomEdge: true)
+                try audit(app, name + "-end")
+            } else {
+                if largestDark { exposeEverydayGuidance(guidance, in: app) }
+                try audit(app, name)
+            }
+        }
+    }
+
+    private func exposeEverydayGuidance(_ element: XCUIElement, in app: XCUIApplication, bottomEdge: Bool? = nil) {
+        for _ in 0..<24 {
+            let bounds = everydayGuidanceBounds(in: app)
+            var delta: CGFloat = 0.12
+            if element.exists {
+                let frame = element.frame
+                let edge = bottomEdge.map { $0 ? frame.maxY : frame.minY }
+                if let edge {
+                    if bounds.contains(edge) { break }
+                    delta = (edge - (edge < bounds.lowerBound ? bounds.lowerBound : bounds.upperBound)) / app.frame.height
+                } else {
+                    if bounds.contains(frame.minY), bounds.contains(frame.maxY) { break }
+                    delta = (frame.minY < bounds.lowerBound ? frame.minY - bounds.lowerBound : frame.maxY - bounds.upperBound) / app.frame.height
+                }
+            }
+            let distance = min(max(abs(delta), 0.06), 0.18) * (delta < 0 ? -1 : 1)
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55 - distance)))
+        }
+        let bounds = everydayGuidanceBounds(in: app)
+        let top = bounds.lowerBound
+        let bottom = bounds.upperBound
+        XCTAssertTrue(element.exists)
+        guard element.exists else { return }
+        XCTAssertTrue(element.isHittable)
+        if let bottomEdge {
+            let edge = bottomEdge ? element.frame.maxY : element.frame.minY
+            XCTAssertGreaterThanOrEqual(edge, top)
+            XCTAssertLessThanOrEqual(edge, bottom)
+        } else {
+            XCTAssertGreaterThanOrEqual(element.frame.minY, top)
+            XCTAssertLessThanOrEqual(element.frame.maxY, bottom)
+        }
+        let edgeName = bottomEdge.map { $0 ? "end" : "start" } ?? "whole paragraph"
+        let geometry = XCTAttachment(string: "Target: \(element.label)\nFrame: \(element.frame)\nEdge: \(edgeName)\nUsable vertical bounds: \(top)...\(bottom)")
+        geometry.name = "empty-guidance-edge-geometry"; geometry.lifetime = .keepAlways; add(geometry)
+    }
+
+    private func everydayGuidanceBounds(in app: XCUIApplication) -> ClosedRange<CGFloat> {
+        // Search hides the navigation bar. Lists also collapse large titles while scrolling,
+        // so measure the current chrome rather than retaining the launch-time bar height.
+        let list = app.collectionViews.firstMatch
+        var top = list.exists ? list.frame.minY : app.frame.minY + 60
+        let navigationBar = app.navigationBars.firstMatch
+        if navigationBar.exists { top = max(top, navigationBar.frame.maxY) }
+        // The 375×667 SE fixture has a physical Home button, so no in-app indicator overlaps it.
+        let homeButtonFixture = app.frame.size == CGSize(width: 375, height: 667)
+        var bottom = app.frame.maxY - (homeButtonFixture ? 0 : 34)
+        for control in [app.tabBars.firstMatch, app.searchFields.firstMatch] where control.exists {
+            let frame = control.frame
+            if frame.intersects(app.frame) {
+                if frame.midY > app.frame.midY { bottom = min(bottom, frame.minY) }
+                else { top = max(top, frame.maxY) }
+            }
+        }
+        return (top + 8)...(bottom - 8)
+    }
+
+    func testEmptyContactSearchAtStandardTextAudit() throws {
+        try auditEmptyContactSearch(largestDark: false)
+    }
+
+    func testEmptyContactSearchAtLargestTextAudit() throws {
+        try auditEmptyContactSearch(largestDark: true)
+    }
+
+    private func auditEmptyContactSearch(largestDark: Bool) throws {
+        let app = launch(["--uitesting-screen", "contacts", "--uitesting-single-person",
+                          "-UIPreferredContentSizeCategoryName",
+                          largestDark ? "UICTContentSizeCategoryAccessibilityXXXL" : "UICTContentSizeCategoryL"], dark: largestDark)
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.appears(timeout: 5))
+        search.tap(); search.typeText("NoMatchingPerson")
+        app.keyboards.buttons["Search"].tap()
+        let title = app.staticTexts["empty-state-title"].firstMatch
+        exposeEverydayGuidance(title, in: app)
+        XCTAssertEqual(title.label, "No matching contacts")
+        XCTAssertFalse(app.staticTexts["Jamie"].exists)
+        if largestDark {
+            let capture = XCTAttachment(screenshot: app.screenshot())
+            capture.name = "empty-everyday-contacts-search-largest-dark-title"; capture.lifetime = .keepAlways; add(capture)
+        }
+        let guidance = app.staticTexts["Try another name or number."].firstMatch
+        exposeEverydayGuidance(guidance, in: app)
+        try audit(app, "empty-everyday-contacts-search-\(largestDark ? "largest-dark" : "standard-light")")
+    }
+
     func testEmptyFamilyGuidanceAtLargestTextAudit() throws {
         try auditEmptyFamilyGuidance(largestDark: true)
     }

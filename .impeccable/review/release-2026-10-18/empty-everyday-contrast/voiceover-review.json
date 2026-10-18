@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-18",
+  "releaseAcceptance": false,
+  "sixScreenRun": "final-ios27",
+  "result": "failed",
+  "screens": [
+    {
+      "screen": "calls",
+      "expectedTitle": "No calls yet",
+      "expectedGuidance": "Calls that reach Shield will appear here.",
+      "completeTitleFound": true,
+      "completeGuidanceFound": true,
+      "guidanceReadbacks": [
+        {
+          "text": "Calls that reach Shield will appear here.",
+          "characters": 41
+        }
+      ],
+      "traceAttachment": "0E1938DA-A138-453B-9382-6C53F9097FCB.txt"
+    },
+    {
+      "screen": "messages",
+      "expectedTitle": "No messages yet",
+      "expectedGuidance": "Voicemail and saved notices will appear here.",
+      "completeTitleFound": true,
+      "completeGuidanceFound": true,
+      "guidanceReadbacks": [
+        {
+          "text": "Voicemail and saved notices will appear here.",
+          "characters": 45
+        }
+      ],
+      "traceAttachment": "EED4D2DB-D1DD-4795-82D8-059660FF3FFD.txt"
+    },
+    {
+      "screen": "numbers",
+      "expectedTitle": "No numbers yet",
+      "expectedGuidance": "Save a number from a card, bill, or official website.",
+      "completeTitleFound": true,
+      "completeGuidanceFound": true,
+      "guidanceReadbacks": [
+        {
+          "text": "Save a number from a card, bill, or official website.",
+          "characters": 53
+        }
+      ],
+      "traceAttachment": "E5F6985E-0D47-404C-97DE-48C49BE786C4.txt"
+    },
+    {
+      "screen": "blocked",
+      "expectedTitle": "No blocked numbers",
+      "expectedGuidance": "Numbers blocked by Shield will appear here.",
+      "completeTitleFound": true,
+      "completeGuidanceFound": true,
+      "guidanceReadbacks": [
+        {
+          "text": "Numbers blocked by Shield will appear here.",
+          "characters": 43
+        }
+      ],
+      "traceAttachment": "186F6F34-499B-4001-B0AF-44250E1F0FE1.txt"
+    },
+    {
+      "screen": "contacts",
+      "expectedTitle": "Your calling list is empty",
+      "expectedGuidance": "Share your contacts once, or add a contact with the Add button.",
+      "completeTitleFound": true,
+      "completeGuidanceFound": true,
+      "guidanceReadbacks": [
+        {
+          "text": "Share your contacts once, or add a contact with the Add button.",
+          "characters": 63
+        }
+      ],
+      "traceAttachment": "F7D6BB1E-36EA-4112-BAC4-E31E546C21EC.txt"
+    },
+    {
+      "screen": "phone-setup",
+      "expectedTitle": "Phone setup",
+      "expectedGuidance": "Phone setup is done with a helper, one step at a time. The sample app doesn’t change your phone.",
+      "completeTitleFound": true,
+      "completeGuidanceFound": false,
+      "guidanceReadbacks": [
+        {
+          "text": "Phone setup is done with a helper, one step at a time. The sampl",
+          "characters": 64
+        }
+      ],
+      "traceAttachment": "7FC2AFA2-D5EA-4C8E-8D7D-4742DB46AED5.txt"
+    }
+  ],
+  "nativeControl": {
+    "run": "native-voiceover-ios27",
+    "result": "failed",
+    "fixture": "Existing native NavigationLink row with a 68-character accessibility label, without ShieldEmptyState or the optional Shield list style.",
+    "readback": "Expected label: Native row 1. Supporting text. Tuesday, October 13, 2026 at 5:00 PM.\nAccessibility label: Native row 1. Supporting text. Tuesday, October 13, 2026 at 5:00 PM.\nInitial speech (64): Native row 1. Supporting text. Tuesday, October 13, 2026 at 5:00\nAfter two seconds (64): Native row 1. Supporting text. Tuesday, October 13, 2026 at 5:00",
+    "attachment": "834564A7-C22D-456F-8919-6BD8065930BA.txt",
+    "waitSeconds": 2,
+    "visualInspection": "Native reference screenshot shows the focused first row; this is visual/focus evidence only.",
+    "runnerNote": "Log reports restart after the failed method; result bundle still records one failure and zero passes."
+  },
+  "interpretation": "The same 64-character readback boundary occurs outside the new empty-state component. The root cause and actual device speech are unverified. No text, label, full-speech assertion or issue filter was shortened to make these tests pass.",
+  "screenshotReview": "All five completed description-focus checkpoints were inspected. Their focused paragraphs are complete. Some earlier headings/filter controls have scrolled behind navigation; separate heading captures are retained by the layout audit. Phone setup never reached its successful checkpoint.",
+  "limits": [
+    "currentSpeech is an automation result, not a recording of physical speech.",
+    "The traversal helper temporarily disables VoiceOver for direct page scrolling.",
+    "Physical VoiceOver gestures and complete audio announcements remain required."
+  ],
+  "references": [
+    "https://developer.apple.com/documentation/xcuiautomation/xcuivoiceoverservice/output/utterance",
+    "https://developer.apple.com/documentation/xcuiautomation/xcuivoiceoverservice/currentspeech()"
+  ]
+}

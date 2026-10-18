@@ -22,7 +22,8 @@ struct CallsView: View {
                 if model.calls.isEmpty && model.callsError == nil {
                     if !initialLoading {
                         ShieldGroup {
-                            ContentUnavailableView(model.filter.emptyTitle, systemImage: model.filter == .voicemail ? "recordingtape" : "phone", description: Text("Calls that reach Shield will appear here."))
+                            ShieldEmptyState(title: model.filter.emptyTitle, symbol: model.filter == .voicemail ? "recordingtape" : "phone",
+                                             detail: "Calls that reach Shield will appear here.")
                             if model.filter != .all { Button("Show all calls") { model.filter = .all }.frame(minHeight: ShieldTheme.Layout.minimumTarget) }
                         }
                     }

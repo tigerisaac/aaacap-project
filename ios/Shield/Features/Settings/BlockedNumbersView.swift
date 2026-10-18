@@ -21,8 +21,8 @@ struct BlockedNumbersView: View {
                 if loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting blocked numbers…") } }
             } else if items.isEmpty {
                 ShieldGroup {
-                    ContentUnavailableView("No blocked numbers", systemImage: "hand.raised",
-                        description: Text("Numbers blocked by Shield will appear here."))
+                    ShieldEmptyState(title: "No blocked numbers", symbol: "hand.raised",
+                                     detail: "Numbers blocked by Shield will appear here.")
                 }
             }
             if model.isOwner, !model.isPreview {
@@ -101,7 +101,7 @@ struct BlockedNumbersView: View {
             return
         }
         if model.isPreview {
-            items = [BlockedNumber(id: String(repeating: "a", count: 64), phone: "+13125550199", reason: "scam",
+            items = PreviewScenario.emptyData("blocked", preview: model.isPreview) ? [] : [BlockedNumber(id: String(repeating: "a", count: 64), phone: "+13125550199", reason: "scam",
                 blockedAt: .now.addingTimeInterval(-86400), expiresAt: .now.addingTimeInterval(179 * 86400), attempts: 2, lastAttemptAt: .now)]
             loaded = true
             return

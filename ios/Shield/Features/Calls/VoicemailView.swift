@@ -86,8 +86,8 @@ struct VoicemailView: View {
                     // Progress stays in the toolbar without inserting a large placeholder row.
                 } else if messages.isEmpty, inbox.error == nil {
                     ShieldGroup {
-                        ContentUnavailableView(keptOnly ? "No kept messages yet" : filter.emptyTitle, systemImage: "tray",
-                            description: Text(keptOnly ? "Open a sample message and tap Keep this message." : "Voicemail and saved notices will appear here."))
+                        ShieldEmptyState(title: keptOnly ? "No kept messages yet" : filter.emptyTitle, symbol: "tray",
+                                         detail: keptOnly ? "Open a sample message and tap Keep this message." : "Voicemail and saved notices will appear here.")
                     }
                 } else {
                     ShieldGroup {

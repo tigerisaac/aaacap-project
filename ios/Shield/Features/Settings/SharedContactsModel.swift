@@ -25,7 +25,7 @@ final class SharedContactsModel {
             return
         }
         if app.isPreview {
-            items = [SavedNumber(id: UUID(), label: "Jamie", phone: "+13125550102", provenance: "contacts", createdAt: .now),
+            items = PreviewScenario.emptyData("contacts", preview: app.isPreview) ? [] : [SavedNumber(id: UUID(), label: "Jamie", phone: "+13125550102", provenance: "contacts", createdAt: .now),
                      SavedNumber(id: UUID(), label: "My clinic", phone: "+13125550103", provenance: "contacts", createdAt: .now)]
             return
         }
