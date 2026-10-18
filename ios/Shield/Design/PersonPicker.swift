@@ -16,12 +16,12 @@ struct PersonPicker: View {
                 }
             }
         } label: {
-            HStack(spacing: ShieldTheme.Spacing.compact) {
+            HStack(spacing: 7) {
                 Image(systemName: model.isOwner ? "person.crop.circle.fill" : "person.2.circle.fill")
                 Text(model.person?.name ?? "People").fontWeight(.semibold)
                 Image(systemName: "chevron.down").font(.caption.weight(.bold))
             }
-            .frame(minHeight: ShieldTheme.Layout.systemTarget)
+            .frame(minHeight: 44)
         }
         .accessibilityLabel("Viewing \(model.person?.name ?? "people"). Change person.")
         .accessibilityInputLabels([model.person?.name ?? "People", "Change person"])

@@ -108,7 +108,7 @@ struct VoicemailView: View {
                 if inbox.nextCursor != nil {
                     ShieldGroup {
                         Button(inbox.loading ? "Getting more…" : "Older messages") { Task { await inbox.load(app, more: true) } }
-                            .font(.body)
+                            .font(.body.weight(.medium))
                             .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget).disabled(inbox.loading)
                     }
                 }

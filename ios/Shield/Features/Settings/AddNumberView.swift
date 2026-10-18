@@ -72,7 +72,7 @@ struct AddNumberView: View {
                         .shieldPrimaryButton()
                         .disabled(!canSave || (model.isDemo && !usesFixture))
                     }
-                    .shieldPageMargins()
+                    .padding(ShieldTheme.Spacing.page)
                     .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
                 }
                 .disabled(saving)
@@ -96,9 +96,7 @@ struct AddNumberView: View {
                     if field != nil {
                         ToolbarItem(placement: .confirmationAction) { Button("Done") { finishEditing() } }
                     }
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") { dismiss() }.foregroundStyle(ShieldTheme.ink).disabled(saving)
-                    }
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(saving) }
                 }
             }
         }

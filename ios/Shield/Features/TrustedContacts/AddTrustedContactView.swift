@@ -47,7 +47,7 @@ struct AddTrustedContactView: View {
                     Text("They hear only when checks while you talk detect a possible scam request and intervene. Those checks must be on. Alerts include your name; calls, recordings, and messages stay private. Message and data rates may apply.")
                         .foregroundStyle(ShieldTheme.secondaryText)
                 }
-            }.shieldPageMargins()
+            }.padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
         }.background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .navigationTitle("Add caretaker").navigationBarTitleDisplayMode(.inline)

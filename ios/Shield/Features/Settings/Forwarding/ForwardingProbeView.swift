@@ -5,7 +5,7 @@ struct ForwardingProbeView: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     private var ring: Bool { model.step == .ring }
     var body: some View {
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
+        VStack(alignment: .leading, spacing: 24) {
             if model.probePassed {
                 Label(ring ? "You heard Shield" : "A call reached Shield", systemImage: "checkmark.circle.fill")
                     .font(.title2.bold()).foregroundStyle(ShieldTheme.connected)
@@ -28,9 +28,13 @@ struct ForwardingProbeView: View {
             } else {
                 HStack(alignment: .top, spacing: ShieldTheme.Spacing.content) {
                     if !typeSize.isAccessibilitySize {
-                        ShieldRowSymbol(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right", size: 56)
+                        Image(systemName: ring ? "phone.badge.waveform" : "phone.arrow.right")
+                            .font(.title2.weight(.semibold)).foregroundStyle(ShieldTheme.action)
+                            .frame(width: 56, height: 56)
+                            .background(ShieldTheme.action.opacity(0.10), in: .rect(cornerRadius: 14))
+                            .accessibilityHidden(true)
                     }
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("Shield will call you.").font(.title2.weight(.semibold))
                         if ring { Text("Answer, listen, and press 1.").font(.title3).foregroundStyle(ForwardingStyle.secondaryText) }
                     }
@@ -45,7 +49,7 @@ struct ForwardingProbeView: View {
     }
 
     private var dontAnswer: some View {
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("Don’t answer").font(.title2.bold()).foregroundStyle(ShieldTheme.held)
             Text("Let it ring. Don’t decline the call.").foregroundStyle(ForwardingStyle.secondaryText)
         }

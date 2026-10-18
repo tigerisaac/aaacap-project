@@ -50,7 +50,7 @@ struct ForwardingSetupView: View {
                             }
                         }.id(model.step)
                         if let error = model.error {
-                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                            VStack(alignment: .leading, spacing: 8) {
                                 ShieldNotice(title: "This step didn’t finish", detail: error, symbol: "exclamationmark.circle")
                                     .accessibilityIdentifier("forwarding-error")
                                     .accessibilityFocused($errorFocused)
@@ -71,7 +71,7 @@ struct ForwardingSetupView: View {
                             .frame(maxWidth: .infinity)
                     }
                 }
-                .shieldPageMargins()
+                .padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }
             .onChange(of: model.error) { _, value in
@@ -118,19 +118,16 @@ struct ForwardingSetupView: View {
                     .accessibilityInputLabels(["Back", "Previous step"])
                 }
             }
-            // iOS 26 bar buttons: the ellipsis menu, then the system Close (✕), each in its own glass.
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("Options", systemImage: "ellipsis") {
+                Button("Close") { dismiss() }.disabled(model.working)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu("Options", systemImage: "ellipsis.circle") {
                     Button("Disconnect Shield", systemImage: "arrow.uturn.backward") { confirmRestore = true }
                 }
-                .accessibilityLabel("More")
+                .labelStyle(.titleOnly).accessibilityLabel("Setup options")
                 .accessibilityIdentifier("Setup options")
-                .accessibilityInputLabels(["More", "Options", "Setup options"])
-            }
-            ToolbarSpacer(.fixed, placement: .topBarTrailing)
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(role: .close) { dismiss() }.disabled(model.working)
-                    .accessibilityInputLabels(["Close"])
+                .accessibilityInputLabels(["Options", "Setup options"])
             }
         }
         .onDisappear { model.guidePlayer.stop(); model.shortcutGuidePlayer.stop() }

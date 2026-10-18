@@ -10,8 +10,8 @@ struct TrustedContactOnboardingView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
-                ShieldWelcomeHeader(title: added == nil ? "Would you like someone to help?" : "Waiting for confirmation",
-                                    symbol: added == nil ? "person.2.fill" : "hourglass")
+                Text(added == nil ? "Would you like someone to help?" : "Waiting for confirmation")
+                    .shieldPageHeading().accessibilityAddTraits(.isHeader)
                 if let added {
                     Text("\(added.name) gets alerts only after accepting, and chooses how to get them.")
                     if added.requestDelivery != "submitted" {
@@ -33,9 +33,9 @@ struct TrustedContactOnboardingView: View {
                     }
                 }
                 if let error { ShieldNotice(title: "Couldn’t save your choice", detail: error, symbol: "exclamationmark.circle") }
-            }.shieldWelcomeMargins().padding(.vertical, ShieldTheme.Spacing.card)
+            }.padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
-        }.background(ShieldTheme.welcomePage)
+        }.background(ShieldTheme.surface)
             .navigationTitle("Your choice").navigationBarTitleDisplayMode(.inline)
     }
     /// One of two equal choices: the shared row symbol and text, on its own card.
@@ -46,12 +46,11 @@ struct TrustedContactOnboardingView: View {
         var body: some View {
             HStack(spacing: ShieldTheme.Spacing.regular) {
                 ActionRow(title: title, detail: detail, symbol: symbol)
-                Image(systemName: "chevron.forward").font(.subheadline.weight(.semibold))
+                Image(systemName: "chevron.right").font(.subheadline.weight(.semibold))
                     .foregroundStyle(.tertiary).accessibilityHidden(true)
             }
-            .padding(.horizontal, ShieldTheme.Spacing.content).padding(.vertical, ShieldTheme.Spacing.regular)
-            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-            .background(ShieldTheme.welcomeElement, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+            .padding(.horizontal, ShieldTheme.Spacing.content).padding(.vertical, 6)
+            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
             .contentShape(.rect)
         }
     }

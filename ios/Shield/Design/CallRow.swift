@@ -42,16 +42,16 @@ struct CallRow: View {
         // The symbol centers on the text block, as in Phone and Mail, rather than riding above it.
         HStack(alignment: .center, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
             if !typeSize.isAccessibilitySize {
-                ShieldRowSymbol(systemName: call.outcome.symbol, color: ShieldTheme.color(for: call.outcome), style: .avatar)
+                ShieldRowSymbol(systemName: call.outcome.symbol, color: ShieldTheme.color(for: call.outcome))
             }
-            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+            VStack(alignment: .leading, spacing: 6) {
                 if typeSize >= .xxxLarge {
                     titleText
                     timeText
                 } else {
-                    HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.compact) {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
                         titleText
-                        Spacer(minLength: ShieldTheme.Spacing.compact)
+                        Spacer(minLength: 8)
                         timeText
                     }
                 }
@@ -60,7 +60,7 @@ struct CallRow: View {
                 }
             }
         }
-        .padding(.vertical, ShieldTheme.Spacing.tight)
+        .padding(.vertical, 10)
     }
 
     var accessibilityDetails: String {
@@ -73,7 +73,7 @@ struct CallRow: View {
     }
 
     private var titleText: some View {
-        Text(title).font(.headline).foregroundStyle(ShieldTheme.ink)
+        Text(title).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
             .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -87,7 +87,7 @@ struct CallRow: View {
     private var detailLine: some View {
         Group {
             if typeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                VStack(alignment: .leading, spacing: 6) {
                     if let outcomeWord { outcomeWord }
                     if let newMessageWord { newMessageWord }
                     numberText

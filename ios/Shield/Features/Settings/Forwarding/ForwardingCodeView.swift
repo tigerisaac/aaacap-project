@@ -7,7 +7,7 @@ struct ForwardingCodeView: View {
     private var returned: Bool { model.codeReturnedStep == model.step }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+        VStack(alignment: .leading, spacing: 16) {
             if let code = model.code {
                 if let sequence = model.codeSequence {
                     Text(sequence).font(.headline).accessibilityIdentifier("forwarding-code-sequence")

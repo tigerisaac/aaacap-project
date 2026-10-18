@@ -14,7 +14,7 @@ struct SetupShortcutPreview: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
+                VStack(alignment: .leading, spacing: 24) {
                     Text(heading).shieldPageHeading()
                     instructions
                     if session.phase == .add {
@@ -55,7 +55,7 @@ struct SetupShortcutPreview: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .shieldPageMargins()
+                .padding(24)
             }
             .onChange(of: session.error) { _, error in
                 guard error != nil else { return }
@@ -68,7 +68,7 @@ struct SetupShortcutPreview: View {
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             if !typeSize.isAccessibilitySize {
-                primaryAction.shieldBottomTray()
+                primaryAction.padding(24).background(ShieldTheme.surface)
             }
         }
         .background {

@@ -7,7 +7,7 @@ struct ForwardingStepContent: View {
     var onRestorationStageChange: () -> Void = {}
     @Environment(\.dynamicTypeSize) private var typeSize
     var body: some View {
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
+        VStack(alignment: .leading, spacing: 24) {
             switch step {
             case .overview:
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
@@ -21,7 +21,7 @@ struct ForwardingStepContent: View {
                     point("You choose whether to answer", symbol: "hand.tap")
                     point("Messages come to Shield", symbol: "recordingtape")
                 }
-                Text("To leave, open More at the top, then Disconnect Shield.")
+                Text("To leave, choose Options → Disconnect Shield.")
                     .foregroundStyle(ForwardingStyle.secondaryText)
                 Text(PrivacyCopy.screeningProviders)
                 Text(PrivacyCopy.screeningConsent)
@@ -37,17 +37,17 @@ struct ForwardingStepContent: View {
                     Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!)
                 }
             case .save:
-                HStack(spacing: ShieldTheme.Spacing.content) {
-                    Image("ShieldMark").resizable().scaledToFit().frame(width: ShieldTheme.Layout.contactIcon, height: ShieldTheme.Layout.contactIcon)
-                        .clipShape(.rect(cornerRadius: ShieldTheme.Layout.contactIcon * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
+                HStack(spacing: 16) {
+                    Image("ShieldMark").resizable().scaledToFit().frame(width: 56, height: 56)
+                        .clipShape(.rect(cornerRadius: 56 * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
                         .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("Shield").font(.title2.bold())
                         Text("Screened calls").foregroundStyle(ForwardingStyle.secondaryText)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .shieldCard()
+                .padding(20).background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
                 Text("Allow Contacts if asked.").foregroundStyle(ForwardingStyle.secondaryText)
             case .checks:
                 ForwardingTestView(status: status)

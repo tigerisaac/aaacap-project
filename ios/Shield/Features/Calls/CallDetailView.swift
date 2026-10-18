@@ -39,7 +39,7 @@ struct CallDetailView: View {
             ShieldPageHeader {
                 // Headline and outcome, then what happened with who and when: one short article top.
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                    VStack(alignment: .leading, spacing: 6) {
                         Text(messageRemoved ? "Message removed" : CallPresentation.title(call))
                             .shieldHeading(.title).foregroundStyle(ShieldTheme.ink)
                             .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
@@ -47,7 +47,7 @@ struct CallDetailView: View {
                             OutcomeBadge(outcome: call.outcome)
                         }
                     }
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                    VStack(alignment: .leading, spacing: 4) {
                         if call.voicemail == nil {
                             Text(CallPresentation.explanation(call)).foregroundStyle(ShieldTheme.ink)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -60,11 +60,11 @@ struct CallDetailView: View {
                         // Not selectable: on iOS 26 a selectable line is an 18-point touch target,
                         // and Shield asks people not to reuse a caller's number anyway.
                     }
-                }.padding(.top, ShieldTheme.Spacing.tight).padding(.bottom, ShieldTheme.Spacing.tight).fixedSize(horizontal: false, vertical: true)
+                }.padding(.top, 2).padding(.bottom, 4).fixedSize(horizontal: false, vertical: true)
             }
             if messageRemoved {
                 ShieldGroup {
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("It seemed suspicious.")
                             .fixedSize(horizontal: false, vertical: true)
                         if let voicemail = call.voicemail, voicemail.isRestorable {
@@ -76,7 +76,7 @@ struct CallDetailView: View {
                         } else {
                             Text("This message is no longer available.").foregroundStyle(ShieldTheme.secondaryText)
                         }
-                    }.padding(.vertical, ShieldTheme.Spacing.compact)
+                    }.padding(.vertical, 8)
                 }
             }
             if let message = call.voicemail, model.canListen, !messageRemoved {
@@ -86,7 +86,7 @@ struct CallDetailView: View {
                         Text(summary).font(.title3).fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("message-summary")
                     } footer: {
-                        Text("The caller’s claims haven’t been verified.").foregroundStyle(ShieldTheme.secondaryText)
+                        Text("The caller’s claims haven’t been verified.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                     } }
                 }
                 if message.summary == nil, message.status == "ready" {
@@ -142,6 +142,7 @@ struct CallDetailView: View {
                             Button(updatingPlayedStatus ? "Saving…" : "Mark as listened") {
                                 Task { await markPlayed(voicemail) }
                             }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
                             .disabled(updatingPlayedStatus)
                         }
                         if audioUnavailableReason == nil {
@@ -167,7 +168,7 @@ struct CallDetailView: View {
                             .foregroundStyle(ShieldTheme.secondaryText)
                         if voicemail.status == "pending" {
                             Button(loadingDetails ? "Checking…" : "Check again") { Task { await load() } }
-                                .disabled(loadingDetails)
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(loadingDetails)
                         }
                     }
                 }
@@ -207,7 +208,7 @@ struct CallDetailView: View {
                     }
                     if !events.isEmpty {
                         ForEach(events) { event in
-                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                            VStack(alignment: .leading, spacing: 4) {
                                 Text(event.label)
                                 Text(event.at, style: .time).foregroundStyle(ShieldTheme.secondaryText)
                             }
@@ -221,7 +222,7 @@ struct CallDetailView: View {
         // The page heading starts under the bar, not a full empty section below it.
         .contentMargins(.top, 0, for: .scrollContent)
         .safeAreaInset(edge: .bottom) {
-            if !inlineMessageActions { messageActions().shieldTrayBackdrop() }
+            if !inlineMessageActions { messageActions() }
         }
         .navigationTitle(call.voicemail?.kindLabel ?? "Call")
         .navigationBarTitleDisplayMode(.inline)
@@ -274,7 +275,7 @@ struct CallDetailView: View {
         return ((model.isDemo && !usesAudioFixture) || voicemail.status == "ready") && audioUnavailableReason == nil
     }
 
-    private func messageActions(on background: Color = .clear) -> some View {
+    private func messageActions(on background: Color = ShieldTheme.surface) -> some View {
         VStack(spacing: 0) {
             if let voicemail = call.voicemail, messageRemoved, voicemail.isRestorable, model.canListen {
                 Button { confirmRestore = true } label: {
@@ -282,7 +283,7 @@ struct CallDetailView: View {
                 }
                 .shieldPrimaryButton().disabled(restoring || model.isDemo)
                 .accessibilityIdentifier("restore-voicemail")
-                .scenePadding(.horizontal).padding(.vertical, ShieldTheme.Spacing.compact).background(background)
+                .padding(16).background(background)
                 .alert("Bring back this message?", isPresented: $confirmRestore) {
                     Button("Bring back message") { Task { await restore(voicemail) } }
                     Button("Cancel", role: .cancel) {}
@@ -293,12 +294,12 @@ struct CallDetailView: View {
                     Button { toggleSample() } label: {
                         ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
                     }
-                    .shieldPrimaryButton().scenePadding(.horizontal).padding(.vertical, ShieldTheme.Spacing.compact).background(background)
+                    .shieldPrimaryButton().padding(16).background(background)
                 } else if voicemail.status == "ready", audioUnavailableReason == nil {
                     Button { Task { await togglePlayback(voicemail) } } label: {
                         ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Pause message" : player.paused ? "Resume message" : "Listen to message", isWorking: player.loading)
                     }
-                    .shieldPrimaryButton().disabled(player.loading).scenePadding(.horizontal).padding(.vertical, ShieldTheme.Spacing.compact).background(background)
+                    .shieldPrimaryButton().disabled(player.loading).padding(16).background(background)
                 }
             }
         }

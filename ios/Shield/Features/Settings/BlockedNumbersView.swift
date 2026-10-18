@@ -30,8 +30,8 @@ struct BlockedNumbersView: View {
             }
             ShieldGroup {
                 ForEach(items) { item in
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
-                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text(PhoneDisplay.format(item.phone)).font(.headline).monospacedDigit()
                             Text(item.reasonText).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             Text(detail(for: item)).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
@@ -49,7 +49,7 @@ struct BlockedNumbersView: View {
                             .accessibilityIdentifier("unblock-\(item.phone)")
                         }
                     }
-                    .padding(.vertical, ShieldTheme.Spacing.tight)
+                    .padding(.vertical, 2)
                     .swipeActions {
                         if model.isOwner {
                             Button("Allow calls again") { pendingUnblock = item }.tint(ShieldTheme.action)

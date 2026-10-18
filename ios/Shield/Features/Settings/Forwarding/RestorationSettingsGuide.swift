@@ -15,7 +15,7 @@ struct RestorationSettingsGuide: View {
     private var guide: SetupGuide { unknownCallers ? .never : checkingCarrier ? .voicemailOff : .voicemailOn }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
+        VStack(alignment: .leading, spacing: 24) {
             if showsTitle {
                 Text(unknownCallers ? "Let ordinary calls ring" : "Restore iPhone voicemail")
                     .shieldHeading(.title).accessibilityAddTraits(.isHeader)

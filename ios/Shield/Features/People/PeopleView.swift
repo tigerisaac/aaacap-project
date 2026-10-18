@@ -18,10 +18,10 @@ struct PeopleView: View {
                         } label: {
                             HStack(spacing: ShieldTheme.Layout.rowSymbolSpacing) {
                                 if !typeSize.isAccessibilitySize {
-                                ShieldRowSymbol(systemName: person.isOwner ? "person.fill" : "person.2.fill", style: .avatar)
+                                    ShieldRowSymbol(systemName: person.isOwner ? "person" : "person.2")
                                 }
-                                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
-                                    Text(person.name).font(.headline).foregroundStyle(ShieldTheme.ink)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(person.name).font(.body.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
                                     Text(person.isOwner ? "Your phone" : person.canListen ? "Calls and messages" : "Calls only")
                                         .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 }
@@ -33,7 +33,7 @@ struct PeopleView: View {
                                         .accessibilityHidden(true)
                                 }
                             }
-                            .padding(.vertical, ShieldTheme.Spacing.compact)
+                            .padding(.vertical, 8)
                         }
                         .accessibilityIdentifier("person-\(person.name)")
                         .accessibilityElement(children: .combine)

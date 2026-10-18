@@ -9,7 +9,7 @@ struct HelpView: View {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                     Text("If a call worries you, hang up.").shieldPageHeading().accessibilityAddTraits(.isHeader)
                     Text("You can check it later.").foregroundStyle(ShieldTheme.secondaryText)
-                }.padding(.vertical, ShieldTheme.Spacing.tight)
+                }.padding(.vertical, 4)
             }
             ShieldGroup {
                 ShieldDisclosure("How can I check a caller?") {

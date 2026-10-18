@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PhoneSignInView: View {
     @Environment(AppState.self) private var model
-    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var phone = ""
     @State private var code = ""
     @State private var challenge: PhoneChallenge?
@@ -26,23 +25,26 @@ struct PhoneSignInView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
-                    ShieldWelcomeHeader(
-                        title: challenge == nil ? "Welcome" : "Enter your code",
-                        detail: challenge == nil ? "We’ll text you a code to sign in." : "Code sent to \(PhoneDisplay.format(normalizedPhone ?? phone))."
-                    )
+                    ShieldBrand(compact: true)
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                        Text(challenge == nil ? "Welcome" : "Enter your code")
+                            .shieldHeading(.display).accessibilityAddTraits(.isHeader)
+                        Text(challenge == nil ? "We’ll text you a code to sign in." : "Code sent to \(PhoneDisplay.format(normalizedPhone ?? phone)).")
+                            .font(.body).foregroundStyle(ShieldTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
                             if challenge == nil {
                                 ShieldPhoneEntry(text: $phone, focus: $focus, field: .phone,
-                                                 title: "Mobile number", identifier: "sign-in-phone", mobileOnly: true,
-                                                 fill: ShieldTheme.welcomeElement)
+                                                 title: "Mobile number", identifier: "sign-in-phone", mobileOnly: true)
                             } else {
                                 Text("Verification code").font(.headline)
                                 TextField("Code", text: $code, prompt: Text("Code").foregroundStyle(ShieldTheme.secondaryText))
                                     .font(.title3.monospacedDigit())
                                     .textContentType(.oneTimeCode).keyboardType(.numberPad)
                                     .focused($focus, equals: .code).accessibilityIdentifier("sign-in-phone-code")
-                                    .shieldField(focused: focus == .code, fill: ShieldTheme.welcomeElement)
+                                    .shieldField(focused: focus == .code)
                             }
                             if challenge == nil {
                                 Text("Message and data rates may apply.")
@@ -50,54 +52,45 @@ struct PhoneSignInView: View {
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                         }.disabled(working)
-                        if let error {
-                            ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle")
-                                .accessibilityIdentifier("phone-sign-in-error")
+                        if let error { ShieldNotice(title: "Couldn’t sign in", detail: error, symbol: "exclamationmark.circle").accessibilityIdentifier("phone-sign-in-error") }
+                        Button { Task { await submit() } } label: {
+                            HStack(spacing: ShieldTheme.Spacing.regular) {
+                                if working { ProgressView().tint(.primary) }
+                                Text(working ? "Please wait…" : challenge == nil ? "Text me a code" : "Sign in")
+                                    .fixedSize(horizontal: false, vertical: true).multilineTextAlignment(.center)
+                            }
+                            .font(.headline).foregroundStyle(canSubmit ? ShieldTheme.actionInk : Color.primary)
+                            .frame(maxWidth: .infinity).padding(.vertical, ShieldTheme.Spacing.compact)
                         }
-                        if challenge != nil {
-                            secondaryButton("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
-                                .disabled(working)
-                        }
-                        if let base = model.configuration.baseURL {
-                            Link(destination: base.appending(path: "privacy")) {
-                                Text("Privacy").font(.subheadline).foregroundStyle(ShieldTheme.action)
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
-                                    .contentShape(.rect)
-                            }.buttonStyle(.plain)
+                        .shieldPrimaryButton().disabled(!canSubmit)
+                        .accessibilityIdentifier("phone-sign-in-submit")
+                        // Secondary choices stack as one quiet group of full-width targets below the action.
+                        VStack(alignment: .leading, spacing: 0) {
+                            if challenge != nil {
+                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                    let seconds = max(0, Int(ceil(resendAt.timeIntervalSince(context.date))))
+                                    secondaryButton(seconds > 0 ? "Resend code in \(seconds)s" : "Resend code") { Task { await requestCode() } }
+                                        .disabled(working || seconds > 0)
+                                        .accessibilityIdentifier("phone-sign-in-resend")
+                                }
+                                secondaryButton("Change number") { challenge = nil; code = ""; error = nil; focus = .phone }
+                                    .disabled(working)
+                            }
+                            if let base = model.configuration.baseURL {
+                                Link(destination: base.appending(path: "privacy")) {
+                                    Text("Privacy").font(.subheadline).foregroundStyle(ShieldTheme.action)
+                                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                        .contentShape(.rect)
+                                }.buttonStyle(.plain)
+                            }
                         }
                     }
-                    if typeSize.isAccessibilitySize { primaryActions }
                 }
-                .shieldWelcomeMargins().padding(.vertical, ShieldTheme.Spacing.card)
+                .padding(ShieldTheme.Spacing.page)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }
-            // The action scrolls with the page at accessibility sizes to leave room for the fields.
-            .safeAreaInset(edge: .bottom) {
-                if !typeSize.isAccessibilitySize {
-                    primaryActions.frame(maxWidth: ShieldTheme.Layout.readableWidth)
-                        .padding(.horizontal, ShieldTheme.Spacing.card).shieldBottomTray(over: ShieldTheme.welcomePage)
-                }
-            }
-            .background(ShieldTheme.welcomePage).scrollDismissesKeyboard(.interactively)
+            .background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
-        }
-    }
-
-    private var primaryActions: some View {
-        VStack(spacing: ShieldTheme.Spacing.compact) {
-            Button { Task { await submit() } } label: {
-                ShieldActionLabel(title: working ? "Please wait…" : challenge == nil ? "Text me a code" : "Sign in", isWorking: working)
-            }
-            .shieldPrimaryButton().disabled(!canSubmit)
-            .accessibilityIdentifier("phone-sign-in-submit")
-            if challenge != nil {
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    let seconds = max(0, Int(ceil(resendAt.timeIntervalSince(context.date))))
-                    secondaryButton(seconds > 0 ? "Resend code in \(seconds)s" : "Resend code") { Task { await requestCode() } }
-                        .disabled(working || seconds > 0)
-                        .accessibilityIdentifier("phone-sign-in-resend")
-                }
-            }
         }
     }
 

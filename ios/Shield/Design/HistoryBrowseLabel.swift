@@ -6,7 +6,7 @@ struct HistoryBrowseLabel: View {
 
     var body: some View {
         HStack(spacing: ShieldTheme.Spacing.content) {
-            Text(title).font(.body)
+            Text(title).font(.body.weight(.medium))
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
             // Drawn like the native row disclosure so stacked rows share one chevron.

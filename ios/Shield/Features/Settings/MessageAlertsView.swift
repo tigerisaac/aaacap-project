@@ -59,12 +59,12 @@ struct MessageAlertsView: View {
             if !typeSize.isAccessibilitySize {
                 ShieldRowSymbol(systemName: allowed ? "bell.badge" : "bell.slash", color: allowed ? ShieldTheme.action : ShieldTheme.secondaryText)
             }
-            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.headline).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
                 Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
             }.fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, ShieldTheme.Spacing.compact)
+        .padding(.vertical, 10)
     }
 
     private func load() async {

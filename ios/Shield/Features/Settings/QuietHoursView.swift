@@ -42,7 +42,7 @@ struct QuietHoursView: View {
                         .accessibilityIdentifier("quiet-end-time")
                         .disabled(!hours.enabled)
                     } footer: {
-                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Calls that reach Shield go to voicemail during these hours.")
                             Text("Times are Central time.")
                             Text("Save below to use these hours.")
@@ -76,7 +76,7 @@ struct QuietHoursView: View {
                         }
                     }
                     .shieldPrimaryButton().disabled(working || !changed)
-                    .shieldBottomTray()
+                    .padding(ShieldTheme.Spacing.content).background(ShieldTheme.surface)
                 }
             }
             .navigationTitle("Quiet hours")
