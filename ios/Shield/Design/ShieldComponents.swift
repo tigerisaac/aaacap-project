@@ -259,7 +259,7 @@ struct ShieldActionLabel: View {
         }
         .font(.headline)
         .foregroundStyle(isEnabled ? ShieldTheme.actionInk : Color.primary)
-        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(isWorking ? "In progress" : "")

@@ -12,6 +12,9 @@ enum ShieldTheme {
     }
     enum Layout {
         static let minimumTarget: CGFloat = 52
+        /// Label height inside a large capsule button. The capsule adds its own padding
+        /// above and below, so the whole button meets `minimumTarget` without growing past it.
+        static let capsuleLabelHeight: CGFloat = 22
         static let rowHeight: CGFloat = 60
         /// Between a row's symbol tile and its text.
         static let rowSymbolSpacing: CGFloat = 14

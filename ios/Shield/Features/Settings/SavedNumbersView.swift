@@ -88,7 +88,8 @@ struct SavedNumbersView: View {
     @ViewBuilder private func numberActions(_ item: SavedNumber) -> some View {
         if kind == .destinations {
             Button { call(item.phone) } label: {
-                Label("Call", systemImage: "phone.fill").frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                Label("Call", systemImage: "phone.fill")
+                    .frame(maxWidth: typeSize.isAccessibilitySize ? .infinity : nil, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
             }
             .accessibilityLabel("Call \(item.label)").accessibilityInputLabels(["Call \(item.label)", "Call"])
             .shieldSecondaryButton().disabled(model.isDemo)

@@ -41,7 +41,7 @@ struct BlockedNumbersView: View {
                         if model.isOwner {
                             Button { pendingUnblock = item } label: {
                                 Text("Allow calls again")
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             .shieldSecondaryButton().disabled(working)

@@ -12,7 +12,7 @@ struct ShieldLoadFailure: View {
             ShieldNotice(title: title, detail: detail, symbol: symbol)
             Button(action: retry) {
                 Label("Try again", systemImage: "arrow.clockwise").shieldWrappingLabel()
-                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
             }
             .shieldSecondaryButton()
         }

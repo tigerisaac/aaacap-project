@@ -31,7 +31,7 @@ struct ProtectionOnboardingView: View {
                                 if choiceUnconfirmed {
                                     Button { Task { await checkStatus() } } label: {
                                         Label(checkingStatus ? "Checking…" : "Check current status", systemImage: "arrow.clockwise")
-                                            .shieldWrappingLabel().frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                            .shieldWrappingLabel().frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                                     }.shieldSecondaryButton().disabled(working)
                                 }
                             }.id("onboarding-choice-error")

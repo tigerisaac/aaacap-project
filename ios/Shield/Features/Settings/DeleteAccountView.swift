@@ -45,7 +45,7 @@ struct DeleteAccountView: View {
                             .foregroundStyle(ShieldTheme.secondaryText)
                         Button(role: .destructive) { confirming = true } label: {
                             Text("Delete my account").font(.headline)
-                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                         }
                         .shieldSecondaryButton().tint(ShieldTheme.held)
                         .accessibilityIdentifier("delete-account-confirm")

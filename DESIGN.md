@@ -467,7 +467,7 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 
 Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
 
-Home follows the [October 18 Home status rules](#october-18--home-status-as-an-editorial-figure): checks on is a serif figure paired with Calls stopped, and other states use a row tile with full-width native primary/secondary buttons. Title and supporting copy align within their text column; at accessibility sizes, the badge gives way to full-width text. The empty Home inbox retains the plain All messages browse action.
+Home follows the [October 18 checks-on line](#october-18--smaller-capsules-and-a-plain-checks-on-line): checks on is one sentence with a shield, set on the page above Calls stopped. Other states use a card with a row tile, one line of detail and a full-width native primary or secondary button. Title and supporting copy align within their text column; at accessibility sizes, the tile gives way to full-width text. The empty Home inbox retains the plain All messages browse action.
 
 Shared disclosures, browse rows and full-width button labels keep a 52-point minimum target and allow text to wrap, retaining the native style appropriate to each role. Status details, row metadata, playback time and section footers use the shared adaptive supporting-text color. Keep nested native buttons and links independently activatable: explicit borderless styling separates resource links from their disclosures and playback actions from neighboring controls.
 
@@ -583,7 +583,7 @@ Feedback was that the checks-on card looked generated: an icon in a coloured cir
 - **Accessible wording.** The visual pair reads "Call checks / On"; VoiceOver reads the full title ("Call checks are on") as a heading, and `today-status-title` stays on that text. A timed window keeps its supporting line ("…checked until 10:27 AM").
 - **Other states.** Setup, off, paused, disconnecting and unknown use the shared `ShieldRowSymbol` tile (navy for setup, quiet otherwise; "pause.circle" becomes "pause" inside the tile) beside the headline title, then their one button. The circle badge is gone everywhere.
 
-This supersedes the October 17 decorative badge and teal checks-on surface.
+This supersedes the October 17 decorative badge and teal checks-on surface. It is itself superseded by the [October 18 checks-on line](#october-18--smaller-capsules-and-a-plain-checks-on-line).
 
 ## October 18 — Call detail copy
 
@@ -595,6 +595,13 @@ Two audit reports are still kept as evidence rather than changed. The tab-bar ed
 
 A button with the automatic style inside a List row takes over the whole row. Three rows did this. Tapping "Sample clinic" in Numbers you trust opened "Remove Sample clinic?". Tapping a person in Call sharing opened "Stop sharing with …?". Tapping a removed contact's name in Your contacts added the contact back with no confirmation. Remove, Stop sharing and Add back to Contacts are now borderless buttons, and their 52-point targets sit inside their labels, where a borderless button takes taps. A probe confirmed the fix: names do nothing, and the buttons still open their confirmations. Any new button that shares a row with text needs an explicit style.
 
-Numbers you trust's Call was a near-round blob, 82 points tall and about 96 wide, because its short label sat in a large capsule. It now fills the row beside Remove, like Allow calls again and Remove from iPhone. Remove is red text only, like Stop sharing and Remove contact: with an icon, its icon stayed navy and its text stayed full ink while disabled in the sample app. The unused ScreenIntro tile, a 48-point symbol on a tinted square, is gone.
+Numbers you trust's Call was a near-round blob, 82 points tall and about 96 wide, because its short label sat in a large capsule. It is now an ordinary 52-point pill beside Remove (see the capsule rule below). Remove is red text only, like Stop sharing and Remove contact: with an icon, its icon stayed navy and its text stayed full ink while disabled in the sample app. The unused ScreenIntro tile, a 48-point symbol on a tinted square, is gone.
 
 Four UI-test steps still described the screens as they were before October 17's form and settings changes, and no suite run since had caught them. Settings no longer lists Automatic text checks. Add number and Add contact are scroll views, not lists. Add number's Save follows the fields, so the largest text size scrolls to it. Call sharing ends with Caretaker alerts, not a sign-in line. The tests now check the current screens. On iOS 27 (iPhone 17), these suites pass: SeniorDesign 12/12, including a new test that a name never triggers its row's action; FiveAreaRefinement 6/6; and SeniorPolish 24/24.
+
+## October 18 — smaller capsules and a plain checks-on line
+
+**Capsules are 52 points tall.** A large capsule adds about 15 points above and below its label. Labels also carried the 52-point minimum themselves, so every primary and secondary button grew to about 82 points. Labels inside `shieldPrimaryButton` and `shieldSecondaryButton` now use `ShieldTheme.Layout.capsuleLabelHeight` (22), so a one-line button is 52 points: Save my choice, Text me a code, Allow calls again, Remove from iPhone, Home's status actions and the rest. Larger text still grows them. Call in Numbers you trust hugs its label at standard sizes and fills the width at accessibility sizes. A UI test keeps these buttons between 52 and 56 points. [Before and after](docs/images/ios-capsule-height.jpg).
+
+**Checks on is one plain line.** Feedback was that the white "Call checks / On" figure still looked generated: a status forced into a stat-card template beside a real stat. Home now shows `checkmark.shield.fill` in Connected with "Call checks are on" in the serif section heading. It sits directly on the page, with no card and no supporting line, and the shield lines up with the text inside the cards below. A timed window puts its end in the heading ("Call checks are on until 2:04 PM"). The wording stays factual. Shield only checks calls that reach it and can miss scams, so Home never says "Protected" or "You're protected", and an existing UI test checks for that. Setup, paused, off and disconnecting keep their card, tile, detail and action. Calls stopped stays the navy panel. [States](docs/images/ios-home-checks-line.jpg).
+

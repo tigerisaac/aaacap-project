@@ -28,7 +28,8 @@ struct OverviewView: View {
                         TimelineView(.periodic(from: .now, by: 30)) { context in
                             statusCard(now: context.date)
                         }
-                        .listRowBackground(ShieldTheme.card)
+                        // Checks on sits on the page as a plain line; states that need a decision get a card.
+                        .listRowBackground(summary(now: .now).tone == .on ? Color.clear : ShieldTheme.card)
                     }
                 }
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
@@ -115,10 +116,8 @@ struct OverviewView: View {
         }
     }
 
-    /// The status reads in one glance: a badge, a bold state and one line, then the card's one next
-    /// action as a real button. Checks on gets the teal card.
-    /// Checks on reads as the Calls stopped panel's counterpart: a headline label with its symbol,
-    /// then the state as a serif figure. States that need a decision keep a row tile and one button.
+    /// Checks on is one plain sentence with its shield, set on the page above the Calls stopped panel.
+    /// States that need a decision keep a card with a row tile, one line of detail and one button.
     @ViewBuilder private func statusCard(now: Date) -> some View {
         let presentation = summary(now: now)
         if presentation.tone == .on {
@@ -146,26 +145,15 @@ struct OverviewView: View {
     }
 
     private func checksOn(_ presentation: HomeStatusPresentation) -> some View {
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
-            HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.regular) {
-                Text("Call checks").font(.headline).foregroundStyle(ShieldTheme.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer(minLength: 0)
-                Image(systemName: "checkmark.shield").font(.body.weight(.medium))
-                    .foregroundStyle(ShieldTheme.connected)
-            }
-            .accessibilityHidden(true)
-            Text("On")
-                .font(ShieldTheme.Typography.display.scaled(by: 1.3)).tracking(-0.8)
-                .foregroundStyle(ShieldTheme.connected)
+        HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.regular) {
+            Image(systemName: "checkmark.shield.fill").font(.title2).foregroundStyle(ShieldTheme.connected)
+                .accessibilityHidden(true)
+            Text(presentation.title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
-                .accessibilityLabel(presentation.title)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityIdentifier("today-status-title")
-            Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
         }
-        .padding(.vertical, ShieldTheme.Spacing.regular)
+        // The shield lines up with the text inside the cards below.
+        .listRowInsets(EdgeInsets(top: ShieldTheme.Spacing.compact, leading: 4, bottom: ShieldTheme.Spacing.compact, trailing: 4))
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -196,7 +184,7 @@ struct OverviewView: View {
     private func statusActionLabel(_ title: String) -> some View {
         Text(title).font(.headline).multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
     }
 
     private func summary(now: Date) -> HomeStatusPresentation {

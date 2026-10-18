@@ -67,7 +67,7 @@ struct SharedContactsView: View {
                                     .fixedSize(horizontal: false, vertical: true)
                                     .multilineTextAlignment(.leading)
                             }
-                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight, alignment: .leading)
                                 .contentShape(.rect)
                         }
                         .shieldSecondaryButton().tint(ShieldTheme.held)

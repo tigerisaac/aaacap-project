@@ -103,7 +103,7 @@ struct TrustedContactsView: View {
                             Button { Task { await load() } } label: {
                                 Label(response == nil ? "Try again" : "Check current status", systemImage: "arrow.clockwise")
                                     .shieldWrappingLabel()
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                             }.shieldSecondaryButton()
                         }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }

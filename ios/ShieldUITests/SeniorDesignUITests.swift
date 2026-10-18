@@ -279,6 +279,19 @@ final class SeniorDesignUITests: XCTestCase {
         XCTAssertGreaterThan(app.buttons["Call Sample clinic"].firstMatch.frame.width, remove.frame.width)
     }
 
+    /// Capsule buttons meet the 52-point target without growing into tall pills.
+    func testCapsuleButtonsStayAtTheMinimumTarget() {
+        func check(_ button: XCUIElement, _ name: String) {
+            XCTAssertTrue(button.waitForExistence(timeout: 5), name)
+            XCTAssertTrue((52...56).contains(button.frame.height), "\(name) is \(button.frame.height) points tall")
+        }
+        var app = launch(["--uitesting-screen", "numbers"]); check(app.buttons["Call Sample clinic"], "Call")
+        app = launch(["--uitesting-screen", "blocked"])
+        check(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'unblock-'")).firstMatch, "Allow calls again")
+        app = launch(["--uitesting-protection-onboarding"], sample: false); check(app.buttons["Save my choice"], "Save my choice")
+        app = launch([], sample: false); check(app.buttons["Text me a code"], "Text me a code")
+    }
+
     private func launch(_ args: [String] = [], sample: Bool = true) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = (sample ? ["--uitesting-preview"] : []) + args

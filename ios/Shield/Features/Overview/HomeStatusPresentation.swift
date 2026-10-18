@@ -43,7 +43,8 @@ struct HomeStatusPresentation {
         } else if status.alwaysOn == true, status.liveScreening == true {
             result = .init(title: "Call checks are on", detail: "Shield checks calls that reach it.", symbol: "checkmark.shield.fill", enabled: true)
         } else if status.active, status.liveScreening == true, let expiry = status.expiresAt, expiry > now, status.remainingCalls > 0 {
-            result = .init(title: "Call checks are on", detail: "Calls that reach Shield are checked until \(expiry.formatted(date: .omitted, time: .shortened)).", symbol: "checkmark.shield.fill", enabled: true)
+            // Home shows only the title when checks are on, so a timed window carries its end there.
+            result = .init(title: "Call checks are on until \(expiry.formatted(date: .omitted, time: .shortened))", detail: "Calls that reach Shield are checked until \(expiry.formatted(date: .omitted, time: .shortened)).", symbol: "checkmark.shield.fill", enabled: true)
         } else {
             result = .init(title: "Call checks are off", detail: "Calls that reach Shield may go to voicemail.", symbol: "pause.circle", needsSetup: true, actionTitle: "Phone options", useSetupMenu: true)
         }

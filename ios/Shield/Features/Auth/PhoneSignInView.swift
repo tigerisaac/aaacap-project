@@ -60,7 +60,7 @@ struct PhoneSignInView: View {
                                     .fixedSize(horizontal: false, vertical: true).multilineTextAlignment(.center)
                             }
                             .font(.headline).foregroundStyle(canSubmit ? ShieldTheme.actionInk : Color.primary)
-                            .frame(maxWidth: .infinity).padding(.vertical, ShieldTheme.Spacing.compact)
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                         }
                         .shieldPrimaryButton().disabled(!canSubmit)
                         .accessibilityIdentifier("phone-sign-in-submit")

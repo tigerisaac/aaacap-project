@@ -28,7 +28,7 @@ struct AddTrustedContactView: View {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                     Button { showingPicker = true } label: {
                         Label("Choose from Contacts", systemImage: "person.text.rectangle").shieldWrappingLabel()
-                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                     }
                     .shieldSecondaryButton().disabled(working || requestUnconfirmed)
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
@@ -53,7 +53,7 @@ struct AddTrustedContactView: View {
                                 Button { Task { await checkStatus() } } label: {
                                 Label(checkingStatus ? "Checking…" : "Check current status", systemImage: "arrow.clockwise")
                                     .shieldWrappingLabel()
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                                 }.shieldSecondaryButton().disabled(working)
                             }
                         }.id("trusted-contact-create-error")

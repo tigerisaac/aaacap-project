@@ -116,7 +116,8 @@ final class RedesignUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["demoBanner"].appears(timeout: 5))
             XCTAssertTrue(app.navigationBars["Home"].appears(timeout: 5))
             XCTAssertTrue(app.staticTexts["today-status-title"].appears(timeout: 5))
-            XCTAssertEqual(app.staticTexts["today-status-title"].label, title)
+            let label = app.staticTexts["today-status-title"].label
+            if state == "window" { XCTAssertTrue(label.hasPrefix("Call checks are on until "), label) } else { XCTAssertEqual(label, title) }
             XCTAssertFalse(app.staticTexts["Protected"].exists)
             capture(app, "Redesign Today \(state)")
         }
