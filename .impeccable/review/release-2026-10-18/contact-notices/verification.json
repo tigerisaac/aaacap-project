@@ -1,0 +1,690 @@
+{
+  "recordedAt": "2026-10-18T21:44:16.318275+00:00",
+  "scope": "Two existing contact notices at maximum Dynamic Type in dark mode, with empty and populated synthetic lists. iOS 26.5 SE3 and iOS 27 iPhone 17e. This change adds test coverage only.",
+  "releaseReady": false,
+  "sourceInputsVerified": 286,
+  "productionBoundary": {
+    "at": "2026-10-18T21:14:50.559Z",
+    "productionInputsUnchanged": 256,
+    "productionManifestSha256": "495baf664fe10d2078f9f376cf1a34226f27b763ef6187a76dd89ba5fa53bc4a",
+    "referenceArchive": "/private/tmp/shield-contact-recovery-final.xcarchive",
+    "newProductChanges": false
+  },
+  "runs": [
+    {
+      "name": "smallest-ios26",
+      "result": "Failed",
+      "passedTests": 0,
+      "failedTests": 1,
+      "runtimeWarnings": [],
+      "startTime": 1792358062.923,
+      "finishTime": 1792358302.904,
+      "auditObservationCount": 6,
+      "diagnosticCounts": {
+        "Contrast failed": 6
+      },
+      "observations": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-whole-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-whole-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-end-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-end-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-whole-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-end-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        }
+      ],
+      "coverage": [
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-coverage",
+          "text": "Notice: Only names and numbers go to Shield. Contacts update only when you choose; there are no automatic uploads.\nFirst visible end: 184.0\nLast visible start: 374.5\nHeight: 594.5"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-coverage",
+          "text": "Notice: Only names and numbers go to Shield. Contacts update only when you choose; there are no automatic uploads.\nFirst visible end: 184.0\nLast visible start: 374.5\nHeight: 594.5"
+        }
+      ],
+      "geometryOrQueryFailures": [
+        "XCTAssertLessThanOrEqual failed: (\"374.5\") is greater than (\"184.0\") - The start/end views must cover every line of the notice.",
+        "XCTAssertLessThanOrEqual failed: (\"649.0\") is greater than (\"567.5\")",
+        "XCTAssertLessThanOrEqual failed: (\"374.5\") is greater than (\"184.0\") - The start/end views must cover every line of the notice.",
+        "XCTAssertLessThanOrEqual failed: (\"649.0\") is greater than (\"567.5\")"
+      ],
+      "logSha256": "d79bfb2918e2b6f0026b596379d111d37a92929b769d16ab253432b8fbfbab7f",
+      "resultBundle": "artifacts/private/contact-notices-oct18/smallest-ios26.xcresult"
+    },
+    {
+      "name": "smallest-ios26-coverage",
+      "result": "Failed",
+      "passedTests": 0,
+      "failedTests": 1,
+      "runtimeWarnings": [],
+      "startTime": 1792358803.773,
+      "finishTime": 1792358933.228,
+      "auditObservationCount": 12,
+      "diagnosticCounts": {
+        "Contrast failed": 11,
+        "Text clipped": 1
+      },
+      "observations": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-2-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Text clipped\nText of this element may be clipped at larger Dynamic Type sizes.\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-2-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        }
+      ],
+      "coverage": [
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...184.0, height 594.5, frame (16.0, 383.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 1: 35.5...457.0, height 594.5, frame (16.0, 110.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 2: 308.5...594.5, height 594.5, frame (16.0, -162.5, 343.0, 594.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...166.5, height 304.5, frame (16.0, 401.0, 343.0, 304.5), bounds 146.0...567.5\nSlice 1: 18.0...304.5, height 304.5, frame (16.0, 128.0, 343.0, 304.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...184.0, height 594.5, frame (16.0, 383.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 1: 35.5...457.0, height 594.5, frame (16.0, 110.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 2: 308.5...594.5, height 594.5, frame (16.0, -162.5, 343.0, 594.5), bounds 146.0...567.5"
+        }
+      ],
+      "geometryOrQueryFailures": [
+        "Failed to get matching snapshot: No matches found for first query match sequence: `Descendants matching type StaticText` -> `Elements matching predicate 'label == \"Removing a number here also removes it from iPhone Contacts.\"'`, given input App element pid: 10989"
+      ],
+      "logSha256": "c21a8126c7cb2af7826ed28eb8bd0a2ad51a5faa6de9b38f9768619357675f9b",
+      "resultBundle": "artifacts/private/contact-notices-oct18/smallest-ios26-coverage.xcresult"
+    },
+    {
+      "name": "smallest-ios26-coverage-final",
+      "result": "Failed",
+      "passedTests": 0,
+      "failedTests": 1,
+      "runtimeWarnings": [],
+      "startTime": 1792359065.1,
+      "finishTime": 1792359193.159,
+      "auditObservationCount": 11,
+      "diagnosticCounts": {
+        "Contrast failed": 10,
+        "Text clipped": 1
+      },
+      "observations": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-2-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Text clipped\nText of this element may be clipped at larger Dynamic Type sizes.\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-2-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        }
+      ],
+      "coverage": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...68.5, height 304.5, frame (16.0, 499.0, 343.0, 304.5), bounds 146.0...567.5\nSlice 1: 0.0...304.5, height 304.5, frame (16.0, 226.0, 343.0, 304.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...184.0, height 594.5, frame (16.0, 383.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 1: 35.5...457.0, height 594.5, frame (16.0, 110.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 2: 308.5...594.5, height 594.5, frame (16.0, -162.5, 343.0, 594.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...190.0, height 304.5, frame (16.0, 377.5, 343.0, 304.5), bounds 146.0...567.5\nSlice 1: 46.0...304.5, height 304.5, frame (16.0, 100.0, 343.0, 304.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...184.0, height 594.5, frame (16.0, 383.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 1: 29.0...450.5, height 594.5, frame (16.0, 117.0, 343.0, 594.5), bounds 146.0...567.5\nSlice 2: 302.0...594.5, height 594.5, frame (16.0, -156.0, 343.0, 594.5), bounds 146.0...567.5"
+        }
+      ],
+      "geometryOrQueryFailures": [],
+      "logSha256": "4238d178b13dfaaddb29937f8ea10acc42b13ed796f75d5c2883bf27270634ce",
+      "resultBundle": "artifacts/private/contact-notices-oct18/smallest-ios26-coverage-final.xcresult"
+    },
+    {
+      "name": "ios27-coverage-final",
+      "result": "Failed",
+      "passedTests": 0,
+      "failedTests": 1,
+      "runtimeWarnings": [],
+      "startTime": 1792359242.228,
+      "finishTime": 1792359383.579,
+      "auditObservationCount": 10,
+      "diagnosticCounts": {
+        "Contrast failed": 9,
+        "Text clipped": 1
+      },
+      "observations": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Text clipped\nText of this element may be clipped at larger Dynamic Type sizes.\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        }
+      ],
+      "coverage": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...202.66666666666663, height 304.66666666666663, frame (16.0, 565.0, 358.0, 304.66666666666663), bounds 173.0...767.6666666666666\nSlice 1: 0.0...304.66666666666674, height 304.66666666666674, frame (16.0, 366.0, 358.0, 304.66666666666674), bounds 173.0...767.6666666666666"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...357.3333333333333, height 594.6666666666667, frame (16.0, 410.3333333333333, 358.0, 594.6666666666667), bounds 173.0...767.6666666666666\nSlice 1: 26.00000000000003...594.6666666666666, height 594.6666666666666, frame (16.0, 146.99999999999997, 358.0, 594.6666666666666), bounds 173.0...767.6666666666666"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...238.0000000000001, height 304.66666666666686, frame (16.0, 529.6666666666665, 358.0, 304.66666666666686), bounds 173.0...767.6666666666666\nSlice 1: 0.0...304.66666666666674, height 304.66666666666674, frame (16.0, 266.33333333333326, 358.0, 304.66666666666674), bounds 173.0...767.6666666666666"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...357.3333333333333, height 594.6666666666667, frame (16.0, 410.3333333333333, 358.0, 594.6666666666667), bounds 173.0...767.6666666666666\nSlice 1: 13.000000000000028...594.6666666666666, height 594.6666666666666, frame (16.0, 159.99999999999997, 358.0, 594.6666666666666), bounds 173.0...767.6666666666666"
+        }
+      ],
+      "geometryOrQueryFailures": [
+        "XCTAssertGreaterThanOrEqual failed: (\"594.6666666666666\") is less than (\"594.6666666666667\") - Every line of the contact notice must be reachable.",
+        "XCTAssertGreaterThanOrEqual failed: (\"304.66666666666674\") is less than (\"304.66666666666686\") - Every line of the contact notice must be reachable.",
+        "XCTAssertGreaterThanOrEqual failed: (\"594.6666666666666\") is less than (\"594.6666666666667\") - Every line of the contact notice must be reachable."
+      ],
+      "logSha256": "d7527b5fc2806eabebce83f37a9413c206405cf2995dc057264bbe0daf9818a5",
+      "resultBundle": "artifacts/private/contact-notices-oct18/ios27-coverage-final.xcresult"
+    },
+    {
+      "name": "precision-ios27",
+      "result": "Failed",
+      "passedTests": 0,
+      "failedTests": 1,
+      "runtimeWarnings": [],
+      "startTime": 1792359479.318,
+      "finishTime": 1792359641.73,
+      "auditObservationCount": 11,
+      "diagnosticCounts": {
+        "Contrast failed": 10,
+        "Text clipped": 1
+      },
+      "observations": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Text clipped\nText of this element may be clipped at larger Dynamic Type sizes.\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        }
+      ],
+      "coverage": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...195.66666666666663, height 304.66666666666663, frame (16.0, 572.0, 358.0, 304.66666666666663), bounds 173.0...767.6666666666666\nSlice 1: 0.0...304.66666666666674, height 304.66666666666674, frame (16.0, 366.0, 358.0, 304.66666666666674), bounds 173.0...767.6666666666666"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...357.3333333333333, height 594.6666666666667, frame (16.0, 410.3333333333333, 358.0, 594.6666666666667), bounds 173.0...767.6666666666666\nSlice 1: 26.00000000000003...594.6666666666666, height 594.6666666666666, frame (16.0, 146.99999999999997, 358.0, 594.6666666666666), bounds 173.0...767.6666666666666"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...249.33333333333337, height 304.66666666666674, frame (16.0, 518.3333333333333, 358.0, 304.66666666666674), bounds 173.0...767.6666666666666\nSlice 1: 0.0...304.66666666666674, height 304.66666666666674, frame (16.0, 255.0, 358.0, 304.66666666666674), bounds 173.0...767.6666666666666"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...357.3333333333333, height 594.6666666666667, frame (16.0, 410.3333333333333, 358.0, 594.6666666666667), bounds 173.0...767.6666666666666\nSlice 1: 20.333333333333343...594.6666666666667, height 594.6666666666667, frame (16.0, 152.66666666666666, 358.0, 594.6666666666667), bounds 173.0...767.6666666666666"
+        }
+      ],
+      "geometryOrQueryFailures": [],
+      "logSha256": "75c536abf3e4d317958ecf0ee708621eaeff7f4310fd089c042f7d9c5eb0bd6d",
+      "resultBundle": "artifacts/private/contact-notices-oct18/precision-ios27.xcresult"
+    },
+    {
+      "name": "precision-ios26",
+      "result": "Failed",
+      "passedTests": 0,
+      "failedTests": 1,
+      "runtimeWarnings": [],
+      "startTime": 1792359647.743,
+      "finishTime": 1792359788.283,
+      "auditObservationCount": 11,
+      "diagnosticCounts": {
+        "Contrast failed": 10,
+        "Text clipped": 1
+      },
+      "observations": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Text clipped\nText of this element may be clipped at larger Dynamic Type sizes.\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-slice-0-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-2-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-slice-1-audit-details",
+          "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+        }
+      ],
+      "coverage": [
+        {
+          "name": "contact-notice-populated-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...60.0, height 304.5, frame (16.0, 507.5, 343.0, 304.5), bounds 146.0...567.5\nSlice 1: 0.0...304.5, height 304.5, frame (16.0, 233.5, 343.0, 304.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-populated-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...184.0, height 594.5, frame (16.0, 383.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 1: 35.5...457.0, height 594.5, frame (16.0, 110.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 2: 303.0...594.5, height 594.5, frame (16.0, -157.0, 343.0, 594.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-empty-removal-largest-dark-coverage",
+          "text": "Slice 0: 0.0...151.0, height 304.5, frame (16.0, 416.5, 343.0, 304.5), bounds 146.0...567.5\nSlice 1: 4.5...304.5, height 304.5, frame (16.0, 141.5, 343.0, 304.5), bounds 146.0...567.5"
+        },
+        {
+          "name": "contact-notice-empty-sharing-largest-dark-coverage",
+          "text": "Slice 0: 0.0...184.0, height 594.5, frame (16.0, 383.5, 343.0, 594.5), bounds 146.0...567.5\nSlice 1: 29.0...450.5, height 594.5, frame (16.0, 117.0, 343.0, 594.5), bounds 146.0...567.5\nSlice 2: 290.0...594.5, height 594.5, frame (16.0, -144.0, 343.0, 594.5), bounds 146.0...567.5"
+        }
+      ],
+      "geometryOrQueryFailures": [],
+      "logSha256": "d0e7f5bb2c59b2dfd1726e6919ba5c5d5d0e31a57659eae93df116482ef19fad",
+      "resultBundle": "artifacts/private/contact-notices-oct18/precision-ios26.xcresult"
+    }
+  ],
+  "reviewedCaptures": [
+    {
+      "run": "smallest-ios26",
+      "attachment": "81C23B33-2740-4C63-9FF6-A504E9AA3095.png",
+      "name": "contact-notice-empty-removal-largest-dark-whole",
+      "sha256": "e219bc9b143ec6544e924d5be02d0181d4b4142f541db3294145167ed66c1ce3",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-81C23B33-2740-4C63-9FF6-A504E9AA3095.png"
+    },
+    {
+      "run": "smallest-ios26-coverage",
+      "attachment": "7CA5B4F2-0802-475A-AD08-783E7A802B94.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-1",
+      "sha256": "a35080b03ca06be060ffac39ce8b0c69e73ef7961ca7b543b17fd20882a2dc2f",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-coverage-7CA5B4F2-0802-475A-AD08-783E7A802B94.png"
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "EEB7EDD3-B2F2-470D-BB08-578FB0CE4E3C.png",
+      "name": "contact-notice-populated-removal-largest-dark-slice-1",
+      "sha256": "adf93a4dc9a8bcfe5e66ae0e24073d8d211733dc37f50a951e1d240b70e67f69",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "1E0F84D2-D033-4675-9428-F93ECDD9410B.png",
+      "name": "contact-notice-populated-removal-largest-dark-slice-0",
+      "sha256": "e077d17278c626c8c9718779500a9be0df336ac15f3b2c174f7bb45f1901e091",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "ACC60F49-1132-406B-A45C-88CA2A3E7D89.png",
+      "name": "contact-notice-populated-sharing-largest-dark-slice-2",
+      "sha256": "2b153a2a12984b266387f45df12d66a527c5be48e4704516223a99c12cdd4b78",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "8432CEF6-E39B-40E4-A2CD-FB5E904BFD5F.png",
+      "name": "contact-notice-populated-sharing-largest-dark-slice-1",
+      "sha256": "bc6ec057f24c8a16885e7b3aed9bf8a382b63e0111001c05692fafb4621a21e2",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "50BEA326-22BF-4C8D-AEFD-BD463DDD1B54.png",
+      "name": "contact-notice-populated-sharing-largest-dark-slice-0",
+      "sha256": "6b7f4bb94dfcbe6fd9fd7cd0c785d9b3cbcb819d7145dbe41ad7e71d3cf6c777",
+      "visuallyInspected": true
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "CD0ADE19-E631-47CB-A44D-CD4F5032E32A.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-1",
+      "sha256": "335bf5379c4b1b9a56ea8161118282104d0f32526a1c5f00d478b77601a3dea7",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-coverage-final-CD0ADE19-E631-47CB-A44D-CD4F5032E32A.png"
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "D3DA3B54-17A0-452E-877F-09F895F20CBC.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-0",
+      "sha256": "d987d17de4224cddc899e542316a1b063fb8c5f033412edcb84266c1a5bad1c2",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-coverage-final-D3DA3B54-17A0-452E-877F-09F895F20CBC.png"
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "4269F8CC-1A54-45E3-A170-4BE4FEB85073.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-2",
+      "sha256": "65c5b4822c384be2eee62d747be6fc1d39bd16ba437155e1f003dfc28ac72ce7",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-coverage-final-4269F8CC-1A54-45E3-A170-4BE4FEB85073.png"
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "8A040688-46A7-4CDC-B4EC-528DAAEFB24B.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-1",
+      "sha256": "5d6fc259b280c6528217d4778551304f5d0f28474f9ef3f2c477d5f7426a8360",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-coverage-final-8A040688-46A7-4CDC-B4EC-528DAAEFB24B.png"
+    },
+    {
+      "run": "smallest-ios26-coverage-final",
+      "attachment": "2A1CB438-CC1A-495F-858E-E21A965B73C0.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-0",
+      "sha256": "fe04efc5307003975ac4ee7af9f8ec011a0910a5002053f8e8a51241813c35a1",
+      "visuallyInspected": true,
+      "publishedFile": "smallest-ios26-coverage-final-2A1CB438-CC1A-495F-858E-E21A965B73C0.png"
+    },
+    {
+      "run": "ios27-coverage-final",
+      "attachment": "7CB6E3C8-A33A-4D27-94B4-C8E1489F82F6.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-1",
+      "sha256": "6407183f4e904d9fc2b103adcd272cdf0bb7dda3cb59a4daf955b3256f459bb2",
+      "visuallyInspected": true,
+      "publishedFile": "ios27-coverage-final-7CB6E3C8-A33A-4D27-94B4-C8E1489F82F6.png"
+    },
+    {
+      "run": "ios27-coverage-final",
+      "attachment": "FEE2475C-7C23-43C1-9573-055F3F7E6042.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-0",
+      "sha256": "8a10bcd20094ae290e76730033ef4f99198c9b0cd59fa56e546fad669f162eb9",
+      "visuallyInspected": true,
+      "publishedFile": "ios27-coverage-final-FEE2475C-7C23-43C1-9573-055F3F7E6042.png"
+    },
+    {
+      "run": "ios27-coverage-final",
+      "attachment": "F40BAF50-CAFF-456F-8A62-FBF494AAF942.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-1",
+      "sha256": "e0e1e1a6926c41319edec349f31fd5d97322d9e05c1251f0b1f098b06f8c2c07",
+      "visuallyInspected": true,
+      "publishedFile": "ios27-coverage-final-F40BAF50-CAFF-456F-8A62-FBF494AAF942.png"
+    },
+    {
+      "run": "ios27-coverage-final",
+      "attachment": "45C0A56B-A40E-4920-9925-0153E1B2D325.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-0",
+      "sha256": "15903b642f2a50f8a84ee0c2e24455383531ba23602131130177f19dd24a08ab",
+      "visuallyInspected": true,
+      "publishedFile": "ios27-coverage-final-45C0A56B-A40E-4920-9925-0153E1B2D325.png"
+    },
+    {
+      "run": "precision-ios27",
+      "attachment": "AFC4BA4E-8982-4A43-9DD1-6D08ECAECF24.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-1",
+      "sha256": "66e7fb4bd571541726136e8347c29a5ae6e57ba88d937117a9276a50b7cb4d11",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios27-AFC4BA4E-8982-4A43-9DD1-6D08ECAECF24.png"
+    },
+    {
+      "run": "precision-ios27",
+      "attachment": "B7B6C0FC-64BD-465E-BF39-CD524477A64F.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-0",
+      "sha256": "c199fad3a6859650f67cdb2fed0dcfbf2bab6941aa2a835fbc980ea4dc63dd4f",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios27-B7B6C0FC-64BD-465E-BF39-CD524477A64F.png"
+    },
+    {
+      "run": "precision-ios27",
+      "attachment": "E70F3F91-4F66-4E9F-9899-BECB245BDBBE.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-1",
+      "sha256": "7f8147013e152dd14e1848a751347d77b12fddd482128275b09b14620abbf1f3",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios27-E70F3F91-4F66-4E9F-9899-BECB245BDBBE.png"
+    },
+    {
+      "run": "precision-ios27",
+      "attachment": "EA01099C-2C22-459F-87E4-DCD859FC7844.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-0",
+      "sha256": "0a8601425c9bded0979cab66f8ae08a779162a03077014baa878f119080f7431",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios27-EA01099C-2C22-459F-87E4-DCD859FC7844.png"
+    },
+    {
+      "run": "precision-ios26",
+      "attachment": "FA234202-9639-4CD1-803A-2593458FFF00.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-1",
+      "sha256": "e6c3fb32ebde6dac16287aaf3e53c8c7c909726ca574400e3245633e701c3af1",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios26-FA234202-9639-4CD1-803A-2593458FFF00.png"
+    },
+    {
+      "run": "precision-ios26",
+      "attachment": "F644547C-8E7D-454F-9428-729B5B6333A3.png",
+      "name": "contact-notice-empty-removal-largest-dark-slice-0",
+      "sha256": "d159e6d94cdd342558a382ab07d8663b40ab4359e794aa32470c7ebeb5c50a81",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios26-F644547C-8E7D-454F-9428-729B5B6333A3.png"
+    },
+    {
+      "run": "precision-ios26",
+      "attachment": "1ACC47C8-8EA3-4C38-9EEC-0AE5FBEDDF69.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-2",
+      "sha256": "68fcd6e2e5fb589d266814c5b4e12cb6cb2f6de94a7a4282d27c6099e061087e",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios26-1ACC47C8-8EA3-4C38-9EEC-0AE5FBEDDF69.png"
+    },
+    {
+      "run": "precision-ios26",
+      "attachment": "6E5F740A-58E8-4B63-B9BF-7D4F009F0666.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-1",
+      "sha256": "43498086bfa100e8b7301a3706c79f60a8989482afe89ada9363bfbbe543d34f",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios26-6E5F740A-58E8-4B63-B9BF-7D4F009F0666.png"
+    },
+    {
+      "run": "precision-ios26",
+      "attachment": "9E22EE82-F9B6-4AAB-B7CB-165892DB4680.png",
+      "name": "contact-notice-empty-sharing-largest-dark-slice-0",
+      "sha256": "3211ac8d67dfa4407c712200518edea16395a60b5251168bcaa9b4e3a049c54b",
+      "visuallyInspected": true,
+      "publishedFile": "precision-ios26-9E22EE82-F9B6-4AAB-B7CB-165892DB4680.png"
+    }
+  ],
+  "reviewedCaptureCount": 25,
+  "finding": "The final coverage checks show every line of both notices reachable in overlapping scroll positions on both runtimes. Whole-screen native audits still fail and retain their unassociated contrast/clipping reports. Reachability does not explain or waive those reports.",
+  "retainedHarnessFailures": [
+    "First test jumped between start/end positions and left a middle coverage gap; its attempted whole-paragraph positioning also oscillated with native search chrome.",
+    "Second test covered all segments reached but made a trailing StaticText query after its node disappeared; the locator now follows any accessibility element with the exact wording, and final comparison uses the captured initial height.",
+    "First iOS 27 run failed three end-height comparisons at floating-point differences near 1e-13 points. Final coverage uses a 0.001-point precision allowance; no accessibility audit type, handler or contrast threshold changed.",
+    "Initial result export lacked permission for the Xcode cache; the authorized export succeeded. Initial simulator cleanup found one device already shut down; state-aware cleanup preserves unrelated simulators."
+  ],
+  "limitations": [
+    "The audit does not identify which SwiftUI nodes produced the retained reports. No blanket scroll-edge or inactive-control waiver is asserted.",
+    "The tests use synthetic sample data and do not request Contacts permission, edit the address book, call a phone, send messages or activate caretaker delivery.",
+    "The original unfiltered failure bundles remain available. Simulator reachability does not verify physical VoiceOver gestures, complete spoken output or full accessibility.",
+    "Production source is unchanged from the 256-input verified unsigned contact-recovery archive. No archive was rebuilt for this test-only follow-up. Backend checks are referenced from the unchanged passing source checkpoint, not newly claimed."
+  ]
+}

@@ -76,6 +76,53 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try auditEmptyEverydayGuidance(largestDark: true)
     }
 
+    func testContactNoticesAtLargestTextAudit() throws {
+        for empty in [true, false] {
+            var arguments = ["--uitesting-screen", "contacts", "--uitesting-single-person",
+                             "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+            if empty { arguments.append("--uitesting-empty-data") }
+            let app = launch(arguments, dark: true)
+            for (name, wording) in [
+                ("sharing", "Only names and numbers go to Shield. Contacts update only when you choose; there are no automatic uploads."),
+                ("removal", "Removing a number here also removes it from iPhone Contacts.")
+            ] {
+                let notice = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", wording)).firstMatch
+                exposeEverydayGuidance(notice, in: app, bottomEdge: false)
+                guard notice.exists else { continue }
+                XCTAssertEqual(notice.label, wording)
+                let prefix = "contact-notice-\(empty ? "empty" : "populated")-\(name)-largest-dark"
+                // A notice can exceed the viewport. Follow overlapping slices instead of
+                // jumping between its ends or trying to fit the entire paragraph at once.
+                let noticeHeight = notice.frame.height
+                var coveredThrough: CGFloat = 0
+                var coverage: [String] = []
+                for slice in 0..<24 {
+                    let bounds = everydayGuidanceBounds(in: app)
+                    let frame = notice.frame
+                    let visibleStart = max(0, bounds.lowerBound - frame.minY)
+                    let visibleEnd = min(frame.height, bounds.upperBound - frame.minY)
+                    XCTAssertLessThanOrEqual(visibleStart, coveredThrough + 1,
+                                             "Scrolling must not skip a line of the notice.")
+                    XCTAssertGreaterThan(visibleEnd, visibleStart)
+                    coveredThrough = max(coveredThrough, visibleEnd)
+                    coverage.append("Slice \(slice): \(visibleStart)...\(visibleEnd), height \(frame.height), frame \(frame), bounds \(bounds)")
+                    try audit(app, prefix + "-slice-\(slice)")
+                    if coveredThrough + 0.001 >= frame.height { break }
+                    // Small, one-way drags preserve overlap and avoid oscillation when
+                    // the native search control expands or collapses during scrolling.
+                    app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
+                        .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.47)))
+                }
+                // CGRect rounding can vary below one thousandth of a point between snapshots.
+                XCTAssertGreaterThanOrEqual(coveredThrough + 0.001, noticeHeight,
+                                            "Every line of the contact notice must be reachable.")
+                let evidence = XCTAttachment(string: coverage.joined(separator: "\n"))
+                evidence.name = prefix + "-coverage"; evidence.lifetime = .keepAlways; add(evidence)
+            }
+            app.terminate()
+        }
+    }
+
     private func auditEmptyEverydayGuidance(largestDark: Bool) throws {
         for (screen, detail) in [
             ("calls", "Calls that reach Shield will appear here."),

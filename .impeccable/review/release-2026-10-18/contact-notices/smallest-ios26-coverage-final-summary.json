@@ -1,0 +1,56 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "CC8E707F-8A0B-4263-80F7-EDBF673FA0C0",
+        "deviceName" : "Shield empty-state SE3 Oct18",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 1,
+      "passedTests" : 0,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "Shield · Built with macOS 27.0",
+  "expectedFailures" : 0,
+  "failedTests" : 1,
+  "finishTime" : 1792359193.159,
+  "passedTests" : 0,
+  "result" : "Failed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1792359065.1,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+    {
+      "failureText" : "Contrast failed",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 1,
+      "testIdentifierString" : "SeniorAccessibilityUITests/testContactNoticesAtLargestTextAudit()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testContactNoticesAtLargestTextAudit",
+      "testName" : "testContactNoticesAtLargestTextAudit()"
+    }
+  ],
+  "title" : "Test - Shield",
+  "topInsights" : [
+    {
+      "category" : "Common Failures",
+      "impact" : "100% of failures",
+      "text" : "10 runs of 1 test failed with Contrast failed"
+    }
+  ],
+  "totalTestCount" : 1
+}

@@ -1,5 +1,8 @@
 # iOS release verification — October 17, 2026
 
+**October 18 contact-notice follow-up:** every line of both contact-sharing/removal notices is reachable at maximum text on iOS 26.5 SE3 and iOS 27 iPhone 17e, in empty and populated lists. Both final coverage checks pass, while each unfiltered native audit still fails with **ten contrast and one clipping finding without element associations**. All six attempts and 25 inspected captures are retained; runtime warnings are zero. Only tests/evidence changed, preserving the verified production archive. [Exact findings and limits](IOS-CARETAKER-RECOVERY.md#contact-notices-at-maximum-text--october-18).
+
+
 **Release decision: not ready for public submission.** This is an engineering audit and implementation record. Apple setup was explicitly deferred by the owner; public subscriptions and the ten-senior pilot remain requirements. Both the [initial scoped backend update](IOS-BACKEND-ROLLOUT.md) and the later [retention/pagination update](RETENTION-PAGINATION-ROLLOUT.md) are approved, deployed and verified within their documented limits. No real call, message to a phone, carrier change or App Store submission was made by this audit.
 
 The work uses the canonical `tigerisaac/aaacap-project` checkout on `main`. Concurrent phone-sign-in/disconnection changes were preserved. Code, deployed state and physical-call evidence are reported separately below.
