@@ -10,7 +10,7 @@ The other **14 functions and their traffic**, bridge, **seven schedules**, **six
 
 The **15:46:57–15:52:16 Central** observation spans 319 seconds. Available new-revision request metrics show **four 200 responses, six 401 responses and zero 5xx**; fixed error diagnostics are empty. The six observed denials are consistent with the six explicit guard probes, without individual-request attribution. Metrics lagged by about one minute; their latest returned bucket ended at 15:51:16. The earlier 112-second snapshot is retained separately. This bounded result does not establish actual signed-in contact behavior or longer-term reliability. [Approval, source verification, configuration preservation and health receipts](../.impeccable/review/release-2026-10-18/contact-recovery/deployment/verification.json).
 
-The original [Firestore retry API candidate](FIRESTORE-RETRY-ROLLOUT.md) is now stale: it must be rebased onto this serving source and reverified before its separate rollout. Its original frozen evidence is retained; deploying that old API ZIP would remove this correction.
+The original Firestore retry API candidate became stale after this deployment. Its [refreshed proposal](FIRESTORE-RETRY-ROLLOUT.md) now preserves this serving source and passes 94 integration plus six transport checks; its separate approval remains pending. Original frozen evidence is retained; deploying the old retry API ZIP would remove this correction.
 
 ## Exact scope
 
@@ -37,7 +37,7 @@ Private archives, source hashes, settings/IAM snapshots, exact-package tests and
 
 The source passes required typecheck/build, **382 unit**, **293 Firestore** and **12 account** checks locally and in first-attempt [independent CI on `df0bf4e`](https://github.com/tigerisaac/aaacap-project/actions/runs/39162762938). The frozen candidate passes all **13 selected contact integration checks** against its unchanged serving dependencies and original database initialization; production dependency audit findings are zero. All 90 candidate directory/ZIP hashes and the original rollback ZIP have been reverified. The app passes **23 Swift checks**, **7 native checks on iOS 27**, **6 on iOS 26.5** and unsigned Release archive inspection. [Exact evidence, retained failed attempts and physical/VoiceOver limits](IOS-CONTACT-RECOVERY.md).
 
-The earlier [Firestore retry proposal](FIRESTORE-RETRY-ROLLOUT.md) is separately pending. This contact package went first and does not include that correction. The retry proposal's API candidate must now be rebased and reverified to preserve these contact changes. Never deploy its old frozen API package, and never deploy all of `main`.
+The [Firestore retry proposal](FIRESTORE-RETRY-ROLLOUT.md) is separately pending. This contact package went first and does not include that correction. The retry proposal's refreshed API candidate now preserves these contact changes and has been reverified. Never deploy its old frozen API package, and never deploy all of `main`.
 
 The new app checks the contract before editing native Contacts. Older clients can still use the legacy request shape, but do not gain durable recovery or versioned request ordering merely from this API deployment. Complete backend acceptance before distributing the updated client.
 

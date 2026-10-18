@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-18T21:06:18.536Z",
+  "scope": "Retry-only API package rebased onto accepted contact-recovery deployment; unchanged fleet/bridge candidates reverified",
+  "deployed": false,
+  "approved": false,
+  "runtimeManifestSha256": "352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e",
+  "supersedesManifestSha256": "56ec8cc1044c7c10696edcab5b4de2579525cadb9265ddbf54a941ff115b047a",
+  "sourceCommit": "9181a50ae9c3559c430de03534d30539a2e41a99",
+  "sourceSha256": {
+    "backend/src/cloud/firestore.ts": "0c4e9e2e62f67fd6adab112683148dba4767447099994c0190e21dae90236ba8",
+    "backend/src/cloud/index.ts": "bcce10b61c73bd2c16f77c47f9a9bcc409a003ba62afc4a50b64a89a35fef6b4",
+    "backend/src/live/server.ts": "78e1217ec94be46995f320fd13a3e7ab9aef36fed123f31e7fff6a3e4b837ced",
+    "backend/src/cloud/api.ts": "d46fb3e5128b85d79b607eb0b2ce19e61b3d020a3dc8581f14d23bf0477b4b23",
+    "backend/src/cloud/shared-contacts.ts": "e3b64be604c93d2b3b7272bd7b86833d591f5b66590d4bc0787bea14dabaf901",
+    "backend/src/cloud/contact-revision.ts": "5dc7294ecaaaf8ab6ed15405622eb62cf2162e48c7ae6a920e8775b591becd3a",
+    "backend/tests/cloud.test.ts": "a2c843864ab1a27aa0fe993158a13af85f8ce1e2bdfb16e8fbef07ebfd2246d4",
+    "backend/tests/shared-pilot.test.ts": "096996c9a104cc729f69756f09f1663a24aeecf43f8bb553c298921fdd20fa8d",
+    "backend/tests/firestore-retry.test.ts": "541de89305f9afc7d8a1087f6fafa946827c2bd4e1ea0d2bc854656dd00c53a5",
+    "scripts/check-ios-release-package.mjs": "3f9fd86191de7e8e9ef7b154f7d9055f897b6ae922854a789127632ac6b81b89"
+  },
+  "apiBaseline": "shieldapi-00035-qos",
+  "apiArchiveSha256": "5d9cc660fbc16709e7eee804d7d19c4a9c9b196cf8f058652ba34562d063b4b1",
+  "apiFrozenFiles": 91,
+  "changedApiFiles": [
+    "lib/cloud/firestore.js",
+    "lib/cloud/index.js"
+  ],
+  "contactRecoveryPreserved": true,
+  "otherFunctionCandidatesByteIdentical": 14,
+  "bridgeCandidateContextByteIdentical": true,
+  "integration": {
+    "first": {
+      "passed": 92,
+      "failed": 2,
+      "pending": 0
+    },
+    "final": {
+      "passed": 94,
+      "failed": 0,
+      "pending": 0
+    },
+    "assertionsPreserved": true,
+    "sdkBoundaryDiagnostic": "sdk-boundary.json",
+    "finalInputs": "test-inputs-final.json"
+  },
+  "transport": {
+    "passed": 6,
+    "failed": 0,
+    "pending": 0
+  },
+  "packageSmoke": {
+    "packagedStartup": "passed",
+    "accountAndBillingWorkers": "present",
+    "policyVersion": "2026-10-17-v2",
+    "providerRequests": 0,
+    "databaseRequests": 0,
+    "deployed": false
+  },
+  "productionAudit": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 199,
+      "dev": 0,
+      "optional": 100,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 298
+    }
+  },
+  "independentCI": {
+    "commit": "df0bf4ecf24c2d049931407d26ac6de4e14e9aa3",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39162762938",
+    "conclusion": "success",
+    "backendAndLocksUnchangedSinceCI": true,
+    "unitPassed": 382,
+    "firestorePassed": 293,
+    "accountPassed": 12,
+    "metadataSha256": "9d99dce3c86796b2975f1ee4728758c70db86e12df1f25a13e7a57fc9ea99677"
+  },
+  "retainedFailures": [
+    "Initial import-only preservation check rejected the extra newline from splitting an import; no tests or runtime edits had occurred. Corrected comparison consumes each import line terminator.",
+    "First combined run passed 92 and failed two deletion cases. The harness passed an API SDK database to a worker using a separate SDK installation; cross-install DeleteTransform validation rejects the value. Final harness constructs the worker store with its own frozen SDK.",
+    "First direct SDK diagnostic expected different error wording; observed custom-prototype DeleteTransform rejection is retained in sdk-boundary.json."
+  ],
+  "retainedWarnings": [
+    "Vite reports missing source-map files in inherited serving archives; runtime bytes were preserved.",
+    "Clean npm installation reports inherited node-domexception and glob deprecations; production audit reports zero known vulnerabilities."
+  ],
+  "logs": {
+    "npm-ci.log": "065bb4a8337739de8d4a9adab5ef825ae75f63aba4611c6e77e25c90d347f6c1",
+    "integration-tests.log": "82df721b65f3ee5fc4d3be3cfefb535de0739e4a9f726a96e95072db76d1cc3c",
+    "emulators-integration.log": "005251c60f8fd1a7dbb2bdde335ddc87b5203393bf47f10f1beb5c08527670dc",
+    "integration-final-tests.log": "0100e3d705cd21bae66a0ef79b662673f66623bdab94fc40f20655089d0540ed",
+    "emulators-integration-final.log": "a23f3b6d0947d91b502b79cd2551d5eb77f4f2b67464ee32e01fc81f147473ef",
+    "transport-tests.log": "55bd9af88694d3ce3a29651c76fc96e062e1e9dfcfd2371da6dba917f2291b91",
+    "package-smoke.log": "6541ed78c85667f485b29eb500eff40153067387fabc4ab80dbe4cc74ac0639a"
+  },
+  "node": "22.23.1",
+  "npm": "11.4.2",
+  "limits": [
+    "Owner approval for this retry rollout remains pending.",
+    "The new pinned-base bridge image is not built or verified.",
+    "Fresh serving baselines/configuration, zero active calls and original rollback archives must pass immediately before deployment.",
+    "No production handler, customer fixture, call, message, phone setting or Apple operation was performed.",
+    "Natural post-deployment worker completions and observer checks remain required; daily cleanup requires its next natural 04:00 Central run.",
+    "Historical error attribution, physical devices/real calls and the broader public/pilot release gates remain open."
+  ]
+}

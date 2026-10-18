@@ -1,0 +1,402 @@
+{
+  "passed": 92,
+  "failed": 2,
+  "pending": 0,
+  "reportSha256": "0a5c149192ef6b649be1a61caeb8499cb9811aef0eebfc5aac7d3659904b15c0",
+  "suites": [
+    {
+      "name": "cloud.test.ts",
+      "status": "failed",
+      "tests": [
+        {
+          "name": "Firebase serverless integration (Firestore emulator) deletes a never-enrolled login without needing a participant or trusting a supplied UID",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) removes helper and trusted-contact access without deleting the other person or their calls",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) checks every owned phone before erasure, preserving all data if one still forwards",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) erases unaccepted requests to a verified number without taking over a recycled number’s old relationships",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) erases owned data in pages, preserves provider erasure jobs and retries identity deletion safely",
+          "status": "failed",
+          "failures": [
+            "AssertionError: expected { completed: +0, failed: 1 } to deeply equal { completed: 1, failed: +0 }"
+          ]
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) persists an idempotent deletion receipt, fences writes, and waits for in-flight work before erasure",
+          "status": "failed",
+          "failures": [
+            "AssertionError: expected { state: 'pending' } to deeply equal { state: 'complete' }"
+          ]
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) shares only phone-list fields, deduplicates numbers and restricts the operation to the owner",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) can remove and restore a number without losing its original list identity",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) adds only the selected contact, retries safely and restores its original identity without replacing the calling list",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) fences individual contact additions, restorations and deletions while a full share owns the list",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery advertises a revision for legacy lists and replays a saved change without a second write",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery rejects receipt reuse for a different intent or row and a delayed superseded request",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery accepts at most one concurrent choice from the same revision",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery makes every legacy list mutation supersede older requests",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery supersedes an older change even when a full share needs no contact-row writes",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery rejects a delayed full share after a newer individual choice",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery returns each revision and its matching contact values from one snapshot",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery requires complete, bounded revision requests and owner authorization",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) contact change recovery fails closed on corrupt or exhausted revision data instead of accepting a stale write",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) restricts history and checks to an owner or accepted caregiver",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) accepts invitations once and enforces immediate revocation and owner-only writes",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) matches iOS contacts and pagination DTOs without leaking expired history",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) preserves the total beyond seven days and cleanup, without duplicate backfills or another person’s calls",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) backfills multiple pages and seeds expired history before its first cleanup",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) commits quota groups atomically under contention",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) checks pasted text only with consent, without storing it, and never claims a sender is genuine",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase serverless integration (Firestore emulator) reports the Telnyx number in setup and no longer reports a direct-call trial window",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "name": "shared-pilot.test.ts",
+      "status": "passed",
+      "tests": [
+        {
+          "name": "accepts one normalized forwarding identity and rejects missing, malformed, conflicting, or injected headers",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number enforces the 25-person enrollment cap and never reassigns an existing forwarding identity",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number admits 25 simultaneous users across two independent clients, then refuses a duplicate live leg",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number does not fall back to the caller, another senior, or a shared voicemail when metadata is absent",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number isolates 25 concurrent offers, rejects cross-call acceptance, bridges only press 1 and releases all slots",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number keeps per-person screening and incoming-call quotas isolated at the larger pilot size",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number keeps ten connected calls intact and sends the eleventh to its own voicemail after http-rejection",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number keeps ten connected calls intact and sends the eleventh to its own voicemail after hangup-callback",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number pins the verified recipient even when the participant phone record later changes",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number deduplicates retries and binds only the intended recipient before press-1 bridging",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number keeps an accepted call and its capacity beyond five minutes, then ends it at the hour",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number plays Grace before starting screening, and ignores old TTS completion callbacks",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number retries a failed Grace greeting once with Joanna (failed), then waits for completion",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number retries a failed Grace greeting once with Joanna (file_not_found), then waits for completion",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number retries a failed Grace greeting once with Joanna (unknown), then waits for completion",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number never advances a canceled prompt or an unsuccessful backup",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number uses Joanna after a definite provider rejection, but retries uncertain playback without switching voices",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number waits for the Joanna hold disclosure before dialing after Grace fails",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number cannot accept a late primary gather after falling back, and still requires press 1 on the bound recipient",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number preserves a legitimate keypad interruption of Grace and the no-tone captured voicemail prompt",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number moves only the accepted recipient before caller removal, then plays the recording once after its signed receipt",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number fences uncertain room creation and never retries it or sends backup speech",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number waits for an unheld isolated recipient and fails closed for an unexpected participant",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number does not replay an uncertain conference playback, and never revives an ended or expired recipient",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number fences simultaneous handoff workers before creating a room",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number preserves the legacy monitoring warning fallback during rollout",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number preserves warning receipts and fallback while the caller hangup holds the call executor",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number queues one warning only after both bound legs confirm separation, even during executor contention",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number does not resurrect warning playback after the recipient hangs up or its cleanup deadline passes",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number records interrupted warning playback without claiming completion or acting on another leg",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number defaults the sound check to Grace and only confirms the active backup gather after failure",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number uses Joanna for a rejected warning audio command, and ends the recipient after its backup finishes",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number records from answer before the greeting, and a saved callback cannot hang up a connected call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number never bridges if stopping the temporary capture fails",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number saves a notice outcome even when the recording hangs up first, without offering a live call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number never bridges rejection, silence, the inbound caller’s digit, or another person’s child leg",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number accepts signed raw JSON only from the configured application",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number handles hangup before initiation and never resurrects the call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number retries an uncertain answer with the same command id, but never redials an uncertain outbound call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number sweeps a crashed screening session without releasing capacity before successful hangup",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number qualifies two simultaneous forwarding checks independently, never using another senior’s nonce",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number revoking a route or changing its verified phone prevents a pending offer from being accepted",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number does not let an in-flight forwarding check undo an operator revocation",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number keeps the slot when the caller hangs up but recipient termination is uncertain",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number recovers failed media with a held executor lock (bridge claimed: false)",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number recovers failed media with a held executor lock (bridge claimed: true)",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number retries failed recovery without repeating a successful voicemail command",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number releases an unconnected hangup during a stalled outcome and admits the next caller",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number persists a recording callback despite a held executor lock",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number still terminates a completed saved notice without mistaking its decision for a carrier hangup",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number ignores stale media failure after an offer or acceptance and rejects another inbound leg",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number keeps ringing during preparation and does not invite speech until the actual recognizer is ready",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number recovers admission even if the webhook process dies before any startup work",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number ignores hangup before the startup worker and admits a new call immediately",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number admits the next caller while an old preparation is stuck and ignores its late success",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number offers voicemail after failed preparation and a hangup cannot strand the next call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number releases hangup before-ready without letting late work affect a new call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number releases hangup queued-greeting without letting late work affect a new call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number releases hangup during-greeting without letting late work affect a new call",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number retries a failed greeting with the same command and never restarts streaming",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number recovers a persisted outcome on a fresh worker after the media process disappears",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number persists recovery even when all media-failure webhook attempts fail",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number uses the durable startup deadline when no media or failed-stream webhook arrives",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number never releases capacity for an unconfirmed timeout hangup and retries it independently",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number discards an obsolete deadline and a delayed outcome once the recipient has accepted",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number deduplicates queue delivery but propagates dispatch failures for durable retry",
+          "status": "passed"
+        },
+        {
+          "name": "25 users on one shared number does not admit disabled or unverified routes",
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

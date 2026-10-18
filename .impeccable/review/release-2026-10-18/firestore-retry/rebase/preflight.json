@@ -1,0 +1,142 @@
+{
+  "at": "2026-10-18T20:57:51.651Z",
+  "readOnly": true,
+  "deployed": false,
+  "functions": [
+    {
+      "function": "dailySetupChecks",
+      "revision": "dailysetupchecks-00002-goq",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "expireMessageDeliveries",
+      "revision": "expiremessagedeliveries-00003-yab",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "checkForwardingVoicemail",
+      "revision": "checkforwardingvoicemail-00003-hod",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "ingestForwardingVoicemail",
+      "revision": "ingestforwardingvoicemail-00009-goz",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "dispatchSharedCallJob",
+      "revision": "dispatchsharedcalljob-00001-gup",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "cleanupShield",
+      "revision": "cleanupshield-00016-nag",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "monitorConnectedCall",
+      "revision": "monitorconnectedcall-00008-hem",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "expireSharedCalls",
+      "revision": "expiresharedcalls-00005-rug",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "finishAccountDeletions",
+      "revision": "finishaccountdeletions-00002-raw",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "runSharedCallJob",
+      "revision": "runsharedcalljob-00004-red",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "monitorScheduledCall",
+      "revision": "monitorscheduledcall-00003-riq",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "shieldApi",
+      "revision": "shieldapi-00035-qos",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "reviewServiceAccess",
+      "revision": "reviewserviceaccess-00002-jof",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "sendShieldAlert",
+      "revision": "sendshieldalert-00005-biq",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "function": "checkBackgroundHealth",
+      "revision": "checkbackgroundhealth-00001-not",
+      "sourceReferencePreserved": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    }
+  ],
+  "bridgeRevision": "shield-live-00017-qrw",
+  "bridgeImageUnchanged": true,
+  "schedulesPreserved": 7,
+  "enabledPoliciesPreserved": 6,
+  "activeCallReservations": 0,
+  "newApiBaseline": "shieldapi-00035-qos",
+  "newApiFiles": 91,
+  "changedApiFiles": [
+    "lib/cloud/firestore.js",
+    "lib/cloud/index.js"
+  ],
+  "contactRecoveryPreserved": true,
+  "apiArchiveSha256": "5d9cc660fbc16709e7eee804d7d19c4a9c9b196cf8f058652ba34562d063b4b1",
+  "manifestSha256": "352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e",
+  "otherCandidateArchivesPreserved": 14
+}

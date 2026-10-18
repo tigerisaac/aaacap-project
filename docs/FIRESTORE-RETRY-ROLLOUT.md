@@ -2,7 +2,7 @@
 
 **Source fix, local packages and independent CI verified; not deployed.** The intermittent admission and history-counter failure is now reproduced without Shield domain code and isolated with a real local gRPC transport. This evidence identifies an SDK retry mechanism; it does not establish which historical production requests encountered it.
 
-**API package rebase required:** the separately owner-approved [contact-recovery rollout](CONTACT-RECOVERY-ROLLOUT.md) advanced the API to `shieldapi-00035-qos` on October 18 at 15:47 Central. The API baseline/candidate below are historical and must not be deployed as-is. Rebase the two-file retry overlay onto that newly serving archive, repeat its exact-package verification and update the complete rollout manifest before requesting approval. The original packages and results remain retained. No retry deployment is authorized by the contact-recovery approval.
+**API package refreshed and reverified October 18 at 16:06 Central:** the two-file retry overlay now starts from the accepted contact-recovery deployment `shieldapi-00035-qos`. All three contact-recovery files are preserved. The other fourteen function candidates and the bridge build context are byte-identical to the original proposal. The new manifest below supersedes the original API candidate; original packages and failures remain retained. Owner approval for this retry rollout is still pending. The [contact-recovery approval](CONTACT-RECOVERY-ROLLOUT.md) does not authorize it.
 
 ## Cause and correction
 
@@ -33,9 +33,20 @@ Independent source [CI on `bbdc93e`](https://github.com/tigerisaac/aaacap-projec
 
 Earlier CI and diagnostic failures remain recorded in [the original evidence](../.impeccable/review/release-2026-10-17/operations/transaction-diagnostics.json). The later unchanged `d820851` run passed; it is evidence of intermittence, not the fix. No failed result was replaced by an unchanged rerun.
 
+## Refreshed package verification — October 18, 16:06 Central
+
+The [new evidence](../.impeccable/review/release-2026-10-18/firestore-retry/rebase/verification.json) records the refreshed package and its retained failures:
+
+- Read-only preflight at **15:57 Central** verified all fifteen serving revisions, source references, settings, IAM and full traffic. The bridge, seven schedules and all six enabled alert policies are preserved; active call reservations were zero at that snapshot. These conditions must be checked again immediately before any deployment.
+- The final combined package run passed **94/94 integration checks** on Node 22.23.1: 27 API checks, including versioned contact recovery, and 67 shared-call checks. The actual frozen deletion-worker implementation uses its own database client. All **six transport regressions** also passed against the refreshed API factory and its installed SDK. Assertions and runtime package files were unchanged by the harness correction.
+- The first combined run passed **92 and failed two deletion checks**. A direct diagnostic reproduced cross-install SDK object rejection: the harness passed the API's database object to a worker using another SDK installation. The corrected harness constructs the worker store with its own client, matching the deployed process boundary. Both reports, the diagnostic and the original harness are retained. An initial import-comparison newline error and a diagnostic error-wording mismatch are also recorded; neither changed release bytes.
+- Packaged startup, public policy and authentication guards passed with zero database/provider requests. Clean production dependency installation passed; its current audit reports **zero known vulnerabilities**. Inherited source-map and dependency-deprecation warnings remain recorded.
+- After tests, all **1,221 frozen files**, fifteen candidate ZIPs and fifteen rollback ZIPs passed verification. Each candidate differs from its serving baseline in exactly the two intended runtime files; every dependency lock is preserved. The API contains 91 files. All seven bridge build-context files and its source archive match the original plan; the new build tag identifies the refreshed manifest. **The container image has not been built.**
+- The backend and dependency locks are unchanged since first-attempt [CI on `df0bf4e`](https://github.com/tigerisaac/aaacap-project/actions/runs/39162762938), which passed typecheck/build, **382 unit + 293 Firestore + 12 account checks** and the production dependency audit. Those source checks were not rerun for this package/documentation-only refresh.
+
 ## Exact proposed rollout
 
-The frozen runtime manifest is **`56ec8cc1044c7c10696edcab5b4de2579525cadb9265ddbf54a941ff115b047a`**. [Archive hashes and per-function baselines](../.impeccable/review/release-2026-10-18/firestore-retry/rollout.json) identify the complete set. Original archives, IAM/settings snapshots, candidates, tests and build plan are retained under `artifacts/private/firestore-retry-oct18/`.
+The current frozen runtime manifest is **`352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e`**. [Current archive hashes and per-function baselines](../.impeccable/review/release-2026-10-18/firestore-retry/rebase/rollout.json) identify the complete set. The refreshed API archive is **`5d9cc660fbc16709e7eee804d7d19c4a9c9b196cf8f058652ba34562d063b4b1`**; its rollback archive is the accepted contact-recovery ZIP **`3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7`**. The new API, refreshed full manifest, current snapshots and build plan are retained under `artifacts/private/firestore-retry-rebase-oct18/`. Its artifact-location map points to the unchanged fourteen candidates and bridge under `artifacts/private/firestore-retry-oct18/`. The original manifest `56ec8cc1044c7c10696edcab5b4de2579525cadb9265ddbf54a941ff115b047a` and [historical evidence](../.impeccable/review/release-2026-10-18/firestore-retry/rollout.json) remain retained; its old API ZIP must not be deployed.
 
 Each function package changes exactly two files: add `lib/cloud/firestore.js` and redirect the existing `getFirestore` import in `lib/cloud/index.js` to it. Every other source, dependency-lock and audio byte is preserved. All fifteen functions use that shared database initialization, so the proposal covers the full fleet:
 
@@ -55,11 +66,11 @@ Each function package changes exactly two files: add `lib/cloud/firestore.js` an
 | `reviewServiceAccess` | `reviewserviceaccess-00002-jof` |
 | `runSharedCallJob` | `runsharedcalljob-00004-red` |
 | `sendShieldAlert` | `sendshieldalert-00005-biq` |
-| `shieldApi` | `shieldapi-00034-yaw` |
+| `shieldApi` | `shieldapi-00035-qos` |
 
 The bridge adds the same factory and redirects its `lib/live/server.js` import. Its Docker base is the exact serving `shield-live-00017-qrw` image, digest `a8ae73408b3334343458bbc68faf140ab4d27c6abb407006574035ccec6b0280`. The prepared build overlays only those two files and performs no dependency installation. Six build steps compare the original/new application and dependency contents, check the inherited lock, and run readiness in both modes. **That new image has not been built or verified yet.** Build failure must stop deployment.
 
-Function configuration, IAM, secrets, traffic policy, queues, schedules, indexes, Hosting, phone routing, feature availability and screening/monitoring policies are preserved. The two health policies were subsequently enabled and their natural-run/activation gates accepted on October 18. Before any approved retry deployment, refresh the configuration preflight to preserve those enabled policies and require fresh natural health receipts after worker replacements; a snapshot expecting disabled policies is obsolete. Candidate source packages remain unchanged. No manual worker, customer data fixture, phone call, message, synthetic email or Apple change is included.
+Function configuration, IAM, secrets, traffic policy, queues, schedules, indexes, Hosting, phone routing, feature availability and screening/monitoring policies are preserved. The two health policies were enabled and their natural-run/activation gates accepted on October 18. The refreshed preflight now records all six policies enabled; require fresh natural health receipts after worker replacements. A snapshot expecting disabled policies is obsolete. Only the API candidate changed during this refresh, preserving the newly deployed contact correction. No manual worker, customer data fixture, phone call, message, synthetic email or Apple change is included.
 
 ## Approval and deployment safeguards
 

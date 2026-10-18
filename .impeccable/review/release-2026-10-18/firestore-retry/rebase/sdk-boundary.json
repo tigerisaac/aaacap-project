@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-18T21:04:07.722Z",
+  "crossInstallSentinelRejected": true,
+  "sameInstallSentinelAccepted": true,
+  "apiAndWorkerFactoryClassesDistinct": true,
+  "reason": "Update() requires either a single JavaScript object or an alternating list of field/value pairs that can be followed by an optional precondition. Value for argument \"dataOrField\" is not a valid Firestore document. Couldn't serialize object of type \"DeleteTransform\" (found in field \"field\"). Firestore doesn't support JavaScript objects with custom prototypes (i.e. objects that were created via the \"new\" operator).",
+  "batchCommitted": false,
+  "networkRequests": 0,
+  "priorDiagnosticAssertion": "Expected different error wording; observed DeleteTransform custom-prototype rejection, retained here."
+}

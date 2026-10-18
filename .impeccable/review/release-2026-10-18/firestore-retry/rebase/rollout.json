@@ -1,0 +1,222 @@
+{
+  "at": "2026-10-18T21:06:18.547Z",
+  "runtimeManifestSha256": "352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e",
+  "supersedesManifestSha256": "56ec8cc1044c7c10696edcab5b4de2579525cadb9265ddbf54a941ff115b047a",
+  "deployed": false,
+  "functions": {
+    "checkBackgroundHealth": {
+      "revision": "checkbackgroundhealth-00001-not",
+      "baselineArchiveSha256": "269317aa879c329b004e1aa93a66fa074b0ab22ff574ec0db132292e235d918c",
+      "archiveSha256": "1c5f6cf87a374961e7e45b31fb09532ffd226e1ff5baf585e133c377b360c539",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 91
+    },
+    "checkForwardingVoicemail": {
+      "revision": "checkforwardingvoicemail-00003-hod",
+      "baselineArchiveSha256": "62082ebda9fc4fc0c47315fd45715e0562817819b3c1fdc72248553f5b02588d",
+      "archiveSha256": "a584b38bdfa9db9b6a46a02a8788137f8f92cc0fa2ccf66e0958be7631219b7f",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 73
+    },
+    "cleanupShield": {
+      "revision": "cleanupshield-00016-nag",
+      "baselineArchiveSha256": "b7bfeafc098c2c57bb584bd68783f86334c81db70668991ead48da3c073bae7d",
+      "archiveSha256": "56bceaed78bea4b843cb01aaafe8a31a340a60d2de86e24c1fe8b9924a6289ed",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 88
+    },
+    "dailySetupChecks": {
+      "revision": "dailysetupchecks-00002-goq",
+      "baselineArchiveSha256": "5af0637ee318265ef3da57d154c0f638a3d57d08b66ba27b0fa3a206d387176d",
+      "archiveSha256": "57ddbd0eca103daa31775466cf5963009d611f493d8a93d5e4297ec28318e10f",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 72
+    },
+    "dispatchSharedCallJob": {
+      "revision": "dispatchsharedcalljob-00001-gup",
+      "baselineArchiveSha256": "47e816094e9ce853e14169e08bfa0bd9a7e1a8ef361809296540cbd54379055d",
+      "archiveSha256": "5b46389f1ead40a5bf9f71c8ef0f37a439192459423270fb0e9fdc8fc2dcc212",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 75
+    },
+    "expireMessageDeliveries": {
+      "revision": "expiremessagedeliveries-00003-yab",
+      "baselineArchiveSha256": "d28fea533fbfa0359b05d8e209d2722cc5884f8130b97a06f2be9bb0f6d2729d",
+      "archiveSha256": "ad316a9e2f65192d7b817ccb7d7f6c25ad9fb8de7c8f2b4f0f0a578b81474bc6",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 77
+    },
+    "expireSharedCalls": {
+      "revision": "expiresharedcalls-00005-rug",
+      "baselineArchiveSha256": "9f7552f326016b17e4429ce03cc438ce4918d5abca0a406f3fe42f9c2ff4da33",
+      "archiveSha256": "20ff438bb91c77790fdb9fe8f171dcd0573a06737868b9eaada25ec6383a6ed0",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 81
+    },
+    "finishAccountDeletions": {
+      "revision": "finishaccountdeletions-00002-raw",
+      "baselineArchiveSha256": "88f48d62d0686c32c3027151ec2785abad57ac887de6534d98f1db5d8cb2be2d",
+      "archiveSha256": "14e6c98bc0ec2db87c40a7a11a30a7b1520fe8af9234a6c2a36d728524e31c30",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 88
+    },
+    "ingestForwardingVoicemail": {
+      "revision": "ingestforwardingvoicemail-00009-goz",
+      "baselineArchiveSha256": "d67050cf42701adf4040af4449669588806a6388dcf1a55701273d57ecadc30f",
+      "archiveSha256": "e69e95ff809187ebdb40fdfa7e6d545ed129d5465a9ad59a95a0cbc88d55c66f",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 73
+    },
+    "monitorConnectedCall": {
+      "revision": "monitorconnectedcall-00008-hem",
+      "baselineArchiveSha256": "4e4f1a13261c368f2ca7544d66bd9c408f85b2f60e4ed24e5cef8b273aa6d6dd",
+      "archiveSha256": "740e842f945dee8193b3437b304f34119a89dfc4722e76ba5034877ee4873211",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 77
+    },
+    "monitorScheduledCall": {
+      "revision": "monitorscheduledcall-00003-riq",
+      "baselineArchiveSha256": "75855fca208ad85d07a4fb8be58e5bfc4983a340bf96e3bbdc4973d335f059dc",
+      "archiveSha256": "740e842f945dee8193b3437b304f34119a89dfc4722e76ba5034877ee4873211",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 77
+    },
+    "reviewServiceAccess": {
+      "revision": "reviewserviceaccess-00002-jof",
+      "baselineArchiveSha256": "c30ff63dda5a0e89a83e623f97d4ec0597636800ea97371c8accf3248fc575dc",
+      "archiveSha256": "44677152f70b77f3849f2a5bd3f01d69e4588f97c02d7ff0b46fd362a791d537",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 88
+    },
+    "runSharedCallJob": {
+      "revision": "runsharedcalljob-00004-red",
+      "baselineArchiveSha256": "8555fcf7dfcb4972a9d9738fafc9060bcf23b9e7ef3c468fbbb0c701f9c8e38e",
+      "archiveSha256": "c6a27c265e4d77f0b80b478391ea586cf876ef338a5aa059ceac455844922104",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 83
+    },
+    "sendShieldAlert": {
+      "revision": "sendshieldalert-00005-biq",
+      "baselineArchiveSha256": "96e541858b6d6ddf9ff0606e6905f9b87731aa2660f79248f35c0398c4a20aa2",
+      "archiveSha256": "c431f3855d6b3d96513e8ccc2d4f3a0a6d6c34b495f8984bf78f390c323529e5",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 87
+    },
+    "shieldApi": {
+      "revision": "shieldapi-00035-qos",
+      "baselineArchiveSha256": "3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7",
+      "archiveSha256": "5d9cc660fbc16709e7eee804d7d19c4a9c9b196cf8f058652ba34562d063b4b1",
+      "packageLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "changes": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "firestore": "9.3.1",
+      "gax": "6.12.1",
+      "frozenFiles": 91
+    }
+  },
+  "bridge": {
+    "revision": "shield-live-00017-qrw",
+    "baseImage": "us-central1-docker.pkg.dev/shield-calls-isaac/gcf-artifacts/shield-live@sha256:a8ae73408b3334343458bbc68faf140ab4d27c6abb407006574035ccec6b0280",
+    "files": {
+      "Dockerfile": "6c0d9fdae119c1d551d5aed31d27234bd689a5e5b1c188185454b5148cf38c08",
+      "lib/cloud/firestore.js": "75b82f818a52bf46d6ed2b07fe2b0c950b0e1384f60ce9163c919253ff62d36f",
+      "lib/live/server.js": "a8d78ab78970589fe35fd0bb0fee984a6f81b024cbe9e1ee61778708fba6c584"
+    },
+    "changedRuntimeFiles": [
+      "lib/cloud/firestore.js",
+      "lib/live/server.js"
+    ],
+    "imageBuildSubmitted": false,
+    "imageVerified": false
+  },
+  "bridgeBuildSourceSha256": "7abb882054f49794b8427b76642b1ad806f4136578c6fb71837282f91dfb93f6",
+  "bridgeBuildPlanSha256": "a8b6c365217c2f4838d82e164a80dc16e7f986352f796284c582644a6a3290e3",
+  "cloudBuildSteps": 6,
+  "cloudBuildSubmitted": false
+}

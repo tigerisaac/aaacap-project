@@ -1,0 +1,176 @@
+{
+  "at": "2026-10-18T21:06:18.392065+00:00",
+  "deployed": false,
+  "runtimeManifestSha256": "352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e",
+  "functions": [
+    {
+      "function": "checkBackgroundHealth",
+      "candidateFiles": 91,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "checkForwardingVoicemail",
+      "candidateFiles": 73,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "cleanupShield",
+      "candidateFiles": 88,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "dailySetupChecks",
+      "candidateFiles": 72,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "dispatchSharedCallJob",
+      "candidateFiles": 75,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "expireMessageDeliveries",
+      "candidateFiles": 77,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "expireSharedCalls",
+      "candidateFiles": 81,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "finishAccountDeletions",
+      "candidateFiles": 88,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "ingestForwardingVoicemail",
+      "candidateFiles": 73,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "monitorConnectedCall",
+      "candidateFiles": 77,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "monitorScheduledCall",
+      "candidateFiles": 77,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "reviewServiceAccess",
+      "candidateFiles": 88,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "runSharedCallJob",
+      "candidateFiles": 83,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "sendShieldAlert",
+      "candidateFiles": 87,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    },
+    {
+      "function": "shieldApi",
+      "candidateFiles": 91,
+      "changedFiles": [
+        "lib/cloud/firestore.js",
+        "lib/cloud/index.js"
+      ],
+      "directoryAndZipMatch": true,
+      "rollbackArchiveVerified": true,
+      "lockPreserved": true
+    }
+  ],
+  "totalFrozenFunctionFiles": 1221,
+  "bridgeBuildContextFilesVerified": 7,
+  "bridgeBuildSubmitted": false,
+  "bridgeBuildPlanSha256": "a8b6c365217c2f4838d82e164a80dc16e7f986352f796284c582644a6a3290e3"
+}

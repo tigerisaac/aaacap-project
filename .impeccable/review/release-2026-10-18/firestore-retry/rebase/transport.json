@@ -1,0 +1,38 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "pending": 0,
+  "reportSha256": "3ac7d3be1243a26acf72aac2b41cd63fc20620cb8e5717b690349fc139cdcc70",
+  "suites": [
+    {
+      "name": "firestore-retry.test.ts",
+      "status": "passed",
+      "tests": [
+        {
+          "name": "Firestore streaming and transaction retries restarts the transaction after an aborted query without replaying a closed read",
+          "status": "passed"
+        },
+        {
+          "name": "Firestore streaming and transaction retries restarts the transaction after an aborted documents without replaying a closed read",
+          "status": "passed"
+        },
+        {
+          "name": "Firestore streaming and transaction retries propagates non-retryable status 7 without replaying the read or committing",
+          "status": "passed"
+        },
+        {
+          "name": "Firestore streaming and transaction retries propagates non-retryable status 3 without replaying the read or committing",
+          "status": "passed"
+        },
+        {
+          "name": "Firestore streaming and transaction retries preserves transient unavailable retries inside the same transaction",
+          "status": "passed"
+        },
+        {
+          "name": "Firestore streaming and transaction retries stops at the existing transaction attempt limit without committing",
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

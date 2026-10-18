@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-18T21:04:07.286Z",
+  "inputs": {
+    "cloud.test.ts": {
+      "sourceSha256": "a2c843864ab1a27aa0fe993158a13af85f8ce1e2bdfb16e8fbef07ebfd2246d4",
+      "adaptedSha256": "0660587e3f414510995e01b41dcf60fa3a1ecc9ca4f11937b53e430002ebc762",
+      "assertionsPreserved": true
+    },
+    "shared-pilot.test.ts": {
+      "sourceSha256": "096996c9a104cc729f69756f09f1663a24aeecf43f8bb553c298921fdd20fa8d",
+      "adaptedSha256": "2ded0265a2f1e1c3e0b7ff1819510a20a071a25d57b3d922577ee87dec667d16",
+      "assertionsPreserved": true
+    },
+    "firestore-retry.test.ts": {
+      "sourceSha256": "541de89305f9afc7d8a1087f6fafa946827c2bd4e1ea0d2bc854656dd00c53a5",
+      "adaptedSha256": "efc79da6bd07e6f8257b295204e3fb70377a4804ee5f90d826708d6149f5fdc7",
+      "assertionsPreserved": true
+    },
+    "enroll.ts": {
+      "sourceSha256": "b20475b3f997ad2a012e787254c53e5f0453c5e9e747c9f74af88efe0f4a69af",
+      "adaptedSha256": "d45da1247f35f1a61b4d7ff58cfaafc3f79e8b17046364230c12e9bd46368b08",
+      "assertionsPreserved": true
+    },
+    "fixtures/firestore-retry.proto": {
+      "sha256": "c3b0ea7e9f0bfec9d8c2f6e185120d98edf0f31b01263682c3541180f38f8761"
+    }
+  },
+  "deletionBatchProcessor": "Actual frozen finishAccountDeletions candidate",
+  "adminResolution": "Rebased API candidate SDK",
+  "runtimeSourceChanged": false,
+  "correction": "Deletion worker now creates its own database/store using its frozen SDK instead of receiving an API SDK object across installations."
+}
