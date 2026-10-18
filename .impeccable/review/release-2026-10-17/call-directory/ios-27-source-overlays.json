@@ -1,0 +1,21 @@
+{
+  "ios/CallDirectory/CallDirectoryHandler.swift": "60d99136318231b1a5c0f86f82dc3dff41cfa653870ed9b2134011d6b684c152",
+  "ios/Shared/CallDirectoryList.swift": "77a4badb1867bbec4e38daede4ef24b7501bf533108743b58e3aa35657db99ca",
+  "ios/Shield.xcodeproj/project.pbxproj": "4da27291d5dc504f43837c6302b0cc1c8b2bfdb40af546ee1ccf49d78aa09327",
+  "ios/Shield/App/AppState+AccountDeletion.swift": "68de6e6cbdf2791d7cfb406041ddd86e9f1be4a38c325dbf0dd4ecb8d2438d7e",
+  "ios/Shield/App/AppState+CallDirectory.swift": "0899757fd3236cf1e5e02e8ae3a24d65395d217df7fa14b49e58c95eccae91cb",
+  "ios/Shield/App/AppState+OfflineHistory.swift": "1ba8993aa773c2badb0df702bf59d58b999ca87063c4cf12db0a1c2d3f3b2cc5",
+  "ios/Shield/App/AppState.swift": "9ceac722772d6d2eb60988353e8fcecec505c0ffc2d3890d60ebd4807789f82b",
+  "ios/Shield/App/RootView.swift": "cd14f4bbd36509dc81825e72d6a9e1591513d70a2fae37dc9f3fd791a26caa86",
+  "ios/Shield/App/ShieldApp.swift": "55923b76ca69aaf51e42229f736c6e63a7d41b3628e44ddd3541ce092fd9a029",
+  "ios/Shield/Features/Settings/BlockedNumbersView.swift": "b83fbcb50e83151696fc9cfb407e859e5da7631c9ed2e981fa540badd4c95182",
+  "ios/Shield/Features/Settings/CallDirectoryCoordinator.swift": "38547ab91a35c5d0fb939537d45d9bca300afd91946a8dd80436aef03080be31",
+  "ios/Shield/Features/Settings/CallDirectoryStatusView.swift": "032e1a3e91fa8e3cdd2356ce8d9d89b282534fd60b88830efaac2973f76b58fa",
+  "ios/Shield/Features/Settings/CallDirectorySync.swift": "63e053d14442e5a30751bdddc2d878a9141b6a8cb8e6b9492f28e589d2272643",
+  "ios/Shield/Preview/CallDirectoryStorageCheckView.swift": "bd268133a7937986a54b3ad059a4f5844357a04f565fa04d9cb54ef509d65613",
+  "ios/ShieldUITests/CallDirectoryStorageUITests.swift": "9459039f9bdab8257de777150abb7fcbefd71fa6b94e8d7dc14e0f56c17ec4f0",
+  "package.json": "ead96f0aa998b3516c4308f0f32359af78ab09ecbc9ccb1fa981ef1458f6d5a2",
+  "scripts/check-ios-archive.mjs": "2a4b32b477f87dd38578738e37f366f3e8d7d00b6f5e0b04400b5e35b2ad25e6",
+  "scripts/test-call-directory.mjs": "8e7bb37458de5b1966a65c929eed7c80af9054267d1f270fe752c207ca60471b",
+  "scripts/tests/call-directory.swift": "efae882e368c626ff45b035fbc732167d85f3ecc3515ac9c90a5430ac8ee9b30"
+}

@@ -38,7 +38,7 @@ extension AppState {
         await messageAudio.activate(account)
         try await deleteLocalMessageLibrary()
         guard signedIn, sessionGeneration == deletionSession else { throw CancellationError() }
-        await CallDirectorySync.update(phones: [])
+        await callDirectory.activate(nil, waitForReload: false)
         // Persist a status-only capability BEFORE submitting, so a lost response
         // or app termination can recover the same authorized request.
         let receipt = (UUID().uuidString + UUID().uuidString).replacingOccurrences(of: "-", with: "").lowercased()

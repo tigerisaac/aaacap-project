@@ -61,7 +61,7 @@ for (const file of files.filter(file => file.endsWith('.plist'))) {
 const binary = await readFile(join(app, info.CFBundleExecutable));
 for (const marker of ['--uitesting', 'appl_synthetic', 'synthetic-server-credential', '--forwarding-start-checks',
   'RevenueCatSDKVerification', 'SHIELD_RC_TEST_KEY', 'shield_qa_monthly', 'shield_qa_annual',
-  'Contact sharing passed', 'Contact restore passed']) {
+  'Contact sharing passed', 'Contact restore passed', 'Blocking storage passed', 'SyntheticCallDirectoryCheck']) {
   assert.ok(!binary.includes(Buffer.from(marker)), `Release binary contains a test fixture: ${marker}`);
 }
 console.log(JSON.stringify({ archive, verified: true, distributionSigningVerified: false,

@@ -1,0 +1,184 @@
+{
+  "date": "2026-10-17",
+  "baseCommit": "109af93061ace55d4629d33d94d7f947de0972d1",
+  "sourceOverlays": "source-overlays.json",
+  "scope": [
+    "Account/participant-scoped Call Directory snapshot with expiry and backup exclusion",
+    "Durable serialized reload acknowledgement and retries, sign-out/account/ownership clearing",
+    "Fence stale fetches and unblock races; do not block authentication on CallKit"
+  ],
+  "requiredChecks": {
+    "unit": {
+      "passed": 344,
+      "skippedBySuiteSelection": 264,
+      "typecheck": "passed",
+      "build": "passed"
+    },
+    "firestore": {
+      "passed": 257,
+      "failed": 0,
+      "suites": 12,
+      "project": "demo-shield",
+      "config": "artifacts/private/privacy-inventory-oct17/firebase.emulators.json",
+      "metadataServerDetection": "none"
+    }
+  },
+  "swiftHarness": {
+    "command": "npm run test:call-directory",
+    "passed": 12,
+    "failed": 0,
+    "source": "scripts/tests/call-directory.swift",
+    "coverage": [
+      "version/number bounds and expiry",
+      "backup metadata repair",
+      "offline expiry",
+      "failed unblock/relaunch",
+      "account change and stale-account fencing",
+      "stale successful/failed reload during logout",
+      "ownership loss",
+      "stale fetch and preservation of unrelated blocks",
+      "disabled/re-enabled extension",
+      "legacy file",
+      "disk failure retains latest desired update without loading old file",
+      "authentication returns while reload is waiting"
+    ]
+  },
+  "ui": {
+    "ios27": {
+      "passed": 7,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "summary": "ios-summary.json",
+      "resultBundle": "/tmp/shield-call-directory-final-oct17.xcresult",
+      "sourceOverlays": "ios-27-source-overlays.json"
+    },
+    "ios265": {
+      "passed": 7,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "summary": "ios-265-summary.json",
+      "resultBundle": "/tmp/shield-call-directory-265-oct17.xcresult",
+      "sourceOverlays": "source-overlays.json"
+    },
+    "coverage": [
+      "Actual AppState sign-out with delayed/failing injected reloader, visible failure/retry/relaunch",
+      "Three offline-history tests",
+      "Block/unblock confirmation",
+      "Helper role restrictions",
+      "Sample-account sign-out navigation"
+    ],
+    "sourceDifference": "The final 26.5 run and archive include the screen-local load revision guard added after the seven-test iOS 27 run.",
+    "limits": "The blocking fixture uses an isolated Application Support file and injected reloader, not a real CallKit operation. History and UI data are synthetic. Neither run is a complete accessibility audit."
+  },
+  "screenshots": [
+    {
+      "file": "reload-failure-largest-dark.png",
+      "sourceAttachment": "60922875-26E7-4359-B40C-07C607058FED.png",
+      "runtime": "iOS 27",
+      "appearance": "dark",
+      "textSize": "accessibility XXXL",
+      "reviewed": true
+    },
+    {
+      "file": "reload-recovered-largest-dark.png",
+      "sourceAttachment": "59A4F7F5-2799-427A-BF6D-F4C43544C9D4.png",
+      "runtime": "iOS 27",
+      "appearance": "dark",
+      "textSize": "accessibility XXXL",
+      "reviewed": true
+    }
+  ],
+  "archive": {
+    "archive": "/tmp/shield-call-directory-oct17.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "bdfdcb0b09f1b586736a58fe1187c30fe7fed7f11ce21a853deab3fd6c1623b9"
+  },
+  "toolingNotes": [
+    "Initial Swift compile was blocked from the compiler cache by the sandbox; permitted runs passed.",
+    "An initial four-test iOS 27 run passed but exposed a mutable-capture warning in the test fixture; an isolated reloader removed it. Final seven-test runs have no Swift compile warnings or recorded runtime warnings.",
+    "The Release archive has one AppIntents metadata-extraction warning for a target without that framework dependency; the build and packaging checks passed.",
+    "An initial result-reader cache access was blocked; the permitted result summary and export succeeded."
+  ],
+  "privateLogs": [
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/npm-check.log",
+      "sha256": "400481c3d2da1c7a766aa6419702fdc8c6cf9cc5e70b64b652ac34f9149960b2"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/firestore-tests.log",
+      "sha256": "8721b74eac69f50a3bd1ab4b73fc639e7b324e48e4bfc83cc187161e916dd9c4"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/foundation-sandbox.log",
+      "sha256": "939d17d093ba3966f26a2838c854dd065fcff5d2d09702a87d62bea09b1beba4"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/foundation-tests.log",
+      "sha256": "e63bd27ca057386d245ba91153ecafa16394adfbfbdb0f5cfad488d1660f4749"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/foundation-eleven-checks.log",
+      "sha256": "bd062e77c714c638785d15f23b3af824a94e665c261201cd4d0e723bf77ddcc1"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/foundation-final.log",
+      "sha256": "7dac418bd4512372e06ba664ea7f77b19ec00035ebfd4d2ad1e67be4ddce80ec"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/ios-tests.log",
+      "sha256": "eac4cf190c7faccc476dcbd26d3a737e539f9ce68fb4c6465061f68226662b8e"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/ios-final-tests.log",
+      "sha256": "b543725d950361ad289486ca69cbc95e72426aacfbba92842fb7c03500f57bba"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/ios-265-tests.log",
+      "sha256": "c4e963b2ed5d437ec576b4fca23ddeae4d1a72e0fab29ea7caef37f3bb204068"
+    },
+    {
+      "path": "artifacts/private/call-directory-retention-oct17/archive-build.log",
+      "sha256": "2601ed079358bd3338559441bb9df49f9f2e0788f47c4afecd6d579dad1e4577"
+    }
+  ],
+  "externalActions": {
+    "deployed": false,
+    "physicalPhoneInstalled": false,
+    "realCallsOrMessagesSent": false,
+    "phoneSettingsChanged": false,
+    "providerConfigurationChanged": false,
+    "appleSetupChanged": false
+  },
+  "remainingGates": [
+    "Real-device CallKit and signed App Group provisioning",
+    "Expiry/installed list while app suspended and OS-managed copies",
+    "Existing backups, other-device and reinstall behavior",
+    "Server blocked-number endpoint still limited to 200 rows without pagination",
+    "Wider release accessibility, Apple, legal and carrier gates"
+  ],
+  "releaseApproved": false
+}

@@ -7,6 +7,7 @@ import UserNotifications
 @Observable
 final class AppState {
     let api: APIClient
+    let callDirectory: CallDirectoryCoordinator
     let subscription = SubscriptionModel(client: RevenueCatClient())
     let historyStore = OfflineHistoryStore()
     var offlineHistories: [OfflineHistory] = []
@@ -64,11 +65,12 @@ final class AppState {
     var isOwner: Bool { person?.isOwner ?? false }
     var isTrial: Bool { service?.mode == "trial" && !isDemo }
 
-    init(configuration: BackendConfiguration = .bundled) {
+    init(configuration: BackendConfiguration = .bundled, callDirectory: CallDirectoryCoordinator? = nil) {
         #if DEBUG && targetEnvironment(simulator)
         let configuration = ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") ? BackendConfiguration(baseURL: nil) : configuration
         #endif
         self.configuration = configuration
+        self.callDirectory = callDirectory ?? CallDirectorySync.coordinator
         self.api = APIClient(configuration: configuration)
         self.messageAudio = MessageAudioDelivery(api: self.api)
         self.deletionReceipt = UserDefaults.standard.string(forKey: "shield-account-deletion-" + (configuration.baseURL?.absoluteString ?? "unconfigured"))
@@ -93,6 +95,11 @@ final class AppState {
             people = people.filter { $0.id == selectedPersonID }
         }
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("--uitesting-call-directory") {
+            isRestoringSession = false
+            isPreview = true
+            signedIn = true
+        }
         if let index = arguments.firstIndex(of: "--uitesting-subscription"), arguments.indices.contains(index + 1) {
             if !isPreview { exploreDemo() }
             subscription.preview(arguments[index + 1])
@@ -110,7 +117,12 @@ final class AppState {
     }
 
     func restoreSession() async {
-        guard !signedIn, deletionReceipt == nil else { isRestoringSession = false; return }
+        guard !signedIn else { isRestoringSession = false; return }
+        guard deletionReceipt == nil else {
+            await callDirectory.activate(nil, waitForReload: false)
+            isRestoringSession = false
+            return
+        }
         let generation = sessionGeneration
         defer { if generation == sessionGeneration { isRestoringSession = false } }
         #if DEBUG && targetEnvironment(simulator)
@@ -122,6 +134,8 @@ final class AppState {
         if await api.hasSession {
             guard generation == sessionGeneration, !signedIn else { return }
             signedIn = true
+            await activateCallDirectory(generation: generation)
+            guard generation == sessionGeneration, signedIn else { return }
             #if DEBUG && targetEnvironment(simulator)
             if ProcessInfo.processInfo.arguments.contains("--uitesting-slow-session-restore") {
                 do { try await Task.sleep(for: .seconds(4)) } catch { return }
@@ -134,6 +148,8 @@ final class AppState {
             // A returning owner can use the complete local Home immediately, before networking.
             if overview != nil { isRestoringSession = false }
             await refresh(force: false)
+        } else if generation == sessionGeneration, !signedIn {
+            await callDirectory.activate(nil, waitForReload: false)
         }
     }
 
@@ -172,6 +188,8 @@ final class AppState {
         defer { if generation == sessionGeneration { isRestoringSession = false } }
         isPreview = false
         signedIn = true
+        await activateCallDirectory(generation: generation)
+        guard generation == sessionGeneration, signedIn else { return }
         await loadOfflineHistory()
         await loadLocalMessages()
         await restoreHomeStatus()
@@ -217,6 +235,8 @@ final class AppState {
         let generation = sessionGeneration
         isLoading = true
         defer { isLoading = false }
+        await callDirectory.refresh(waitForReload: false)
+        guard generation == sessionGeneration, signedIn, !isPreview, !isDeletingAccount else { return }
         if force { await api.invalidateNavigationCache() }
         do {
             let response: APIResponses.People = try await api.send("/api/people")
@@ -257,10 +277,11 @@ final class AppState {
 
     /// Only the protected person's own phone blocks their scammers; a helper's phone never does.
     private func syncCallDirectory(generation: Int) async {
+        let directoryGeneration = callDirectory.requestGeneration
         guard isOwner, !isDemo, let id = selectedPersonID,
               let response: APIResponses.BlockedNumbers = try? await api.send("/api/blocked-numbers", participantID: id),
               generation == sessionGeneration, selectedPersonID == id else { return }
-        await CallDirectorySync.update(phones: response.items.map(\.phone))
+        await updateCallDirectory(response.items, personID: id, generation: generation, directoryGeneration: directoryGeneration)
     }
 
     private func loadProtectionOnboarding(generation: Int) async {
@@ -406,11 +427,14 @@ final class AppState {
     #endif
 
     func signOut() async {
+        let wasPreview = isPreview
         isRestoringSession = false
         restoredPhoneSetup = nil
         subscription.reset()
         isTestAccount = false
         sessionGeneration += 1
+        let generation = sessionGeneration
+        if !wasPreview { callDirectory.reset() }
         demoKeptMessages = []
         signedIn = false
         audioSyncTask?.cancel()
@@ -439,6 +463,15 @@ final class AppState {
         errorMessage = nil
         showingError = false
         await api.signOut()
+        if !wasPreview {
+            let directory = callDirectory
+            Task { [weak self] in
+                await directory.refresh()
+                guard let self, generation == sessionGeneration, !signedIn, let issue = directory.error else { return }
+                errorMessage = issue
+                showingError = true
+            }
+        }
     }
 
     func invalidateAccountLoads() {
@@ -460,12 +493,14 @@ final class AppState {
         if case let APIError.service(code, status) = error {
             if status == 401 {
                 invalidateAccountLoads()
+                callDirectory.reset()
                 signedIn = false; people = []; selectedPersonID = nil; overview = nil; calls = []
                 service = nil; protectionOnboarding = nil; trustedContactsOnboarding = false
             }
             if status == 403 && code == "access_denied" {
                 offlineHistories.removeAll { $0.person.id == selectedPersonID }
                 people.removeAll { $0.id == selectedPersonID }
+                callDirectory.retainOwners(Set(people.filter(\.isOwner).map(\.id)))
                 Task { await reconcileOfflineOwners() }
                 selectedPersonID = people.first?.id
                 loadedCallFilters.removeAll()

@@ -10,6 +10,7 @@ struct BlockedNumbersView: View {
     @State private var phoneBlocking: Bool?
     @State private var loadError: String?
     @State private var loadAttempts = 0
+    @State private var loadRevision = 0
     @State private var working = false
 
     var body: some View {
@@ -24,17 +25,8 @@ struct BlockedNumbersView: View {
                         description: Text("Numbers blocked by Shield will appear here."))
                 }
             }
-            if model.isOwner, !model.isPreview, phoneBlocking != nil {
-                ShieldGroup {
-                    LabeledContent("Block on this iPhone", value: phoneBlocking == true ? "On" : "Off")
-                    if phoneBlocking == false {
-                        Button("Turn on in Settings", systemImage: "gearshape") { Task { await CallDirectorySync.openSettings() } }
-                    }
-                } footer: {
-                    Text(phoneBlocking == true
-                         ? "Your iPhone blocks these numbers too."
-                         : "In Phone settings, open Call Blocking & Identification and turn on Shield.").foregroundStyle(ShieldTheme.secondaryText)
-                }
+            if model.isOwner, !model.isPreview {
+                CallDirectoryStatusView(directory: model.callDirectory, phoneBlocking: phoneBlocking)
             }
             ShieldGroup {
                 ForEach(items) { item in
@@ -70,7 +62,7 @@ struct BlockedNumbersView: View {
             }
             ShieldGroup {
                 ShieldDisclosure("About blocked numbers") {
-                    Text("Shield stops calls from these numbers. Blocks end after 180 days.")
+                    Text("Shield stops calls from these numbers for 180 days. Open Shield to keep this iPhone’s blocking list up to date. Changes on this iPhone take effect after its list refreshes successfully.")
                     Text(model.isOwner ? "Scammers can use someone else’s number. Allow calls again only if you know who it belongs to." : "Only the person using Shield can allow calls again.")
                 }
             }
@@ -100,6 +92,8 @@ struct BlockedNumbersView: View {
     }
 
     private func load() async {
+        loadRevision += 1
+        let revision = loadRevision
         loadError = nil
         if let failure = PreviewScenario.loadFailure("blocked", attempt: loadAttempts, preview: model.isPreview) {
             loadAttempts += 1
@@ -113,29 +107,44 @@ struct BlockedNumbersView: View {
             return
         }
         guard let personID = model.selectedPersonID else { return }
+        let generation = model.sessionGeneration
+        let directoryGeneration = model.callDirectory.requestGeneration
         do {
             let response: APIResponses.BlockedNumbers = try await model.api.send("/api/blocked-numbers", participantID: personID)
-            guard model.selectedPersonID == personID else { return }
+            guard model.selectedPersonID == personID, model.sessionGeneration == generation, model.signedIn,
+                  loadRevision == revision else { return }
             items = response.items
             loaded = true
             if model.isOwner {
-                await CallDirectorySync.update(phones: response.items.map(\.phone))
+                await model.updateCallDirectory(response.items, personID: personID, generation: generation, directoryGeneration: directoryGeneration)
                 phoneBlocking = await CallDirectorySync.isEnabled()
             }
         } catch is CancellationError { return }
-        catch { loadError = error.localizedDescription; model.handleSessionFailure(error) }
+        catch {
+            guard model.selectedPersonID == personID, model.sessionGeneration == generation, loadRevision == revision else { return }
+            loadError = error.localizedDescription
+            model.handleSessionFailure(error)
+        }
     }
 
     private func unblock(_ item: BlockedNumber) async {
         pendingUnblock = nil
-        guard model.isOwner, !working else { return }
+        guard model.isOwner, !working, let personID = model.selectedPersonID else { return }
+        let generation = model.sessionGeneration
         working = true
         defer { working = false }
         if model.isPreview { items.removeAll { $0.id == item.id }; return }
+        loadRevision += 1
+        model.callDirectory.invalidateRequests()
         do {
-            let _: APIResponses.Empty = try await model.api.send("/api/blocked-numbers/\(item.id)", method: "DELETE", participantID: model.selectedPersonID)
+            let _: APIResponses.Empty = try await model.api.send("/api/blocked-numbers/\(item.id)", method: "DELETE", participantID: personID)
+            guard model.selectedPersonID == personID, model.sessionGeneration == generation, model.signedIn else { return }
+            loadRevision += 1
             items.removeAll { $0.id == item.id }
-            await CallDirectorySync.update(phones: items.map(\.phone))
-        } catch { model.handle(error) }
+            await model.removeFromCallDirectory(item, personID: personID, generation: generation)
+        } catch {
+            guard model.selectedPersonID == personID, model.sessionGeneration == generation else { return }
+            model.handle(error)
+        }
     }
 }

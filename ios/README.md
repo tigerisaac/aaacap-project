@@ -90,9 +90,11 @@ The Messages tab combines voicemail and saved notices. Authorized users see a sh
 
 ## Call Directory extension
 
-`CallDirectory/` blocks every number on the person's Shield blocklist at the phone level. That includes numbers she has since saved or called back, which would otherwise ring her directly and never reach Shield.
-- **How it works:** the app writes the list (`Shared/CallDirectoryList.swift`) to the App Group container `group.$(SHIELD_APP_BUNDLE_ID)` and asks iOS to reload the extension. It does this on refresh, and when Blocked numbers opens or a number is unblocked. Only the protected person's own phone does this, never a helper's.
+`CallDirectory/` supplies the protected person's downloaded blocklist to iOS, including saved or recently dialed numbers that could otherwise ring directly. Real-device behavior still requires acceptance; the server list's current 200-row limit also prevents claiming complete synchronization for larger lists.
+
+- **How it works:** the app writes the account-scoped, expiring list (`Shared/CallDirectoryList.swift`) to `group.$(SHIELD_APP_BUNDLE_ID)`, with file protection and backup exclusion. A serialized coordinator persists pending reloads, retries failures and fences stale requests. Refresh filters expiry before networking; sign-out/account change/confirmed ownership loss clear the handoff. Only an owner's list is published, never a helper's. A successful file write alone does not establish iOS's installed state.
 - **Turning it on:** the person enables Shield under Settings → Apps → Phone → Call Blocking & Identification. The Blocked numbers screen shows whether it's on and links there.
+- **Checks:** `npm run test:call-directory` runs 12 Swift storage/concurrency checks on macOS. `CallDirectoryStorageUITests` covers actual AppState sign-out with an injected reloader, visible failure, retry and relaunch. Both are synthetic and perform no phone operation. [Exact evidence and operating-system limits](../docs/IOS-CALL-DIRECTORY.md).
 
 **Signing (added October 11, not yet installed on the phone):**
 - **App ID:** the extension needs `org.isaaczhang.Shield.CallDirectory`.

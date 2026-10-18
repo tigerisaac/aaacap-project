@@ -36,7 +36,7 @@ Before the last confirmation, the backend rejects active calls and any forwarded
 
 ## Durable account deletion
 
-The client rechecks all owned phones, cancels stale account loads, erases this iPhone's audio/history and clears its Call Directory list. A status-only receipt and initiating account namespace are saved before submitting the final request, allowing a dropped response to be recovered. The UI distinguishes an unconfirmed request from one accepted by the server; retry cannot submit against a different signed-in account.
+The client rechecks all owned phones, cancels stale account loads, erases this iPhone's audio/history and stages an empty Call Directory handoff. The local blocking-list correction retains a pending reload and reports failures rather than treating a file write as proof that iOS cleared its list. Server deletion does not wait indefinitely for CallKit; physical clearing and other-device behavior remain acceptance gates. [Blocking lifecycle and evidence](IOS-CALL-DIRECTORY.md). A status-only receipt and initiating account namespace are saved before submitting the final request, allowing a dropped response to be recovered. The UI distinguishes an unconfirmed request from one accepted by the server; retry cannot submit against a different signed-in account.
 
 The server atomically fences owned participants and saves an encrypted account-deletion job. Other authenticated API operations are rejected for a deleting account. A two-minute settling period lets bounded in-flight requests drain. `finishAccountDeletions` runs every minute, claims due jobs with a lease and retries failures. The matching API/worker/index rollout is deployed; observed scheduled HTTP success is not evidence that a real account completed erasure.
 

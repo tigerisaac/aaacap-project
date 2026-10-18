@@ -24,8 +24,11 @@ struct ShieldApp: App {
                     await model.restoreSession()
                 }
                 .onChange(of: scenePhase) { _, phase in
-                    if phase == .active, model.signedIn, !model.isRestoringSession {
-                        Task { await model.refresh(force: false) }
+                    if phase == .active, !model.isRestoringSession, !model.isPreview {
+                        Task {
+                            if model.signedIn { await model.refresh(force: false) }
+                            else { await model.callDirectory.activate(nil, waitForReload: false) }
+                        }
                     }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .shieldPushToken)) { notification in

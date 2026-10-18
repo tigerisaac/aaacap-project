@@ -1,5 +1,13 @@
 # Status
 
+## October 17 — iPhone blocking-list lifecycle corrected (local)
+
+The Call Directory handoff now carries account/participant scope and per-number expiry, applies backup exclusion, and clears on sign-out/account change/confirmed ownership loss. Failed reloads remain pending across relaunch, expose a retry action, and cannot be acknowledged by an older completion. Stale list requests cannot undo an unblock, and authentication/server deletion do not stall on the optional iOS reload.
+
+The actual Swift storage/coordinator harness passed **12 checks**; focused sign-out/retry/history/role journeys passed **7/7 on iOS 27 and 7/7 on iOS 26.5**, with zero runtime warnings. Largest-text failure/recovery captures were inspected. Required typecheck/build and **344 unit + 257 Firestore tests** passed. The final 26.5 run includes the last screen-load race guard. [Implementation, exact archive/test evidence and limits](IOS-CALL-DIRECTORY.md).
+
+Physical CallKit behavior, expiry while suspended, existing backups and other devices remain unverified. A separate server **200-row list cap** was found and remains an open completeness defect. No deployment, physical installation, phone operation or Apple configuration changed. The existing retention deployment approval request remains pending; its frozen package is unchanged.
+
 ## October 17 — retention rollout prepared and production configuration inventoried (not deployed)
 
 The two-function [retention/configuration rollout](RETENTION-ROLLOUT.md) is ready for owner review. It changes four files in the verified live source package: completed sign-in challenge scrubbing, completed recording-job expiry, three privacy sentences and intended-price metadata. The latter still held the superseded $15/$120 values; version `2026-10-17-v2` now records the approved **$9.99/month and $99.99/year**. Actual purchase screens continue using store prices. Screening, monitoring, call-control, consent versions and optional-feature availability remain outside this scope.

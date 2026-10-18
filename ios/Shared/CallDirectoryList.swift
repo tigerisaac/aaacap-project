@@ -1,9 +1,18 @@
 import Foundation
 
-/// The numbers Shield blocks, handed from the app to the Call Directory extension through the shared App Group
-/// container. The extension needs them as E.164 digits without "+", ascending and unique.
+/// A versioned, expiring handoff to CallKit. Legacy number-only files cannot establish ownership or expiry.
 struct CallDirectoryList: Codable, Equatable, Sendable {
-    var blocked: [Int64]
+    struct Entry: Codable, Equatable, Sendable {
+        let number: Int64
+        let expiresAt: Date
+    }
+
+    let version: Int
+    let accountKey: String?
+    let participantID: UUID?
+    let entries: [Entry]
+    let revision: UUID
+    var needsReload: Bool
 
     static let fileName = "call-directory.json"
     static var fileURL: URL? {
@@ -11,10 +20,29 @@ struct CallDirectoryList: Codable, Equatable, Sendable {
         return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group)?.appending(path: fileName)
     }
 
-    init(blocked: [Int64]) { self.blocked = Array(Set(blocked)).sorted() }
-    init(phones: [String]) { self.init(blocked: phones.compactMap(Self.digits)) }
+    init(accountKey: String?, participantID: UUID?, entries: [Entry], revision: UUID = UUID(), needsReload: Bool = true) {
+        version = 2
+        self.accountKey = accountKey
+        self.participantID = participantID
+        self.entries = accountKey != nil && participantID != nil ? Self.normalized(entries) : []
+        self.revision = revision
+        self.needsReload = needsReload
+    }
 
-    /// "+15125550100" → 15125550100. Anything that isn't a plain E.164 number is skipped.
+    private enum CodingKeys: String, CodingKey { case version, accountKey, participantID, entries, revision, needsReload }
+
+    init(from decoder: any Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        guard try values.decode(Int.self, forKey: .version) == 2 else {
+            throw DecodingError.dataCorruptedError(forKey: .version, in: values, debugDescription: "Unsupported blocking-list version")
+        }
+        self.init(accountKey: try values.decodeIfPresent(String.self, forKey: .accountKey),
+                  participantID: try values.decodeIfPresent(UUID.self, forKey: .participantID),
+                  entries: try values.decode([Entry].self, forKey: .entries),
+                  revision: try values.decode(UUID.self, forKey: .revision),
+                  needsReload: try values.decode(Bool.self, forKey: .needsReload))
+    }
+
     static func digits(_ phone: String) -> Int64? {
         guard phone.hasPrefix("+"), (9...16).contains(phone.count) else { return nil }
         let digits = phone.dropFirst()
@@ -22,16 +50,40 @@ struct CallDirectoryList: Codable, Equatable, Sendable {
         return Int64(digits)
     }
 
-    static func load() -> CallDirectoryList? {
-        guard let url = fileURL, let data = try? Data(contentsOf: url) else { return nil }
+    private static func normalized(_ entries: [Entry]) -> [Entry] {
+        var expiryByNumber: [Int64: Date] = [:]
+        for entry in entries where (10_000_000...999_999_999_999_999).contains(entry.number)
+            && entry.expiresAt.timeIntervalSinceReferenceDate.isFinite {
+            expiryByNumber[entry.number] = max(expiryByNumber[entry.number] ?? entry.expiresAt, entry.expiresAt)
+        }
+        return expiryByNumber.map { Entry(number: $0.key, expiresAt: $0.value) }.sorted { $0.number < $1.number }
+    }
+
+    func activeEntries(at date: Date) -> [Entry] { entries.filter { $0.expiresAt > date } }
+    func activeNumbers(at date: Date) -> [Int64] { activeEntries(at: date).map(\.number) }
+
+    func hasSameContents(as other: Self) -> Bool {
+        accountKey == other.accountKey && participantID == other.participantID && entries == other.entries
+    }
+
+    static func load(from url: URL? = fileURL) -> CallDirectoryList? {
+        guard let url, let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(CallDirectoryList.self, from: data)
     }
 
-    /// Writes the list if it changed. Returns whether the extension needs reloading.
-    func save() throws -> Bool {
-        guard let url = Self.fileURL else { return false }
-        if Self.load() == self { return false }
+    func save(to url: URL) throws {
         try JSONEncoder().encode(self).write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
-        return true
+        try Self.protect(url)
+    }
+
+    /// Repair metadata even when an unchanged file was written by an earlier app version.
+    static func protect(_ url: URL) throws {
+        var url = url
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try url.setResourceValues(values)
+        #if os(iOS)
+        try FileManager.default.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: url.path)
+        #endif
     }
 }

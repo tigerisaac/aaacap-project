@@ -67,6 +67,7 @@ extension AppState {
         let generation = sessionGeneration
         guard let account = await api.localAccountID, generation == sessionGeneration, signedIn else { return }
         let owners = Set(people.filter(\.isOwner).map(\.id))
+        callDirectory.retainOwners(owners)
         offlineHistories.removeAll { !owners.contains($0.person.id) }
         try? await historyStore.save(offlineHistories, account: account)
     }
