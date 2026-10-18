@@ -1,0 +1,29 @@
+{
+  "archive": "/tmp/shield-onboarding-recovery-final-oct18.xcarchive",
+  "verified": true,
+  "distributionSigningVerified": false,
+  "version": "0.1.0",
+  "build": "1",
+  "minimumOS": "26.0",
+  "apiHost": "shield-calls-isaac.web.app",
+  "developmentNetworkingException": false,
+  "messageFilterEmbedded": false,
+  "bundles": [
+    {
+      "path": ".",
+      "identifier": "org.isaaczhang.Shield",
+      "architecture": "arm64"
+    },
+    {
+      "path": "PlugIns/ShieldCallDirectory.appex",
+      "identifier": "org.isaaczhang.Shield.CallDirectory",
+      "architecture": "arm64"
+    }
+  ],
+  "privacyManifests": [
+    "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+    "PrivacyInfo.xcprivacy",
+    "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+  ],
+  "appBinarySha256": "0b666e5a1a5b6b2d7b970ab6b18d4ee355a0c0409ad3458f432e9be1b44b1eaa"
+}

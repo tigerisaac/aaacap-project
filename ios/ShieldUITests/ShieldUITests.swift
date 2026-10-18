@@ -158,9 +158,12 @@ final class ShieldUITests: XCTestCase {
         XCTAssertTrue(app.switches["onboarding-protection-toggle"].appears(timeout: 5))
         app.switches["onboarding-protection-toggle"].tap()
         app.buttons["onboarding-protection-continue"].tap()
-        XCTAssertTrue(app.staticTexts["Couldn’t save your choice"].appears(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["onboarding-choice-error"].appears(timeout: 5))
         XCTAssertEqual(app.switches["onboarding-protection-toggle"].value as? String, "1")
         XCTAssertFalse(app.staticTexts["demoBanner"].exists)
+        XCTAssertFalse(app.buttons["onboarding-protection-continue"].isEnabled)
+        XCTAssertFalse(app.switches["onboarding-protection-toggle"].isEnabled)
+        app.buttons["Check current status"].tap()
         XCTAssertTrue(app.buttons["onboarding-protection-continue"].isEnabled)
     }
 

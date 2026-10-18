@@ -1,0 +1,52 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+        "deviceName" : "iPhone 17e",
+        "modelName" : "iPhone 17e",
+        "osBuildNumber" : "24A434",
+        "osVersion" : "27.0",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 1,
+      "passedTests" : 0,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "Shield · Built with macOS 27.0",
+  "expectedFailures" : 0,
+  "failedTests" : 1,
+  "finishTime" : 1792342317.77,
+  "passedTests" : 0,
+  "result" : "Failed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1792342254.437,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+    {
+      "failureText" : "XCTAssertTrue failed - Finishing an old-session save must not invalidate the new session's fresh status read.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 1,
+      "testIdentifierString" : "OnboardingRecoveryUITests/testEarlierSessionSaveCannotCancelTheNewSessionRefresh()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/OnboardingRecoveryUITests/testEarlierSessionSaveCannotCancelTheNewSessionRefresh",
+      "testName" : "testEarlierSessionSaveCannotCancelTheNewSessionRefresh()"
+    }
+  ],
+  "title" : "Test - Shield",
+  "topInsights" : [
+
+  ],
+  "totalTestCount" : 1
+}

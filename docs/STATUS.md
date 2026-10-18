@@ -1,5 +1,11 @@
 # Status
 
+## October 18 — onboarding choices recover after a lost response
+
+Three controlled cases reproduced false failure wording after the server saved a protection/caretaker setup choice; maximum-text caretaker feedback also fell below the viewport. The correction reveals **Choice not confirmed**, checks current settings without another save and preserves the submitted choice until a deliberate retry is safe. The initial iOS 27 run passed **16/16**, including two Simulator VoiceOver walkthroughs. A later controlled session race exposed an old-operation cleanup defect in that first correction; its failed baseline is retained beside the final guard and passing regression.
+
+The final focused iOS 27 run passed **3/3**, and final-source compatibility passed **22/22 on iOS 26.5**, all with zero runtime warnings. The final unsigned archive passes with all 282 input hashes matching; 23 before/after captures were inspected. Earlier runs retain their separate source boundaries. No physical installation, backend deployment, real setting change or Apple operation occurred. Full accessibility, physical delivery and release acceptance remain open. [Exact results, original failures and limitations](IOS-CARETAKER-RECOVERY.md#onboarding-choice-response-follow-up--october-18).
+
 ## October 18 — lost caretaker-creation replies can be reconciled without another invitation
 
 Standard and largest-text baselines reproduced a false **Couldn’t add this contact** message after the server saved a caretaker. The correction preserves the submitted details and request ID, shows **Request not confirmed** and offers a read-only status check. A missing request permits an explicit same-ID retry; known rejections leave the form editable. The three saved-but-lost cases each confirm exactly one creation attempt and one saved contact.

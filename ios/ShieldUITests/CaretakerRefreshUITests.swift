@@ -88,6 +88,8 @@ final class CaretakerRefreshUITests: XCTestCase {
         revealForm(check, app); check.tap()
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "We couldn’t find this request yet")).firstMatch.appears(timeout: 5))
         inspect(app, containing: "changes:0", "creationAttempts:1", "creationIdentities:1")
+        revealForm(check, app); XCTAssertTrue(check.isEnabled)
+        capture(app, "Caretaker missing request status action remains available")
         let retry = app.buttons["Try sending again"]
         revealForm(retry, app); XCTAssertTrue(retry.isEnabled)
         capture(app, "Caretaker creation not found permits deliberate retry")

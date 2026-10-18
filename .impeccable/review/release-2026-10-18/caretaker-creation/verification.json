@@ -460,5 +460,20 @@
     "The earlier ten-observation restored-theme accessibility audit remains open; this focused follow-up does not claim a complete accessibility pass.",
     "No physical installation, live deployment, Apple upload or distribution-signing acceptance occurred.",
     "Protection/caretaker onboarding save-response wording remains a separate source-review lead awaiting controlled reproduction."
-  ]
+  ],
+  "committedCheckpoint": {
+    "commit": "e0aa3d3ff4007c2e7b7c7d8eb77bd3823b85714f",
+    "runId": 39145668434,
+    "attempt": 1,
+    "conclusion": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39145668434",
+    "logSha256": "749d950f37c59035cf6ff92ff41ffb2a9e35b280ab760dcbacbd815b9cb96975",
+    "committedIOSInputsMatch": 279,
+    "archiveSource": "post-contrast-source.json",
+    "passedTests": {
+      "unit": 382,
+      "firestore": 284,
+      "accounts": 8
+    }
+  }
 }

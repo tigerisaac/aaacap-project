@@ -1,0 +1,358 @@
+{
+  "recordedAt": "2026-10-18T17:02:11.071034+00:00",
+  "status": "Scoped source/simulator verification; public release acceptance remains open.",
+  "baseCommit": "e0aa3d3ff4007c2e7b7c7d8eb77bd3823b85714f",
+  "iosInputCount": 282,
+  "sourceInventories": {
+    "baseline-source.json": {
+      "path": "baseline-source.json",
+      "sha256": "48ccd0b3e1348fe5af9a2596d6e879aabbb8037e10584a2982d1b62e483dd1a8"
+    },
+    "corrected-source.json": {
+      "path": "corrected-source.json",
+      "sha256": "70d87fef3fb3012412f201be787adb8d1480f9869668637e7cef6a99d0958e61"
+    },
+    "session-baseline-source.json": {
+      "path": "session-baseline-source.json",
+      "sha256": "65f35fb8e4141291ea52aac7b9abf98823e75a2ad65b51f406113be9ab8f72a9"
+    },
+    "final-source.json": {
+      "path": "final-source.json",
+      "sha256": "a4fda2f209b968c24d2825bd0029d79cbe5cd085709b1b5e6258e3fe4d9aad44"
+    }
+  },
+  "sourceChangesBetweenRuns": [
+    {
+      "before": "baseline-source.json",
+      "after": "corrected-source.json",
+      "changedFiles": [
+        "ios/Shield/App/AppState.swift",
+        "ios/Shield/Features/Auth/ProtectionOnboardingView.swift",
+        "ios/Shield/Features/TrustedContacts/TrustedContactOnboardingView.swift",
+        "ios/Shield/Preview/OnboardingRecoveryFixture.swift",
+        "ios/ShieldUITests/OnboardingRecoveryUITests.swift",
+        "ios/ShieldUITests/SeniorPolishUITests.swift",
+        "ios/ShieldUITests/ShieldUITests.swift",
+        "ios/ShieldUITests/VoiceOverUITests.swift"
+      ]
+    },
+    {
+      "before": "corrected-source.json",
+      "after": "session-baseline-source.json",
+      "changedFiles": [
+        "ios/Shield/App/AppState.swift",
+        "ios/Shield/Networking/APIClient.swift",
+        "ios/Shield/Preview/OnboardingRecoveryCheckView.swift",
+        "ios/Shield/Preview/OnboardingRecoveryFixture.swift",
+        "ios/ShieldUITests/OnboardingRecoveryUITests.swift"
+      ]
+    },
+    {
+      "before": "session-baseline-source.json",
+      "after": "final-source.json",
+      "changedFiles": [
+        "ios/Shield/App/AppState.swift",
+        "ios/ShieldUITests/CaretakerRefreshUITests.swift",
+        "ios/ShieldUITests/OnboardingRecoveryUITests.swift"
+      ]
+    }
+  ],
+  "allFinalInputHashesMatchAtSignoff": true,
+  "archiveCheckerSha256": "dce2f1fe70937c5920ae56224659a433d6a9b7d1eaa1e726869a71c3835fa271",
+  "defects": [
+    "The server could save an onboarding choice and lose its response, while the app incorrectly said the choice could not be saved.",
+    "Maximum-text caretaker feedback could fall below the viewport.",
+    "The first correction let cleanup of an old-session save invalidate a new-session status read; the controlled race failed before the cleanup guard was corrected."
+  ],
+  "correction": [
+    "Readable Choice not confirmed feedback, repeated-error scrolling and accessibility focus.",
+    "Fresh status GETs verify choiceRecorded and the submitted enabled value without another write.",
+    "Uncertain choices stay stable; a missing/mismatched result enables a deliberate same-choice retry. An initial known rejection remains editable.",
+    "Owner/session/participant operation guards prevent old operations from publishing into or invalidating a newer session."
+  ],
+  "runs": [
+    {
+      "name": "baseline",
+      "sourceInventory": "baseline-source.json",
+      "boundary": "Original production views/save methods; three lost-response failures, six assertions.",
+      "passed": 0,
+      "failed": 3,
+      "skipped": 0,
+      "runtimeWarnings": 0,
+      "summary": {
+        "path": "baseline-summary.json",
+        "sha256": "1755979363e098d90d56c92db7eb8a17efb5efbdaa8f6526ff5cc2f15796beed"
+      },
+      "logSha256": "fbfb2ed446183d1515bc3dd0dfadfdefa2fac2bd9f6f671cefe2964095a00ad8",
+      "privateResultBundle": "artifacts/private/onboarding-recovery-oct18/baseline.xcresult"
+    },
+    {
+      "name": "corrected-ios27",
+      "sourceInventory": "corrected-source.json",
+      "boundary": "Initial correction: eight recovery methods, five existing setup methods, one largest-text method and two VoiceOver walkthroughs.",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": 0,
+      "summary": {
+        "path": "corrected-ios27-summary.json",
+        "sha256": "cd2ba8d0b545fd7c740c89306226710a053126158054fc87fcf9d1adcb79d817"
+      },
+      "logSha256": "6329e8a402bf551867e149268fc7dd3d586a0a27f7b06ce3ab99bef260e630c4",
+      "privateResultBundle": "artifacts/private/onboarding-recovery-oct18/corrected-ios27.xcresult"
+    },
+    {
+      "name": "session-baseline",
+      "sourceInventory": "session-baseline-source.json",
+      "boundary": "First correction plus a controlled session race: old-operation cleanup invalidated the new session refresh; one method and two assertions failed.",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "runtimeWarnings": 0,
+      "summary": {
+        "path": "session-baseline-summary.json",
+        "sha256": "d7870b4de93c359707f3a7e18246a5865153c5ee7c1caaa26e042fdd35f2152a"
+      },
+      "logSha256": "f6ce25d3426e3a1c901d9be44a4a4dfb354796bbc307088504921013ca50a4c8",
+      "privateResultBundle": "artifacts/private/onboarding-recovery-oct18/session-baseline.xcresult"
+    },
+    {
+      "name": "final-focused-ios27",
+      "sourceInventory": "final-source.json",
+      "boundary": "Guarded session cleanup plus explicit enabled/visible status-action checks after missing onboarding and caretaker-creation results.",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": 0,
+      "summary": {
+        "path": "final-focused-ios27-summary.json",
+        "sha256": "26dba93a7b50ad93d1a443d26ddaa1c5693120c56a4403adae9372b029a2a5c5"
+      },
+      "logSha256": "e4dc1418e3e7eeb51a5a8e1726e2529df29b3254f1209c9b6e51815ee643b50c",
+      "privateResultBundle": "artifacts/private/onboarding-recovery-oct18/final-focused-ios27.xcresult"
+    },
+    {
+      "name": "final-ios26",
+      "sourceInventory": "final-source.json",
+      "boundary": "Final source: nine onboarding recovery, five existing setup, one largest-text and seven release-readiness methods.",
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "runtimeWarnings": 0,
+      "summary": {
+        "path": "final-ios26-summary.json",
+        "sha256": "a87605430e1d7b1c928a17a507960eb3a310a13ab76031b9414c91795a75f57c"
+      },
+      "logSha256": "ed666e88a52cb59f14d06ef326600fe371eb804be53f6723849c7e0813275a80",
+      "privateResultBundle": "artifacts/private/onboarding-recovery-oct18/final-ios26.xcresult"
+    }
+  ],
+  "captures": [
+    {
+      "path": "captures/baseline-caretaker-light.png",
+      "sha256": "479579acd2221bb64af76abfc10a480375e88ef5502655b7c8fb507afc12f29a",
+      "run": "baseline",
+      "inspected": true,
+      "originalExportName": "79B044D6-506A-4A8C-95A4-3CED7B35A94A.png"
+    },
+    {
+      "path": "captures/baseline-caretaker-largest.png",
+      "sha256": "5e1435f72efe4ca444cf469220f8ec1b0235c5f4a4367fdeeb919093fccf48bd",
+      "run": "baseline",
+      "inspected": true,
+      "originalExportName": "7AC83194-99BF-42CA-9090-C53570E26671.png"
+    },
+    {
+      "path": "captures/baseline-protection-light.png",
+      "sha256": "9a1635a724cbc0cb20fed16731132bb1262d4356386a56e1b69630fd5d958051",
+      "run": "baseline",
+      "inspected": true,
+      "originalExportName": "6C4C226D-91B1-4833-BC3F-DE62AD1B8663.png"
+    },
+    {
+      "path": "captures/protection-uncertain.png",
+      "sha256": "baf8e7648aad71c4ce4c77e85ba55a3f12fbcbbfc40148372810ae46f75afa90",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "97F6FFE5-3217-48AE-8DD0-E734137EFFED.png"
+    },
+    {
+      "path": "captures/caretaker-uncertain.png",
+      "sha256": "32a48417d6c6e8da4c17576d3c1339aead880535a5e27f9292e1c9a950c46c13",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "411E3187-D451-4316-AA23-724C01291383.png"
+    },
+    {
+      "path": "captures/caretaker-largest-notice.png",
+      "sha256": "829d08b7244e8ead0b9f6b8ee75cac2f93ab2802a0897c38dbad580f7f1df727",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "1202AA6F-B70F-4CA3-817B-E878772B38E5.png"
+    },
+    {
+      "path": "captures/caretaker-largest-status-action.png",
+      "sha256": "de8e5795868cbe88f50f272679a1b6363c646fd78580e80d6fb3f1b6e8e0edc2",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "118F6878-1409-4206-B1FB-E6BD8151F106.png"
+    },
+    {
+      "path": "captures/added-caretaker-uncertain.png",
+      "sha256": "af308cdd4076d74ab8d9ee77733fd967a4252ed1148d985238f78f8ef913bdd4",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "1CB4CFF9-0331-4C95-BAC8-1E19A07CF246.png"
+    },
+    {
+      "path": "captures/status-read-failed.png",
+      "sha256": "fdf1cb674a747a9cbdbbc0792d0f2f3e5219198a520bf9e9c1c8cac1d0b94002",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "5C05C4FB-B860-4313-A0A4-B1714C3E042C.png"
+    },
+    {
+      "path": "captures/initial-missing-choice-capture.png",
+      "sha256": "4c8cb4134aabada556b87bbc682062a53cf34848fb2020b82c778ceb6373f045",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "FD3C678B-5895-40D2-95F5-496175E223A6.png"
+    },
+    {
+      "path": "captures/rejected-choice-editable.png",
+      "sha256": "c23a72c27bd11a55a0bbf6c979bdc72d8b7a7b572ed18f214f4f2ba0c52972b4",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "F120FA60-2EC1-4149-8552-785E46CA85DC.png"
+    },
+    {
+      "path": "captures/voiceover-uncertain.png",
+      "sha256": "23e711862308ba273b6b97938812766ad121e8356f9e7b5bb99d7bb6c794c875",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "8F3954B1-1BF5-45E8-9CF9-515527C4C17D.png"
+    },
+    {
+      "path": "captures/voiceover-confirmed.png",
+      "sha256": "7234791174bcf7eda869d2f757e47e82f3d0015371311bec48a7e8995d6c67b4",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "C5FBFD92-A1E4-4371-A133-FCD5EE1E5BD0.png"
+    },
+    {
+      "path": "captures/voiceover-preview-retry.png",
+      "sha256": "84f01e64a78468747a33538bb3ddb742ca10bca80b7d8ea5fcf619b02d783ffc",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "8D02CA82-6BCF-40FA-8F3F-7197424CF021.png"
+    },
+    {
+      "path": "captures/protection-confirmed-one-write.png",
+      "sha256": "923b87ff4fd28c97709283b113f35d172576ff0743c10624674913d78fc8cca0",
+      "run": "corrected-ios27",
+      "inspected": true,
+      "originalExportName": "2DB9887C-1943-4628-B398-6522221D9593.png"
+    },
+    {
+      "path": "captures/session-race-before.png",
+      "sha256": "9335cfa257971bac6f0630386e72596716f1cc674220355bdf7e7ad418eb16a4",
+      "run": "session-baseline",
+      "inspected": true,
+      "originalExportName": "0AC0FD01-3176-4FC9-B026-3EE43B98D5F7.png"
+    },
+    {
+      "path": "captures/session-race-after.png",
+      "sha256": "348ecb2cdb2dfebf77340886a070d6955e693786b8bde0303495943555ff3c5a",
+      "run": "final-focused-ios27",
+      "inspected": true,
+      "originalExportName": "EB5FDD16-680B-492A-AC76-F59A2654B15A.png"
+    },
+    {
+      "path": "captures/creation-status-action-after-missing-result.png",
+      "sha256": "bb4d9ea398480d68aa4822725096b47baa638a17c83504712aec62fce3123a36",
+      "run": "final-focused-ios27",
+      "inspected": true,
+      "originalExportName": "3A381458-04AD-48FF-87C9-62057331C31A.png"
+    },
+    {
+      "path": "captures/onboarding-status-action-after-missing-result.png",
+      "sha256": "555e6ce041177fe1f1473d4ebd10191e3e1d2028107972e803d975af5f5e0193",
+      "run": "final-focused-ios27",
+      "inspected": true,
+      "originalExportName": "C1DC50B8-258E-4C5E-A86C-0DE62C5E1A47.png"
+    },
+    {
+      "path": "captures/ios26-caretaker-largest-notice.png",
+      "sha256": "43c68b27596a1b88d19f027b6fdecd5496d7797d93496de57ee0f3df045ecbb9",
+      "run": "final-ios26",
+      "inspected": true,
+      "originalExportName": "0C2550B0-71FE-4A9B-B840-12A5BD2E3EA7.png"
+    },
+    {
+      "path": "captures/ios26-caretaker-largest-status-action.png",
+      "sha256": "b7e59299dc664c09e0348ab5865d9a2ccc1135fe600d434d5418a4d6786be8a3",
+      "run": "final-ios26",
+      "inspected": true,
+      "originalExportName": "A077C987-D6BD-42EB-8487-6C7821918A73.png"
+    },
+    {
+      "path": "captures/ios26-session-race-confirmed.png",
+      "sha256": "1994b64ba64ab246371f27cd6a61e8b415dab330a0dec99c7b6d7fb87b9ff8ba",
+      "run": "final-ios26",
+      "inspected": true,
+      "originalExportName": "267A45F7-EAC2-4EDB-B884-2DF7069823B7.png"
+    },
+    {
+      "path": "captures/ios26-missing-choice-status-action.png",
+      "sha256": "f0fc9f7b6da5d2cd079a936b59b2e0a935cfa904fca9ebdc8db54265420cafc8",
+      "run": "final-ios26",
+      "inspected": true,
+      "originalExportName": "6E035123-2C4C-480D-B59D-E545F94EFD35.png"
+    }
+  ],
+  "archive": {
+    "archive": "/tmp/shield-onboarding-recovery-final-oct18.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "0b666e5a1a5b6b2d7b970ab6b18d4ee355a0c0409ad3458f432e9be1b44b1eaa",
+    "receipt": {
+      "path": "final-release-archive-verification.json",
+      "sha256": "3e327a842ebb9f899d44ead5128fbef95c7761448e485fb756c99a55629c2382"
+    },
+    "sourceInventory": "final-source.json"
+  },
+  "visualFollowup": "An earlier capture did not show the secondary status action after a missing result. Explicit reveal/enabled assertions and inspected fresh captures confirm both onboarding and creation actions remain available; no additional production change was made for this observation. A transient-render cause is not established.",
+  "boundaries": [
+    "The initial 16-method iOS 27 run predates the final session-cleanup guard; exact inventories and the failing session baseline are retained separately.",
+    "The synthetic server, identifiers, phone numbers and controls compile only for Debug simulator builds. No account, provider, call or message is contacted.",
+    "Choice confirmed is a diagnostic completion marker after actual AppState onboarding flags clear; these fixture captures do not demonstrate the production Home destination.",
+    "VoiceOver checks actual Simulator speech/focus, with direct actions while speech is temporarily disabled. They do not establish physical gestures, immediate announcement timing or full accessibility acceptance.",
+    "Maximum text can require scrolling; a notice screenshot alone is not evidence of its entire message or every action being simultaneously visible.",
+    "The earlier unfiltered restored-theme accessibility observations remain open.",
+    "Backend source is unchanged. Independent backend CI for the previous e0aa3d3 checkpoint passed 382 unit, 284 Firestore and eight account checks; it does not compile Swift.",
+    "No physical installation, live deployment, Apple upload or distribution signing was performed. Purchases and caretaker delivery remain disabled."
+  ]
+}

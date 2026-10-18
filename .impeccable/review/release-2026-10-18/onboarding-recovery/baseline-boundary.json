@@ -1,0 +1,8 @@
+{
+  "baseCommit": "e0aa3d3ff4007c2e7b7c7d8eb77bd3823b85714f",
+  "onboardingViewsUnchangedAtBaseline": true,
+  "bothAppStateSaveMethodsUnchangedAtBaseline": true,
+  "failedMethods": 3,
+  "failureAssertions": 6,
+  "runtimeWarnings": 0
+}

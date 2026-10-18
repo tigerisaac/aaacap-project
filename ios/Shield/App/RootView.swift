@@ -85,6 +85,8 @@ struct RootView: View {
                 BlockedPaginationCheckView()
             } else if ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh") {
                 CaretakerRefreshCheckView()
+            } else if ProcessInfo.processInfo.arguments.contains("--uitesting-onboarding-recovery") {
+                OnboardingRecoveryCheckView()
             } else {
                 content
             }

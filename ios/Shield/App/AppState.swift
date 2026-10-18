@@ -55,6 +55,10 @@ final class AppState {
     var trustedContactsOnboarding = false
     var protectionParticipantID: UUID?
     private var protectionChoiceGeneration = 0
+    private var protectionChoiceRequest: (session: Int, participant: UUID, revision: Int)?
+    private var protectionChoicePending: Bool {
+        protectionChoiceRequest?.session == sessionGeneration && protectionChoiceRequest?.participant == selectedPersonID
+    }
     private(set) var sessionGeneration = 0
     #if DEBUG && targetEnvironment(simulator)
     private var accountFixtureInitialRefresh = true
@@ -67,7 +71,7 @@ final class AppState {
 
     init(configuration: BackendConfiguration = .bundled, callDirectory: CallDirectoryCoordinator? = nil) {
         #if DEBUG && targetEnvironment(simulator)
-        let configuration = ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") || ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh")
+        let configuration = ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") || ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh") || ProcessInfo.processInfo.arguments.contains("--uitesting-onboarding-recovery")
             ? BackendConfiguration(baseURL: nil) : configuration
         #endif
         self.configuration = configuration
@@ -96,7 +100,7 @@ final class AppState {
             people = people.filter { $0.id == selectedPersonID }
         }
         let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("--uitesting-call-directory") || arguments.contains("--uitesting-blocked-pagination") || arguments.contains("--uitesting-caretaker-refresh") {
+        if arguments.contains("--uitesting-call-directory") || arguments.contains("--uitesting-blocked-pagination") || arguments.contains("--uitesting-caretaker-refresh") || arguments.contains("--uitesting-onboarding-recovery") {
             isRestoringSession = false
             isPreview = true
             signedIn = true
@@ -286,7 +290,7 @@ final class AppState {
     }
 
     private func loadProtectionOnboarding(generation: Int) async {
-        guard let id = selectedPersonID, isOwner, !isDemo else { return }
+        guard let id = selectedPersonID, isOwner, !isDemo, !protectionChoicePending else { return }
         let choiceGeneration = protectionChoiceGeneration
         guard let status = try? await api.forwardingSnapshot(participantID: id).status,
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
@@ -305,8 +309,8 @@ final class AppState {
     }
 
     func completeProtectionOnboarding(enabled: Bool, participantID: UUID, version: String) async throws {
-        guard signedIn, selectedPersonID == participantID, protectionParticipantID == participantID else { throw APIError.invalidResponse }
-        let generation = sessionGeneration
+        let request = try beginProtectionChoice(participantID: participantID)
+        defer { finishProtectionChoice(request) }
         if !isPreview {
             let body: [String: Any] = enabled ? ["enabled": true, "version": version] : ["enabled": false]
             let _: APIResponses.Empty = try await api.send("/api/forwarding/monitoring", method: "POST",
@@ -315,23 +319,78 @@ final class AppState {
         #if DEBUG && targetEnvironment(simulator)
         if ProcessInfo.processInfo.arguments.contains("--protection-save-fails") { throw APIError.invalidResponse }
         #endif
-        guard generation == sessionGeneration, selectedPersonID == participantID else { return }
-        protectionChoiceGeneration += 1
+        guard currentProtectionChoice(request) else { throw CancellationError() }
         protectionOnboarding = nil
         if !trustedContactsOnboarding { protectionParticipantID = nil }
     }
 
     func completeTrustedContacts(enabled: Bool, participantID: UUID) async throws {
-        let generation = sessionGeneration
+        let request = try beginProtectionChoice(participantID: participantID)
+        defer { finishProtectionChoice(request) }
         if !isPreview {
             let _: APIResponses.Empty = try await api.send("/api/trusted-contacts/choice", method: "POST",
                 body: APIClient.payload(["enabled": enabled]), participantID: participantID)
         }
-        guard generation == sessionGeneration, selectedPersonID == participantID else { return }
-        protectionChoiceGeneration += 1
+        guard currentProtectionChoice(request) else { throw CancellationError() }
         trustedContactsOnboarding = false
         if protectionOnboarding == nil { protectionParticipantID = nil }
     }
+
+    /// These endpoints bypass navigation caches and never repeat the original save.
+    func confirmProtectionOnboarding(enabled: Bool, participantID: UUID) async throws -> Bool {
+        let request = try beginProtectionChoice(participantID: participantID)
+        defer { finishProtectionChoice(request) }
+        guard !isPreview else { return false }
+        let status: ForwardingStatus.Monitoring = try await api.send("/api/forwarding/monitoring", participantID: participantID)
+        guard currentProtectionChoice(request) else { throw CancellationError() }
+        guard status.choiceRecorded == true, status.enabled == enabled else { return false }
+        protectionOnboarding = nil
+        if !trustedContactsOnboarding { protectionParticipantID = nil }
+        return true
+    }
+
+    func confirmTrustedContacts(enabled: Bool, participantID: UUID) async throws -> Bool {
+        let request = try beginProtectionChoice(participantID: participantID)
+        defer { finishProtectionChoice(request) }
+        guard !isPreview else { return false }
+        let status: TrustedContactsResponse = try await api.send("/api/trusted-contacts", participantID: participantID)
+        guard currentProtectionChoice(request) else { throw CancellationError() }
+        guard status.choiceRecorded, status.enabled == enabled else { return false }
+        trustedContactsOnboarding = false
+        if protectionOnboarding == nil { protectionParticipantID = nil }
+        return true
+    }
+
+    private func beginProtectionChoice(participantID: UUID) throws -> (session: Int, participant: UUID, revision: Int) {
+        guard signedIn, isOwner, selectedPersonID == participantID, protectionParticipantID == participantID,
+              !protectionChoicePending else { throw CancellationError() }
+        protectionChoiceGeneration += 1
+        let request = (session: sessionGeneration, participant: participantID, revision: protectionChoiceGeneration)
+        protectionChoiceRequest = request
+        return request
+    }
+
+    private func currentProtectionChoice(_ request: (session: Int, participant: UUID, revision: Int)) -> Bool {
+        signedIn && isOwner && request.session == sessionGeneration && request.participant == selectedPersonID
+            && protectionChoiceRequest?.revision == request.revision
+    }
+
+    private func finishProtectionChoice(_ request: (session: Int, participant: UUID, revision: Int)) {
+        guard protectionChoiceRequest?.revision == request.revision else { return }
+        protectionChoiceRequest = nil
+        // A previous session's completion must not invalidate reads begun by the current session.
+        if request.session == sessionGeneration, request.participant == selectedPersonID {
+            protectionChoiceGeneration += 1
+        }
+    }
+
+    #if DEBUG && targetEnvironment(simulator)
+    var onboardingFixtureRequestPending: Bool { protectionChoiceRequest != nil }
+    func refreshOnboardingFixture() async {
+        guard ProcessInfo.processInfo.arguments.contains("--uitesting-onboarding-recovery") else { return }
+        await loadProtectionOnboarding(generation: sessionGeneration)
+    }
+    #endif
 
     func loadContext() async {
         guard !isDeletingAccount else { return }

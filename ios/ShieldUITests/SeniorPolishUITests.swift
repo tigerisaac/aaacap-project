@@ -304,9 +304,13 @@ final class SeniorPolishUITests: XCTestCase {
         let completion = app.buttons["onboarding-protection-continue"]
         reveal(protection, in: app); protection.tap()
         reveal(completion, in: app); completion.tap()
-        XCTAssertTrue(app.staticTexts["Couldn’t save your choice"].appears(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["onboarding-choice-error"].appears(timeout: 5))
+        XCTAssertFalse(completion.isEnabled)
+        let check = app.buttons["Check current status"]
+        reveal(check, in: app); check.tap()
         reveal(completion, in: app); XCTAssertTrue(completion.isEnabled)
         reveal(protection, in: app); XCTAssertEqual(protection.value as? String, "1")
+        XCTAssertFalse(protection.isEnabled)
         capture(app, "protection-save-recovery-large-dark")
     }
 

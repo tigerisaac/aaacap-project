@@ -63,7 +63,8 @@ for (const marker of ['--uitesting', 'appl_synthetic', 'synthetic-server-credent
   'RevenueCatSDKVerification', 'SHIELD_RC_TEST_KEY', 'shield_qa_monthly', 'shield_qa_annual',
   'Contact sharing passed', 'Contact restore passed', 'Blocking storage passed', 'SyntheticCallDirectoryCheck',
   'SyntheticBlockedPagination', 'blocked-pagination-fixture',
-  'CaretakerRefreshFixture', 'CaretakerRefreshCheckView', 'Start held refresh', 'Release older response']) {
+  'CaretakerRefreshFixture', 'CaretakerRefreshCheckView', 'Start held refresh', 'Release older response',
+  'OnboardingRecoveryFixture', 'OnboardingRecoveryCheckView', 'Inspect saved choice', 'onboarding-fixture-complete']) {
   assert.ok(!binary.includes(Buffer.from(marker)), `Release binary contains a test fixture: ${marker}`);
 }
 console.log(JSON.stringify({ archive, verified: true, distributionSigningVerified: false,

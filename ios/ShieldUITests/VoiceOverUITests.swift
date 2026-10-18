@@ -186,12 +186,31 @@ final class VoiceOverUITests: XCTestCase {
         try walk.activate("Check calls while I talk", where: { $0.localizedCaseInsensitiveContains("Switch") })
         XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "1")
         try walk.activate("Save my choice")
-        try walk.find("Couldn’t save your choice")
+        try walk.find("Choice not confirmed")
         XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "1")
-        try walk.activate("Check calls while I talk", where: { $0.localizedCaseInsensitiveContains("Switch") })
-        XCTAssertEqual(walk.app.switches["onboarding-protection-toggle"].value as? String, "0")
+        XCTAssertFalse(walk.app.switches["onboarding-protection-toggle"].isEnabled)
+        try walk.activate("Check current status")
+        try walk.find("Your choice isn’t confirmed yet")
+        XCTAssertTrue(walk.app.buttons["onboarding-protection-continue"].isEnabled)
         XCTAssertFalse(walk.app.switches["onboarding-helper-alerts-toggle"].exists)
         walk.checkpoint("retained-protection-choice")
+    }
+
+    func testVoiceOverCanConfirmASavedOnboardingChoice() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "onboarding-saved-response", arguments: ["--uitesting-onboarding-recovery"], large: true)
+        defer { walk.finish() }
+        try walk.find("Help while you talk")
+        try walk.activate("Check calls while I talk", where: { $0.localizedCaseInsensitiveContains("Switch") })
+        try walk.activate("Save my choice")
+        try walk.find("Choice not confirmed")
+        try walk.find("Your connection was interrupted")
+        XCTAssertFalse(walk.app.switches["onboarding-protection-toggle"].isEnabled)
+        walk.checkpoint("choice-uncertainty-readable")
+        try walk.activate("Check current status")
+        try walk.find("Choice confirmed")
+        XCTAssertFalse(walk.app.descendants(matching: .any)["onboarding-choice-error"].exists)
+        walk.checkpoint("choice-confirmed")
     }
 
     func testVoiceOverDailyNavigationAndSampleMessage() throws {

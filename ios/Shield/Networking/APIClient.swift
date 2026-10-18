@@ -14,6 +14,7 @@ actor APIClient {
     #if DEBUG && targetEnvironment(simulator)
     private var blockedPaginationFixture = BlockedPaginationFixture()
     let caretakerRefreshFixture = CaretakerRefreshFixture()
+    let onboardingRecoveryFixture = OnboardingRecoveryFixture()
     #endif
 
     init(configuration: BackendConfiguration) {
@@ -201,6 +202,8 @@ actor APIClient {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-onboarding-recovery"),
+           let result = try await onboardingRecoveryFixture.response(path: path, method: method, body: body, participantID: participantID) { return result }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh"),
            let result = try await caretakerRefreshFixture.response(path: path, method: method, body: body) { return result }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-blocked-pagination"),
