@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { type Firestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { checkMaintenanceHealth, inspectMaintenanceHealth, MAINTENANCE_FRESHNESS_MS, runMaintenanceJob } from '../src/cloud/maintenance-health.js';
@@ -80,7 +81,7 @@ describe('scheduled completion and failure privacy', () => {
 });
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('background progress and backlog (Firestore emulator)', () => {
-  const project = 'demo-shield-maintenance', admin = initializeApp({ projectId: project }, 'maintenance-tests'), db = getFirestore(admin);
+  const project = 'demo-shield-maintenance', admin = initializeApp({ projectId: project }, 'maintenance-tests'), db = getShieldFirestore(admin);
   let now: number, store: CloudStore;
   const jobs = Object.keys(MAINTENANCE_FRESHNESS_MS) as (keyof typeof MAINTENANCE_FRESHNESS_MS)[];
   beforeEach(async () => {

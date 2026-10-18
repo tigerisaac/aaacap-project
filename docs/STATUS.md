@@ -1,5 +1,9 @@
 # Status
 
+## October 18 — database retry defect isolated and corrected in source
+
+The intermittent admission/history-counter failure is reproduced without Shield code and deterministically traced to an SDK streaming retry replaying a closed transaction. A shared client setting now preserves `ABORTED` for the SDK's bounded whole-transaction retry. The root and deployed dependency versions both fail before and pass after the correction. Required checks pass **382 unit + 284 Firestore + 8 account-lifecycle tests**; the two original concurrency cases pass ten repetitions each. Frozen serving-package candidates additionally pass **85 integration and six retry tests**, all fifteen function imports and both bridge startup modes. Earlier failures and harness corrections are retained. **This is source/package evidence, not a deployment or production-incident attribution.** Independent CI and owner approval remain pending. [Exact scope, evidence and rollback safeguards](FIRESTORE-RETRY-ROLLOUT.md).
+
 ## October 17 — approved background-health update deployed; acceptance pending
 
 All four exact worker packages and the new private observer are deployed and verified with full traffic. The index is READY, the five-minute schedule is authenticated, the counter is receiving data and two policies are staged **disabled**. Existing services, schedules, operational policies, budget, Hosting and public flags are preserved. Natural deletion, access-review and audio-expiry runs completed; the 23:25 observer found zero overdue work and correctly reported daily cleanup still missing. Acceptance waits for **04:00 Central October 18** cleanup, then a healthy observation and a fresh counter signal after policy activation. No manual worker, phone or synthetic email test was performed. R5 remains open. [Exact revisions, receipts and safeguards](BACKGROUND-JOB-HEALTH-ROLLOUT.md).

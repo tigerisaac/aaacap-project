@@ -2,7 +2,7 @@ import { processAccountDeletions } from '../src/cloud/deletion-jobs.js';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema, RETENTION_MS } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
@@ -20,7 +20,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Voicemail keep-or-remove 
     TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: `${'A'.repeat(43)}=`,
     TELNYX_APPLICATION_ID: '123456789012345678', VOICEMAIL_SCREENING_ENABLED: true,
     APNS: { keyId: 'ABCDEF1234', teamId: '6R6HMW3DWN', privateKey: generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }).toString() } };
-  const admin = initializeApp({ projectId: project }, 'voicemail-tests'), db = getFirestore(admin);
+  const admin = initializeApp({ projectId: project }, 'voicemail-tests'), db = getShieldFirestore(admin);
   const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', PHONE = '+12025550101';
   const id = PERSON, caller = '+12025550102';
   const auth: AuthProvider = {

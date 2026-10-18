@@ -39,6 +39,8 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@grpc/grpc-js": "1.14.5",
+    "@grpc/proto-loader": "0.8.1",
     "@types/node": "26.6.2",
     "@types/ws": "8.18.1",
     "firebase-tools": "15.10.1",

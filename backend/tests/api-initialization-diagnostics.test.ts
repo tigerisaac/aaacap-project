@@ -10,7 +10,7 @@ vi.mock('firebase-functions/params', () => ({ defineSecret: (name: string) => ({
   value: () => name === 'SHIELD_RUNTIME' ? fixture.runtime : 'synthetic-openai-marker'
 }) }));
 vi.mock('firebase-admin/app', () => ({ getApps: () => [{}], initializeApp: () => ({}) }));
-vi.mock('firebase-admin/firestore', () => ({ getFirestore: () => ({}) }));
+vi.mock('firebase-admin/firestore', () => ({ getFirestore: () => ({ settings: vi.fn() }) }));
 vi.mock('../src/cloud/app.js', () => ({ buildCloudApp: fixture.build }));
 
 const config = { FIREBASE_WEB_API_KEY: 'emulator-test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',

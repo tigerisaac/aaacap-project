@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { initializeApp, applicationDefault, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../dist/cloud/firestore.js';
 import { z } from 'zod';
 import { cloudSchema } from '../dist/cloud/config.js';
 import { CloudStore } from '../dist/cloud/store.js';
@@ -22,7 +22,7 @@ async function main() {
   if (config.FIREBASE_PROJECT_ID !== project) throw new Error('project_mismatch');
   const data = approval.parse(JSON.parse(await readFile(input, 'utf8')));
   const app = initializeApp({ projectId: project, ...(process.env.FIRESTORE_EMULATOR_HOST ? {} : { credential: applicationDefault() }) });
-  const db = getFirestore(app);
+  const db = getShieldFirestore(app);
   try {
     const access = new ServiceAccess(new CloudStore(db, config));
     const result = await access.approve(data, !process.argv.includes('--confirm'));

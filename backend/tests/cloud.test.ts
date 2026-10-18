@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema, RETENTION_MS } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
@@ -19,7 +19,7 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     TELNYX_ACCOUNT_ID: 'fe8d2922-2dcf-4461-87bc-17a539688c31', TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: `${'A'.repeat(43)}=`,
     TELNYX_APPLICATION_ID: '123456789012345678' });
   const admin = initializeApp({ projectId: 'demo-shield' }, 'cloud-tests');
-  const db = getFirestore(admin);
+  const db = getShieldFirestore(admin);
   let now: number; let store: CloudStore; let checked: string[];
   const routine = extractionSchema.parse({ purpose: 'appointment', sensitiveAccountIssue: { value: 'absent', evidence: null },
     familyMoneyEmergency: { value: 'absent', evidence: null }, prohibitedRequests: [], uncertainty: [] });

@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema, RETENTION_MS } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
@@ -18,7 +18,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Push alerts (Firestore em
     TELNYX_APPLICATION_ID: '123456789012345678' };
   const apns = { keyId: 'ABCDEF1234', teamId: '6R6HMW3DWN',
     privateKey: generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }).toString() };
-  const admin = initializeApp({ projectId: project }, 'alerts-tests'), db = getFirestore(admin);
+  const admin = initializeApp({ projectId: project }, 'alerts-tests'), db = getShieldFirestore(admin);
   const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', PHONE = '+12025550101', NUMBER = '+12025550109';
   const id = PERSON;
   const tokens = { owner: 'aa'.repeat(32), helper: 'bb'.repeat(32), viewer: 'cc'.repeat(32) };

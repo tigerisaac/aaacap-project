@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { once } from 'node:events';
 import { WebSocket } from 'ws';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { expect, it } from 'vitest';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
@@ -17,7 +17,7 @@ import { enroll } from './enroll.js';
 /** Exercise the actual packaged HTTP/WebSocket server at capacity one. No provider/model calls. */
 it.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('reuses a real bridge process after disconnect, missing start, and malformed media', async () => {
   if (!/^127\.0\.0\.1:\d+$/.test(process.env.FIRESTORE_EMULATOR_HOST!)) throw new Error('local_emulator_required');
-  const project = 'demo-shield-startup', admin = initializeApp({ projectId: project }, 'startup-server'), db = getFirestore(admin);
+  const project = 'demo-shield-startup', admin = initializeApp({ projectId: project }, 'startup-server'), db = getShieldFirestore(admin);
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
     TRIAL_PROXY_SECRET: 'a'.repeat(64), DATA_ENCRYPTION_KEY: 'b'.repeat(64), TELNYX_API_KEY: 'test'.repeat(8),
     TELNYX_PUBLIC_KEY: Buffer.alloc(32).toString('base64'), TELNYX_ACCOUNT_ID: randomUUID(), TELNYX_APPLICATION_ID: '123456789',

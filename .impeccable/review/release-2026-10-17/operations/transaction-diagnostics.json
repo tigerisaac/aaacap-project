@@ -238,5 +238,12 @@
     "artifacts/private/transaction-diagnostics-oct17/minimal-burst/result.json": "06576275eb8e68af50a53d2358cc2b52b9ebdb7a5422054d6e6685d8b9b83031",
     "artifacts/private/transaction-diagnostics-oct17/minimal-burst/sdk.log": "120c161fe171a1a6009f2be17c20f367ed811bb28098c0eac7129f3d3972a550",
     "artifacts/private/transaction-diagnostics-oct17/minimal-burst/firestore-debug.log": "3152eebcc5d8c2538c15904f10e02074fc933589a0fc116c36eba50d14cbe0fe"
+  },
+  "followup": {
+    "date": "2026-10-18",
+    "status": "SDK mechanism isolated; source and package fix verified locally, not deployed",
+    "verification": "../../release-2026-10-18/firestore-retry/verification.json",
+    "review": "docs/FIRESTORE-RETRY-ROLLOUT.md",
+    "originalFailuresRetained": true
   }
 }

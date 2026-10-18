@@ -1,7 +1,8 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync, sign } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import Fastify from 'fastify';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
@@ -28,9 +29,9 @@ it('accepts one normalized forwarding identity and rejects missing, malformed, c
 });
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared number', () => {
-  const project = 'demo-shield-shared', admin = initializeApp({ projectId: project }, 'shared-pilot'), db = getFirestore(admin);
+  const project = 'demo-shield-shared', admin = initializeApp({ projectId: project }, 'shared-pilot'), db = getShieldFirestore(admin);
   // Independent client = independent admission queue, like a second API instance.
-  const otherAdmin = initializeApp({ projectId: project }, 'shared-pilot-other'), otherDB = getFirestore(otherAdmin);
+  const otherAdmin = initializeApp({ projectId: project }, 'shared-pilot-other'), otherDB = getShieldFirestore(otherAdmin);
   const keys = generateKeyPairSync('ed25519');
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app', TRIAL_PROXY_SECRET: 'a'.repeat(64), DATA_ENCRYPTION_KEY: 'b'.repeat(64),
     TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64'),

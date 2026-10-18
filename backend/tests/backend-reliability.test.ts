@@ -1,7 +1,8 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { ForwardingStore } from '../src/cloud/forwarding-store.js';
@@ -14,7 +15,7 @@ import { enroll } from './enroll.js';
 import { announcementAudio, CAPTURE_VOICEMAIL } from '../src/cloud/announcements.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('backend reliability recovery', () => {
-  const project = 'demo-shield-reliability', admin = initializeApp({ projectId: project }, 'reliability'), db = getFirestore(admin);
+  const project = 'demo-shield-reliability', admin = initializeApp({ projectId: project }, 'reliability'), db = getShieldFirestore(admin);
   const keys = generateKeyPairSync('ed25519');
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'test', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app', TRIAL_PROXY_SECRET: 'a'.repeat(64), DATA_ENCRYPTION_KEY: 'b'.repeat(64),
     TELNYX_API_KEY: 'test'.repeat(8), TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64'),

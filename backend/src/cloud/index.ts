@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from './firestore.js';
 import { defineSecret } from 'firebase-functions/params';
 import { onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
@@ -20,7 +20,7 @@ function getStore() {
   if (!store) {
     if (process.env.FIREBASE_AUTH_EMULATOR_HOST && !process.env.FUNCTIONS_EMULATOR) throw new Error('unexpected_auth_emulator');
     const app = getApps()[0] ?? initializeApp();
-    store = new CloudStore(getFirestore(app), cloudSchema.parse(JSON.parse(runtime.value())));
+    store = new CloudStore(getShieldFirestore(app), cloudSchema.parse(JSON.parse(runtime.value())));
   }
   return store;
 }

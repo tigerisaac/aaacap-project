@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { CloudStore } from '../src/cloud/store.js';
 import { ForwardingStore } from '../src/cloud/forwarding-store.js';
@@ -20,7 +20,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Daily setup check (Firest
     TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64'),
     APNS: { keyId: 'ABCDEF1234', teamId: '6R6HMW3DWN', privateKey: generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }).toString() } };
   const A = { id: 'a0a7af93-72ad-431d-9708-f1d9564a2b36', uid: 'alice', phone: '+12025550101', shieldNumber: '+15125550111' };
-  const admin = initializeApp({ projectId: project }, 'setup-check-tests'), db = getFirestore(admin);
+  const admin = initializeApp({ projectId: project }, 'setup-check-tests'), db = getShieldFirestore(admin);
   const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {} };
   const dial = vi.fn<(id: string, from: string, to: string) => Promise<string | undefined>>();
   let now: number, s: CloudStore, f: ForwardingStore, checks: SetupChecks, app: Awaited<ReturnType<typeof buildCloudApp>>;

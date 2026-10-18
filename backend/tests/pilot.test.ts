@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { CloudStore } from '../src/cloud/store.js';
 import { afterScreening, ForwardingLive } from '../src/cloud/forwarding-live.js';
@@ -21,7 +21,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Several people on their o
   const A = { id: 'a0a7af93-72ad-431d-9708-f1d9564a2b36', uid: 'alice', phone: '+12025550101', shieldNumber: '+15125550111' };
   const B = { id: 'b0b7af93-72ad-431d-9708-f1d9564a2b36', uid: 'bob', phone: '+12025550201', shieldNumber: '+15125550222' };
   const caller = '+12025550102';
-  const admin = initializeApp({ projectId: project }, 'pilot-tests'), db = getFirestore(admin);
+  const admin = initializeApp({ projectId: project }, 'pilot-tests'), db = getShieldFirestore(admin);
   const sid = (n: number) => `10123456-1234-4321-1234-${n.toString(16).padStart(12, '0')}`;
   const approve = { action: 'approve', reason: 'routine', purpose: 'personal', evidence: 'lunch tomorrow', hasName: true, hasReason: true } as const;
   const auth: AuthProvider = { async identify(token) { return { subject: token }; }, async requestCode() {}, async verifyCode() { return {}; }, async refresh() { return {}; }, async logout() {}, async deleteAccount() {} };

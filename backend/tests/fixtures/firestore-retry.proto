@@ -1,0 +1,53 @@
+syntax = "proto3";
+package google.firestore.v1;
+
+// Minimal wire-compatible surface for the real Firestore SDK retry tests.
+// Uninspected query, transaction-option and write messages stay opaque bytes.
+service Firestore {
+  rpc BatchGetDocuments(BatchGetDocumentsRequest) returns (stream BatchGetDocumentsResponse);
+  rpc RunQuery(RunQueryRequest) returns (stream RunQueryResponse);
+  rpc Commit(CommitRequest) returns (CommitResponse);
+  rpc Rollback(RollbackRequest) returns (Empty);
+}
+message Timestamp { int64 seconds = 1; int32 nanos = 2; }
+message Value { int64 integer_value = 2; }
+message Document {
+  string name = 1;
+  map<string, Value> fields = 2;
+  Timestamp create_time = 3;
+  Timestamp update_time = 4;
+}
+message BatchGetDocumentsRequest {
+  string database = 1;
+  repeated string documents = 2;
+  bytes transaction = 4;
+  bytes new_transaction = 5;
+}
+message BatchGetDocumentsResponse {
+  oneof result { Document found = 1; string missing = 2; }
+  bytes transaction = 3;
+  Timestamp read_time = 4;
+}
+message RunQueryRequest {
+  string parent = 1;
+  bytes structured_query = 2;
+  bytes transaction = 5;
+  bytes new_transaction = 6;
+}
+message RunQueryResponse {
+  Document document = 1;
+  bytes transaction = 2;
+  Timestamp read_time = 3;
+}
+message CommitRequest {
+  string database = 1;
+  repeated bytes writes = 2;
+  bytes transaction = 3;
+}
+message WriteResult { Timestamp update_time = 1; }
+message CommitResponse {
+  repeated WriteResult write_results = 1;
+  Timestamp commit_time = 2;
+}
+message RollbackRequest { string database = 1; bytes transaction = 2; }
+message Empty {}

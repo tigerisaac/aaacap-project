@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
@@ -13,7 +13,7 @@ import type { SubscriptionSnapshot } from '../src/cloud/revenuecat.js';
 import { HttpError, type AuthProvider } from '../src/auth.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Service access and subscriptions (emulator)', () => {
-  const project = 'demo-shield-service-access', admin = initializeApp({ projectId: project }, 'service-access-tests'), db = getFirestore(admin);
+  const project = 'demo-shield-service-access', admin = initializeApp({ projectId: project }, 'service-access-tests'), db = getShieldFirestore(admin);
   const personID = 'ab443d1b-a90e-4a11-a627-d8baac281da9';
   const config = cloudSchema.parse({ FIREBASE_WEB_API_KEY: 'synthetic', PUBLIC_BASE_URL: 'https://shield-calls-isaac.web.app',
     TRIAL_PROXY_SECRET: 'c'.repeat(64), DATA_ENCRYPTION_KEY: 'd'.repeat(64), TELNYX_ACCOUNT_ID: personID,

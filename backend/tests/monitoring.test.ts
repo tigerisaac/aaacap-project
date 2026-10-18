@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { enroll } from './enroll.js';
 import { CloudStore } from '../src/cloud/store.js';
@@ -23,7 +23,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Connected-call protection
   let config = cloudSchema.parse({ ...base, CALL_MONITORING_ENABLED: true });
   const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', NUMBER = '+12025550109', PHONE = '+12025550101';
   const number = NUMBER;
-  const admin = initializeApp({ projectId: project }, 'monitoring-tests'), db = getFirestore(admin);
+  const admin = initializeApp({ projectId: project }, 'monitoring-tests'), db = getShieldFirestore(admin);
   const sid = (n = 1) => `10123456-1234-4321-1234-${n.toString(16).padStart(12, '0')}`;
   const from = '+12025550102';
   let now: number, s: CloudStore, f: ForwardingStore, monitor: CallMonitor, app: Awaited<ReturnType<typeof buildCloudApp>>;

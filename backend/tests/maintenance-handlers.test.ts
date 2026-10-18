@@ -8,7 +8,7 @@ vi.mock('firebase-functions/v2/scheduler', () => ({ onSchedule: (_options: unkno
 vi.mock('firebase-functions/v2/tasks', () => ({ onTaskDispatched: (_options: unknown, handler: unknown) => handler }));
 vi.mock('firebase-functions/params', () => ({ defineSecret: () => ({ value: () => JSON.stringify({}) }) }));
 vi.mock('firebase-admin/app', () => ({ getApps: () => [{}], initializeApp: () => ({}) }));
-vi.mock('firebase-admin/firestore', () => ({ getFirestore: () => ({}) }));
+vi.mock('firebase-admin/firestore', () => ({ getFirestore: () => ({ settings: vi.fn() }) }));
 vi.mock('../src/cloud/config.js', () => ({ cloudSchema: { parse: () => ({}) } }));
 vi.mock('../src/cloud/store.js', () => {
   const query = { where: () => query, count: () => ({ get: fixture.aggregate }) };

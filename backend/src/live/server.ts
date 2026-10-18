@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { WebSocket, WebSocketServer } from 'ws';
 import { getApps, initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../cloud/firestore.js';
 import { cloudSchema } from '../cloud/config.js';
 import { CloudStore } from '../cloud/store.js';
 import { ForwardingStore } from '../cloud/forwarding-store.js';
@@ -36,7 +36,7 @@ const screeningMode = process.env.SHIELD_SCREENING_MODE ?? 'live';
 if (!['live', 'hybrid'].includes(screeningMode)) throw new Error('invalid_screening_mode');
 const sonioxKey = process.env.SONIOX_API_KEY;
 if (screeningMode === 'hybrid' && !sonioxKey) throw new Error('soniox_key_required');
-const store = new CloudStore(getFirestore(getApps()[0] ?? initializeApp()), config);
+const store = new CloudStore(getShieldFirestore(getApps()[0] ?? initializeApp()), config);
 const forwarding = new ForwardingStore(store), live = new ForwardingLive(forwarding), telnyx = new TelnyxVoice(config);
 const server = createServer(async (request, response) => {
   response.setHeader('Cache-Control', 'no-store');

@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { deleteApp, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { type Firestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { FirebaseAuth } from '../src/firebase-auth.js';
 import { buildCloudApp } from '../src/cloud/app.js';
 import { cloudSchema } from '../src/cloud/config.js';
@@ -44,7 +45,7 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
     if (authHost !== '127.0.0.1:9199' || firestoreHost !== '127.0.0.1:8189'
         || process.env.GCLOUD_PROJECT !== project) throw new Error('Dedicated local demo emulators are required');
     admin = initializeApp({ projectId: project }, 'account-lifecycle-tests');
-    identityProvider = getAuth(admin); db = getFirestore(admin);
+    identityProvider = getAuth(admin); db = getShieldFirestore(admin);
     auth = new FirebaseAuth(config, localProvider, identityProvider);
   });
 

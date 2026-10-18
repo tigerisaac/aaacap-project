@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { enroll } from './enroll.js';
 import { CloudStore } from '../src/cloud/store.js';
@@ -21,7 +21,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Supervised Telnyx forward
     TELNYX_PUBLIC_KEY: keys.publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64') });
   const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', NUMBER = '+12025550109', PHONE = '+12025550101';
   const number = NUMBER;
-  const admin = initializeApp({ projectId: project }, 'forwarding-tests'), db = getFirestore(admin);
+  const admin = initializeApp({ projectId: project }, 'forwarding-tests'), db = getShieldFirestore(admin);
   const sid = (n = 1) => `10123456-1234-4321-1234-${n.toString(16).padStart(12, '0')}`;
   const startProbe = vi.fn<(id: string, from: string, to: string) => Promise<void>>();
   const warmLiveBridge = vi.fn<() => void>();

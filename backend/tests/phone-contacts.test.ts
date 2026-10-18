@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID, generateKeyPairSync, sign } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
 import { buildCloudApp } from '../src/cloud/app.js';
@@ -10,7 +10,7 @@ import { contactPhoneHash } from '../src/cloud/trusted-contacts.js';
 import type { AuthProvider } from '../src/auth.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optional trusted contacts (emulator)', () => {
-  const project = 'demo-shield-phone-contacts', admin = initializeApp({ projectId: project }, 'phone-contact-tests'), db = getFirestore(admin);
+  const project = 'demo-shield-phone-contacts', admin = initializeApp({ projectId: project }, 'phone-contact-tests'), db = getShieldFirestore(admin);
   const PERSON = 'b0b7af93-72ad-431d-9708-f1d9564a2b36', OWNER_PHONE = '+12025550101', PHONE = '+12025550102', FROM = '+12025550109';
   const keys = generateKeyPairSync('ed25519');
   const publicKey = keys.publicKey.export({ format: 'der', type: 'spki' }).subarray(-32).toString('base64');

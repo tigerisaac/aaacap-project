@@ -1,0 +1,2184 @@
+{
+  "at": "2026-10-18T05:27:41.976691+00:00",
+  "scope": "Firestore streaming retry initialization; local verification only",
+  "deployed": false,
+  "realPhoneCalls": false,
+  "sourceSha256": {
+    "backend/src/cloud/firestore.ts": "0c4e9e2e62f67fd6adab112683148dba4767447099994c0190e21dae90236ba8",
+    "backend/src/cloud/index.ts": "bcce10b61c73bd2c16f77c47f9a9bcc409a003ba62afc4a50b64a89a35fef6b4",
+    "backend/src/live/server.ts": "78e1217ec94be46995f320fd13a3e7ab9aef36fed123f31e7fff6a3e4b837ced",
+    "backend/tests/firestore-retry.test.ts": "541de89305f9afc7d8a1087f6fafa946827c2bd4e1ea0d2bc854656dd00c53a5",
+    "backend/tests/fixtures/firestore-retry.proto": "c3b0ea7e9f0bfec9d8c2f6e185120d98edf0f31b01263682c3541180f38f8761",
+    "scripts/check-ios-release-package.mjs": "3f9fd86191de7e8e9ef7b154f7d9055f897b6ae922854a789127632ac6b81b89",
+    "scripts/manage-service-access.mjs": "a05a95d20b63545c54f7b0f8de8dac1ce65010ac49e3f89d10a3f9402c29955c",
+    "package.json": "9054f5cc1deb51ebf5b6dfabdf3505eb01495f004d60d66c1f04e99c03dd5f8b",
+    "package-lock.json": "d84da8cbb6cd2d45c3ba0a13da16498aaed72f08843b5670b563da562825e919",
+    "backend/tests/account-lifecycle.test.ts": "62811586e052728f2fc1661df13edcf06558f76da402530b92c35d811097fa08",
+    "backend/tests/alerts.test.ts": "5b7aafa1bf77f04c0c09c6b7475977b4bdf7b9aab44a445a441c839169ab14c5",
+    "backend/tests/api-initialization-diagnostics.test.ts": "8ec0705651e06cd21df5d835218e153e4f84319d4f0f53fe75166ceeda7c251c",
+    "backend/tests/backend-reliability.test.ts": "3f89d2a0dae253a6fe10387389a9d24b77b7a0955471b45acaeb373d66161768",
+    "backend/tests/cloud.test.ts": "8e6f6735da86deeaec5edf982d5f125b8b70ebd6637e0fb1ac521af7431d72a7",
+    "backend/tests/forwarding.test.ts": "9191f979837f26749d04155869b357ec729b3b3fa056e587fd49d9a82bf8cf26",
+    "backend/tests/live-startup-emulator.test.ts": "ee953084bb2460b3ee36030f790db50d08c88fcf9104f2eca0cd9d198e254a47",
+    "backend/tests/maintenance-handlers.test.ts": "0162da0e271f36d07ee3295643770e8ecf163fc26d0d09800c607401ea3fb802",
+    "backend/tests/maintenance-health.test.ts": "a2c174bcf6acd9b55d16ebf960dd8b59d7dc4c42e9a9025a83573e091a041a54",
+    "backend/tests/monitoring.test.ts": "675e53186b493963f244492c57c9f8ba520f52110ff52a5f951324034e513ec0",
+    "backend/tests/phone-contacts.test.ts": "670b39a820387c5018325cc029ab57fca1f51e1f43bad137b6d13f8835addb36",
+    "backend/tests/pilot.test.ts": "f13f3458b0d1aa9c4fe231b73b48668407bb12b5651a38150597dc0eee3db497",
+    "backend/tests/service-access.test.ts": "ddb4e8349ea510e51f3da5e0ec3908f93d97d0a9d386d67f988df7c385ce1a25",
+    "backend/tests/setup-check.test.ts": "6e6a43ac1ca5eb363eea89bf5140eaea1bf5be7f32aca30f22570d4c747b2c07",
+    "backend/tests/shared-pilot.test.ts": "096996c9a104cc729f69756f09f1663a24aeecf43f8bb553c298921fdd20fa8d",
+    "backend/tests/voicemail.test.ts": "b77f7a458424a9b694dc01265157ae8d98173685b30a053cb3bd037c4c151c04"
+  },
+  "implementation": {
+    "settings": {
+      "gaxServerStreamingRetries": true
+    },
+    "transactionAttemptLimitChanged": false,
+    "testTimeoutChanged": false,
+    "existingAssertionsChanged": false,
+    "runtimeDependencyVersionsChanged": false,
+    "rootFirestore": "9.2.0",
+    "rootGax": "6.4.0",
+    "liveFunctionFirestore": "9.3.1",
+    "liveFunctionGax": "6.12.1"
+  },
+  "sdkOnlyCounterBefore": [
+    {
+      "round": 1,
+      "elapsedMs": 11308,
+      "attempts": [
+        2,
+        3
+      ],
+      "result": [
+        {
+          "status": "rejected",
+          "code": 3,
+          "message": "3 INVALID_ARGUMENT: Transaction is invalid or closed."
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "sdkOnlyCounterAfter": [
+    {
+      "round": 1,
+      "elapsedMs": 3353,
+      "attempts": [
+        2,
+        2
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "elapsedMs": 2882,
+      "attempts": [
+        2,
+        1
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "elapsedMs": 2542,
+      "attempts": [
+        2,
+        1
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "elapsedMs": 3032,
+      "attempts": [
+        2,
+        1
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "elapsedMs": 2865,
+      "attempts": [
+        2,
+        1
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "elapsedMs": 3108,
+      "attempts": [
+        2,
+        2
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "elapsedMs": 2808,
+      "attempts": [
+        1,
+        2
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "elapsedMs": 3246,
+      "attempts": [
+        2,
+        2
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 9,
+      "elapsedMs": 3513,
+      "attempts": [
+        2,
+        2
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "round": 10,
+      "elapsedMs": 3398,
+      "attempts": [
+        2,
+        1
+      ],
+      "result": [
+        {
+          "status": "fulfilled",
+          "value": 1
+        },
+        {
+          "status": "fulfilled",
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "deterministicRootBefore": {
+    "passed": 1,
+    "failed": 4,
+    "pending": 0,
+    "success": false,
+    "reportSha256": "fc4468e7289d5cffe92b9e0cdec1e200d5b8d02eab9900476cbe1427d280e074",
+    "cases": [
+      {
+        "name": "restarts the transaction after an aborted query without replaying a closed read",
+        "status": "failed"
+      },
+      {
+        "name": "restarts the transaction after an aborted documents without replaying a closed read",
+        "status": "failed"
+      },
+      {
+        "name": "propagates permission errors without retrying the read or committing",
+        "status": "failed"
+      },
+      {
+        "name": "preserves transient unavailable retries inside the same transaction",
+        "status": "passed"
+      },
+      {
+        "name": "stops at the existing transaction attempt limit without committing",
+        "status": "failed"
+      }
+    ]
+  },
+  "initialRootAfter": {
+    "passed": 5,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "7466291fd5c77a67b4ec4c6dca9c9f5c4a07a82704b86ed6cac2806f2f36c801",
+    "cases": [
+      {
+        "name": "restarts the transaction after an aborted query without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "restarts the transaction after an aborted documents without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "propagates permission errors without retrying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "preserves transient unavailable retries inside the same transaction",
+        "status": "passed"
+      },
+      {
+        "name": "stops at the existing transaction attempt limit without committing",
+        "status": "passed"
+      }
+    ]
+  },
+  "finalRootUnitChecks": {
+    "command": "npm run check",
+    "node": "22.17.1",
+    "typecheck": "passed",
+    "unitPassed": 382,
+    "unitSkipped": 283,
+    "build": "passed",
+    "logSha256": "65e2645a93ada872c74ff865c67a1dc7d7c4f988537d9b3434fc5be07bb8e52c"
+  },
+  "liveSDKBeforeNode22": {
+    "passed": 1,
+    "failed": 5,
+    "pending": 0,
+    "success": false,
+    "reportSha256": "d99f76970c5e88d924da9fd51b82bf681637531e415475f1a8fc122c318c56b5",
+    "cases": [
+      {
+        "name": "restarts the transaction after an aborted query without replaying a closed read",
+        "status": "failed"
+      },
+      {
+        "name": "restarts the transaction after an aborted documents without replaying a closed read",
+        "status": "failed"
+      },
+      {
+        "name": "propagates non-retryable status 7 without replaying the read or committing",
+        "status": "failed"
+      },
+      {
+        "name": "propagates non-retryable status 3 without replaying the read or committing",
+        "status": "failed"
+      },
+      {
+        "name": "preserves transient unavailable retries inside the same transaction",
+        "status": "passed"
+      },
+      {
+        "name": "stops at the existing transaction attempt limit without committing",
+        "status": "failed"
+      }
+    ]
+  },
+  "liveSDKAfterNode22": {
+    "passed": 6,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "4a872bd46e2fe9fcecf100f6492845739f5abc4faf44fd4597300151c2d1cead",
+    "cases": [
+      {
+        "name": "restarts the transaction after an aborted query without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "restarts the transaction after an aborted documents without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "propagates non-retryable status 7 without replaying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "propagates non-retryable status 3 without replaying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "preserves transient unavailable retries inside the same transaction",
+        "status": "passed"
+      },
+      {
+        "name": "stops at the existing transaction attempt limit without committing",
+        "status": "passed"
+      }
+    ]
+  },
+  "liveSDKAfterNode24": {
+    "passed": 6,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "e40a2f4ab843e4fd138dd5641acfc7fd359b1693475b576486fb2300e5737d6a",
+    "cases": [
+      {
+        "name": "restarts the transaction after an aborted query without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "restarts the transaction after an aborted documents without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "propagates non-retryable status 7 without replaying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "propagates non-retryable status 3 without replaying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "preserves transient unavailable retries inside the same transaction",
+        "status": "passed"
+      },
+      {
+        "name": "stops at the existing transaction attempt limit without committing",
+        "status": "passed"
+      }
+    ]
+  },
+  "repeatedConcurrencyCases": {
+    "distinctCases": 2,
+    "repetitionsPerCase": 10,
+    "node": "24.3.0",
+    "runs": [
+      {
+        "name": "concurrency-1",
+        "status": 0,
+        "elapsedMs": 8326,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-2",
+        "status": 0,
+        "elapsedMs": 7276,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-3",
+        "status": 0,
+        "elapsedMs": 8017,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-4",
+        "status": 0,
+        "elapsedMs": 7655,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-5",
+        "status": 0,
+        "elapsedMs": 8237,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-6",
+        "status": 0,
+        "elapsedMs": 7947,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-7",
+        "status": 0,
+        "elapsedMs": 7808,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-8",
+        "status": 0,
+        "elapsedMs": 7858,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-9",
+        "status": 0,
+        "elapsedMs": 8405,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      },
+      {
+        "name": "concurrency-10",
+        "status": 0,
+        "elapsedMs": 7670,
+        "passed": 2,
+        "failed": 0,
+        "pending": 83
+      }
+    ]
+  },
+  "fullFirestore": {
+    "node": "24.3.0",
+    "passed": 284,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "ec01244e922a0584f1ff267a360e21347d3c49a35763b36e710b7a39104a18b6",
+    "cases": [
+      {
+        "name": "offers notifications and stores a registration only when APNs is configured",
+        "status": "passed"
+      },
+      {
+        "name": "moves a phone to whoever signs in on it, and forgets it on sign-out",
+        "status": "passed"
+      },
+      {
+        "name": "sends person alerts to the person, and helper alerts only after the person turns them on",
+        "status": "passed"
+      },
+      {
+        "name": "drops a registration Apple reports as gone, skips expired ones and stale jobs",
+        "status": "passed"
+      },
+      {
+        "name": "queues pause once and does not announce service stopped merely for opening restoration",
+        "status": "passed"
+      },
+      {
+        "name": "queues nothing when push is not configured",
+        "status": "passed"
+      },
+      {
+        "name": "throttles blocked-call jobs and queues an alert when Shield ends a connected call",
+        "status": "passed"
+      },
+      {
+        "name": "durably retries voicemail after dial rejection and a failed announcement",
+        "status": "passed"
+      },
+      {
+        "name": "durably retries voicemail after recipient hangup and a failed announcement",
+        "status": "passed"
+      },
+      {
+        "name": "durably retries voicemail after recipient decline and a failed announcement",
+        "status": "passed"
+      },
+      {
+        "name": "ignores a late voicemail job after completed prompt without extending the timer",
+        "status": "passed"
+      },
+      {
+        "name": "ignores a late voicemail job after caller hangup without extending the timer",
+        "status": "passed"
+      },
+      {
+        "name": "expires completed recording jobs across retained pages without discarding unfinished provider erasure",
+        "status": "passed"
+      },
+      {
+        "name": "drains multiple expiry pages, skips retained contacts and preserves historical totals",
+        "status": "passed"
+      },
+      {
+        "name": "deletes a never-enrolled login without needing a participant or trusting a supplied UID",
+        "status": "passed"
+      },
+      {
+        "name": "removes helper and trusted-contact access without deleting the other person or their calls",
+        "status": "passed"
+      },
+      {
+        "name": "checks every owned phone before erasure, preserving all data if one still forwards",
+        "status": "passed"
+      },
+      {
+        "name": "erases unaccepted requests to a verified number without taking over a recycled number\u2019s old relationships",
+        "status": "passed"
+      },
+      {
+        "name": "erases owned data in pages, preserves provider erasure jobs and retries identity deletion safely",
+        "status": "passed"
+      },
+      {
+        "name": "persists an idempotent deletion receipt, fences writes, and waits for in-flight work before erasure",
+        "status": "passed"
+      },
+      {
+        "name": "shares only phone-list fields, deduplicates numbers and restricts the operation to the owner",
+        "status": "passed"
+      },
+      {
+        "name": "can remove and restore a number without losing its original list identity",
+        "status": "passed"
+      },
+      {
+        "name": "adds only the selected contact, retries safely and restores its original identity without replacing the calling list",
+        "status": "passed"
+      },
+      {
+        "name": "fences individual contact additions, restorations and deletions while a full share owns the list",
+        "status": "passed"
+      },
+      {
+        "name": "restricts history and checks to an owner or accepted caregiver",
+        "status": "passed"
+      },
+      {
+        "name": "accepts invitations once and enforces immediate revocation and owner-only writes",
+        "status": "passed"
+      },
+      {
+        "name": "matches iOS contacts and pagination DTOs without leaking expired history",
+        "status": "passed"
+      },
+      {
+        "name": "preserves the total beyond seven days and cleanup, without duplicate backfills or another person\u2019s calls",
+        "status": "passed"
+      },
+      {
+        "name": "backfills multiple pages and seeds expired history before its first cleanup",
+        "status": "passed"
+      },
+      {
+        "name": "commits quota groups atomically under contention",
+        "status": "passed"
+      },
+      {
+        "name": "checks pasted text only with consent, without storing it, and never claims a sender is genuine",
+        "status": "passed"
+      },
+      {
+        "name": "reports the Telnyx number in setup and no longer reports a direct-call trial window",
+        "status": "passed"
+      },
+      {
+        "name": "serves only approved generic audio from the packaged fallback route",
+        "status": "passed"
+      },
+      {
+        "name": "starts one fixed-recipient test on concurrent taps and never returns its challenge",
+        "status": "passed"
+      },
+      {
+        "name": "opens an owner-approved window without extending it or resetting consumed calls",
+        "status": "passed"
+      },
+      {
+        "name": "requires the sound-check digit on the bound signed outbound leg",
+        "status": "passed"
+      },
+      {
+        "name": "requires the unique challenge to traverse both legs before reporting forwarding",
+        "status": "passed"
+      },
+      {
+        "name": "does not retry an uncertain provider request and enforces expiry and daily limits",
+        "status": "passed"
+      },
+      {
+        "name": "restoration stops in-flight test evidence from passing",
+        "status": "passed"
+      },
+      {
+        "name": "cancels unchanged restoration intent without changing service and survives lost-response retries",
+        "status": "passed"
+      },
+      {
+        "name": "requires fresh setup evidence after cancellation with changed settings and fences pre-disconnection tests",
+        "status": "passed"
+      },
+      {
+        "name": "handles cancellation racing with a confirmation and supports old sessions without a saved stage",
+        "status": "passed"
+      },
+      {
+        "name": "saves ordered restoration progress, rejects stale/skipped steps and completes without a helper",
+        "status": "passed"
+      },
+      {
+        "name": "uses saved instructions without guessing codes and catches a forwarded call during the final checks",
+        "status": "passed"
+      },
+      {
+        "name": "rejects a child without authenticated parent binding, wrong parent and wrong destination",
+        "status": "passed"
+      },
+      {
+        "name": "rejects the wrong application and requires renewed provider consent",
+        "status": "passed"
+      },
+      {
+        "name": "requires authentic provider signatures and rejects loopback numbers",
+        "status": "passed"
+      },
+      {
+        "name": "screens a withheld caller ID (\"anonymous\") without storing it or trusting it",
+        "status": "passed"
+      },
+      {
+        "name": "screens a withheld caller ID (\"Restricted\") without storing it or trusting it",
+        "status": "passed"
+      },
+      {
+        "name": "screens a withheld caller ID (\"+anonymous\") without storing it or trusting it",
+        "status": "passed"
+      },
+      {
+        "name": "screens a withheld caller ID (\"\") without storing it or trusting it",
+        "status": "passed"
+      },
+      {
+        "name": "screens an international caller and binds the webhook caller to the provider record",
+        "status": "passed"
+      },
+      {
+        "name": "never matches a withheld caller to a single-caller test scope",
+        "status": "passed"
+      },
+      {
+        "name": "allows any caller but only one offer at a time, including recursive forwarding",
+        "status": "passed"
+      },
+      {
+        "name": "never offers outside the window, over quota, paused, or to a trusted caller",
+        "status": "passed"
+      },
+      {
+        "name": "offers only the fixed enrolled recipient, requires the bound child and press 1",
+        "status": "passed"
+      },
+      {
+        "name": "routes non-acceptance 2 to voicemail without recording a conversation",
+        "status": "passed"
+      },
+      {
+        "name": "routes non-acceptance  to voicemail without recording a conversation",
+        "status": "passed"
+      },
+      {
+        "name": "routes non-acceptance 9 to voicemail without recording a conversation",
+        "status": "passed"
+      },
+      {
+        "name": "does not start disconnection while a call is still being offered",
+        "status": "passed"
+      },
+      {
+        "name": "expires acceptance even if the callback started during the window",
+        "status": "passed"
+      },
+      {
+        "name": "gates setup and never equates button acknowledgements with a verified routing test",
+        "status": "passed"
+      },
+      {
+        "name": "deduplicates voicemail, rejects invalid durations and protects encrypted audio",
+        "status": "passed"
+      },
+      {
+        "name": "sends every forwarded caller to voicemail when live screening is switched off",
+        "status": "passed"
+      },
+      {
+        "name": "screens a number removed from the shared list and skips screening for one still saved",
+        "status": "passed"
+      },
+      {
+        "name": "claims live audio only once, preserves a silent block, and releases the call lock",
+        "status": "passed"
+      },
+      {
+        "name": "preserves the block when the carrier completion callback arrives first",
+        "status": "passed"
+      },
+      {
+        "name": "rechecks the test window before a live approval can offer a call",
+        "status": "passed"
+      },
+      {
+        "name": "gives voicemail instead of hanging up after an unresolved hold",
+        "status": "passed"
+      },
+      {
+        "name": "gives voicemail instead of hanging up after a screening failure",
+        "status": "passed"
+      },
+      {
+        "name": "gives voicemail instead of hanging up after a screening timeout",
+        "status": "passed"
+      },
+      {
+        "name": "never offers voicemail to a blocked scam or a silent line",
+        "status": "passed"
+      },
+      {
+        "name": "remembers a scam number and ends its next call at once, without screening, voicemail or the daily allowance",
+        "status": "passed"
+      },
+      {
+        "name": "blocks a saved contact that turned out to be a scam, and screens again once the block expires",
+        "status": "passed"
+      },
+      {
+        "name": "does not remember the number or set caution after a robocall",
+        "status": "passed"
+      },
+      {
+        "name": "does not remember the number or set caution after a solicitation",
+        "status": "passed"
+      },
+      {
+        "name": "does not remember the number or set caution after a silent line",
+        "status": "passed"
+      },
+      {
+        "name": "does not remember the number or set caution after an unresolved hold",
+        "status": "passed"
+      },
+      {
+        "name": "sets caution after a withheld scam caller, who cannot be blocked by number",
+        "status": "passed"
+      },
+      {
+        "name": "screens with caution for 24 hours after a stopped scam, and only then",
+        "status": "passed"
+      },
+      {
+        "name": "keeps at most a fixed number of blocked attempts a day in history but ends every one",
+        "status": "passed"
+      },
+      {
+        "name": "lists blocked numbers to the person and lets only the person unblock",
+        "status": "passed"
+      },
+      {
+        "name": "hides expired blocks at once and removes them in daily cleanup",
+        "status": "passed"
+      },
+      {
+        "name": "paginates all blocked numbers beyond 200 with stable ordering for equal timestamps",
+        "status": "passed"
+      },
+      {
+        "name": "continues after a full page of expired blocks to return older active numbers",
+        "status": "passed"
+      },
+      {
+        "name": "continues from cursor values when the boundary document was deleted",
+        "status": "passed"
+      },
+      {
+        "name": "rechecks sharing on every blocked-number page and keeps unblocking owner-only",
+        "status": "passed"
+      },
+      {
+        "name": "rejects malformed and wrong-person blocked-number cursors",
+        "status": "passed"
+      },
+      {
+        "name": "resumes an approved Live call through the existing private callback route",
+        "status": "passed"
+      },
+      {
+        "name": "reuses a real bridge process after disconnect, missing start, and malformed media",
+        "status": "passed"
+      },
+      {
+        "name": "does not record success until the actual operation completes",
+        "status": "passed"
+      },
+      {
+        "name": "rejects a partial batch while preserving the last successful run",
+        "status": "passed"
+      },
+      {
+        "name": "sanitizes arbitrary provider failures before platform logging and keeps failure visible",
+        "status": "passed"
+      },
+      {
+        "name": "does not replace a newer successful run with an older late failure",
+        "status": "passed"
+      },
+      {
+        "name": "does not claim success if saving completion fails",
+        "status": "passed"
+      },
+      {
+        "name": "keeps initialization errors and health-check errors out of logs",
+        "status": "passed"
+      },
+      {
+        "name": "does not retry successful customer work merely because console logging throws",
+        "status": "passed"
+      },
+      {
+        "name": "rejects invalid batch failure counts instead of claiming health",
+        "status": "passed"
+      },
+      {
+        "name": "reports fresh completed jobs and an empty backlog without writing any health data",
+        "status": "passed"
+      },
+      {
+        "name": "detects stale cleanupShield even when every backlog is empty",
+        "status": "passed"
+      },
+      {
+        "name": "detects stale finishAccountDeletions even when every backlog is empty",
+        "status": "passed"
+      },
+      {
+        "name": "detects stale reviewServiceAccess even when every backlog is empty",
+        "status": "passed"
+      },
+      {
+        "name": "detects stale expireMessageDeliveries even when every backlog is empty",
+        "status": "passed"
+      },
+      {
+        "name": "treats absent, failed, incomplete and future-dated results as unhealthy",
+        "status": "passed"
+      },
+      {
+        "name": "measures deletion age from the original request, not the renewed lease or retry time",
+        "status": "passed"
+      },
+      {
+        "name": "counts overdue audio, chunks, provider erasure, call deadlines and monitor checks with their grace periods",
+        "status": "passed"
+      },
+      {
+        "name": "is off until the owner opts in with the current consent, and only when the service offers it",
+        "status": "passed"
+      },
+      {
+        "name": "asks for the onboarding choice again when an enabled consent is outdated",
+        "status": "passed"
+      },
+      {
+        "name": "offers calls exactly as before when the owner has not opted in",
+        "status": "passed"
+      },
+      {
+        "name": "discloses to the caller, then transcribes both sides with the configured engine",
+        "status": "passed"
+      },
+      {
+        "name": "keeps only final, signed, same-call speech encrypted, coalescing updates before spending a check",
+        "status": "passed"
+      },
+      {
+        "name": "schedules speech arriving during a check and checks its latest words even if the speakers then go quiet",
+        "status": "passed"
+      },
+      {
+        "name": "recovers a crashed worker without another transcript, charging its abandoned attempt to the old window",
+        "status": "passed"
+      },
+      {
+        "name": "records when the quoted request arrived and when the warning started, without its words",
+        "status": "passed"
+      },
+      {
+        "name": "leaves the arrival time out when the quote cannot be placed",
+        "status": "passed"
+      },
+      {
+        "name": "re-checks speech that arrived during a check and keeps a real conversation going",
+        "status": "passed"
+      },
+      {
+        "name": "does not end a call on an invented quote",
+        "status": "passed"
+      },
+      {
+        "name": "ends a clear scam with a spoken warning to her only, then forgets the transcript",
+        "status": "passed"
+      },
+      {
+        "name": "blocks the caller's number and sets caution once Shield ends a connected call",
+        "status": "passed"
+      },
+      {
+        "name": "ends the whole call if her leg cannot be redirected to the warning",
+        "status": "passed"
+      },
+      {
+        "name": "deletes the transcript when an unremarkable call ends",
+        "status": "passed"
+      },
+      {
+        "name": "never pays twice for duplicate task delivery, including concurrent delivery",
+        "status": "passed"
+      },
+      {
+        "name": "keeps old API jobs working during promotion and switches their follow-up to the new cadence",
+        "status": "passed"
+      },
+      {
+        "name": "has 240 reserved windows across a busy full hour, with a real check in the last minute",
+        "status": "passed"
+      },
+      {
+        "name": "skips silence, keeps late-call protection, and dispatches only a contentless delayed task",
+        "status": "passed"
+      },
+      {
+        "name": "lets 25 different users request codes behind one proxy without trusting forwarded IPs",
+        "status": "passed"
+      },
+      {
+        "name": "issues opaque expiring challenges, throttles resends, and never mints a session for an incorrect code",
+        "status": "passed"
+      },
+      {
+        "name": "rejects expired and exhausted challenges before calling the provider",
+        "status": "passed"
+      },
+      {
+        "name": "serializes concurrent verification so only one session can be minted",
+        "status": "passed"
+      },
+      {
+        "name": "erases verified challenge payload even when the identity exchange fails, without allowing a replay",
+        "status": "passed"
+      },
+      {
+        "name": "erases an exhausted challenge after a provider failure without allowing another provider check",
+        "status": "passed"
+      },
+      {
+        "name": "fences a slow verification whose lease was superseded, even if the provider accepts it",
+        "status": "passed"
+      },
+      {
+        "name": "limits active contacts to five and keeps declined contacts from consuming a slot",
+        "status": "passed"
+      },
+      {
+        "name": "requires explicit owner choice and a real contact before enabling, and saves no without requiring contacts",
+        "status": "passed"
+      },
+      {
+        "name": "sends only a generic request and retries the same save without sending another text",
+        "status": "passed"
+      },
+      {
+        "name": "requires matching verified phone consent and never grants call history or recording access",
+        "status": "passed"
+      },
+      {
+        "name": "delivers an opted-in monitoring intervention once through text and push, but no other event",
+        "status": "passed"
+      },
+      {
+        "name": "does not send duplicate pushes when a caretaker also has shared call access or workers overlap",
+        "status": "passed"
+      },
+      {
+        "name": "does not deliver queued events from before acceptance",
+        "status": "passed"
+      },
+      {
+        "name": "stops alerts immediately after no",
+        "status": "passed"
+      },
+      {
+        "name": "stops alerts immediately after decline",
+        "status": "passed"
+      },
+      {
+        "name": "stops alerts immediately after revoke",
+        "status": "passed"
+      },
+      {
+        "name": "stops alerts immediately after offboard",
+        "status": "passed"
+      },
+      {
+        "name": "honors signed STOP/START in order, rejects forged hooks and leaves push choices intact",
+        "status": "passed"
+      },
+      {
+        "name": "expires pending requests, retains accepted consent, and disables features without provider configuration",
+        "status": "passed"
+      },
+      {
+        "name": "screens two people's overlapping calls at once and dials each only to their own phone",
+        "status": "passed"
+      },
+      {
+        "name": "binds and accepts only the person's own leg: B's phone can never pick up A's call",
+        "status": "passed"
+      },
+      {
+        "name": "keeps each person's contacts, pause and one-call-at-a-time to themselves",
+        "status": "passed"
+      },
+      {
+        "name": "answers nothing on an unknown, available or quarantined number",
+        "status": "passed"
+      },
+      {
+        "name": "never screens a call from any Shield number, assigned or not (loop guard)",
+        "status": "passed"
+      },
+      {
+        "name": "refuses a number registered to someone else even if a person record names it",
+        "status": "passed"
+      },
+      {
+        "name": "sends callers to voicemail past each person's daily screening cap, counted on Central time, without touching others",
+        "status": "passed"
+      },
+      {
+        "name": "screens around the clock once always-on, without using a test window",
+        "status": "passed"
+      },
+      {
+        "name": "sends an approved always-on caller to voicemail in quiet hours, but a supervised test window still rings",
+        "status": "passed"
+      },
+      {
+        "name": "asks the protection question before a Shield number is assigned, but keeps forwarding setup for enrolled people",
+        "status": "passed"
+      },
+      {
+        "name": "lets each person set quiet hours, and validates them",
+        "status": "passed"
+      },
+      {
+        "name": "sends a call the bridge has no room for to voicemail, never to the person",
+        "status": "passed"
+      },
+      {
+        "name": "runs each person's phone tests between their own Shield number and phone only",
+        "status": "passed"
+      },
+      {
+        "name": "shows each person their own number and their carrier's codes, and none for an untested carrier",
+        "status": "passed"
+      },
+      {
+        "name": "leaves existing assisted users alone and rejects client-supplied entitlement flags",
+        "status": "passed"
+      },
+      {
+        "name": "requires verified ownership, country, carrier and prepared restoration before approving a purchase",
+        "status": "passed"
+      },
+      {
+        "name": "supports an approval dry run and binds only an opaque customer ID to this authenticated account",
+        "status": "passed"
+      },
+      {
+        "name": "never enables purchases when the runtime switch is off or the person is no longer eligible",
+        "status": "passed"
+      },
+      {
+        "name": "keeps expired access out of activation without changing carrier routing or history",
+        "status": "passed"
+      },
+      {
+        "name": "keeps Apple cancellation guidance available for deletion during a provider outage",
+        "status": "passed"
+      },
+      {
+        "name": "caps the pilot at ten accounts with idempotent grants and no public billing configuration",
+        "status": "passed"
+      },
+      {
+        "name": "starts the pilot only after both server checks and consent, with a persisted non-renewing end date",
+        "status": "passed"
+      },
+      {
+        "name": "authenticates, re-queries and deduplicates webhooks instead of trusting their entitlement claims",
+        "status": "passed"
+      },
+      {
+        "name": "rechecks both existing accounts after a transfer and ignores an unbound alias",
+        "status": "passed"
+      },
+      {
+        "name": "keeps a failed webhook retryable and serializes competing account refreshes",
+        "status": "passed"
+      },
+      {
+        "name": "does not overwrite a newer provider snapshot with an older response",
+        "status": "passed"
+      },
+      {
+        "name": "recovers missed billing events and flags expired pilots without changing a phone",
+        "status": "passed"
+      },
+      {
+        "name": "reports unconfigured public subscriptions as failed instead of silently advancing past them",
+        "status": "passed"
+      },
+      {
+        "name": "fences deletion during a lookup and keeps failed provider erasure retryable",
+        "status": "passed"
+      },
+      {
+        "name": "does not delete the login before provider erasure succeeds, and retries after participant cleanup",
+        "status": "passed"
+      },
+      {
+        "name": "calls from the check number to the person's own phone, once a day, only when always-on and outside quiet hours",
+        "status": "passed"
+      },
+      {
+        "name": "passes when the call comes straight back through forwarding, and hangs up without screening it",
+        "status": "passed"
+      },
+      {
+        "name": "never lets a late or stray call from the check number vouch for an old check",
+        "status": "passed"
+      },
+      {
+        "name": "flags a call that rang her phone first, and alerts",
+        "status": "passed"
+      },
+      {
+        "name": "speaks the fixed message when her phone answers, and only on the check call's own legs",
+        "status": "passed"
+      },
+      {
+        "name": "stays quiet when the forwarded copy arrived before the answer was reported",
+        "status": "passed"
+      },
+      {
+        "name": "reports broken forwarding when the call ends without coming back, and records one result only",
+        "status": "passed"
+      },
+      {
+        "name": "counts a failed dial or a lost status as broken forwarding",
+        "status": "passed"
+      },
+      {
+        "name": "runs from the app at launch when the last check is over a day old, and shows the result",
+        "status": "passed"
+      },
+      {
+        "name": "checks every always-on person in the daily run",
+        "status": "passed"
+      },
+      {
+        "name": "accepts one normalized forwarding identity and rejects missing, malformed, conflicting, or injected headers",
+        "status": "passed"
+      },
+      {
+        "name": "enforces the 25-person enrollment cap and never reassigns an existing forwarding identity",
+        "status": "passed"
+      },
+      {
+        "name": "admits 25 simultaneous users across two independent clients, then refuses a duplicate live leg",
+        "status": "passed"
+      },
+      {
+        "name": "does not fall back to the caller, another senior, or a shared voicemail when metadata is absent",
+        "status": "passed"
+      },
+      {
+        "name": "isolates 25 concurrent offers, rejects cross-call acceptance, bridges only press 1 and releases all slots",
+        "status": "passed"
+      },
+      {
+        "name": "keeps per-person screening and incoming-call quotas isolated at the larger pilot size",
+        "status": "passed"
+      },
+      {
+        "name": "keeps ten connected calls intact and sends the eleventh to its own voicemail after http-rejection",
+        "status": "passed"
+      },
+      {
+        "name": "keeps ten connected calls intact and sends the eleventh to its own voicemail after hangup-callback",
+        "status": "passed"
+      },
+      {
+        "name": "pins the verified recipient even when the participant phone record later changes",
+        "status": "passed"
+      },
+      {
+        "name": "deduplicates retries and binds only the intended recipient before press-1 bridging",
+        "status": "passed"
+      },
+      {
+        "name": "keeps an accepted call and its capacity beyond five minutes, then ends it at the hour",
+        "status": "passed"
+      },
+      {
+        "name": "plays Grace before starting screening, and ignores old TTS completion callbacks",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed Grace greeting once with Joanna (failed), then waits for completion",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed Grace greeting once with Joanna (file_not_found), then waits for completion",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed Grace greeting once with Joanna (unknown), then waits for completion",
+        "status": "passed"
+      },
+      {
+        "name": "never advances a canceled prompt or an unsuccessful backup",
+        "status": "passed"
+      },
+      {
+        "name": "uses Joanna after a definite provider rejection, but retries uncertain playback without switching voices",
+        "status": "passed"
+      },
+      {
+        "name": "waits for the Joanna hold disclosure before dialing after Grace fails",
+        "status": "passed"
+      },
+      {
+        "name": "cannot accept a late primary gather after falling back, and still requires press 1 on the bound recipient",
+        "status": "passed"
+      },
+      {
+        "name": "preserves a legitimate keypad interruption of Grace and the no-tone captured voicemail prompt",
+        "status": "passed"
+      },
+      {
+        "name": "moves only the accepted recipient before caller removal, then plays the recording once after its signed receipt",
+        "status": "passed"
+      },
+      {
+        "name": "fences uncertain room creation and never retries it or sends backup speech",
+        "status": "passed"
+      },
+      {
+        "name": "waits for an unheld isolated recipient and fails closed for an unexpected participant",
+        "status": "passed"
+      },
+      {
+        "name": "does not replay an uncertain conference playback, and never revives an ended or expired recipient",
+        "status": "passed"
+      },
+      {
+        "name": "fences simultaneous handoff workers before creating a room",
+        "status": "passed"
+      },
+      {
+        "name": "preserves the legacy monitoring warning fallback during rollout",
+        "status": "passed"
+      },
+      {
+        "name": "preserves warning receipts and fallback while the caller hangup holds the call executor",
+        "status": "passed"
+      },
+      {
+        "name": "queues one warning only after both bound legs confirm separation, even during executor contention",
+        "status": "passed"
+      },
+      {
+        "name": "does not resurrect warning playback after the recipient hangs up or its cleanup deadline passes",
+        "status": "passed"
+      },
+      {
+        "name": "records interrupted warning playback without claiming completion or acting on another leg",
+        "status": "passed"
+      },
+      {
+        "name": "defaults the sound check to Grace and only confirms the active backup gather after failure",
+        "status": "passed"
+      },
+      {
+        "name": "uses Joanna for a rejected warning audio command, and ends the recipient after its backup finishes",
+        "status": "passed"
+      },
+      {
+        "name": "records from answer before the greeting, and a saved callback cannot hang up a connected call",
+        "status": "passed"
+      },
+      {
+        "name": "never bridges if stopping the temporary capture fails",
+        "status": "passed"
+      },
+      {
+        "name": "saves a notice outcome even when the recording hangs up first, without offering a live call",
+        "status": "passed"
+      },
+      {
+        "name": "never bridges rejection, silence, the inbound caller\u2019s digit, or another person\u2019s child leg",
+        "status": "passed"
+      },
+      {
+        "name": "accepts signed raw JSON only from the configured application",
+        "status": "passed"
+      },
+      {
+        "name": "handles hangup before initiation and never resurrects the call",
+        "status": "passed"
+      },
+      {
+        "name": "retries an uncertain answer with the same command id, but never redials an uncertain outbound call",
+        "status": "passed"
+      },
+      {
+        "name": "sweeps a crashed screening session without releasing capacity before successful hangup",
+        "status": "passed"
+      },
+      {
+        "name": "qualifies two simultaneous forwarding checks independently, never using another senior\u2019s nonce",
+        "status": "passed"
+      },
+      {
+        "name": "revoking a route or changing its verified phone prevents a pending offer from being accepted",
+        "status": "passed"
+      },
+      {
+        "name": "does not let an in-flight forwarding check undo an operator revocation",
+        "status": "passed"
+      },
+      {
+        "name": "keeps the slot when the caller hangs up but recipient termination is uncertain",
+        "status": "passed"
+      },
+      {
+        "name": "recovers failed media with a held executor lock (bridge claimed: false)",
+        "status": "passed"
+      },
+      {
+        "name": "recovers failed media with a held executor lock (bridge claimed: true)",
+        "status": "passed"
+      },
+      {
+        "name": "retries failed recovery without repeating a successful voicemail command",
+        "status": "passed"
+      },
+      {
+        "name": "releases an unconnected hangup during a stalled outcome and admits the next caller",
+        "status": "passed"
+      },
+      {
+        "name": "persists a recording callback despite a held executor lock",
+        "status": "passed"
+      },
+      {
+        "name": "still terminates a completed saved notice without mistaking its decision for a carrier hangup",
+        "status": "passed"
+      },
+      {
+        "name": "ignores stale media failure after an offer or acceptance and rejects another inbound leg",
+        "status": "passed"
+      },
+      {
+        "name": "keeps ringing during preparation and does not invite speech until the actual recognizer is ready",
+        "status": "passed"
+      },
+      {
+        "name": "recovers admission even if the webhook process dies before any startup work",
+        "status": "passed"
+      },
+      {
+        "name": "ignores hangup before the startup worker and admits a new call immediately",
+        "status": "passed"
+      },
+      {
+        "name": "admits the next caller while an old preparation is stuck and ignores its late success",
+        "status": "passed"
+      },
+      {
+        "name": "offers voicemail after failed preparation and a hangup cannot strand the next call",
+        "status": "passed"
+      },
+      {
+        "name": "releases hangup before-ready without letting late work affect a new call",
+        "status": "passed"
+      },
+      {
+        "name": "releases hangup queued-greeting without letting late work affect a new call",
+        "status": "passed"
+      },
+      {
+        "name": "releases hangup during-greeting without letting late work affect a new call",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed greeting with the same command and never restarts streaming",
+        "status": "passed"
+      },
+      {
+        "name": "recovers a persisted outcome on a fresh worker after the media process disappears",
+        "status": "passed"
+      },
+      {
+        "name": "persists recovery even when all media-failure webhook attempts fail",
+        "status": "passed"
+      },
+      {
+        "name": "uses the durable startup deadline when no media or failed-stream webhook arrives",
+        "status": "passed"
+      },
+      {
+        "name": "never releases capacity for an unconfirmed timeout hangup and retries it independently",
+        "status": "passed"
+      },
+      {
+        "name": "discards an obsolete deadline and a delayed outcome once the recipient has accepted",
+        "status": "passed"
+      },
+      {
+        "name": "deduplicates queue delivery but propagates dispatch failures for durable retry",
+        "status": "passed"
+      },
+      {
+        "name": "does not admit disabled or unverified routes",
+        "status": "passed"
+      },
+      {
+        "name": "holds a newly stored message for its check instead of showing it",
+        "status": "passed"
+      },
+      {
+        "name": "processes readable messages even when the legacy voicemail switch is off",
+        "status": "passed"
+      },
+      {
+        "name": "shows and alerts a kept message",
+        "status": "passed"
+      },
+      {
+        "name": "discards a clear scam without keeping playable audio or readable text",
+        "status": "passed"
+      },
+      {
+        "name": "purges a removed message after 7 days, after which it cannot be restored",
+        "status": "passed"
+      },
+      {
+        "name": "does not use a saved caller ID to exempt a clear harmful message",
+        "status": "passed"
+      },
+      {
+        "name": "keeps the message when transcription fails or the model throws",
+        "status": "passed"
+      },
+      {
+        "name": "leaves a message alone if it was deleted during the check",
+        "status": "passed"
+      },
+      {
+        "name": "purges capture content if a clear screening block arrives during processing",
+        "status": "passed"
+      },
+      {
+        "name": "honors a delayed screening block after a capture has already been summarized",
+        "status": "passed"
+      },
+      {
+        "name": "removes message content and legacy check jobs on account deletion",
+        "status": "passed"
+      },
+      {
+        "name": "keeps a message whose check never ran, once it is an hour old",
+        "status": "passed"
+      },
+      {
+        "name": "saves an encrypted summary and decision but never a transcript or quoted evidence",
+        "status": "passed"
+      },
+      {
+        "name": "never returns a previously stored transcript and removes it on message processing",
+        "status": "passed"
+      },
+      {
+        "name": "preserves a one-shot notice from the initial capture and reassembles encrypted chunks",
+        "status": "passed"
+      },
+      {
+        "name": "deletes the provider capture for answered without downloading or creating a message",
+        "status": "passed"
+      },
+      {
+        "name": "deletes the provider capture for scam without downloading or creating a message",
+        "status": "passed"
+      },
+      {
+        "name": "deletes the provider capture for deleted without downloading or creating a message",
+        "status": "passed"
+      },
+      {
+        "name": "waits for the final call outcome, and retries provider deletion without resurrecting deleted content",
+        "status": "passed"
+      },
+      {
+        "name": "allows terminal screening time after hangup even when capture began earlier",
+        "status": "passed"
+      },
+      {
+        "name": "keeps a download until owner confirmation, deletes every chunk, and accepts a lost-response retry",
+        "status": "passed"
+      },
+      {
+        "name": "does not hand off pending audio before its content check finishes",
+        "status": "passed"
+      },
+      {
+        "name": "does not let a listening helper, another account, or a tampered receipt delete the owner copy",
+        "status": "passed"
+      },
+      {
+        "name": "refuses a receipt for an audio revision replaced during download",
+        "status": "passed"
+      },
+      {
+        "name": "rejects confirmation after the account or message is deleted",
+        "status": "passed"
+      },
+      {
+        "name": "rejects confirmation after the account or message is offboarded",
+        "status": "passed"
+      },
+      {
+        "name": "expires delivery at 24 hours and physically removes audio while preserving its summary",
+        "status": "passed"
+      },
+      {
+        "name": "never extends an existing delivery window when restoring a legacy removal",
+        "status": "passed"
+      },
+      {
+        "name": "does not resurrect delivered audio on a late provider callback",
+        "status": "passed"
+      },
+      {
+        "name": "does not resurrect expired audio on a late provider callback",
+        "status": "passed"
+      },
+      {
+        "name": "deletes an overdue provider copy even if startup or the call outcome never finished",
+        "status": "passed"
+      },
+      {
+        "name": "advances past failing deletion jobs and wraps around to retry them",
+        "status": "passed"
+      }
+    ]
+  },
+  "accounts": {
+    "node": "22.17.1",
+    "passed": 8,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "242766fed9fa24885657093d286a557a826f37f8a54d0d9399e8201a5f5df8cf",
+    "cases": [
+      {
+        "name": "erases the never-enrolled account and its sessions while preserving other people",
+        "status": "passed"
+      },
+      {
+        "name": "erases the helper account and its sessions while preserving other people",
+        "status": "passed"
+      },
+      {
+        "name": "erases the alert-only account and its sessions while preserving other people",
+        "status": "passed"
+      },
+      {
+        "name": "erases the owner account and its sessions while preserving other people",
+        "status": "passed"
+      },
+      {
+        "name": "erases the multiple-owned-phones account and its sessions while preserving other people",
+        "status": "passed"
+      },
+      {
+        "name": "rejects deletion when any owned phone still forwards, without deleting the identity or another phone",
+        "status": "passed"
+      },
+      {
+        "name": "finishes from the receipt after Firebase deleted the user but its response was lost",
+        "status": "passed"
+      },
+      {
+        "name": "recreates the same verified phone as a new identity without restoring deleted access or history",
+        "status": "passed"
+      }
+    ]
+  },
+  "exactAPIRetry": {
+    "passed": 6,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "844f8c6097100ad8f79c5aa5d5b325aa3fbd36542e84b0cbae5f91528c075acf",
+    "cases": [
+      {
+        "name": "restarts the transaction after an aborted query without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "restarts the transaction after an aborted documents without replaying a closed read",
+        "status": "passed"
+      },
+      {
+        "name": "propagates non-retryable status 7 without replaying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "propagates non-retryable status 3 without replaying the read or committing",
+        "status": "passed"
+      },
+      {
+        "name": "preserves transient unavailable retries inside the same transaction",
+        "status": "passed"
+      },
+      {
+        "name": "stops at the existing transaction attempt limit without committing",
+        "status": "passed"
+      }
+    ]
+  },
+  "exactPackageIntegration": {
+    "passed": 85,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "reportSha256": "88a41a500beb832d5994c9f308c95a54c0d7e32d2c9d90117a1e42ece31e9379",
+    "cases": [
+      {
+        "name": "deletes a never-enrolled login without needing a participant or trusting a supplied UID",
+        "status": "passed"
+      },
+      {
+        "name": "removes helper and trusted-contact access without deleting the other person or their calls",
+        "status": "passed"
+      },
+      {
+        "name": "checks every owned phone before erasure, preserving all data if one still forwards",
+        "status": "passed"
+      },
+      {
+        "name": "erases unaccepted requests to a verified number without taking over a recycled number\u2019s old relationships",
+        "status": "passed"
+      },
+      {
+        "name": "erases owned data in pages, preserves provider erasure jobs and retries identity deletion safely",
+        "status": "passed"
+      },
+      {
+        "name": "persists an idempotent deletion receipt, fences writes, and waits for in-flight work before erasure",
+        "status": "passed"
+      },
+      {
+        "name": "shares only phone-list fields, deduplicates numbers and restricts the operation to the owner",
+        "status": "passed"
+      },
+      {
+        "name": "can remove and restore a number without losing its original list identity",
+        "status": "passed"
+      },
+      {
+        "name": "adds only the selected contact, retries safely and restores its original identity without replacing the calling list",
+        "status": "passed"
+      },
+      {
+        "name": "fences individual contact additions, restorations and deletions while a full share owns the list",
+        "status": "passed"
+      },
+      {
+        "name": "restricts history and checks to an owner or accepted caregiver",
+        "status": "passed"
+      },
+      {
+        "name": "accepts invitations once and enforces immediate revocation and owner-only writes",
+        "status": "passed"
+      },
+      {
+        "name": "matches iOS contacts and pagination DTOs without leaking expired history",
+        "status": "passed"
+      },
+      {
+        "name": "preserves the total beyond seven days and cleanup, without duplicate backfills or another person\u2019s calls",
+        "status": "passed"
+      },
+      {
+        "name": "backfills multiple pages and seeds expired history before its first cleanup",
+        "status": "passed"
+      },
+      {
+        "name": "commits quota groups atomically under contention",
+        "status": "passed"
+      },
+      {
+        "name": "checks pasted text only with consent, without storing it, and never claims a sender is genuine",
+        "status": "passed"
+      },
+      {
+        "name": "reports the Telnyx number in setup and no longer reports a direct-call trial window",
+        "status": "passed"
+      },
+      {
+        "name": "accepts one normalized forwarding identity and rejects missing, malformed, conflicting, or injected headers",
+        "status": "passed"
+      },
+      {
+        "name": "enforces the 25-person enrollment cap and never reassigns an existing forwarding identity",
+        "status": "passed"
+      },
+      {
+        "name": "admits 25 simultaneous users across two independent clients, then refuses a duplicate live leg",
+        "status": "passed"
+      },
+      {
+        "name": "does not fall back to the caller, another senior, or a shared voicemail when metadata is absent",
+        "status": "passed"
+      },
+      {
+        "name": "isolates 25 concurrent offers, rejects cross-call acceptance, bridges only press 1 and releases all slots",
+        "status": "passed"
+      },
+      {
+        "name": "keeps per-person screening and incoming-call quotas isolated at the larger pilot size",
+        "status": "passed"
+      },
+      {
+        "name": "keeps ten connected calls intact and sends the eleventh to its own voicemail after http-rejection",
+        "status": "passed"
+      },
+      {
+        "name": "keeps ten connected calls intact and sends the eleventh to its own voicemail after hangup-callback",
+        "status": "passed"
+      },
+      {
+        "name": "pins the verified recipient even when the participant phone record later changes",
+        "status": "passed"
+      },
+      {
+        "name": "deduplicates retries and binds only the intended recipient before press-1 bridging",
+        "status": "passed"
+      },
+      {
+        "name": "keeps an accepted call and its capacity beyond five minutes, then ends it at the hour",
+        "status": "passed"
+      },
+      {
+        "name": "plays Grace before starting screening, and ignores old TTS completion callbacks",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed Grace greeting once with Joanna (failed), then waits for completion",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed Grace greeting once with Joanna (file_not_found), then waits for completion",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed Grace greeting once with Joanna (unknown), then waits for completion",
+        "status": "passed"
+      },
+      {
+        "name": "never advances a canceled prompt or an unsuccessful backup",
+        "status": "passed"
+      },
+      {
+        "name": "uses Joanna after a definite provider rejection, but retries uncertain playback without switching voices",
+        "status": "passed"
+      },
+      {
+        "name": "waits for the Joanna hold disclosure before dialing after Grace fails",
+        "status": "passed"
+      },
+      {
+        "name": "cannot accept a late primary gather after falling back, and still requires press 1 on the bound recipient",
+        "status": "passed"
+      },
+      {
+        "name": "preserves a legitimate keypad interruption of Grace and the no-tone captured voicemail prompt",
+        "status": "passed"
+      },
+      {
+        "name": "moves only the accepted recipient before caller removal, then plays the recording once after its signed receipt",
+        "status": "passed"
+      },
+      {
+        "name": "fences uncertain room creation and never retries it or sends backup speech",
+        "status": "passed"
+      },
+      {
+        "name": "waits for an unheld isolated recipient and fails closed for an unexpected participant",
+        "status": "passed"
+      },
+      {
+        "name": "does not replay an uncertain conference playback, and never revives an ended or expired recipient",
+        "status": "passed"
+      },
+      {
+        "name": "fences simultaneous handoff workers before creating a room",
+        "status": "passed"
+      },
+      {
+        "name": "preserves the legacy monitoring warning fallback during rollout",
+        "status": "passed"
+      },
+      {
+        "name": "preserves warning receipts and fallback while the caller hangup holds the call executor",
+        "status": "passed"
+      },
+      {
+        "name": "queues one warning only after both bound legs confirm separation, even during executor contention",
+        "status": "passed"
+      },
+      {
+        "name": "does not resurrect warning playback after the recipient hangs up or its cleanup deadline passes",
+        "status": "passed"
+      },
+      {
+        "name": "records interrupted warning playback without claiming completion or acting on another leg",
+        "status": "passed"
+      },
+      {
+        "name": "defaults the sound check to Grace and only confirms the active backup gather after failure",
+        "status": "passed"
+      },
+      {
+        "name": "uses Joanna for a rejected warning audio command, and ends the recipient after its backup finishes",
+        "status": "passed"
+      },
+      {
+        "name": "records from answer before the greeting, and a saved callback cannot hang up a connected call",
+        "status": "passed"
+      },
+      {
+        "name": "never bridges if stopping the temporary capture fails",
+        "status": "passed"
+      },
+      {
+        "name": "saves a notice outcome even when the recording hangs up first, without offering a live call",
+        "status": "passed"
+      },
+      {
+        "name": "never bridges rejection, silence, the inbound caller\u2019s digit, or another person\u2019s child leg",
+        "status": "passed"
+      },
+      {
+        "name": "accepts signed raw JSON only from the configured application",
+        "status": "passed"
+      },
+      {
+        "name": "handles hangup before initiation and never resurrects the call",
+        "status": "passed"
+      },
+      {
+        "name": "retries an uncertain answer with the same command id, but never redials an uncertain outbound call",
+        "status": "passed"
+      },
+      {
+        "name": "sweeps a crashed screening session without releasing capacity before successful hangup",
+        "status": "passed"
+      },
+      {
+        "name": "qualifies two simultaneous forwarding checks independently, never using another senior\u2019s nonce",
+        "status": "passed"
+      },
+      {
+        "name": "revoking a route or changing its verified phone prevents a pending offer from being accepted",
+        "status": "passed"
+      },
+      {
+        "name": "does not let an in-flight forwarding check undo an operator revocation",
+        "status": "passed"
+      },
+      {
+        "name": "keeps the slot when the caller hangs up but recipient termination is uncertain",
+        "status": "passed"
+      },
+      {
+        "name": "recovers failed media with a held executor lock (bridge claimed: false)",
+        "status": "passed"
+      },
+      {
+        "name": "recovers failed media with a held executor lock (bridge claimed: true)",
+        "status": "passed"
+      },
+      {
+        "name": "retries failed recovery without repeating a successful voicemail command",
+        "status": "passed"
+      },
+      {
+        "name": "releases an unconnected hangup during a stalled outcome and admits the next caller",
+        "status": "passed"
+      },
+      {
+        "name": "persists a recording callback despite a held executor lock",
+        "status": "passed"
+      },
+      {
+        "name": "still terminates a completed saved notice without mistaking its decision for a carrier hangup",
+        "status": "passed"
+      },
+      {
+        "name": "ignores stale media failure after an offer or acceptance and rejects another inbound leg",
+        "status": "passed"
+      },
+      {
+        "name": "keeps ringing during preparation and does not invite speech until the actual recognizer is ready",
+        "status": "passed"
+      },
+      {
+        "name": "recovers admission even if the webhook process dies before any startup work",
+        "status": "passed"
+      },
+      {
+        "name": "ignores hangup before the startup worker and admits a new call immediately",
+        "status": "passed"
+      },
+      {
+        "name": "admits the next caller while an old preparation is stuck and ignores its late success",
+        "status": "passed"
+      },
+      {
+        "name": "offers voicemail after failed preparation and a hangup cannot strand the next call",
+        "status": "passed"
+      },
+      {
+        "name": "releases hangup before-ready without letting late work affect a new call",
+        "status": "passed"
+      },
+      {
+        "name": "releases hangup queued-greeting without letting late work affect a new call",
+        "status": "passed"
+      },
+      {
+        "name": "releases hangup during-greeting without letting late work affect a new call",
+        "status": "passed"
+      },
+      {
+        "name": "retries a failed greeting with the same command and never restarts streaming",
+        "status": "passed"
+      },
+      {
+        "name": "recovers a persisted outcome on a fresh worker after the media process disappears",
+        "status": "passed"
+      },
+      {
+        "name": "persists recovery even when all media-failure webhook attempts fail",
+        "status": "passed"
+      },
+      {
+        "name": "uses the durable startup deadline when no media or failed-stream webhook arrives",
+        "status": "passed"
+      },
+      {
+        "name": "never releases capacity for an unconfirmed timeout hangup and retries it independently",
+        "status": "passed"
+      },
+      {
+        "name": "discards an obsolete deadline and a delayed outcome once the recipient has accepted",
+        "status": "passed"
+      },
+      {
+        "name": "deduplicates queue delivery but propagates dispatch failures for durable retry",
+        "status": "passed"
+      },
+      {
+        "name": "does not admit disabled or unverified routes",
+        "status": "passed"
+      }
+    ]
+  },
+  "exactPackageTestImports": "Only source paths changed; deletion batch processor linked to the actual finishAccountDeletions candidate; original assertions and fixtures preserved.",
+  "packageImports": {
+    "at": "2026-10-18T05:20:45.277Z",
+    "results": [
+      {
+        "function": "checkBackgroundHealth",
+        "exportPresent": true,
+        "filesVerified": 91
+      },
+      {
+        "function": "checkForwardingVoicemail",
+        "exportPresent": true,
+        "filesVerified": 73
+      },
+      {
+        "function": "cleanupShield",
+        "exportPresent": true,
+        "filesVerified": 88
+      },
+      {
+        "function": "dailySetupChecks",
+        "exportPresent": true,
+        "filesVerified": 72
+      },
+      {
+        "function": "dispatchSharedCallJob",
+        "exportPresent": true,
+        "filesVerified": 75
+      },
+      {
+        "function": "expireMessageDeliveries",
+        "exportPresent": true,
+        "filesVerified": 77
+      },
+      {
+        "function": "expireSharedCalls",
+        "exportPresent": true,
+        "filesVerified": 81
+      },
+      {
+        "function": "finishAccountDeletions",
+        "exportPresent": true,
+        "filesVerified": 88
+      },
+      {
+        "function": "ingestForwardingVoicemail",
+        "exportPresent": true,
+        "filesVerified": 73
+      },
+      {
+        "function": "monitorConnectedCall",
+        "exportPresent": true,
+        "filesVerified": 77
+      },
+      {
+        "function": "monitorScheduledCall",
+        "exportPresent": true,
+        "filesVerified": 77
+      },
+      {
+        "function": "reviewServiceAccess",
+        "exportPresent": true,
+        "filesVerified": 88
+      },
+      {
+        "function": "runSharedCallJob",
+        "exportPresent": true,
+        "filesVerified": 83
+      },
+      {
+        "function": "sendShieldAlert",
+        "exportPresent": true,
+        "filesVerified": 87
+      },
+      {
+        "function": "shieldApi",
+        "exportPresent": true,
+        "filesVerified": 90
+      }
+    ],
+    "invocations": 0
+  },
+  "bridgeLocalStartup": {
+    "live": {
+      "packagedBridgeStartup": "passed",
+      "policyVersion": "2026-10-13-general-v158",
+      "maxSessions": 10
+    },
+    "hybrid": {
+      "packagedBridgeStartup": "passed",
+      "policyVersion": "2026-10-13-general-v158",
+      "maxSessions": 10
+    },
+    "inheritedLockSha256": "a15f163189a80e17b1c31819375b8e0c08467fe4109fdcf628c5ae5bfc23164b",
+    "newImageBuilt": false
+  },
+  "independentCI": {
+    "status": "pending"
+  },
+  "retainedSetupFailures": [
+    "Root npm 10.9.2 rejected the existing uuid override during clean install; npm 11.4.2 clean install passed and runtime lock entries were preserved.",
+    "Initial package startup mixed Admin SDK credential instances; package-relative SDK resolution corrected the verifier.",
+    "Initial account emulator ports did not match the existing fixed-port guard; all eight cases passed on the required ports without changing the guard.",
+    "Initial package integration run omitted enroll.ts and used the API copy of a worker-only deletion return contract; final imports target the actual worker candidate and all 85 cases pass."
+  ],
+  "limits": [
+    "No production incident is attributed to this mechanism without live evidence.",
+    "Earlier failed CI runs and failed local reproduction remain retained.",
+    "The unchanged d820851 CI passed; that earlier intermittent pass did not resolve the defect.",
+    "New bridge image verification and deployment require owner approval.",
+    "Background-health natural-completion acceptance and broader release gates remain open."
+  ]
+}
