@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-18T05:49:46.577334+00:00",
+  "baseCommit": "56424e621011c64c5152284becd75bced0446860",
+  "status": "Local draft; Swift changes have not compiled or run. Not committed, pushed, deployed or installed on a physical phone.",
+  "findings": [
+    {
+      "screen": "Caretakers",
+      "evidence": "Source review: load() returns while loading, so a successful pause/remove can skip its confirmation read and a pre-change refresh can later publish the old state."
+    },
+    {
+      "screen": "Alerts for others",
+      "evidence": "Source review: concurrent reads lack ordering, so a pre-decline response can replace the newer empty requests list, or an older failure can publish an obsolete error."
+    }
+  ],
+  "draftCorrection": "Each load has a revision; only the current revision publishes success or failure. Owner mutations invalidate earlier loads and request fresh confirmation. Session/participant checks fence owner mutation results.",
+  "draftSourceSha256": {
+    "ios/Shield/Features/TrustedContacts/TrustedContactsView.swift": "22835644c07008e0ed61e10ea0962d594d0a38eb604f3723fcc88213ab496016",
+    "ios/Shield/Features/TrustedContacts/ContactAlertsView.swift": "6ab523266ac11754a171258acd2b0eaeaa311ea1e65965475a79c570282b55e8",
+    "ios/Shield/App/AppState.swift": "6d5404a7644acff97a9e8c546659324c2902b2897bff28b0da8fa6eb76470874",
+    "ios/Shield/App/RootView.swift": "880b24bf010ed01c0ce4d7a443317006ef8704d37dda4d06578da9093c85120d",
+    "ios/Shield/Networking/APIClient.swift": "ad71a2078c20329b4cc64a629ffbece3a0455487154d6b005f9dd958fff36da7",
+    "ios/Shield/Preview/CaretakerRefreshFixture.swift": "264da3b30907df22001c8fee86af399f9b1357da32e82df8bc2a0d8b927d9929",
+    "ios/Shield/Preview/CaretakerRefreshCheckView.swift": "f1ff4cf0663344879b428bfaaef588a6820083363494c82f3e9f198951ebb97d",
+    "ios/ShieldUITests/CaretakerRefreshUITests.swift": "af53a439d42a82f57ecfc207077f772cfbf96b020dc41031ef619d2e95abcdd3",
+    "ios/Shield.xcodeproj/project.pbxproj": "9bc470bf76d5c12d905793f388a33d1c0327dd5ad49f77e378cb752cd7f0dd85"
+  },
+  "regressionsPrepared": [
+    "pause during held refresh",
+    "removal during held refresh",
+    "decline during held refresh",
+    "older refresh failure after decline",
+    "failed confirmation followed by explicit recovery"
+  ],
+  "fixtureSafety": "DEBUG simulator-only, nil backend configuration for outer and inner app models; synthetic person and phone; no provider or notification calls.",
+  "uiAttempt": {
+    "command": "xcodebuild test, existing compact iOS 27 simulator, existing derived data/package caches, CaretakerRefreshUITests only",
+    "exitCode": 70,
+    "testsRun": 0,
+    "result": "Requested simulator unavailable before compilation because CoreSimulator is out of date.",
+    "xcode": "27.1 (27A9275)",
+    "runningCoreSimulator": "1171.7",
+    "requiredCoreSimulator": "1174.9.2",
+    "logSha256": "0eff5b4c728ac722bee1875480463d4f1e822a3874c3c18a376f46d1dc7ddb00",
+    "followup": "xcrun simctl list invoked automatic xcodebuild -runFirstLaunch; macOS authorization pending. Protected SecurityAgent UI cannot be controlled by the computer tool. Owner asked to complete local setup."
+  },
+  "backendChecks": {
+    "command": "npm run check",
+    "exitCode": 0,
+    "unitPassed": 382,
+    "unitSkipped": 283,
+    "typesAndBuildPassed": true,
+    "logSha256": "fbab0f27a38b99f336986c5e3814e85d6ae11fc2fc0a084701b7c25a584493b2",
+    "firestore": {
+      "sourceOfTestList": "package.json scripts['test:firebase']",
+      "same13Files": true,
+      "localPort": 18189,
+      "node": "22.17.1",
+      "passed": 284,
+      "failed": 0,
+      "pending": 0,
+      "reportSha256": "ce013a0a3e35d1ed094e04689497c028dc331626919d438ae8a3f28fdd4c82ea"
+    },
+    "scope": "Backend unchanged. These checks do not compile or verify the Swift draft."
+  },
+  "baselineCI": {
+    "commit": "56424e621011c64c5152284becd75bced0446860",
+    "result": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39101053129",
+    "scope": "Previously committed source; not this local draft."
+  },
+  "nextAcceptance": [
+    "Finish Xcode local component setup",
+    "Run the controlled regressions against both original and corrected view sources",
+    "Run existing caretaker recovery journeys on both supported simulator runtimes",
+    "Build and inspect an unsigned Release archive",
+    "Review and commit the tested iOS correction"
+  ],
+  "releaseGate": "Open; previous 11 raw contrast findings, physical-device acceptance, caretaker delivery and all other release requirements remain unchanged."
+}
