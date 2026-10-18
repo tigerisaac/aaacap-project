@@ -1,0 +1,434 @@
+[
+  {
+    "path": "baseline-ios26/empty-family-trusted-contacts-largest-dark-77a95ba8.png",
+    "sha256": "67a6735d3b10a42a641cf898fe1e0aa6990bbf06ba25754ece7b26240d0e48ae",
+    "originalAttachment": "77A95BA8-20C4-404A-99AB-B0FF6E8DBDA7.png",
+    "attachmentName": "empty-family-trusted-contacts-largest-dark_0_93B1333C-6019-49EC-830D-516D4426A0F2.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/empty-family-sharing-largest-dark-b5debcc2.png",
+    "sha256": "4a846ff02722fef8bf102e681bf90ef0c2cdfd30e6b59d2d77152558ea8ef9c2",
+    "originalAttachment": "B5DEBCC2-7398-4B93-A959-CA7E823E6438.png",
+    "attachmentName": "empty-family-sharing-largest-dark_0_E96D49D6-D322-4C03-9D2A-DE161403D839.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/element-screenshot-fe78c9ba.png",
+    "sha256": "a99f6f7c2e027e3cb5cb93758e1abebbae1e4b5b1923d9a26dbe47c47746b9e7",
+    "originalAttachment": "FE78C9BA-397B-436D-A402-5585E4D1F57F.png",
+    "attachmentName": "Element Screenshot_1_E020EF28-92E9-40F1-A85E-D3CD58320BA9.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      818,
+      802
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/element-screenshot-c67a3305.png",
+    "sha256": "f9a15c92f15a00da30ebcfa0f12762b1c666c4665ccbb94d90a82a46e51e083b",
+    "originalAttachment": "C67A3305-39CA-41C5-983F-AB564A4CEE91.png",
+    "attachmentName": "Element Screenshot_1_CEFB17CB-131A-4C34-9B95-9DFC0BAA64E3.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      797,
+      1446
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/empty-family-trusted-contacts-standard-light-5e953517.png",
+    "sha256": "8f296e7042cba0c84f6a3a10a0bfdc37c93ced6e6d404603e696717ac0bf361a",
+    "originalAttachment": "5E953517-8D70-42D7-8599-E4FB0977C724.png",
+    "attachmentName": "empty-family-trusted-contacts-standard-light_0_852B84ED-9804-4A85-AF51-5DAA43A5B6CF.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/empty-family-sharing-standard-light-594f6d54.png",
+    "sha256": "f8e73b5d7fd378111001c833e97da599e4678d10108762e2e9a2c50ea6e34722",
+    "originalAttachment": "594F6D54-F6EF-4F06-B376-42A306DD2851.png",
+    "attachmentName": "empty-family-sharing-standard-light_0_B7883EEC-476B-40EA-949B-43465B919DF4.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/element-screenshot-5904bd25.png",
+    "sha256": "7d164167ea06a9abfd5e5db04987035f6301c04f76b4b82b7792bcc7bc741039",
+    "originalAttachment": "5904BD25-897E-4059-8828-C53E0EE5BB47.png",
+    "attachmentName": "Element Screenshot_1_2DC0CED7-F32C-4708-AAD1-FC8C936FEEDC.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      708,
+      114
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "baseline-ios26/element-screenshot-2ec8734b.png",
+    "sha256": "d49908b57ad37e67c4875c9fc6922d32d1e9077d0967dd6e0b99f8715d0e2fe0",
+    "originalAttachment": "2EC8734B-B917-4537-B2D7-F61A26A5B389.png",
+    "attachmentName": "Element Screenshot_1_DDB483C3-5CD0-4727-8F45-46B2C93FA4FC.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      712,
+      114
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "incoming-baseline-ios26/empty-family-contact-alerts-standard-light-ac239e40.png",
+    "sha256": "beed636a248d769a66ba0996b7d98db2f29fffed24af5e3f1496eb22b5a65f1b",
+    "originalAttachment": "AC239E40-CE53-49A6-8AC9-366C0B2EF3AB.png",
+    "attachmentName": "empty-family-contact-alerts-standard-light_0_5FB24658-743E-41E3-882C-E9BFBCC1A97B.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "incoming-baseline-ios26/element-screenshot-b64e4c9f.png",
+    "sha256": "809fa884ec129f70da384b4f33bac6c5fcba7e24969bcbcb7c3574777c2496ac",
+    "originalAttachment": "B64E4C9F-0618-4BCB-ABC5-631E97D81ECD.png",
+    "attachmentName": "Element Screenshot_1_9093F81F-140D-4398-A0C9-8C974B587256.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      786,
+      234
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/call-sharing-empty-largest-dark-action-ec707214.png",
+    "sha256": "c397ca99b66946527e63559eb2a714fd4b67b24af647e8e0b88bc6e2d880b965",
+    "originalAttachment": "EC707214-8E00-4900-82EB-C792667C0314.png",
+    "attachmentName": "Call sharing empty largest-dark action_0_13B50A69-EE25-440A-88CF-62F418BA17CB.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/call-sharing-empty-largest-dark-title-8e9e94e4.png",
+    "sha256": "6f1d519ec84f1d04e7cd7d6d0cd6279aa47011eadf8556ab8a103bd659a7275f",
+    "originalAttachment": "8E9E94E4-652C-4001-9E6A-FAE6E865E513.png",
+    "attachmentName": "Call sharing empty largest-dark title_0_E880A57B-D5A6-43F6-9FF5-1CEDADEAA46C.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/alert-requests-empty-largest-dark-exit-1b3bda42.png",
+    "sha256": "3b0dd4587f8e20579b8bcf2eb685c083cf797f4e47095c6728d008dc5da83285",
+    "originalAttachment": "1B3BDA42-1919-4FEB-B714-CB1AFD573B8C.png",
+    "attachmentName": "Alert requests empty largest-dark exit_0_2690D3DA-4CBB-454D-A6F9-F265D50A9232.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/alert-requests-empty-largest-dark-title-7fe80b98.png",
+    "sha256": "0af402be9f587977b11eae77a4242cbf4ff9edb515451ecf28e45498c6a34ebb",
+    "originalAttachment": "7FE80B98-F03C-4DDD-ABE4-47C86AC49308.png",
+    "attachmentName": "Alert requests empty largest-dark title_0_2954094A-0811-4D3F-B66A-C19352FD0447.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/caretakers-unavailable-largest-dark-recovery-df380bfc.png",
+    "sha256": "7121175b8d42804d4bff4d8a0ac242f1b0071aae041018ebc16d11b023d70a9e",
+    "originalAttachment": "DF380BFC-22E4-470B-A883-CB9F091409E1.png",
+    "attachmentName": "Caretakers unavailable largest-dark recovery_0_775A98EF-A7F8-4EFE-B872-44DDAE238230.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/caretakers-unavailable-largest-dark-title-1720f1f3.png",
+    "sha256": "be1d9ff3a8d25ef1606a67026eb81a074e9280f963eac9e4b6a9ef5c1cfcc21b",
+    "originalAttachment": "1720F1F3-1635-4155-B53F-FB10D0984192.png",
+    "attachmentName": "Caretakers unavailable largest-dark title_0_2DFED03C-2FD7-40A7-9CCA-0EA7A98932B6.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/empty-family-trusted-contacts-largest-dark-b6268225.png",
+    "sha256": "7395e10bb3d921dc42943ed097213af119b68fcee12ad8710e7bc287e2573165",
+    "originalAttachment": "B6268225-DFFD-4EEC-AE8F-F34DD98E9C54.png",
+    "attachmentName": "empty-family-trusted-contacts-largest-dark_0_EB45B240-FCBD-455E-97CB-CF2ECA1C4E04.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/empty-family-sharing-largest-dark-1e14d720.png",
+    "sha256": "b7666145b35f3d88cf93c4bd7dea3f2dd4fb62deebf9b0c9917461411659ad64",
+    "originalAttachment": "1E14D720-15CA-4DB0-BCFA-B58670EF703D.png",
+    "attachmentName": "empty-family-sharing-largest-dark_0_EF297B5D-819A-49B8-8D34-00D81A65E453.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/element-screenshot-47171731.png",
+    "sha256": "343ab9ce233c17c6181196aeb156e59e3701b5dfb6c1090c7efa6d90e002fc1e",
+    "originalAttachment": "47171731-EB44-4D0F-8853-836267D4B837.png",
+    "attachmentName": "Element Screenshot_1_58B81BDA-5682-49A7-B4E9-CCEBF2186AC1.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      818,
+      802
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/element-screenshot-b7a28740.png",
+    "sha256": "47cdfb179690d9414879ec9d103329b451caf5e0a3fd6a6c32fee7b466fdecda",
+    "originalAttachment": "B7A28740-02D9-4911-9B5E-1CEE6FD66AEB.png",
+    "attachmentName": "Element Screenshot_1_618B9F2E-BA30-46C3-A989-CFD71CA17823.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      797,
+      1448
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/empty-family-trusted-contacts-standard-light-eb493334.png",
+    "sha256": "53de86e9c902377cefc6285a80c523ac2023e2a38ca39d92609f12ff90a246ea",
+    "originalAttachment": "EB493334-5170-42AE-A0A9-B7CC9ACA0636.png",
+    "attachmentName": "empty-family-trusted-contacts-standard-light_0_50809E15-17D1-4951-A2F2-8DAED0871E31.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/empty-family-sharing-standard-light-db45f0fd.png",
+    "sha256": "7ea6e88426d8d686df20ab4bdee3b385c07bd732ab8382f6b3535714c4b11677",
+    "originalAttachment": "DB45F0FD-63D4-40DC-872B-69DE7A65463E.png",
+    "attachmentName": "empty-family-sharing-standard-light_0_AE138009-5540-4440-BA36-BE9C6E5A5726.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios26/empty-family-contact-alerts-standard-light-901b9855.png",
+    "sha256": "d19fb56810cec41406bde888935fd19419a468e1446b3ed70f256b52c36df0e0",
+    "originalAttachment": "901B9855-601D-486D-8CF0-0B72A4C0B0CC.png",
+    "attachmentName": "empty-family-contact-alerts-standard-light_0_C7A94976-5734-4113-84D4-D7E29ADE4746.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/alert-requests-empty-largest-dark-exit-9c23ddec.png",
+    "sha256": "167d4d31147175759af8254292ad13f269fffba43f7b4fbe01c6330e4228f724",
+    "originalAttachment": "9C23DDEC-F19C-4735-90C9-0EFDE67852FB.png",
+    "attachmentName": "Alert requests empty largest-dark exit_0_DF304EB0-F8FD-48C2-B830-29633C0ABD88.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/alert-requests-empty-largest-dark-title-6d2a4df3.png",
+    "sha256": "18f687cba0897e89b463995b3c6e7bf22f61a75b3777d595539aefe44a9159de",
+    "originalAttachment": "6D2A4DF3-5272-441E-A1C0-722C97F098CB.png",
+    "attachmentName": "Alert requests empty largest-dark title_0_EC022908-64B3-4965-9018-9525D3BB0129.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/caretakers-unavailable-largest-dark-recovery-09da93a6.png",
+    "sha256": "92af1a1a97067a86b6618978dca7720031e2c7f0c539abd7b4277b37699cd038",
+    "originalAttachment": "09DA93A6-9BCD-4FD7-B0DB-90720CA4E4DD.png",
+    "attachmentName": "Caretakers unavailable largest-dark recovery_0_79F0375C-AF10-4AAD-B02E-89A816164BB6.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/caretakers-unavailable-largest-dark-title-ecd0a30e.png",
+    "sha256": "b2d4a0f64e1a1497cea7e2326cd61f6b8f475c18ec6d8cc51bb4ad68b061c81a",
+    "originalAttachment": "ECD0A30E-0C89-48FD-9C67-83163BE55CA3.png",
+    "attachmentName": "Caretakers unavailable largest-dark title_0_CA22774A-0441-45F4-BE22-7DF6D9C6F095.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/empty-family-trusted-contacts-largest-dark-40cda600.png",
+    "sha256": "ef3bddebc0e57f3e504de34c2dd57d7821fa45b05b377cc3352f631752bb3974",
+    "originalAttachment": "40CDA600-E8BE-4C37-8019-AF503C601F1B.png",
+    "attachmentName": "empty-family-trusted-contacts-largest-dark_0_4CE4208C-53FB-4A2A-B677-550B58BFC1F4.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/empty-family-sharing-largest-dark-8fe8ae05.png",
+    "sha256": "940cf0e35b63b3cad7f263034d0f2b1c9b8e4873b7e18832f791a66a767aea69",
+    "originalAttachment": "8FE8AE05-8269-4149-993F-736E6A70340B.png",
+    "attachmentName": "empty-family-sharing-largest-dark_0_BEF4C15A-9E89-4992-ABDE-E31EAFAB58CF.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/element-screenshot-b15e8912.png",
+    "sha256": "dc969d86786a111027899386aa7815a8ab57545715723e958c974c9c0c33baaa",
+    "originalAttachment": "B15E8912-42D1-4E6F-BA2E-A62E6F97433D.png",
+    "attachmentName": "Element Screenshot_1_E12C5F7F-0059-432E-B911-88D357526556.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      804,
+      756
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/element-screenshot-3304db56.png",
+    "sha256": "8640e95a7ddbafa098946d8755cb030d41369a3146697e5cb05b37d0f72602a3",
+    "originalAttachment": "3304DB56-0171-48C1-B6B4-E788EF4B76B0.png",
+    "attachmentName": "Element Screenshot_1_E59B0D36-7538-45E1-949B-F5B7366FAE16.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "dimensions": [
+      782,
+      1382
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/empty-family-trusted-contacts-standard-light-139418ad.png",
+    "sha256": "e1bf9a7c446ab82b8cbee8d5b08c84f7791bcbf28f6971407fd7f1a993597754",
+    "originalAttachment": "139418AD-B6A6-4B33-B673-E0CECA9A136F.png",
+    "attachmentName": "empty-family-trusted-contacts-standard-light_0_3AF7ABBE-963D-45AC-8DEA-56434A608966.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/empty-family-sharing-standard-light-a7f4ea58.png",
+    "sha256": "e912ce71336799e8330fc6b378d898982dbc86bed0d70e6f80ccdeb701986ca3",
+    "originalAttachment": "A7F4EA58-28AF-4490-979A-ED3B11BF6ECD.png",
+    "attachmentName": "empty-family-sharing-standard-light_0_3F0B3FBE-48CC-4174-9669-D16D4F6B5DBF.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "candidate-ios27/empty-family-contact-alerts-standard-light-9103c603.png",
+    "sha256": "caf4b51de0c526b17b897560005e43f93d83fcf9c1a01f4723b59cc1aabfd4f7",
+    "originalAttachment": "9103C603-5864-4FB3-98BF-67005D924061.png",
+    "attachmentName": "empty-family-contact-alerts-standard-light_0_A447EAAE-0F70-4954-A37E-BCE9A7306C17.png",
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "navigation-ios27/call-sharing-empty-largest-dark-action-86da5563.png",
+    "sha256": "312ad95dee16fbf20c46f1ee4a84716899bec66d9ce821af121d9c6af61b8967",
+    "originalAttachment": "86DA5563-E2D0-4360-AEDB-3FA6D8173EF2.png",
+    "attachmentName": "Call sharing empty largest-dark action_0_F31A3E60-2484-41B2-8B94-2E24B121EF9A.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  },
+  {
+    "path": "navigation-ios27/call-sharing-empty-largest-dark-title-3a9811c1.png",
+    "sha256": "765c560c2057cef85323574a7b97c5752e949fe4a1e301ac5663f5bf79023f3e",
+    "originalAttachment": "3A9811C1-227F-4375-9D72-2A7DFD59D922.png",
+    "attachmentName": "Call sharing empty largest-dark title_0_894DA637-5FE1-409F-9750-82B5BF47473D.png",
+    "testIdentifier": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+    "dimensions": [
+      1170,
+      2532
+    ],
+    "visuallyInspected": true
+  }
+]

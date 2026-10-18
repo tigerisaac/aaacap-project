@@ -1,0 +1,276 @@
+{
+  "recordedAt": "2026-10-18T17:56:37.950473+00:00",
+  "scope": "Three informative family empty-state descriptions use existing adaptive secondary text. Three added audit methods and one test-only navigation-direction correction. No production layout, wording, permissions, requests or native component change.",
+  "baseCommit": "3cfea5d4183b44936411fb1e4b1e5f05e499ee6a",
+  "xcode": "27.1 (27A9275)",
+  "source": {
+    "inventories": {
+      "baseline": "baseline-source.json",
+      "incoming-baseline": "incoming-baseline-source.json",
+      "candidate": "candidate-source.json",
+      "final": "final-source.json"
+    },
+    "trackedIOSFileCount": 282,
+    "allFinalInputsMatch": true,
+    "initialToIncomingBaseline": [
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift"
+    ],
+    "incomingBaselineToCandidate": [
+      "ios/Shield/Features/People/SharingView.swift",
+      "ios/Shield/Features/TrustedContacts/ContactAlertsView.swift",
+      "ios/Shield/Features/TrustedContacts/TrustedContactsView.swift"
+    ],
+    "candidateToFinal": [
+      "ios/ShieldUITests/FiveAreaRefinementUITests.swift"
+    ]
+  },
+  "runs": [
+    {
+      "run": "baseline-ios26",
+      "sourceInventory": "baseline-source.json",
+      "summary": "baseline-ios26-summary.json",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 2,
+      "runtimeWarnings": 0,
+      "beganAt": "2026-10-18T17:39:15.015000+00:00",
+      "finishedAt": "2026-10-18T17:40:05.905000+00:00",
+      "exitCode": 65,
+      "logSha256": "4337ff588464bc98b3a373436e84a240e6c94fe51a84de5ca9935593fc0b8e5d",
+      "methods": [
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 18.979
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 13.572
+        }
+      ]
+    },
+    {
+      "run": "incoming-baseline-ios26",
+      "sourceInventory": "incoming-baseline-source.json",
+      "summary": "incoming-baseline-ios26-summary.json",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 1,
+      "runtimeWarnings": 0,
+      "beganAt": "2026-10-18T17:41:28.898000+00:00",
+      "finishedAt": "2026-10-18T17:41:52.191000+00:00",
+      "exitCode": 65,
+      "logSha256": "1523f73016917183edf325afeb57e6ce0f05e96e6dc60492db644ebe988358fb",
+      "methods": [
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit",
+          "result": "failed",
+          "seconds": 6.695
+        }
+      ]
+    },
+    {
+      "run": "candidate-ios26",
+      "sourceInventory": "candidate-source.json",
+      "summary": "candidate-ios26-summary.json",
+      "result": "Failed",
+      "passed": 5,
+      "failed": 1,
+      "runtimeWarnings": 0,
+      "beganAt": "2026-10-18T17:42:44.625000+00:00",
+      "finishedAt": "2026-10-18T17:45:16.122000+00:00",
+      "exitCode": 65,
+      "logSha256": "0c506a90d408008f96ebc54e0625084e5436d1d464c63555a016f29fae7981b5",
+      "methods": [
+        {
+          "test": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit",
+          "result": "passed",
+          "seconds": 71.193
+        },
+        {
+          "test": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate",
+          "result": "passed",
+          "seconds": 13.095
+        },
+        {
+          "test": "ReleaseReadinessUITests/testUnavailableCaretakerCannotSendRequests",
+          "result": "passed",
+          "seconds": 9.912
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 18.737
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 12.884
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 6.384
+        }
+      ]
+    },
+    {
+      "run": "candidate-ios27",
+      "sourceInventory": "candidate-source.json",
+      "summary": "candidate-ios27-summary.json",
+      "result": "Failed",
+      "passed": 4,
+      "failed": 2,
+      "runtimeWarnings": 0,
+      "beganAt": "2026-10-18T17:46:06.523000+00:00",
+      "finishedAt": "2026-10-18T17:49:24.295000+00:00",
+      "exitCode": 65,
+      "logSha256": "7d3b495ed8d8e82e519877d010216e277dbe2180f5a0269f993064f7c3cbce5d",
+      "methods": [
+        {
+          "test": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit",
+          "result": "failed",
+          "seconds": 87.898
+        },
+        {
+          "test": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate",
+          "result": "passed",
+          "seconds": 13.186
+        },
+        {
+          "test": "ReleaseReadinessUITests/testUnavailableCaretakerCannotSendRequests",
+          "result": "passed",
+          "seconds": 11.101
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit",
+          "result": "failed",
+          "seconds": 21.318
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 16.068
+        },
+        {
+          "test": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit",
+          "result": "passed",
+          "seconds": 8.024
+        }
+      ]
+    },
+    {
+      "run": "navigation-ios27",
+      "sourceInventory": "final-source.json",
+      "summary": "navigation-ios27-summary.json",
+      "result": "Passed",
+      "passed": 3,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "beganAt": "2026-10-18T17:51:09.154000+00:00",
+      "finishedAt": "2026-10-18T17:53:25.401000+00:00",
+      "exitCode": 0,
+      "logSha256": "7cff664b4b065549f1741d234d4c8cd16a96e160363ca93e899c562ca852477c",
+      "methods": [
+        {
+          "test": "FiveAreaRefinementUITests/testFailedSharingChangeIsVisibleAndKeepsAccessAtLargestText",
+          "result": "passed",
+          "seconds": 11.766
+        },
+        {
+          "test": "FiveAreaRefinementUITests/testSettingsPrioritizesEverydayControlsAndReturnsFromDestinations",
+          "result": "passed",
+          "seconds": 19.002
+        },
+        {
+          "test": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit",
+          "result": "passed",
+          "seconds": 74.755
+        }
+      ]
+    },
+    {
+      "run": "navigation-ios26",
+      "sourceInventory": "final-source.json",
+      "summary": "navigation-ios26-summary.json",
+      "result": "Passed",
+      "passed": 3,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "beganAt": "2026-10-18T17:54:04.052000+00:00",
+      "finishedAt": "2026-10-18T17:56:07.922000+00:00",
+      "exitCode": 0,
+      "logSha256": "d99e7c12de820aeb7410ea359de4705134a6957e83a01a2582d2518f42345298",
+      "methods": [
+        {
+          "test": "FiveAreaRefinementUITests/testFailedSharingChangeIsVisibleAndKeepsAccessAtLargestText",
+          "result": "passed",
+          "seconds": 10.028
+        },
+        {
+          "test": "FiveAreaRefinementUITests/testSettingsPrioritizesEverydayControlsAndReturnsFromDestinations",
+          "result": "passed",
+          "seconds": 18.885
+        },
+        {
+          "test": "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit",
+          "result": "passed",
+          "seconds": 76.255
+        }
+      ]
+    }
+  ],
+  "contrast": {
+    "standardTextBefore": 3.4388767891778884,
+    "standardTextAfter": 6.575199344765689,
+    "inspectedDarkGuidanceAfter": 8.326932906013663,
+    "measurements": "measurements.json",
+    "standardAudits": "Both standard-text methods pass on both runtimes, covering all three descriptions.",
+    "largestAudit": "One method still fails on each runtime with two title contrast reports. Target descriptions satisfy the geometry, enabled and hittable assertions. No finding is suppressed."
+  },
+  "diagnosticInterpretation": [
+    "The original iOS 26.5 sharing-title crop includes navigation in its upper area, but all title lettering is visible beneath it. The candidate captures partly cover the first title line. Do not attribute the original report solely to obscured lettering.",
+    "Unavailable-caretaker title crops omit earlier words at the recorded audit scroll positions. Functional title captures show the complete heading; recovery actions are reachable below.",
+    "Neither capture geometry nor the measured description colors proves the cause of the title audit reports. These findings remain unresolved.",
+    "The incoming guidance is taller than the screen at maximum text. Beginning/ending captures and reachable Done are inspected; these selected stills do not certify every line or assistive-technology interaction."
+  ],
+  "navigationCorrection": "Initial iOS 27 family journey failed after returning from Alerts for others. A true towardTop hint overrode the known target frame and kept scrolling toward the top after passing the target. The test helper now honors a known frame first. The original 4/6 run is retained; three relevant journeys pass on both runtimes after this test-only correction.",
+  "screenshots": {
+    "reviewedImageCount": 36,
+    "manifest": "reviewed-images.json",
+    "originalPNGBytesPreserved": true
+  },
+  "archive": {
+    "receipt": "release-archive-verification.json",
+    "sourceInventory": "candidate-source.json",
+    "productionInputsUnchangedByFinalTestHelperCorrection": true,
+    "appBinarySha256": "03a78daea52443f9884edf1bc6a57e3974d92d0262f3435864ef63e6a9ade58d",
+    "signedForDistribution": false,
+    "physicallyInstalled": false
+  },
+  "backend": {
+    "receipt": "backend-ci-base-receipt.json",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39150339742",
+    "head": "3cfea5d4183b44936411fb1e4b1e5f05e499ee6a",
+    "counts": {
+      "unit": 382,
+      "firestore": 284,
+      "account": 8
+    },
+    "attempt": 1,
+    "boundary": "Backend, dependencies and workflows unchanged by this SwiftUI follow-up. CI does not compile Swift. Existing checks were not repeated locally for three UI color lines and test navigation."
+  },
+  "remaining": [
+    "Two maximum-text heading contrast reports per runtime in this focused audit.",
+    "Earlier unresolved Your contacts diagnostics and wider restored-design review.",
+    "Other native empty-state descriptions require their own reproduction; no blanket defect or fix claim.",
+    "Physical accessibility, real delivery, distribution signing and Apple acceptance."
+  ],
+  "externalEffects": {
+    "productionDeployment": false,
+    "realCallOrMessage": false,
+    "appleOperation": false,
+    "physicalInstallation": false
+  }
+}

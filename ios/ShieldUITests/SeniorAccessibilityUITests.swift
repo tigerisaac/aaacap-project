@@ -64,6 +64,39 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try audit(app, "contact-contrast-enabled-removal")
     }
 
+    func testEmptyFamilyGuidanceAtStandardTextAudit() throws {
+        try auditEmptyFamilyGuidance(largestDark: false)
+    }
+
+    func testEmptyFamilyGuidanceAtLargestTextAudit() throws {
+        try auditEmptyFamilyGuidance(largestDark: true)
+    }
+
+    func testEmptyIncomingCaretakerGuidanceAtStandardTextAudit() throws {
+        let app = launch(["--uitesting-screen", "contact-alerts", "--uitesting-alert-requests-empty",
+                          "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"])
+        let guidance = app.staticTexts["When someone adds you as a caretaker, their request appears here. They need the mobile number you use to sign in."]
+        XCTAssertTrue(guidance.appears(timeout: 5))
+        exposeContactElement(guidance, in: app)
+        try audit(app, "empty-family-contact-alerts-standard-light")
+    }
+
+    private func auditEmptyFamilyGuidance(largestDark: Bool) throws {
+        for (screen, detail) in [
+            ("sharing", "No one has shared access to your calls or messages."),
+            ("trusted-contacts", "You can keep using Shield without a caretaker.")
+        ] {
+            let app = launch(["--uitesting-screen", screen, "--uitesting-caretakers-unavailable",
+                              "-UIPreferredContentSizeCategoryName",
+                              largestDark ? "UICTContentSizeCategoryAccessibilityXXXL" : "UICTContentSizeCategoryL"],
+                             dark: largestDark)
+            let text = app.staticTexts[detail].firstMatch
+            XCTAssertTrue(text.appears(timeout: 5))
+            exposeContactElement(text, in: app)
+            try audit(app, "empty-family-\(screen)-\(largestDark ? "largest-dark" : "standard-light")")
+        }
+    }
+
     private func auditExposedContactLabel(screen: String, label: String) throws {
         let app = launch(["--uitesting-screen", screen,
                           "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], dark: true)

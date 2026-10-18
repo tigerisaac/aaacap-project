@@ -28,6 +28,7 @@ struct ContactAlertsView: View {
                                 } icon: { Image(systemName: "bell") }
                             } description: {
                                 Text("When someone adds you as a caretaker, their request appears here. They need the mobile number you use to sign in.")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)

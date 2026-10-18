@@ -1,0 +1,384 @@
+{
+  "method": "Native unmodified sRGB PNGs. Count opaque dominant foreground and background pixels inside the specified rectangles; calculate WCAG relative luminance using the sRGB transfer function and (lighter + 0.05)/(darker + 0.05). Antialiased edge shades are excluded. Scoped contrast evidence only, not full accessibility certification.",
+  "sourceReferences": [
+    "https://www.w3.org/TR/WCAG22/#contrast-minimum",
+    "https://www.w3.org/TR/wcag2ict/"
+  ],
+  "samples": [
+    {
+      "label": "Call sharing privacy guidance",
+      "scope": "Before correction; exact native diagnostic crop, standard light, iOS 26.5.",
+      "image": "baseline-ios26/element-screenshot-5904bd25.png",
+      "imageSha256": "7d164167ea06a9abfd5e5db04987035f6301c04f76b4b82b7792bcc7bc741039",
+      "regionLTRB": [
+        0,
+        0,
+        708,
+        114
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixelCount": 4883,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 67264,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "label": "Unavailable caretaker guidance",
+      "scope": "Before correction; exact native diagnostic crop, standard light, iOS 26.5.",
+      "image": "baseline-ios26/element-screenshot-2ec8734b.png",
+      "imageSha256": "d49908b57ad37e67c4875c9fc6922d32d1e9077d0967dd6e0b99f8715d0e2fe0",
+      "regionLTRB": [
+        0,
+        0,
+        712,
+        114
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixelCount": 4201,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 68775,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "label": "Incoming caretaker request guidance",
+      "scope": "Before correction; exact native diagnostic crop, standard light, iOS 26.5.",
+      "image": "incoming-baseline-ios26/element-screenshot-b64e4c9f.png",
+      "imageSha256": "809fa884ec129f70da384b4f33bac6c5fcba7e24969bcbcb7c3574777c2496ac",
+      "regionLTRB": [
+        0,
+        0,
+        786,
+        234
+      ],
+      "foregroundRGB": [
+        138,
+        138,
+        142
+      ],
+      "foregroundPixelCount": 11296,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 154394,
+      "contrastRatio": 3.4388767891778884
+    },
+    {
+      "label": "You can keep using Shield without a caretaker.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Largest dark.",
+      "image": "candidate-ios26/empty-family-trusted-contacts-largest-dark-b6268225.png",
+      "imageSha256": "7395e10bb3d921dc42943ed097213af119b68fcee12ad8710e7bc287e2573165",
+      "regionLTRB": [
+        155,
+        1074,
+        1015,
+        1773
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixelCount": 76931,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixelCount": 508058,
+      "contrastRatio": 8.326932906013663
+    },
+    {
+      "label": "No one has shared access to your calls or messages.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Largest dark.",
+      "image": "candidate-ios26/empty-family-sharing-largest-dark-1e14d720.png",
+      "imageSha256": "b7666145b35f3d88cf93c4bd7dea3f2dd4fb62deebf9b0c9917461411659ad64",
+      "regionLTRB": [
+        198,
+        777,
+        972,
+        1649
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixelCount": 84681,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixelCount": 571928,
+      "contrastRatio": 8.326932906013663
+    },
+    {
+      "label": "You can keep using Shield without a caretaker.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Standard light.",
+      "image": "candidate-ios26/empty-family-trusted-contacts-standard-light-eb493334.png",
+      "imageSha256": "53de86e9c902377cefc6285a80c523ac2023e2a38ca39d92609f12ff90a246ea",
+      "regionLTRB": [
+        228,
+        978,
+        942,
+        1092
+      ],
+      "foregroundRGB": [
+        82,
+        94,
+        112
+      ],
+      "foregroundPixelCount": 5736,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 70517,
+      "contrastRatio": 6.575199344765689
+    },
+    {
+      "label": "No one has shared access to your calls or messages.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Standard light.",
+      "image": "candidate-ios26/empty-family-sharing-standard-light-db45f0fd.png",
+      "imageSha256": "7ea6e88426d8d686df20ab4bdee3b385c07bd732ab8382f6b3535714c4b11677",
+      "regionLTRB": [
+        231,
+        1004,
+        939,
+        1119
+      ],
+      "foregroundRGB": [
+        82,
+        94,
+        112
+      ],
+      "foregroundPixelCount": 6244,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 69390,
+      "contrastRatio": 6.575199344765689
+    },
+    {
+      "label": "When someone adds you as a caretaker, their request appears here. They need the mobile number you use to sign in.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Standard light.",
+      "image": "candidate-ios26/empty-family-contact-alerts-standard-light-901b9855.png",
+      "imageSha256": "d19fb56810cec41406bde888935fd19419a468e1446b3ed70f256b52c36df0e0",
+      "regionLTRB": [
+        192,
+        875,
+        978,
+        1110
+      ],
+      "foregroundRGB": [
+        82,
+        94,
+        112
+      ],
+      "foregroundPixelCount": 14053,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 158048,
+      "contrastRatio": 6.575199344765689
+    },
+    {
+      "label": "You can keep using Shield without a caretaker.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Largest dark.",
+      "image": "candidate-ios27/empty-family-trusted-contacts-largest-dark-40cda600.png",
+      "imageSha256": "ef3bddebc0e57f3e504de34c2dd57d7821fa45b05b377cc3352f631752bb3974",
+      "regionLTRB": [
+        190,
+        1012,
+        980,
+        1990
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixelCount": 97774,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixelCount": 656484,
+      "contrastRatio": 8.326932906013663
+    },
+    {
+      "label": "No one has shared access to your calls or messages.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Largest dark.",
+      "image": "candidate-ios27/empty-family-sharing-largest-dark-8fe8ae05.png",
+      "imageSha256": "940cf0e35b63b3cad7f263034d0f2b1c9b8e4873b7e18832f791a66a767aea69",
+      "regionLTRB": [
+        152,
+        836,
+        1018,
+        1814
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixelCount": 107987,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixelCount": 718369,
+      "contrastRatio": 8.326932906013663
+    },
+    {
+      "label": "You can keep using Shield without a caretaker.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Standard light.",
+      "image": "candidate-ios27/empty-family-trusted-contacts-standard-light-139418ad.png",
+      "imageSha256": "e1bf9a7c446ab82b8cbee8d5b08c84f7791bcbf28f6971407fd7f1a993597754",
+      "regionLTRB": [
+        236,
+        949,
+        935,
+        1097
+      ],
+      "foregroundRGB": [
+        82,
+        94,
+        112
+      ],
+      "foregroundPixelCount": 11064,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 85555,
+      "contrastRatio": 6.575199344765689
+    },
+    {
+      "label": "No one has shared access to your calls or messages.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Standard light.",
+      "image": "candidate-ios27/empty-family-sharing-standard-light-a7f4ea58.png",
+      "imageSha256": "e912ce71336799e8330fc6b378d898982dbc86bed0d70e6f80ccdeb701986ca3",
+      "regionLTRB": [
+        199,
+        988,
+        971,
+        1136
+      ],
+      "foregroundRGB": [
+        82,
+        94,
+        112
+      ],
+      "foregroundPixelCount": 12140,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 94442,
+      "contrastRatio": 6.575199344765689
+    },
+    {
+      "label": "When someone adds you as a caretaker, their request appears here. They need the mobile number you use to sign in.",
+      "scope": "After correction; target frame from paired geometry attachment, scale 3 native PNG. Standard light.",
+      "image": "candidate-ios27/empty-family-contact-alerts-standard-light-9103c603.png",
+      "imageSha256": "caf4b51de0c526b17b897560005e43f93d83fcf9c1a01f4723b59cc1aabfd4f7",
+      "regionLTRB": [
+        192,
+        858,
+        978,
+        1230
+      ],
+      "foregroundRGB": [
+        82,
+        94,
+        112
+      ],
+      "foregroundPixelCount": 27215,
+      "backgroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 248445,
+      "contrastRatio": 6.575199344765689
+    },
+    {
+      "label": "Incoming request guidance, visible lower paragraph",
+      "scope": "After correction; largest dark, selected visible text region. The full paragraph is taller than the screen; this measurement does not certify every scrolled pixel.",
+      "image": "candidate-ios26/alert-requests-empty-largest-dark-exit-1b3bda42.png",
+      "imageSha256": "3b0dd4587f8e20579b8bcf2eb685c083cf797f4e47095c6728d008dc5da83285",
+      "regionLTRB": [
+        200,
+        800,
+        1000,
+        1720
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixelCount": 111984,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixelCount": 601047,
+      "contrastRatio": 8.326932906013663
+    },
+    {
+      "label": "Incoming request guidance, visible lower paragraph",
+      "scope": "After correction; largest dark, selected visible text region. The full paragraph is taller than the screen; this measurement does not certify every scrolled pixel.",
+      "image": "candidate-ios27/alert-requests-empty-largest-dark-exit-9c23ddec.png",
+      "imageSha256": "167d4d31147175759af8254292ad13f269fffba43f7b4fbe01c6330e4228f724",
+      "regionLTRB": [
+        200,
+        800,
+        1000,
+        1720
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "foregroundPixelCount": 85899,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "backgroundPixelCount": 634235,
+      "contrastRatio": 8.326932906013663
+    }
+  ]
+}

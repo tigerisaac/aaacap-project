@@ -1,5 +1,11 @@
 # Status
 
+## October 18 — family empty-state guidance contrast corrected
+
+Three standard-text descriptions in Call sharing, unavailable Caretakers and empty Alerts for others reproduced low contrast. Three production lines now apply the existing adaptive secondary color: native measurements improve from **3.44:1 to 6.58:1** in light mode, with **8.33:1** in the inspected dark guidance regions. Both standard-text audit methods pass on iOS 27 and iOS 26.5. The largest-text audit still reports two heading failures per runtime; these remain open.
+
+The initial corrected suites report **5 passed / 1 failed on iOS 26.5** and **4 passed / 2 failed on iOS 27**. The additional iOS 27 failure came from a test scroll-direction hint overriding a known target frame. After that test-only correction, all **three Settings/family/recovery journeys pass on both runtimes**. Original failures are retained; all six completed runs have zero runtime warnings. Thirty-six images were inspected, all 282 final source hashes match, and the unchanged production candidate passes unsigned Release archive checks. No physical installation or deployment occurred. [Exact scope, evidence and remaining gates](IOS-CARETAKER-RECOVERY.md#empty-family-guidance-contrast--october-18).
+
 ## October 18 — contact contrast findings inspected on both simulator runtimes
 
 Exact diagnostic crops now distinguish the ten earlier reports: seven explicitly disabled sample controls, two labels covered by navigation, and a fully visible **Add caretaker** label measuring **13.56:1**. This corrects the earlier blanket scroll-boundary explanation. Four added checks fully reveal the target labels; all geometry checks pass, with measured text/background contrast of **8.33:1–14.69:1** on both runtimes.

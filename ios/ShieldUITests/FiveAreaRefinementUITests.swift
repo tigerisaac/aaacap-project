@@ -161,7 +161,7 @@ final class FiveAreaRefinementUITests: XCTestCase {
             let top = app.navigationBars.firstMatch.frame.maxY
             let bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY - 35
             if element.exists, element.isHittable, element.frame.minY >= top, element.frame.maxY <= bottom { return }
-            let down = towardTop || (element.exists && !element.frame.isEmpty && element.frame.minY < top)
+            let down = element.exists && !element.frame.isEmpty ? element.frame.minY < top : towardTop
             app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.35 : 0.72))
                 .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.7 : 0.35)))
         }

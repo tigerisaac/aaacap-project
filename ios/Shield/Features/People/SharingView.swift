@@ -50,6 +50,7 @@ struct SharingView: View {
                         } icon: { Image(systemName: "lock.shield") }
                     } description: {
                         Text("No one has shared access to your calls or messages.")
+                            .foregroundStyle(ShieldTheme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                         .accessibilityIdentifier("sharing-empty")

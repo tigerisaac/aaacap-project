@@ -37,6 +37,7 @@ struct TrustedContactsView: View {
                                 } icon: { Image(systemName: "person.badge.shield.checkmark") }
                             } description: {
                                 Text("You can keep using Shield without a caretaker.")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             Button(loading ? "Checking…" : "Check again") { Task { await load() } }

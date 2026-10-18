@@ -1,0 +1,64 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+        "deviceName" : "iPhone 17e",
+        "modelName" : "iPhone 17e",
+        "osBuildNumber" : "24A434",
+        "osVersion" : "27.0",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 2,
+      "passedTests" : 4,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "Shield · Built with macOS 27.0",
+  "expectedFailures" : 0,
+  "failedTests" : 2,
+  "finishTime" : 1792345764.295,
+  "passedTests" : 4,
+  "result" : "Failed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1792345566.523,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+    {
+      "failureText" : "Contrast failed",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 4,
+      "testIdentifierString" : "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit",
+      "testName" : "testEmptyFamilyGuidanceAtLargestTextAudit()"
+    },
+    {
+      "failureText" : "Failed to tap \"call-sharing-settings\" Button: No matches found for Elements matching predicate '\"call-sharing-settings\" IN identifiers' from input {(\n    Button, identifier: 'house.fill', label: 'Home',\n    Button, identifier: 'phone.fill', label: 'Calls',\n    Button, identifier: 'tray.fill', label: 'Messages',\n    Button, identifier: 'ellipsis', label: 'More', Selected,\n    Button, identifier: 'BackButton', label: 'More',\n    Button, label: 'Checks while you talk',\n    Button, label: 'Quiet hours',\n    Button, label: 'Blocked numbers'\n)}",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 1,
+      "testIdentifierString" : "FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit",
+      "testName" : "testUnavailableCaretakersAndEmptyRequestsHaveAnExit()"
+    }
+  ],
+  "title" : "Test - Shield",
+  "topInsights" : [
+    {
+      "category" : "Common Failures",
+      "impact" : "50% of failures",
+      "text" : "2 runs of 1 test failed with Contrast failed"
+    }
+  ],
+  "totalTestCount" : 6
+}

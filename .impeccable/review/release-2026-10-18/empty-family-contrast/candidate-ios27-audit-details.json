@@ -1,0 +1,37 @@
+[
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "attachmentName": "empty-family-trusted-contacts-largest-dark-audit-details_0_DB726FD7-4AFC-48F4-93BE-2CE80DC9C52E.txt",
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, 0x114f08140, {{64.5, -126.7}, {261.0, 461.3}}, label: 'Caretaker alerts aren\u2019t available yet'\nElement subtree:\n \u2192StaticText, 0x114f08140, {{64.5, -126.7}, {261.0, 461.3}}, label: 'Caretaker alerts aren\u2019t available yet'\nPath to element:\n \u2192Application, 0x114ef7e80, pid: 71634, label: 'Shield'\n  \u21b3Window (Main), 0x114ef75c0, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, 0x114ef7700, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, 0x114ef7840, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, 0x114ef7980, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, 0x114ef7340, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, 0x114ef6a80, {{0.0, 101.0}, {390.0, 743.0}}\n        \u21b3Other, 0x114ef6e40, {{0.0, 101.0}, {390.0, 743.0}}\n         \u21b3Other, 0x114ef6d00, {{0.0, 101.0}, {390.0, 743.0}}\n          \u21b3Other, 0x114ef6580, {{0.0, 101.0}, {390.0, 743.0}}\n           \u21b3Other, 0x114ef5a40, {{0.0, 101.0}, {390.0, 743.0}}\n            \u21b3CollectionView, 0x114ef5680, {{0.0, 101.0}, {390.0, 743.0}}\n             \u21b3Cell, 0x114ef6800, {{16.0, -166.0}, {358.0, 890.3}}\n              \u21b3Other, 0x114ef6940, {{16.0, -166.0}, {358.0, 890.3}}\n               \u21b3Other, 0x114ef70c0, {{16.0, -166.0}, {358.0, 890.3}}\n                \u21b3Other, 0x114f08000, {{16.0, -166.0}, {358.0, 890.3}}\n                 \u21b3StaticText, 0x114f08140, {{64.5, -126.7}, {261.0, 461.3}}, label: 'Caretaker alerts aren\u2019t available yet'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, 0x114f1da40, pid: 71634, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid: 71634, elementOrHash.elementID: 4348295392.34\n    Output: {\n      StaticText, 0x114ef7c00, {{64.5, -126.7}, {261.0, 461.3}}, label: 'Caretaker alerts aren\u2019t available yet'\n    }\n"
+  },
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "attachmentName": "contact-contrast-target-geometry_0_D10218C4-20AA-4BA7-B5C1-DB43815AEDD9.txt",
+    "text": "Target: You can keep using Shield without a caretaker.\nFrame: (63.5, 337.66666666666663, 263.0, 325.66666666666663)\nUsable vertical bounds: 185.0...724.0\nEnabled: true"
+  },
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "attachmentName": "empty-family-sharing-largest-dark-audit-details_0_0012CE5C-934A-4513-A0B5-EAE76940E019.txt",
+    "text": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, 0x114ef6080, {{61.0, 24.0}, {268.0, 252.0}}, identifier: 'sharing-empty', label: 'Your calls are private'\nElement subtree:\n \u2192StaticText, 0x114ef6080, {{61.0, 24.0}, {268.0, 252.0}}, identifier: 'sharing-empty', label: 'Your calls are private'\nPath to element:\n \u2192Application, 0x114ef5b80, pid: 71618, label: 'Shield'\n  \u21b3Window (Main), 0x114ef6bc0, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, 0x114ef7200, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, 0x114ef7340, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, 0x114ef7480, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, 0x114ef75c0, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, 0x114ef7700, {{0.0, 101.0}, {390.0, 743.0}}\n        \u21b3Other, 0x114ef6a80, {{0.0, 101.0}, {390.0, 743.0}}\n         \u21b3Other, 0x114ef6940, {{0.0, 101.0}, {390.0, 743.0}}\n          \u21b3Other, 0x114ef66c0, {{0.0, 101.0}, {390.0, 743.0}}\n           \u21b3Other, 0x114ef4c80, {{0.0, 101.0}, {390.0, 743.0}}\n            \u21b3CollectionView, 0x114ef5040, {{0.0, 101.0}, {390.0, 743.0}}\n             \u21b3Cell, 0x114ef4f00, {{16.0, -15.3}, {358.0, 681.0}}\n              \u21b3Other, 0x114ef5e00, {{16.0, -15.3}, {358.0, 681.0}}\n               \u21b3Other, 0x114ef5cc0, {{16.0, -15.3}, {358.0, 681.0}}\n                \u21b3Other, 0x114ef5f40, {{16.0, -15.3}, {358.0, 681.0}}\n                 \u21b3StaticText, 0x114ef6080, {{61.0, 24.0}, {268.0, 252.0}}, identifier: 'sharing-empty', label: 'Your calls are private'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, 0x114ef7c00, pid: 71618, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid: 71618, elementOrHash.elementID: 4368776832.40\n    Output: {\n      StaticText, 0x114f0b480, {{61.0, 24.0}, {268.0, 252.0}}, identifier: 'sharing-empty', label: 'Your calls are private'\n    }\n"
+  },
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtLargestTextAudit()",
+    "attachmentName": "contact-contrast-target-geometry_0_3B105A3C-04AD-49CE-B443-84743DEA3F37.txt",
+    "text": "Target: No one has shared access to your calls or messages.\nFrame: (50.83333333333334, 278.99999999999994, 288.33333333333326, 325.6666666666667)\nUsable vertical bounds: 185.0...724.0\nEnabled: true"
+  },
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "attachmentName": "contact-contrast-target-geometry_0_F83FA579-1F2A-4F88-9FB1-3AEF41566015.txt",
+    "text": "Target: You can keep using Shield without a caretaker.\nFrame: (78.66666666666669, 316.5, 232.66666666666669, 49.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true"
+  },
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyFamilyGuidanceAtStandardTextAudit()",
+    "attachmentName": "contact-contrast-target-geometry_0_20E4161D-FCCC-4388-B4CE-B9281A7F4E57.txt",
+    "text": "Target: No one has shared access to your calls or messages.\nFrame: (66.5, 329.5, 257.0, 49.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true"
+  },
+  {
+    "testIdentifier": "SeniorAccessibilityUITests/testEmptyIncomingCaretakerGuidanceAtStandardTextAudit()",
+    "attachmentName": "contact-contrast-target-geometry_0_8F74A6D6-857C-4C25-870D-767020F650E9.txt",
+    "text": "Target: When someone adds you as a caretaker, their request appears here. They need the mobile number you use to sign in.\nFrame: (64.0, 286.0, 262.0, 124.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true"
+  }
+]
