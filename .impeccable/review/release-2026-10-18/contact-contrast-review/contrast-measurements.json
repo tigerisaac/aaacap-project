@@ -1,0 +1,290 @@
+{
+  "method": "Two dominant opaque colors in the inspected text region, excluding anti-aliased intermediate pixels; sRGB linearized relative luminance and (Llighter + 0.05)/(Ldarker + 0.05). Regions are source-image pixel coordinates. These are scoped pixel observations, not whole-control or whole-app certification.",
+  "measurements": [
+    {
+      "label": "Original Add caretaker diagnostic",
+      "source": "original-01-element.png",
+      "sha256": "fae9e7002f03f5477650f6d349764f7040725d9bae94550dcd3b68507bb2a9d7",
+      "sourcePixels": [
+        820,
+        434
+      ],
+      "regionLTRB": null,
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        243,
+        246,
+        251
+      ],
+      "backgroundPixelCount": 314052,
+      "foregroundPixelCount": 36151,
+      "ratio": 13.559626680462085,
+      "originalAttachment": "original-attachments/B4619D64-6716-4823-8844-91476673F9B9.png"
+    },
+    {
+      "label": "Current Add caretaker",
+      "source": "ios27-contact-contrast-exposed-trusted-contacts.png",
+      "sha256": "8fa8239bba0d511b3c0ed19c1fe114dba0b8d6b828c3865f5d73c3de013c5819",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        96,
+        1213,
+        916,
+        1649
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        243,
+        246,
+        251
+      ],
+      "backgroundPixelCount": 315692,
+      "foregroundPixelCount": 36151,
+      "ratio": 13.559626680462085,
+      "originalAttachment": "exposed-ios27-attachments/1B0C9820-C2E4-4C99-9456-2AF3C2CF6574.png"
+    },
+    {
+      "label": "Current Waiting for them to join",
+      "source": "ios27-contact-contrast-exposed-sharing-access.png",
+      "sha256": "c0f435708c6cd6694d7efc58311ea07a3d44a33348be76d03ec3008cf02b101a",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        96,
+        1081,
+        822,
+        1431
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "backgroundPixelCount": 206812,
+      "foregroundPixelCount": 39213,
+      "ratio": 8.326932906013663,
+      "originalAttachment": "exposed-ios27-attachments/4568DF71-6BD5-463C-AC7E-682C38E80CB7.png"
+    },
+    {
+      "label": "Current Text messages",
+      "source": "ios27-contact-contrast-exposed-contact-alerts.png",
+      "sha256": "32c5013883a8ce68f8184ad353b3d606e6e04cb7db2f4ee5638b377b8da56a13",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        96,
+        1509,
+        1074,
+        1839
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 289256,
+      "foregroundPixelCount": 27938,
+      "ratio": 14.688356131975747,
+      "originalAttachment": "exposed-ios27-attachments/AA9E4B9A-5986-43FA-8BA9-EEA730B3C9C3.png"
+    },
+    {
+      "label": "Current enabled Remove from iPhone",
+      "source": "ios27-contact-contrast-enabled-removal.png",
+      "sha256": "f63d62ffb388410620a642b49ea2d172616c2d6549af79524ef2e79fd172edb2",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        240,
+        1350,
+        840,
+        1440
+      ],
+      "backgroundRGB": [
+        209,
+        216,
+        227
+      ],
+      "foregroundRGB": [
+        0,
+        38,
+        100
+      ],
+      "backgroundPixelCount": 47944,
+      "foregroundPixelCount": 3475,
+      "ratio": 10.020506787588486,
+      "originalAttachment": "exposed-ios27-attachments/5D2F5B18-FF2D-49E6-88C4-0516528D7296.png"
+    },
+    {
+      "label": "iOS 26.5 Add caretaker",
+      "source": "ios26-contact-contrast-exposed-trusted-contacts.png",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/B83CF82D-7E75-4B35-9BD8-F30FB657D996.png",
+      "sha256": "5f3e9af970510c7709b207de4e00334a425c65e6b7b21db9060c8efb7396ef09",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        96,
+        1213,
+        916,
+        1649
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        243,
+        246,
+        251
+      ],
+      "backgroundPixelCount": 315689,
+      "foregroundPixelCount": 36154,
+      "ratio": 13.559626680462085
+    },
+    {
+      "label": "iOS 26.5 Waiting for them to join",
+      "source": "ios26-contact-contrast-exposed-sharing-access.png",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/30C6CD01-3870-48E4-BDCA-53CF163CDA50.png",
+      "sha256": "829475887b38a3e49fd07d057396f106ed7781c7f5dba36eb720d7524a4f4b09",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        96,
+        1081,
+        822,
+        1431
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "backgroundPixelCount": 206807,
+      "foregroundPixelCount": 39210,
+      "ratio": 8.326932906013663
+    },
+    {
+      "label": "iOS 26.5 Text messages",
+      "source": "ios26-contact-contrast-exposed-contact-alerts.png",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/A0FDA5CB-1AD4-4875-8EC4-2FB4707D3CF6.png",
+      "sha256": "b1c2c000c988bf49f408ac42c34d2c9e5c35241aa2e52d7c022e6dfb2bd99096",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        96,
+        1509,
+        1074,
+        1839
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 289253,
+      "foregroundPixelCount": 27942,
+      "ratio": 14.688356131975747
+    },
+    {
+      "label": "iOS 26.5 enabled Remove from iPhone",
+      "source": "ios26-contact-contrast-enabled-removal.png",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/CA450411-9B3D-433C-BE87-65845D04693B.png",
+      "sha256": "f2db691892cfe13427716f4d7413e21b2f6e280f3a96e2b87ca9ce272a12a469",
+      "sourcePixels": [
+        1170,
+        2532
+      ],
+      "regionLTRB": [
+        240,
+        1350,
+        840,
+        1440
+      ],
+      "backgroundRGB": [
+        209,
+        216,
+        227
+      ],
+      "foregroundRGB": [
+        0,
+        38,
+        100
+      ],
+      "backgroundPixelCount": 47944,
+      "foregroundPixelCount": 3479,
+      "ratio": 10.020506787588486
+    },
+    {
+      "label": "iOS 26.5 visible portion of partially covered paragraph",
+      "source": "ios26-testFullyExposedAddCaretakerAtLargestTextAudit-diagnostic-1.png",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/7F98894F-35A2-4944-9711-CE5385719CA1.png",
+      "sha256": "dc6483e29067bd330e46cdefaa3af8275ab3f05e3d51c4905f32957e296ef8fe",
+      "sourcePixels": [
+        1074,
+        1582
+      ],
+      "regionLTRB": [
+        20,
+        1000,
+        1040,
+        1500
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 422259,
+      "foregroundPixelCount": 73462,
+      "ratio": 14.688356131975747
+    }
+  ]
+}

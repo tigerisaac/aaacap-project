@@ -1,0 +1,782 @@
+{
+  "errors" : [
+
+  ],
+  "values" : [
+    {
+      "disabledTests" : [
+        {
+          "identifier" : "ShieldUITests/BlockedPaginationUITests/testLaterPageFailureRetriesWithoutShowingPartialDataAndOlderNumberCanBeUnblocked()"
+        },
+        {
+          "identifier" : "ShieldUITests/BlockedPaginationUITests/testSupersededLaterPageShowsRetryInsteadOfLoadingForever()"
+        },
+        {
+          "identifier" : "ShieldUITests/CallDirectoryStorageUITests/testSignOutClearsProtectedFileAndFailedReloadCanRetryAndSurviveRelaunch()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testDeclinedRequestDoesNotReturnFromAnOlderRefresh()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testFailedConfirmationRetainsItsErrorUntilAnExplicitFreshRead()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testFailedCreationStatusCheckCanBeRetriedWithoutAnotherRequest()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testLostCreationResponseCanBeCheckedWithoutAnotherRequest()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testLostCreationResponseIsRecoverableAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testOlderRefreshFailureDoesNotReplaceAConfirmedDecline()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testPauseIsConfirmedDespiteAnOlderRefresh()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testRecipientConfirmationFailureIsVisibleAndRecoverable()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testRecipientConfirmationFailureIsVisibleAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testRejectedCreationLeavesTheDetailsEditable()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testRemovalIsConfirmedDespiteAnOlderRefresh()"
+        },
+        {
+          "identifier" : "ShieldUITests/CaretakerRefreshUITests/testUnsavedCreationCanRetryWithTheOriginalRequestIdentity()"
+        },
+        {
+          "identifier" : "ShieldUITests/CarrierSetupUITests/testCopyOpenReturnAndConfirmationAreSeparate()"
+        },
+        {
+          "identifier" : "ShieldUITests/CarrierSetupUITests/testLargestTextDarkCopyAndReturnRemainReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/CarrierSetupUITests/testNativePhoneLauncherKeepsCodeAndManualRoute()"
+        },
+        {
+          "identifier" : "ShieldUITests/CarrierSetupUITests/testOneCodeSkipsUnusedStepsAndBackReturnsToItsCode()"
+        },
+        {
+          "identifier" : "ShieldUITests/CarrierSetupUITests/testReopenAndCopyAgainRequireAnotherVisit()"
+        },
+        {
+          "identifier" : "ShieldUITests/CarrierSetupUITests/testTwoCodeProfileAndStaleResumeDoNotCreateEmptySteps()"
+        },
+        {
+          "identifier" : "ShieldUITests/ContactNameValidationUITests/testCaretakerRejectsOverlongNameAndRecoversWithoutSendingARequest()"
+        },
+        {
+          "identifier" : "ShieldUITests/ContactNameValidationUITests/testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing()"
+        },
+        {
+          "identifier" : "ShieldUITests/ContactSyncUITests/testMalformedSavedEntriesDoNotRejectValidContactsOrEditTheAddressBook()"
+        },
+        {
+          "identifier" : "ShieldUITests/ContactSyncUITests/testRemovingOneNumberPreservesOtherFieldsAndRestoresWithoutDuplicates()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testCallChecksAndCompletionAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testCancellationAfterChangesOffersSetupAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testCancellationClearsSavedIntentAndCloseKeepsIt()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testCancelledGuideOpensPhoneSetupAboveIt()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testDeleteAccountReturnsFromGuidedRestorationBeforeFinalConfirmation()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testDeletionProgressDistinguishesUnsentAcceptedAndCompleted()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testFailedCancellationKeepsProgress()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testFailedSaveKeepsTheSameStepAndOffersRetry()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testHomeOffersDirectCancellationWithoutChangingSettings()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testLocalGuideRemainsReadableWhenGuidedServiceIsUnavailable()"
+        },
+        {
+          "identifier" : "ShieldUITests/DisconnectUITests/testOverviewExplainsSafeExitAndManualCarrierRecovery()"
+        },
+        {
+          "identifier" : "ShieldUITests/FiveAreaRefinementUITests/testFailedSharingChangeIsVisibleAndKeepsAccessAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/FiveAreaRefinementUITests/testRefinedScreensAtBothAppearancesAndLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/FiveAreaRefinementUITests/testSettingsPrioritizesEverydayControlsAndReturnsFromDestinations()"
+        },
+        {
+          "identifier" : "ShieldUITests/FiveAreaRefinementUITests/testSettingsReturnOffersReopenBeforeConfirmation()"
+        },
+        {
+          "identifier" : "ShieldUITests/FiveAreaRefinementUITests/testUnavailableCaretakersAndEmptyRequestsHaveAnExit()"
+        },
+        {
+          "identifier" : "ShieldUITests/FiveAreaRefinementUITests/testUnavailableRecordingKeepsDetailsWithoutOfferingBrokenPlayback()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testCarrierCodeAtLargestTextInDarkMode()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testCopyRequiresCarrierConfirmationAndResetsForNextCode()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testDarkAppearance()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testDoneLeavesSetupAndRestorationRemainsSeparate()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testFailedSoundCheckShowsRetryAndDoesNotAdvance()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testGuidedFlowRequiresRealCheckResultsAndPreparesEachCarrierCode()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testLargestTextContactsFailureIsVisibleWithoutAdvancing()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testLargestTextKeepsActionsVisibleAndInstructionsScrollable()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testProvidersAreDisclosedBeforeForwardingConsent()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testRestorationGuidesAlreadyDoneSettingsAndPersistsChecks()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testRestorationPreparesEachResetWithoutAdvancingUntilConfirmed()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testRestorationSettingsAtLargestTextInDarkMode()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testReturningChangesInstructionsButNeverConfirmsCarrierChange()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testSettingsFallbackKeepsProgressAndInstructionsAvailable()"
+        },
+        {
+          "identifier" : "ShieldUITests/ForwardingUITests/testSettingsReturnDoesNotConfirmSwitchesAndCanReopen()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testAllCallsRespondsAcrossTheRowAtStandardAndLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testEmptyHomeKeepsAFullWidthMessagesRoute()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testHelpResourceDisclosureCollapsesWithoutOpeningTheBrowser()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testHomeStatusUsesTheReadingEdgeAndReachableRecovery()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testLargestMessageFilterRespondsAcrossItsWidth()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testLargestTextDarkModeKeepsDiscardedMessageReadable()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testLongSwitchLabelsKeepTheirWidthAndToggleFromTheRow()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testStoppedCountOpensTheMatchingCalls()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeReadabilityUITests/testZeroCountIsExplicitAndUnavailableCountIsNotZero()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeStatusStabilityUITests/testConfirmedHomeStatusSurvivesOldTimestampAndFailedRefresh()"
+        },
+        {
+          "identifier" : "ShieldUITests/HomeStatusStabilityUITests/testMessagesFilterNeverInsertsRemovedMessagesBeforeRefresh()"
+        },
+        {
+          "identifier" : "ShieldUITests/MessageAudioStorageUITests/testSavedAudioPlaysAfterRelaunchWithoutServiceAndIsExcludedFromBackup()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testDisclosureExpandsWithinItsCardAndCollapses()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testHomeHasNoAccountButtonAtStandardAndLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testMessageTypeFiltersReuseTheSameInbox()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testMoreTitleReturnsWithThePageRepeatedly()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testPeopleRemainAvailableFromMore()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testRootTypographyAndDirectPhoneSetupReturn()"
+        },
+        {
+          "identifier" : "ShieldUITests/NavigationRegressionUITests/testTextCheckOpensDirectlyFromSettingsAndTitlesFollowTheStack()"
+        },
+        {
+          "identifier" : "ShieldUITests/OfflineHistoryUITests/testColdLaunchRestoresHomeBeforeShowingAccountScreens()"
+        },
+        {
+          "identifier" : "ShieldUITests/OfflineHistoryUITests/testEmptyPagesStayVisibleDuringRefreshAndMessagesHasNoStorageBanner()"
+        },
+        {
+          "identifier" : "ShieldUITests/OfflineHistoryUITests/testOwnerHistoryReopensAndFiltersWithoutService()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testAddedCaretakerChoiceCanBeConfirmedWithoutSavingAgain()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testEarlierSessionSaveCannotCancelTheNewSessionRefresh()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testFailedChoiceStatusReadDoesNotSaveAgain()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testLostCaretakerChoiceCanBeCheckedWithoutSavingAgain()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testLostCaretakerChoiceIsVisibleAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testLostProtectionChoiceCanBeCheckedWithoutSavingAgain()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testLostProtectionOptOutCanBeConfirmed()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testMissingProtectionChoiceAllowsAnExplicitSameChoiceRetry()"
+        },
+        {
+          "identifier" : "ShieldUITests/OnboardingRecoveryUITests/testRejectedProtectionChoiceRemainsEditable()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testCanContinueIndependently()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testCodeKeyboardHasNoExtraDoneToolbar()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testContactRequiresDetailsAndWaitsForAcceptance()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testPhoneAndContactChoicesAtLargestTextDark()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testPhoneCodeErrorAndSuccessfulSignIn()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testRecipientChoosesBothChannelsAndCanStop()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneOnboardingUITests/testSignInOffersOnlyPhoneAndPrivacy()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSettingsDeviceUITests/testCopyDoesNotDialOrConfirmCarrierChange()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSettingsDeviceUITests/testPhoneSettingsOpensAndReturnsWithoutClaimingVerification()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSetupShortcutUITests/testAlreadyAddedDoesNotConfirmEitherSetting()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSetupShortcutUITests/testLargestTextInstallationFailureRetainsSavedFileAndManualRecovery()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSetupShortcutUITests/testMissingShortcutKeepsRetryAndManualGuide()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSetupShortcutUITests/testNormalSetupInstallsRunsAndRequiresBothConfirmations()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSetupShortcutUITests/testPublicAddRouteInNormalSetupDoesNotRunOrConfirm()"
+        },
+        {
+          "identifier" : "ShieldUITests/PhoneSetupShortcutUITests/testUnavailableGuideRequiresDeliberateContinuationAndReopenRetries()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testCallsUnavailableIsNotAnEmptyHistory()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testCheckUsesConsentAndClearlyLabelsSampleResult()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testContrastOfReportedRowsWhenFullyVisible()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testCoreScreensAccessibilityAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testDarkLargeTextCoreNavigationAndAccessibility()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testDetailSettingsAndSharingAccessibility()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testFlaggedControlsAtLargestTextSize()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testGuidedFlowsAccessibilityAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testInitialAccountErrorShowsRetryInsteadOfJoining()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testLargestTextMessageFilterPreservesKeptState()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testMainJourneysAndMessageFilters()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testNativePasteRequiresConsentInDarkMode()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testPeopleAndAccurateUnavailableSettings()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testSendingWithAnOpenKeyboardRevealsFailureAndRetainsEmail()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testSignInReturnAndLoadingStayInContext()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testSuccessfulCallsPullToRefreshClearsPreviousError()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testTodayEmptyAndLoadingAreDistinct()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testTodayStatesNeverTreatMissingOrExpiredDataAsOpen()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testWelcomeAccessibilityAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/RedesignUITests/testWelcomeAndRecoverableSignInError()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testCaretakerRequestKeepsCallAccessSeparateAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testFailedCaretakerPauseIsVisibleAndCanBeRetriedAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testFailedCaretakerRemovalIsVisibleAndCanBeRetriedAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testIndependentUserFindsOptionalCaretakerInSettings()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testSavedNumberSelectionHasAComfortableTouchTarget()"
+        },
+        {
+          "identifier" : "ShieldUITests/ReleaseReadinessUITests/testUnavailableCaretakerCannotSendRequests()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testDarkToolbarActionsAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testEverydayScreensAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testExternalNativeBoundaryClippingReference()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testNativeControlDiagnosticIsolation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testNativeControlReferenceAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testNativeFooterClippingDiagnostic()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testNativeHistoryRowDiagnosticIsolation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testNativeNavigationLinkDiagnosticIsolation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testNativeStoppedCardDiagnosticIsolation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testOnboardingChoicesAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testOwnerSettingsScreensAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testPhoneSetupAndDisconnectionAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testSwitchLabelsAtStandardAndLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testWelcomeAndSentEmailAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testEverydayScreensAndKeepingSampleVoicemail()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testLargestTextDarkModeKeepsEverydayActionsReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testMotionAllSecondaryScreensAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testMotionNativePickersCancelBackToTheirForms()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testMotionNavigationReturnsToExpandedContentAndRetainsTabs()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testMotionOptionalVoicemailGuideReturnsToCompletedDisconnect()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testMotionQuietHoursKeepsTimeRowsStableAndCanReverse()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testPhoneSignInHasNoRetiredEmailSheetAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testSecondaryScreenVisualsInBothAppearances()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testSecondaryScreensAndPlainTextCheck()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorDesignUITests/testWelcomeAndChoicesStayBrief()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testAddNumberKeepsLabelsAndInputAfterAnInterruptedSave()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testAudioCanPauseResumeRestartAndStopsWhenBackgrounded()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testBackgroundingDuringAudioPreparationDoesNotStartItLater()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testBackgroundingWhileAudioLoadsDoesNotStartItLater()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testConfiguredSettingsAndSharingScopesStayReadable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testContactRemovalNamesItsScopeAndHasAFullRowTarget()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testContactSavedOnPhoneExplainsAnUnconfirmedShieldUpdate()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testFailedListsHaveRecoveryWithoutFalseEmptyClaims()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testGetStartedAsksForHelpWithoutInvitations()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testIncompleteEmailHasAnExplanationAndCanBeCorrected()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testLargestProtectionSaveFailureRetainsChoice()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testLargestTextBringsSaveErrorsIntoView()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testLargestTextCanChangePeopleAndReadFullCallMetadata()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testLeavingTheSampleHasVisibleCancellation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testLostListeningAccessDiscardsStartedAudio()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testMessagesLeadWithPurposeAndKeepFullReadingInTheDetail()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testOptionalContactCanBeBackedOutOfAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testPersonContextChangeClosesThePreviousCallDetail()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testPhoneOptionsExcludesAccountDeletion()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testPlayedStatusFailureKeepsPlaybackControlsUsable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testQuietHoursFailureKeepsTheUnsavedChoice()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testSecondaryScreensAtLargestTextKeepAllActionsReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testSharingConfirmationsHaveVisibleSafeChoices()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorPolishUITests/testSharingListsHelpersWithoutMakingInvitations()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testAlreadyChangedBothStillRequiresBothConfirmations()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testClosingAndReopeningKeepsTheSameStep()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testLargestTextDarkWrittenStepsAndPrimaryRemainReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testLargestTextSettingsInstructionsAndActionRemainReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testRestorationGuidesKeepTheirExplicitConfirmations()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testReturnFromOtherAppRetainsCarrierStepAndWrittenRecovery()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testSettingInstructionsKeepExplicitConfirmation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testSettingsHasOnePrimaryActionAndNoPlaybackControls()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testSettingsReturnStillRequiresExplicitConfirmation()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testUnavailableFloatingReminderExplainsBeforeLeaving()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testUnavailableReminderLargestTextRecoveryIsReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testUnavailableReminderWhenReopeningKeepsDeliberateFallback()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupGuideUITests/testVoicemailResumedWithoutCombinedVisitStillOpensSettings()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testGuidedInstallReturnDoesNotConfirmSettings()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testInstallFailureKeepsLargestTextRecoveryReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testLargestTextFloatingFailureKeepsFallbackReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testNativeImportCanBeReviewedWithoutRunning()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testPublishedInstallOpensAddShortcutWithoutRunning()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testReturnRequiresConfirmationAndAllowsReopening()"
+        },
+        {
+          "identifier" : "ShieldUITests/SetupShortcutPreviewUITests/testUnavailableShortcutsDoesNotConfirmAnything()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testAccountDeletionIsReachableBeforeEnrollmentAndCanBeCancelled()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testAccountDeletionLargestTextKeepsConfirmationReachable()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testBlockedNumbersShowsWhyAndAsksBeforeUnblocking()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testDiscardedScamHasNoPlaybackOrRestore()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testEmailSentShowsAddressOnceAndCanChangeIt()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testHelperCannotUnblockOrChooseHelperAlerts()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testPreviewCanSwitchPeople()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testPreviewShowsHeldCallAndClearExplanation()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testProtectionCheckAllGoodAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testProtectionCheckListsWhatNeedsAttention()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testProtectionOnboardingCanBeTurnedOn()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testProtectionOnboardingDefaultsOffAndContinues()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testProtectionOnboardingLargestTextInDarkMode()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testProtectionSaveFailureKeepsTheChoiceVisible()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testSavedNoticeAtLargestTextInDarkMode()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testSavedNoticeHasSummaryAudioAndIndependentContactWithoutTranscript()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testSimulatorTestAccountSequenceOpensSampleAccount()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testTrustedContactsFollowProtectionWithoutAnAssumedHelper()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testWelcomeAtLargestTextSize()"
+        },
+        {
+          "identifier" : "ShieldUITests/ShieldUITests/testWelcomeEmailValidationWithoutSampleEntry()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testBillingGraceShowsAccessDeadlineInsteadOfAPastRenewal()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testDeletionKeepsAppleReminderWhenAccessLookupFails()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testExpiredPilotHasSupportInsteadOfAPaywall()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testFailedLookupRemainsRecoverable()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testPendingPurchaseExplainsApproval()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testPilotNeverSeesMonetaryActionsAtLargestText()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testPublicPlansShowAnnualTotalAndEquivalent()"
+        },
+        {
+          "identifier" : "ShieldUITests/SubscriptionUITests/testSubscribedAccountHasManagementAndDeletionReminder()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCanConfirmASavedOnboardingChoice()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCanEnterEmailAndRecoverFromAnInterruptedSend()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCanReadAndCheckAFailedCaretakerChange()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCanReconcileALostCaretakerChangeResponse()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCanRecoverALostCaretakerCreationResponse()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCanRecoverAnUnconfirmedCaretakerDecline()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverCaretakerChoiceExplainsScopeAndAllowsDecline()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverContactRemovalHasReachableSafeChoice()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverDailyNavigationAndSampleMessage()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverEmailReturnHasResendAndChangeEmail()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverNativeFocusAndDirectToggleActions()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverOnboardingChoicesAndSafeSaveRecovery()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverPhoneSignInKeepsWrongCodeRecoverable()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverPilotAccessHasNoStoreActions()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverPlaybackAndFeedbackAreInReadingFlow()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverQuietHoursExplainsUnsavedState()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverReadsAndOpensAMessage()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverSetupAndDisconnectionInstructions()"
+        },
+        {
+          "identifier" : "ShieldUITests/VoiceOverUITests/testVoiceOverSharingHasSafeCancellation()"
+        }
+      ],
+      "enabledTests" : [
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testEnabledContactRemovalStandardLightAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testFullyExposedAddCaretakerAtLargestTextAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testFullyExposedPendingSharingAtLargestTextAudit()"
+        },
+        {
+          "identifier" : "ShieldUITests/SeniorAccessibilityUITests/testFullyExposedTextAlertsAtLargestTextAudit()"
+        }
+      ],
+      "testPlan" : "Shield"
+    }
+  ]
+}

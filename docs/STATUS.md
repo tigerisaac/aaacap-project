@@ -1,5 +1,11 @@
 # Status
 
+## October 18 — contact contrast findings inspected on both simulator runtimes
+
+Exact diagnostic crops now distinguish the ten earlier reports: seven explicitly disabled sample controls, two labels covered by navigation, and a fully visible **Add caretaker** label measuring **13.56:1**. This corrects the earlier blanket scroll-boundary explanation. Four added checks fully reveal the target labels; all geometry checks pass, with measured text/background contrast of **8.33:1–14.69:1** on both runtimes.
+
+After preserving the concurrent contact-row fix `932e6b2`, both relevant interaction checks pass on each runtime. The unfiltered screen audits remain **2 passed / 2 failed per runtime**, with zero runtime warnings. Final iOS 27 retains one unidentified contact-screen report; iOS 26.5 retains two, alongside a partially covered paragraph on each. These findings remain open. An earlier zero-test invocation is excluded from passing results. Forty images were inspected; the new unsigned archive passes packaging checks with all 282 input hashes matching. This task adds tests/evidence and preserves the upstream product fix; no installation or deployment occurred. [Exact findings and remaining gates](IOS-CARETAKER-RECOVERY.md#contact-contrast-diagnostic-review--october-18).
+
 ## October 18 — onboarding choices recover after a lost response
 
 Three controlled cases reproduced false failure wording after the server saved a protection/caretaker setup choice; maximum-text caretaker feedback also fell below the viewport. The correction reveals **Choice not confirmed**, checks current settings without another save and preserves the submitted choice until a deliberate retry is safe. The initial iOS 27 run passed **16/16**, including two Simulator VoiceOver walkthroughs. A later controlled session race exposed an old-operation cleanup defect in that first correction; its failed baseline is retained beside the final guard and passing regression.

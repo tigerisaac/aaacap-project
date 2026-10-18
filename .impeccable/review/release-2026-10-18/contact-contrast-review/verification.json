@@ -1,0 +1,1131 @@
+{
+  "recordedAt": "2026-10-18T17:25:35.936507+00:00",
+  "scope": "Initial synthetic simulator contrast diagnostics, followed by verification after the concurrent contact-row fix. Each phase retains its own source inventory.",
+  "sourceManifest": {
+    "path": "source-input.json",
+    "sha256": "e513eb82c57c8401ad26b353dbcdce196a970521a387e7d5cb3c92b748cf4e79",
+    "trackedInputCount": 282,
+    "onlyIOSDifferenceFromBase": [
+      "ios/ShieldUITests/SeniorAccessibilityUITests.swift"
+    ],
+    "allHashesMatchedAtRecordedTime": true
+  },
+  "productionSourceChanged": false,
+  "auditTypes": [
+    "contrast",
+    "textClipped",
+    "hitRegion",
+    "sufficientElementDescription"
+  ],
+  "suppressedIssues": 0,
+  "originalObservations": "original-observations.json",
+  "measurements": "contrast-measurements.json",
+  "runs": [
+    {
+      "runtime": "27.0",
+      "summary": "ios27-summary.json",
+      "passedMethods": 2,
+      "failedMethods": 2,
+      "contrastObservations": 2,
+      "runtimeWarnings": [],
+      "log": "artifacts/private/contact-contrast-review-oct18/exposed-ios27.log",
+      "logSHA256": "796b64c2f0c121e307a76bc2b90fcca4a0c8bd3d8ae2e8c94d083f698e8c8a25",
+      "resultBundle": "artifacts/private/contact-contrast-review-oct18/exposed-ios27.xcresult",
+      "cases": [
+        {
+          "method": "testEnabledContactRemovalStandardLightAudit",
+          "captures": [
+            {
+              "path": "ios27-contact-contrast-enabled-removal.png",
+              "sha256": "f63d62ffb388410620a642b49ea2d172616c2d6549af79524ef2e79fd172edb2",
+              "originalAttachment": "exposed-ios27-attachments/5D2F5B18-FF2D-49E6-88C4-0516528D7296.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            },
+            {
+              "path": "ios27-testEnabledContactRemovalStandardLightAudit-diagnostic-1.png",
+              "sha256": "5a030527c710ae6ac8b9b279a7b758a41ad7dfd7aa03d7979a888505a0734df0",
+              "originalAttachment": "exposed-ios27-attachments/471554F4-BD21-4B1B-BF12-F61E3E64A8BF.png",
+              "pixels": [
+                978,
+                168
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Remove Jamie from Contacts\nFrame: (32.0, 420.3333333333333, 326.0, 82.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true",
+          "observations": [
+            {
+              "attachment": "exposed-ios27-attachments/83D40FE5-096E-43AC-B6C1-472EA27E6465.txt",
+              "detail": "Contrast nearly passed\nContrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.\nAttributes: StaticText, <element>, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled\nElement subtree:\n \u2192StaticText, <element>, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled\nPath to element:\n \u2192Application, <element>, pid <process>, label: 'Shield'\n  \u21b3Window (Main), <element>, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, <element>, {{0.0, 89.0}, {390.0, 755.0}}\n        \u21b3Other, <element>, {{0.0, 89.0}, {390.0, 755.0}}\n         \u21b3Other, <element>, {{0.0, 89.0}, {390.0, 755.0}}\n          \u21b3Other, <element>, {{0.0, 89.0}, {390.0, 755.0}}\n           \u21b3Other, <element>, {{0.0, 89.0}, {390.0, 755.0}}\n            \u21b3CollectionView, <element>, {{0.0, 89.0}, {390.0, 755.0}}\n             \u21b3Cell, <element>, {{16.0, 161.0}, {358.0, 86.0}}\n              \u21b3Other, <element>, {{16.0, 161.0}, {358.0, 86.0}}\n               \u21b3Other, <element>, {{16.0, 161.0}, {358.0, 86.0}}\n                \u21b3Other, <element>, {{16.0, 161.0}, {358.0, 86.0}}\n                 \u21b3Button, <element>, {{16.0, 161.0}, {358.0, 86.0}}, identifier: 'share-all-contacts', label: 'Share contacts once', Disabled\n                  \u21b3StaticText, <element>, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, <element>, pid <process>, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid <process>, elementOrHash.elementID: 4654368640.108\n    Output: {\n      StaticText, <element>, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled\n    }\n"
+            }
+          ]
+        },
+        {
+          "method": "testFullyExposedAddCaretakerAtLargestTextAudit",
+          "captures": [
+            {
+              "path": "ios27-contact-contrast-exposed-trusted-contacts.png",
+              "sha256": "8fa8239bba0d511b3c0ed19c1fe114dba0b8d6b828c3865f5d73c3de013c5819",
+              "originalAttachment": "exposed-ios27-attachments/1B0C9820-C2E4-4C99-9456-2AF3C2CF6574.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            },
+            {
+              "path": "ios27-testFullyExposedAddCaretakerAtLargestTextAudit-diagnostic-1.png",
+              "sha256": "e106f884390f610cb6ae38f902f3382d0f50a3c3bb2ad6afcf051a314f0cd5b3",
+              "originalAttachment": "exposed-ios27-attachments/D0D7F463-1795-4E73-A3B8-73A331C6A4F3.png",
+              "pixels": [
+                1074,
+                1582
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Add caretaker\nFrame: (32.0, 404.3333333333333, 273.3333333333333, 145.33333333333343)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+          "observations": [
+            {
+              "attachment": "exposed-ios27-attachments/1D0D0F52-DB24-4406-BF94-819D9FBB4B6C.txt",
+              "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nElement subtree:\n \u2192StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nPath to element:\n \u2192Application, <element>, pid <process>, label: 'Shield'\n  \u21b3Window (Main), <element>, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n        \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n         \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n          \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n           \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n            \u21b3CollectionView, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n             \u21b3Cell, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n              \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n               \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                 \u21b3StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, <element>, pid <process>, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid <process>, elementOrHash.elementID: 4352457568.42\n    Output: {\n      StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\n    }\n"
+            }
+          ]
+        },
+        {
+          "method": "testFullyExposedPendingSharingAtLargestTextAudit",
+          "captures": [
+            {
+              "path": "ios27-contact-contrast-exposed-sharing-access.png",
+              "sha256": "c0f435708c6cd6694d7efc58311ea07a3d44a33348be76d03ec3008cf02b101a",
+              "originalAttachment": "exposed-ios27-attachments/4568DF71-6BD5-463C-AC7E-682C38E80CB7.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Waiting for them to join\nFrame: (32.0, 360.3333333333333, 242.0, 116.66666666666669)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+          "observations": []
+        },
+        {
+          "method": "testFullyExposedTextAlertsAtLargestTextAudit",
+          "captures": [
+            {
+              "path": "ios27-contact-contrast-exposed-contact-alerts.png",
+              "sha256": "32c5013883a8ce68f8184ad353b3d606e6e04cb7db2f4ee5638b377b8da56a13",
+              "originalAttachment": "exposed-ios27-attachments/AA9E4B9A-5986-43FA-8BA9-EEA730B3C9C3.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Text messages\nFrame: (32.0, 503.0, 326.0, 161.33333333333326)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+          "observations": []
+        }
+      ]
+    },
+    {
+      "runtime": "26.5",
+      "summary": "ios26-summary.json",
+      "passedMethods": 2,
+      "failedMethods": 2,
+      "contrastObservations": 3,
+      "runtimeWarnings": [],
+      "log": "artifacts/private/contact-contrast-review-oct18/exposed-ios26-after-enumeration.log",
+      "logSHA256": "f78ef66d8388c2b0a4d7112bedab004f6ad26d1155f8be60a8b25aea0c063cc3",
+      "resultBundle": "artifacts/private/contact-contrast-review-oct18/exposed-ios26-after-enumeration.xcresult",
+      "cases": [
+        {
+          "method": "testEnabledContactRemovalStandardLightAudit",
+          "captures": [
+            {
+              "path": "ios26-contact-contrast-enabled-removal.png",
+              "sha256": "f2db691892cfe13427716f4d7413e21b2f6e280f3a96e2b87ca9ce272a12a469",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/CA450411-9B3D-433C-BE87-65845D04693B.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            },
+            {
+              "path": "ios26-testEnabledContactRemovalStandardLightAudit-diagnostic-1.png",
+              "sha256": "8c2f6151ee1c4a57d6743e0a1dbf3545a331a819286c3852de6c9eaeccca4e09",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/489BFF87-9751-4830-8B5A-454898C68195.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            },
+            {
+              "path": "ios26-testEnabledContactRemovalStandardLightAudit-diagnostic-2.png",
+              "sha256": "8c2f6151ee1c4a57d6743e0a1dbf3545a331a819286c3852de6c9eaeccca4e09",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/5F6D73E8-3E1E-410B-9A30-DAB8153DDC77.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Remove Jamie from Contacts\nFrame: (32.0, 420.3333333333333, 326.0, 82.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true",
+          "observations": [
+            {
+              "attachment": "exposed-ios26-after-enumeration-attachments/8D812A7A-0B0C-4549-BBCA-5DE7A5342011.txt",
+              "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+            },
+            {
+              "attachment": "exposed-ios26-after-enumeration-attachments/E0E132AF-29E9-4B63-8FDF-BDFFC1F1C5B1.txt",
+              "detail": "Contrast nearly passed\nContrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.\nNo associated element"
+            }
+          ]
+        },
+        {
+          "method": "testFullyExposedAddCaretakerAtLargestTextAudit",
+          "captures": [
+            {
+              "path": "ios26-contact-contrast-exposed-trusted-contacts.png",
+              "sha256": "5f3e9af970510c7709b207de4e00334a425c65e6b7b21db9060c8efb7396ef09",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/B83CF82D-7E75-4B35-9BD8-F30FB657D996.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            },
+            {
+              "path": "ios26-testFullyExposedAddCaretakerAtLargestTextAudit-diagnostic-1.png",
+              "sha256": "dc6483e29067bd330e46cdefaa3af8275ab3f05e3d51c4905f32957e296ef8fe",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/7F98894F-35A2-4944-9711-CE5385719CA1.png",
+              "pixels": [
+                1074,
+                1582
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Add caretaker\nFrame: (32.0, 404.3333333333333, 273.3333333333333, 145.33333333333343)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+          "observations": [
+            {
+              "attachment": "exposed-ios26-after-enumeration-attachments/D98A1F08-D4D7-48BE-A6B4-2100767E04AF.txt",
+              "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nElement subtree:\n \u2192StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nPath to element:\n \u2192Application, <element>, pid <process>, label: 'Shield'\n  \u21b3Window (Main), <element>, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n        \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n         \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n          \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n           \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n            \u21b3CollectionView, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n             \u21b3Cell, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n              \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n               \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                 \u21b3StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, <element>, pid <process>, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid <process>, elementOrHash.elementID: 4412846336.41\n    Output: {\n      StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\n    }\n"
+            }
+          ]
+        },
+        {
+          "method": "testFullyExposedPendingSharingAtLargestTextAudit",
+          "captures": [
+            {
+              "path": "ios26-contact-contrast-exposed-sharing-access.png",
+              "sha256": "829475887b38a3e49fd07d057396f106ed7781c7f5dba36eb720d7524a4f4b09",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/30C6CD01-3870-48E4-BDCA-53CF163CDA50.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Waiting for them to join\nFrame: (32.0, 360.3333333333333, 242.0, 116.66666666666669)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+          "observations": []
+        },
+        {
+          "method": "testFullyExposedTextAlertsAtLargestTextAudit",
+          "captures": [
+            {
+              "path": "ios26-contact-contrast-exposed-contact-alerts.png",
+              "sha256": "b1c2c000c988bf49f408ac42c34d2c9e5c35241aa2e52d7c022e6dfb2bd99096",
+              "originalAttachment": "exposed-ios26-after-enumeration-attachments/A0FDA5CB-1AD4-4875-8EC4-2FB4707D3CF6.png",
+              "pixels": [
+                1170,
+                2532
+              ],
+              "visuallyInspected": true
+            }
+          ],
+          "geometry": "Target: Text messages\nFrame: (32.0, 503.0, 326.0, 161.33333333333326)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+          "observations": []
+        }
+      ]
+    }
+  ],
+  "visuallyInspectedImages": [
+    {
+      "path": "original-00-element.png",
+      "sha256": "e44ebf4da49d175329fed9cab8536ca44da8d5979d2c7ff715214fe015b56c17",
+      "originalAttachment": "original-attachments/601C9CB7-B310-4ADA-8CF3-5F1CED9186A1.png",
+      "pixels": [
+        580,
+        562
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-01-element.png",
+      "sha256": "fae9e7002f03f5477650f6d349764f7040725d9bae94550dcd3b68507bb2a9d7",
+      "originalAttachment": "original-attachments/B4619D64-6716-4823-8844-91476673F9B9.png",
+      "pixels": [
+        820,
+        434
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-02-element.png",
+      "sha256": "b7c202b9922a7d26797595a496898599672a9b3e7877fb823014a08b99f0772d",
+      "originalAttachment": "original-attachments/85BED72C-3D80-4802-B250-BACBE64C7589.png",
+      "pixels": [
+        978,
+        482
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-03-element.png",
+      "sha256": "215f884ce4290d6dfddad794a9340b5b01ca7b3e5d4096feb06213b610e2ba76",
+      "originalAttachment": "original-attachments/BF3753EC-C9A0-420A-93B4-FF5F8D00F6C6.png",
+      "pixels": [
+        726,
+        350
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-04-element.png",
+      "sha256": "5a030527c710ae6ac8b9b279a7b758a41ad7dfd7aa03d7979a888505a0734df0",
+      "originalAttachment": "original-attachments/B5E000D3-EA06-407D-B567-EF5496D5ABEA.png",
+      "pixels": [
+        978,
+        168
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-05-element.png",
+      "sha256": "3aada7e47bf8674e598fc12c7198ea9df0ffd436ee7cda4524c49e6d81c2ed82",
+      "originalAttachment": "original-attachments/95815793-C283-4022-BF86-8412E94D70AF.png",
+      "pixels": [
+        472,
+        61
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-06-element.png",
+      "sha256": "3aada7e47bf8674e598fc12c7198ea9df0ffd436ee7cda4524c49e6d81c2ed82",
+      "originalAttachment": "original-attachments/68960E64-8B81-45D8-A441-D16E3420B3A1.png",
+      "pixels": [
+        472,
+        61
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-07-element.png",
+      "sha256": "3b9c99374145c18db4dd15dfbea672adf59fae25bec467e3db7211d5379acf88",
+      "originalAttachment": "original-attachments/CDA4D087-BFD4-410A-934E-DCF252648A1D.png",
+      "pixels": [
+        978,
+        166
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-08-element.png",
+      "sha256": "3aada7e47bf8674e598fc12c7198ea9df0ffd436ee7cda4524c49e6d81c2ed82",
+      "originalAttachment": "original-attachments/64F11751-B948-4206-9FBB-04ED10EEA52E.png",
+      "pixels": [
+        472,
+        61
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "original-09-element.png",
+      "sha256": "923001d3336120968a99cc88ae907b8e151a6a6d29c197ef9b461e38160ffb05",
+      "originalAttachment": "original-attachments/476746E5-5530-4D5D-9282-822995173D81.png",
+      "pixels": [
+        472,
+        60
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios27-contact-contrast-enabled-removal.png",
+      "sha256": "f63d62ffb388410620a642b49ea2d172616c2d6549af79524ef2e79fd172edb2",
+      "originalAttachment": "exposed-ios27-attachments/5D2F5B18-FF2D-49E6-88C4-0516528D7296.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios27-testEnabledContactRemovalStandardLightAudit-diagnostic-1.png",
+      "sha256": "5a030527c710ae6ac8b9b279a7b758a41ad7dfd7aa03d7979a888505a0734df0",
+      "originalAttachment": "exposed-ios27-attachments/471554F4-BD21-4B1B-BF12-F61E3E64A8BF.png",
+      "pixels": [
+        978,
+        168
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios27-contact-contrast-exposed-trusted-contacts.png",
+      "sha256": "8fa8239bba0d511b3c0ed19c1fe114dba0b8d6b828c3865f5d73c3de013c5819",
+      "originalAttachment": "exposed-ios27-attachments/1B0C9820-C2E4-4C99-9456-2AF3C2CF6574.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios27-testFullyExposedAddCaretakerAtLargestTextAudit-diagnostic-1.png",
+      "sha256": "e106f884390f610cb6ae38f902f3382d0f50a3c3bb2ad6afcf051a314f0cd5b3",
+      "originalAttachment": "exposed-ios27-attachments/D0D7F463-1795-4E73-A3B8-73A331C6A4F3.png",
+      "pixels": [
+        1074,
+        1582
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios27-contact-contrast-exposed-sharing-access.png",
+      "sha256": "c0f435708c6cd6694d7efc58311ea07a3d44a33348be76d03ec3008cf02b101a",
+      "originalAttachment": "exposed-ios27-attachments/4568DF71-6BD5-463C-AC7E-682C38E80CB7.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios27-contact-contrast-exposed-contact-alerts.png",
+      "sha256": "32c5013883a8ce68f8184ad353b3d606e6e04cb7db2f4ee5638b377b8da56a13",
+      "originalAttachment": "exposed-ios27-attachments/AA9E4B9A-5986-43FA-8BA9-EEA730B3C9C3.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-contact-contrast-enabled-removal.png",
+      "sha256": "f2db691892cfe13427716f4d7413e21b2f6e280f3a96e2b87ca9ce272a12a469",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/CA450411-9B3D-433C-BE87-65845D04693B.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-testEnabledContactRemovalStandardLightAudit-diagnostic-1.png",
+      "sha256": "8c2f6151ee1c4a57d6743e0a1dbf3545a331a819286c3852de6c9eaeccca4e09",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/489BFF87-9751-4830-8B5A-454898C68195.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-testEnabledContactRemovalStandardLightAudit-diagnostic-2.png",
+      "sha256": "8c2f6151ee1c4a57d6743e0a1dbf3545a331a819286c3852de6c9eaeccca4e09",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/5F6D73E8-3E1E-410B-9A30-DAB8153DDC77.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-contact-contrast-exposed-trusted-contacts.png",
+      "sha256": "5f3e9af970510c7709b207de4e00334a425c65e6b7b21db9060c8efb7396ef09",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/B83CF82D-7E75-4B35-9BD8-F30FB657D996.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-testFullyExposedAddCaretakerAtLargestTextAudit-diagnostic-1.png",
+      "sha256": "dc6483e29067bd330e46cdefaa3af8275ab3f05e3d51c4905f32957e296ef8fe",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/7F98894F-35A2-4944-9711-CE5385719CA1.png",
+      "pixels": [
+        1074,
+        1582
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-contact-contrast-exposed-sharing-access.png",
+      "sha256": "829475887b38a3e49fd07d057396f106ed7781c7f5dba36eb720d7524a4f4b09",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/30C6CD01-3870-48E4-BDCA-53CF163CDA50.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    },
+    {
+      "path": "ios26-contact-contrast-exposed-contact-alerts.png",
+      "sha256": "b1c2c000c988bf49f408ac42c34d2c9e5c35241aa2e52d7c022e6dfb2bd99096",
+      "originalAttachment": "exposed-ios26-after-enumeration-attachments/A0FDA5CB-1AD4-4875-8EC4-2FB4707D3CF6.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true
+    }
+  ],
+  "initialIOS26Attempt": {
+    "summary": "ios26-empty-attempt-summary.json",
+    "result": "Tool said TEST SUCCEEDED and exited 0 but executed no tests; not a pass.",
+    "followUp": "Both suite and exact-selection enumeration found the methods enabled. One unchanged fresh attempt then executed all four. The cause of the empty attempt is unproved."
+  },
+  "assessment": [
+    "The original seven disabled-control observations are specifically outside the WCAG 1.4.3 minimum text-contrast requirement; broader accessibility remains unaccepted.",
+    "The original Add caretaker crop is fully visible and measures 13.56:1; the prior blanket scroll-boundary explanation was incorrect for that label.",
+    "Original Text messages and Waiting for them to join diagnostic crops contain navigation chrome covering their lettering. Both fully exposed screens pass on both runtimes.",
+    "All four target geometry/enabled-state assertions pass. Their measured opaque text/background pairs range from 8.33:1 to 14.69:1 on both runtimes.",
+    "iOS 27 retains two contrast reports: disabled Share contacts once and the introductory paragraph extending above navigation. Neither report identifies a fully exposed target.",
+    "iOS 26.5 retains three contrast reports: the same partially covered paragraph and two Your contacts reports with no associated element or element crop. Those two cannot be assigned to a specific control and remain unresolved.",
+    "The paragraph diagnostic includes uncovered high-contrast ending lines and covered earlier lines; it is partially, not completely, obscured.",
+    "No automated-framework cause is established. Passing target measurements are not a passing whole-screen audit or real-device accessibility acceptance."
+  ],
+  "references": [
+    "https://www.w3.org/TR/WCAG22/#contrast-minimum",
+    "https://www.w3.org/TR/wcag2ict/",
+    "https://developer.apple.com/videos/play/wwdc2023/10035/"
+  ],
+  "releaseGateOpen": true,
+  "notPerformedInInitialPass": [
+    "Production deployment",
+    "Physical device installation",
+    "Phone call",
+    "Message delivery",
+    "Apple submission",
+    "New release archive or unchanged backend rerun"
+  ],
+  "integrationFollowUp": {
+    "recordedAt": "2026-10-18T17:34:19.589219+00:00",
+    "sourceManifest": {
+      "path": "integrated-source.json",
+      "sha256": "31013685b6494af691045812b3eaa166f60d63e9b7b12acc605da67ef94204af",
+      "trackedInputCount": 282,
+      "allCurrentHashesMatch": true,
+      "onlyIOSOverlay": [
+        "ios/ShieldUITests/SeniorAccessibilityUITests.swift"
+      ]
+    },
+    "baseCommit": "932e6b2888da10c36aed7f4e5e7c9d2f25c39c17",
+    "concurrentProductionChangesPreserved": [
+      "ios/Shield/Design/ShieldIdentity.swift",
+      "ios/Shield/Features/People/SharingView.swift",
+      "ios/Shield/Features/Settings/SavedNumbersView.swift",
+      "ios/Shield/Features/Settings/SharedContactsView.swift",
+      "ios/ShieldUITests/SeniorDesignUITests.swift",
+      "ios/ShieldUITests/SeniorPolishUITests.swift"
+    ],
+    "runs": [
+      {
+        "runtime": "27.0",
+        "summary": "integrated-ios27-summary.json",
+        "passedMethods": 4,
+        "failedMethods": 2,
+        "functionalPassed": 2,
+        "auditMethodsPassed": 2,
+        "auditMethodsFailed": 2,
+        "runtimeWarnings": [],
+        "methodResults": [
+          {
+            "class": "ReleaseReadinessUITests",
+            "method": "testContactSharingIsExplicitAndCallSharingRemainsSeparate",
+            "result": "passed",
+            "seconds": 16.199
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testEnabledContactRemovalStandardLightAudit",
+            "result": "failed",
+            "seconds": 9.137
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testFullyExposedAddCaretakerAtLargestTextAudit",
+            "result": "failed",
+            "seconds": 11.001
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testFullyExposedPendingSharingAtLargestTextAudit",
+            "result": "passed",
+            "seconds": 10.686
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testFullyExposedTextAlertsAtLargestTextAudit",
+            "result": "passed",
+            "seconds": 8.29
+          },
+          {
+            "class": "SeniorDesignUITests",
+            "method": "testNamesInActionRowsDoNotTriggerTheirActions",
+            "result": "passed",
+            "seconds": 13.455
+          }
+        ],
+        "log": "artifacts/private/contact-contrast-review-oct18/integrated-ios27.log",
+        "logSHA256": "746660d68e55e912f5d880544966d5cbc90b7c465c745c2b82a252e79c17d757",
+        "resultBundle": "artifacts/private/contact-contrast-review-oct18/integrated-ios27.xcresult",
+        "cases": [
+          {
+            "method": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate()",
+            "captures": [
+              {
+                "path": "integrated-ios27-release-separate-call-permissions-0.png",
+                "sha256": "c64c81e6e039ac30dbd5afaeb7a0a2b2579580c9f87ba65e9280d17b966b288c",
+                "originalAttachment": "integrated-ios27-attachments/82ACBED2-F318-475F-A0E7-4455FC3498F4.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios27-release-explicit-contact-sharing-1.png",
+                "sha256": "e070b788aa659f0951a33c7b2dfff6c42f2772de6d140899dca0a84a7fdc201e",
+                "originalAttachment": "integrated-ios27-attachments/A640319A-37C2-4997-A60F-AD6DA852AF9F.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": null,
+            "observations": []
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testEnabledContactRemovalStandardLightAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios27-contact-contrast-enabled-removal-0.png",
+                "sha256": "ab003b6dfb8e0f0cf71132f66bf8aed3c51ef552bf75bc91e735d09cf9aecf7b",
+                "originalAttachment": "integrated-ios27-attachments/88E3DBC6-5492-4A2D-883D-8AC834C5DAC3.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios27-app-screenshot-1.png",
+                "sha256": "ab003b6dfb8e0f0cf71132f66bf8aed3c51ef552bf75bc91e735d09cf9aecf7b",
+                "originalAttachment": "integrated-ios27-attachments/D6716E09-13D4-47A5-8329-B729DF2A9CCD.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Remove Jamie from Contacts\nFrame: (32.0, 420.3333333333333, 326.0, 82.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true",
+            "observations": [
+              {
+                "originalAttachment": "integrated-ios27-attachments/543BD327-09DF-45CF-8885-E0E1FCD1DE4D.txt",
+                "detail": "Contrast nearly passed\nContrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.\nNo associated element"
+              }
+            ]
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testFullyExposedAddCaretakerAtLargestTextAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios27-contact-contrast-exposed-trusted-contacts-0.png",
+                "sha256": "5122a3d60bf49aae2e271c822e04658c5b8f5ffcb32122aa974a5b7149cdebb0",
+                "originalAttachment": "integrated-ios27-attachments/B6368232-987B-477C-952F-1D350D8D708E.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios27-element-screenshot-1.png",
+                "sha256": "a237b8ba9837f5ea35b7a9df342ee18ca4466dc05504d3335b936c4f655a2dd6",
+                "originalAttachment": "integrated-ios27-attachments/71023354-13C7-40A6-967C-04A7BB53E22F.png",
+                "pixels": [
+                  1074,
+                  1582
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Add caretaker\nFrame: (32.0, 404.3333333333333, 273.3333333333333, 145.33333333333343)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+            "observations": [
+              {
+                "originalAttachment": "integrated-ios27-attachments/518A78DA-239D-44D8-A0F0-3A71F74A49FD.txt",
+                "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nElement subtree:\n \u2192StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nPath to element:\n \u2192Application, <element>, pid <process>, label: 'Shield'\n  \u21b3Window (Main), <element>, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n        \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n         \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n          \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n           \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n            \u21b3CollectionView, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n             \u21b3Cell, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n              \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n               \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                 \u21b3StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, <element>, pid <process>, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid <process>, elementOrHash.elementID: 4382063776.42\n    Output: {\n      StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\n    }\n"
+              }
+            ]
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testFullyExposedPendingSharingAtLargestTextAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios27-contact-contrast-exposed-sharing-access-0.png",
+                "sha256": "382908cf59333fa90302493e430700592b8eb5b44465f99c4219927b7f1c704e",
+                "originalAttachment": "integrated-ios27-attachments/1F0B796C-DCDA-46BA-8708-22AF09766013.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Waiting for them to join\nFrame: (32.0, 360.3333333333333, 242.0, 116.66666666666669)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+            "observations": []
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testFullyExposedTextAlertsAtLargestTextAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios27-contact-contrast-exposed-contact-alerts-0.png",
+                "sha256": "4ddd682e24afc98f1c004c028842c29263a6354a0649dab69a47a10d00f00bd9",
+                "originalAttachment": "integrated-ios27-attachments/B4024120-A28E-4E7A-A46B-FC7146B25239.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Text messages\nFrame: (32.0, 503.0, 326.0, 161.33333333333326)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+            "observations": []
+          }
+        ]
+      },
+      {
+        "runtime": "26.5",
+        "summary": "integrated-ios26-summary.json",
+        "passedMethods": 4,
+        "failedMethods": 2,
+        "functionalPassed": 2,
+        "auditMethodsPassed": 2,
+        "auditMethodsFailed": 2,
+        "runtimeWarnings": [],
+        "methodResults": [
+          {
+            "class": "ReleaseReadinessUITests",
+            "method": "testContactSharingIsExplicitAndCallSharingRemainsSeparate",
+            "result": "passed",
+            "seconds": 14.549
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testEnabledContactRemovalStandardLightAudit",
+            "result": "failed",
+            "seconds": 14.061
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testFullyExposedAddCaretakerAtLargestTextAudit",
+            "result": "failed",
+            "seconds": 9.77
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testFullyExposedPendingSharingAtLargestTextAudit",
+            "result": "passed",
+            "seconds": 9.203
+          },
+          {
+            "class": "SeniorAccessibilityUITests",
+            "method": "testFullyExposedTextAlertsAtLargestTextAudit",
+            "result": "passed",
+            "seconds": 6.846
+          },
+          {
+            "class": "SeniorDesignUITests",
+            "method": "testNamesInActionRowsDoNotTriggerTheirActions",
+            "result": "passed",
+            "seconds": 10.076
+          }
+        ],
+        "log": "artifacts/private/contact-contrast-review-oct18/integrated-ios26.log",
+        "logSHA256": "1388aae7a3c9b7d79f40093324a37e175fe9d7189958dd04e25d2fc81e09799c",
+        "resultBundle": "artifacts/private/contact-contrast-review-oct18/integrated-ios26.xcresult",
+        "cases": [
+          {
+            "method": "ReleaseReadinessUITests/testContactSharingIsExplicitAndCallSharingRemainsSeparate()",
+            "captures": [
+              {
+                "path": "integrated-ios26-release-separate-call-permissions-0.png",
+                "sha256": "0a93ce8e5fe99f93342c27cc47f77073712297ff50e63c4ba523b92017047500",
+                "originalAttachment": "integrated-ios26-attachments/D2D56268-00E1-4CDA-B986-369447BD9144.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios26-release-explicit-contact-sharing-1.png",
+                "sha256": "66a4b26b1eef6012cbcadd85929aabbf5908c8892430ff7dff8a4712ceb69514",
+                "originalAttachment": "integrated-ios26-attachments/BD61B18F-75E9-43A9-857C-E9DB9A068149.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": null,
+            "observations": []
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testEnabledContactRemovalStandardLightAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios26-contact-contrast-enabled-removal-0.png",
+                "sha256": "c2eee4aeb1810b2465b9531b57b5fe139d8060b976411d4cec6b03e766ecdd6f",
+                "originalAttachment": "integrated-ios26-attachments/197E65AD-6676-4459-8048-627741AD73D9.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios26-app-screenshot-1.png",
+                "sha256": "c871f423c6ec99346e815718ee5038b9e47d9859435656a89bbe20e36cbc2ab7",
+                "originalAttachment": "integrated-ios26-attachments/240A643B-C2BA-4995-AB81-7E41E1367C6F.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios26-app-screenshot-2.png",
+                "sha256": "c871f423c6ec99346e815718ee5038b9e47d9859435656a89bbe20e36cbc2ab7",
+                "originalAttachment": "integrated-ios26-attachments/BF980AD1-C07A-47DE-9193-DCAF98F2E3B0.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Remove Jamie from Contacts\nFrame: (32.0, 420.3333333333333, 326.0, 82.0)\nUsable vertical bounds: 173.0...724.0\nEnabled: true",
+            "observations": [
+              {
+                "originalAttachment": "integrated-ios26-attachments/A0AB7CE5-3C29-48A6-8D3B-EB4FAEEE7D55.txt",
+                "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nNo associated element"
+              },
+              {
+                "originalAttachment": "integrated-ios26-attachments/EEA26FF5-B77F-4788-89AC-5B7DCA19C363.txt",
+                "detail": "Contrast nearly passed\nContrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.\nNo associated element"
+              }
+            ]
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testFullyExposedAddCaretakerAtLargestTextAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios26-contact-contrast-exposed-trusted-contacts-0.png",
+                "sha256": "621ac7a52d8069e2c36c76bbcc0d766d86f2f3a11177f1f777a9950aa18f60a8",
+                "originalAttachment": "integrated-ios26-attachments/5F537627-0E9C-4F03-8FFB-E832520A7E20.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              },
+              {
+                "path": "integrated-ios26-element-screenshot-1.png",
+                "sha256": "09367bfc9466589bea5774657aa2f339253b514cedd47a7b87b0ecf78d976dca",
+                "originalAttachment": "integrated-ios26-attachments/2C823BBE-66BC-4724-A3B6-1399BFAE049D.png",
+                "pixels": [
+                  1074,
+                  1582
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Add caretaker\nFrame: (32.0, 404.3333333333333, 273.3333333333333, 145.33333333333343)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+            "observations": [
+              {
+                "originalAttachment": "integrated-ios26-attachments/0723AAFA-DA6A-4D4E-93BD-33964E1ECFF9.txt",
+                "detail": "Contrast failed\nContrast failed for SwiftUI.AccessibilityNode\nAttributes: StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nElement subtree:\n \u2192StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nPath to element:\n \u2192Application, <element>, pid <process>, label: 'Shield'\n  \u21b3Window (Main), <element>, {{0.0, 0.0}, {390.0, 844.0}}\n   \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n    \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n     \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n      \u21b3Other, <element>, {{0.0, 0.0}, {390.0, 844.0}}\n       \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n        \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n         \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n          \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n           \u21b3Other, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n            \u21b3CollectionView, <element>, {{0.0, 101.0}, {390.0, 743.0}}\n             \u21b3Cell, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n              \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n               \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                \u21b3Other, <element>, {{16.0, -166.0}, {358.0, 527.3}}\n                 \u21b3StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\nQuery chain:\n \u2192Find: Target Application 'org.isaaczhang.Shield'\n  Output: {\n    Application, <element>, pid <process>, label: 'Shield'\n  }\n  \u21aa\ufe0eFind: Descendant with identity binding to AX element pid <process>, elementOrHash.elementID: 4400263424.41\n    Output: {\n      StaticText, <element>, {{16.0, -166.0}, {358.0, 527.3}}, label: 'Alert someone you trust when checks while you talk detect a possible scam request and intervene.'\n    }\n"
+              }
+            ]
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testFullyExposedPendingSharingAtLargestTextAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios26-contact-contrast-exposed-sharing-access-0.png",
+                "sha256": "39ffbbf83f14fe56cd32488d53fe05d00efe0ec379336ee579f7181cc7db6807",
+                "originalAttachment": "integrated-ios26-attachments/43EA9AEC-B92E-414F-A23B-03E5117A913A.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Waiting for them to join\nFrame: (32.0, 360.6666666666667, 242.0, 116.66666666666663)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+            "observations": []
+          },
+          {
+            "method": "SeniorAccessibilityUITests/testFullyExposedTextAlertsAtLargestTextAudit()",
+            "captures": [
+              {
+                "path": "integrated-ios26-contact-contrast-exposed-contact-alerts-0.png",
+                "sha256": "29ccc708afebce619972e6091f1d7c11560c3f2d67a3164830899fdddededf2b",
+                "originalAttachment": "integrated-ios26-attachments/4F9DCFB2-716A-4732-B4D5-0AAA11AFA804.png",
+                "pixels": [
+                  1170,
+                  2532
+                ],
+                "visuallyInspected": true
+              }
+            ],
+            "geometry": "Target: Text messages\nFrame: (32.0, 503.0, 326.0, 161.33333333333326)\nUsable vertical bounds: 185.0...724.0\nEnabled: true",
+            "observations": []
+          }
+        ]
+      }
+    ],
+    "visuallyInspectedImages": [
+      {
+        "path": "integrated-ios27-release-separate-call-permissions-0.png",
+        "sha256": "c64c81e6e039ac30dbd5afaeb7a0a2b2579580c9f87ba65e9280d17b966b288c",
+        "originalAttachment": "integrated-ios27-attachments/82ACBED2-F318-475F-A0E7-4455FC3498F4.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-release-explicit-contact-sharing-1.png",
+        "sha256": "e070b788aa659f0951a33c7b2dfff6c42f2772de6d140899dca0a84a7fdc201e",
+        "originalAttachment": "integrated-ios27-attachments/A640319A-37C2-4997-A60F-AD6DA852AF9F.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-contact-contrast-enabled-removal-0.png",
+        "sha256": "ab003b6dfb8e0f0cf71132f66bf8aed3c51ef552bf75bc91e735d09cf9aecf7b",
+        "originalAttachment": "integrated-ios27-attachments/88E3DBC6-5492-4A2D-883D-8AC834C5DAC3.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-app-screenshot-1.png",
+        "sha256": "ab003b6dfb8e0f0cf71132f66bf8aed3c51ef552bf75bc91e735d09cf9aecf7b",
+        "originalAttachment": "integrated-ios27-attachments/D6716E09-13D4-47A5-8329-B729DF2A9CCD.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-contact-contrast-exposed-trusted-contacts-0.png",
+        "sha256": "5122a3d60bf49aae2e271c822e04658c5b8f5ffcb32122aa974a5b7149cdebb0",
+        "originalAttachment": "integrated-ios27-attachments/B6368232-987B-477C-952F-1D350D8D708E.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-element-screenshot-1.png",
+        "sha256": "a237b8ba9837f5ea35b7a9df342ee18ca4466dc05504d3335b936c4f655a2dd6",
+        "originalAttachment": "integrated-ios27-attachments/71023354-13C7-40A6-967C-04A7BB53E22F.png",
+        "pixels": [
+          1074,
+          1582
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-contact-contrast-exposed-sharing-access-0.png",
+        "sha256": "382908cf59333fa90302493e430700592b8eb5b44465f99c4219927b7f1c704e",
+        "originalAttachment": "integrated-ios27-attachments/1F0B796C-DCDA-46BA-8708-22AF09766013.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios27-contact-contrast-exposed-contact-alerts-0.png",
+        "sha256": "4ddd682e24afc98f1c004c028842c29263a6354a0649dab69a47a10d00f00bd9",
+        "originalAttachment": "integrated-ios27-attachments/B4024120-A28E-4E7A-A46B-FC7146B25239.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-release-separate-call-permissions-0.png",
+        "sha256": "0a93ce8e5fe99f93342c27cc47f77073712297ff50e63c4ba523b92017047500",
+        "originalAttachment": "integrated-ios26-attachments/D2D56268-00E1-4CDA-B986-369447BD9144.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-release-explicit-contact-sharing-1.png",
+        "sha256": "66a4b26b1eef6012cbcadd85929aabbf5908c8892430ff7dff8a4712ceb69514",
+        "originalAttachment": "integrated-ios26-attachments/BD61B18F-75E9-43A9-857C-E9DB9A068149.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-contact-contrast-enabled-removal-0.png",
+        "sha256": "c2eee4aeb1810b2465b9531b57b5fe139d8060b976411d4cec6b03e766ecdd6f",
+        "originalAttachment": "integrated-ios26-attachments/197E65AD-6676-4459-8048-627741AD73D9.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-app-screenshot-1.png",
+        "sha256": "c871f423c6ec99346e815718ee5038b9e47d9859435656a89bbe20e36cbc2ab7",
+        "originalAttachment": "integrated-ios26-attachments/240A643B-C2BA-4995-AB81-7E41E1367C6F.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-app-screenshot-2.png",
+        "sha256": "c871f423c6ec99346e815718ee5038b9e47d9859435656a89bbe20e36cbc2ab7",
+        "originalAttachment": "integrated-ios26-attachments/BF980AD1-C07A-47DE-9193-DCAF98F2E3B0.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-contact-contrast-exposed-trusted-contacts-0.png",
+        "sha256": "621ac7a52d8069e2c36c76bbcc0d766d86f2f3a11177f1f777a9950aa18f60a8",
+        "originalAttachment": "integrated-ios26-attachments/5F537627-0E9C-4F03-8FFB-E832520A7E20.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-element-screenshot-1.png",
+        "sha256": "09367bfc9466589bea5774657aa2f339253b514cedd47a7b87b0ecf78d976dca",
+        "originalAttachment": "integrated-ios26-attachments/2C823BBE-66BC-4724-A3B6-1399BFAE049D.png",
+        "pixels": [
+          1074,
+          1582
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-contact-contrast-exposed-sharing-access-0.png",
+        "sha256": "39ffbbf83f14fe56cd32488d53fe05d00efe0ec379336ee579f7181cc7db6807",
+        "originalAttachment": "integrated-ios26-attachments/43EA9AEC-B92E-414F-A23B-03E5117A913A.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      },
+      {
+        "path": "integrated-ios26-contact-contrast-exposed-contact-alerts-0.png",
+        "sha256": "29ccc708afebce619972e6091f1d7c11560c3f2d67a3164830899fdddededf2b",
+        "originalAttachment": "integrated-ios26-attachments/4F9DCFB2-716A-4732-B4D5-0AAA11AFA804.png",
+        "pixels": [
+          1170,
+          2532
+        ],
+        "visuallyInspected": true
+      }
+    ],
+    "measurements": "integrated-contrast-measurements.json",
+    "archive": {
+      "archive": "/tmp/shield-contact-contrast-integrated-oct18.xcarchive",
+      "verified": true,
+      "distributionSigningVerified": false,
+      "version": "0.1.0",
+      "build": "1",
+      "minimumOS": "26.0",
+      "apiHost": "shield-calls-isaac.web.app",
+      "developmentNetworkingException": false,
+      "messageFilterEmbedded": false,
+      "bundles": [
+        {
+          "path": ".",
+          "identifier": "org.isaaczhang.Shield",
+          "architecture": "arm64"
+        },
+        {
+          "path": "PlugIns/ShieldCallDirectory.appex",
+          "identifier": "org.isaaczhang.Shield.CallDirectory",
+          "architecture": "arm64"
+        }
+      ],
+      "privacyManifests": [
+        "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+        "PrivacyInfo.xcprivacy",
+        "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+      ],
+      "appBinarySha256": "5e16c7dd846e8d3f568298b125188395c436e00d9f781bbb61162ad226ee9314",
+      "receipt": "integrated-release-archive-verification.json",
+      "sourceInventory": "integrated-source.json",
+      "checkerSHA256": "dce2f1fe70937c5920ae56224659a433d6a9b7d1eaa1e726869a71c3835fa271",
+      "logSHA256": "2133309ffe04e93251d315e20de8f25ea625b04301d6f5f5ee9154a0f7203c92"
+    },
+    "assessment": [
+      "Both explicit-sharing and name-versus-action interaction methods pass on both runtimes.",
+      "The four contrast methods still pass two and fail two on each runtime; all target geometry assertions pass.",
+      "Integrated iOS 27 has one unassociated Your contacts contrast report and the partially covered introductory paragraph. The unassociated report cannot be assigned to the disabled Share contacts button.",
+      "Integrated iOS 26.5 has two unassociated Your contacts contrast reports and the same partially covered paragraph.",
+      "Current opaque target text/background ratios remain 8.33:1 through 14.69:1. This is not a blanket audit pass, a framework-cause attribution or physical accessibility acceptance.",
+      "The unsigned release archive passes package/privacy/fixture inspection. It is not distribution-signed, physically installed or submitted to Apple."
+    ],
+    "releaseGateOpen": true
+  },
+  "totalVisuallyInspectedImages": 40
+}

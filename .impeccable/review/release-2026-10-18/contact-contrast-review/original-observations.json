@@ -1,0 +1,196 @@
+{
+  "source": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/verification.json",
+  "sourceSHA256": "2d931188f59f23d80df13fd9cf361c997fc72db60270962877a07af071e79281",
+  "observations": [
+    {
+      "capture": "release-sharing-contacts-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{119.3, 582.0}, {193.3, 187.3}}, label: 'Remove from iPhone', Disabled",
+      "originalObservationIndex": 0,
+      "diagnosticCrop": {
+        "path": "original-00-element.png",
+        "sha256": "e44ebf4da49d175329fed9cab8536ca44da8d5979d2c7ff715214fe015b56c17",
+        "originalAttachment": "original-attachments/601C9CB7-B310-4ADA-8CF3-5F1CED9186A1.png",
+        "pixels": [
+          580,
+          562
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    },
+    {
+      "capture": "release-sharing-trusted-contacts-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Add caretaker",
+      "disabled": false,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 196.7}, {273.3, 145.3}}, label: 'Add caretaker'",
+      "originalObservationIndex": 1,
+      "diagnosticCrop": {
+        "path": "original-01-element.png",
+        "sha256": "fae9e7002f03f5477650f6d349764f7040725d9bae94550dcd3b68507bb2a9d7",
+        "originalAttachment": "original-attachments/B4619D64-6716-4823-8844-91476673F9B9.png",
+        "pixels": [
+          820,
+          434
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Exact diagnostic crop contains the complete Add caretaker label, measured 13.56:1. The earlier all-three-at-scroll-boundaries inference is corrected. This target has no associated finding when fully exposed in either new run; the underlying automated-report cause is unproved."
+    },
+    {
+      "capture": "release-sharing-contact-alerts-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Text messages",
+      "disabled": false,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 8.3}, {326.0, 161.3}}, label: 'Text messages'",
+      "originalObservationIndex": 2,
+      "diagnosticCrop": {
+        "path": "original-02-element.png",
+        "sha256": "b7c202b9922a7d26797595a496898599672a9b3e7877fb823014a08b99f0772d",
+        "originalAttachment": "original-attachments/85BED72C-3D80-4802-B250-BACBE64C7589.png",
+        "pixels": [
+          978,
+          482
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Exact diagnostic crop contains navigation/sample chrome covering the target lettering. The same fully exposed target passes the unfiltered screen audit on both runtimes; scoped current pixel measurements exceed 4.5:1. This does not waive offscreen or assistive-technology behavior."
+    },
+    {
+      "capture": "release-sharing-sharing-access-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Waiting for them to join",
+      "disabled": false,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 18.3}, {242.0, 116.7}}, label: 'Waiting for them to join'",
+      "originalObservationIndex": 3,
+      "diagnosticCrop": {
+        "path": "original-03-element.png",
+        "sha256": "215f884ce4290d6dfddad794a9340b5b01ca7b3e5d4096feb06213b610e2ba76",
+        "originalAttachment": "original-attachments/BF3753EC-C9A0-420A-93B4-FF5F8D00F6C6.png",
+        "pixels": [
+          726,
+          350
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Exact diagnostic crop contains navigation/sample chrome covering the target lettering. The same fully exposed target passes the unfiltered screen audit on both runtimes; scoped current pixel measurements exceed 4.5:1. This does not waive offscreen or assistive-technology behavior."
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light",
+      "kind": "Contrast nearly passed",
+      "label": "Share contacts once",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled",
+      "originalObservationIndex": 4,
+      "diagnosticCrop": {
+        "path": "original-04-element.png",
+        "sha256": "5a030527c710ae6ac8b9b279a7b758a41ad7dfd7aa03d7979a888505a0734df0",
+        "originalAttachment": "original-attachments/B5E000D3-EA06-407D-B567-EF5496D5ABEA.png",
+        "pixels": [
+          978,
+          168
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 451.2}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+      "originalObservationIndex": 5,
+      "diagnosticCrop": {
+        "path": "original-05-element.png",
+        "sha256": "3aada7e47bf8674e598fc12c7198ea9df0ffd436ee7cda4524c49e6d81c2ed82",
+        "originalAttachment": "original-attachments/95815793-C283-4022-BF86-8412E94D70AF.png",
+        "pixels": [
+          472,
+          61
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 625.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+      "originalObservationIndex": 6,
+      "diagnosticCrop": {
+        "path": "original-06-element.png",
+        "sha256": "3aada7e47bf8674e598fc12c7198ea9df0ffd436ee7cda4524c49e6d81c2ed82",
+        "originalAttachment": "original-attachments/68960E64-8B81-45D8-A441-D16E3420B3A1.png",
+        "pixels": [
+          472,
+          61
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light-scrolled",
+      "kind": "Contrast failed",
+      "label": "Share contacts once",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 52.3}, {326.0, 56.0}}, label: 'Share contacts once', Disabled",
+      "originalObservationIndex": 7,
+      "diagnosticCrop": {
+        "path": "original-07-element.png",
+        "sha256": "3b9c99374145c18db4dd15dfbea672adf59fae25bec467e3db7211d5379acf88",
+        "originalAttachment": "original-attachments/CDA4D087-BFD4-410A-934E-DCF252648A1D.png",
+        "pixels": [
+          978,
+          166
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light-scrolled",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 327.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+      "originalObservationIndex": 8,
+      "diagnosticCrop": {
+        "path": "original-08-element.png",
+        "sha256": "3aada7e47bf8674e598fc12c7198ea9df0ffd436ee7cda4524c49e6d81c2ed82",
+        "originalAttachment": "original-attachments/64F11751-B948-4206-9FBB-04ED10EEA52E.png",
+        "pixels": [
+          472,
+          61
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light-scrolled",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 501.8}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled",
+      "originalObservationIndex": 9,
+      "diagnosticCrop": {
+        "path": "original-09-element.png",
+        "sha256": "923001d3336120968a99cc88ae907b8e151a6a6d29c197ef9b461e38160ffb05",
+        "originalAttachment": "original-attachments/476746E5-5530-4D5D-9282-822995173D81.png",
+        "pixels": [
+          472,
+          60
+        ],
+        "visuallyInspected": true
+      },
+      "disposition": "Explicitly inactive sample control; WCAG 1.4.3 has no text-contrast requirement for inactive UI. This does not establish enabled-state or broader accessibility acceptance."
+    }
+  ]
+}

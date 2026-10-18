@@ -43,6 +43,54 @@ final class SeniorAccessibilityUITests: XCTestCase {
         try auditContactsAndCaretakers(largestDark: true)
     }
 
+    func testFullyExposedAddCaretakerAtLargestTextAudit() throws {
+        try auditExposedContactLabel(screen: "trusted-contacts", label: "Add caretaker")
+    }
+
+    func testFullyExposedTextAlertsAtLargestTextAudit() throws {
+        try auditExposedContactLabel(screen: "contact-alerts", label: "Text messages")
+    }
+
+    func testFullyExposedPendingSharingAtLargestTextAudit() throws {
+        try auditExposedContactLabel(screen: "sharing-access", label: "Waiting for them to join")
+    }
+
+    func testEnabledContactRemovalStandardLightAudit() throws {
+        let app = launch(["--uitesting-screen", "contacts", "--uitesting-contact-removal"])
+        let removal = app.buttons["Remove Jamie from Contacts"]
+        XCTAssertTrue(removal.appears(timeout: 5))
+        XCTAssertTrue(removal.isEnabled)
+        exposeContactElement(removal, in: app)
+        try audit(app, "contact-contrast-enabled-removal")
+    }
+
+    private func auditExposedContactLabel(screen: String, label: String) throws {
+        let app = launch(["--uitesting-screen", screen,
+                          "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], dark: true)
+        let text = app.staticTexts[label].firstMatch
+        XCTAssertTrue(text.appears(timeout: 5))
+        exposeContactElement(text, in: app)
+        try audit(app, "contact-contrast-exposed-\(screen)")
+    }
+
+    private func exposeContactElement(_ element: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<24 {
+            let top = app.navigationBars.firstMatch.frame.maxY + 20
+            let bottom = app.frame.maxY - 120
+            if element.exists, element.isHittable, element.frame.minY >= top, element.frame.maxY <= bottom { break }
+            let down = element.exists && !element.frame.isEmpty && element.frame.minY < top
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.42 : 0.64))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.64 : 0.42)))
+        }
+        let top = app.navigationBars.firstMatch.frame.maxY + 20
+        let bottom = app.frame.maxY - 120
+        XCTAssertTrue(element.isHittable)
+        XCTAssertGreaterThanOrEqual(element.frame.minY, top)
+        XCTAssertLessThanOrEqual(element.frame.maxY, bottom)
+        let geometry = XCTAttachment(string: "Target: \(element.label)\nFrame: \(element.frame)\nUsable vertical bounds: \(top)...\(bottom)\nEnabled: \(element.isEnabled)")
+        geometry.name = "contact-contrast-target-geometry"; geometry.lifetime = .keepAlways; add(geometry)
+    }
+
     private func auditContactsAndCaretakers(largestDark: Bool) throws {
         for screen in ["contacts", "trusted-contacts", "contact-alerts", "sharing-access"] {
             var arguments = ["--uitesting-screen", screen]

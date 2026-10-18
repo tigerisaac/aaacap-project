@@ -1,0 +1,253 @@
+{
+  "method": "Two dominant opaque colors in the inspected text region, excluding anti-aliased intermediate pixels; sRGB linearized relative luminance and (Llighter + 0.05)/(Ldarker + 0.05). Regions are source-image pixel coordinates. These are scoped pixel observations, not whole-control or whole-app certification.",
+  "measurements": [
+    {
+      "path": "integrated-ios27-contact-contrast-enabled-removal-0.png",
+      "sha256": "ab003b6dfb8e0f0cf71132f66bf8aed3c51ef552bf75bc91e735d09cf9aecf7b",
+      "originalAttachment": "integrated-ios27-attachments/88E3DBC6-5492-4A2D-883D-8AC834C5DAC3.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-enabled-removal",
+      "runtime": "27.0",
+      "regionLTRB": [
+        240,
+        1350,
+        840,
+        1440
+      ],
+      "backgroundRGB": [
+        209,
+        216,
+        227
+      ],
+      "foregroundRGB": [
+        0,
+        38,
+        100
+      ],
+      "backgroundPixelCount": 47944,
+      "foregroundPixelCount": 3475,
+      "ratio": 10.020506787588486
+    },
+    {
+      "path": "integrated-ios27-contact-contrast-exposed-trusted-contacts-0.png",
+      "sha256": "5122a3d60bf49aae2e271c822e04658c5b8f5ffcb32122aa974a5b7149cdebb0",
+      "originalAttachment": "integrated-ios27-attachments/B6368232-987B-477C-952F-1D350D8D708E.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-exposed-trusted-contacts",
+      "runtime": "27.0",
+      "regionLTRB": [
+        96,
+        1213,
+        916,
+        1649
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        243,
+        246,
+        251
+      ],
+      "backgroundPixelCount": 315692,
+      "foregroundPixelCount": 36151,
+      "ratio": 13.559626680462085
+    },
+    {
+      "path": "integrated-ios27-contact-contrast-exposed-sharing-access-0.png",
+      "sha256": "382908cf59333fa90302493e430700592b8eb5b44465f99c4219927b7f1c704e",
+      "originalAttachment": "integrated-ios27-attachments/1F0B796C-DCDA-46BA-8708-22AF09766013.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-exposed-sharing-access",
+      "runtime": "27.0",
+      "regionLTRB": [
+        96,
+        1081,
+        822,
+        1431
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "backgroundPixelCount": 206812,
+      "foregroundPixelCount": 39213,
+      "ratio": 8.326932906013663
+    },
+    {
+      "path": "integrated-ios27-contact-contrast-exposed-contact-alerts-0.png",
+      "sha256": "4ddd682e24afc98f1c004c028842c29263a6354a0649dab69a47a10d00f00bd9",
+      "originalAttachment": "integrated-ios27-attachments/B4024120-A28E-4E7A-A46B-FC7146B25239.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-exposed-contact-alerts",
+      "runtime": "27.0",
+      "regionLTRB": [
+        96,
+        1509,
+        1074,
+        1839
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 289256,
+      "foregroundPixelCount": 27938,
+      "ratio": 14.688356131975747
+    },
+    {
+      "path": "integrated-ios26-contact-contrast-enabled-removal-0.png",
+      "sha256": "c2eee4aeb1810b2465b9531b57b5fe139d8060b976411d4cec6b03e766ecdd6f",
+      "originalAttachment": "integrated-ios26-attachments/197E65AD-6676-4459-8048-627741AD73D9.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-enabled-removal",
+      "runtime": "26.5",
+      "regionLTRB": [
+        240,
+        1350,
+        840,
+        1440
+      ],
+      "backgroundRGB": [
+        209,
+        216,
+        227
+      ],
+      "foregroundRGB": [
+        0,
+        38,
+        100
+      ],
+      "backgroundPixelCount": 47944,
+      "foregroundPixelCount": 3479,
+      "ratio": 10.020506787588486
+    },
+    {
+      "path": "integrated-ios26-contact-contrast-exposed-trusted-contacts-0.png",
+      "sha256": "621ac7a52d8069e2c36c76bbcc0d766d86f2f3a11177f1f777a9950aa18f60a8",
+      "originalAttachment": "integrated-ios26-attachments/5F537627-0E9C-4F03-8FFB-E832520A7E20.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-exposed-trusted-contacts",
+      "runtime": "26.5",
+      "regionLTRB": [
+        96,
+        1213,
+        916,
+        1649
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        243,
+        246,
+        251
+      ],
+      "backgroundPixelCount": 315689,
+      "foregroundPixelCount": 36154,
+      "ratio": 13.559626680462085
+    },
+    {
+      "path": "integrated-ios26-contact-contrast-exposed-sharing-access-0.png",
+      "sha256": "39ffbbf83f14fe56cd32488d53fe05d00efe0ec379336ee579f7181cc7db6807",
+      "originalAttachment": "integrated-ios26-attachments/43EA9AEC-B92E-414F-A23B-03E5117A913A.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-exposed-sharing-access",
+      "runtime": "26.5",
+      "regionLTRB": [
+        96,
+        1081,
+        822,
+        1431
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        184,
+        196,
+        214
+      ],
+      "backgroundPixelCount": 206807,
+      "foregroundPixelCount": 39210,
+      "ratio": 8.326932906013663
+    },
+    {
+      "path": "integrated-ios26-contact-contrast-exposed-contact-alerts-0.png",
+      "sha256": "29ccc708afebce619972e6091f1d7c11560c3f2d67a3164830899fdddededf2b",
+      "originalAttachment": "integrated-ios26-attachments/4F9DCFB2-716A-4732-B4D5-0AAA11AFA804.png",
+      "pixels": [
+        1170,
+        2532
+      ],
+      "visuallyInspected": true,
+      "label": "contact-contrast-exposed-contact-alerts",
+      "runtime": "26.5",
+      "regionLTRB": [
+        96,
+        1509,
+        1074,
+        1839
+      ],
+      "backgroundRGB": [
+        28,
+        41,
+        59
+      ],
+      "foregroundRGB": [
+        255,
+        255,
+        255
+      ],
+      "backgroundPixelCount": 289253,
+      "foregroundPixelCount": 27942,
+      "ratio": 14.688356131975747
+    }
+  ]
+}

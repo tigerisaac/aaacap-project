@@ -1,0 +1,17 @@
+{
+  "devicesAndConfigurations": [],
+  "environmentDescription": "Shield \u00b7 Built with macOS 27.0",
+  "expectedFailures": 0,
+  "failedTests": 0,
+  "finishTime": 1792343654.597,
+  "passedTests": 0,
+  "result": "unknown",
+  "runtimeWarnings": [],
+  "skippedTests": 0,
+  "startTime": 1792343629.124,
+  "statistics": [],
+  "testFailures": [],
+  "title": "Test - Shield",
+  "topInsights": [],
+  "totalTestCount": 0
+}
