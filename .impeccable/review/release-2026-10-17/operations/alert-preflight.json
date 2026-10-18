@@ -1,0 +1,33 @@
+{
+  "preparedAt": "2026-10-18T02:04:59.099Z",
+  "readOnly": true,
+  "owner": {
+    "recordedAt": "2026-10-18T02:04:59.098Z",
+    "email": "isaac.cw.zhang@gmail.com",
+    "monthlyBudgetUSD": 50,
+    "source": "Owner response: service alerts to the supplied address; Google Cloud budget 50 dollars"
+  },
+  "existingCounts": {
+    "policies": 0,
+    "channels": 0,
+    "uptimeChecks": 0
+  },
+  "currencyCode": "USD",
+  "budgetServiceState": "DISABLED",
+  "apiMetricValidation": {
+    "httpStatus": 200,
+    "series": 1,
+    "maximumObservedBucket": 16
+  },
+  "workerMetricValidation": {
+    "httpStatus": 200,
+    "series": 1,
+    "maximumObservedBucket": 12
+  },
+  "schedulerLogFilterValid": true,
+  "usaCheckerLocations": 3,
+  "emailDescriptorRequiredLabels": [
+    "email_address"
+  ],
+  "configurationChanged": false
+}

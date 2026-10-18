@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-18T02:27:04.794Z",
+  "readOnly": true,
+  "start": "2026-10-18T02:16:51.174Z",
+  "end": "2026-10-18T02:27:04.794Z",
+  "querySucceeded": true,
+  "series": [
+    {
+      "checkerLocation": "usa-oregon",
+      "samples": [
+        {
+          "at": "2026-10-18T02:22:30Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:22:20Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:22:10Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:22:00Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:21:50Z",
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T02:21:40Z",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "samples": 6,
+  "failedSamples": 0,
+  "locationsObserved": 1,
+  "actualEmailReceiptVerified": false,
+  "syntheticAlertSent": false
+}

@@ -1,0 +1,83 @@
+{
+  "verifiedAt": "2026-10-18T02:18:32.429Z",
+  "project": "shield-calls-isaac",
+  "configurationApplied": true,
+  "ownerSelectedEmail": "isaac.cw.zhang@gmail.com",
+  "monthlyBudgetUSD": 50,
+  "channel": {
+    "enabled": true,
+    "verificationStatus": "VERIFICATION_STATUS_UNSPECIFIED",
+    "actualReceiptVerified": false
+  },
+  "servicePolicies": [
+    {
+      "name": "Shield API server-error burst",
+      "enabled": true,
+      "conditionCount": 1
+    },
+    {
+      "name": "Shield background-worker server-error burst",
+      "enabled": true,
+      "conditionCount": 1
+    },
+    {
+      "name": "Shield scheduled job failure",
+      "enabled": true,
+      "conditionCount": 1
+    },
+    {
+      "name": "Shield readiness check failing",
+      "enabled": true,
+      "conditionCount": 1
+    }
+  ],
+  "uptime": {
+    "period": "900s",
+    "timeout": "30s",
+    "regions": [
+      "USA"
+    ],
+    "host": "shield-calls-isaac.web.app",
+    "path": "/public/ready",
+    "requiresStatus200": true,
+    "requiresJSONStatusReady": true,
+    "executionVerified": false
+  },
+  "budget": {
+    "projectOnly": true,
+    "currency": "USD",
+    "amount": "50",
+    "calendarPeriod": "MONTH",
+    "thresholds": [
+      {
+        "thresholdPercent": 0.5,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 0.9,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 1,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 1,
+        "spendBasis": "FORECASTED_SPEND"
+      }
+    ],
+    "selectedChannelOnly": true,
+    "unrelatedBudgetsPreserved": true
+  },
+  "planSha256": "3dd78710ca7b0589fb0904c956f42abaeecd0e251de86735f67d10c74bf2e53f",
+  "noAutomaticShutdown": true,
+  "backendDeployment": false,
+  "syntheticAlertSent": false,
+  "ownerPhoneContacted": false,
+  "requestLogExclusionsChanged": false,
+  "remaining": [
+    "Actual notification receipt and operator response",
+    "Observed uptime executions",
+    "Overdue-job and scheduled-work freshness monitoring"
+  ]
+}

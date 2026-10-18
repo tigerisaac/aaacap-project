@@ -1,0 +1,111 @@
+{
+  "checkedAt": "2026-10-18T02:20:29.764Z",
+  "originalWindow": {
+    "start": "2026-10-17T01:30:03.794Z",
+    "end": "2026-10-18T01:30:03.794Z",
+    "total5xx": 63
+  },
+  "requestGroups": [
+    {
+      "service": "ingestforwardingvoicemail",
+      "revision": "ingestforwardingvoicemail-00008-mab",
+      "httpStatus": 500,
+      "total": 6,
+      "firstBucketEnd": "2026-10-17T01:34:03.794Z",
+      "lastBucketEnd": "2026-10-17T01:38:03.794Z"
+    },
+    {
+      "service": "ingestforwardingvoicemail",
+      "revision": "ingestforwardingvoicemail-00009-goz",
+      "httpStatus": 500,
+      "total": 17,
+      "firstBucketEnd": "2026-10-17T21:56:03.794Z",
+      "lastBucketEnd": "2026-10-17T22:03:03.794Z"
+    },
+    {
+      "service": "runsharedcalljob",
+      "revision": "runsharedcalljob-00003-nog",
+      "httpStatus": 500,
+      "total": 3,
+      "firstBucketEnd": "2026-10-17T03:40:03.794Z",
+      "lastBucketEnd": "2026-10-17T22:04:03.794Z"
+    },
+    {
+      "service": "shieldapi",
+      "revision": "shieldapi-00027-xaw",
+      "httpStatus": 503,
+      "total": 1,
+      "firstBucketEnd": "2026-10-17T16:46:03.794Z",
+      "lastBucketEnd": "2026-10-17T16:46:03.794Z"
+    },
+    {
+      "service": "shieldapi",
+      "revision": "shieldapi-00027-xaw",
+      "httpStatus": 504,
+      "total": 1,
+      "firstBucketEnd": "2026-10-17T16:04:03.794Z",
+      "lastBucketEnd": "2026-10-17T16:04:03.794Z"
+    },
+    {
+      "service": "shieldapi",
+      "revision": "shieldapi-00028-viw",
+      "httpStatus": 503,
+      "total": 8,
+      "firstBucketEnd": "2026-10-17T17:07:03.794Z",
+      "lastBucketEnd": "2026-10-17T17:08:03.794Z"
+    },
+    {
+      "service": "shieldapi",
+      "revision": "shieldapi-00031-cif",
+      "httpStatus": 503,
+      "total": 27,
+      "firstBucketEnd": "2026-10-17T21:56:03.794Z",
+      "lastBucketEnd": "2026-10-17T22:04:03.794Z"
+    }
+  ],
+  "errorLogCategories": {
+    "sourceErrors": {
+      "call_busy": 3
+    },
+    "platformCategories": {
+      "firestore_event_payload": 4,
+      "cloud_functions_unhandled": 3
+    }
+  },
+  "audioRolloutWindow": {
+    "start": "2026-10-17T01:30:00Z",
+    "end": "2026-10-17T01:42:30Z",
+    "entries": 31,
+    "eventPayloadErrorEntries": 4,
+    "eventPayloadEntriesAcrossAllSeveritiesIncludingDuplicates": 8,
+    "unapprovedRecordingOriginEntries": 2
+  },
+  "classificationDoesNotProveIndividualRecovery": true,
+  "unexplainedAPI503": 28,
+  "knownAPITimingCorrelations": {
+    "verifyProfileConfiguration": 8,
+    "initialReadinessTimeout": 1
+  },
+  "rawPayloadsSaved": false,
+  "customerIdentifiersPublished": false,
+  "configurationChangedByInvestigation": false,
+  "privateEvidenceSha256": {
+    "failure-investigation.json": "c5eb334548ada08a15db7388d9668d8c628c6bf98b3092ad8b421b6164e3b795",
+    "failure-classification-expanded.json": "d264ce032675d6c5b12ab934297d8521da7993545473e5d326d7542cb7f02166",
+    "failure-classification-rollout.json": "b87270915db19ac376dd89f63738200e2265a922e00d4e6a89dcdfa1660f7a2e"
+  },
+  "lateAfternoonWindow": {
+    "start": "2026-10-17T21:54:00Z",
+    "end": "2026-10-17T22:06:00Z",
+    "entries": 24,
+    "sourceErrorCounts": {
+      "capture_outcome_pending": 17,
+      "call_busy": 2
+    }
+  },
+  "boundedPostDeploymentObservation": {
+    "start": "2026-10-18T01:34:52.667Z",
+    "end": "2026-10-18T01:50:06.766Z",
+    "total": 0
+  }
+}

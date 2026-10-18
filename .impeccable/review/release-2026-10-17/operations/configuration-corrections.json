@@ -1,0 +1,35 @@
+{
+  "uptimeJSONEncoding": {
+    "at": "2026-10-18T02:16:11.357Z",
+    "previousPlanSha256": "4545445554cabd2ba23708ba01895dd76cc5e00bc4912f224c8eefbdf4f5db22",
+    "newPlanSha256": "3dd78710ca7b0589fb0904c956f42abaeecd0e251de86735f67d10c74bf2e53f",
+    "field": "uptime.contentMatchers[0].content",
+    "reason": "JSON_PATH EXACT_MATCH requires a JSON-encoded scalar; the readiness value remains the string ready.",
+    "initialHttpStatus": 400,
+    "noMatchingResourceConfirmed": true,
+    "ownerRecipientBudgetAndConditionsUnchanged": true
+  },
+  "budgetAPIConsumer": {
+    "at": "2026-10-18T02:16:01.377Z",
+    "httpStatus": 403,
+    "status": "PERMISSION_DENIED",
+    "reason": "SERVICE_DISABLED",
+    "consumerWasCLIOAuthProject": true,
+    "shieldBudgetsServiceAlreadyEnabled": true,
+    "correction": "Use Shield as the explicit Google Cloud quota project",
+    "subsequentReadStatus": 200
+  },
+  "firstReadinessObservation": {
+    "checkedAt": "2026-10-18T02:20:00.834Z",
+    "readOnly": true,
+    "start": "2026-10-18T02:16:51.174Z",
+    "end": "2026-10-18T02:20:00.834Z",
+    "querySucceeded": true,
+    "series": [],
+    "samples": 0,
+    "failedSamples": 0,
+    "locationsObserved": 0,
+    "actualEmailReceiptVerified": false,
+    "syntheticAlertSent": false
+  }
+}

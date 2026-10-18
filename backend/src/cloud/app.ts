@@ -20,6 +20,7 @@ import { registerTrustedContacts } from './trusted-contacts.js';
 import type { TextSender } from './text-alerts.js';
 import { registerServiceAccess } from './service-access.js';
 import type { SubscriptionProvider } from './revenuecat.js';
+import { reportAPIFailure } from './diagnostics.js';
 
 export async function buildCloudApp(store: CloudStore, dependencies: ForwardingVoiceDependencies & ProbeDependencies & { auth?: AuthProvider; checker?: MessageChecker; openaiApiKey?: string; phoneVerifier?: PhoneVerifier; textSender?: TextSender; subscriptions?: SubscriptionProvider } = {}) {
   // Webhook URLs contain the forwarding secret; never use automatic request/body logs.
@@ -29,6 +30,7 @@ export async function buildCloudApp(store: CloudStore, dependencies: ForwardingV
   app.setErrorHandler((error, request, reply) => {
     const status = error instanceof ZodError ? 400 : error instanceof HttpError ? error.statusCode
       : (error as { statusCode?: number }).statusCode ?? 500;
+    reportAPIFailure('api_request', error, status);
     if (request.url.startsWith('/forwarding/')) return reply.code(status).type('text/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Hangup/></Response>');
     return reply.code(status).send({ error: { code: error instanceof HttpError ? error.code : status === 400 ? 'invalid_request' : 'service_unavailable' } });
   });

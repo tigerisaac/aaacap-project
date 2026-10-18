@@ -8,6 +8,7 @@ import { onTaskDispatched } from 'firebase-functions/v2/tasks';
 import { cloudSchema } from './config.js';
 import { CloudStore } from './store.js';
 import type { buildCloudApp } from './app.js';
+import { reportAPIFailure } from './diagnostics.js';
 
 const runtime = defineSecret('SHIELD_RUNTIME');
 const openaiKey = defineSecret('SHIELD_OPENAI_API_KEY');
@@ -25,11 +26,13 @@ function getStore() {
 let appPromise: ReturnType<typeof buildCloudApp> | undefined;
 // The API needs the OpenAI key only for the Check tab.
 export const shieldApi = onRequest({ ...options, secrets: [runtime, openaiKey], invoker: 'public', concurrency: 20 }, async (request, response) => {
+  let stage: 'api_initialization' | 'api_dispatch' = 'api_initialization';
   try {
     // Background functions do not need Fastify or Firebase Auth, so the HTTP app loads lazily.
     appPromise ??= import('./app.js').then(({ buildCloudApp }) => buildCloudApp(getStore(), { openaiApiKey: openaiKey.value() }))
       .catch(error => { appPromise = undefined; throw error; });
     const app = await appPromise;
+    stage = 'api_dispatch';
     const headers: Record<string, string> = {};
     for (const name of ['authorization', 'content-type', 'x-shield-participant', 'telnyx-signature-ed25519', 'telnyx-timestamp']) {
       const value = request.headers[name]; if (typeof value === 'string') headers[name] = value;
@@ -38,7 +41,8 @@ export const shieldApi = onRequest({ ...options, secrets: [runtime, openaiKey], 
       headers, remoteAddress: request.ip ?? 'unknown', payload: ['GET', 'HEAD'].includes(request.method) ? undefined : request.rawBody });
     for (const [name, value] of Object.entries(result.headers)) if (value !== undefined) response.setHeader(name, value);
     response.status(result.statusCode).send(result.rawPayload);
-  } catch {
+  } catch (error) {
+    reportAPIFailure(stage, error, 503);
     response.status(503).set('Cache-Control', 'no-store').send({ error: { code: 'service_unavailable' } });
   }
 });

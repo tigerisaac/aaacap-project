@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — service alerts and $50 budget configured; diagnostics prepared
+
+Using the owner's chosen `isaac.cw.zhang@gmail.com` address, four service-alert policies, one email channel, a readiness check and a Shield-only **USD $50 monthly Google Cloud budget** were configured and read back at **21:18 Central**. Spending thresholds are $25/$45/$50 and a $50 forecast; there is no automatic shutdown. The unrelated budget was preserved. At 21:27, matching readiness metrics had passing samples from one US location; the other locations, actual email receipt and incident response remain unverified. [Settings, corrections and evidence](OPERATIONAL-ALERT-SETUP.md).
+
+Historical classification retains all 63 earlier 5xx responses and identifies worker retry/configuration categories and known API incident timing. At least 28 API 503 responses remain unexplained. A three-file [API diagnostics package](API-DIAGNOSTICS-ROLLOUT.md), rebuilt on the newly deployed warning-handoff baseline, is **prepared but not approved or deployed**. It passed required typecheck/build, 360 unit and 267 isolated Firestore tests; the exact 89-file package passed all 220 scoped checks. It records fixed categories without private request/error contents. R5 remains open for failure recovery, alert delivery, overdue-job/freshness coverage and broader operational acceptance. No phone was contacted, cleanup worker invoked or backend deployed by this follow-up.
+
 ## October 17 — prerecorded intervention warning deployed
 
 The owner-approved warning handoff is live and verified at **21:19 Central** on API `shieldapi-00033-nuk`, call worker `runsharedcalljob-00004-red`, and monitoring workers `monitorconnectedcall-00008-hem` / `monitorscheduledcall-00003-riq`. The recipient moves into a bounded private conference before caller teardown; the existing recording plays only after confirmed caller removal and isolated-recipient checks. New warnings use no Polly. Durable work, recipient binding, at-most-once commands and 30-second cleanup cover interruption/retries. [Scope, tests, source hashes and rollout](WARNING-HANDOFF-ROLLOUT.md).

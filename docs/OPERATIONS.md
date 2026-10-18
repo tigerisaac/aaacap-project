@@ -2,7 +2,7 @@
 
 How to deploy, switch features, run supervised test calls, and inspect what happened. Everything targets the Google Cloud and Firebase project `shield-calls-isaac`. It's the shared live project, not a sandbox.
 
-The [October 17 operational-readiness audit](OPERATIONAL-READINESS.md) found no configured project alerts, notification channels, uptime checks or Shield cloud budget. It records aggregate backlog/HTTP-error observations, their limits and the required configuration/acceptance work. These release gates remain open; the audit changed no production settings.
+Following the [October 17 operational-readiness audit](OPERATIONAL-READINESS.md), the owner selected `isaac.cw.zhang@gmail.com` and a USD $50 monthly Google Cloud budget. [Four service alerts, an email channel, a readiness check and the Shield-only budget](OPERATIONAL-ALERT-SETUP.md) are now configured and read back. Actual notification receipt, overdue-job/freshness coverage, historical failure resolution and incident acceptance remain open. The [API diagnostics package](API-DIAGNOSTICS-ROLLOUT.md) is prepared separately and not deployed.
 
 ## Access and secrets
 
