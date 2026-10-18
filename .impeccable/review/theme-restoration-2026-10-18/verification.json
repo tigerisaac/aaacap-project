@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-18",
+  "applicationCommit": "b17a6a2d839dc963d4306f5375a5457d08bcf73b",
+  "builds": {
+    "simulator": "passed",
+    "signedDevice": "passed",
+    "codesignVerification": "passed"
+  },
+  "requiredChecks": {
+    "npmRunCheck": "passed",
+    "unitTestsPassed": 382,
+    "firestoreTestsPassed": 284,
+    "initialFirestoreAttempt": "usual emulator port occupied; complete suite passed on isolated local ports"
+  },
+  "compactWorkingCopy": {
+    "passed": 36,
+    "failed": 2,
+    "restorationMethodsPassed": 31,
+    "excludedCaretakerDraftPassed": 5,
+    "excludedCaretakerDraftFailed": 2,
+    "note": "Separate uncommitted draft excluded from the final candidate."
+  },
+  "exactCandidate": {
+    "initialPassed": 19,
+    "initialFailed": 1,
+    "failure": "Caretaker header virtualized after scrolling to its Remove button. Reproduced on iOS 26.5; recording confirms retained details. Test now reveals the name before checking it and verifies the next caretaker after retry.",
+    "correctedTestPassedOn": [
+      "iOS 26.5",
+      "iOS 27.0"
+    ],
+    "distinctMethodsWithPassingEvidence": 20,
+    "applicationChangedForTestCorrection": false
+  },
+  "phone": {
+    "installation": "success",
+    "launch": "success",
+    "appBinarySha256": "3f9ea70bc5c62919f203b96b19dffa0ebec1c8066e767655a41460c1b48cf180",
+    "includesUncommittedCaretakerDraft": false
+  },
+  "screenshots": [
+    {
+      "file": "screenshots/home-dark.png",
+      "sha256": "da5339a4ddaa719b70afb4e24b48ba493d16afd935a781e2ce7e742df8098595",
+      "syntheticDataOnly": true
+    },
+    {
+      "file": "screenshots/settings-light.png",
+      "sha256": "7c6cc9bee0b95c1ed73a1b56465a4c72212adb09af5e5d2d60583524534c1f5d",
+      "syntheticDataOnly": true
+    },
+    {
+      "file": "screenshots/signin-dark.png",
+      "sha256": "aa007066a3000ad8e1365380261c6987bf6154aa6a8c4908efe5b6dffa4dfc9f",
+      "syntheticDataOnly": true
+    },
+    {
+      "file": "screenshots/signin-light.png",
+      "sha256": "cbca5241592fa9d68af4d84639d74d2b89c21bd16e3ca822e98dd822d686f5fb",
+      "syntheticDataOnly": true
+    }
+  ],
+  "limits": [
+    "No backend deployment or real-call verification.",
+    "This scoped restoration does not resolve the pre-existing broader accessibility or App Store release gates."
+  ],
+  "fullLocalEvidence": "artifacts/private/theme-restore-2026-10-18"
+}

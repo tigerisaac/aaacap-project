@@ -102,10 +102,16 @@ final class ReleaseReadinessUITests: XCTestCase {
         reveal(remove, app); remove.tap(); app.alerts.buttons["Remove contact"].tap()
         assertCaretakerFailureVisible(app, "Caretaker removal failed largest dark")
         reveal(app.switches["Send protection alerts"], app, fromBelow: true)
-        reveal(remove, app)
+        // At maximum text, the section heading leaves List's accessibility tree
+        // when its removal button scrolls into view. Verify the retained name first.
+        reveal(app.staticTexts["Jamie"], app)
         XCTAssertTrue(app.staticTexts["Jamie"].exists, "Failure must not claim the caretaker was removed.")
+        reveal(remove, app)
         remove.tap(); app.alerts.buttons["Remove contact"].tap()
-        XCTAssertTrue(app.staticTexts["Jamie"].wait(for: \.exists, toEqual: false, timeout: 3))
+        reveal(app.switches["Send protection alerts"], app, fromBelow: true)
+        reveal(app.staticTexts["Morgan"], app)
+        XCTAssertTrue(app.staticTexts["Morgan"].exists, "The next caretaker must remain after removing Jamie.")
+        XCTAssertFalse(app.staticTexts["Jamie"].exists)
         XCTAssertFalse(app.descendants(matching: .any)["caretaker-error-feedback"].exists)
         capture(app, "Caretaker removal retry succeeded largest dark")
     }

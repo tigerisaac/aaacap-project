@@ -1,5 +1,7 @@
 # Apple-style iPhone theme port — October 17, 2026
 
+The owner subsequently requested restoration of the earlier visual design. See the [October 18 restoration and verification record](IOS-THEME-RESTORATION.md). The results below describe the historical Apple-style port.
+
 The visual work from `origin/Andrewwww` at `c9818b6` is ported onto the current Shield app. This is a selective source port, not a merge of the older application state. The shared ancestor is `c9412ca9dcbf585965a24d6a0d026a6cb6d36b09`. The original branch changed about 80 paths; 33 source files needed reconciliation with newer main work.
 
 ## Result and preserved behavior

@@ -1,0 +1,327 @@
+{
+  "restorationCommit": "b17a6a2d839dc963d4306f5375a5457d08bcf73b",
+  "reversedCommit": "98dbc2bcd5431b9f179c1a7a4adce0d2cd1ffcc9",
+  "visualReference": "b9ac3f47bd886c3247abf229d8d2c0a6df6552c4",
+  "paths": [
+    {
+      "path": "ios/Shield/App/RootView.swift",
+      "matchesPreTheme": false,
+      "sha256": "c6c9ad925c1e6d94ea398393ed57ef4fcb6f603ed1b78f79b0fd7d77357f06ef"
+    },
+    {
+      "path": "ios/Shield/App/ShieldApp.swift",
+      "matchesPreTheme": false,
+      "sha256": "151f8919b5a5971c68bee98c5a8d18e5b9acb020f7c3d15d574b4282cdf5847c"
+    },
+    {
+      "path": "ios/Shield/Design/CallRow.swift",
+      "matchesPreTheme": true,
+      "sha256": "59b425d0b64788789518ecab280a01208308eb3a02705124512a5ff92812c65c"
+    },
+    {
+      "path": "ios/Shield/Design/DemoBanner.swift",
+      "matchesPreTheme": true,
+      "sha256": "9cb930442895e16902aca19d7226ccac4223080959841eeec15605f88fe70b5f"
+    },
+    {
+      "path": "ios/Shield/Design/HistoryBrowseLabel.swift",
+      "matchesPreTheme": true,
+      "sha256": "b8f83e6f7a1bca5d57b462d2a2b029869cdee6987fb1b302571ca9ed15ec9ab3"
+    },
+    {
+      "path": "ios/Shield/Design/OutcomeBadge.swift",
+      "matchesPreTheme": true,
+      "sha256": "d27d398b8dbc0cc1502a8a1579b3164fd13d0d966500dc2a8dbbf093ac0849e0"
+    },
+    {
+      "path": "ios/Shield/Design/PersonPicker.swift",
+      "matchesPreTheme": true,
+      "sha256": "4e5c44b41e69e3aab4b441adbdb16f7ec5ca6fd94c18c162822c760d0f98b9b6"
+    },
+    {
+      "path": "ios/Shield/Design/ShieldComponents.swift",
+      "matchesPreTheme": true,
+      "sha256": "adc4782a9a28f8493bc3d9deede366f47f8c48ea7df02ccd4ab00007bcf17afc"
+    },
+    {
+      "path": "ios/Shield/Design/ShieldIdentity.swift",
+      "matchesPreTheme": true,
+      "sha256": "4fce6fa58f031d76a691f33503c9e428a9c02c4746def6828ec4050f8c41b8bb"
+    },
+    {
+      "path": "ios/Shield/Design/ShieldPhoneEntry.swift",
+      "matchesPreTheme": true,
+      "sha256": "9742732297b64e98e3bb34f93c6b053e6871e3ea9ff99bbd41391a9bd78ac64d"
+    },
+    {
+      "path": "ios/Shield/Design/ShieldTheme.swift",
+      "matchesPreTheme": true,
+      "sha256": "818787698eaedf1b7be50d4e64c3840f7e3c881a0bab47a0e779b145241a5688"
+    },
+    {
+      "path": "ios/Shield/Features/Auth/CallProtectionExplanation.swift",
+      "matchesPreTheme": false,
+      "sha256": "09d7bdb8258adbd7e9535055bb461a1825b0a4549f0d20d3359e0a33d75005fb"
+    },
+    {
+      "path": "ios/Shield/Features/Auth/PhoneSignInView.swift",
+      "matchesPreTheme": true,
+      "sha256": "2225eea9b261600308011c2facebdae07ab2d492a9c7a740f98d31335e9352d6"
+    },
+    {
+      "path": "ios/Shield/Features/Auth/ProtectionOnboardingView.swift",
+      "matchesPreTheme": true,
+      "sha256": "771b2a654d05653e69626074696ca168f4f4ea3a8a8974cc0034b333185f59d1"
+    },
+    {
+      "path": "ios/Shield/Features/Auth/SignInView.swift",
+      "matchesPreTheme": true,
+      "sha256": "3ad9b35c79427eb0b240ce884cca80746625ca3591374ab93a3bd0466fb8a644"
+    },
+    {
+      "path": "ios/Shield/Features/Calls/CallDetailView.swift",
+      "matchesPreTheme": true,
+      "sha256": "4402b1df00f8b236f5bb5fb5523ec13090599b9e6ee69d728361f6465710dbae"
+    },
+    {
+      "path": "ios/Shield/Features/Calls/CallsView.swift",
+      "matchesPreTheme": true,
+      "sha256": "553fc770b8476cbd1b0d02d0f323a32ca4eeea2ce97b7277850d3a40a8f0702e"
+    },
+    {
+      "path": "ios/Shield/Features/Calls/VoicemailRow.swift",
+      "matchesPreTheme": true,
+      "sha256": "e83a3772815f92b58b29981896c7016d7d54162cbbb106ac09aa17d55ad19c92"
+    },
+    {
+      "path": "ios/Shield/Features/Calls/VoicemailView.swift",
+      "matchesPreTheme": true,
+      "sha256": "8fae48419f11f2b144e90cf322c4dbfaae5b300010abef8b24e8977626ec428d"
+    },
+    {
+      "path": "ios/Shield/Features/Check/CheckView.swift",
+      "matchesPreTheme": true,
+      "sha256": "402a9636c8e91704b813f37f2d376bde3014b7ef59f9df43db746f6340814712"
+    },
+    {
+      "path": "ios/Shield/Features/Overview/OverviewView.swift",
+      "matchesPreTheme": true,
+      "sha256": "368909b56e0746025cafc67aab48021bb62af1078631286af815c5b9f90715e5"
+    },
+    {
+      "path": "ios/Shield/Features/Overview/ProtectionCheckCard.swift",
+      "matchesPreTheme": true,
+      "sha256": "fd484211289ce05a6ace2ab0b4e0416dc5d5708cc0e23aab256ab65e1ee5e77a"
+    },
+    {
+      "path": "ios/Shield/Features/Overview/StoppedCallsCard.swift",
+      "matchesPreTheme": true,
+      "sha256": "c982a564d16ad0c8a6acc4990a4042c4268f2b4f94cb54dd12d18e69749fd123"
+    },
+    {
+      "path": "ios/Shield/Features/People/PeopleView.swift",
+      "matchesPreTheme": true,
+      "sha256": "37e3d7dd4bf2e7e7693645c4ecd7d0aed34b3cabff9d0ee7817525a4e466a02e"
+    },
+    {
+      "path": "ios/Shield/Features/People/SharingView.swift",
+      "matchesPreTheme": true,
+      "sha256": "c4109bdf97f74defcb0694bec0340a1ec673ea666a15d9f0157cf1599c4db6c3"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/AddNumberView.swift",
+      "matchesPreTheme": true,
+      "sha256": "7bdd4c92afb3d8ec2a5feaeeb20df371976edf7b5c56ee25d95ebd54220468dc"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/BlockedNumbersView.swift",
+      "matchesPreTheme": false,
+      "sha256": "0d002d9757667dbc21d297f920376601fef1816934f364e5a1f7634c86a44b33"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Disconnect/DisconnectView.swift",
+      "matchesPreTheme": true,
+      "sha256": "a388c701ed9c3244e1426226c03e621b07bdc2ac69cea8194942f2ad752ecf8a"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift",
+      "matchesPreTheme": true,
+      "sha256": "9a49444261c2ef37836b06fded4ffe69e9d1cd2ec0cc3bbc9952bc4c4d5c117e"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingCodeView.swift",
+      "matchesPreTheme": true,
+      "sha256": "7602e953bb1998d0084e871235dcd590df5eb03049d44c927123599c6b9da248"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingPhoneSettingsView.swift",
+      "matchesPreTheme": true,
+      "sha256": "420fdf534211b76561fbbd4115b8bf982a1dfed6aa0df79e56ed9509ff2cd1c0"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingProbeView.swift",
+      "matchesPreTheme": true,
+      "sha256": "85d5b476b75bef50fbb845581490a39569430f107ccf9cb6daf173b06891f786"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift",
+      "matchesPreTheme": true,
+      "sha256": "866b26a54300e7a9d3ea4a2c79a375093f6bc7a9625b5eba494baa71771c4899"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingStepContent.swift",
+      "matchesPreTheme": true,
+      "sha256": "a7baa895126cb8fa1a485d46f217c917a33f610e1f5eb1861d76dda0619f481e"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ForwardingTestView.swift",
+      "matchesPreTheme": true,
+      "sha256": "3eaa38952a2d774a700c8908757ee62dee78887fef65449ca1d52f81db721604"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/ManualPhoneSettingsGuide.swift",
+      "matchesPreTheme": true,
+      "sha256": "f5b2ff477c97dfb68f8f46e728cf0dcefe952c63010b542b7531ffcd6e3a5cb4"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/PhoneCodeGuide.swift",
+      "matchesPreTheme": true,
+      "sha256": "2a4447b5bad8b13c7b9e44d804daf079904c42216035cd63aadef88e4835cffa"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/RestorationSettingsGuide.swift",
+      "matchesPreTheme": true,
+      "sha256": "030f3699c18836d0a75ff94987daf518bbfaabb07554d89af94a593ce00f3569"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupGuideView.swift",
+      "matchesPreTheme": true,
+      "sha256": "9fa416ce80cbbd5cb59aef550d0ca6246693261ed5e5afcc09ba759ef7b4852b"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupInfoCard.swift",
+      "matchesPreTheme": true,
+      "sha256": "455943b7986064051328c07501b3ba49de6b2f168e91a2826738d61393b1dd8c"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupInstruction.swift",
+      "matchesPreTheme": true,
+      "sha256": "a1618309ad4b77a14d63019effe3056258e6a45fc9ada004c46c1f1f2992789b"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/Forwarding/SetupShortcutPreview.swift",
+      "matchesPreTheme": true,
+      "sha256": "1c449c6a9319842c07d099ef28191ad5ee68450cd60c243b0793ce1476510e8d"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/HelpView.swift",
+      "matchesPreTheme": true,
+      "sha256": "4bc5d75b311925251e1b04fcedd5f9bdd7000b90af034ab4d188f51451d33c28"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/MessageAlertsView.swift",
+      "matchesPreTheme": true,
+      "sha256": "cc686d674fdb1514b185e7bd3678fcf5c1575d1f5cd6d910e75fc2fe60c87384"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/QuietHoursView.swift",
+      "matchesPreTheme": true,
+      "sha256": "fc46b07d4e3c01d1fdd1b6f563b7cf58090a411bdd593b9fa156142dff0ce8f5"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/SavedNumbersView.swift",
+      "matchesPreTheme": true,
+      "sha256": "bad361a80153eef13c2803ac898b536b2cc691bda4fcbdadbb52ddeafa1304ee"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/SharedContactsView.swift",
+      "matchesPreTheme": true,
+      "sha256": "5a5533791395f42ec7bc0aa3b2dea1b5c59977fe96db6ad5004fa1232b6f0a18"
+    },
+    {
+      "path": "ios/Shield/Features/Settings/TrialSetupView.swift",
+      "matchesPreTheme": true,
+      "sha256": "9048c4272ecb0f605e0c681a115f149063c3b6e73eb9d028d7f0e235800640fb"
+    },
+    {
+      "path": "ios/Shield/Features/TrustedContacts/AddTrustedContactView.swift",
+      "matchesPreTheme": true,
+      "sha256": "909f523226b04668310968514f7bdf507115b1939a7b59741915793c005bc937"
+    },
+    {
+      "path": "ios/Shield/Features/TrustedContacts/ContactAlertChoiceView.swift",
+      "matchesPreTheme": false,
+      "sha256": "391dec471fdd1bc6b6fae5218e64439a1f08e2cdacaff9b0e4e569d990bfbd93"
+    },
+    {
+      "path": "ios/Shield/Features/TrustedContacts/TrustedContactOnboardingView.swift",
+      "matchesPreTheme": true,
+      "sha256": "92548eed62c4057b97bc1ffd98f531f0415c0adbfc7242acc22941ff9048af43"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Action.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "e85b288d7598c1f6bae08fac74e43aa137b2c24112432ac7c5576888e703938e"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/ActionFill.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": null
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Card.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "7e6bdddcad48e962fb75f0acdc57aedc1ce4f7c1d45fb46ac8485dc4280bd353"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Connected.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "a93b34f65db4a22bdee5edfedabbf359011678fdbc2442e9caac7b07c25d49d4"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/FieldBorder.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "d70f1b42ff257d8db0c428c19fe678a555ae8e282ac58e8d708a2f05c8a3ef13"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Held.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "28b6c4d3758433dec5c20d19e990221a0685e97857ea206bd88dfc00356c1bca"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Ink.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "731b45f12b4e12280e5f88e752d225073b30f90679b749e4538a1927e6092c57"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Message.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "659e64c745d50a25eab47f455fec262c740ee5e33efc568e00b535e5e1747365"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/PasteFill.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "442f7e8469c0bba3821b7bc36b6f2d505ff2aa1c1e3a56b2d64f2bbe2a8382b0"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/QuietSurface.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "00780ea2b22a56d1170fd617d1f96ac28cd01f1c57593cf2d7a50b8ef09d119e"
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/SecondaryText.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": null
+    },
+    {
+      "path": "ios/Shield/Resources/Assets.xcassets/Surface.colorset/Contents.json",
+      "matchesPreTheme": true,
+      "sha256": "7fc419d355e0d22c2a3a2d02a3129fee0f8f34db99d2d7ea45fffec2c01c507c"
+    },
+    {
+      "path": "ios/Shield/Resources/LaunchScreen.storyboard",
+      "matchesPreTheme": true,
+      "sha256": "fcf502bed351a2acf7653142807f764c55b7ed244b172b00a9e1f45007be3602"
+    }
+  ]
+}
