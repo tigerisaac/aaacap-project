@@ -6,6 +6,8 @@ The owner-approved [background-health rollout](BACKGROUND-JOB-HEALTH-ROLLOUT.md)
 
 Independent CI on the later app/evidence commit `80a0e8d` failed one of 284 Firestore tests in two-client simultaneous call admission, with `Transaction is invalid or closed`; account tests were skipped. Backend source/dependencies/workflow were unchanged from the passing `a0619b2` run. This expands the retained concurrency evidence beyond the earlier stopped-history test, without establishing a common cause or production impact. [Failure and bounded SDK investigation](../.impeccable/review/release-2026-10-17/operations/backend-ci-80a0e8d.json). R5 and overall release acceptance remain open.
 
+The later `7e8cec2` CI failed stopped-history backfill with the same error. The unchanged two-client admission test then reproduced it locally on the fourth attempt, with diagnostics retained and the bounded run stopped at that failure. Two SDK-only reductions did not reproduce it in ten rounds each. The cause and production impact remain unresolved; this has not been hidden by retries, changed assertions or replacement CI runs. [Current reproduction evidence](../.impeccable/review/release-2026-10-17/operations/transaction-diagnostics.json).
+
 ## Initial observed configuration — 20:21–20:33 Central
 
 | Check | Observation | Evidence limit |

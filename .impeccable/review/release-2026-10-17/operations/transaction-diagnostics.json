@@ -1,0 +1,242 @@
+{
+  "at": "2026-10-18T04:55:02.979989+00:00",
+  "appCommit": "7e8cec2749da6eaad31270c68c65ae947ee12910",
+  "backendUnchangedSince": "a0619b2634acf7c8baaf5a7ac39cc811dc97e049",
+  "newCI": {
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39098163221",
+    "headSha": "7e8cec2749da6eaad31270c68c65ae947ee12910",
+    "status": "completed",
+    "conclusion": "failure",
+    "check": "passed",
+    "firestorePassed": 283,
+    "firestoreFailed": 1,
+    "failedTest": "cloud.test.ts: preserves the total beyond seven days and cleanup, without duplicate backfills or another person\u2019s calls",
+    "error": "3 INVALID_ARGUMENT: Transaction is invalid or closed.",
+    "accounts": "skipped after failed Firestore step"
+  },
+  "localReproduction": {
+    "test": "shared-pilot.test.ts: admits 25 simultaneous users across two independent clients, then refuses a duplicate live leg",
+    "plannedMaximumRepetitions": 10,
+    "stoppedOnFirstFailure": true,
+    "completedRepetitions": [
+      {
+        "run": 1,
+        "status": 0,
+        "signal": null,
+        "elapsedMs": 11995,
+        "passed": 1,
+        "failed": 0,
+        "pending": 66
+      },
+      {
+        "run": 2,
+        "status": 0,
+        "signal": null,
+        "elapsedMs": 7672,
+        "passed": 1,
+        "failed": 0,
+        "pending": 66
+      },
+      {
+        "run": 3,
+        "status": 0,
+        "signal": null,
+        "elapsedMs": 4804,
+        "passed": 1,
+        "failed": 0,
+        "pending": 66
+      },
+      {
+        "run": 4,
+        "status": 1,
+        "signal": null,
+        "elapsedMs": 10132,
+        "passed": 0,
+        "failed": 1,
+        "pending": 66
+      }
+    ],
+    "sourceOrAssertionChanges": false,
+    "sdkDiagnosticsEnabled": true,
+    "fixtures": "local demo project only; existing test fixtures",
+    "node": "22.17.1",
+    "java": "Temurin 21.0.1+12",
+    "firestoreSDK": "9.2.0",
+    "firebaseAdmin": "14.4.0",
+    "firebaseTools": "15.10.1",
+    "testSourceSha256": "380941b9062c6d868da3c2d425631ce70cb7c21e7689964406720eb273f18738",
+    "forwardingStoreSha256": "799bd8af948f6757a8a4e2342e5e334d1399b8d9ed7d8f21d9498ac5a08b951a",
+    "stoppedTotalSha256": "c73c9f6ebcc3a2bb3a954d6cc0d1289ee7a850e64c88fb79bd6177e475c286bb"
+  },
+  "observedErrorEvents": [
+    {
+      "at": "2026-10-18T04:47:34.158Z",
+      "transaction": "transaction-1",
+      "component": "Firestore.request",
+      "message": "Received error: Error: 10 ABORTED: Transaction lock timeout."
+    },
+    {
+      "at": "2026-10-18T04:47:34.159Z",
+      "transaction": "transaction-1",
+      "component": "Firestore.runTransaction",
+      "message": "Rolling back transaction after callback error: Error: 10 ABORTED: Transaction lock timeout."
+    },
+    {
+      "at": "2026-10-18T04:47:34.162Z",
+      "transaction": "transaction-1",
+      "component": "Firestore.runTransaction",
+      "message": "Retrying transaction after error: Error: 10 ABORTED: Transaction lock timeout."
+    },
+    {
+      "at": "2026-10-18T04:47:41.055Z",
+      "transaction": "transaction-2",
+      "component": "Firestore._initializeStream",
+      "message": "Received initial error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.056Z",
+      "transaction": "transaction-2",
+      "component": "Firestore._retry",
+      "message": "Request failed with error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.057Z",
+      "transaction": "transaction-2",
+      "component": "DocumentReader.fetchDocuments",
+      "message": "BatchGetDocuments failed with error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.057Z",
+      "transaction": "transaction-2",
+      "component": "Firestore.runTransaction",
+      "message": "Rolling back transaction after callback error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.058Z",
+      "transaction": "transaction-2",
+      "component": "Firestore.runTransaction",
+      "message": "Transaction not eligible for retry, returning error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.116Z",
+      "transaction": "transaction-2",
+      "component": "Firestore._initializeStream",
+      "message": "Received initial error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.117Z",
+      "transaction": "transaction-2",
+      "component": "Firestore._retry",
+      "message": "Request failed with error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.117Z",
+      "transaction": "transaction-2",
+      "component": "DocumentReader.fetchDocuments",
+      "message": "BatchGetDocuments failed with error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.248Z",
+      "transaction": "transaction-2",
+      "component": "Firestore._initializeStream",
+      "message": "Received initial error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.249Z",
+      "transaction": "transaction-2",
+      "component": "Firestore._retry",
+      "message": "Request failed with error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    },
+    {
+      "at": "2026-10-18T04:47:41.249Z",
+      "transaction": "transaction-2",
+      "component": "DocumentReader.fetchDocuments",
+      "message": "BatchGetDocuments failed with error: Error: 3 INVALID_ARGUMENT: Transaction is invalid or closed."
+    }
+  ],
+  "interpretation": [
+    "The same admission test failed locally on repetition four after three passes; this is a reproduced failure, not a CI-only supposition.",
+    "One other transaction received ABORTED: Transaction lock timeout and was retried. The failing transaction returned INVALID_ARGUMENT: Transaction is invalid or closed and the SDK did not retry it. Those tags differ; their causal relationship is unproved.",
+    "The local server stack reports EmulatorTransactionManager.reuseExisting. What invalidated that transaction has not been isolated.",
+    "The earlier and newer CI failures affect admission and history backfill respectively; their matching error text does not establish a shared cause."
+  ],
+  "sdkOnlyReductions": {
+    "twoTransactions": {
+      "rounds": 10,
+      "failedRounds": 0,
+      "counts": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "twentyFiveTransactionsAcrossTwoQueues": {
+      "rounds": 10,
+      "failedRounds": 0,
+      "counts": [
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25
+      ]
+    },
+    "interpretation": "Both reductions passed all ten bounded rounds. They do not isolate the cause or reproduce the exact Shield path; no SDK-only defect or resolution is claimed."
+  },
+  "setupAttempts": [
+    {
+      "result": "Normal emulator port occupied; no tests ran. Existing service left untouched."
+    },
+    {
+      "result": "Rules referenced outside private project directory; emulator refused startup and no tests ran."
+    },
+    {
+      "result": "Private copies of unchanged rules/indexes, separate loopback ports and private working directory used successfully."
+    }
+  ],
+  "backendRuntimeChanged": false,
+  "testsWeakened": false,
+  "productionInvoked": false,
+  "rootCauseEstablished": false,
+  "resolved": false,
+  "limits": [
+    "Diagnostic logging changes timing.",
+    "Local emulator evidence does not prove production call behavior.",
+    "Minimal reductions omit application-specific read/write structure and cannot clear the original failure.",
+    "No additional retry, timeout or suppression was introduced."
+  ],
+  "privateEvidenceSha256": {
+    "artifacts/private/transaction-diagnostics-oct17/runs.json": "95bbb149db5165a5ce8efae46cd89b4a3b7ab0e77af7866b9aba990e92df1712",
+    "artifacts/private/transaction-diagnostics-oct17/run-4.json": "d6fd7a230bb7603c83fde1f63ef747337d7b9b7560013a9dc8493f4ae464ebe8",
+    "artifacts/private/transaction-diagnostics-oct17/run-4-sdk.log": "10a9cbe16cb3e761075349480bcf60736389e41ab2a427764a3d81c5d02212e6",
+    "artifacts/private/transaction-diagnostics-oct17/firestore-after-4.log": "2bfe49fb5e30b4614e99aa3eb22beec94c2e7b4d2b30441ec7b5f5daaced9740",
+    "artifacts/private/transaction-diagnostics-oct17/setup.mjs": "43c8c88eb3d3e15db18c3eb87f7e89a8adacb82d0f88a606f072ff0db6ad1372",
+    "artifacts/private/transaction-diagnostics-oct17/vitest.config.mjs": "24810774fef29b53e9e180c930c749090baf3049526cbc5cc9e2527ddca3c325",
+    "artifacts/private/transaction-diagnostics-oct17/run.mjs": "8033421e235aee98447ad8356710bf3700a1cee1c2e11397788bb06b49444661",
+    "artifacts/private/transaction-diagnostics-oct17/emulator.log": "b34248acd87ef65bed23b2e8b210ce9ea9e80a6a378530d7634361880f111e5f",
+    "artifacts/private/transaction-diagnostics-oct17/emulator-initial-port-conflict.log": "36d0a92b22c1c23ec16742ef437c19ef4f74f6bdccc68f82070764ba41288e44",
+    "artifacts/private/transaction-diagnostics-oct17/emulator-config-path-error.log": "b57b5dd62e87aa6dcdca28b0441e9cd78b999b531652f7f851a15e632c3cdf31",
+    "artifacts/private/transaction-diagnostics-oct17/ci-7e8cec2.json": "55b370391f619557e8d9eb261d8f67b53b3a758fec987fba503b0f570ded2b29",
+    "artifacts/private/transaction-diagnostics-oct17/ci-7e8cec2-failure.log": "1fb61a55db14088879a82f4fa5fc684099e5585ba86f06358645b2b0bb201ca6",
+    "artifacts/private/transaction-diagnostics-oct17/minimal/reproduce.mjs": "7655cc76427718dafe191a7985739f3c1992684da1c64d1e8b78bc87a5a57344",
+    "artifacts/private/transaction-diagnostics-oct17/minimal/result.json": "04ccb4be8bf2700ab6a0dbb23632937030a93661fa29f844d1cc3f36738e56c9",
+    "artifacts/private/transaction-diagnostics-oct17/minimal/sdk.log": "ff1c92fb10e0543f6849340d52b772d8db9d8db99578de5abd57d42793730687",
+    "artifacts/private/transaction-diagnostics-oct17/minimal/firestore-debug.log": "a88b4833608f4bd018f33eeefdfbd4da8a1e0288d8a8d401a047f25e6b548f72",
+    "artifacts/private/transaction-diagnostics-oct17/minimal-burst/reproduce.mjs": "367ba170ba8a2b8eb89a25bf9e3158ce805dcbacde530700e1c7b3f25e7702b9",
+    "artifacts/private/transaction-diagnostics-oct17/minimal-burst/result.json": "06576275eb8e68af50a53d2358cc2b52b9ebdb7a5422054d6e6685d8b9b83031",
+    "artifacts/private/transaction-diagnostics-oct17/minimal-burst/sdk.log": "120c161fe171a1a6009f2be17c20f367ed811bb28098c0eac7129f3d3972a550",
+    "artifacts/private/transaction-diagnostics-oct17/minimal-burst/firestore-debug.log": "3152eebcc5d8c2538c15904f10e02074fc933589a0fc116c36eba50d14cbe0fe"
+  }
+}
