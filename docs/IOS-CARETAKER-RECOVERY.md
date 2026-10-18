@@ -181,7 +181,7 @@ The unchanged backend at base `3cfea5d` passed [independent CI](https://github.c
 
 ## Independent backend CI failure retained
 
-**October 18 follow-up:** the investigation below is a historical checkpoint. A later SDK-only reproduction isolated the retry mechanism, and a deterministic regression verifies the source correction on both root and deployed dependency versions. Required checks and independent CI passed. The [retry-only rollout](FIRESTORE-RETRY-ROLLOUT.md) still requires separate owner approval; production incident attribution remains unproved. The original failed CI runs and diagnostic limits below are retained.
+**October 18 follow-up:** the investigation below is a historical checkpoint. A later SDK-only reproduction isolated the retry mechanism, and a deterministic regression verifies the source correction on both root and deployed dependency versions. Required checks and independent CI passed. The separately approved [retry-only rollout](FIRESTORE-RETRY-ROLLOUT.md) is now deployed and source/configuration-verified; natural replacement-worker acceptance and production incident attribution remain open. The original failed CI runs and diagnostic limits below are retained.
 
 The pushed recovery/deployment-evidence commit `80a0e8d` passed the required typecheck/unit/build step, but [its independent CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39097303655) failed **1 of 284 Firestore tests**: admission of 25 simultaneous users across two independent clients returned `3 INVALID_ARGUMENT: Transaction is invalid or closed.` The other 283 passed; account-lifecycle tests were skipped after that failure. Backend source, dependencies and workflow were unchanged from the passing `a0619b2` baseline.
 

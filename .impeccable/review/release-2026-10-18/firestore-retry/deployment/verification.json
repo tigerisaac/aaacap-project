@@ -1,0 +1,654 @@
+{
+  "recordedAt": "2026-10-18T22:06:14.857Z",
+  "scope": "Owner-approved database client retry initialization only: fifteen functions and the pinned voice-bridge overlay. Each package preserves its own live baseline, including contact recovery.",
+  "ownerApproval": {
+    "questionId": "call_cab6914cf2144ef58a539120a13d40e5",
+    "reply": "Approve the reviewed retry rollout",
+    "recordedAt": "2026-10-18T21:23:09.848728+00:00",
+    "manifestSha256": "352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e"
+  },
+  "freshPreflight": {
+    "at": "2026-10-18T21:24:28.743Z",
+    "servingArchivesVerified": 15,
+    "activeCallReservations": 0,
+    "schedulesPreserved": 7,
+    "enabledPoliciesPreserved": 6
+  },
+  "build": {
+    "buildId": "6df0011d-d848-4402-b5e9-67203d7c50bf",
+    "digest": "sha256:aaf7e5f6fe7e7ea3d9675e7697d7a77332c5a4310ed1296692fd571772f21db7",
+    "stepsPassed": 6,
+    "imageFilesVerified": 13763,
+    "changedRuntimeFiles": 2,
+    "allOtherAppAndDependencyFilesPreserved": true,
+    "node": "v22.23.3",
+    "startupModesVerified": [
+      "live",
+      "hybrid"
+    ],
+    "stagedReadinessIdentical": true
+  },
+  "sourceAcceptance": {
+    "at": "2026-10-18T22:00:10.840Z",
+    "approvedManifestSha256": "352ba27e0a07e7a113cc8180de0f4fcc156ab7d2a753afc6c3c7d78df46cb73e",
+    "deployed": true,
+    "sourceAndConfigurationVerified": true,
+    "functions": [
+      {
+        "at": "2026-10-18T21:57:25.580Z",
+        "function": "dailySetupChecks",
+        "revision": "dailysetupchecks-00003-nuw",
+        "previousRevision": "dailysetupchecks-00002-goq",
+        "sourceFiles": 72,
+        "archiveSha256": "57ddbd0eca103daa31775466cf5963009d611f493d8a93d5e4297ec28318e10f",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-19T15:30:03.741297Z",
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:50:36.271Z",
+        "function": "expireMessageDeliveries",
+        "revision": "expiremessagedeliveries-00004-quc",
+        "previousRevision": "expiremessagedeliveries-00003-yab",
+        "sourceFiles": 77,
+        "archiveSha256": "ad316a9e2f65192d7b817ccb7d7f6c25ad9fb8de7c8f2b4f0f0a578b81474bc6",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-18T21:55:03.255322Z",
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:43:04.455Z",
+        "function": "checkForwardingVoicemail",
+        "revision": "checkforwardingvoicemail-00004-pid",
+        "previousRevision": "checkforwardingvoicemail-00003-hod",
+        "sourceFiles": 73,
+        "archiveSha256": "a584b38bdfa9db9b6a46a02a8788137f8f92cc0fa2ccf66e0958be7631219b7f",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:35:48.620Z",
+        "function": "ingestForwardingVoicemail",
+        "revision": "ingestforwardingvoicemail-00010-zas",
+        "previousRevision": "ingestforwardingvoicemail-00009-goz",
+        "sourceFiles": 73,
+        "archiveSha256": "e69e95ff809187ebdb40fdfa7e6d545ed129d5465a9ad59a95a0cbc88d55c66f",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:34:19.361Z",
+        "function": "dispatchSharedCallJob",
+        "revision": "dispatchsharedcalljob-00002-ros",
+        "previousRevision": "dispatchsharedcalljob-00001-gup",
+        "sourceFiles": 75,
+        "archiveSha256": "5b46389f1ead40a5bf9f71c8ef0f37a439192459423270fb0e9fdc8fc2dcc212",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:55:22.265Z",
+        "function": "cleanupShield",
+        "revision": "cleanupshield-00017-yey",
+        "previousRevision": "cleanupshield-00016-nag",
+        "sourceFiles": 88,
+        "archiveSha256": "56bceaed78bea4b843cb01aaafe8a31a340a60d2de86e24c1fe8b9924a6289ed",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-19T09:00:02.502898Z",
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:38:34.645Z",
+        "function": "monitorConnectedCall",
+        "revision": "monitorconnectedcall-00009-ner",
+        "previousRevision": "monitorconnectedcall-00008-hem",
+        "sourceFiles": 77,
+        "archiveSha256": "740e842f945dee8193b3437b304f34119a89dfc4722e76ba5034877ee4873211",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:41:37.957Z",
+        "function": "expireSharedCalls",
+        "revision": "expiresharedcalls-00006-sem",
+        "previousRevision": "expiresharedcalls-00005-rug",
+        "sourceFiles": 81,
+        "archiveSha256": "20ff438bb91c77790fdb9fe8f171dcd0573a06737868b9eaada25ec6383a6ed0",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-18T21:42:01.345157Z",
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:46:40.896Z",
+        "function": "finishAccountDeletions",
+        "revision": "finishaccountdeletions-00003-yiw",
+        "previousRevision": "finishaccountdeletions-00002-raw",
+        "sourceFiles": 88,
+        "archiveSha256": "14e6c98bc0ec2db87c40a7a11a30a7b1520fe8af9234a6c2a36d728524e31c30",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-18T21:47:01.277018Z",
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:36:54.654Z",
+        "function": "runSharedCallJob",
+        "revision": "runsharedcalljob-00005-liy",
+        "previousRevision": "runsharedcalljob-00004-red",
+        "sourceFiles": 83,
+        "archiveSha256": "c6a27c265e4d77f0b80b478391ea586cf876ef338a5aa059ceac455844922104",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:39:29.368Z",
+        "function": "monitorScheduledCall",
+        "revision": "monitorscheduledcall-00004-gip",
+        "previousRevision": "monitorscheduledcall-00003-riq",
+        "sourceFiles": 77,
+        "archiveSha256": "740e842f945dee8193b3437b304f34119a89dfc4722e76ba5034877ee4873211",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:32:38.190Z",
+        "function": "shieldApi",
+        "revision": "shieldapi-00036-win",
+        "previousRevision": "shieldapi-00035-qos",
+        "sourceFiles": 91,
+        "archiveSha256": "5d9cc660fbc16709e7eee804d7d19c4a9c9b196cf8f058652ba34562d063b4b1",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:51:54.390Z",
+        "function": "reviewServiceAccess",
+        "revision": "reviewserviceaccess-00003-nus",
+        "previousRevision": "reviewserviceaccess-00002-jof",
+        "sourceFiles": 88,
+        "archiveSha256": "44677152f70b77f3849f2a5bd3f01d69e4588f97c02d7ff0b46fd362a791d537",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-18T22:22:00.784855Z",
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:44:20.457Z",
+        "function": "sendShieldAlert",
+        "revision": "sendshieldalert-00006-yiv",
+        "previousRevision": "sendshieldalert-00005-biq",
+        "sourceFiles": 87,
+        "archiveSha256": "c431f3855d6b3d96513e8ccc2d4f3a0a6d6c34b495f8984bf78f390c323529e5",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": null,
+        "rollback": false,
+        "errorLogCount": 0
+      },
+      {
+        "at": "2026-10-18T21:28:35.142Z",
+        "function": "checkBackgroundHealth",
+        "revision": "checkbackgroundhealth-00002-ziq",
+        "previousRevision": "checkbackgroundhealth-00001-not",
+        "sourceFiles": 91,
+        "archiveSha256": "1c5f6cf87a374961e7e45b31fb09532ffd226e1ff5baf585e133c377b360c539",
+        "configurationPreserved": true,
+        "iamPreserved": true,
+        "trafficPercent": 100,
+        "nextNaturalRun": "2026-10-18T21:30:02.544514Z",
+        "rollback": false,
+        "errorLogCount": 0
+      }
+    ],
+    "bridge": {
+      "revision": "shield-live-retry-352ba27e0a07",
+      "image": "us-central1-docker.pkg.dev/shield-calls-isaac/gcf-artifacts/shield-live@sha256:aaf7e5f6fe7e7ea3d9675e7697d7a77332c5a4310ed1296692fd571772f21db7",
+      "trafficPercent": 100,
+      "readinessUnchanged": true
+    },
+    "enabledPolicies": 6,
+    "schedulesPreserved": 7,
+    "queuesPreserved": 2,
+    "hostingPreserved": true,
+    "publicConfigPreserved": true,
+    "privacyPreserved": true,
+    "apiReadiness": 200,
+    "newRevisionErrorLogs": 0,
+    "activeCallReservations": 0,
+    "metrics": [
+      {
+        "service": "dailySetupChecks",
+        "revision": "dailysetupchecks-00003-nuw",
+        "start": "2026-10-18T21:57:25.580Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "expireMessageDeliveries",
+        "revision": "expiremessagedeliveries-00004-quc",
+        "start": "2026-10-18T21:50:36.271Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {
+          "200": 1
+        },
+        "hasTraffic": true
+      },
+      {
+        "service": "checkForwardingVoicemail",
+        "revision": "checkforwardingvoicemail-00004-pid",
+        "start": "2026-10-18T21:43:04.455Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "ingestForwardingVoicemail",
+        "revision": "ingestforwardingvoicemail-00010-zas",
+        "start": "2026-10-18T21:35:48.620Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "dispatchSharedCallJob",
+        "revision": "dispatchsharedcalljob-00002-ros",
+        "start": "2026-10-18T21:34:19.361Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "cleanupShield",
+        "revision": "cleanupshield-00017-yey",
+        "start": "2026-10-18T21:55:22.265Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "monitorConnectedCall",
+        "revision": "monitorconnectedcall-00009-ner",
+        "start": "2026-10-18T21:38:34.645Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "expireSharedCalls",
+        "revision": "expiresharedcalls-00006-sem",
+        "start": "2026-10-18T21:41:37.957Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {
+          "200": 17
+        },
+        "hasTraffic": true
+      },
+      {
+        "service": "finishAccountDeletions",
+        "revision": "finishaccountdeletions-00003-yiw",
+        "start": "2026-10-18T21:46:40.896Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {
+          "200": 13
+        },
+        "hasTraffic": true
+      },
+      {
+        "service": "runSharedCallJob",
+        "revision": "runsharedcalljob-00005-liy",
+        "start": "2026-10-18T21:36:54.654Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "monitorScheduledCall",
+        "revision": "monitorscheduledcall-00004-gip",
+        "start": "2026-10-18T21:39:29.368Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "shieldApi",
+        "revision": "shieldapi-00036-win",
+        "start": "2026-10-18T21:32:38.190Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {
+          "200": 8,
+          "401": 6
+        },
+        "hasTraffic": true
+      },
+      {
+        "service": "reviewServiceAccess",
+        "revision": "reviewserviceaccess-00003-nus",
+        "start": "2026-10-18T21:51:54.390Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "sendShieldAlert",
+        "revision": "sendshieldalert-00006-yiv",
+        "start": "2026-10-18T21:44:20.457Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {},
+        "hasTraffic": false
+      },
+      {
+        "service": "checkBackgroundHealth",
+        "revision": "checkbackgroundhealth-00002-ziq",
+        "start": "2026-10-18T21:28:35.142Z",
+        "end": "2026-10-18T21:59:00.000Z",
+        "responses": {
+          "200": 6
+        },
+        "hasTraffic": true
+      },
+      {
+        "service": "shield-live",
+        "pendingIngestion": true
+      }
+    ],
+    "metricIngestionAllowanceSeconds": 60,
+    "naturalWorkerAcceptancePending": true,
+    "realCallsVerified": false,
+    "manualWorkersInvoked": 0,
+    "phoneOrMessageOperations": 0
+  },
+  "health": {
+    "readAt": "2026-10-18T22:01:05.675Z",
+    "workers": [
+      {
+        "job": "finishAccountDeletions",
+        "accepted": true,
+        "revision": "finishaccountdeletions-00003-yiw",
+        "nextNaturalRun": "2026-10-18T21:47:01.277018Z",
+        "deadline": "2026-10-18T21:57:01.277Z",
+        "startedAt": "2026-10-18T21:48:08.568Z",
+        "finishedAt": "2026-10-18T21:48:08.633Z",
+        "matchingLogAt": "2026-10-18T21:48:08.759201Z"
+      },
+      {
+        "job": "expireMessageDeliveries",
+        "accepted": true,
+        "revision": "expiremessagedeliveries-00004-quc",
+        "nextNaturalRun": "2026-10-18T21:55:03.255322Z",
+        "deadline": "2026-10-18T22:15:03.255Z",
+        "startedAt": "2026-10-18T21:55:12.762Z",
+        "finishedAt": "2026-10-18T21:55:13.441Z",
+        "matchingLogAt": "2026-10-18T21:55:13.545002Z"
+      },
+      {
+        "job": "reviewServiceAccess",
+        "accepted": false,
+        "revision": "reviewserviceaccess-00003-nus",
+        "nextNaturalRun": "2026-10-18T22:22:00.784855Z",
+        "deadline": "2026-10-18T22:52:00.784Z",
+        "deadlineExceeded": false,
+        "state": {
+          "status": "complete",
+          "startedAt": 1792358524864,
+          "finishedAt": 1792358525656,
+          "lastSucceededAt": 1792358524864
+        },
+        "events": []
+      },
+      {
+        "job": "cleanupShield",
+        "accepted": false,
+        "revision": "cleanupshield-00017-yey",
+        "nextNaturalRun": "2026-10-19T09:00:02.502898Z",
+        "deadline": "2026-10-19T09:20:02.502Z",
+        "deadlineExceeded": false,
+        "state": {
+          "status": "complete",
+          "startedAt": 1792314038689,
+          "finishedAt": 1792314043125,
+          "lastSucceededAt": 1792314038689
+        },
+        "events": []
+      }
+    ],
+    "healthyObservations": 7,
+    "lastHealthyObservation": "2026-10-18T22:00:36.617171Z",
+    "positiveCounterPoints": [
+      {
+        "interval": {
+          "startTime": "2026-10-18T22:00:00Z",
+          "endTime": "2026-10-18T22:01:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T22:00:36.617171Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T21:55:00Z",
+          "endTime": "2026-10-18T21:56:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T21:55:11.741842Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T21:50:00Z",
+          "endTime": "2026-10-18T21:51:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T21:50:15.730340Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T21:45:00Z",
+          "endTime": "2026-10-18T21:46:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T21:45:20.523579Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T21:40:00Z",
+          "endTime": "2026-10-18T21:41:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T21:40:07.685567Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T21:35:00Z",
+          "endTime": "2026-10-18T21:36:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T21:35:04.096436Z"
+      },
+      {
+        "interval": {
+          "startTime": "2026-10-18T21:30:00Z",
+          "endTime": "2026-10-18T21:31:00Z"
+        },
+        "count": 1,
+        "observation": "2026-10-18T21:30:15.643147Z"
+      }
+    ],
+    "allWorkersAccepted": false,
+    "subsequentHealthy": false,
+    "accepted": false
+  },
+  "retainedVerificationFailures": [
+    {
+      "kind": "verification_script_path",
+      "detail": "First fresh preflight used /ready instead of the existing /public/ready API route and failed before any deployment. Correcting the verifier path passed; no approved package changed."
+    },
+    {
+      "kind": "read_only_log_service_error",
+      "detail": "First supplemental Cloud Build log read reported an internal error with adapter status 500. One read-only retry recovered the comparison and both startup receipts. The provider cause was not captured; the build itself succeeded once and was never resubmitted."
+    },
+    {
+      "kind": "health_log_read_interruption",
+      "detail": "Two observer-log reads reported an internal error with adapter status 500 and stopped the rollout after eleven verified functions. A later read recovered and accepted a timely natural deletion completion before work resumed. A further read after the thirteenth verified function exposed the underlying HTTP 429 RESOURCE_EXHAUSTED / RATE_LIMIT_EXCEEDED for Logging read requests (60 per minute); the Firebase client had masked it as 500. The verifier was changed to a single combined log query, preserving revision/time/event filters and all assertions, and retried only after backoff. Earlier error causes were not captured and are not retroactively proven. No deployment was repeated."
+    },
+    {
+      "kind": "evidence_selection_guard",
+      "detail": "The first publisher selected an error receipt while looking for the newest health report. Its assertion stopped publication. Restricting the selector to timestamped successful read reports fixed the evidence assembly; no acceptance condition or deployment changed."
+    }
+  ],
+  "verificationToolHashes": {
+    "deploy-approved.mjs": "18e6c1d63bcdb36b8e9e0af001466ad504b129559383862bc256b59b9b13bbb2",
+    "advance-function.mjs": "884514222356bccee22fc8af83463ab001ab3645a7adba4a56027174bc50993c",
+    "read-health.mjs": "cf358916fd1f1cab96c25e3f8c6f0cddabf82ad558e204ab46284a41f2936b97",
+    "read-health-before-batching.mjs": "0e1f60fc5f1fff307709ec84cd051cd787118644b2bde906d685698bd761dcdf",
+    "final-checks.mjs": "c60cbddcc6d034609b337324afd34e1fd385ffa5b37079291f405ec395dae84c",
+    "final-checks-before-batching.mjs": "9cd3a88eb1f6d1496148f999a32d6b78954637405ca611b0c750b79b08bdc4a9",
+    "check-promoted-bridge.mjs": "4972d04f309da5779f6dd6a98cd892cbb752ce550e62e7f7122aabbda32a0225"
+  },
+  "privateReceiptHashes": {
+    "api-guards.json": "b3b2d17eadedd27c8f5a1b93413f477955e877a72b7c6dbe9d17abc86dc9da97",
+    "approval.json": "c24099976c688417d233017df918a9330adbd10e7e629ecc4f72a23346ecf545",
+    "before.json": "c516642bd28e1f198a3d3e1f0292198edb0390506dc71811daa866fe9c57e931",
+    "bridge-build-evidence.json": "59caad58f69537856cc06ccda5d358e583a225239ab0fb881f98ac63af1ec759",
+    "bridge-prepromotion-verified.json": "f36f9fc0ec77bc336d0f6b90a3afb83fd846e53d88640b5710f6ea512182bc3f",
+    "bridge-promote-intent.json": "ad3f6e0845ecbd47023491a4c081da7cb12051012446fa95819b1bd00eb8e5a6",
+    "bridge-promote-submitted.json": "8fb074d96da32b0c5fc2d2353000d4d33ee30fca3fee928bc175be669c00db68",
+    "bridge-promote-verified.json": "1abf985304897278d37930b59b521521fff5358fb5ea6537edf99f0727e53097",
+    "bridge-stage-intent.json": "fcb0526a306bf52c037e82f438facfa3226b67cb26adf80bd0b41806051b281f",
+    "bridge-stage-submitted.json": "928ced3ea6e5134c22a2e4822612dd5d80b8f245c69c98329948954708d0218f",
+    "bridge-stage-verified.json": "a3f5427431757969af608c59ad6e820c5b38d15e0a3d116f532a01edd4304ae0",
+    "build-intent.json": "54279de93c325f41e7831efe8d9a59daade836b3576ad64e2218b7fef1c3e9cf",
+    "build-submitted.json": "4c24b68e9b0f1083f64e03b0856a45784fe74cb1eefcaadad210ad9e3a9fd792",
+    "build-verified.json": "1f03a856a8aea3c337497e167d39f7875198f3063d8feadb96b9707cadb95c41",
+    "checkBackgroundHealth-intent.json": "16e1c2072f79f1b4b0470207e9931bce254f7b1c7b800b187dc1ebe5e39eea59",
+    "checkBackgroundHealth-submitted.json": "3e60a2dac5bb7aa9b91ee020c5caaca5f8669d17cc37a893f8ffabeab16687f5",
+    "checkBackgroundHealth-verified.json": "9df866f9def91bc81b2418c25ff6ead5505f1a2733a0009afb5926959df54e16",
+    "checkForwardingVoicemail-intent.json": "807c0c9fc0fc759f63f237b315a6e650aa21eb7126b8a446c3b47b8362c31b59",
+    "checkForwardingVoicemail-submitted.json": "3c521ea0ad047e8b3c38b42b63f3a02bf02f67ed22c92e00075f8325756c60b9",
+    "checkForwardingVoicemail-verified.json": "af728f456c58bcc05e7f38a27e9e0d28c4f9b45e67710ddff4cdfe7fb617ade3",
+    "cleanupShield-intent.json": "7b0809989641790798e71cd3c3aab1366b18e8ea845882b9bb94cbe62a0f7ba7",
+    "cleanupShield-submitted.json": "ad895c4c040586a4ab171fd1f446d9da298b20d5c2a0acc001c46a5c950135c5",
+    "cleanupShield-verified.json": "694a20f1b4fd41c7689a2126900a86b4323e1242417254da02f153a62e2cef9c",
+    "dailySetupChecks-intent.json": "1458cde3eafd782c8ca3de19aae134585d244be7fb48d2e2b13d92fe1dda4189",
+    "dailySetupChecks-submitted.json": "335712c6fc1429027f1cee8490fa76e831d44b335a36ebf35bbb1e962da383bc",
+    "dailySetupChecks-verified.json": "5d41b6b7a699fdbccef46bc166fdb3c4d55473bef09553125bfe03d05ea886ee",
+    "dispatchSharedCallJob-intent.json": "2119a38d040c7a2b559df0b953955b42dcc6c9344d501219b5f75c3de3f87d3a",
+    "dispatchSharedCallJob-submitted.json": "f33d6cba99b8bb101d9155b10e29d9b96f6983fe6fe81c254adbe7d667c28abb",
+    "dispatchSharedCallJob-verified.json": "d80ec526e0afe4d9f2c1613863dc1c4b86a72c3537bfb9fa2634f981584b0568",
+    "expireMessageDeliveries-intent.json": "a63447aa1dddc497c4f4f6f148b52fce51cc791deac4b5e8e1d012156d222e66",
+    "expireMessageDeliveries-natural-accepted.json": "450e278ab2077b210e31b4a067b36b53338706a9227e78ffdb73dcb0069552ac",
+    "expireMessageDeliveries-submitted.json": "242db9cff1c3250bcd3b6057a9f9f9d80386557792021729fc8e7a33a8ba6984",
+    "expireMessageDeliveries-verified.json": "9267948b1387adeb1cefaaf7014ad64ad9f1e6d82af53b75b536192735fed7f8",
+    "expireSharedCalls-intent.json": "ef6d39ce4a6e53cc485c186770c4e1af1bcf3259f5e88bbfeeedf2a5306bc265",
+    "expireSharedCalls-submitted.json": "fbe70e0f83046d827abcc44a43cb237895e9535cfce47a3cee14180bf3d892e4",
+    "expireSharedCalls-verified.json": "a61b7a26d2abe90739d07eb6fe87a933dd71b5e25373eaeb16297c4be5db5278",
+    "failure-1792358621005.json": "9c37120c598cc071bc70d4dc6655db5e88be88e6b78cc2e4518f5cdb464b1f9b",
+    "finishAccountDeletions-intent.json": "37158ffe63d64a4faba3d6b492a10fa46a60529d386a8a8b78f740c8dbec3823",
+    "finishAccountDeletions-natural-accepted.json": "db6c7983502dde83237bdec6ad0b0a1ec967bf5701d2c29efcdb011890c600d4",
+    "finishAccountDeletions-submitted.json": "5378212150015bfefbb25d11f16145ba847727f71d0dcf886268f5b8deb74acf",
+    "finishAccountDeletions-verified.json": "6ec08ea743436805a272950fcf3c1aa0eb0c33f7872ac5ecb1c32ca91eda679c",
+    "health-1792359316876.json": "0772fcc18b16adfbb13eff0298f11a71e9b6276ac45bcac7f08803384d7c4e20",
+    "health-1792360103301.json": "a05aaa2f5da010790fd170fa91abb0f237408712327d51e081da9effd56746e7",
+    "health-1792360239629.json": "24f137262e37d08707932f1b5c464f23657b39b5b414c60db2c7afab59db5ae2",
+    "health-1792360413471.json": "013ec3deaed5561d61f288126deba13a26ad8b18e9e1d0b40d7398f5d72aea87",
+    "health-1792360525436.json": "e3ee302a25f3a9ff5eaad9514c575df95b2e4dc2341d203453a0ffc4acc32007",
+    "health-1792360648588.json": "f1d727c7db5453ee1d108e88713514a05e5e4f186193e1ed806c63002ec12b38",
+    "health-1792360868261.json": "4873d1110e0e784107b44fa2ad4cc454d6478a8c652a19366d7655d97d990c4f",
+    "health-failure-1792360002041.json": "bf6f21fd8746e355f65b495cfdaff0a4213bdbdbbc28bb5dffe7d27395b01adc",
+    "health-failure-1792360005885.json": "bf6f21fd8746e355f65b495cfdaff0a4213bdbdbbc28bb5dffe7d27395b01adc",
+    "health-failure-1792360316353.json": "48e72f9dedbf786d8189659fa3c18729e1e1d7c9bdaa017642ef8a9f3a6dba16",
+    "ingestForwardingVoicemail-intent.json": "25b380d5e7bbf6c7c11f4c7941685b4a5cf30c6e57c83ca5cdb855507b2436eb",
+    "ingestForwardingVoicemail-submitted.json": "645db6b0850244ce675c0ee50e15c3147d1626c6753ff04acab26c3e4024b08a",
+    "ingestForwardingVoicemail-verified.json": "7635f1b63e357649b5432ce5821e611eb64af275faac415450071bf88e7ca57d",
+    "monitorConnectedCall-intent.json": "7b22e47fadd1baab7a885db70d2663abcfb42840f0abd60edd9724f55d45365b",
+    "monitorConnectedCall-submitted.json": "c19f24b695c3870749fc4cea8bd11a9c07f44375cfd8391d9f0b00c9d0855265",
+    "monitorConnectedCall-verified.json": "d991c4d30a7d9494b30b6655a5ebefd2dc2da91f0cc431dcbaf8ccffb41f93fe",
+    "monitorScheduledCall-intent.json": "6dde5fd98ae06b3d360015cf0a0dcd4a4454f1530be9ad3eab514ee2224c6874",
+    "monitorScheduledCall-submitted.json": "3d705407f89380e75a4c2260c482947f5f73335198eba542d1b589461125fc63",
+    "monitorScheduledCall-verified.json": "cab284442b73faa1a598bbf29324af9a60e37293249ba31f31ace3533c993708",
+    "observer-natural-accepted.json": "6bb9a2738b5acdd833f512b40d7b708ffff96de8d3a69835f2d6507799460a6d",
+    "reviewServiceAccess-intent.json": "844dfdda95428a3f1c9be726ce9cb7604c3f610278c0a728ea871d3e1818e87d",
+    "reviewServiceAccess-submitted.json": "d093c4542691da7c36a7cc4dda680f50ff8f78188c9181a35729b36922dd7a67",
+    "reviewServiceAccess-verified.json": "10c413f6f0c62e0bca923004c257cfae41712347d712c57662e84a200fdf0660",
+    "runSharedCallJob-intent.json": "b75d86864b483a7736f1411134af81c0ec63490dd66c043bdadbc846d8465961",
+    "runSharedCallJob-submitted.json": "5d492d635009cea193bc83d58ba85e516b0e0713c29f844072d416800452c8a6",
+    "runSharedCallJob-verified.json": "86d62606fa53a50556db334afccb0115242fe6f06ada69fbb7c68d8476ce4a2a",
+    "sendShieldAlert-intent.json": "46df234c7f7fdc354ce8edf138eb78ec6ec9aa921c2dfcaeb80858105ed5e590",
+    "sendShieldAlert-submitted.json": "10d95ebba56c12190c643cea5837b2e9b5e40faf99b4855fb2627e5063236f2c",
+    "sendShieldAlert-verified.json": "e72e7cf1eac755adb882e563320cea65158236b0bfd9c86d5f9879450556f3dc",
+    "shieldApi-intent.json": "79e3f241196504f8d0d3a04126e73254aeca2fb5ffacc7bdd5149dfc3268c7c7",
+    "shieldApi-submitted.json": "c43f38f2fc7b95e8bf1283337faa1a1c9f6a4b34d961456d1c2b45ce03516827",
+    "shieldApi-verified.json": "ce2acd3a761926e64faaa5129c731dd3e00d30f6ae0008aff063b38c7b69bfd5",
+    "source-acceptance-1792360810843.json": "c1400ac515a6ae3ee97c3cbd8254594e2e5757782ba2d5bdada83506522131ea",
+    "bridge-postpromotion-probe.json": "d24eb070ff5550a465308d82c2a3c9e76d71b493d0fc24315b4fe23bedcf784d",
+    "bridge-postpromotion-metrics.json": "0a269cfbd9303de969ea0b0d7cf535ccfc4b9fd8909001d466235f3fb317c615"
+  },
+  "limitations": [
+    "Daily cleanup requires its next natural 04:00 America/Chicago run plus the original 20-minute deadline. No manual worker invocation is authorized or performed.",
+    "Readiness, archive hashes and bounded diagnostics do not establish real-call or physical-device behavior.",
+    "Historical API error attribution, actual service-alert failure/recovery, full accessibility, Apple setup and broader public/pilot release acceptance remain open.",
+    "Request metrics can lag and an idle service supplies no functional call evidence.",
+    "No new automation, call, text, test email, carrier setting or Apple change was made."
+  ],
+  "bridgeMetricFollowup": {
+    "at": "2026-10-18T22:05:00.823Z",
+    "revision": "shield-live-retry-352ba27e0a07",
+    "start": "2026-10-18T22:00:00.000Z",
+    "end": "2026-10-18T22:04:00.000Z",
+    "responses": {
+      "200": 1
+    },
+    "ingestionAllowanceSeconds": 60,
+    "readinessProbe": {
+      "at": "2026-10-18T22:01:05.525Z",
+      "revision": "shield-live-retry-352ba27e0a07",
+      "status": 200,
+      "readinessPreserved": true
+    },
+    "realCallEvidence": false,
+    "resolvesEarlierPendingIngestion": true
+  }
+}

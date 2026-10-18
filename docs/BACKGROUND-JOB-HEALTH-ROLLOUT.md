@@ -4,7 +4,7 @@
 
 At **22:05 Central**, a read-only snapshot found zero pending account deletions, overdue audio manifests/chunks, pending/overdue provider-recording erasures, overdue call deadlines and overdue monitoring checks. All six schedules were enabled. The saved subscription review had checked zero accounts and failed zero. These observations do not prove historical completion or provider erasure. [Dated evidence and package hashes](../.impeccable/review/release-2026-10-17/operations/background-health.json).
 
-Read-only follow-up at **00:29 Central October 18** found three fresh workers, zero overdue counts and no recorded worker failures. That checkpoint preceded the 04:00 natural cleanup; the morning acceptance below resolves its pending gates. The separate [database retry proposal](FIRESTORE-RETRY-ROLLOUT.md) has not been deployed and does not replace these receipts.
+Read-only follow-up at **00:29 Central October 18** found three fresh workers, zero overdue counts and no recorded worker failures. That checkpoint preceded the 04:00 natural cleanup; the morning acceptance below resolves its pending gates. The separately approved [database retry update](FIRESTORE-RETRY-ROLLOUT.md) was subsequently deployed October 18. Its replacement revisions need fresh natural receipts; the historical acceptance below remains retained.
 
 ## Exact approved scope
 
@@ -130,3 +130,8 @@ Missing-field/corrupt legacy jobs, full incident escalation, spending-alert rece
 The absence policy observes silence from an established metric stream; Google excludes resources it recognizes as terminated/deleted from metric-absence evaluation, so this is not a resource-deletion alarm. Log counters can have zero points adjacent to nonzero points and ingestion can lag. Neither an automatically closed alert nor a resumed heartbeat proves that the underlying maintenance work recovered: recovery requires a fresh healthy observation and the relevant worker result. The one-hour auto-close setting on the metric-absence policy can close a continuing missing-data incident after a further 24 hours; incident closure must not be used as the recovery signal. [Resource-state limitation](https://docs.cloud.google.com/monitoring/alerts/metric-absence), [log-counter gaps](https://docs.cloud.google.com/logging/docs/logs-based-metrics), [metric-absence closure](https://docs.cloud.google.com/monitoring/alerts/incidents-events).
 
 API references: [log counter schema](https://docs.cloud.google.com/logging/docs/reference/v2/rest/v2/projects.metrics), [alert policy conditions](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies).
+
+
+## Retry replacement boundary — October 18
+
+The [approved retry initialization overlay](FIRESTORE-RETRY-ROLLOUT.md#approved-deployment--october-18) replaced this observer and all four maintenance-worker revisions while preserving the schedules, index, metric, enabled policies and function settings. The observer passed a new natural scheduled read before the remaining functions were replaced. Natural completion has been accepted for `finishAccountDeletions`, `expireMessageDeliveries`. Post-replacement completion is still pending for `reviewServiceAccess`, `cleanupShield`. Daily cleanup must run naturally at 04:00 Central October 19 and finish by its recorded 20-minute deadline; no worker is invoked manually. The new observer reports healthy results and positive counter data, but prior-version worker results cannot satisfy replacement acceptance. R5 and the broader public/pilot release remain open.

@@ -1,5 +1,9 @@
 # Architecture
 
+## Database retry initialization — deployed October 18
+
+All fifteen serving Functions and the voice bridge now use the shared Firestore factory with `gaxServerStreamingRetries: true`. This preserves `ABORTED` for the SDK’s bounded whole-transaction retry. Each package retains its own live dependency lock and all other source bytes, including contact recovery, screening v158 and post-call policy v4. The API is `shieldapi-00036-win`; the bridge is `shield-live-retry-352ba27e0a07`. Source/configuration acceptance is verified; fresh natural subscription-review and daily-cleanup completion remain separate gates. [Exact deployment and acceptance boundary](FIRESTORE-RETRY-ROLLOUT.md#approved-deployment--october-18).
+
 ## Connected-call warning delivery — deployed October 17
 
 New monitoring interventions use a versioned, bounded handoff of the existing recipient into a private conference before caller teardown. A durable warning job requires a signed caller-hangup receipt and an isolated, unheld recipient before submitting the existing prerecorded Soniox warning once. The recipient binding is persisted before conference creation; matching signed conference playback receipts finish the call, with independent 30-second cleanup. No new leg or Polly speech is used for this path. The usual conversation remains a direct bridge after press-1 acceptance. [Verified revisions, exact scope and synthetic-versus-handset evidence](WARNING-HANDOFF-ROLLOUT.md).
