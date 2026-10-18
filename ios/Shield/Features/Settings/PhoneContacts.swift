@@ -31,6 +31,14 @@ actor PhoneContacts {
         return try matching(phone).contains { $0.phoneNumbers.contains { Self.canonical($0.value.stringValue) == Self.canonical(phone) } }
     }
 
+    /// Recovery on opening/foregrounding is read-only and never prompts for access.
+    func containsIfAuthorized(_ phone: String) throws -> Bool? {
+        guard CNContactStore.authorizationStatus(for: .contacts) == .authorized else { return nil }
+        return try matching(phone).contains { $0.phoneNumbers.contains { Self.canonical($0.value.stringValue) == Self.canonical(phone) } }
+    }
+
+    func authorizeChange() async throws { try await authorize() }
+
     func all() async throws -> (contacts: [SharedContact], skipped: Int) {
         try await authorize()
         var result: [SharedContact] = []
@@ -139,6 +147,23 @@ actor PhoneContacts {
         }
     }
     #if DEBUG && targetEnvironment(simulator)
+    func prepareRecoveryFixture() async throws {
+        try await authorize()
+        let phone = ContactRecoveryFixture.phone
+        // Reset only this fixture's reserved synthetic number/cards on the simulator.
+        let request = CNSaveRequest()
+        for card in try matching(phone) {
+            guard card.givenName == "Synthetic contact recovery", let mutable = card.mutableCopy() as? CNMutableContact else {
+                throw APIError.invalidResponse
+            }
+            request.delete(mutable)
+        }
+        let contact = CNMutableContact(); contact.givenName = "Synthetic contact recovery"
+        contact.phoneNumbers = [CNLabeledValue(label: CNLabelPhoneNumberMobile, value: CNPhoneNumber(stringValue: phone))]
+        request.add(contact, toContainerWithIdentifier: nil); try store.execute(request)
+        try removeRestoreCopies(personID: ContactRecoveryFixture.person)
+    }
+
     func verifySharingPreparation() async throws -> Bool {
         try await authorize()
         let unusual = CNMutableContact(), unnamed = CNMutableContact()

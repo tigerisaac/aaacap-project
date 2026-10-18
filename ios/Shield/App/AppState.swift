@@ -10,6 +10,7 @@ final class AppState {
     let callDirectory: CallDirectoryCoordinator
     let subscription = SubscriptionModel(client: RevenueCatClient())
     let historyStore = OfflineHistoryStore()
+    let contactChanges = ContactChangeStore.shared
     var offlineHistories: [OfflineHistory] = []
     var historySavedAt: Date?
     var showingSavedHistory = false

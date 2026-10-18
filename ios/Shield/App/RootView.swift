@@ -79,6 +79,8 @@ struct RootView: View {
                 MessageAudioStorageCheckView()
             } else if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-storage") {
                 ContactStorageCheckView()
+            } else if ProcessInfo.processInfo.arguments.contains("--uitesting-contact-recovery") {
+                ContactRecoveryCheckView()
             } else if ProcessInfo.processInfo.arguments.contains("--uitesting-call-directory") {
                 CallDirectoryStorageCheckView()
             } else if ProcessInfo.processInfo.arguments.contains("--uitesting-blocked-pagination") {

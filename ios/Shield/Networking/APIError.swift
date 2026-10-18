@@ -64,6 +64,9 @@ enum APIError: LocalizedError {
             case "contact_change_unconfirmed": "That number is still saved in iPhone Contacts. Check whether the contact is read-only before trying again."
             case "contacts_sync_busy": "Your contacts are still updating. Try again in a moment."
             case "contact_sync_incomplete": "We couldn’t update this contact. Refresh the list before checking calls."
+            case "contacts_changed", "contact_change_conflict": "Your shared contacts changed. Check the latest list before continuing."
+            case "contact_changes_unavailable", "contact_revision_unavailable": "Contact changes aren’t available right now. Try again after Shield’s service has been updated."
+            case "contact_recovery_unavailable": "Shield couldn’t read the unfinished contact change on this phone. Contact support before changing the calling list."
             case "contact_permission": "Allow Contacts access in Settings to save the Shield number. You can also save it yourself."
             default: "We couldn’t finish that. Please try again."
             }

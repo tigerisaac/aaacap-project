@@ -27,6 +27,7 @@
     "check": "npm run typecheck && npm test && npm run build",
     "test:subscriptions": "node scripts/test-subscriptions.mjs",
     "test:contacts": "npm run build && node scripts/test-contact-sharing.mjs",
+    "test:contact-recovery": "node scripts/test-contact-recovery.mjs",
     "test:accounts": "firebase emulators:exec --config firebase.account-tests.json --only firestore,auth --project demo-shield-accounts 'SHIELD_ACCOUNT_EMULATOR_TESTS=1 npx vitest run backend/tests/account-lifecycle.test.ts'"
   },
   "dependencies": {

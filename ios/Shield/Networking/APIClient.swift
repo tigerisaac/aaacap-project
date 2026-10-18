@@ -15,6 +15,7 @@ actor APIClient {
     private var blockedPaginationFixture = BlockedPaginationFixture()
     let caretakerRefreshFixture = CaretakerRefreshFixture()
     let onboardingRecoveryFixture = OnboardingRecoveryFixture()
+    let contactRecoveryFixture = ContactRecoveryFixture()
     #endif
 
     init(configuration: BackendConfiguration) {
@@ -26,6 +27,10 @@ actor APIClient {
         self.keychain = KeychainStore(service: "org.shield.auth.\(configuration.baseURL?.absoluteString ?? "unconfigured")")
         self.tokens = try? keychain.read()
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-contact-recovery") {
+            let payload = Data(#"{"sub":"contact-recovery-fixture"}"#.utf8).base64EncodedString()
+            self.tokens = AuthTokens(accessToken: "fixture.\(payload).fixture", refreshToken: "", expiresIn: 0)
+        }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") {
             // In-memory synthetic identity; no server or real Keychain account is used.
             let payload = Data(#"{"sub":"offline-history-fixture"}"#.utf8).base64EncodedString()
@@ -202,6 +207,9 @@ actor APIClient {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-contact-recovery") {
+            return try await contactRecoveryFixture.response(path: path, method: method, body: body)
+        }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-onboarding-recovery"),
            let result = try await onboardingRecoveryFixture.response(path: path, method: method, body: body, participantID: participantID) { return result }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh"),

@@ -49,7 +49,15 @@ extension AppState {
         let result: DeletionRequest = try await api.send("/api/account/delete", method: "POST", body: APIClient.payload(["receipt": receipt]))
         saveDeletionReceipt(result.receipt)
         markDeletionSubmitted()
+        try await clearDeletedContactChanges()
         await signOut()
+    }
+    private func clearDeletedContactChanges() async throws {
+        // Keep recovery if deletion was rejected or never submitted. Once the
+        // server accepts deletion, its write fence makes unfinished changes moot.
+        if let account = UserDefaults.standard.string(forKey: deletionReceiptKey + "-account") {
+            try await contactChanges.removeAccount(account)
+        }
     }
     func checkAccountDeletion() async throws -> Bool {
         guard let receipt = deletionReceipt else { return false }
@@ -57,6 +65,7 @@ extension AppState {
             let result: ReceiptStatus = try await api.send("/api/account/deletion/receipt", method: "POST",
                 body: APIClient.payload(["receipt": receipt]), authenticated: false)
             markDeletionSubmitted()
+            try await clearDeletedContactChanges()
             if result.state == "complete" { await signOut(); return true }
             return false
         } catch APIError.service(let code, _) where code == "deletion_receipt_unavailable" {

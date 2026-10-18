@@ -208,7 +208,118 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
       { method: 'PATCH' as const, url: `/api/trusted-numbers/${id}`, payload: { enabled: false } },
       { method: 'DELETE' as const, url: `/api/trusted-numbers/${id}` }
     ]) expect((await app!.inject({ ...request, headers: headers() })).json().error.code).toBe('contacts_sync_busy');
+    expect((await app!.inject({ url: '/api/trusted-numbers', headers: headers() })).json().error.code).toBe('contacts_sync_busy');
     expect((await store.personRef(PERSON).collection('trusted-numbers').get()).size).toBe(1);
+  });
+
+  describe('contact change recovery', () => {
+    const list = () => app!.inject({ url: '/api/trusted-numbers', headers: headers() });
+    const add = (label = 'Clinic', phone = '+13125550148') => app!.inject({ method: 'POST', url: '/api/trusted-numbers', headers: headers(), payload: { label, phone } });
+    const change = (id: string, payload: Record<string, unknown>, token = 'owner') => app!.inject({ method: 'PATCH', url: `/api/trusted-numbers/${id}`, headers: headers(token), payload });
+
+    it('advertises a revision for legacy lists and replays a saved change without a second write', async () => {
+      expect((await list()).json()).toMatchObject({ changeContract: 'revision-v1', revision: 0, items: [] });
+      const { id } = (await add()).json(), changeId = randomUUID();
+      const payload = { changeId, expectedRevision: 1, enabled: false };
+      const first = await change(id, payload);
+      expect(first.json()).toEqual({ saved: true, changeId, revision: 2 });
+      const before = await store.personRef(PERSON).get();
+      expect((await change(id, payload)).json()).toEqual(first.json());
+      expect((await store.personRef(PERSON).get()).updateTime).toEqual(before.updateTime);
+      expect((await list()).json()).toMatchObject({ revision: 2, items: [{ id, enabled: false }] });
+    });
+
+    it('rejects receipt reuse for a different intent or row and a delayed superseded request', async () => {
+      const { id } = (await add()).json(), second = (await add('Neighbour', '+13125550149')).json().id;
+      const payload = { changeId: randomUUID(), expectedRevision: 2, enabled: false };
+      expect((await change(id, payload)).statusCode).toBe(200);
+      for (const [row, body] of [[id, { ...payload, enabled: true }], [second, payload], [id, { ...payload, expectedRevision: 3 }]] as const) {
+        expect((await change(row, body)).json().error.code).toBe('contact_change_conflict');
+      }
+      expect((await change(id, { enabled: true, expectedRevision: 3, changeId: randomUUID() })).statusCode).toBe(200);
+      expect((await change(id, payload)).json().error.code).toBe('contacts_changed');
+      expect((await list()).json()).toMatchObject({ revision: 4, items: expect.arrayContaining([expect.objectContaining({ id, enabled: true })]) });
+    });
+
+    it('accepts at most one concurrent choice from the same revision', async () => {
+      const { id } = (await add()).json();
+      const replies = await Promise.all([false, true].map(enabled => change(id, { enabled, expectedRevision: 1, changeId: randomUUID() })));
+      expect(replies.map(reply => reply.statusCode).sort()).toEqual([200, 409]);
+      const winner = replies[0]!.statusCode === 200 ? false : true;
+      expect((await list()).json()).toMatchObject({ revision: 2, items: [{ id, enabled: winner }] });
+    });
+
+    it('makes every legacy list mutation supersede older requests', async () => {
+      const { id } = (await add()).json();
+      let revision = 1;
+      const stale = () => change(id, { enabled: false, expectedRevision: revision - 1, changeId: randomUUID() });
+      for (const mutate of [
+        () => change(id, { enabled: true }),
+        () => add('Updated clinic'),
+        () => add('Neighbour', '+13125550149'),
+        () => app!.inject({ method: 'DELETE', url: `/api/trusted-numbers/${randomUUID()}`, headers: headers() })
+      ]) {
+        expect((await mutate()).statusCode).toBe(200); revision++;
+        expect((await stale()).json().error.code).toBe('contacts_changed');
+        expect((await list()).json()).toMatchObject({ revision });
+      }
+    });
+
+    it('supersedes an older change even when a full share needs no contact-row writes', async () => {
+      const entry = { label: 'Clinic', phone: '+13125550148' }, { id } = (await add()).json();
+      const before = await store.personRef(PERSON).collection('trusted-numbers').doc(id).get();
+      const full = await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers(), payload: { contacts: [entry], expectedRevision: 1 } });
+      expect(full.statusCode).toBe(200);
+      expect((await store.personRef(PERSON).collection('trusted-numbers').doc(id).get()).updateTime).toEqual(before.updateTime);
+      expect((await change(id, { enabled: false, expectedRevision: 1, changeId: randomUUID() })).json().error.code).toBe('contacts_changed');
+      expect((await list()).json()).toMatchObject({ revision: 2, items: [{ id, enabled: true }] });
+    });
+
+    it('rejects a delayed full share after a newer individual choice', async () => {
+      const { id } = (await add()).json();
+      expect((await change(id, { enabled: false, expectedRevision: 1, changeId: randomUUID() })).statusCode).toBe(200);
+      const reply = await app!.inject({ method: 'POST', url: '/api/trusted-numbers/sync', headers: headers(),
+        payload: { expectedRevision: 1, contacts: [{ label: 'Clinic', phone: '+13125550148' }] } });
+      expect(reply.json().error.code).toBe('contacts_changed');
+      expect((await list()).json()).toMatchObject({ revision: 2, items: [{ id, enabled: false }] });
+    });
+
+    it('returns each revision and its matching contact values from one snapshot', async () => {
+      const { id } = (await add()).json();
+      const read = await Promise.all([
+        list(), change(id, { enabled: false, expectedRevision: 1, changeId: randomUUID() }), list()
+      ]);
+      expect(read[1]!.statusCode).toBe(200);
+      for (const response of [read[0]!, read[2]!]) {
+        const body = response.json();
+        expect([1, 2]).toContain(body.revision);
+        expect(body.items[0].enabled).toBe(body.revision === 1);
+      }
+    });
+
+    it('requires complete, bounded revision requests and owner authorization', async () => {
+      const { id } = (await add()).json(), valid = { enabled: false, expectedRevision: 1, changeId: randomUUID() };
+      for (const payload of [
+        { enabled: false, changeId: valid.changeId }, { enabled: false, expectedRevision: 1 },
+        { ...valid, expectedRevision: -1 }, { ...valid, expectedRevision: 1.5 },
+        { ...valid, expectedRevision: Number.MAX_SAFE_INTEGER }, { ...valid, changeId: 'invalid' },
+        { ...valid, phone: '+13125550148' }
+      ]) expect((await change(id, payload)).statusCode).toBe(400);
+      expect((await change(id, valid, 'stranger')).statusCode).toBe(403);
+      await db.collection('alertContacts').doc('caretaker').set({ participantId: PERSON, ownerUid: 'owner', recipientUid: 'caregiver', status: 'accepted' });
+      expect((await change(id, valid, 'caregiver')).statusCode).toBe(403);
+      expect((await list()).json()).toMatchObject({ revision: 1, items: [{ enabled: true }] });
+    });
+
+    it('fails closed on corrupt or exhausted revision data instead of accepting a stale write', async () => {
+      const { id } = (await add()).json();
+      for (const contactsRevision of [-1, 1.5, '1', Number.MAX_SAFE_INTEGER]) {
+        await store.personRef(PERSON).update({ contactsRevision });
+        expect((await list()).json().error.code).toBe('contact_revision_unavailable');
+        expect((await change(id, { enabled: false })).json().error.code).toBe('contact_revision_unavailable');
+      }
+      expect((await store.personRef(PERSON).collection('trusted-numbers').doc(id).get()).data()?.enabled).not.toBe(false);
+    });
   });
 
   it('restricts history and checks to an owner or accepted caregiver', async () => {

@@ -405,6 +405,13 @@
 			"path" = "Shield/Features/Settings/CallProtectionView.swift";
 			"sourceTree" = "<group>";
 		};
+		"BE99D2AF8776B1F7B15B6989" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ContactChangeStore.swift";
+			"path" = "Shield/Features/Settings/ContactChangeStore.swift";
+			"sourceTree" = "<group>";
+		};
 		"D1577BE04A3E1CB18293FA4B" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1168,6 +1175,20 @@
 			"path" = "Shield/Preview/CaretakerRefreshFixture.swift";
 			"sourceTree" = "<group>";
 		};
+		"A04F8035A69E3B26FF6F8B2E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ContactRecoveryCheckView.swift";
+			"path" = "Shield/Preview/ContactRecoveryCheckView.swift";
+			"sourceTree" = "<group>";
+		};
+		"AC50079F665E950CAC6FC238" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ContactRecoveryFixture.swift";
+			"path" = "Shield/Preview/ContactRecoveryFixture.swift";
+			"sourceTree" = "<group>";
+		};
 		"293C0D67569201BE6ECD94A1" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1588,6 +1609,13 @@
 			"path" = "ShieldUITests/ContactNameValidationUITests.swift";
 			"sourceTree" = "<group>";
 		};
+		"D50739B046708DC569FBB36D" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ContactRecoveryUITests.swift";
+			"path" = "ShieldUITests/ContactRecoveryUITests.swift";
+			"sourceTree" = "<group>";
+		};
 		"8B0B6BF3B4417093ABE37537" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1969,6 +1997,7 @@
 				"BD694E540B991D702463E65B",
 				"4B8991E842C636AE0612D2D5",
 				"F6FD79817C774E79FB5A3176",
+				"BE99D2AF8776B1F7B15B6989",
 				"D1577BE04A3E1CB18293FA4B",
 				"E6FE24A9DF26DC5462906C05",
 				"58750779E8C4555C376C5D44",
@@ -2111,6 +2140,8 @@
 				"8F360BD9CD1942BBB833A367",
 				"7E480FD3D69A6EF76D941709",
 				"B2D5C7CB6F5EF1F773D70303",
+				"A04F8035A69E3B26FF6F8B2E",
+				"AC50079F665E950CAC6FC238",
 				"293C0D67569201BE6ECD94A1",
 				"8B775AA3486A4A1995679E1A",
 				"2E1D863D9CAAC308439CD07C",
@@ -2230,6 +2261,7 @@
 				"830ACFA49E442D7F8A6D4A3B",
 				"DDD9C8E6F6F9165B571A2EE6",
 				"611456F0E666EC49BC315E7E",
+				"D50739B046708DC569FBB36D",
 				"8B0B6BF3B4417093ABE37537",
 				"CA321A6763E73B5B7F179180",
 				"4E7692A5CFC496A5D30B6D44",
@@ -2595,6 +2627,10 @@
 		"06F0A9F04E4019BE87299274" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "F6FD79817C774E79FB5A3176";
+		};
+		"323A9B09D7173235670CBA7E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "BE99D2AF8776B1F7B15B6989";
 		};
 		"24366F353254DA726CA38BA3" = {
 			"isa" = "PBXBuildFile";
@@ -3032,6 +3068,14 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "B2D5C7CB6F5EF1F773D70303";
 		};
+		"7FDC2D8A2D8180B84D2A0B23" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A04F8035A69E3B26FF6F8B2E";
+		};
+		"9339C140445631E4B40F24F3" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "AC50079F665E950CAC6FC238";
+		};
 		"10A961AFFDB824898642489D" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "293C0D67569201BE6ECD94A1";
@@ -3145,6 +3189,7 @@
 				"DF10881A4485978E8E68C27B",
 				"C2AADBAF126AD15A8BB00B5C",
 				"06F0A9F04E4019BE87299274",
+				"323A9B09D7173235670CBA7E",
 				"24366F353254DA726CA38BA3",
 				"F3C103821A87EDC20BAA18AC",
 				"ADB9CC0ADC84E1ED0719C395",
@@ -3254,6 +3299,8 @@
 				"5A5871951092B13AD55677A8",
 				"F964B86C92981F896EF6664A",
 				"66CB4CD8102EBE4F150A644A",
+				"7FDC2D8A2D8180B84D2A0B23",
+				"9339C140445631E4B40F24F3",
 				"10A961AFFDB824898642489D",
 				"6DB4D6AE8DC79A76EF387158",
 				"062624282A424AAD3E33F749",
@@ -3749,6 +3796,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "611456F0E666EC49BC315E7E";
 		};
+		"CCEB58E51949151A10FE3DF5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D50739B046708DC569FBB36D";
+		};
 		"402C2022F960E07033C486EC" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "8B0B6BF3B4417093ABE37537";
@@ -3858,6 +3909,7 @@
 				"16244FE9A983C56E145184A9",
 				"6573C5BE7F7FABB1E16CC140",
 				"32BE76D7F104E0B450F93F67",
+				"CCEB58E51949151A10FE3DF5",
 				"402C2022F960E07033C486EC",
 				"73623A7E0C7D1E943500BE7F",
 				"213CA1CDEBA656AA0DC4116A",

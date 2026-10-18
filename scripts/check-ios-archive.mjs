@@ -64,6 +64,7 @@ for (const marker of ['--uitesting', 'appl_synthetic', 'synthetic-server-credent
   'Contact sharing passed', 'Contact restore passed', 'Blocking storage passed', 'SyntheticCallDirectoryCheck',
   'SyntheticBlockedPagination', 'blocked-pagination-fixture',
   'CaretakerRefreshFixture', 'CaretakerRefreshCheckView', 'Start held refresh', 'Release older response',
+  'ContactRecoveryFixture', 'ContactRecoveryCheckView', 'contact-recovery-fixture', 'Restore test connection',
   'OnboardingRecoveryFixture', 'OnboardingRecoveryCheckView', 'Inspect saved choice', 'onboarding-fixture-complete']) {
   assert.ok(!binary.includes(Buffer.from(marker)), `Release binary contains a test fixture: ${marker}`);
 }

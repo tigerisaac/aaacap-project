@@ -16,6 +16,7 @@ import { trustedContactsAvailable } from './trusted-contacts.js';
 import { requestAccountDeletion, deletionReceipt } from './deletion-jobs.js';
 import commercial from './commercial-policy.json' with { type: 'json' };
 import { ServiceAccess, accessRef } from './service-access.js';
+import { CONTACT_CHANGE_CONTRACT, advanceContactsRevision, contactsRevision } from './contact-revision.js';
 
 // Swift's UUID.uuidString uses uppercase; Firestore document IDs are case-sensitive.
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -182,25 +183,59 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
   });
   app.patch('/api/trusted-numbers/:id', async request => {
     const ctx = await access(request, true), id = getId(request);
-    const { enabled } = z.object({ enabled: z.boolean() }).strict().parse(request.body);
-    await store.db.runTransaction(async tx => {
+    const change = z.union([
+      z.object({ enabled: z.boolean() }).strict(),
+      z.object({ enabled: z.boolean(), changeId: uuid,
+        expectedRevision: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER - 1) }).strict(),
+    ]).parse(request.body);
+    const { enabled } = change;
+    return store.db.runTransaction(async tx => {
+      const personRef = store.personRef(ctx.participant.id);
       const ref = store.personRef(ctx.participant.id).collection('trusted-numbers').doc(id);
-      const [person, row] = await tx.getAll(store.personRef(ctx.participant.id), ref);
+      const [person, row] = await tx.getAll(personRef, ref);
+      const data = person!.data();
+      if (!data || data.status === 'offboarded' || data.ownerUid !== ctx.uid) throw new HttpError(403, 'owner_required');
       if (!row!.exists) throw new HttpError(404, 'contact_not_found');
-      if (person!.data()?.contactsSyncUntil > store.now()) throw new HttpError(409, 'contacts_sync_busy');
+      if (data.contactsSyncUntil > store.now()) throw new HttpError(409, 'contacts_sync_busy');
+      const revision = contactsRevision(data);
+      if ('changeId' in change) {
+        const prior = data.contactsChange;
+        if (prior?.id === change.changeId) {
+          if (prior.rowId !== id || prior.enabled !== enabled || prior.fromRevision !== change.expectedRevision) {
+            throw new HttpError(409, 'contact_change_conflict');
+          }
+          if (revision === change.expectedRevision + 1 && (row!.data()!.enabled !== false) === enabled) {
+            return { saved: true, changeId: change.changeId, revision };
+          }
+        }
+        if (revision !== change.expectedRevision) throw new HttpError(409, 'contacts_changed');
+      }
       tx.update(ref, { enabled });
+      tx.update(personRef, { ...advanceContactsRevision(data),
+        ...('changeId' in change ? { contactsChange: { id: change.changeId, rowId: id, enabled, fromRevision: revision } } : {}) });
+      return { saved: true, revision: revision + 1, ...('changeId' in change ? { changeId: change.changeId } : {}) };
     });
-    return { saved: true };
   });
 
   for (const collection of ['trusted-numbers', 'destinations']) {
     const rows = (id: string) => store.personRef(id).collection(collection);
     app.get(`/api/${collection}`, async request => {
-      const ctx = await access(request, true); const docs = await rows(ctx.participant.id).orderBy('createdAt').limit(collection === 'trusted-numbers' ? 5000 : 100).get();
-      return { ...(collection === 'trusted-numbers' ? { sharedAt: at(ctx.participant.contactsSyncedAt) } : {}),
-        items: docs.docs.map(doc => ({ id: doc.id, createdAt: at(doc.data().createdAt),
+      const ctx = await access(request, true);
+      const query = rows(ctx.participant.id).orderBy('createdAt').limit(collection === 'trusted-numbers' ? 5000 : 100);
+      const items = (docs: FirebaseFirestore.QuerySnapshot) => docs.docs.map(doc => ({ id: doc.id, createdAt: at(doc.data().createdAt),
         label: store.vault.open(doc.data().labelEnc, `contact:${doc.id}:label`), phone: store.vault.open(doc.data().phoneEnc, `contact:${doc.id}:phone`),
-        provenance: collection === 'destinations' ? doc.data().provenance : null, enabled: doc.data().enabled !== false })) };
+        provenance: collection === 'destinations' ? doc.data().provenance : null, enabled: doc.data().enabled !== false }));
+      if (collection !== 'trusted-numbers') return { items: items(await query.get()) };
+      // The revision and list must describe the same read snapshot. A separate
+      // participant read could otherwise let a stale write use a newer revision.
+      return store.db.runTransaction(async tx => {
+        const person = (await tx.get(store.personRef(ctx.participant.id))).data();
+        if (!person || person.status === 'offboarded' || person.ownerUid !== ctx.uid) throw new HttpError(403, 'owner_required');
+        if (person.contactsSyncUntil > store.now()) throw new HttpError(409, 'contacts_sync_busy');
+        const docs = await tx.get(query);
+        return { items: items(docs), sharedAt: at(person.contactsSyncedAt),
+          changeContract: CONTACT_CHANGE_CONTRACT, revision: contactsRevision(person) };
+      });
     });
     app.post(`/api/${collection}`, async request => {
       const ctx = await access(request, true);
@@ -218,6 +253,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
           // Single-contact saves are retryable and restore an existing disabled row.
           // Never upload or replace the rest of the owner's contacts for this action.
           tx.update(prior.ref, { labelEnc: store.vault.seal(data.label, `contact:${prior.id}:label`), enabled: true });
+          tx.update(store.personRef(ctx.participant.id), advanceContactsRevision(person.data()!));
           return prior.id;
         }
         if (prior) throw new HttpError(409, 'number_already_saved');
@@ -225,6 +261,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
         tx.create(rows(ctx.participant.id).doc(id), { labelEnc: store.vault.seal(data.label, `contact:${id}:label`),
           phoneEnc: store.vault.seal(phone, `contact:${id}:phone`), phoneHash: hash, createdAt: store.now(),
           ...('provenance' in data ? { provenance: data.provenance } : {}) });
+        if (collection === 'trusted-numbers') tx.update(store.personRef(ctx.participant.id), advanceContactsRevision(person.data()!));
         return id;
       });
       return { id: savedId };
@@ -236,6 +273,7 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
         if (!person.exists || person.data()?.status === 'offboarded' || person.data()?.ownerUid !== ctx.uid) throw new HttpError(403, 'owner_required');
         if (collection === 'trusted-numbers' && person.data()?.contactsSyncUntil > store.now()) throw new HttpError(409, 'contacts_sync_busy');
         tx.delete(rows(ctx.participant.id).doc(getId(request)));
+        if (collection === 'trusted-numbers') tx.update(store.personRef(ctx.participant.id), advanceContactsRevision(person.data()!));
       });
       return { deleted: true };
     });

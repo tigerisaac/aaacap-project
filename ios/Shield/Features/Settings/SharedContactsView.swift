@@ -11,6 +11,7 @@ struct SharedContactsView: View {
     @State private var loadingVisible = false
     @State private var showingAdd = false
     @State private var pendingRemoval: SavedNumber?
+    @State private var confirmingKeepRemoved = false
     private var usesRemovalFixture: Bool {
         #if DEBUG && targetEnvironment(simulator)
         PreviewScenario.requested("contacts", preview: app.isPreview) && ProcessInfo.processInfo.arguments.contains("--uitesting-contact-removal")
@@ -24,11 +25,37 @@ struct SharedContactsView: View {
 
     var body: some View {
         List {
+            if let pending = model.pending {
+                ShieldGroup {
+                    Text("Finish contact change").font(.headline).accessibilityAddTraits(.isHeader)
+                    Text("You asked to \(pending.enabled ? "restore" : "remove") \(pending.item.label). Shield hasn’t confirmed that iPhone Contacts and your shared list agree.")
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let error = model.recoveryError {
+                        Text(error).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                    }
+                    Button("Check saved change", systemImage: "arrow.clockwise") { Task { await model.load(app) } }
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+                        .accessibilityIdentifier("check-contact-change")
+                    if model.missingPendingContact && pending.enabled {
+                        Text("This contact is no longer on your shared list. Keep it removed to finish, then add it again if you choose.")
+                            .font(.subheadline).fixedSize(horizontal: false, vertical: true)
+                        Button("Keep number removed", role: .destructive) { confirmingKeepRemoved = true }
+                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+                    } else {
+                        Button(pending.enabled ? "Continue restoring contact" : "Continue removing contact") {
+                            Task { await model.retry(app) }
+                        }
+                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working)
+                        .accessibilityIdentifier("continue-contact-change")
+                    }
+                }
+                .buttonStyle(.borderless)
+            }
             ShieldGroup {
                 Button { Task { await model.share(app) } } label: {
-                    ActionRow(title: model.working ? "Sharing contacts…" : model.hasShared(app.selectedPersonID) ? "Update shared contacts" : "Share contacts once", symbol: "person.2.badge.plus")
+                    ActionRow(title: model.working ? "Updating contacts…" : model.hasShared(app.selectedPersonID) ? "Update shared contacts" : "Share contacts once", symbol: "person.2.badge.plus")
                 }
-                .disabled(model.working || app.isDemo)
+                .disabled(!model.canEdit || app.isDemo)
                 .accessibilityIdentifier("share-all-contacts")
                 if let message = model.message { Text(message).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
                 if let sharedAt = model.sharedAt {
@@ -71,7 +98,7 @@ struct SharedContactsView: View {
                                 .contentShape(.rect)
                         }
                         .shieldSecondaryButton().tint(ShieldTheme.held)
-                        .contentShape(.rect).disabled(model.working || (app.isDemo && !usesRemovalFixture))
+                        .contentShape(.rect).disabled(!model.canEdit || (app.isDemo && !usesRemovalFixture))
                         .accessibilityLabel("Remove \(item.label) from Contacts")
                         .accessibilityInputLabels(["Remove from iPhone", "Remove \(item.label)"])
                     }
@@ -93,7 +120,7 @@ struct SharedContactsView: View {
                                     Label("Add back to Contacts", systemImage: "arrow.uturn.backward")
                                         .frame(minHeight: ShieldTheme.Layout.minimumTarget).contentShape(.rect)
                                 }
-                                .buttonStyle(.borderless).disabled(model.working || app.isDemo)
+                                .buttonStyle(.borderless).disabled(!model.canEdit || app.isDemo)
                                 .accessibilityLabel("Add \(item.label) back to Contacts")
                             }
                         }
@@ -112,16 +139,23 @@ struct SharedContactsView: View {
             }
             Button("Keep contact", role: .cancel) { pendingRemoval = nil }
         } message: { Text("This can also remove the contact from your other devices through iCloud. A restore copy stays on this phone.") }
+        .alert("Keep this number removed?", isPresented: $confirmingKeepRemoved) {
+            Button("Keep number removed", role: .destructive) { Task { await model.retry(app, keepRemoved: true) } }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Shield will remove the number from iPhone Contacts to match your shared list. This can also affect your other devices through iCloud. A restore copy stays on this phone.")
+        }
         .navigationTitle("Your contacts")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $search, prompt: "Name or number")
         .toolbar { ToolbarItem(placement: .primaryAction) {
             Button("Add", systemImage: "plus") { showingAdd = true }
                 .labelStyle(.titleAndIcon).accessibilityLabel("Add contact")
-                .disabled(model.working || app.isDemo)
+                .disabled(!model.canEdit || app.isDemo)
         } }
         .sheet(isPresented: $showingAdd, onDismiss: { Task { await model.load(app) } }) { AddNumberView(kind: .trusted) }
-        .task {
+        .task(id: "\(app.sessionGeneration)-\(app.selectedPersonID?.uuidString ?? "none")-\(app.signedIn)-\(app.isOwner)") {
+            pendingRemoval = nil; confirmingKeepRemoved = false; showingAdd = false
             await model.load(app)
             #if DEBUG
             if let demoAction, let phone = ProcessInfo.processInfo.environment["SHIELD_DEMO_CONTACT"] {

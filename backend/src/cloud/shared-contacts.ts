@@ -3,8 +3,9 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { z } from 'zod';
 import type { CloudStore } from './store.js';
 import { HttpError } from '../auth.js';
+import { advanceContactsRevision, contactsRevision } from './contact-revision.js';
 
-export const sharedContactsSchema = z.object({ contacts: z.array(z.object({
+export const sharedContactsSchema = z.object({ expectedRevision: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER - 1).optional(), contacts: z.array(z.object({
   label: z.string().trim().min(1).max(60), phone: z.string().min(3).max(100)
 }).strict()).max(5000) }).strict();
 export function normalizeSharedPhone(raw: string) {
@@ -18,7 +19,12 @@ export async function syncSharedContacts(store: CloudStore, participantId: strin
   await store.db.runTransaction(async tx => {
     const p = (await tx.get(person)).data();
     if (p?.contactsSyncUntil > now) throw new HttpError(409, 'contacts_sync_busy');
-    tx.update(person, { contactsSyncToken: token, contactsSyncUntil: now + 60_000 });
+    if (input.expectedRevision !== undefined && input.expectedRevision !== contactsRevision(p ?? {})) {
+      throw new HttpError(409, 'contacts_changed');
+    }
+    // Starting a new explicit full share supersedes earlier per-contact requests,
+    // including a delayed request for a row whose value needs no batch write.
+    tx.update(person, { ...advanceContactsRevision(p ?? {}), contactsSyncToken: token, contactsSyncUntil: now + 60_000 });
   });
   let synced = false;
   try {
