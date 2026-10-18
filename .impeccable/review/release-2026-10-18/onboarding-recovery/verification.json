@@ -354,5 +354,21 @@
     "The earlier unfiltered restored-theme accessibility observations remain open.",
     "Backend source is unchanged. Independent backend CI for the previous e0aa3d3 checkpoint passed 382 unit, 284 Firestore and eight account checks; it does not compile Swift.",
     "No physical installation, live deployment, Apple upload or distribution signing was performed. Purchases and caretaker delivery remain disabled."
-  ]
+  ],
+  "committedCheckpoint": {
+    "commit": "0bd436d7e01424b3082bb316015bf809b6ed2d4e",
+    "runId": 39147783943,
+    "attempt": 1,
+    "conclusion": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39147783943",
+    "logSha256": "47c8b13c964e3be43293f2c61c522e40db58bdb66bffa9e661d332ed8578f06f",
+    "committedIOSInputsMatch": 282,
+    "archiveSource": "final-source.json",
+    "passedTests": {
+      "unit": 382,
+      "firestore": 284,
+      "accounts": 8
+    },
+    "boundary": "CI does not compile Swift; the separately recorded Xcode runs and archive match all committed iOS inputs."
+  }
 }

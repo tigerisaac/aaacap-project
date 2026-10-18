@@ -121,6 +121,8 @@ Final iOS 26.5 compatibility verification passed **22/22**: all nine onboarding 
 
 The synthetic server and controls compile only for Debug simulators. Its **Choice confirmed** screen is a completion marker after actual AppState onboarding flags clear, not a demonstration of the production Home destination. VoiceOver checks speech/focus using direct actions while speech is temporarily disabled; physical gestures and immediate announcement timing remain unverified. Maximum-text content can require scrolling. The unfiltered accessibility findings, real delivery, physical installation, distribution signing and Apple acceptance remain open. Backend source is unchanged; no real account setting, call, message, deployment or Apple configuration was changed.
 
+The correction was pushed as `0bd436d`. Independent [CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39147783943) passed on attempt one with **382 unit, 284 Firestore and eight account checks**. All 282 committed iOS inputs match the final simulator/archive inventory. CI does not compile Swift.
+
 ## Independent backend CI failure retained
 
 **October 18 follow-up:** the investigation below is a historical checkpoint. A later SDK-only reproduction isolated the retry mechanism, and a deterministic regression verifies the source correction on both root and deployed dependency versions. Required checks and independent CI passed. The [retry-only rollout](FIRESTORE-RETRY-ROLLOUT.md) still requires separate owner approval; production incident attribution remains unproved. The original failed CI runs and diagnostic limits below are retained.
