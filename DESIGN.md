@@ -584,3 +584,9 @@ Feedback was that the checks-on card looked generated: an icon in a coloured cir
 - **Other states.** Setup, off, paused, disconnecting and unknown use the shared `ShieldRowSymbol` tile (navy for setup, quiet otherwise; "pause.circle" becomes "pause" inside the tile) beside the headline title, then their one button. The circle badge is gone everywhere.
 
 This supersedes the October 17 decorative badge and teal checks-on surface.
+
+## October 18 — Call detail copy
+
+Copying a caller's number is back. It was removed on October 17 with the selectable line's 18-point target. A long press on the whole Call detail header (title, outcome, explanation, number and date) opens one "Copy number" item. iOS lifts the header as its preview. VoiceOver reaches it with double-tap and hold on any header line. That is unverified with VoiceOver; an explicit action on the number line was dropped because the audit then reported that line as a too-small target. Withheld numbers and numbers under seven digits offer nothing. The line stays non-selectable, and the call-back guidance below it is unchanged.
+
+Two audit reports are still kept as evidence rather than changed. The tab-bar edge report also appeared with the hard scroll edge Shield used before October 13, and an app-free list reproduces it. Setup's Close measures 14.0:1. The owner declined the only alternative that would change its appearance (a system close glyph).

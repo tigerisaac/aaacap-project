@@ -27,6 +27,8 @@ struct CallDetailView: View {
     @State private var playbackRequest = UUID()
     private var call: CallRecord { updatedCall ?? initialCall }
     private var callerNumber: String { PhoneDisplay.format(call.callerNumber) }
+    /// Withheld and short service numbers have nothing worth copying.
+    private var copyableNumber: String? { call.callerNumber.filter(\.isNumber).count >= 7 ? callerNumber : nil }
     private var messageRemoved: Bool { call.voicemail?.status == "removed" }
     private var usesAudioFixture: Bool { PreviewScenario.requested("audio", preview: model.isPreview) }
 
@@ -57,10 +59,17 @@ struct CallDetailView: View {
                             Text(call.occurredAt, format: .dateTime.month(.abbreviated).day().hour().minute())
                         ])
                         .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        // Not selectable: on iOS 26 a selectable line is an 18-point touch target,
-                        // and Shield asks people not to reuse a caller's number anyway.
+                        // Not selectable: on iOS 26 a selectable line is an 18-point touch target.
+                        // Copy lives on the whole header's long-press menu instead. A VoiceOver action
+                        // here would make this line an interactive 18-point target too.
                     }
                 }.padding(.top, 2).padding(.bottom, 4).fixedSize(horizontal: false, vertical: true)
+                .contentShape(.rect)
+                .contextMenu {
+                    if let copyableNumber {
+                        Button("Copy number", systemImage: "doc.on.doc") { UIPasteboard.general.string = copyableNumber }
+                    }
+                }
             }
             if messageRemoved {
                 ShieldGroup {
