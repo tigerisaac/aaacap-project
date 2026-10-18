@@ -1,0 +1,284 @@
+{
+  "at": "2026-10-18T20:35:28.622866+00:00",
+  "releaseReady": false,
+  "deployed": false,
+  "physicalInstallation": false,
+  "source": {
+    "productionCommit": "df0bf4ecf24c2d049931407d26ac6de4e14e9aa3",
+    "nativeTestOverlay": {
+      "path": "ios/ShieldUITests/ContactRecoveryUITests.swift",
+      "sha256": "491fcfea731dfd276e9b8636975eb79d3b20b2c3a2ed504c56735e1c98d8927b",
+      "purpose": "Disable VoiceOver for two fixture-only controls outside production navigation; preserve actual production-screen focus/readback assertions."
+    },
+    "archiveInputs": "archive-inputs.json",
+    "archiveInputCount": 256,
+    "archiveInputManifestSha256": "495baf664fe10d2078f9f376cf1a34226f27b763ef6187a76dd89ba5fa53bc4a",
+    "allCurrentArchiveInputsMatch": true,
+    "fixtureBoundary": "Debug simulator only, reserved synthetic contact, actual Contacts framework and production model/store, synthetic API without network calls."
+  },
+  "baseline": {
+    "unchangedProductionModel": "artifacts/private/contact-recovery-oct18/SharedContactsModel-before.swift",
+    "modelSha256": "59f3751450a74c78142a4ad15329972c35725c85033b7392670fd61512713e44",
+    "harnessSha256": "e6f3af069e537e847df286f263a81ae601e744ff12460537ffaee65203f3de0a",
+    "passed": 1,
+    "failed": 2,
+    "failures": [
+      "Lost server response rolled back only native Contacts after server save.",
+      "Older held refresh replaced a confirmed newer visible state."
+    ],
+    "log": "baseline-results.log"
+  },
+  "checks": [
+    {
+      "name": "typecheck, unit and build",
+      "passed": 382,
+      "failed": 0,
+      "normalEmulatorSkips": 296,
+      "log": "check-permitted.log"
+    },
+    {
+      "name": "full isolated Firestore",
+      "passed": 293,
+      "failed": 0,
+      "newCases": 9,
+      "log": "firestore.log"
+    },
+    {
+      "name": "Auth and Firestore account lifecycle",
+      "passed": 12,
+      "failed": 0,
+      "log": "accounts.log"
+    },
+    {
+      "name": "exact serving-based API candidate",
+      "passed": 13,
+      "failed": 0,
+      "unselectedTests": 14,
+      "productionAuditFindings": 0,
+      "log": "candidate-tests.log"
+    },
+    {
+      "name": "actual Swift model, DTO, protected store and account-deletion extension",
+      "passed": 23,
+      "failed": 0,
+      "log": "model-tests-complete.log"
+    },
+    {
+      "name": "final native iOS 27.0",
+      "passed": 7,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "summary": "ios27-summary.json",
+      "log": "native-complete.log"
+    },
+    {
+      "name": "final native iOS 26.5",
+      "passed": 6,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "summary": "ios26-summary.json",
+      "log": "ios26.log",
+      "exclusion": "iOS 27 VoiceOver service method excluded explicitly; no claim of iOS 26 VoiceOver execution."
+    }
+  ],
+  "ci": {
+    "receipt": "ci-run.json",
+    "attempt": 1,
+    "headSha": "df0bf4ecf24c2d049931407d26ac6de4e14e9aa3",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39162762938",
+    "conclusion": "success",
+    "counts": {
+      "unit": 382,
+      "firestore": 293,
+      "accounts": 12
+    },
+    "productionAuditFindings": 0,
+    "log": "ci.log",
+    "boundary": "The follow-up documentation, captures and native test-helper correction do not change backend or archive inputs; CI covers the implementation commit."
+  },
+  "nativeCoverage": [
+    "Saved removal with lost reply settles without a second mutation.",
+    "Unsent removal needs explicit retry; status checks do not post.",
+    "Actual app process relaunch reads persisted state without restoring the number or posting.",
+    "Largest Dynamic Type in dark mode exposes the complete recovery-check control.",
+    "Two existing native Contacts checks cover malformed saved entries and removing/restoring one number while preserving other fields and avoiding duplicates.",
+    "Actual iOS 27 Simulator VoiceOver reaches production recovery heading, check button and final empty state."
+  ],
+  "voiceOver": {
+    "speechActions": "ios27-voiceover-speech-actions.json",
+    "gesturesVerified": false,
+    "mechanism": "Actual Simulator VoiceOver focus/readback; test helper temporarily disables VoiceOver for direct UI actions. Fixture network/status controls are also operated with VoiceOver disabled.",
+    "limitation": "Long speech readback remains truncated at 64 characters; complete spoken guidance and physical gestures are not established."
+  },
+  "visualReview": {
+    "captures": "captures.json",
+    "finalImagesInspected": 14,
+    "notes": [
+      "Recovery labels and complete Check saved change control are readable in retained standard and largest-text captures.",
+      "At maximum text, confirmation spans several viewports; captures do not imply the whole paragraph fits at once.",
+      "The native iOS 26.5 search prompt is ellipsized at maximum text. Full-screen accessibility and earlier unresolved audit observations remain open."
+    ]
+  },
+  "archive": {
+    "receipt": "archive-final-check.json",
+    "appBinarySha256": "8c4cb0c1eebe553a9e4a56e167bbf68095526b6ceaf1700bcf85dd624ae2ad6f",
+    "unsigned": true,
+    "fixtureMarkersAbsent": true,
+    "bundles": 2,
+    "privacyManifests": 3,
+    "log": "archive-final.log"
+  },
+  "apiCandidate": {
+    "manifest": "candidate-manifest.json",
+    "baselineRevision": "shieldapi-00034-yaw",
+    "changedFiles": 3,
+    "preservedFiles": 87,
+    "sourceZipSha256": "3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7",
+    "all90ArchiveAndDirectoryFileHashesMatch": true,
+    "separateFirestoreRetryIncluded": false,
+    "approval": "Not requested or granted at this checkpoint.",
+    "preflight": "live-api-summary.json",
+    "preflightBoundary": "Read-only 15:14 Central snapshot, unchanged source/service settings/IAM and 100% traffic. Must refresh before any deployment."
+  },
+  "retainedFailures": [
+    {
+      "run": "baseline-build.log",
+      "result": "Compiler-cache sandbox startup failure; zero tests. Permitted compilation then reproduced both original defects."
+    },
+    {
+      "run": "check.log",
+      "result": "368 passed, six local-listener failures, 304 skips and one unhandled EPERM. Permitted full run passes; initial attempt is not a pass."
+    },
+    {
+      "run": "model-tests-compile-failure.log",
+      "result": "Test harness used await on the right side of &&; zero tests. Harness corrected."
+    },
+    {
+      "run": "model-tests-revoked-permission-failure.log",
+      "result": "18 passed, one failed. First correction replaced the receipt before denied native authorization. Production now authorizes before replacing it; final 23 pass."
+    },
+    {
+      "run": "native-tests.log",
+      "result": "Two passed, four failed methods (eight assertions). Fixture retained demo mode, correctly disabling editing; corrected fixture uses the production recovery path."
+    },
+    {
+      "run": "native-tests-corrected.log",
+      "result": "Five passed, one failed. Test queried lazily offscreen Share contacts once; scrolling preserved the disabled-state assertion."
+    },
+    {
+      "run": "native-tests-final.log",
+      "result": "Six passed. Screenshot review found raw network-error wording and a partly covered recovery-button capture. Final production wording is friendly; final test checks the full button frame."
+    },
+    {
+      "run": "voiceover.log",
+      "result": "Zero passed, one failed. Production recovery controls were reached; test-only footer control was outside the VoiceOver navigation container. Final helper operates fixture controls separately while retaining production VoiceOver checks."
+    }
+  ],
+  "warningsRetained": [
+    "Missing inherited candidate source maps and SDK metadata-availability warnings.",
+    "Dependency deprecation notices; zero known production vulnerabilities does not certify all runtime behavior.",
+    "Xcode SDK build-number parsing, debugger lookup and duplicate system accessibility-class warnings; final xcresult runtimeWarnings lists are empty."
+  ],
+  "privateLogs": {
+    "baseline-build.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/baseline-build.log",
+      "sha256": "0a71e2fbbb9c5f251b98bfe492bb24dd3ec2ed3b253b573bb5711f4be603b093"
+    },
+    "baseline-build-permitted.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/baseline-build-permitted.log",
+      "sha256": "c463863c5eb0d435dee088dff0eece1e77e8e902ff8bbd1eb0a95dc95a028056"
+    },
+    "baseline-results.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/baseline-results.log",
+      "sha256": "003090d12278437365190fa2f9677c53ef5f2d1e0727a69497f376dafef9af02"
+    },
+    "check.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/check.log",
+      "sha256": "dc2989830a29ea69a8d5d6ed2c80db46d95b3eaf40e6d6e5db27552fa1908993"
+    },
+    "check-permitted.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/check-permitted.log",
+      "sha256": "1d9c31215ee4d3cfc93e5a58494c1915ec12dbea7dc762e691a6431a1722cc95"
+    },
+    "firestore.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/firestore.log",
+      "sha256": "95cb6733343efb3f40d2032d168aa309a2210e92b18f6a0f07cb3f17e7043dd1"
+    },
+    "accounts.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/accounts.log",
+      "sha256": "43ff79d7072acb635980627e3328390aa9ea0e0a589b13bff90ae2e817032dd5"
+    },
+    "candidate-install.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/candidate-install.log",
+      "sha256": "969dcc1815c093045e288290988ffaf265ce87402d2e00b63e667c4eaa13fde1"
+    },
+    "candidate-tests.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/candidate-tests.log",
+      "sha256": "8ff82925a45b767e72342736ea431bdc61c7b8abf985d2643817e022fc057165"
+    },
+    "model-tests-compile-failure.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/model-tests-compile-failure.log",
+      "sha256": "be9a048408c1e86095de9e3235a0d06bbe75e492d323f1d4f58b074b62ecefd5"
+    },
+    "model-tests-revoked-permission-failure.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/model-tests-revoked-permission-failure.log",
+      "sha256": "7f97af9f704a2f4edb87eaf98c184e3253619749c19e42eeccde0df969e36eca"
+    },
+    "model-tests-19-passed.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/model-tests-19-passed.log",
+      "sha256": "1d178775b2555effbda3fddd16558783bbf86f272e09426f054d641006e0ae08"
+    },
+    "model-tests-final.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/model-tests-final.log",
+      "sha256": "6e0f0635581c2b809bd92e9500aba30a64c9dff8c63fe9577de9a8736dc39853"
+    },
+    "model-tests-complete.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/model-tests-complete.log",
+      "sha256": "6e0f0635581c2b809bd92e9500aba30a64c9dff8c63fe9577de9a8736dc39853"
+    },
+    "native-tests.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/native-tests.log",
+      "sha256": "d50ac1c0aa4448f5615c41c5786acc304fd5631ef64d696f0edd14c45efb8364"
+    },
+    "native-tests-corrected.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/native-tests-corrected.log",
+      "sha256": "dd975834b58f2872a143621b940a60fe951b8bd09c968adde38ed2b1738589c5"
+    },
+    "native-tests-final.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/native-tests-final.log",
+      "sha256": "117f904a9781cf287fe9d03863cf21a447baa026d5751d22c5da1f6fb530d18c"
+    },
+    "voiceover.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/voiceover.log",
+      "sha256": "15a83ad420c49ec7bb9b5d9cac0536071beeaf9691d2aaadc8a8a90e0950c750"
+    },
+    "native-complete.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/native-complete.log",
+      "sha256": "50ac95a3c128b737f4aae43ec04c0c26c55cc4763aeade7a4a94787205a43106"
+    },
+    "ios26.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/ios26.log",
+      "sha256": "5e760fab7752c1514b5a6508e9cf5b8ddd5d560df075156f9c8dc8f57cfe8efb"
+    },
+    "archive-final.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/archive-final.log",
+      "sha256": "eb8a2118ba82e86d6ac9a3fed803dbadf8796820153db43d8781e2f4a73eed88"
+    },
+    "ci.log": {
+      "privatePath": "artifacts/private/contact-recovery-oct18/ci.log",
+      "sha256": "7eccd944ee480e61230b1ade72de4e3eba99953e54b9701d26558a0614581747"
+    }
+  },
+  "remainingAcceptance": [
+    "Owner-approved deployment and serving-source verification of the three-file API package before distributing this client.",
+    "Physical permission denial/limited Contacts, read-only/duplicate sources, iCloud propagation, locking/reinstall and actual removal/restoration call behavior.",
+    "Other-device/account erasure, real VoiceOver gestures and complete spoken guidance, full accessibility and senior rehearsal.",
+    "All separate Apple, billing, provider, carrier, real-call, operational and public/pilot release gates remain open.",
+    "The separately pending Firestore retry API package must be rebased and reverified if either proposal deploys first."
+  ],
+  "cleanup": {
+    "taskOwnedSimulatorsReturnedToShutdown": 2,
+    "otherSimulatorsUntouched": true,
+    "localEmulatorJobsFinished": true
+  }
+}

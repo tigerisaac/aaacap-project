@@ -11,11 +11,17 @@ final class ContactRecoveryUITests: XCTestCase {
         try walk.find("Finish contact change")
         try walk.find("Check saved change")
         walk.checkpoint("contact-recovery-controls-readable")
-        try walk.activate("Restore test connection")
+        // Fixture controls are outside the production navigation container.
+        // Change the simulated network directly; audit VoiceOver on the actual screen.
+        try XCUIDevice.shared.voiceOverService.disable()
+        walk.app.buttons["Restore test connection"].tap()
+        try XCUIDevice.shared.voiceOverService.enable()
         try walk.activate("Check saved change")
         try walk.find("Your calling list is empty")
-        try walk.activate("Inspect contact state")
+        try XCUIDevice.shared.voiceOverService.disable()
+        walk.app.buttons["Inspect contact state"].tap()
         XCTAssertEqual(walk.app.staticTexts["contact-recovery-state"].label, "phone:false;server:false;patches:1;shares:0")
+        try XCUIDevice.shared.voiceOverService.enable()
         walk.checkpoint("contact-recovery-confirmed-without-another-edit")
     }
 

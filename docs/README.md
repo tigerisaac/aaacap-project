@@ -9,6 +9,7 @@ For release work, use the single current [App Store release checklist](APP-STORE
 | [Architecture](ARCHITECTURE.md) | Components (Telnyx, GPT Live bridge, Firebase), how a call flows, voice and TTS, data, what was retired |
 | [Status](STATUS.md) | Dated implementation, deployment and verification checkpoints; follow the release checklist for current acceptance gates |
 | [iOS release verification](IOS-RELEASE-VERIFICATION.md) | Source, simulator, archive and CI evidence, retained failures and physical/Apple limits |
+| [Contact change recovery](IOS-CONTACT-RECOVERY.md) | Lost-response and relaunch recovery, explicit contact changes, exact API rollout boundary and remaining physical acceptance |
 | [Operational readiness](OPERATIONAL-READINESS.md) | Service health, alert delivery, scheduled workers, incident evidence and remaining acceptance |
 | [Dependency security](DEPENDENCY-SECURITY.md) | Runtime/tooling audit boundaries, remaining advisories, package-manager requirements and verification evidence |
 | [Screening](SCREENING.md) | How the screener decides, what each outcome does, rules for changing the policy, test suites and commands |

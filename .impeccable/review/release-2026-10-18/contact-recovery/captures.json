@@ -1,0 +1,128 @@
+[
+  {
+    "file": "ios27-relaunch-confirmed.png",
+    "sha256": "5a021c4d1f224ea2eaa88824578345683c069f154bb5be126e18f232894cb6b2",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/69976D70-596C-4DDA-9598-4EACB2744A6F.png",
+    "test": "ContactRecoveryUITests/testAppRelaunchRecoversSavedChangeWithoutPostingOrRestoringTheNumber()",
+    "timestamp": 1792354990.922,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-largest-dark-confirmed.png",
+    "sha256": "b4445cdb5bb472c7ed4d7b0319ff1a4bfd3a195e652d1f9340233362c2c0bb73",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/1494A156-327E-4175-B1C8-9E4FF857B4E7.png",
+    "test": "ContactRecoveryUITests/testSavedChangeRecoveryIsUsableAtLargestTextInDarkMode()",
+    "timestamp": 1792355045.87,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-largest-dark-pending.png",
+    "sha256": "1ccd99da988613d1f766aad5330007027c15943bafb0a68d192c07e1508df3e8",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/AA34BCFA-E906-4762-AEA4-CFEF094EB589.png",
+    "test": "ContactRecoveryUITests/testSavedChangeRecoveryIsUsableAtLargestTextInDarkMode()",
+    "timestamp": 1792355042.569,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-confirmed.png",
+    "sha256": "e0e1622d4e11f19485c97e41b56080fa954cc9c2911c641b44c5289dfdf6312e",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/771FC378-7ABA-4E21-B725-968F0E6A37B9.png",
+    "test": "ContactRecoveryUITests/testSavedChangeWithLostReplySettlesWithoutAnotherEdit()",
+    "timestamp": 1792355059.719,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-pending.png",
+    "sha256": "74695d573c1849777c00f01eb6f9b17c17ec6c06f7880427c0790196964197a7",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/55FB8BCC-C834-459C-A7E8-14F4C7337C0E.png",
+    "test": "ContactRecoveryUITests/testSavedChangeWithLostReplySettlesWithoutAnotherEdit()",
+    "timestamp": 1792355056.43,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-explicit-retry.png",
+    "sha256": "40845ee5932e4d02fd3e87ee3027071b85e7431ad81a19fd32450a9814ec1a6d",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/37200050-6747-48FC-9DBF-94C6629436E2.png",
+    "test": "ContactRecoveryUITests/testUnsavedChangeRequiresAnExplicitRetry()",
+    "timestamp": 1792355075.012,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-voiceover-confirmed.png",
+    "sha256": "56087f5fa896e3fda56f97e7e0590e3abaa5b7d647a6dded758dc534842a5ea8",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/7B9C7E79-9528-4115-AC39-6DBA42AF4B21.png",
+    "test": "ContactRecoveryUITests/testVoiceOverCanFindContactRecoveryAndConfirmTheSavedChange()",
+    "timestamp": 1792355139.413,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios27-voiceover-controls.png",
+    "sha256": "3ba4b11bb42dc6d66216fb04a8dbfefb5ecae705a37c03979efe22b877b759c5",
+    "privateSource": "artifacts/private/contact-recovery-oct18/final-captures/C4656F8A-51AE-4758-B5A9-28CE4F8C7079.png",
+    "test": "ContactRecoveryUITests/testVoiceOverCanFindContactRecoveryAndConfirmTheSavedChange()",
+    "timestamp": 1792355110.721,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios26-relaunch-confirmed.png",
+    "sha256": "7a50103f848e798f71997e05a06c334ddb7a17f9f7ff60547aa417e65dcba1c8",
+    "privateSource": "artifacts/private/contact-recovery-oct18/ios26-captures/A84811EC-5486-4C41-9E4D-ACD184FD6AC4.png",
+    "test": "ContactRecoveryUITests/testAppRelaunchRecoversSavedChangeWithoutPostingOrRestoringTheNumber()",
+    "timestamp": 1792355203.452,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios26-largest-dark-confirmed.png",
+    "sha256": "a02c676937f2d6a4a8af92f29861d630a72c6342cd8ce3340a4751f59555ee48",
+    "privateSource": "artifacts/private/contact-recovery-oct18/ios26-captures/F031B8DB-3391-4BD9-A5B2-9048CDD1C03D.png",
+    "test": "ContactRecoveryUITests/testSavedChangeRecoveryIsUsableAtLargestTextInDarkMode()",
+    "timestamp": 1792355259.633,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios26-largest-dark-pending.png",
+    "sha256": "ed7cdf9bf6612675a94df9cb98f50e79db41e04f16f8d93a63f435a19b5913f5",
+    "privateSource": "artifacts/private/contact-recovery-oct18/ios26-captures/993AE444-382A-4463-9E5A-DDEFFDC31513.png",
+    "test": "ContactRecoveryUITests/testSavedChangeRecoveryIsUsableAtLargestTextInDarkMode()",
+    "timestamp": 1792355255.602,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios26-confirmed.png",
+    "sha256": "a0e9f4ae3df37ebccae5bd86a1c21e68c30db54ad0116320cc2c8b7ec23078d1",
+    "privateSource": "artifacts/private/contact-recovery-oct18/ios26-captures/38DF03A9-341B-4725-AE38-B1260FAC4CE3.png",
+    "test": "ContactRecoveryUITests/testSavedChangeWithLostReplySettlesWithoutAnotherEdit()",
+    "timestamp": 1792355272.045,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios26-pending.png",
+    "sha256": "5ce77b0c841dac273077ab97340bd4a0798d3394ee3f0b235c5fba01bc36bcde",
+    "privateSource": "artifacts/private/contact-recovery-oct18/ios26-captures/5D29DCDC-329F-4F08-A6B9-165DE6780621.png",
+    "test": "ContactRecoveryUITests/testSavedChangeWithLostReplySettlesWithoutAnotherEdit()",
+    "timestamp": 1792355268.755,
+    "visuallyInspected": true,
+    "modified": false
+  },
+  {
+    "file": "ios26-explicit-retry.png",
+    "sha256": "0e615a4cf0c32e048a04e2236f9df77c3a5a5d9d5d540d78d51a9739b360b612",
+    "privateSource": "artifacts/private/contact-recovery-oct18/ios26-captures/C83AC5FD-4F48-4A54-8EA4-C1552771EBD5.png",
+    "test": "ContactRecoveryUITests/testUnsavedChangeRequiresAnExplicitRetry()",
+    "timestamp": 1792355285.66,
+    "visuallyInspected": true,
+    "modified": false
+  }
+]

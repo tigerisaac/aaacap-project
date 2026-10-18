@@ -1,0 +1,142 @@
+[
+  {
+    "action" : "current",
+    "utterance" : "Shield Your contacts Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Add contact Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Share contacts once Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Only names and numbers go to Shield. Contacts update only when y"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Synthetic contact recovery"
+  },
+  {
+    "action" : "next",
+    "utterance" : "(202) 555-0186"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Remove Synthetic contact recovery from Contacts Button"
+  },
+  {
+    "action" : "activate",
+    "utterance" : "Remove Synthetic contact recovery from Contacts Button"
+  },
+  {
+    "action" : "direct-action-with-VoiceOver-disabled",
+    "utterance" : "Remove Synthetic contact recovery from Contacts"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Shield Remove Synthetic contact recovery from iPhone Contacts?"
+  },
+  {
+    "action" : "next",
+    "utterance" : "This can also remove the contact from your other devices through"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Remove contact Button"
+  },
+  {
+    "action" : "activate",
+    "utterance" : "Remove contact Button"
+  },
+  {
+    "action" : "direct-action-with-VoiceOver-disabled",
+    "utterance" : "Remove contact"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Shield Your contacts Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Add contact dimmed Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Finish contact change Heading"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Finish contact change Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "You asked to remove Synthetic contact recovery. Shield hasn’t co"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Your connection was interrupted. Check your internet connection "
+  },
+  {
+    "action" : "next",
+    "utterance" : "Check saved change Button"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Shield Your contacts Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Add contact dimmed Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Finish contact change Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "You asked to remove Synthetic contact recovery. Shield hasn’t co"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Your connection was interrupted. Check your internet connection "
+  },
+  {
+    "action" : "next",
+    "utterance" : "Check saved change Button"
+  },
+  {
+    "action" : "activate",
+    "utterance" : "Check saved change Button"
+  },
+  {
+    "action" : "direct-action-with-VoiceOver-disabled",
+    "utterance" : "Check saved change"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Shield Your contacts Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Add contact Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Share contacts once Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Synthetic contact recovery was removed from Contacts and your sh"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Only names and numbers go to Shield. Contacts update only when y"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Your calling list is empty"
+  }
+]

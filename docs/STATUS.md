@@ -1,5 +1,13 @@
 # Status
 
+## October 18 — interrupted contact edits recover without reversing the phone
+
+Two deterministic failures reproduced a lost reply restoring only iPhone Contacts after a saved server change, and an older refresh reversing a confirmed visible change. The correction saves account/person-scoped recovery before native edits, checks status without another upload, rejects delayed versioned writes and preserves recovery across relaunch or uncertain account deletion. Permission is requested only for an explicit edit. The current theme is preserved.
+
+Final checks pass **23 Swift**, **7 native iOS 27** and **6 native iOS 26.5** cases. Actual Simulator VoiceOver reaches the recovery controls; physical gestures and full long speech remain unverified. Fourteen final captures were inspected, the unsigned archive passes with all 256 production inputs unchanged, and first-attempt [CI on `df0bf4e`](https://github.com/tigerisaac/aaacap-project/actions/runs/39162762938) passes **382 unit + 293 Firestore + 12 account checks**. Original bugs, intermediate correction failures and test-helper errors are retained. [Evidence and remaining acceptance](IOS-CONTACT-RECOVERY.md).
+
+The exact three-file API package passes **13 integration checks**, preserving the other 87 serving files and dependency lock. **It is not deployed and requires separate owner approval.** The matching API contract must be deployed and verified before distributing this app. Its package excludes the separately pending database retry correction; whichever deploys second must be rebased and reverified. [Scoped rollout and rollback](CONTACT-RECOVERY-ROLLOUT.md). Physical Contacts/iCloud, real calls, Apple setup and the wider public/pilot release gates remain open.
+
 ## October 18 — development tooling security and regression verification
 
 Pinned Firebase tooling now reduces the root dependency audit from **18 to five affected development packages**. The production-only audit remains **zero known vulnerabilities**, with all 339 production/optional package versions, integrity values and dependency edges preserved. The five findings belong to the retained braces/chokidar and OpenTelemetry/PubSub advisory chains. CI now gates production advisories; npm 11.4.2 is the declared minimum after isolated npm 10 candidates lost the existing UUID override.
