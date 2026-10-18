@@ -1,0 +1,146 @@
+{
+  "at": "2026-10-18T04:19:55.641790+00:00",
+  "baseCommit": "a0619b2634acf7c8baaf5a7ac39cc811dc97e049",
+  "sourceFilesMatchFinalManifest": true,
+  "scope": "Focused contact/caretaker recovery and accessibility review; Apple theme retained.",
+  "reproducedDefects": [
+    "Failed pause error outside viewport at maximum text.",
+    "Failed removal error outside viewport at maximum text."
+  ],
+  "correction": "Reveal Change not confirmed, request accessibility focus, offer a fresh read labeled Check current status, retain last-confirmed state and deliberate retry; plain-language connection error.",
+  "fixture": "DEBUG simulator only; three synthetic contacts, one injected connection failure, no real account or messages.",
+  "runs": {
+    "before-27": {
+      "totalTestCount": 9,
+      "passedTests": 5,
+      "failedTests": 4,
+      "skippedTests": 0,
+      "runtimeWarnings": []
+    },
+    "after-27": {
+      "totalTestCount": 10,
+      "passedTests": 6,
+      "failedTests": 4,
+      "skippedTests": 0,
+      "runtimeWarnings": []
+    },
+    "final-27": {
+      "totalTestCount": 8,
+      "passedTests": 8,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "runtimeWarnings": []
+    },
+    "final-265": {
+      "totalTestCount": 7,
+      "passedTests": 7,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "runtimeWarnings": []
+    }
+  },
+  "correctedNavigationTestsPassed": 2,
+  "distinctFinalMethodsPassed": 8,
+  "finalTestExecutionsPassed": 15,
+  "unfilteredReportsPerRun": 13,
+  "auditReportLabels": {
+    "before": {
+      "My clinic": 1,
+      "Remove from iPhone": 5,
+      "Text messages": 1,
+      "Waiting for them to join": 1,
+      "Share contacts once": 2,
+      "Contacts settings": 1,
+      "Decline request": 2
+    },
+    "after": {
+      "Waiting for them to join": 1,
+      "Text messages": 1,
+      "Remove from iPhone": 5,
+      "Only names and numbers go to Shield. Contacts update only when you choose; there are no automatic uploads.": 1,
+      "Decline request": 2,
+      "Share contacts once": 2,
+      "Contacts settings": 1
+    }
+  },
+  "auditPassed": false,
+  "auditFiltersOrWaivers": false,
+  "voiceOver": "Simulator focus/speech audited with VoiceOver enabled; direct action/scrolling disable it temporarily. Physical gestures and immediate announcement timing unverified.",
+  "archive": {
+    "archive": "/tmp/shield-contact-accessibility-oct17.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "1f52d0011c77e01cc3ff4582a42633be5a247585c4bfe2eb1796ddc152114d8c"
+  },
+  "backendChecks": {
+    "typecheck": "passed",
+    "build": "passed",
+    "unitTestsPassedThisContinuation": 376,
+    "unchangedBackendFirestoreTestsPassedInSecondReview": 284,
+    "unchangedBackendCI": "https://github.com/tigerisaac/aaacap-project/actions/runs/39094590443"
+  },
+  "physicalInstallation": false,
+  "realPhoneOrCaretakerDeliveryVerified": false,
+  "appleChanged": false,
+  "backendRollout": "Separate approved background-health deployment; not part of this app patch.",
+  "limits": [
+    "Raw contrast diagnostics remain open.",
+    "Maximum text can require scrolling to lower actions.",
+    "No whole-app, physical device or older-adult usability certification.",
+    "Apple, real calls, caretaker delivery and physical Contacts/Call Directory gates remain open."
+  ],
+  "evidenceSha256": {
+    ".impeccable/review/release-2026-10-17/contact-accessibility/after-27-issues.json": "b7d06f1049e61e9dd901f19484c27c1af566c17934322ff5c6298d6757845078",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/after-pause-retry-ios265.png": "b0e4915a4f1a51054f62eb7c99e0d39ec63afef2b51aa3643e2d678ec77403ff",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/before-27-issues.json": "44f405b01b3b12f7a1bec9c63be655bc9ea57094a59d9546421ae99162ba2a12",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/final-27-summary.json": "b6952f6d435005cfec56ca9a8222c0edc9053062dd435e85fe299c9ff3bc9937",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/source-before.json": "9ce58efed66a71fba02797d5f8969af96591d4bd76acd23e2ebee8a5bc9e0d73",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/final-265-summary.json": "2746c02be3265cdbdb24d3036bcb82ccab886e6e792b2b846c215a678ea19c04",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/after-pause-failure-ios265.png": "8e50ab8a8d00d2449e7d27968d7bd46d71c97cda5001e9e880a4f726bd724b7c",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/after-pause-failure.png": "60433c4ffbe737ce494661618e62807fce3cc98eff96343904a3c9151d9ec9b8",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/before-remove-failure.png": "f7ea1a7b6da997d0ffe19f4e157fdd39d165b8e74c936001ccfaf9a14db58bd8",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/before-27-summary.json": "04f46c591c3c15a3018762bb3203f261ed40c7c18b82f0d54e156198bfc7bfb5",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/before-pause-failure.png": "e7b71617dd278ead92ac11b343f8b764fdc74a456f80e1fdf6fa10a249960cfe",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/archive-audit.json": "56e7c4615f7734d03cfe3b31ed97414207fb1d50b534f1a09c7ac913a69c96c9",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/intermediate-27-summary.json": "b9b2d149a517394e7fd3d43badf037b55d00ebe89de4fbead63dedceff2d0686",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/voiceover-speech-and-actions.json": "83685e83c88f158fa174a4beb9e274387d9ad8e4f3b0d60be4dc8d232c3f0281",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/after-removal-retry.png": "ae6007fcaecb96a4e222e49cc23032e08f8df5e0b365ed299eb02f0c4752a211",
+    ".impeccable/review/release-2026-10-17/contact-accessibility/source-final.json": "ba47850458c0b859bb8d1efdaa5369931bbb08e4f9cf449e563db7c4470b7fd1"
+  },
+  "privateLogSha256": {
+    "artifacts/private/contact-accessibility-oct17/build-before.log": "98bc5c2b68afb8c0b2afff96227940fdb54c316c505b33096310ba6a0a1c42c2",
+    "artifacts/private/contact-accessibility-oct17/build-before-corrected.log": "245096ea56d5f1486aa58632e7ef670062a5d00ed94c80a54ed3055f2a03c027",
+    "artifacts/private/contact-accessibility-oct17/before-27.log": "626a1d32894448ed3a56a4e77c4e494ac67dbb7b2257f7ceac57e464b1192583",
+    "artifacts/private/contact-accessibility-oct17/after-27.log": "1f940b8b478e7bbad096fdc7fa6c0b68265f7fb59807c173db166c51ead5ca8a",
+    "artifacts/private/contact-accessibility-oct17/recovery-27.log": "3326c1a9badbca4c289bfae15582d578ea20d424fcae9c30b4f686c84ebd75b8",
+    "artifacts/private/contact-accessibility-oct17/build-final.log": "7e5c950f2850b0f3aa504cb563fee3902f6dd77d111acc54c85779e43739cfcd",
+    "artifacts/private/contact-accessibility-oct17/final-27.log": "25b08de2b35017a423c57578068ff495bb785c57132c73c392875fd521bcaf1b",
+    "artifacts/private/contact-accessibility-oct17/final-265.log": "98adf48ceea6f51a4754097a206f8529c803ecc38fea5c0c1f4ae4dc9bf763fa",
+    "artifacts/private/contact-accessibility-oct17/archive.log": "15b19a1f4bb931846a2fdc78bdb5b4a4ca4b7b15865efae7db03380fc127319e",
+    "artifacts/private/contact-accessibility-oct17/archive-audit.log": "e7ba6f229680fc5bf11108de24ae61a0ebbd79fb52ea5289586dd510a0b3ce12",
+    "artifacts/private/contact-accessibility-oct17/check.log": "2b65ca88d597af908dddf3f50b6b73782c318e0a317f12bb1c1882040d0ec773"
+  }
+}

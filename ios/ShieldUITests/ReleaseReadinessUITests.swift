@@ -82,16 +82,63 @@ final class ReleaseReadinessUITests: XCTestCase {
         capture(app, "Release separate call permissions")
     }
 
+    func testFailedCaretakerPauseIsVisibleAndCanBeRetriedAtLargestText() {
+        let app = caretakerFailureFixture()
+        let toggle = app.switches["Send protection alerts"]
+        reveal(toggle, app); XCTAssertEqual(toggle.value as? String, "1"); toggle.tap()
+        assertCaretakerFailureVisible(app, "Caretaker pause failed largest dark")
+        reveal(toggle, app, fromBelow: true)
+        XCTAssertEqual(toggle.value as? String, "1", "A failed pause must retain the last confirmed setting.")
+        toggle.tap()
+        let paused = app.switches.matching(NSPredicate(format: "label == %@ AND value == %@", "Send protection alerts", "0")).firstMatch
+        XCTAssertTrue(paused.appears(timeout: 3))
+        XCTAssertFalse(app.descendants(matching: .any)["caretaker-error-feedback"].exists)
+        capture(app, "Caretaker pause retry succeeded largest dark")
+    }
+
+    func testFailedCaretakerRemovalIsVisibleAndCanBeRetriedAtLargestText() {
+        let app = caretakerFailureFixture()
+        let remove = app.buttons["Remove contact"].firstMatch
+        reveal(remove, app); remove.tap(); app.alerts.buttons["Remove contact"].tap()
+        assertCaretakerFailureVisible(app, "Caretaker removal failed largest dark")
+        reveal(app.switches["Send protection alerts"], app, fromBelow: true)
+        reveal(remove, app)
+        XCTAssertTrue(app.staticTexts["Jamie"].exists, "Failure must not claim the caretaker was removed.")
+        remove.tap(); app.alerts.buttons["Remove contact"].tap()
+        XCTAssertTrue(app.staticTexts["Jamie"].wait(for: \.exists, toEqual: false, timeout: 3))
+        XCTAssertFalse(app.descendants(matching: .any)["caretaker-error-feedback"].exists)
+        capture(app, "Caretaker removal retry succeeded largest dark")
+    }
+
+    private func caretakerFailureFixture() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-screen", "trusted-contacts", "--uitesting-caretaker-change-fails",
+            "--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Caretakers"].appears(timeout: 5))
+        return app
+    }
+
+    private func assertCaretakerFailureVisible(_ app: XCUIApplication, _ name: String) {
+        let error = app.descendants(matching: .any)["caretaker-error-feedback"]
+        _ = error.appears(timeout: 3)
+        capture(app, name)
+        XCTAssertTrue(error.exists, "The failure must be revealed without manual scrolling.")
+        XCTAssertGreaterThanOrEqual(error.frame.minY, app.navigationBars.firstMatch.frame.maxY)
+        XCTAssertLessThanOrEqual(error.frame.maxY, app.frame.maxY - 35)
+        XCTAssertTrue(app.buttons["Check current status"].exists)
+    }
+
     private func launch(_ extra: [String]) -> XCUIApplication {
         let app = XCUIApplication(); app.launchArguments = ["--uitesting-preview"] + extra; app.launch()
         XCTAssertTrue(app.navigationBars["Home"].appears(timeout: 5)); return app
     }
-    private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
+    private func reveal(_ element: XCUIElement, _ app: XCUIApplication, fromBelow: Bool = false) {
         for _ in 0..<14 {
             let top = app.navigationBars.firstMatch.frame.maxY
             let bottom = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY - 35
             if element.exists, element.isHittable, element.frame.minY >= top, element.frame.maxY <= bottom { return }
-            let down = element.exists && !element.frame.isEmpty && element.frame.minY < top
+            let down = element.exists && !element.frame.isEmpty ? element.frame.minY < top : fromBelow
             app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.35 : 0.72))
                 .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.7 : 0.35)))
         }

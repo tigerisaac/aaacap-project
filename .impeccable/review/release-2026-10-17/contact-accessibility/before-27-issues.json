@@ -1,0 +1,54 @@
+[
+  {
+    "screen": "release-sharing-contacts-largest-dark-scrolled",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f86800, {{32.0, 760.0}, {208.0, 63.3}}, label: 'My clinic'"
+  },
+  {
+    "screen": "release-sharing-contacts-largest-dark-scrolled",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f85cc0, {{119.3, 519.7}, {193.3, 187.3}}, label: 'Remove from iPhone', Disabled"
+  },
+  {
+    "screen": "release-sharing-contact-alerts-largest-dark-scrolled",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f84b40, {{32.0, 5.3}, {326.0, 161.3}}, label: 'Text messages'"
+  },
+  {
+    "screen": "release-sharing-sharing-access-largest-dark-scrolled",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f84140, {{32.0, 13.3}, {242.0, 116.7}}, label: 'Waiting for them to join'"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast nearly passed; Attributes: StaticText, 0x110f84c80, {{32.0, 204.7}, {326.0, 22.0}}, label: 'Share contacts once', Disabled"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f86580, {{79.7, 435.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f875c0, {{79.7, 609.8}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f88dc0, {{32.7, 757.0}, {173.7, 22.7}}, label: 'Contacts settings'"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light-scrolled",
+    "details": "Contrast nearly passed; Attributes: StaticText, 0x110f84c80, {{32.0, 149.3}, {326.0, 22.0}}, label: 'Share contacts once', Disabled"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light-scrolled",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f86580, {{79.7, 380.2}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+  },
+  {
+    "screen": "release-sharing-contacts-standard-light-scrolled",
+    "details": "Contrast failed; Attributes: StaticText, 0x110f875c0, {{79.7, 554.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+  },
+  {
+    "screen": "release-sharing-contact-alerts-standard-light",
+    "details": "Contrast nearly passed; Attributes: Button, 0x110f88500, {{16.0, 596.3}, {358.0, 52.0}}, label: 'Decline request'"
+  },
+  {
+    "screen": "release-sharing-contact-alerts-standard-light-scrolled",
+    "details": "Contrast nearly passed; Attributes: Button, 0x110f88500, {{16.0, 596.3}, {358.0, 52.0}}, label: 'Decline request'"
+  }
+]

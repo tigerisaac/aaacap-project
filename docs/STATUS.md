@@ -1,5 +1,15 @@
 # Status
 
+## October 17 — approved background-health update deployed; acceptance pending
+
+All four exact worker packages and the new private observer are deployed and verified with full traffic. The index is READY, the five-minute schedule is authenticated, the counter is receiving data and two policies are staged **disabled**. Existing services, schedules, operational policies, budget, Hosting and public flags are preserved. Natural deletion, access-review and audio-expiry runs completed; the 23:25 observer found zero overdue work and correctly reported daily cleanup still missing. Acceptance waits for **04:00 Central October 18** cleanup, then a healthy observation and a fresh counter signal after policy activation. No manual worker, phone or synthetic email test was performed. R5 remains open. [Exact revisions, receipts and safeguards](BACKGROUND-JOB-HEALTH-ROLLOUT.md).
+
+## October 17 — caretaker failure feedback and recovery (source only)
+
+Two largest-text regressions reproduced pause/removal errors below the visible list. The app now reveals **Change not confirmed**, requests accessibility focus and offers **Check current status** without repeating a mutation or claiming a lost response proves no server change. Connection errors use readable wording; the Apple-style theme and alert-only caretaker permissions are preserved.
+
+Final checks passed **8/8 on compact iOS 27 and 7/7 on compact iOS 26.5**, with zero runtime warnings. The unsigned archive passes packaging/fixture exclusions. Typecheck/build and **376 unit tests** passed again; unchanged backend evidence retains **284 Firestore checks** and successful `a0619b2` CI. The two unfiltered audit methods still produce **13 contrast reports**, all retained. Simulator VoiceOver speech/focus passed with direct test actions; physical gestures and senior usability remain unverified. No physical app installation or caretaker message occurred. [Exact results, failed harness attempts, captures and limits](IOS-CARETAKER-RECOVERY.md).
+
 ## October 17 — background completion and overdue-work checks prepared
 
 The release audit found that account deletion and subscription review could report scheduled HTTP success after caught per-item failures. A scoped update now records actual batch completion, retains failure visibility, detects stale schedules and reads six overdue-job aggregates. Public billing accounts missing provider/customer configuration are no longer silently skipped. **This is prepared locally, not deployed.** The exact review covers four existing workers, one read-only observer and its schedule, one index, one log counter and two policies using the existing email channel. [Scope, hashes, rollout and acceptance](BACKGROUND-JOB-HEALTH-ROLLOUT.md).

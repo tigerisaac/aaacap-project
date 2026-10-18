@@ -35,6 +35,26 @@ final class SeniorAccessibilityUITests: XCTestCase {
         }
     }
 
+    func testContactsAndCaretakersStandardLightAudit() throws {
+        try auditContactsAndCaretakers(largestDark: false)
+    }
+
+    func testContactsAndCaretakersLargestDarkAudit() throws {
+        try auditContactsAndCaretakers(largestDark: true)
+    }
+
+    private func auditContactsAndCaretakers(largestDark: Bool) throws {
+        for screen in ["contacts", "trusted-contacts", "contact-alerts", "sharing-access"] {
+            var arguments = ["--uitesting-screen", screen]
+            if largestDark { arguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] }
+            let app = launch(arguments, dark: largestDark)
+            let name = "release-sharing-\(screen)-\(largestDark ? "largest-dark" : "standard-light")"
+            try audit(app, name)
+            app.swipeUp()
+            try audit(app, name + "-scrolled")
+        }
+    }
+
     func testSwitchLabelsAtStandardAndLargestText() throws {
         for dark in [false, true] {
             for largest in [false, true] {

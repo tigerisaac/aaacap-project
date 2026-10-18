@@ -1,7 +1,7 @@
 {
   "preparedAt": "2026-10-18T03:20:44.402641+00:00",
-  "approved": false,
-  "deployed": false,
+  "approved": true,
+  "deployed": true,
   "releaseReady": false,
   "sourceBaseline": "e983d0871264644f81c4ca2344831e5ad0af43df",
   "candidateSetManifestSha256": "fe47426ff545c718c49d96e9aefc983352c63de1d109c3669cac0d62b64d17b6",
@@ -454,6 +454,284 @@
         "path": "artifacts/private/background-health-oct17/second-review/ci-79d2024.json",
         "sha256": "84a91738e3bd7c8c4f9ec781e8ccdbb9c2bf52f225fda81f8306777a35a32d64"
       }
+    ],
+    "finalCommitCI": {
+      "commit": "a0619b2634acf7c8baaf5a7ac39cc811dc97e049",
+      "conclusion": "success",
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39094590443"
+    }
+  },
+  "approval": {
+    "recordedAt": "2026-10-18T04:04:05.397Z",
+    "humanResponse": "Approve reviewed rollout",
+    "review": "docs/BACKGROUND-JOB-HEALTH-ROLLOUT.md",
+    "candidateSetManifestSha256": "fe47426ff545c718c49d96e9aefc983352c63de1d109c3669cac0d62b64d17b6",
+    "manualCleanup": false,
+    "phoneCallsOrTexts": false,
+    "syntheticEmailTest": false
+  },
+  "deploymentStatus": "source and configuration verified; two policies staged disabled; natural cleanup and activation acceptance pending",
+  "deploymentPreflight": {
+    "at": "2026-10-18T04:06:24.554Z",
+    "candidateArchivesVerified": 5,
+    "existingFunctions": 14,
+    "existingSchedules": 6,
+    "existingAlertPolicies": 4,
+    "monthlyBudgetUSD": 50,
+    "existingSettingsPreserved": true,
+    "corrections": [
+      "Normalized order-insensitive Eventarc event filters; no configuration difference.",
+      "Used Shield quota project for the existing Budgets API; no service or billing change."
     ]
+  },
+  "deployment": {
+    "at": "2026-10-18T04:24:36.732Z",
+    "approved": true,
+    "sourceDeployed": true,
+    "functions": [
+      {
+        "verifiedAt": "2026-10-18T04:24:26.520Z",
+        "function": "cleanupShield",
+        "revision": "cleanupshield-00016-nag",
+        "activeAt": "2026-10-18T04:15:20.040280Z",
+        "archiveSha256": "b7bfeafc098c2c57bb584bd68783f86334c81db70668991ead48da3c073bae7d",
+        "sourceVerified": true,
+        "settingsVerified": true,
+        "iamVerified": true,
+        "trafficPercent": 100,
+        "naturalRun": {
+          "expectedAt": "2026-10-18T09:00:02.502898Z",
+          "completionDeadline": "2026-10-18T09:20:02.502Z"
+        }
+      },
+      {
+        "verifiedAt": "2026-10-18T04:24:27.940Z",
+        "function": "finishAccountDeletions",
+        "revision": "finishaccountdeletions-00002-raw",
+        "activeAt": "2026-10-18T04:15:33.080185Z",
+        "archiveSha256": "88f48d62d0686c32c3027151ec2785abad57ac887de6534d98f1db5d8cb2be2d",
+        "sourceVerified": true,
+        "settingsVerified": true,
+        "iamVerified": true,
+        "trafficPercent": 100,
+        "naturalRun": {
+          "expectedAt": "2026-10-18T04:17:01.277018Z",
+          "completionDeadline": "2026-10-18T04:27:01.277Z"
+        }
+      },
+      {
+        "verifiedAt": "2026-10-18T04:24:29.260Z",
+        "function": "reviewServiceAccess",
+        "revision": "reviewserviceaccess-00002-jof",
+        "activeAt": "2026-10-18T04:16:13.097874Z",
+        "archiveSha256": "c30ff63dda5a0e89a83e623f97d4ec0597636800ea97371c8accf3248fc575dc",
+        "sourceVerified": true,
+        "settingsVerified": true,
+        "iamVerified": true,
+        "trafficPercent": 100,
+        "naturalRun": {
+          "expectedAt": "2026-10-18T04:22:00.784855Z",
+          "completionDeadline": "2026-10-18T04:52:00.784Z"
+        }
+      },
+      {
+        "verifiedAt": "2026-10-18T04:24:30.717Z",
+        "function": "expireMessageDeliveries",
+        "revision": "expiremessagedeliveries-00003-yab",
+        "activeAt": "2026-10-18T04:17:44.437740Z",
+        "archiveSha256": "d28fea533fbfa0359b05d8e209d2722cc5884f8130b97a06f2be9bb0f6d2729d",
+        "sourceVerified": true,
+        "settingsVerified": true,
+        "iamVerified": true,
+        "trafficPercent": 100,
+        "naturalRun": {
+          "expectedAt": "2026-10-18T04:20:03.255322Z",
+          "completionDeadline": "2026-10-18T04:40:03.255Z"
+        }
+      },
+      {
+        "verifiedAt": "2026-10-18T04:24:31.842Z",
+        "function": "checkBackgroundHealth",
+        "revision": "checkbackgroundhealth-00001-not",
+        "activeAt": "2026-10-18T04:20:42.102504Z",
+        "archiveSha256": "269317aa879c329b004e1aa93a66fa074b0ab22ff574ec0db132292e235d918c",
+        "sourceVerified": true,
+        "settingsVerified": true,
+        "iamVerified": true,
+        "trafficPercent": 100,
+        "naturalRun": null
+      }
+    ],
+    "indexReady": true,
+    "existingResourcesPreserved": true,
+    "existingAlertPolicies": 4,
+    "newPoliciesStagedDisabled": 2,
+    "observerScheduleEnabled": true,
+    "observerPrivate": true,
+    "logCounterCreated": true,
+    "newPoliciesActivated": false,
+    "naturalCompletionAcceptance": false,
+    "publicReadiness": 200,
+    "manualWorkerInvocations": 0,
+    "phoneCallsOrTexts": 0
+  },
+  "initialNaturalObservation": {
+    "at": "2026-10-18T04:26:15.313Z",
+    "readOnly": true,
+    "jobs": {
+      "cleanupShield": {
+        "missing": true,
+        "completionAfterDeployment": false,
+        "expectedAt": "2026-10-18T09:00:02.502898Z",
+        "deadline": "2026-10-18T09:20:02.502Z",
+        "deadlineMissed": false
+      },
+      "finishAccountDeletions": {
+        "startedAt": 1792297561463,
+        "finishedAt": 1792297561525,
+        "lastSucceededAt": 1792297561463,
+        "status": "complete",
+        "missing": false,
+        "completionAfterDeployment": true,
+        "expectedAt": "2026-10-18T04:17:01.277018Z",
+        "deadline": "2026-10-18T04:27:01.277Z",
+        "deadlineMissed": false
+      },
+      "reviewServiceAccess": {
+        "finishedAt": 1792297322022,
+        "lastSucceededAt": 1792297321009,
+        "status": "complete",
+        "startedAt": 1792297321009,
+        "missing": false,
+        "completionAfterDeployment": true,
+        "expectedAt": "2026-10-18T04:22:00.784855Z",
+        "deadline": "2026-10-18T04:52:00.784Z",
+        "deadlineMissed": false
+      },
+      "expireMessageDeliveries": {
+        "startedAt": 1792297510745,
+        "lastSucceededAt": 1792297510745,
+        "finishedAt": 1792297511287,
+        "status": "complete",
+        "missing": false,
+        "completionAfterDeployment": true,
+        "expectedAt": "2026-10-18T04:20:03.255322Z",
+        "deadline": "2026-10-18T04:40:03.255Z",
+        "deadlineMissed": false
+      }
+    },
+    "observations": [
+      {
+        "timestamp": "2026-10-18T04:25:00.932779Z",
+        "revision": "checkbackgroundhealth-00001-not",
+        "payload": {
+          "event": "shield_maintenance_health",
+          "healthy": false,
+          "jobStates": {
+            "reviewServiceAccess": "fresh",
+            "cleanupShield": "missing",
+            "expireMessageDeliveries": "fresh",
+            "finishAccountDeletions": "fresh"
+          },
+          "overdue": {
+            "accountDeletions": 0,
+            "audioChunks": 0,
+            "callDeadlines": 0,
+            "audioManifests": 0,
+            "monitoringChecks": 0,
+            "providerRecordings": 0
+          },
+          "available": true
+        }
+      }
+    ],
+    "failureChecks": [
+      {
+        "job": "cleanupShield",
+        "more": false,
+        "failures": []
+      },
+      {
+        "job": "finishAccountDeletions",
+        "more": false,
+        "failures": []
+      },
+      {
+        "job": "reviewServiceAccess",
+        "more": false,
+        "failures": []
+      },
+      {
+        "job": "expireMessageDeliveries",
+        "more": false,
+        "failures": []
+      }
+    ],
+    "allWorkersCompleted": false,
+    "acceptanceStopped": false,
+    "manualWorkerInvocations": 0
+  },
+  "initialSignal": {
+    "at": "2026-10-18T04:27:11.259Z",
+    "readOnly": true,
+    "schedule": {
+      "state": "ENABLED",
+      "lastAttemptTime": "2026-10-18T04:25:00.217878Z",
+      "statusCode": 0,
+      "nextRun": "2026-10-18T04:30:02.544514Z"
+    },
+    "counterPoints": [
+      {
+        "revision": "checkbackgroundhealth-00001-not",
+        "interval": {
+          "startTime": "2026-10-18T04:26:11.070Z",
+          "endTime": "2026-10-18T04:27:11.070Z"
+        },
+        "value": 0
+      },
+      {
+        "revision": "checkbackgroundhealth-00001-not",
+        "interval": {
+          "startTime": "2026-10-18T04:25:11.070Z",
+          "endTime": "2026-10-18T04:26:11.070Z"
+        },
+        "value": 1
+      },
+      {
+        "revision": "checkbackgroundhealth-00001-not",
+        "interval": {
+          "startTime": "2026-10-18T04:24:11.070Z",
+          "endTime": "2026-10-18T04:25:11.070Z"
+        },
+        "value": 0
+      },
+      {
+        "revision": "checkbackgroundhealth-00001-not",
+        "interval": {
+          "startTime": "2026-10-18T04:23:11.070Z",
+          "endTime": "2026-10-18T04:24:11.070Z"
+        },
+        "value": 0
+      }
+    ],
+    "policiesStillDisabled": true,
+    "postActivationEvidence": false
+  },
+  "operationalAcceptance": false,
+  "manualWorkerInvocation": false,
+  "callsOrMessagesSentByAgent": 0,
+  "deploymentHelperSha256": "a02b8c24de28c960935e18ec491798e5004025d6632b7ce089598e446da22d89",
+  "verificationToolCorrections": [
+    "Canonical comparison of unordered Eventarc filters.",
+    "Explicit Shield quota project for existing budget API; no service/billing change.",
+    "Scheduler canonicalized the target URI with a trailing slash; OIDC audience remained exact. Reconciled the created job by readback without creating a duplicate."
+  ],
+  "pendingAcceptance": {
+    "dailyCleanupExpected": "2026-10-18T09:00:02.502898Z",
+    "dailyCleanupDeadline": "2026-10-18T09:20:02.502Z",
+    "allWorkersThenHealthyObservationRequired": true,
+    "postActivationPositiveCounterRequired": true,
+    "overnightAutomationCreated": false,
+    "overnightAutomationApprovalRequested": true
   }
 }

@@ -1,10 +1,10 @@
-# Background-job health — prepared October 17, 2026
+# Background-job health — deployed October 17, 2026
 
-**Prepared and tested; not approved or deployed. R5 remains open.** The live email route has owner-confirmed delivery. This update addresses a different gap: a successful scheduled HTTP request could conceal incomplete account deletion or subscription review, and an empty queue could conceal a stopped schedule.
+**Owner-approved source/configuration deployed and verified. Two new policies are staged disabled; natural-completion and activation acceptance remain pending. R5 remains open.** The live email route has owner-confirmed delivery. This update addresses a different gap: a successful scheduled HTTP request could conceal incomplete account deletion or subscription review, and an empty queue could conceal a stopped schedule.
 
 At **22:05 Central**, a read-only snapshot found zero pending account deletions, overdue audio manifests/chunks, pending/overdue provider-recording erasures, overdue call deadlines and overdue monitoring checks. All six schedules were enabled. The saved subscription review had checked zero accounts and failed zero. These observations do not prove historical completion or provider erasure. [Dated evidence and package hashes](../.impeccable/review/release-2026-10-17/operations/background-health.json).
 
-## Exact proposed scope
+## Exact approved scope
 
 Each existing worker has its own package based on its downloaded, serving source. Only the indicated modules change. No API, bridge, call worker, monitoring worker, phone setting, purchase flag, caretaker delivery flag or Hosting deployment is included.
 
@@ -64,7 +64,7 @@ The first source-download helper returned a wrapper-level 500 before saving work
 
 ## Second review — October 17
 
-**Recommended for the scoped deployment, still awaiting approval.** The second review found no additional blocking defect in the runtime changes. Runtime source, all five candidate archives and the monitoring configuration are unchanged; the manifest above remains the deployment candidate. This recommendation does not establish production acceptance or app-release readiness.
+**Second-review recommendation accepted by the owner; deployment approved with the safeguards below.** The second review found no additional blocking defect in the runtime changes. Runtime source, all five candidate archives and the monitoring configuration are unchanged; the manifest above remains the deployment candidate. This recommendation does not establish production acceptance or app-release readiness.
 
 - Added four checks against the actual observer export: it observes healthy state without running customer work or starting a write transaction; completion-read failures, aggregate-read failures and invalid aggregate values all reject with a fixed, private-data-free unavailable result. These checks passed both in source and on the exact observer package. The distinct exact-package total is now **48** (the earlier 44 plus four new checks).
 - Final required typecheck/build and **376 unit tests** passed. The full Firestore suite passed **284/284** again. The unchanged runtime also passed [CI on `79d2024`](https://github.com/tigerisaac/aaacap-project/actions/runs/39093806614), including Firebase Auth/account lifecycle. No test rerun was needed to overcome a failure in this review. Exact-package source-map warnings and local SDK metadata-discovery warnings remain in the private logs; neither caused a failed assertion.
@@ -72,11 +72,31 @@ The first source-download helper returned a wrapper-level 500 before saving work
 - At **22:37 Central**, read-only checks found all fourteen function settings/source references and all six schedule configurations unchanged. The five relevant serving revisions retained their IAM bindings and 100% traffic. Four existing policies remain; no deployment, worker invocation or message occurred.
 - Tightened the procedure below: require completions from the new revisions, bound the wait after each expected natural run, require a fresh healthy observation, and require a positive metric point originating after policy activation. Documented resource-deletion, delayed-metric and automatic-closure limits. These are acceptance clarifications, not new cloud resources or configuration changes.
 
-The [dated evidence](../.impeccable/review/release-2026-10-17/operations/background-health.json) records the review and final test hashes. Actual cloud creation, scheduled execution and alert-condition evaluation remain unverified until the separately approved rollout and acceptance.
+The [dated evidence](../.impeccable/review/release-2026-10-17/operations/background-health.json) records the review and final test hashes. The deployment section below adds cloud creation and initial scheduled-execution evidence; alert activation and condition acceptance remain separate.
+
+## Deployment and initial observation — October 17
+
+The owner explicitly replied **“Approve reviewed rollout.”** Source and configuration read-back passed at **23:24 Central**. The candidate manifest and all five ZIP hashes are unchanged. All serving source archives were downloaded and rehashed, every worker retained its settings/IAM and full traffic, and the observer is private with only the scheduled runtime identity in its direct invoker binding. An unauthenticated request returned 403.
+
+| Function | New serving revision |
+|---|---|
+| `cleanupShield` | `cleanupshield-00016-nag` |
+| `finishAccountDeletions` | `finishaccountdeletions-00002-raw` |
+| `reviewServiceAccess` | `reviewserviceaccess-00002-jof` |
+| `expireMessageDeliveries` | `expiremessagedeliveries-00003-yab` |
+| `checkBackgroundHealth` | `checkbackgroundhealth-00001-not` |
+
+The single new index is READY. The authenticated five-minute observer schedule is enabled with no retry; its first natural **23:25** attempt succeeded. Its real log observation reports three fresh workers, zero for all six overdue counts and a missing cleanup completion. That missing result is expected until the next daily run and is **not** full acceptance. Initial positive counter data was observed at 23:27; it predates policy activation and cannot satisfy the later absence-policy acceptance gate. The two exact policies exist **disabled**. Four existing policies, the email channel, readiness check, $50 budget, all six prior schedules, the other ten functions, bridge, Hosting and public configuration remain unchanged; API readiness returned 200.
+
+Natural deletion, subscription-review and audio-expiry completions have been observed after their new revisions became active. The read-only check found no failed/partial result logs from those deployed revisions. Cleanup is expected at **04:00:02 Central on October 18**, with its agreed **04:20:02** completion deadline. Alert activation waits for that natural result and a subsequent fresh, zero-backlog observation. No worker was invoked manually and no calls, texts or synthetic test email were sent.
+
+The exact second-review commit `a0619b2` passed [independent CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39094590443), including build/unit, Firestore and Auth/account-lifecycle checks. [Deployment receipts and pending gates](../.impeccable/review/release-2026-10-17/operations/background-health.json) separate deployed configuration from operational acceptance.
+
+Verification-tool corrections are retained: Eventarc filter arrays were compared independent of order; the existing Budgets API needed Shield's quota project rather than the CLI OAuth project; and Scheduler canonicalized its target URI by appending `/` while preserving the exact OIDC audience. The initial schedule read-back assertion was too strict. A fresh read reconciled the same existing job; it was not submitted twice. These corrections changed verification code, not the approved runtime archives or scope.
 
 ## Approved-rollout procedure and acceptance
 
-Owner approval is required before the following live changes. Approval of this review includes the specified source updates, new observer/index/schedule, two policies and one metric, and restoring these exact baselines if rollout checks fail. It does not authorize manual cleanup, test records in customer collections, phone calls, texts or another synthetic email test.
+The owner approved the following scope and safeguards. Approval includes the specified source updates, new observer/index/schedule, two policies and one metric, and restoring these exact baselines if rollout checks fail. It does not authorize manual cleanup, test records in customer collections, phone calls, texts or another synthetic email test.
 
 1. Recheck the four worker baselines, API source used for the new package, all package hashes, fleet/schedule configuration and existing policy/channel/budget state. Stop and rebuild the review if scope has changed.
 2. Create only the new deletion-age index and wait for `READY`. Patch only the four workers' source archives, once each. Verify serving source, settings/IAM and full traffic independently for each revision. Preserve the other ten functions, bridge and all six existing schedules.

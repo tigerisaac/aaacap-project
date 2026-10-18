@@ -10,86 +10,112 @@ struct TrustedContactsView: View {
     @State private var working = false
     @State private var removing: TrustedContact?
     @State private var confirmRemoval = false
+    @AccessibilityFocusState private var errorFocused: Bool
+    #if DEBUG && targetEnvironment(simulator)
+    @State private var previewChangeFailed = false
+    private var usesChangeFailureFixture: Bool {
+        model.isPreview && ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-change-fails")
+    }
+    #endif
 
     var body: some View {
-        List {
-            if let response {
-                if !response.available {
-                    ShieldGroup {
-                        ContentUnavailableView {
-                            Label {
-                                Text("Caretaker alerts aren’t available yet")
-                                    .lineLimit(nil).fixedSize(horizontal: false, vertical: true)
-                            } icon: { Image(systemName: "person.badge.shield.checkmark") }
-                        } description: {
-                            Text("You can keep using Shield without a caretaker.")
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        Button(loading ? "Checking…" : "Check again") { Task { await load() } }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(loading)
-                        Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                    }
-                }
-                if response.available, response.contacts.isEmpty {
-                    ShieldGroup { Text("Alert someone you trust when checks while you talk detect a possible scam request and intervene.") }
-                }
-                if !response.contacts.isEmpty {
-                    ShieldGroup {
-                        Toggle("Send protection alerts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
-                            .disabled(working || !response.available || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
-                    }
-                }
-                ForEach(response.contacts) { contact in
-                    ShieldSection(contact.name) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(PhoneDisplay.format(contact.phone)).monospacedDigit()
-                            Text(contact.statusLabel).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                            if contact.status == "accepted" {
-                                Text("Protection alerts only").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+        ScrollViewReader { proxy in
+            List {
+                if let response {
+                    if !response.available {
+                        ShieldGroup {
+                            ContentUnavailableView {
+                                Label {
+                                    Text("Caretaker alerts aren’t available yet")
+                                        .lineLimit(nil).fixedSize(horizontal: false, vertical: true)
+                                } icon: { Image(systemName: "person.badge.shield.checkmark") }
+                            } description: {
+                                Text("You can keep using Shield without a caretaker.")
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
-                        }.padding(.vertical, 4)
-                        if contact.status == "pending", contact.requestDelivery != "submitted" {
-                            Text("The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        }
-                        Button("Remove contact", role: .destructive) { removing = contact; confirmRemoval = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
-                    }
-                }
-                if response.available, let id = model.selectedPersonID {
-                    ShieldGroup {
-                        NavigationLink { AddTrustedContactView(participantID: id) { contact in
-                            if model.isPreview {
-                                self.response = .init(available: true, choiceRecorded: true, enabled: true, contacts: response.contacts + [contact])
-                            } else { Task { await load() } }
-                        } } label: {
-                            ActionRow(title: "Add caretaker", symbol: "person.badge.plus")
-                        }
-                    } footer: { Text("They must accept first. Calls and messages stay private.") }
-                }
-                if response.available {
-                    ShieldGroup {
-                        ShieldDisclosure("When are alerts sent?") {
-                            Text("Only when checks while you talk detect a possible scam request and intervene. Those checks must be on.")
-                            Text("They choose texts, app alerts, or both. You can pause alerts or remove a caretaker here.")
-                                .foregroundStyle(ShieldTheme.secondaryText)
-                        }
-                        NavigationLink(value: AppRoute.callProtection) {
-                            ActionRow(title: "Checks while you talk", symbol: "waveform")
+                            Button(loading ? "Checking…" : "Check again") { Task { await load() } }
+                                .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(loading)
+                            Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         }
                     }
+                    if response.available, response.contacts.isEmpty {
+                        ShieldGroup { Text("Alert someone you trust when checks while you talk detect a possible scam request and intervene.") }
+                    }
+                    if !response.contacts.isEmpty {
+                        ShieldGroup {
+                            Toggle("Send protection alerts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
+                                .disabled(working || !response.available || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
+                        }
+                    }
+                    ForEach(response.contacts) { contact in
+                        ShieldSection(contact.name) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(PhoneDisplay.format(contact.phone)).monospacedDigit()
+                                Text(contact.statusLabel).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                if contact.status == "accepted" {
+                                    Text("Protection alerts only").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                }
+                            }.padding(.vertical, 4)
+                            if contact.status == "pending", contact.requestDelivery != "submitted" {
+                                Text("The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                            Button("Remove contact", role: .destructive) { removing = contact; confirmRemoval = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
+                        }
+                    }
+                    if response.available, let id = model.selectedPersonID {
+                        ShieldGroup {
+                            NavigationLink { AddTrustedContactView(participantID: id) { contact in
+                                if model.isPreview {
+                                    self.response = .init(available: true, choiceRecorded: true, enabled: true, contacts: response.contacts + [contact])
+                                } else { Task { await load() } }
+                            } } label: {
+                                ActionRow(title: "Add caretaker", symbol: "person.badge.plus")
+                            }
+                        } footer: { Text("They must accept first. Calls and messages stay private.") }
+                    }
+                    if response.available {
+                        ShieldGroup {
+                            ShieldDisclosure("When are alerts sent?") {
+                                Text("Only when checks while you talk detect a possible scam request and intervene. Those checks must be on.")
+                                Text("They choose texts, app alerts, or both. You can pause alerts or remove a caretaker here.")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                            NavigationLink(value: AppRoute.callProtection) {
+                                ActionRow(title: "Checks while you talk", symbol: "waveform")
+                            }
+                        }
+                    }
+                } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your caretakers…") } }
+                if let error {
+                    ShieldGroup {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                            ShieldNotice(title: response == nil ? "Caretakers couldn’t load" : "Change not confirmed",
+                                detail: error, symbol: "wifi.exclamationmark")
+                                .accessibilityIdentifier("caretaker-error-feedback")
+                                .accessibilityFocused($errorFocused)
+                            Button { Task { await load() } } label: {
+                                Label(response == nil ? "Try again" : "Check current status", systemImage: "arrow.clockwise")
+                                    .shieldWrappingLabel()
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                            }.shieldSecondaryButton()
+                        }.padding(.vertical, ShieldTheme.Spacing.compact)
+                    }
+                    .id("caretaker-error")
                 }
-            } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your caretakers…") } }
-            if let error {
-                ShieldGroup {
-                    ShieldLoadFailure(title: response == nil ? "Caretakers couldn’t load" : "That didn’t finish", detail: error) { Task { await load() } }
+            }.deferredLoading(loading && response == nil && error == nil, visible: $loadingVisible)
+                .shieldListStyle().navigationTitle("Caretakers").navigationBarTitleDisplayMode(.inline)
+                .task { await load() }.refreshable { await load() }
+                .alert("Remove this caretaker?", isPresented: $confirmRemoval) {
+                    Button("Remove contact", role: .destructive) { Task { await remove() } }
+                    Button("Cancel", role: .cancel) { removing = nil }
+                } message: { Text("They will stop receiving alerts about your protection.") }
+                .onChange(of: error) { _, error in
+                    if error != nil {
+                        proxy.scrollTo("caretaker-error", anchor: .top)
+                        errorFocused = true
+                    }
                 }
-            }
-        }.deferredLoading(loading && response == nil && error == nil, visible: $loadingVisible)
-            .shieldListStyle().navigationTitle("Caretakers").navigationBarTitleDisplayMode(.inline)
-            .task { await load() }.refreshable { await load() }
-            .alert("Remove this caretaker?", isPresented: $confirmRemoval) {
-                Button("Remove contact", role: .destructive) { Task { await remove() } }
-                Button("Cancel", role: .cancel) { removing = nil }
-            } message: { Text("They will stop receiving alerts about your protection.") }
+        }
     }
     private func load() async {
         guard !loading else { return }
@@ -99,7 +125,12 @@ struct TrustedContactsView: View {
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if response == nil {
-                response = .init(available: !ProcessInfo.processInfo.arguments.contains("--uitesting-caretakers-unavailable"), choiceRecorded: false, enabled: false, contacts: [])
+                let contacts: [TrustedContact] = usesChangeFailureFixture ? ["Jamie", "Morgan", "Alex"].enumerated().map { index, name in
+                    TrustedContact(id: UUID(uuidString: "00000000-0000-4000-8000-00000000000\(index + 1)")!, name: name,
+                        phone: "+1202555010\(index + 1)", status: "accepted", textAlerts: true, appAlerts: false, requestDelivery: "submitted")
+                } : []
+                response = .init(available: !ProcessInfo.processInfo.arguments.contains("--uitesting-caretakers-unavailable"),
+                    choiceRecorded: usesChangeFailureFixture, enabled: usesChangeFailureFixture, contacts: contacts)
             }
             #endif
             return
@@ -114,26 +145,42 @@ struct TrustedContactsView: View {
             guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
             response = loaded
         } catch is CancellationError { return }
-        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
+        catch { showFailure(error) }
     }
     private func setEnabled(_ enabled: Bool) async {
         guard !working, model.isOwner, let id = model.selectedPersonID else { return }
         working = true; error = nil; defer { working = false }
         do {
+            try failPreviewChangeIfRequested()
             if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/choice", method: "POST", body: APIClient.payload(["enabled": enabled]), participantID: id) }
             if model.isPreview, let response { self.response = .init(available: true, choiceRecorded: true, enabled: enabled, contacts: response.contacts) }
             await load()
         } catch is CancellationError { return }
-        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
+        catch { showFailure(error) }
     }
     private func remove() async {
         guard let removing, !working, model.isOwner, let id = model.selectedPersonID else { return }
         working = true; error = nil; defer { working = false; self.removing = nil }
         do {
+            try failPreviewChangeIfRequested()
             if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/\(removing.id.uuidString.lowercased())", method: "DELETE", participantID: id) }
             if model.isPreview, let response { self.response = .init(available: true, choiceRecorded: true, enabled: response.enabled, contacts: response.contacts.filter { $0.id != removing.id }) }
             await load()
         } catch is CancellationError { return }
-        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
+        catch { showFailure(error) }
+    }
+
+    private func showFailure(_ failure: Error) {
+        error = failure is URLError ? "Your connection was interrupted. Check your internet connection." : failure.localizedDescription
+        model.handleSessionFailure(failure)
+    }
+
+    private func failPreviewChangeIfRequested() throws {
+        #if DEBUG && targetEnvironment(simulator)
+        if usesChangeFailureFixture, !previewChangeFailed {
+            previewChangeFailed = true
+            throw URLError(.notConnectedToInternet)
+        }
+        #endif
     }
 }

@@ -51,6 +51,21 @@ final class VoiceOverUITests: XCTestCase {
         walk.checkpoint("declined-without-permissions")
     }
 
+    func testVoiceOverCanReadAndCheckAFailedCaretakerChange() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "caretaker-change-failure", arguments: ["--uitesting-preview",
+            "--uitesting-screen", "trusted-contacts", "--uitesting-caretaker-change-fails"], large: true)
+        defer { walk.finish() }
+        try walk.activate("Send protection alerts", where: { $0.localizedCaseInsensitiveContains("switch") })
+        try walk.find("Change not confirmed")
+        walk.checkpoint("failure-readable")
+        try walk.activate("Check current status")
+        try walk.find("Send protection alerts", where: { $0.localizedCaseInsensitiveContains("switch") })
+        XCTAssertEqual(walk.app.switches["Send protection alerts"].value as? String, "1")
+        XCTAssertFalse(walk.app.descendants(matching: .any)["caretaker-error-feedback"].exists)
+        walk.checkpoint("last-confirmed-setting-retained")
+    }
+
     func testVoiceOverPilotAccessHasNoStoreActions() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "pilot-access", arguments: ["--uitesting-preview", "--uitesting-subscription", "pilot"], large: true)

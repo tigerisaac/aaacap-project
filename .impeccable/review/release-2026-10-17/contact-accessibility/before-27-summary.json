@@ -1,0 +1,90 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+        "deviceName" : "iPhone 17e",
+        "modelName" : "iPhone 17e",
+        "osBuildNumber" : "24A434",
+        "osVersion" : "27.0",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 4,
+      "passedTests" : 5,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "Shield · Built with macOS 27.0",
+  "expectedFailures" : 0,
+  "failedTests" : 4,
+  "finishTime" : 1792295595.547,
+  "passedTests" : 5,
+  "result" : "Failed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1792295353.607,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+    {
+      "failureText" : "Contrast failed",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 8,
+      "testIdentifierString" : "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit",
+      "testName" : "testContactsAndCaretakersLargestDarkAudit()"
+    },
+    {
+      "failureText" : "Contrast nearly passed",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 9,
+      "testIdentifierString" : "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit",
+      "testName" : "testContactsAndCaretakersStandardLightAudit()"
+    },
+    {
+      "failureText" : "XCTAssertTrue failed - The failure must be revealed without manual scrolling.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 3,
+      "testIdentifierString" : "ReleaseReadinessUITests/testFailedCaretakerPauseIsVisibleAndCanBeRetriedAtLargestText()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/ReleaseReadinessUITests/testFailedCaretakerPauseIsVisibleAndCanBeRetriedAtLargestText",
+      "testName" : "testFailedCaretakerPauseIsVisibleAndCanBeRetriedAtLargestText()"
+    },
+    {
+      "failureText" : "XCTAssertTrue failed - The failure must be revealed without manual scrolling.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 4,
+      "testIdentifierString" : "ReleaseReadinessUITests/testFailedCaretakerRemovalIsVisibleAndCanBeRetriedAtLargestText()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/ReleaseReadinessUITests/testFailedCaretakerRemovalIsVisibleAndCanBeRetriedAtLargestText",
+      "testName" : "testFailedCaretakerRemovalIsVisibleAndCanBeRetriedAtLargestText()"
+    }
+  ],
+  "title" : "Test - Shield",
+  "topInsights" : [
+    {
+      "category" : "Common Failures",
+      "impact" : "50% of failures",
+      "text" : "9 runs of 2 tests failed with Contrast failed"
+    },
+    {
+      "category" : "Common Failures",
+      "impact" : "25% of failures",
+      "text" : "4 runs of 1 test failed with Contrast nearly passed"
+    },
+    {
+      "category" : "Common Failures",
+      "impact" : "50% of failures",
+      "text" : "2 runs of 2 tests failed with XCTAssertTrue failed - The failure must be revealed without manual scrolling."
+    }
+  ],
+  "totalTestCount" : 9
+}

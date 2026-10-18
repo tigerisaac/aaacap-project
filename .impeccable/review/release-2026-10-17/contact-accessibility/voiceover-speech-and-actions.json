@@ -1,0 +1,142 @@
+[
+  {
+    "action" : "current",
+    "utterance" : "Shield Sample app, no real calls"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Caretakers Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Send protection alerts Switch button on Double tap to toggle set"
+  },
+  {
+    "action" : "activate",
+    "utterance" : "Send protection alerts Switch button on Double tap to toggle set"
+  },
+  {
+    "action" : "direct-action-with-VoiceOver-disabled",
+    "utterance" : "Send protection alerts"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Shield Sample app, no real calls"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Caretakers Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Send protection alerts Switch button on Double tap to toggle set"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Jamie Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "(202) 555-0101"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Text alerts"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Protection alerts only"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Remove contact Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Morgan Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "(202) 555-0102"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Text alerts"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Protection alerts only"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Remove contact Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Alex Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "(202) 555-0103"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Text alerts"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Protection alerts only"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Remove contact Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Add caretaker Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "They must accept first. Calls and messages stay private."
+  },
+  {
+    "action" : "next",
+    "utterance" : "When are alerts sent? Button Heading Collapsed Double-tap to exp"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Checks while you talk Button"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Change not confirmed , Your connection was interrupted. Check yo"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Change not confirmed , Your connection was interrupted. Check yo"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Check current status Button"
+  },
+  {
+    "action" : "activate",
+    "utterance" : "Check current status Button"
+  },
+  {
+    "action" : "direct-action-with-VoiceOver-disabled",
+    "utterance" : "Check current status"
+  },
+  {
+    "action" : "current",
+    "utterance" : "Shield Sample app, no real calls"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Caretakers Heading"
+  },
+  {
+    "action" : "next",
+    "utterance" : "Send protection alerts Switch button on Double tap to toggle set"
+  }
+]
