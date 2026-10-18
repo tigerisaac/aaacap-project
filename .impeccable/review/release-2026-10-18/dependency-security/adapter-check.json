@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-18T19:30:47.605Z",
+  "ok": true,
+  "cliVersion": "15.34.0",
+  "existingAdapter": "scripts/firebase-client.mjs",
+  "readOnly": true,
+  "explicitDataReads": 1,
+  "status": 200,
+  "maskedFields": [
+    "status",
+    "lastSucceededAt"
+  ],
+  "mutations": 0
+}

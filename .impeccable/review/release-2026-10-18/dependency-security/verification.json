@@ -1,0 +1,141 @@
+{
+  "at": "2026-10-18T19:35:28.287578+00:00",
+  "releaseReady": false,
+  "baseCommit": "9a0410cd35c214fe92aa0dfd8bef87e557fc318c",
+  "sourceFiles": 580,
+  "runtimeBehaviorChanged": false,
+  "deployed": false,
+  "toolchain": {
+    "node": "22.23.1",
+    "npm": "11.4.2",
+    "firebaseToolsBefore": "15.10.1",
+    "firebaseToolsAfter": "15.34.0",
+    "lifecycleScripts": "disabled for local clean installs",
+    "systemInstallationChanged": false
+  },
+  "audit": {
+    "before": {
+      "info": 0,
+      "low": 0,
+      "moderate": 9,
+      "high": 9,
+      "critical": 0,
+      "total": 18
+    },
+    "after": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 3,
+      "critical": 0,
+      "total": 5
+    },
+    "production": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "remainingNodesAllDevelopment": true
+  },
+  "tests": [
+    {
+      "name": "check",
+      "passed": 382,
+      "failed": 0,
+      "exitCode": 0,
+      "countLines": [
+        "      Tests  382 passed | 287 skipped (669)"
+      ],
+      "logSha256": "8c51106a440cf54ba498b090138239cbc7853b1d4318cc8d6f792319833954a5",
+      "metadataLookupWarnings": 0
+    },
+    {
+      "name": "firestore",
+      "passed": 284,
+      "failed": 0,
+      "exitCode": 0,
+      "countLines": [
+        "      Tests  284 passed (284)"
+      ],
+      "logSha256": "b6000fdbb686b4de14fd94d1c255fed3d360a15c098aedf31dc2366358463902",
+      "metadataLookupWarnings": 8
+    },
+    {
+      "name": "accounts",
+      "passed": 12,
+      "failed": 0,
+      "exitCode": 0,
+      "countLines": [
+        "      Tests  12 passed (12)"
+      ],
+      "logSha256": "b429bb540641b03bfe9aaa182229561d489a6a5feaf4b015630be523329a3c4e",
+      "metadataLookupWarnings": 1
+    }
+  ],
+  "evidenceSha256": {
+    "audit-before.json": "140eddf567eaba9fcc2df64d7c2b748c763f328ada3d3eec6fc1967f38de3c36",
+    "audit-after.json": "f67a746f27f084ccfad04ec619864f1f26757d1815e5c2151ea766703f1f4d05",
+    "audit-production.json": "01acdf61ed735a595ced75e987b876e45d9bf1648063fd4a92ab97279b62ede6",
+    "runtime-boundary.json": "22e8525b876b5410eef08c266ddf24e2ae04f4958952db5619b118e1683ee9de",
+    "source-hashes.json": "bb07648cc6f11b8ec2da32bd1753d43d7a43b4ddf2657e41252343060eba4162",
+    "adapter-check.json": "9dd232c4a4c5bd2a98915a7445a0f2b1626a08d0780672e2007c123e6eaa1a4c"
+  },
+  "retainedCandidateLogs": [
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-install.log",
+      "sha256": "17dd9c1137173a779c34039ca1840d746aca91ed3861ac10132fac63122516da"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-patches.log",
+      "sha256": "5dadf126af771235fda54e87934e90d0fea7d89604447cb913031dd09ce37e0d"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-re2-refresh.log",
+      "sha256": "c5b4a4f4910b5d28c345d55032439f3d5a9d73b4c53db928bd5f67c5b48d3968"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-re2-supported-node.log",
+      "sha256": "392993a490c5a38a8752d944bd7b32ad1dddc05b63efda4a2224a6692b4aba56"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-re2-compatible.log",
+      "sha256": "71694b8883c1436cc0589bbf696c460a506f71b4dc615ea1e808208ece802232"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-ci.log",
+      "sha256": "c47bee707fc707b4effc9b1db72a9c63ddf1b7a50928443911eee36e40dd101f"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-ci-final.log",
+      "sha256": "4ebf9231c9c66033a17c62947d16e2386028a24e4c72acaa66b65ba6bcb5b5c2"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-npm11-lock.log",
+      "sha256": "a4f3caee5b6b01e421f05191a0f214b6b45977a1d5dae680b19dd33bd5b91562"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/candidate-ci-npm11.log",
+      "sha256": "467b570bcd9a049ad97cc251c513207306ecf9d28684b625bbcbeecce9c78d7e"
+    },
+    {
+      "privateLog": "/Users/isaaczhang/Developer/aaacap project/artifacts/private/dependency-review-oct18/checkout-install.log",
+      "sha256": "467b570bcd9a049ad97cc251c513207306ecf9d28684b625bbcbeecce9c78d7e"
+    }
+  ],
+  "retainedIssues": [
+    "Earlier Node omitted the newer optional RE2 package; omitted-package counts were rejected.",
+    "npm 10.9.2/10.9.8 resolution replaced the existing scoped UUID override; a manual repair failed npm ci. Those candidates were rejected.",
+    "Compatible installed Node/npm regeneration retained patched RE2 and UUID; clean installs passed.",
+    "Five affected development packages remain across braces/chokidar and OpenTelemetry/PubSub chains.",
+    "Metadata availability and three dependency deprecation warnings remain recorded."
+  ],
+  "limitations": [
+    "The root production dependency audit is not an audit of serving cloud images or the final signed iOS distribution archive.",
+    "The masked live read checks the existing adapter read path, not deployment or all CLI commands.",
+    "No live deployment, worker invocation, customer message, call or phone-setting change occurred.",
+    "Apple, physical-device, actual failure/recovery and all other open release gates remain open."
+  ]
+}

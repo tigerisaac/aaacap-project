@@ -1,0 +1,49 @@
+{
+  "productionAndOptionalEntriesCompared": 339,
+  "versionsIntegrityAndEdgesUnchanged": true,
+  "classificationChanges": [
+    {
+      "path": "node_modules/p-limit",
+      "fields": {
+        "devOptional": {
+          "before": true,
+          "after": null
+        },
+        "optional": {
+          "before": null,
+          "after": true
+        }
+      }
+    },
+    {
+      "path": "node_modules/undici",
+      "fields": {
+        "devOptional": {
+          "before": null,
+          "after": true
+        },
+        "optional": {
+          "before": true,
+          "after": null
+        }
+      }
+    },
+    {
+      "path": "node_modules/yocto-queue",
+      "fields": {
+        "devOptional": {
+          "before": true,
+          "after": null
+        },
+        "optional": {
+          "before": null,
+          "after": true
+        }
+      }
+    }
+  ],
+  "beforeLockSha256": "d84da8cbb6cd2d45c3ba0a13da16498aaed72f08843b5670b563da562825e919",
+  "finalLockSha256": "7b8ccffc07a0747a6efea23c000ef3ac125fb609a585669f00b70bc77ded28d2",
+  "runtimeDependenciesUnchanged": true,
+  "overridesUnchanged": true
+}

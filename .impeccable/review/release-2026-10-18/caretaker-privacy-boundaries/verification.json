@@ -123,5 +123,18 @@
     "The six-hour healthy snapshot and policy enablement do not establish actual alert-condition delivery, failure recovery, all deployed package hashes or historical incident causes.",
     "Native request metrics may arrive late; the six retained API 401 responses are not individually attributed.",
     "The database retry rollout, Apple work, physical calls, full accessibility and other release gates remain open."
-  ]
+  ],
+  "postCommitCI": {
+    "receipt": "backend-ci-receipt.json",
+    "headSha": "9a0410cd35c214fe92aa0dfd8bef87e557fc318c",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39157798166",
+    "attempt": 1,
+    "counts": {
+      "unit": 382,
+      "firestore": 284,
+      "account": 12
+    },
+    "conclusion": "success",
+    "warningsRetained": true
+  }
 }

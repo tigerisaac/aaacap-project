@@ -1,10 +1,16 @@
 # Status
 
+## October 18 — development tooling security and regression verification
+
+Pinned Firebase tooling now reduces the root dependency audit from **18 to five affected development packages**. The production-only audit remains **zero known vulnerabilities**, with all 339 production/optional package versions, integrity values and dependency edges preserved. The five findings belong to the retained braces/chokidar and OpenTelemetry/PubSub advisory chains. CI now gates production advisories; npm 11.4.2 is the declared minimum after isolated npm 10 candidates lost the existing UUID override.
+
+Final local typecheck/build, **382 unit + 284 Firestore + 12 account checks**, clean installation and a masked read through the unchanged signed-in cloud adapter pass. The database suite preserves the other emulator by using separate local ports. Metadata-probe and dependency deprecation warnings remain recorded. No app/runtime source, frozen deployment package or live service changed. The README now reflects current phone sign-in, explicit contacts/caretaker permissions and the live-pilot/release boundary. [Exact dependency review, rejected candidates, evidence and remaining work](DEPENDENCY-SECURITY.md).
+
 ## October 18 — caretaker permissions and deletion checked with emulator identities
 
 The expanded Auth/Firestore account suite passes **12/12**. New cases create and accept caretakers through the API, verify sixteen protected read cases against successful owner controls in two account setups, deny protected mutations, exercise independent history/listening consent and revocation, and delete/recreate the caretaker's verified phone without restoring its old relationship or access. The protected owner and saved message survive. The first two failures came from an incomplete synthetic enrollment fixture and remain recorded; the final correction changes no production guard.
 
-Final typecheck/build and **382 unit + 284 Firestore + 12 account checks** pass. The default Firestore startup was blocked by another process on port 8089, so the unchanged suite used isolated ports with the same rules/indexes. SDK metadata-availability warnings remain in the logs. This checkpoint changes tests and evidence only. [Exact cases, source boundary and limits](ACCOUNT-OFFBOARDING.md#caretaker-permissions-and-erasure--october-18).
+Final local checks and first-attempt [independent CI on `9a0410c`](https://github.com/tigerisaac/aaacap-project/actions/runs/39157798166) pass typecheck/build and **382 unit + 284 Firestore + 12 account checks**. The default Firestore startup was blocked by another process on port 8089, so the unchanged suite used isolated ports with the same rules/indexes. SDK metadata-availability warnings remain in the logs. This checkpoint changes tests and evidence only. [Exact cases, source boundary and limits](ACCOUNT-OFFBOARDING.md#caretaker-permissions-and-erasure--october-18).
 
 The independent **14:00 Central** live snapshot found four fresh worker completions, zero selected overdue backlogs, 72 healthy observer reports and no 5xx responses over six hours. Six API 401 responses are retained without attributing their cause. Six policies remain enabled and the checked API/bridge/observer revisions retain full traffic. This is bounded read-only health evidence; production erasure, real delivery/calls, failure recovery and the broader release gates remain open. [Operational record](OPERATIONAL-READINESS.md).
 
