@@ -311,5 +311,149 @@
       "path": "artifacts/private/background-health-oct17/deployment-plan.json",
       "sha256": "6de8e01292adda73471ed18bed56b66b10010ab773b2ac83b4cb98cff3b4bb42"
     }
-  ]
+  ],
+  "secondReview": {
+    "at": "2026-10-18T03:42:33.805809+00:00",
+    "requestedByOwner": true,
+    "recommendedForScopedDeployment": true,
+    "approved": false,
+    "deployed": false,
+    "releaseReady": false,
+    "additionalBlockingRuntimeDefectsFound": 0,
+    "runtimeAndConfigurationUnchanged": true,
+    "candidateSetManifestSha256": "fe47426ff545c718c49d96e9aefc983352c63de1d109c3669cac0d62b64d17b6",
+    "finalSourceHandlerTestsSha256": "0aa6150deb0912cc60f206ece27951a1984ffecc44ed2e3f1e0f5ddb7d41c4fd",
+    "typecheck": "passed",
+    "build": "passed",
+    "unitTestsPassed": 376,
+    "firestoreTestsPassed": 284,
+    "additionalExactObserverChecksPassed": 4,
+    "totalDistinctExactPackageChecksPassed": 48,
+    "unchangedRuntimeCI": {
+      "commit": "79d202452b2b0fecd90919614708d3f75485fa7e",
+      "result": "success",
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39093806614"
+    },
+    "readOnlyRevalidation": {
+      "at": "2026-10-18T03:37:56.433Z",
+      "readOnly": true,
+      "packages": [
+        {
+          "name": "cleanupShield",
+          "archiveAndContentsVerified": true,
+          "unrelatedExportsPreserved": true,
+          "rollbackArchiveVerified": true
+        },
+        {
+          "name": "finishAccountDeletions",
+          "archiveAndContentsVerified": true,
+          "unrelatedExportsPreserved": true,
+          "rollbackArchiveVerified": true
+        },
+        {
+          "name": "reviewServiceAccess",
+          "archiveAndContentsVerified": true,
+          "unrelatedExportsPreserved": true,
+          "rollbackArchiveVerified": true
+        },
+        {
+          "name": "expireMessageDeliveries",
+          "archiveAndContentsVerified": true,
+          "unrelatedExportsPreserved": true,
+          "rollbackArchiveVerified": true
+        },
+        {
+          "name": "checkBackgroundHealth",
+          "archiveAndContentsVerified": true,
+          "unrelatedExportsPreserved": true,
+          "rollbackArchiveVerified": true
+        }
+      ],
+      "live": [
+        {
+          "name": "cleanupShield",
+          "revision": "cleanupshield-00015-nek",
+          "settingsSourceAndIAMUnchanged": true,
+          "trafficPercent": 100
+        },
+        {
+          "name": "finishAccountDeletions",
+          "revision": "finishaccountdeletions-00001-kif",
+          "settingsSourceAndIAMUnchanged": true,
+          "trafficPercent": 100
+        },
+        {
+          "name": "reviewServiceAccess",
+          "revision": "reviewserviceaccess-00001-xey",
+          "settingsSourceAndIAMUnchanged": true,
+          "trafficPercent": 100
+        },
+        {
+          "name": "expireMessageDeliveries",
+          "revision": "expiremessagedeliveries-00002-nos",
+          "settingsSourceAndIAMUnchanged": true,
+          "trafficPercent": 100
+        },
+        {
+          "name": "shieldApi",
+          "revision": "shieldapi-00034-yaw",
+          "settingsSourceAndIAMUnchanged": true,
+          "trafficPercent": 100
+        }
+      ],
+      "unchangedFunctionCount": 14,
+      "unchangedScheduleCount": 6,
+      "existingPolicyCount": 4,
+      "candidateSetManifestSha256": "fe47426ff545c718c49d96e9aefc983352c63de1d109c3669cac0d62b64d17b6",
+      "deployed": false,
+      "callsOrMessagesSent": 0
+    },
+    "acceptanceClarifications": [
+      "Successful worker runs must start after their new revisions became active.",
+      "Stop acceptance if natural completion misses its explicit deadline or a failed/partial result occurs.",
+      "Require a subsequent observation with all four worker states fresh and no overdue backlog.",
+      "Require a positive counter point from an observation made after policy activation.",
+      "Automatic incident closure is not proof of recovery; deleted-resource detection is not guaranteed."
+    ],
+    "remainingLimits": [
+      "Cloud creation and natural production execution await approval.",
+      "Alert-condition failure/recovery remains unverified.",
+      "Prior intermittent stopped-history transaction failure remains unresolved.",
+      "Full app-release, Apple and physical-phone gates remain open."
+    ],
+    "warnings": [
+      "The exact compiled package omits source maps referenced by comments; the runner reports warnings but all selected checks pass.",
+      "The local emulator run reports SDK metadata-discovery warnings; all 284 tests pass."
+    ],
+    "privateEvidence": [
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/check-final.log",
+        "sha256": "31ba52882088b29c5f1885e97be91d86f3c4e70d53980a7a51d7c0383ccd75f3"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/firebase.log",
+        "sha256": "38dd7f45f98cfa9dfac2b17b8c347599bed5678b9993b570379e587340d9e9b9"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/observer-verified.json",
+        "sha256": "b567a06913a5fc13b395ec86ce9073b22cd144b9a50d555b5d22ddd5901ca558"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/observer-verified.log",
+        "sha256": "053f6ee0562c65cf885687e0e9ade2c1b9ddf157232cf3a78798667775e0f6f4"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/revalidation.json",
+        "sha256": "2580a718856ebed8e916d0ea97b80fd2da1ce9b2643f1d7d1929643aa7351f05"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/content-provenance.json",
+        "sha256": "ec0fbe807b8c9d01fc12745b4b5251c31a179292c98c41f8f751abb81f2eb2df"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/second-review/ci-79d2024.json",
+        "sha256": "84a91738e3bd7c8c4f9ec781e8ccdbb9c2bf52f225fda81f8306777a35a32d64"
+      }
+    ]
+  }
 }
