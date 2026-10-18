@@ -280,5 +280,17 @@
     "taskOwnedSimulatorsReturnedToShutdown": 2,
     "otherSimulatorsUntouched": true,
     "localEmulatorJobsFinished": true
+  },
+  "checkpointBoundary": "Original source/package verification before deployment; the later owner-approved deployment has its own receipt.",
+  "postCheckpointDeployment": {
+    "receipt": "deployment/verification.json",
+    "revision": "shieldapi-00035-qos",
+    "sourceAndConfigurationVerified": true,
+    "boundedObservationPending": false,
+    "scopedAcceptanceAt": "2026-10-18T20:52:16.920Z"
+  },
+  "followUpSourceReview": {
+    "area": "SavedNumbersView and AddNumberView response ordering",
+    "status": "Not reproduced or changed in this checkpoint. NavigationCache invalidates and cancels owner list reads on mutations; missing view-level guards alone do not establish a reachable defect. Controlled integration verification remains under release gate R2."
   }
 }

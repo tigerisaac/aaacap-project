@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-18T20:46:57.365Z",
+  "approved": true,
+  "deployed": true,
+  "rolledBack": false,
+  "revision": "shieldapi-00035-qos",
+  "previousRevision": "shieldapi-00034-yaw",
+  "archiveSha256": "3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7",
+  "sourceManifestSha256": "ca234ec7bca04689c911e3495491dbd79a631ee5e85e9b8bb4658828d993598d",
+  "sourceFilesVerified": 90,
+  "configurationPreserved": true,
+  "iamPreserved": true,
+  "trafficPercent": 100,
+  "acceptedAt": "2026-10-18T20:47:03.611Z",
+  "unrelatedFunctionsPreserved": 14,
+  "surroundingTrafficPreserved": true,
+  "bridgePreserved": true,
+  "schedulesPreserved": 7,
+  "alertPoliciesPreserved": 6,
+  "hostingPreserved": true,
+  "publicConfigurationPreserved": true,
+  "readiness": 200,
+  "privacyPreserved": true,
+  "privacySha256": "39381a0cd4f598ca21e5f61aa59f52ab4c0798f565cdb7894e427b078a638df9",
+  "authenticationGuards": [
+    {
+      "path": "/api/trusted-numbers",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/trusted-numbers/00000000-0000-4000-8000-000000000099",
+      "method": "PATCH",
+      "status": 401
+    },
+    {
+      "path": "/api/trusted-numbers/sync",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/blocked-numbers",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/access",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/account/deletion",
+      "method": "GET",
+      "status": 401
+    }
+  ],
+  "activeCallReservations": 0,
+  "noCallsOrMessagesSent": true,
+  "noCustomerFixturesCreated": true,
+  "noManualWorkersInvoked": true,
+  "signedInContactChangeVerified": false,
+  "physicalInstallation": false,
+  "diagnosticsWindowPending": false,
+  "boundedObservationAcceptedAt": "2026-10-18T20:52:16.920Z",
+  "boundedObservation": {
+    "receipt": "post-start-health.json",
+    "elapsedSeconds": 319,
+    "requestCounts": {
+      "200": 4,
+      "401": 6
+    },
+    "latestMetricPointEnd": "2026-10-18T20:51:16.920Z",
+    "serverErrorsObserved": 0,
+    "fixedErrorDiagnostics": 0,
+    "metricLagAcknowledged": true
+  }
+}

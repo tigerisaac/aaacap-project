@@ -2,6 +2,8 @@
 
 **Source fix, local packages and independent CI verified; not deployed.** The intermittent admission and history-counter failure is now reproduced without Shield domain code and isolated with a real local gRPC transport. This evidence identifies an SDK retry mechanism; it does not establish which historical production requests encountered it.
 
+**API package rebase required:** the separately owner-approved [contact-recovery rollout](CONTACT-RECOVERY-ROLLOUT.md) advanced the API to `shieldapi-00035-qos` on October 18 at 15:47 Central. The API baseline/candidate below are historical and must not be deployed as-is. Rebase the two-file retry overlay onto that newly serving archive, repeat its exact-package verification and update the complete rollout manifest before requesting approval. The original packages and results remain retained. No retry deployment is authorized by the contact-recovery approval.
+
 ## Cause and correction
 
 The legacy server-streaming path retries an initial read error before Firestore's transaction runner receives it. If that error is `ABORTED`, the transaction is already closed. Replaying the read with its old ID can replace the original error with `INVALID_ARGUMENT: Transaction is invalid or closed`. Firestore then stops instead of starting a fresh transaction.

@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-18T20:46:57.365Z",
+  "approved": true,
+  "deployed": true,
+  "rolledBack": false,
+  "revision": "shieldapi-00035-qos",
+  "previousRevision": "shieldapi-00034-yaw",
+  "archiveSha256": "3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7",
+  "sourceManifestSha256": "ca234ec7bca04689c911e3495491dbd79a631ee5e85e9b8bb4658828d993598d",
+  "sourceFilesVerified": 90,
+  "configurationPreserved": true,
+  "iamPreserved": true,
+  "trafficPercent": 100
+}

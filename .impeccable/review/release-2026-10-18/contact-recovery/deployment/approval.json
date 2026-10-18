@@ -1,0 +1,11 @@
+{
+  "approved": true,
+  "receivedAt": "2026-10-18T20:43:24.660213+00:00",
+  "userReply": "Approve contact-recovery API rollout",
+  "functions": [
+    "shieldApi"
+  ],
+  "sourceManifestSha256": "ca234ec7bca04689c911e3495491dbd79a631ee5e85e9b8bb4658828d993598d",
+  "archiveSha256": "3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7",
+  "scope": "Three API runtime files, source-only update, read-only acceptance and original-source rollback; no customer fixture, call, message, Apple or feature activation."
+}

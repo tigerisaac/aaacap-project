@@ -1,6 +1,6 @@
 # Contact change recovery — October 18, 2026
 
-**Repository correction and frozen API package; not deployed or installed on a physical phone.** Contact edits must remain consistent when a response is lost, the app closes, access is revoked or an older refresh finishes late. The current theme is preserved. [Backend review and rollout boundary](CONTACT-RECOVERY-ROLLOUT.md).
+**Repository correction verified; the approved API package was deployed October 18. The app is not installed on a physical phone by this work.** Contact edits must remain consistent when a response is lost, the app closes, access is revoked or an older refresh finishes late. The current theme is preserved. [Dated backend receipt and acceptance boundary](CONTACT-RECOVERY-ROLLOUT.md).
 
 ## Reproduced failures
 
@@ -19,7 +19,7 @@ Opening, refreshing or foregrounding the screen reads status only. It does not e
 
 The API returns a consistent list/revision snapshot and advertises `revision-v1`. Versioned changes atomically compare the revision, update the contact and record a receipt. Replaying the same receipt and intent does not write twice. Newer individual changes, explicit full shares and legacy mutations supersede older requests. Versioned full-share requests also compare their starting revision, preventing an older delayed upload from overriding a newer edit. Reads and individual changes reject an active full-share lease instead of treating a partial batch as confirmed.
 
-The app requires this contract before sharing or changing native contacts. Earlier clients remain wire compatible, but retain their earlier client-side recovery limitations. **Deploy and verify the API before distributing the updated app.** No new entitlement, caretaker access, automatic sharing, call-control behavior or delivery activation is included. Removed server rows remain disabled/restorable under the existing contact-retention policy; this is not a new server erasure promise.
+The app requires this contract before sharing or changing native contacts. Earlier clients remain wire compatible, but retain their earlier client-side recovery limitations. The approved API now serves the exact verified package; signed-in contact recovery still needs acceptance before general client distribution. No new entitlement, caretaker access, automatic sharing, call-control behavior or delivery activation is included. Removed server rows remain disabled/restorable under the existing contact-retention policy; this is not a new server erasure promise.
 
 ## Verification
 
@@ -40,4 +40,4 @@ The initial VoiceOver run reached the production recovery controls, then failed 
 
 ## Remaining acceptance
 
-The [release checklist](APP-STORE-RELEASE.md) remains open. Verify the approved server contract after rollout, then the matching signed app on physical iPhones: real permission denial/limited access and changes in Settings; duplicate/read-only contact sources; iCloud propagation; interruption/locking/reinstall; device/account deletion; VoiceOver gestures and complete spoken guidance; and actual call routing after removal/restoration. Apple work remains deferred by the owner. This correction supplies no real-call, carrier, purchase or caretaker-delivery evidence.
+The [release checklist](APP-STORE-RELEASE.md) remains open. Verify signed-in recovery against the deployed server, then the matching signed app on physical iPhones: real permission denial/limited access and changes in Settings; duplicate/read-only contact sources; iCloud propagation; interruption/locking/reinstall; device/account deletion; VoiceOver gestures and complete spoken guidance; and actual call routing after removal/restoration. Apple work remains deferred by the owner. This correction supplies no real-call, carrier, purchase or caretaker-delivery evidence.

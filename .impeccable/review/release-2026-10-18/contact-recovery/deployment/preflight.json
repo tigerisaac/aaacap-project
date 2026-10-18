@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-18T20:43:53.345Z",
+  "prepared": true,
+  "revision": "shieldapi-00034-yaw",
+  "activeCallReservations": 0,
+  "sourceVerified": true,
+  "serviceSettingsPreserved": true,
+  "iamPreserved": true,
+  "sourceFiles": 90,
+  "archiveSha256": "3c35398a526ce01e6ba7273f8665b5222b60192725573919fb976498020c5fc7",
+  "observedFunctions": 15,
+  "observedSchedules": 7,
+  "observedPolicies": 6,
+  "readiness": 200
+}

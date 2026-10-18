@@ -1,0 +1,28 @@
+{
+  "sourceCheckpoint": "47df497",
+  "approvedRuntimeCommit": "df0bf4ecf24c2d049931407d26ac6de4e14e9aa3",
+  "rolloutScriptSha256": "dad460f911146121da50eb92d8eb8fcf772a60e4b030d84e8278325b83b67c19",
+  "privateStateDirectory": "artifacts/private/contact-recovery-oct18/deployment",
+  "sourceOnlyPatch": true,
+  "candidateFiles": 90,
+  "runtimeFilesChanged": 3,
+  "baselineRuntimeFilesPreserved": 87,
+  "sourceArchiveMatched": true,
+  "rollbackUsed": false,
+  "postStartObservation": "Accepted within the bounded, delayed-metric limits recorded in post-start-health.json.",
+  "signedInAcceptance": false,
+  "physicalInstallation": false,
+  "separateFirestoreRetryCandidate": "API baseline is now stale; rebase/reverification required; no retry deployment authorized.",
+  "scopedRolloutAccepted": true,
+  "acceptedAt": "2026-10-18T20:52:16.920Z",
+  "broaderReleaseReady": false,
+  "evidence": {
+    "approval.json": "0153a9cefdf84c69f8f3f44d56f2ac7841b5ad4bf820ec490f4bd701ab44c5ea",
+    "preflight.json": "b9a9574ff7428540609c076083dae4589c1ff42f5eb955344906ea55a345d5ff",
+    "source-verified.json": "75ec5645429c75c946a82973f2310697eee2b7afa14eb40e24e417d4a0cd3794",
+    "acceptance.json": "7bb56378afe4a2cc64ad8540b25907776391e3f49da95b7132a890e44faecaa0",
+    "initial-health.json": "645ca05229970a8e065f3928ef823a52739ecdc6bf0ccfc234b0bf12329d4340",
+    "post-start-health.json": "094d7af9cc43d8215ab0bdb7635cdffba828ba466a56f401837f319b6035a650"
+  },
+  "healthReaderSha256": "0d2b0167716e23fa79f0f6ae2c1d346b34c2ee5006a775a062577c2033888e3a"
+}

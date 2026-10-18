@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-18T20:48:49.854Z",
+  "readOnly": true,
+  "revision": "shieldapi-00035-qos",
+  "start": "2026-10-18T20:46:57.365Z",
+  "end": "2026-10-18T20:48:49.854Z",
+  "elapsedSeconds": 112,
+  "checks": {
+    "requests": {
+      "available": true,
+      "totals": {
+        "200": 1
+      },
+      "points": 1,
+      "latestPointEnd": "2026-10-18T20:47:49.854Z",
+      "serverErrors": 0,
+      "observedSuccessfulRequests": true,
+      "alignmentSeconds": 60,
+      "limitation": "Native request metrics are delayed; counts describe available buckets and do not establish a successful signed-in contact change."
+    },
+    "diagnostics": {
+      "available": true,
+      "failures": [],
+      "failureCount": 0,
+      "customerContentRetrieved": false
+    }
+  },
+  "limit": "Bounded post-start observation. No authenticated production contact edit, physical phone test or operational failure injection is included."
+}
