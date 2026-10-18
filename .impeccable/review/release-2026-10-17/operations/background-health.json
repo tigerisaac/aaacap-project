@@ -92,7 +92,17 @@
       "result": "success",
       "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39091907615"
     },
-    "intermittentHistoricalCounterTransactionFailure": "Still unresolved; no recurrence in this full emulator run."
+    "intermittentHistoricalCounterTransactionFailure": "Still unresolved; no recurrence in this full emulator run.",
+    "candidateCI": {
+      "commit": "7e613fc6356b9190228c03ee37915612d72d8233",
+      "result": "success",
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39093478740",
+      "checks": [
+        "typecheck, unit tests and build",
+        "Firestore emulator suite",
+        "Firebase Auth and Firestore account lifecycle"
+      ]
+    }
   },
   "configurationPreflight": {
     "checkedAt": "2026-10-18T03:19:50.191Z",
@@ -292,6 +302,14 @@
     {
       "path": "artifacts/private/background-health-oct17/monitoring-preflight.json",
       "sha256": "6e3cabdd4a766f5ed009015ae9ad9ce8f895132a8d70370af5b7e251a3ef6076"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/ci-7e613fc.json",
+      "sha256": "985851741b10fa8bb8f3f159734dc8622f0e7a7270183bbc4060fa590fda5d8d"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/deployment-plan.json",
+      "sha256": "6de8e01292adda73471ed18bed56b66b10010ab773b2ac83b4cb98cff3b4bb42"
     }
   ]
 }
