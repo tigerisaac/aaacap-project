@@ -217,7 +217,7 @@ The palette places navy actions and dark reading ink on quiet neutral surfaces. 
 - **Quiet symbol surface** (`QuietSurface`; `quiet-surface-*`): restrained backings for repeated row symbols.
 - **Input boundary** (`FieldBorder`; `field-border-*`): sign-in's visible field boundary; focus uses Action. The focus and increased-contrast stroke is thicker than the resting standard stroke.
 
-ScreenIntro may place a role symbol on a low-opacity tint. This small illustration does not set the opacity of readable text. Outcome labels remain unboxed. The positive Home historical-total row uses Action with Action ink; zero and unavailable totals return to Card.
+Setup’s call-check intro may place a role symbol on a low-opacity tint. This small illustration does not set the opacity of readable text. Outcome labels remain unboxed. The positive Home historical-total row uses Action with Action ink; zero and unavailable totals return to Card.
 
 **The Outcome Truth Rule.** Pair outcome color with plain words or a familiar symbol; a checked, offered or answered call never implies an authenticated caller.
 
@@ -307,7 +307,7 @@ ShieldSwitchStyle keeps the familiar native switch and makes the entire wrapping
 
 Sign-in has a persistent visible label, explicit accessibility label, keyboard/content type and a rounded Card field. Its resting boundary is FieldBorder; focus uses Action, and focus/increased contrast use the stronger stroke. Email entry grows vertically, and a labeled Clear action appears during editing. Long names and numbers grow.
 
-Native Forms retain fields, Picker and Toggle. Add number's bottom action is Done while editing and Save number afterward; validation and working states gate submission. Check a text has a labeled editor, an accessibility-hidden placeholder, native Paste and Picture actions and explicit agreement before sending. Editing clears stale errors. Save failures in entry flows scroll the notice into view and request accessibility focus where implemented. These are source behaviors, with assistive-technology delivery still unverified.
+Native Forms retain fields, Picker and Toggle. Add number's Save number follows its fields, and Done in the navigation bar dismisses the keyboard; validation and working states gate submission. Check a text has a labeled editor, an accessibility-hidden placeholder, native Paste and Picture actions and explicit agreement before sending. Editing clears stale errors. Save failures in entry flows scroll the notice into view and request accessibility focus where implemented. These are source behaviors, with assistive-technology delivery still unverified.
 
 ### Sign-in and choices
 
@@ -590,3 +590,11 @@ This supersedes the October 17 decorative badge and teal checks-on surface.
 Copying a caller's number is back. It was removed on October 17 with the selectable line's 18-point target. A long press on the whole Call detail header (title, outcome, explanation, number and date) opens one "Copy number" item. iOS lifts the header as its preview. VoiceOver reaches it with double-tap and hold on any header line. That is unverified with VoiceOver; an explicit action on the number line was dropped because the audit then reported that line as a too-small target. Withheld numbers and numbers under seven digits offer nothing. The line stays non-selectable, and the call-back guidance below it is unchanged.
 
 Two audit reports are still kept as evidence rather than changed. The tab-bar edge report also appeared with the hard scroll edge Shield used before October 13, and an app-free list reproduces it. Setup's Close measures 14.0:1. The owner declined the only alternative that would change its appearance (a system close glyph).
+
+## October 18 — buttons inside list rows
+
+A button with the automatic style inside a List row takes over the whole row. Three rows did this. Tapping "Sample clinic" in Numbers you trust opened "Remove Sample clinic?". Tapping a person in Call sharing opened "Stop sharing with …?". Tapping a removed contact's name in Your contacts added the contact back with no confirmation. Remove, Stop sharing and Add back to Contacts are now borderless buttons, and their 52-point targets sit inside their labels, where a borderless button takes taps. A probe confirmed the fix: names do nothing, and the buttons still open their confirmations. Any new button that shares a row with text needs an explicit style.
+
+Numbers you trust's Call was a near-round blob, 82 points tall and about 96 wide, because its short label sat in a large capsule. It now fills the row beside Remove, like Allow calls again and Remove from iPhone. Remove is red text only, like Stop sharing and Remove contact: with an icon, its icon stayed navy and its text stayed full ink while disabled in the sample app. The unused ScreenIntro tile, a 48-point symbol on a tinted square, is gone.
+
+Four UI-test steps still described the screens as they were before October 17's form and settings changes, and no suite run since had caught them. Settings no longer lists Automatic text checks. Add number and Add contact are scroll views, not lists. Add number's Save follows the fields, so the largest text size scrolls to it. Call sharing ends with Caretaker alerts, not a sign-in line. The tests now check the current screens. On iOS 27 (iPhone 17), these suites pass: SeniorDesign 12/12, including a new test that a name never triggers its row's action; FiveAreaRefinement 6/6; and SeniorPolish 24/24.

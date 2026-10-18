@@ -283,8 +283,12 @@ final class SeniorPolishUITests: XCTestCase {
             capture(app, "polish-\(screen)-large-dark-top")
             switch screen {
             case "numbers": reveal(app.buttons["Call Sample clinic"], in: app)
-            case "add-number": XCTAssertTrue(app.buttons["Save number"].isHittable)
-            case "sharing": reveal(app.staticTexts["Sign in to manage sharing."], in: app)
+            case "add-number":
+                // Since October 17 Save follows the fields, so the largest size scrolls to it.
+                let save = app.buttons["Save number"]
+                for _ in 0..<6 where !save.isHittable { app.swipeUp() }
+                XCTAssertTrue(save.isHittable)
+            case "sharing": reveal(app.staticTexts["Caretaker alerts"].firstMatch, in: app)
             case "contacts": reveal(app.buttons["Contacts settings"], in: app)
             case "quiet": reveal(app.switches["Quiet hours"], in: app)
             case "blocked": reveal(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'unblock-'")).firstMatch, in: app)

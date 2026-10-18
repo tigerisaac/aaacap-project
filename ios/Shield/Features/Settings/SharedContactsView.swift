@@ -85,10 +85,14 @@ struct SharedContactsView: View {
                         ForEach(model.items.filter { !$0.isEnabled }) { item in
                             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                                 Text(item.label).font(.headline)
-                                Button("Add back to Contacts", systemImage: "arrow.uturn.backward") {
+                                // Borderless keeps a tap on the name from re-adding the contact.
+                                Button {
                                     Task { _ = await model.change(true, item: item, app: app) }
+                                } label: {
+                                    Label("Add back to Contacts", systemImage: "arrow.uturn.backward")
+                                        .frame(minHeight: ShieldTheme.Layout.minimumTarget).contentShape(.rect)
                                 }
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.working || app.isDemo)
+                                .buttonStyle(.borderless).disabled(model.working || app.isDemo)
                                 .accessibilityLabel("Add \(item.label) back to Contacts")
                             }
                         }

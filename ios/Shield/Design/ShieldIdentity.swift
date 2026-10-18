@@ -15,28 +15,6 @@ struct ShieldBrand: View {
     }
 }
 
-struct ScreenIntro: View {
-    let title: String
-    let detail: String
-    let symbol: String
-    var color: Color = ShieldTheme.action
-    var body: some View {
-        HStack(alignment: .top, spacing: 16) {
-            Image(systemName: symbol).font(.title2.weight(.semibold))
-                .foregroundStyle(color).frame(width: 48, height: 48)
-                .background(color.opacity(0.10), in: .rect(cornerRadius: 14))
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 6) {
-                Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
-                Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-            }
-            .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.vertical, 8)
-        .accessibilityElement(children: .combine)
-    }
-}
-
 /// The quiet symbol tile that leads call, message, action and status rows, so their text
 /// starts on one shared column.
 struct ShieldRowSymbol: View {

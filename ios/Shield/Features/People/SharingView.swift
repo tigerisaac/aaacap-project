@@ -59,8 +59,11 @@ struct SharingView: View {
                         Text(grant.label).font(.headline)
                         Text(grant.accepted ? grant.canListen ? "Calls and messages" : "Calls only" : "Waiting for them to join")
                             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                        Button("Stop sharing", role: .destructive) { revokeID = grant.id }
-                            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                        // Borderless keeps the person's name from acting as Stop sharing.
+                        Button(role: .destructive) { revokeID = grant.id } label: {
+                            Text("Stop sharing").frame(minHeight: ShieldTheme.Layout.minimumTarget).contentShape(.rect)
+                        }
+                        .buttonStyle(.borderless)
                             .disabled(revoking || (model.isDemo && !usesConfirmationFixture))
                             .accessibilityLabel("Stop sharing with \(grant.label)")
                     }

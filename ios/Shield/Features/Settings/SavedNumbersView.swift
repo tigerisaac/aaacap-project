@@ -88,13 +88,18 @@ struct SavedNumbersView: View {
     @ViewBuilder private func numberActions(_ item: SavedNumber) -> some View {
         if kind == .destinations {
             Button { call(item.phone) } label: {
-                Label("Call", systemImage: "phone.fill").frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                Label("Call", systemImage: "phone.fill").frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
             }
             .accessibilityLabel("Call \(item.label)").accessibilityInputLabels(["Call \(item.label)", "Call"])
             .shieldSecondaryButton().disabled(model.isDemo)
         }
-        Button("Remove", systemImage: "minus.circle", role: .destructive) { pendingRemoval = item }
-            .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(model.isDemo)
+        // Borderless: an automatic-style button in a List row turns the whole row,
+        // name included, into Remove. The target lives in the label, which borderless uses.
+        // Text only, like Stop sharing: an icon label kept a navy icon and didn't dim when disabled.
+        Button(role: .destructive) { pendingRemoval = item } label: {
+            Text("Remove").frame(minHeight: ShieldTheme.Layout.minimumTarget).contentShape(.rect)
+        }
+        .buttonStyle(.borderless).disabled(model.isDemo)
             .accessibilityLabel("Remove \(item.label)")
     }
 

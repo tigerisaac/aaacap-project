@@ -77,9 +77,7 @@ final class SeniorDesignUITests: XCTestCase {
         app.navigationBars.buttons.firstMatch.tap()
         tap(app.staticTexts["Checks while you talk"].firstMatch, in: app, towardTop: true)
         capture(app, "senior-call-checks-light")
-        app.navigationBars.buttons.firstMatch.tap()
-        tap(app.staticTexts["Automatic text checks"].firstMatch, in: app)
-        capture(app, "senior-auto-text-light")
+        // Automatic text checks left Settings on October 17; its screen is covered by the visual test below.
     }
 
     func testLargestTextDarkModeKeepsEverydayActionsReachable() {
@@ -121,7 +119,10 @@ final class SeniorDesignUITests: XCTestCase {
             for screen in ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts"] {
                 let app = launch(["--uitesting-screen", screen, dark ? "--uitesting-dark" : "--uitesting-light"])
                 XCTAssertTrue(app.navigationBars.firstMatch.appears(timeout: 5), screen)
-                XCTAssertTrue(app.collectionViews.firstMatch.appears(timeout: 5), screen)
+                // Add number and Add contact are scroll views since October 17; the rest are lists.
+                let content = app.descendants(matching: .any).matching(NSPredicate(format: "elementType IN %@", [
+                    XCUIElement.ElementType.collectionView.rawValue, XCUIElement.ElementType.scrollView.rawValue])).firstMatch
+                XCTAssertTrue(content.appears(timeout: 5), screen)
                 capture(app, "visual-\(screen)-\(dark ? "dark" : "light")")
             }
             let app = launch([dark ? "--uitesting-dark" : "--uitesting-light"])
@@ -259,6 +260,23 @@ final class SeniorDesignUITests: XCTestCase {
         capture(app, "motion-native-photo-picker")
         app.buttons["Cancel"].tap()
         XCTAssertTrue(app.textViews.firstMatch.isHittable)
+    }
+
+    /// A name in a list row must not act as that row's Remove or Stop sharing button.
+    func testNamesInActionRowsDoNotTriggerTheirActions() {
+        var app = launch(["--uitesting-screen", "sharing-access", "--uitesting-sharing-confirmations"])
+        XCTAssertTrue(app.staticTexts["Jamie"].firstMatch.appears(timeout: 5))
+        app.staticTexts["Jamie"].firstMatch.tap()
+        XCTAssertFalse(app.alerts.firstMatch.waitForExistence(timeout: 2))
+        let stop = app.buttons["Stop sharing with Jamie"].firstMatch
+        XCTAssertGreaterThanOrEqual(stop.frame.height, 52)
+        stop.tap()
+        XCTAssertTrue(app.alerts["Stop sharing with Jamie?"].appears(timeout: 5))
+        app = launch(["--uitesting-screen", "numbers"])
+        let remove = app.buttons["Remove Sample clinic"].firstMatch
+        XCTAssertTrue(remove.appears(timeout: 5))
+        XCTAssertGreaterThanOrEqual(remove.frame.height, 52)
+        XCTAssertGreaterThan(app.buttons["Call Sample clinic"].firstMatch.frame.width, remove.frame.width)
     }
 
     private func launch(_ args: [String] = [], sample: Bool = true) -> XCUIApplication {
