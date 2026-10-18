@@ -733,5 +733,37 @@
     "postActivationPositiveCounterRequired": true,
     "overnightAutomationCreated": false,
     "overnightAutomationApprovalRequested": true
+  },
+  "followupReadOnlyObservation": {
+    "at": "2026-10-18T05:29:52.981Z",
+    "allWorkersCompleted": false,
+    "acceptanceStopped": false,
+    "latestObserver": {
+      "timestamp": "2026-10-18T05:25:03.418021Z",
+      "revision": "checkbackgroundhealth-00001-not",
+      "payload": {
+        "available": true,
+        "jobStates": {
+          "finishAccountDeletions": "fresh",
+          "cleanupShield": "missing",
+          "expireMessageDeliveries": "fresh",
+          "reviewServiceAccess": "fresh"
+        },
+        "overdue": {
+          "providerRecordings": 0,
+          "accountDeletions": 0,
+          "callDeadlines": 0,
+          "monitoringChecks": 0,
+          "audioChunks": 0,
+          "audioManifests": 0
+        },
+        "event": "shield_maintenance_health",
+        "healthy": false
+      }
+    },
+    "failureCount": 0,
+    "cleanupExpectedAt": "2026-10-18T09:00:02.502898Z",
+    "cleanupDeadline": "2026-10-18T09:20:02.502Z",
+    "manualWorkerInvocations": 0
   }
 }

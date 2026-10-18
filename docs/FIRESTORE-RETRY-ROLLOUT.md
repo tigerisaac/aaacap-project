@@ -1,6 +1,6 @@
 # Firestore transaction retries — October 18, 2026
 
-**Source fix and frozen rollout verified locally; not deployed. Independent CI pending.** The intermittent admission and history-counter failure is now reproduced without Shield domain code and isolated with a real local gRPC transport. This evidence identifies an SDK retry mechanism; it does not establish which historical production requests encountered it.
+**Source fix, local packages and independent CI verified; not deployed.** The intermittent admission and history-counter failure is now reproduced without Shield domain code and isolated with a real local gRPC transport. This evidence identifies an SDK retry mechanism; it does not establish which historical production requests encountered it.
 
 ## Cause and correction
 
@@ -26,6 +26,8 @@ Relevant upstream definitions: [GAX client option](https://github.com/googleapis
 - Frozen candidates passed **85 integration tests**, **six transport regressions**, import/export checks for **all fifteen functions**, and local bridge startup in **both live and hybrid modes**. No handler was invoked against production. The first package run lacked its enrollment fixture and tested a worker-only return value against the API's older helper copy. The final harness copies that fixture and imports the batch processor from the actual deletion-worker candidate; every assertion and release byte is unchanged.
 - The first release-package smoke failed because its root Admin credential belonged to a different SDK installation. Package-relative Admin resolution corrected the verifier; packaged public policy/startup/authentication guards now pass with zero database/provider requests.
 - Local npm 10.9.2 rejected the repository's existing UUID override during clean installation. The release-packaging npm 11.4.2 installed the exact lock successfully. The lock change only declares the two test libraries; existing runtime entries are preserved.
+
+Independent source [CI on `bbdc93e`](https://github.com/tigerisaac/aaacap-project/actions/runs/39100717454) passed on its first run: **382 unit, 284 Firestore and eight account checks**, including a clean dependency installation.
 
 Earlier CI and diagnostic failures remain recorded in [the original evidence](../.impeccable/review/release-2026-10-17/operations/transaction-diagnostics.json). The later unchanged `d820851` run passed; it is evidence of intermittence, not the fix. No failed result was replaced by an unchanged rerun.
 
@@ -63,7 +65,7 @@ Owner approval is required by [AGENTS.md](../AGENTS.md): “Ask the owner before
 
 1. Require green independent source CI, unchanged candidate/archive hashes, unchanged serving baselines/settings/IAM, and no active call reservations. Recheck the health rollout's current acceptance state. Stop for baseline drift; never deploy all of current `main`.
 2. Build the pinned bridge overlay and require every comparison/readiness step to pass. Record the new immutable digest. Stage it with zero customer traffic and verify its `/ready` response and preserved configuration before promotion.
-3. Apply only each function's `buildConfig.source`. Start with the private observer, require its next natural scheduled read to succeed, then the API and call/monitoring workers, followed by remaining workers. Verify downloaded serving archives, unchanged settings/IAM and full intended traffic individually. Stop on any failure before proceeding.
+3. Recheck for no active call reservations before each source update. Apply only each function's `buildConfig.source`. Start with the private observer, require its next natural scheduled read to succeed, then the API and call/monitoring workers, followed by remaining workers. Verify downloaded serving archives, unchanged settings/IAM and full intended traffic individually. Stop on any failure before proceeding.
 4. Promote the staged bridge only after its checks and a renewed no-active-call check. Preserve press-1 acceptance, fixed recipients, bounded timers and failure-closed call control. No real phone verification is implied by readiness.
 5. Capture natural worker completions and fixed-category error logs. If the pending health rollout has not yet completed acceptance, bind its remaining natural-run checks to the new revisions/activation times, retaining its original receipts. Daily cleanup still requires its next natural 04:00 Central run and a 20-minute completion deadline; no manual cleanup is authorized. The existing two-policy activation/fresh-counter requirements remain in force.
 6. On startup, source, configuration or new unexpected error failures, restore the affected function's saved original archive and/or bridge traffic to `shield-live-00017-qrw`. Verify source/settings/traffic after rollback. Preserve diagnostics and leave acceptance incomplete.

@@ -4,6 +4,8 @@
 
 At **22:05 Central**, a read-only snapshot found zero pending account deletions, overdue audio manifests/chunks, pending/overdue provider-recording erasures, overdue call deadlines and overdue monitoring checks. All six schedules were enabled. The saved subscription review had checked zero accounts and failed zero. These observations do not prove historical completion or provider erasure. [Dated evidence and package hashes](../.impeccable/review/release-2026-10-17/operations/background-health.json).
 
+Read-only follow-up at **00:29 Central October 18** still found three fresh workers, zero overdue counts and no recorded worker failures. Daily cleanup is pending its 04:00 natural run; acceptance and the two disabled policies are unchanged. The separate [database retry proposal](FIRESTORE-RETRY-ROLLOUT.md) has not been deployed and does not replace these receipts.
+
 ## Exact approved scope
 
 Each existing worker has its own package based on its downloaded, serving source. Only the indicated modules change. No API, bridge, call worker, monitoring worker, phone setting, purchase flag, caretaker delivery flag or Hosting deployment is included.
