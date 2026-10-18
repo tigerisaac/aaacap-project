@@ -81,7 +81,11 @@
     "audit-production.json": "01acdf61ed735a595ced75e987b876e45d9bf1648063fd4a92ab97279b62ede6",
     "runtime-boundary.json": "22e8525b876b5410eef08c266ddf24e2ae04f4958952db5619b118e1683ee9de",
     "source-hashes.json": "bb07648cc6f11b8ec2da32bd1753d43d7a43b4ddf2657e41252343060eba4162",
-    "adapter-check.json": "9dd232c4a4c5bd2a98915a7445a0f2b1626a08d0780672e2007c123e6eaa1a4c"
+    "adapter-check.json": "9dd232c4a4c5bd2a98915a7445a0f2b1626a08d0780672e2007c123e6eaa1a4c",
+    "audit-frozen-functions.json": "fbd626c19e4f7d5105b7a7ba896daef1413b5a45bd3ff9ca8207c3821a58bc7f",
+    "audit-frozen-bridge.json": "cd3ff1046dc7f2d3270a3b9364ca67df548273e4dca6aa23989ba829c28550c6",
+    "frozen-locks.json": "8bff98d2703187fab0c2cda1916652c65a2df298b6b182ff8f8db357771d1a3d",
+    "backend-ci-receipt.json": "e1f6cc17d4cf0eeb38e894cfaf0441a1584c35c32bd5f3ab24697ecabfe77af8"
   },
   "retainedCandidateLogs": [
     {
@@ -137,5 +141,31 @@
     "The masked live read checks the existing adapter read path, not deployment or all CLI commands.",
     "No live deployment, worker invocation, customer message, call or phone-setting change occurred.",
     "Apple, physical-device, actual failure/recovery and all other open release gates remain open."
-  ]
+  ],
+  "archivedRuntimeAudits": {
+    "functions": {
+      "copiedLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+      "matchingCandidateAndBaselinePairs": 15,
+      "knownVulnerabilities": 0
+    },
+    "bridge": {
+      "copiedLockSha256": "a15f163189a80e17b1c31819375b8e0c08467fe4109fdcf628c5ae5bfc23164b",
+      "knownVulnerabilities": 0
+    },
+    "boundary": "Audited copies of retained source/smoke locks; no live image download, new bridge build or deployment. These results do not audit operating-system packages or the final Apple archive."
+  },
+  "postCommitCI": {
+    "receipt": "backend-ci-receipt.json",
+    "headSha": "655ce76e57a0e797e5b0d5f7d96067308a520498",
+    "attempt": 1,
+    "conclusion": "success",
+    "counts": {
+      "unit": 382,
+      "firestore": 284,
+      "account": 12
+    },
+    "productionVulnerabilities": 0,
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39159513148",
+    "warningsRetained": true
+  }
 }

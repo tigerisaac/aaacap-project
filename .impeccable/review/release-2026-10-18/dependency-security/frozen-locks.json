@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-18",
+  "functionCopies": [
+    {
+      "function": "checkBackgroundHealth",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "checkForwardingVoicemail",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "cleanupShield",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "dailySetupChecks",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "dispatchSharedCallJob",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "expireMessageDeliveries",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "expireSharedCalls",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "finishAccountDeletions",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "ingestForwardingVoicemail",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "monitorConnectedCall",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "monitorScheduledCall",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "reviewServiceAccess",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "runSharedCallJob",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "sendShieldAlert",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    },
+    {
+      "function": "shieldApi",
+      "lockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c"
+    }
+  ],
+  "functionsLockSha256": "b81c40f62e59e41c8ec03a9b4484bca239c382779e5220810e1b44b7292fdb5c",
+  "bridgeLockSha256": "a15f163189a80e17b1c31819375b8e0c08467fe4109fdcf628c5ae5bfc23164b",
+  "boundary": "Copied frozen source/smoke locks only. No serving image download or live deployment performed in this follow-up."
+}

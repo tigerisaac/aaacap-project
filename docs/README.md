@@ -7,13 +7,16 @@ For release work, use the single current [App Store release checklist](APP-STORE
 | Doc | What it covers |
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Components (Telnyx, GPT Live bridge, Firebase), how a call flows, voice and TTS, data, what was retired |
-| [Status](STATUS.md) | What's deployed, what's been verified on real calls, open work in priority order |
+| [Status](STATUS.md) | Dated implementation, deployment and verification checkpoints; follow the release checklist for current acceptance gates |
+| [iOS release verification](IOS-RELEASE-VERIFICATION.md) | Source, simulator, archive and CI evidence, retained failures and physical/Apple limits |
+| [Operational readiness](OPERATIONAL-READINESS.md) | Service health, alert delivery, scheduled workers, incident evidence and remaining acceptance |
+| [Dependency security](DEPENDENCY-SECURITY.md) | Runtime/tooling audit boundaries, remaining advisories, package-manager requirements and verification evidence |
 | [Screening](SCREENING.md) | How the screener decides, what each outcome does, rules for changing the policy, test suites and commands |
 | [Operations](OPERATIONS.md) | Secrets, deploying functions and the bridge, feature switches, test windows, inspection, phone forwarding and restoration |
 | [Screening and voice plan](SENIOR-PILOT-SCREENING-AND-VOICE-PLAN.md) | The October plan toward a senior pilot, plus dated checkpoints for every policy version, red-team round and deployment |
-| [Protection plan](PROTECTION-PLAN.md) | Not built yet: faster and broader in-call monitoring, blocking repeat scammers, caregiver alerts, setup health checks, voicemail keep-or-destroy, cutting the caller's wait and shorter disclosures |
+| [Protection plan](PROTECTION-PLAN.md) | Earlier protection plan and dated checkpoints; use Status and the release checklist for what is now implemented, deployed or verified |
 | [Carriers](CARRIERS.md) | October 12 research: Verizon and T-Mobile setup, brand-specific conditional codes, evidence gaps, restoration, and per-line acceptance tests |
-| [Ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md) | Proposed: shared forwarding numbers, carrier-metadata qualification, optional keypad fallback, exception allocation, tenant isolation, capacity controls and rollout to ten seniors |
+| [Ten-person pilot plan](TEN-PERSON-PILOT-PLAN.md) | Earlier shared-number and enrollment plan; current complimentary-pilot requirements and carrier/capacity gates are in the release checklist |
 | [Shared-number test](SHARED-NUMBER-TEST.md) | Runnable isolated Telnyx diagnostic, Verizon/T-Mobile instructions, independent recipient checks and confirmed overlapping-call evidence |
 | [iOS app](../ios/README.md) | Building, signing and the app's screens |
 | [iOS design for older adults](IOS-SENIOR-DESIGN.md) | Calls and voicemail first, interface references, simulator evidence, and proposed summaries/kept messages |
