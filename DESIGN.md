@@ -467,7 +467,7 @@ The sidecar's self-contained HTML/CSS is a schematic browser preview of the nati
 
 Home’s All calls and All messages actions share a full-width 52-point minimum target, medium-weight text and a decorative native chevron.
 
-Home follows the [October 17 Home status card rules](#october-17--home-status-card) for its leading decorative badge, teal checks-on surface and full-width native primary/secondary buttons. Title and supporting copy align within their text column; at accessibility sizes, the badge gives way to full-width text. The empty Home inbox retains the plain All messages browse action.
+Home follows the [October 18 Home status rules](#october-18--home-status-as-an-editorial-figure): checks on is a serif figure paired with Calls stopped, and other states use a row tile with full-width native primary/secondary buttons. Title and supporting copy align within their text column; at accessibility sizes, the badge gives way to full-width text. The empty Home inbox retains the plain All messages browse action.
 
 Shared disclosures, browse rows and full-width button labels keep a 52-point minimum target and allow text to wrap, retaining the native style appropriate to each role. Status details, row metadata, playback time and section footers use the shared adaptive supporting-text color. Keep nested native buttons and links independently activatable: explicit borderless styling separates resource links from their disclosures and playback actions from neighboring controls.
 
@@ -574,3 +574,13 @@ The owner approved a refinement of all five areas using the new Home and login d
 - **Messages:** The outcome and summary lead. Accessibility layouts place playback after the summary; other sizes retain the pinned primary action. Recording storage details are disclosed on request, deletion has a separate group, and unavailable audio explains expiration or the absence of a local/server copy without offering a known-unavailable playback action. A delivery timestamp does not prove that another phone still has the recording. Local saved audio remains playable.
 - **Caretakers and call sharing:** Alerts and call access remain separate. Empty access explains privacy; the related caretaker route is explicit. Caretakers explains acceptance and alert scope, with monitoring settings in reach. Unavailable alerts and empty recipient requests offer a clear return. Native empty-state labels and descriptions grow vertically rather than truncating. Reloads show their in-progress state. Failed sharing changes move feedback into view, remain unconfirmed and keep the retryable action.
 - **Setup returns:** Reopen Phone or Phone settings is visible beside the returned instructions, including the manual path. Visiting another app never confirms a change. Existing consent, separate confirmations, saved steps, carrier-code count and call checks remain intact. Initial loading/error feedback follows the shared components.
+
+## October 18 — Home status as an editorial figure
+
+Feedback was that the checks-on card looked generated: an icon in a coloured circle on a tinted card. The owner wants Home's two real visuals, checks on and the stopped total, with only the first fixed. Checks on now mirrors the Calls stopped panel:
+
+- **Same structure as Calls stopped.** A white Card with the headline "Call checks" and a `checkmark.shield` symbol on the right, as "Calls stopped" has its hand. Then the state as a serif figure, "On" in Display ×1.3 in Connected teal, then one supporting line. There is no badge circle and no tinted surface. Calls stopped stays the navy panel with its serif numeral, so the pair reads as one editorial set.
+- **Accessible wording.** The visual pair reads "Call checks / On"; VoiceOver reads the full title ("Call checks are on") as a heading, and `today-status-title` stays on that text. A timed window keeps its supporting line ("…checked until 10:27 AM").
+- **Other states.** Setup, off, paused, disconnecting and unknown use the shared `ShieldRowSymbol` tile (navy for setup, quiet otherwise; "pause.circle" becomes "pause" inside the tile) beside the headline title, then their one button. The circle badge is gone everywhere.
+
+This supersedes the October 17 decorative badge and teal checks-on surface.

@@ -28,7 +28,7 @@ struct OverviewView: View {
                         TimelineView(.periodic(from: .now, by: 30)) { context in
                             statusCard(now: context.date)
                         }
-                        .listRowBackground(HomeStatusBackground(tone: summary(now: .now).tone))
+                        .listRowBackground(ShieldTheme.card)
                     }
                 }
                 if model.isOwner, showsProtectionCheck, protectionCheck.items?.isEmpty == false {
@@ -117,24 +117,56 @@ struct OverviewView: View {
 
     /// The status reads in one glance: a badge, a bold state and one line, then the card's one next
     /// action as a real button. Checks on gets the teal card.
+    /// Checks on reads as the Calls stopped panel's counterpart: a headline label with its symbol,
+    /// then the state as a serif figure. States that need a decision keep a row tile and one button.
     @ViewBuilder private func statusCard(now: Date) -> some View {
         let presentation = summary(now: now)
-        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
-            HStack(alignment: .center, spacing: ShieldTheme.Spacing.content) {
-                if !typeSize.isAccessibilitySize {
-                    HomeStatusBadge(symbol: presentation.symbol, tone: presentation.tone)
+        if presentation.tone == .on {
+            checksOn(presentation)
+        } else {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                HStack(alignment: .center, spacing: ShieldTheme.Layout.rowSymbolSpacing) {
+                    if !typeSize.isAccessibilitySize {
+                        // The tile already frames the symbol, so "pause.circle" becomes "pause".
+                        ShieldRowSymbol(systemName: presentation.symbol.hasSuffix(".circle") ? String(presentation.symbol.dropLast(".circle".count)) : presentation.symbol,
+                                        color: presentation.tone == .setup ? ShieldTheme.action : ShieldTheme.secondaryText)
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(presentation.title).font(.headline).foregroundStyle(ShieldTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
+                        Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(presentation.title).font(.title2.weight(.semibold)).foregroundStyle(ShieldTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityIdentifier("today-status-title").accessibilityAddTraits(.isHeader)
-                    Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                if !model.isDemo || isStatusFixture, model.isOwner { statusActions(presentation) }
             }
-            if !model.isDemo || isStatusFixture, model.isOwner { statusActions(presentation) }
+            .padding(.vertical, ShieldTheme.Spacing.regular)
+        }
+    }
+
+    private func checksOn(_ presentation: HomeStatusPresentation) -> some View {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+            HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.regular) {
+                Text("Call checks").font(.headline).foregroundStyle(ShieldTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                Image(systemName: "checkmark.shield").font(.body.weight(.medium))
+                    .foregroundStyle(ShieldTheme.connected)
+            }
+            .accessibilityHidden(true)
+            Text("On")
+                .font(ShieldTheme.Typography.display.scaled(by: 1.3)).tracking(-0.8)
+                .foregroundStyle(ShieldTheme.connected)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityLabel(presentation.title)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("today-status-title")
+            Text(presentation.detail).foregroundStyle(ShieldTheme.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, ShieldTheme.Spacing.regular)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder private func statusActions(_ presentation: HomeStatusPresentation) -> some View {
@@ -245,56 +277,4 @@ struct OverviewView: View {
         }
     }
 
-}
-
-/// The status symbol on a circle: solid teal with a white check when checks are on, navy for setup,
-/// a quiet tile otherwise. In Dark Mode the bright hues become tinted tiles with a coloured glyph,
-/// so the card pops without glowing. Decorative; the title says the state in words.
-private struct HomeStatusBadge: View {
-    let symbol: String
-    let tone: HomeStatusPresentation.Tone
-    @Environment(\.colorScheme) private var colorScheme
-    @ScaledMetric(relativeTo: .title2) private var size = 52.0
-
-    var body: some View {
-        Image(systemName: glyph)
-            .font(.system(size: size * 0.44, weight: .semibold))
-            .foregroundStyle(ink)
-            .frame(width: size, height: size)
-            .background(fill, in: .circle)
-            .accessibilityHidden(true)
-    }
-
-    private var hue: Color? {
-        switch tone {
-        case .on: ShieldTheme.connected
-        case .setup: ShieldTheme.action
-        case .neutral: nil
-        }
-    }
-
-    private var fill: Color {
-        guard let hue else { return ShieldTheme.quietSurface }
-        return colorScheme == .dark ? hue.opacity(0.18) : hue
-    }
-
-    private var ink: Color {
-        guard let hue else { return ShieldTheme.secondaryText }
-        return colorScheme == .dark ? hue : ShieldTheme.actionInk
-    }
-
-    /// The circle is already drawn, so "pause.circle" becomes "pause".
-    private var glyph: String { symbol.hasSuffix(".circle") ? String(symbol.dropLast(".circle".count)) : symbol }
-}
-
-/// Checks on reads as a calm teal card (fainter in Dark Mode); every other state keeps the Card surface.
-private struct HomeStatusBackground: View {
-    let tone: HomeStatusPresentation.Tone
-    @Environment(\.colorScheme) private var colorScheme
-    var body: some View {
-        ZStack {
-            ShieldTheme.card
-            if tone == .on { ShieldTheme.connected.opacity(colorScheme == .dark ? 0.06 : 0.1) }
-        }
-    }
 }
