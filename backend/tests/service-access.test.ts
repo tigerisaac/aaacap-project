@@ -182,6 +182,15 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Service access and subscr
     expect((await access.reviewBatch()).failed).toBe(1);
     expect((await db.doc('serviceAccessControl/review').get()).data()).toMatchObject({ after: null, failed: 1 });
   });
+  it('reports unconfigured public subscriptions as failed instead of silently advancing past them', async () => {
+    await approve();
+    const unconfigured = new ServiceAccess(new CloudStore(db, { ...config, REVENUECAT: undefined }, () => now));
+    expect(await unconfigured.reviewBatch()).toEqual({ checked: 0, failed: 1 });
+    expect((await db.doc('serviceAccessControl/review').get()).data()).toMatchObject({ after: null, failed: 1 });
+    await accessRef(store, 'owner').update({ customerId: null });
+    expect(await access.reviewBatch()).toEqual({ checked: 0, failed: 1 });
+    expect(subscriber).not.toHaveBeenCalled();
+  });
   it('fences deletion during a lookup and keeps failed provider erasure retryable', async () => {
     await approve(); const customerId = (await accessRef(store, 'owner').get()).data()!.customerId;
     subscriber.mockImplementationOnce(async () => { await deletionRef(store, 'owner').set({ status: 'queued' }); return snapshot(); });

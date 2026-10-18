@@ -1,0 +1,297 @@
+{
+  "preparedAt": "2026-10-18T03:20:44.402641+00:00",
+  "approved": false,
+  "deployed": false,
+  "releaseReady": false,
+  "sourceBaseline": "e983d0871264644f81c4ca2344831e5ad0af43df",
+  "candidateSetManifestSha256": "fe47426ff545c718c49d96e9aefc983352c63de1d109c3669cac0d62b64d17b6",
+  "functions": {
+    "cleanupShield": {
+      "baselineFunction": "cleanupShield",
+      "baselineRevision": "cleanupshield-00015-nek",
+      "baselineArchiveSha256": "bff350542275f1193faae7ff83e871deae80213da26d993c8b27f8256f8341b4",
+      "sourceManifestSha256": "726899a7278f2ecaa97c260b8b28c9b4fba9050fc0f9b90f5c278048e977f3d6",
+      "archiveSha256": "b7bfeafc098c2c57bb584bd68783f86334c81db70668991ead48da3c073bae7d",
+      "changedFiles": [
+        "lib/cloud/index.js",
+        "lib/cloud/maintenance-health.js"
+      ],
+      "unchangedFilesPreserved": true,
+      "fileCount": 87
+    },
+    "finishAccountDeletions": {
+      "baselineFunction": "finishAccountDeletions",
+      "baselineRevision": "finishaccountdeletions-00001-kif",
+      "baselineArchiveSha256": "4b1fb30f5e19ac97280ddaeb645f21799c06f3c5afb4ad01870cbc6a16e4a3ae",
+      "sourceManifestSha256": "8e3191c32f37714b8fcef1f4ea80b779e8c5c4f25d6db6fadffbd1ed60d990ce",
+      "archiveSha256": "88f48d62d0686c32c3027151ec2785abad57ac887de6534d98f1db5d8cb2be2d",
+      "changedFiles": [
+        "lib/cloud/deletion-jobs.js",
+        "lib/cloud/index.js",
+        "lib/cloud/maintenance-health.js"
+      ],
+      "unchangedFilesPreserved": true,
+      "fileCount": 87
+    },
+    "reviewServiceAccess": {
+      "baselineFunction": "reviewServiceAccess",
+      "baselineRevision": "reviewserviceaccess-00001-xey",
+      "baselineArchiveSha256": "4b1fb30f5e19ac97280ddaeb645f21799c06f3c5afb4ad01870cbc6a16e4a3ae",
+      "sourceManifestSha256": "a6164cee44356eaaa40205a3405a847b1b216ed9aa49012f4d373eb8fdd690d5",
+      "archiveSha256": "c30ff63dda5a0e89a83e623f97d4ec0597636800ea97371c8accf3248fc575dc",
+      "changedFiles": [
+        "lib/cloud/index.js",
+        "lib/cloud/maintenance-health.js",
+        "lib/cloud/service-access.js"
+      ],
+      "unchangedFilesPreserved": true,
+      "fileCount": 87
+    },
+    "expireMessageDeliveries": {
+      "baselineFunction": "expireMessageDeliveries",
+      "baselineRevision": "expiremessagedeliveries-00002-nos",
+      "baselineArchiveSha256": "a8a67a18a02b019a9fdc674681cc3657a820b0fb463c13efaf42735bc4e85558",
+      "sourceManifestSha256": "1397bb0c94a073398fd5fe2a41d130f386bda45541f8302a7926ea8da61aa980",
+      "archiveSha256": "d28fea533fbfa0359b05d8e209d2722cc5884f8130b97a06f2be9bb0f6d2729d",
+      "changedFiles": [
+        "lib/cloud/index.js",
+        "lib/cloud/maintenance-health.js"
+      ],
+      "unchangedFilesPreserved": true,
+      "fileCount": 76
+    },
+    "checkBackgroundHealth": {
+      "baselineFunction": "shieldApi",
+      "baselineRevision": "shieldapi-00034-yaw",
+      "baselineArchiveSha256": "dff66bb824d4f4ae5718d1840bf956ff01c24d190950d357191b2c5a94513965",
+      "sourceManifestSha256": "f91bb72ef9df7a559b8d195e8724cefc61b5ac47b2986afd38c08c7aa8978e07",
+      "archiveSha256": "269317aa879c329b004e1aa93a66fa074b0ab22ff574ec0db132292e235d918c",
+      "changedFiles": [
+        "lib/cloud/index.js",
+        "lib/cloud/maintenance-health.js"
+      ],
+      "unchangedFilesPreserved": true,
+      "fileCount": 90
+    }
+  },
+  "verification": {
+    "typecheck": "passed",
+    "build": "passed",
+    "fullUnitSuitePassed": 368,
+    "additionalExportedHandlerTestsPassed": 4,
+    "fullFirestoreSuitePassed": 284,
+    "exactPackages": {
+      "firstRunPassed": 40,
+      "firstRunFailedAssertions": 0,
+      "firstRunFailedImports": 1,
+      "correctedAudioRunPassed": 4,
+      "totalDistinctSelectedTestsPassed": 44
+    },
+    "priorCheckpointCI": {
+      "commit": "e983d0871264644f81c4ca2344831e5ad0af43df",
+      "result": "success",
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39091907615"
+    },
+    "intermittentHistoricalCounterTransactionFailure": "Still unresolved; no recurrence in this full emulator run."
+  },
+  "configurationPreflight": {
+    "checkedAt": "2026-10-18T03:19:50.191Z",
+    "readOnly": true,
+    "planSha256": "c388dc9ce282cc27fe6fc9195511421c7f6f166cf412d467cf9e526a5e3a384f",
+    "existingPolicyCount": 4,
+    "selectedEmailChannelEnabled": true,
+    "newPolicyNamesAvailable": true,
+    "newMetricNameAvailable": true,
+    "logFilters": [
+      {
+        "httpStatus": 200,
+        "filterAccepted": true
+      },
+      {
+        "httpStatus": 200,
+        "filterAccepted": true
+      }
+    ],
+    "requestedIndexExists": false,
+    "existingIndexStates": [],
+    "policyCreateValidated": false,
+    "absenceMetricSeriesExists": false,
+    "limitations": [
+      "No resources created or modified.",
+      "Metric descriptor, policy creation and activation require the separately approved rollout.",
+      "Absence coverage requires a real observation after creating the policy."
+    ]
+  },
+  "observation": {
+    "at": "2026-10-18T03:05:25.149Z",
+    "readOnly": true,
+    "counts": {
+      "pendingAccountDeletions": {
+        "available": true,
+        "count": 0
+      },
+      "overdueAudioManifests": {
+        "available": true,
+        "count": 0
+      },
+      "overdueAudioChunks": {
+        "available": true,
+        "count": 0
+      },
+      "pendingProviderErasure": {
+        "available": true,
+        "count": 0
+      },
+      "overdueProviderErasure": {
+        "available": true,
+        "count": 0
+      },
+      "overdueCallDeadlines": {
+        "available": true,
+        "count": 0
+      },
+      "overdueMonitoringChecks": {
+        "available": true,
+        "count": 0
+      }
+    },
+    "review": {
+      "httpStatus": 200,
+      "checkedAt": 1792290124381,
+      "checked": 0,
+      "failed": 0
+    },
+    "schedules": [
+      {
+        "name": "firebase-schedule-expireMessageDeliveries-us-central1",
+        "state": "ENABLED",
+        "schedule": "*/5 * * * *",
+        "timeZone": "Etc/UTC",
+        "lastAttemptTime": "2026-10-18T03:05:03.865263Z",
+        "lastStatusCode": null
+      },
+      {
+        "name": "firebase-schedule-reviewServiceAccess-us-central1",
+        "state": "ENABLED",
+        "schedule": "every 1 hours",
+        "timeZone": "UTC",
+        "lastAttemptTime": "2026-10-18T02:22:00.941961Z",
+        "lastStatusCode": null
+      },
+      {
+        "name": "firebase-schedule-finishAccountDeletions-us-central1",
+        "state": "ENABLED",
+        "schedule": "every 1 minutes",
+        "timeZone": "UTC",
+        "lastAttemptTime": "2026-10-18T03:05:01.418021Z",
+        "lastStatusCode": null
+      },
+      {
+        "name": "firebase-schedule-expireSharedCalls-us-central1",
+        "state": "ENABLED",
+        "schedule": "every 1 minutes",
+        "timeZone": "UTC",
+        "lastAttemptTime": "2026-10-18T03:05:01.527618Z",
+        "lastStatusCode": null
+      },
+      {
+        "name": "firebase-schedule-cleanupShield-us-central1",
+        "state": "ENABLED",
+        "schedule": "every day 04:00",
+        "timeZone": "America/Chicago",
+        "lastAttemptTime": "2026-10-17T09:00:00.276185Z",
+        "lastStatusCode": null
+      },
+      {
+        "name": "firebase-schedule-dailySetupChecks-us-central1",
+        "state": "ENABLED",
+        "schedule": "every day 10:30",
+        "timeZone": "America/Chicago",
+        "lastAttemptTime": "2026-10-17T15:30:21.368626Z",
+        "lastStatusCode": null
+      }
+    ],
+    "descriptors": [
+      {
+        "type": "run.googleapis.com/request_count",
+        "httpStatus": 200,
+        "kind": "DELTA",
+        "valueType": "INT64"
+      },
+      {
+        "type": "cloudtasks.googleapis.com/queue/depth",
+        "httpStatus": 200,
+        "kind": "GAUGE",
+        "valueType": "INT64"
+      }
+    ],
+    "limitation": "Aggregate snapshot and scheduler attempts do not prove completion, provider erasure or alert coverage. No worker invoked and no customer content retrieved."
+  },
+  "scope": {
+    "existingWorkersUpdated": 4,
+    "newReadOnlyObserverFunctions": 1,
+    "newSchedules": 1,
+    "newFirestoreIndexes": 1,
+    "newLogMetrics": 1,
+    "newAlertPolicies": 2,
+    "customerContentLogged": false,
+    "manualWorkerInvocations": 0,
+    "callsOrMessagesSent": 0,
+    "existingServicesPreservationRequired": true
+  },
+  "rolloutActivation": [
+    "Wait for all four workers to finish naturally; do not manufacture success records or invoke cleanup.",
+    "Start the read-only observer and configure its metric/policies only after the readiness conditions in the rollout review.",
+    "Require an actual observer metric sample after policy creation before claiming absence coverage."
+  ],
+  "limits": [
+    "Prepared local changes, not deployed or operationally accepted.",
+    "Native/log alert condition evaluation and actual failure recovery remain unverified.",
+    "This covers four maintenance schedules and six aggregate backlog types, not every background business operation.",
+    "A zero backlog does not prove vendor erasure or historical job completion.",
+    "Apple, real-phone, caretaker delivery and other release gates remain open."
+  ],
+  "harnessCorrection": "The audio package predates deletion-jobs.js. Only its unused import in the copied voicemail test was replaced by an explicit throwing stub; all four selected audio assertions and every candidate byte are unchanged. The initial failed import and corrected retry are retained.",
+  "privateEvidence": [
+    {
+      "path": "artifacts/private/background-health-oct17/isolated-source.json",
+      "sha256": "abf9769a13cfdf59427b327d6bc4f20eacc6a17f940d99f72095e7095b6fe862"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/initial-observation.json",
+      "sha256": "b4ae9753aacc50ed18c7db33d86d1073d88482678b276fcf857f71efa6f1ef03"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/baselines-v2/verification.json",
+      "sha256": "6b0c462e26bef15dbb775884e6e84885218108a17dea0a401721461fb058e00c"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/manifest.json",
+      "sha256": "7ec81d54a262960e7bc0c4c076e25a1dc2efff7012cc715ebd518bed200346a0"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/verified-manifest.json",
+      "sha256": "3ff8dca86a2aadc11be5dbcfa3be827f71e42245dde461e82049a772a679160e"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/check.log",
+      "sha256": "fea9861055a737848b91d33064cf311f2da806f4504e97c8732b9468848cea9e"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/firebase.log",
+      "sha256": "ca577de8dd3aa80c3185cf8152827ce0587db953dcacaf4ab28eab8ef8c8976b"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/scoped-results.json",
+      "sha256": "1df089890d3c5d129f61db468a073213d831a7f7134a22e7f112356d959b1fae"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/scoped-audio-results.json",
+      "sha256": "44b98d30d2fc9a887c22561ba3d1137c8b4e7bcdd50685394a72f84b37eeba14"
+    },
+    {
+      "path": "artifacts/private/background-health-oct17/monitoring-preflight.json",
+      "sha256": "6e3cabdd4a766f5ed009015ae9ad9ce8f895132a8d70370af5b7e251a3ef6076"
+    }
+  ]
+}

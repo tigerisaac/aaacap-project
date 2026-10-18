@@ -211,7 +211,7 @@ export class ServiceAccess {
         if ((await deletionRef(store, account.uid).get()).exists) return;
         try {
           if (account.audience === 'public') {
-            if (!this.provider) return;
+            if (!this.provider || !account.customerId) throw new HttpError(503, 'subscription_verification_unavailable');
             await this.refresh(account.uid, true);
           } else if (account.pilot?.expiresAt && account.pilot.expiresAt <= store.now()) {
             await store.db.runTransaction(async tx => {

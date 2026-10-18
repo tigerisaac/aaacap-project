@@ -37,6 +37,7 @@ export async function deletionReceipt(s: CloudStore, receipt: string) {
 }
 export async function processAccountDeletions(s: CloudStore, auth: AuthProvider) {
   const jobs = await s.db.collection('accountDeletions').where('state', '==', 'pending').where('dueAt', '<=', s.now()).orderBy('dueAt').limit(10).get();
+  let completed = 0, failed = 0;
   for (const job of jobs.docs) {
     const claimed = await s.db.runTransaction(async tx => {
       const d = (await tx.get(job.ref)).data();
@@ -51,9 +52,12 @@ export async function processAccountDeletions(s: CloudStore, auth: AuthProvider)
       await deleteAccount(s, auth, identity, undefined, claimed.participantIds);
       await job.ref.update({ state: 'complete', completedAt: s.now(), expiresAt: s.now() + 7 * 86400_000,
         uidEnc: FieldValue.delete(), phoneEnc: FieldValue.delete(), participantIds: FieldValue.delete(), leaseUntil: FieldValue.delete() });
+      completed += 1;
     } catch {
       // No user data or vendor error strings in receipts/logs. Retain the job to retry.
       await job.ref.update({ leaseUntil: 0, dueAt: s.now() + 60_000 });
+      failed += 1;
     }
   }
+  return { completed, failed };
 }

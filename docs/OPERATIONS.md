@@ -4,6 +4,8 @@ How to deploy, switch features, run supervised test calls, and inspect what happ
 
 Following the [October 17 operational-readiness audit](OPERATIONAL-READINESS.md), the owner selected `isaac.cw.zhang@gmail.com` and a USD $50 monthly Google Cloud budget. [Four service alerts, an email channel, a readiness check and the Shield-only budget](OPERATIONAL-ALERT-SETUP.md) are now configured and read back. The owner confirmed the authorized synthetic test email at 21:54; its temporary policy was removed with permanent settings preserved. Overdue-job/freshness coverage, historical failure resolution, individual service-condition/spending-alert acceptance and incident escalation remain open. The separately approved [API diagnostics package](API-DIAGNOSTICS-ROLLOUT.md) is deployed and verified on `shieldapi-00034-yaw` at 21:49 Central.
 
+The [background-job health rollout](BACKGROUND-JOB-HEALTH-ROLLOUT.md) is prepared and tested but not deployed. It covers four workers’ actual completion, six overdue-job aggregates and an independent read-only observer. Its two proposed policies need owner-approved deployment and natural-run/metric activation evidence; the current live alert count remains four.
+
 ## Access and secrets
 
 - **Google identity.** Operator scripts reuse your Firebase CLI login through `scripts/firebase-client.mjs`, which loads `firebase-tools` from this repo's dev dependencies. Sign in once with `npx firebase login`. The scripts call Google REST APIs directly; `gcloud` isn't needed.

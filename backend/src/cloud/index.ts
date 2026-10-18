@@ -9,6 +9,7 @@ import { cloudSchema } from './config.js';
 import { CloudStore } from './store.js';
 import type { buildCloudApp } from './app.js';
 import { reportAPIFailure } from './diagnostics.js';
+import { runMaintenanceJob, checkMaintenanceHealth } from './maintenance-health.js';
 
 const runtime = defineSecret('SHIELD_RUNTIME');
 const openaiKey = defineSecret('SHIELD_OPENAI_API_KEY');
@@ -47,27 +48,25 @@ export const shieldApi = onRequest({ ...options, secrets: [runtime, openaiKey], 
   }
 });
 export const cleanupShield = onSchedule({ ...options, maxInstances: 1, schedule: 'every day 04:00', timeZone: 'America/Chicago',
-  retryCount: 3, timeoutSeconds: 120 }, async () => {
-  await getStore().cleanup();
+  retryCount: 3, timeoutSeconds: 120 }, async () => runMaintenanceJob('cleanupShield', getStore, async s => {
+  await s.cleanup();
   const { VoicemailCheck } = await import('./voicemail-check.js');
-  await new VoicemailCheck(getStore()).releaseStale();
-});
+  await new VoicemailCheck(s).releaseStale();
+}));
 
 // Durable deletion works after the app closes, including lost Auth-provider responses.
 export const finishAccountDeletions = onSchedule({ ...options, maxInstances: 1, schedule: 'every 1 minutes', timeoutSeconds: 120,
-  retryCount: 3 }, async () => {
+  retryCount: 3 }, async () => runMaintenanceJob('finishAccountDeletions', getStore, async s => {
   const [{ processAccountDeletions }, { FirebaseAuth }] = await Promise.all([import('./deletion-jobs.js'), import('../firebase-auth.js')]);
-  const s = getStore();
-  await processAccountDeletions(s, new FirebaseAuth(s.config));
-});
+  return processAccountDeletions(s, new FirebaseAuth(s.config));
+}));
 
 // Recover missed billing notifications and flag expiry for forwarding-safe assisted offboarding.
 export const reviewServiceAccess = onSchedule({ ...options, maxInstances: 1, schedule: 'every 1 hours', timeoutSeconds: 120,
-  retryCount: 0 }, async () => {
+  retryCount: 0 }, async () => runMaintenanceJob('reviewServiceAccess', getStore, async s => {
   const { ServiceAccess } = await import('./service-access.js');
-  const result = await new ServiceAccess(getStore()).reviewBatch();
-  if (result.failed) console.error('subscription_review_incomplete', result);
-});
+  return new ServiceAccess(s).reviewBatch();
+}));
 
 export const ingestForwardingVoicemail = onDocumentCreated({ ...options, document: 'forwardingRecordings/{recordingId}', retry: true, concurrency: 2 }, async event => {
   const { ingestForwardingRecording } = await import('./forwarding-recordings.js');
@@ -129,14 +128,17 @@ export const expireSharedCalls = onSchedule({ ...options, maxInstances: 1, sched
 });
 
 // Separate from call recovery so recording deletion cannot delay the next caller.
-export const expireMessageDeliveries = onSchedule({ ...options, maxInstances: 1, schedule: 'every 5 minutes', retryCount: 3, timeoutSeconds: 120 }, async () => {
+export const expireMessageDeliveries = onSchedule({ ...options, maxInstances: 1, schedule: 'every 5 minutes', retryCount: 3, timeoutSeconds: 120 }, async () => runMaintenanceJob('expireMessageDeliveries', getStore, async s => {
   const { expireMessageAudio } = await import('./message-audio.js');
   const { expireProviderRecordings } = await import('./forwarding-recordings.js');
-  const s = getStore();
   await expireMessageAudio(s);
   // Never log provider response bodies or recording URLs. Failed jobs remain for the next sweep.
   await expireProviderRecordings(s);
-});
+}));
+
+// Independent of cleanup: observe progress without invoking customer work or changing routing.
+export const checkBackgroundHealth = onSchedule({ ...options, maxInstances: 1, schedule: 'every 5 minutes',
+  retryCount: 0, timeoutSeconds: 60 }, async () => { await checkMaintenanceHealth(getStore); });
 
 export const dispatchSharedCallJob = onDocumentCreated({ ...options, document: 'callControlJobs/{jobId}', retry: true, concurrency: 20 }, async event => {
   const { dispatchCallJob } = await import('./call-jobs.js');

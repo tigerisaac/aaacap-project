@@ -123,14 +123,16 @@ describe.skipIf(!enabled)('Firebase serverless integration (Firestore emulator)'
     const first = await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h });
     expect(first.statusCode).toBe(200);
     const receipt = first.json().receipt;
-    now += 120_001; await processAccountDeletions(store, auth);
+    now += 120_001;
+    expect(await processAccountDeletions(store, auth)).toEqual({ completed: 0, failed: 1 });
     for (const collection of ['participants', 'callSessions', 'grants', 'inviteKeys', 'voicemailChecks', 'monitoredCalls', 'devices']) {
       expect((await db.collection(collection).get()).empty).toBe(true);
     }
     expect((await db.collection('forwardingRecordings').doc('pending-provider-erasure').get()).exists).toBe(true);
     expect((await db.collection('smsOptOuts').doc('minimal-stop-hash').get()).exists).toBe(true);
     expect((await app!.inject({ method: 'POST', url: '/api/account/delete', headers: h })).statusCode).toBe(200);
-    now += 60_001; await processAccountDeletions(store, auth);
+    now += 60_001;
+    expect(await processAccountDeletions(store, auth)).toEqual({ completed: 1, failed: 0 });
     expect(auth.deleteAccount).toHaveBeenCalledTimes(2);
     expect((await app!.inject({ method: 'POST', url: '/api/account/deletion/receipt', payload: { receipt } })).json()).toEqual({ state: 'complete' });
     expect((await deletionRef(store, 'owner').get()).data()?.uidEnc).toBeUndefined();

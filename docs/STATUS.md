@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — background completion and overdue-work checks prepared
+
+The release audit found that account deletion and subscription review could report scheduled HTTP success after caught per-item failures. A scoped update now records actual batch completion, retains failure visibility, detects stale schedules and reads six overdue-job aggregates. Public billing accounts missing provider/customer configuration are no longer silently skipped. **This is prepared locally, not deployed.** The exact review covers four existing workers, one read-only observer and its schedule, one index, one log counter and two policies using the existing email channel. [Scope, hashes, rollout and acceptance](BACKGROUND-JOB-HEALTH-ROLLOUT.md).
+
+Required typecheck/build and 368 unit tests passed, plus four exported-handler tests; the full isolated Firestore suite passed 284/284. All 44 selected checks on the exact per-worker packages passed after correcting one unused test import missing from the older audio-worker package. No candidate bytes or selected assertions changed for that correction. The 22:05 Central live snapshot had zero selected backlogs; no worker was invoked. The prior checkpoint `e983d08` passed independent CI. The previous intermittent history-counter failure and broader R5 gates remain unresolved.
+
 ## October 17 — service alerts and $50 budget configured; API diagnostics deployed
 
 Using the owner's chosen `isaac.cw.zhang@gmail.com` address, four service-alert policies, one email channel, a readiness check and a Shield-only **USD $50 monthly Google Cloud budget** were configured and read back at **21:18 Central**. Spending thresholds are $25/$45/$50 and a $50 forecast; there is no automatic shutdown. The unrelated budget was preserved. At 21:41, readiness metrics had 24 passing samples across all three US locations and zero failed samples. The first authorized email-test event was accepted and ingested, but no alert was observed and the owner reported no email. The final approved retry opened an alert at 21:52:52; the owner confirmed email receipt at 21:54. The temporary policy was removed, and the four permanent alerts, channel, readiness check and budget were reverified unchanged. [Settings, corrections and evidence](OPERATIONAL-ALERT-SETUP.md).

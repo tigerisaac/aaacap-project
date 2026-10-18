@@ -1,0 +1,63 @@
+{
+  "project": "shield-calls-isaac",
+  "notificationEmail": "isaac.cw.zhang@gmail.com",
+  "metric": {
+    "name": "shield_maintenance_heartbeat",
+    "description": "Count of content-free completed maintenance health observations, including unavailable or unhealthy observations.",
+    "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"checkbackgroundhealth\" AND jsonPayload.event=\"shield_maintenance_health\"",
+    "metricDescriptor": { "metricKind": "DELTA", "valueType": "INT64", "unit": "1" }
+  },
+  "policies": [
+    {
+      "displayName": "Shield background work needs attention",
+      "enabled": true,
+      "combiner": "OR",
+      "notificationChannels": ["$EXISTING_SHIELD_EMAIL_CHANNEL"],
+      "documentation": {
+        "mimeType": "text/markdown",
+        "content": "A scheduled batch failed or completed only partly, a successful completion is stale, or queued cleanup/call recovery is overdue. Inspect the fixed job states and aggregate counts in shield_maintenance_health and shield_maintenance_result logs. Preserve deletion jobs for retry. Do not change carrier forwarding or contact a phone as an automatic response. Follow docs/BACKGROUND-JOB-HEALTH-ROLLOUT.md."
+      },
+      "conditions": [{
+        "displayName": "Incomplete work or overdue background state",
+        "conditionMatchedLog": {
+          "filter": "resource.type=\"cloud_run_revision\" AND ((jsonPayload.event=\"shield_maintenance_health\" AND jsonPayload.healthy=false) OR (jsonPayload.event=\"shield_maintenance_result\" AND (jsonPayload.status=\"failed\" OR jsonPayload.status=\"incomplete\")))"
+        }
+      }],
+      "alertStrategy": {
+        "notificationRateLimit": { "period": "3600s" },
+        "autoClose": "3600s",
+        "notificationPrompts": ["OPENED"]
+      }
+    },
+    {
+      "displayName": "Shield background health observer stopped",
+      "enabled": true,
+      "combiner": "OR",
+      "notificationChannels": ["$EXISTING_SHIELD_EMAIL_CHANNEL"],
+      "documentation": {
+        "mimeType": "text/markdown",
+        "content": "No maintenance-health observation has arrived for 30 minutes after aggregation. Check the health function, its Scheduler job and logging pipeline. This is missing evidence of health, not proof that customer work stopped. Do not invoke cleanup or send phone tests as an automatic response. Activation requires a real metric sample after policy creation; verify this before recording coverage."
+      },
+      "conditions": [{
+        "displayName": "No health observation for 30 minutes",
+        "conditionAbsent": {
+          "filter": "resource.type=\"cloud_run_revision\" AND metric.type=\"logging.googleapis.com/user/shield_maintenance_heartbeat\" AND resource.labels.service_name=\"checkbackgroundhealth\"",
+          "aggregations": [{ "alignmentPeriod": "600s", "perSeriesAligner": "ALIGN_SUM", "crossSeriesReducer": "REDUCE_SUM" }],
+          "duration": "1800s",
+          "trigger": { "count": 1 }
+        }
+      }],
+      "alertStrategy": {
+        "autoClose": "3600s",
+        "notificationChannelStrategy": [{ "notificationChannelNames": ["$EXISTING_SHIELD_EMAIL_CHANNEL"], "renotifyInterval": "3600s" }]
+      }
+    }
+  ],
+  "activation": {
+    "requiresOwnerDeploymentApproval": true,
+    "waitForEveryWorkerToCompleteNaturally": true,
+    "requireMetricSampleAfterPolicyCreation": true,
+    "manualCleanupOrPhoneTestAuthorized": false,
+    "syntheticEmailTestAuthorized": false
+  }
+}
