@@ -1775,7 +1775,16 @@
     }
   },
   "independentCI": {
-    "state": "Pending push and verification"
+    "status": "passed",
+    "headSha": "bd1d5ca21373e174644df4f011a8e0babb1b59d6",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39175922622",
+    "firstAttempt": true,
+    "counts": {
+      "npm run check": 394,
+      "npm run test:firebase": 293,
+      "npm run test:accounts": 12
+    },
+    "limits": "Backend CI only; native iOS checks and unsigned archive are recorded separately."
   },
   "limitations": [
     "Physical Contacts, limited/read-only sources, iCloud propagation, locking and large restore operations require device acceptance.",
@@ -1955,6 +1964,8 @@
     "candidate-ios26-clean-build-attachments/39356205-C745-4EEC-A9F4-37004BCB16D5.txt": "b33e9f6832dcec0f0da6afdeb0920c972508660bd1f07be5bb5543d9ce90ec97",
     "candidate-ios26-clean-build-attachments/manifest.json": "52b6bc9e65b0f8cfc61ff3a6b121fb153e1671d22b9a400f3768751a003d0a89",
     "candidate-ios26-attachments/manifest.json": "20133db6f6b044f968b7d8ef60dfd862caa2522e1729599764775bd5304630ae",
-    "candidate-ios26-attachments/66F3B16F-6530-4302-9AD3-8CF4644141C8.txt": "b33e9f6832dcec0f0da6afdeb0920c972508660bd1f07be5bb5543d9ce90ec97"
+    "candidate-ios26-attachments/66F3B16F-6530-4302-9AD3-8CF4644141C8.txt": "b33e9f6832dcec0f0da6afdeb0920c972508660bd1f07be5bb5543d9ce90ec97",
+    "artifacts/private/contact-number-identity-oct18/ci-bd1d5ca.json": "2d79846ec1f62227378c948c24c7a184c62e2ed52d8d8319510f4014dc3af858",
+    "artifacts/private/contact-number-identity-oct18/ci-bd1d5ca.log": "0d3409598e3512f0ef631b42fd8d7117353163032f69a982aaf70c8b74afcc3d"
   }
 }
