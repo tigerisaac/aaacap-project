@@ -1,5 +1,11 @@
 # Status
 
+## October 18 — lost caretaker-creation replies can be reconciled without another invitation
+
+Standard and largest-text baselines reproduced a false **Couldn’t add this contact** message after the server saved a caretaker. The correction preserves the submitted details and request ID, shows **Request not confirmed** and offers a read-only status check. A missing request permits an explicit same-ID retry; known rejections leave the form editable. The three saved-but-lost cases each confirm exactly one creation attempt and one saved contact.
+
+On final source, all five creation journeys passed on iOS 27, alongside one retained VoiceOver command-service failure; its unchanged isolated retry passed. All **23/23** caretaker/release-readiness checks passed on iOS 26.5, with zero runtime warnings. Screenshot review also caught and corrected an introduced secondary-button contrast defect. Seventeen captures were inspected, and the unsigned Release archive passes with all 279 input hashes matching. Physical installation, real delivery, full accessibility and Apple acceptance remain open. [Exact results, retained failures and boundaries](IOS-CARETAKER-RECOVERY.md#lost-creation-response-follow-up--october-18).
+
 ## October 18 — lost caretaker-choice responses recover without repeating a change
 
 Four controlled cases reproduced a false **Alert choices not saved** message after the server had accepted, declined or stopped alerts. The correction presents **Status not confirmed**, rejects older reads and offers a fresh status check. All four recover with exactly one saved change. On iOS 27, **20/21** methods passed; one existing VoiceOver journey hit an automation-command error and then passed an unchanged isolated run. All **18/18** applicable methods passed on iOS 26.5, with zero runtime warnings. The failed run is retained, and its automation cause remains unproved.

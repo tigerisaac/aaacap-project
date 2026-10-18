@@ -100,6 +100,31 @@ final class VoiceOverUITests: XCTestCase {
         walk.checkpoint("lost-response-reconciled")
     }
 
+    func testVoiceOverCanRecoverALostCaretakerCreationResponse() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "caretaker-creation-response", arguments: ["--uitesting-caretaker-refresh",
+            "--caretaker-refresh-create", "--caretaker-refresh-change-response-lost"], large: true)
+        defer { walk.finish() }
+        try walk.activate("Start held refresh")
+        try walk.activate("Add caretaker")
+        try walk.enter("Name", text: "Alex")
+        try walk.findBackward("Done", where: { $0.localizedCaseInsensitiveContains("Button") })
+        try walk.activate("Done")
+        try walk.enter("Mobile number", text: "2025550102")
+        try walk.findBackward("Done", where: { $0.localizedCaseInsensitiveContains("Button") })
+        try walk.activate("Done")
+        try walk.activate("Send request")
+        try walk.find("Request not confirmed")
+        try walk.find("Your connection was interrupted")
+        walk.checkpoint("creation-uncertainty-readable")
+        try walk.activate("Release older response")
+        try walk.activate("Check current status")
+        XCTAssertTrue(walk.app.navigationBars["Caretakers"].appears(timeout: 5))
+        try walk.find("Alex")
+        XCTAssertFalse(walk.app.descendants(matching: .any)["trusted-contact-create-error"].exists)
+        walk.checkpoint("creation-confirmed")
+    }
+
     func testVoiceOverPilotAccessHasNoStoreActions() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "pilot-access", arguments: ["--uitesting-preview", "--uitesting-subscription", "pilot"], large: true)

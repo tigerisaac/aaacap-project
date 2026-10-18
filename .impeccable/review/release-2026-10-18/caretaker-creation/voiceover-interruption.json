@@ -1,0 +1,7 @@
+{
+  "recordedAt": "2026-10-18T16:16:01.522160+00:00",
+  "pid": 48768,
+  "signal": "SIGINT",
+  "reason": "The new VoiceOver walkthrough repeatedly searches forward for the navigation-bar Done control after text entry. All 23 non-VoiceOver methods completed before this interruption. The walkthrough is incomplete, not passed.",
+  "resultBundle": "artifacts/private/caretaker-creation-oct18/corrected-ios27.xcresult"
+}

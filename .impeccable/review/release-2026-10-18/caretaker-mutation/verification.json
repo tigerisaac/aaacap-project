@@ -366,5 +366,20 @@
     "No physical installation, provider message, production deployment, Apple upload or distribution-signing acceptance occurred.",
     "The current inputs include the concurrently requested pre-Andrew theme restoration, Home figure and Call detail copy-number change.",
     "Lost caretaker-creation responses in AddTrustedContactView remain a separate source-review lead, not a verified passing journey."
-  ]
+  ],
+  "committedVerification": {
+    "commit": "e0fa8d1f8b92e5906c4b0df4f20d967bf54040d2",
+    "all279InputHashesMatch": true,
+    "ci": {
+      "run": 39142585722,
+      "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39142585722",
+      "conclusion": "success",
+      "attempt": 1,
+      "unitTests": 382,
+      "firestoreTests": 284,
+      "accountLifecycleTests": 8,
+      "logSha256": "b4e11214ccabe9cff0e55a212ad70d77b4f753b445ae41f29b947ce632376675",
+      "doesNotCompileSwift": true
+    }
+  }
 }

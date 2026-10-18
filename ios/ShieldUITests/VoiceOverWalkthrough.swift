@@ -52,6 +52,20 @@ final class VoiceOverWalkthrough {
                       userInfo: [NSLocalizedDescriptionKey: "VoiceOver could not reach \(label). Last speech: \(current)"])
     }
 
+    /// Reach a control earlier in the reading order without paging away from an editing field.
+    func findBackward(_ label: String, where matches: (String) -> Bool = { _ in true }) throws {
+        current = try service.currentSpeech().utterance
+        log("current", current)
+        if current.contains(label) && matches(current) { return }
+        for _ in 0..<50 {
+            current = try service.moveBackward().utterance
+            log("previous", current)
+            if current.contains(label) && matches(current) { return }
+        }
+        throw NSError(domain: "ShieldVoiceOverWalkthrough", code: 1,
+                      userInfo: [NSLocalizedDescriptionKey: "VoiceOver could not reach earlier control \(label). Last speech: \(current)"])
+    }
+
     private func turnPage(forward: Bool) throws -> Bool {
         let list = app.collectionViews.firstMatch
         let scroll = list.exists ? list : app.scrollViews.firstMatch

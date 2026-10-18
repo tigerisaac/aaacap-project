@@ -63,6 +63,56 @@ final class CaretakerRefreshUITests: XCTestCase {
         checkLostChangeResponse(accept: false, alreadyAccepted: true)
     }
 
+    func testLostCreationResponseCanBeCheckedWithoutAnotherRequest() {
+        checkLostCreationResponse()
+    }
+
+    func testLostCreationResponseIsRecoverableAtLargestText() {
+        checkLostCreationResponse(arguments: ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+    }
+
+    func testFailedCreationStatusCheckCanBeRetriedWithoutAnotherRequest() {
+        checkLostCreationResponse(arguments: ["--caretaker-refresh-fresh-fails"], failedRead: true)
+    }
+
+    func testUnsavedCreationCanRetryWithTheOriginalRequestIdentity() {
+        let app = launch(arguments: ["--caretaker-refresh-create", "--caretaker-refresh-create-not-saved"])
+        fillCreationForm(app)
+        app.buttons["trusted-contact-send"].tap()
+        let notice = app.descendants(matching: .any)["trusted-contact-create-error"]
+        XCTAssertTrue(notice.appears(timeout: 5))
+        XCTAssertFalse(app.buttons["trusted-contact-send"].isEnabled)
+        XCTAssertFalse(app.textFields["trusted-contact-phone"].isEnabled)
+        releaseRefresh(app)
+        let check = app.buttons["Check current status"]
+        revealForm(check, app); check.tap()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "We couldn’t find this request yet")).firstMatch.appears(timeout: 5))
+        inspect(app, containing: "changes:0", "creationAttempts:1", "creationIdentities:1")
+        let retry = app.buttons["Try sending again"]
+        revealForm(retry, app); XCTAssertTrue(retry.isEnabled)
+        capture(app, "Caretaker creation not found permits deliberate retry")
+        retry.tap()
+        XCTAssertTrue(app.navigationBars["Caretakers"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Alex"].exists)
+        inspect(app, containing: "changes:1", "creationAttempts:2", "creationIdentities:1")
+        capture(app, "Caretaker creation retried with same identity")
+    }
+
+    func testRejectedCreationLeavesTheDetailsEditable() {
+        let app = launch(arguments: ["--caretaker-refresh-create", "--caretaker-refresh-create-rejected"])
+        fillCreationForm(app)
+        app.buttons["trusted-contact-send"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["trusted-contact-create-error"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Use your caretaker’s number")).firstMatch.exists)
+        XCTAssertTrue(app.textFields["trusted-contact-phone"].isEnabled)
+        XCTAssertTrue(app.textFields["trusted-contact-name"].isEnabled)
+        XCTAssertTrue(app.buttons["trusted-contact-send"].isEnabled)
+        XCTAssertFalse(app.buttons["Check current status"].exists)
+        inspect(app, containing: "changes:0", "creationAttempts:1")
+        capture(app, "Caretaker creation rejection remains editable")
+        releaseRefresh(app)
+    }
+
     func testFailedConfirmationRetainsItsErrorUntilAnExplicitFreshRead() {
         let app = launch(arguments: ["--caretaker-refresh-fresh-fails"])
         let toggle = app.switches["Send protection alerts"]
@@ -184,6 +234,72 @@ final class CaretakerRefreshUITests: XCTestCase {
         app.launchArguments += arguments
         app.launch()
         return app
+    }
+
+    private func checkLostCreationResponse(arguments: [String] = [], failedRead: Bool = false) {
+        let app = launch(arguments: ["--caretaker-refresh-create", "--caretaker-refresh-change-response-lost"] + arguments)
+        fillCreationForm(app)
+        app.buttons["trusted-contact-send"].tap()
+        inspect(app, containing: "changes:1", "contacts:1")
+        let notice = app.descendants(matching: .any)["trusted-contact-create-error"]
+        let appeared = notice.appears(timeout: 5)
+        capture(app, "Caretaker creation response lost")
+        XCTAssertTrue(appeared, "A lost creation reply needs uncertainty feedback and a read-only status check.")
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Couldn’t add this contact")).firstMatch.exists)
+        guard appeared else { return }
+        XCTAssertTrue(notice.isHittable)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Your connection was interrupted.")).firstMatch.exists)
+        XCTAssertFalse(app.textFields["trusted-contact-phone"].isEnabled)
+        XCTAssertFalse(app.buttons["trusted-contact-send"].isEnabled)
+        releaseRefresh(app)
+        let check = app.buttons["Check current status"]
+        revealForm(check, app)
+        XCTAssertTrue(check.isHittable)
+        capture(app, "Caretaker creation status action")
+        check.tap()
+        if failedRead {
+            XCTAssertTrue(notice.appears(timeout: 5))
+            XCTAssertTrue(app.navigationBars["Add caretaker"].exists)
+            inspect(app, containing: "reads:3", "changes:1")
+            capture(app, "Caretaker creation status check failed")
+            revealForm(check, app); check.tap()
+        }
+        XCTAssertTrue(app.navigationBars["Caretakers"].appears(timeout: 5))
+        let contact = app.staticTexts["Alex"]
+        for _ in 0..<6 where !contact.isHittable { app.collectionViews.firstMatch.swipeUp() }
+        XCTAssertTrue(contact.exists)
+        XCTAssertFalse(notice.exists)
+        inspect(app, containing: "changes:1", "contacts:1", "creationAttempts:1", "creationIdentities:1")
+        capture(app, "Caretaker creation reconciled")
+    }
+
+    private func fillCreationForm(_ app: XCUIApplication) {
+        XCTAssertTrue(app.buttons["Start held refresh"].appears(timeout: 10))
+        holdRefresh(app)
+        let add = app.buttons["Add caretaker"]
+        for _ in 0..<6 where !add.isHittable { app.collectionViews.firstMatch.swipeUp() }
+        add.tap()
+        let name = app.textFields["trusted-contact-name"], phone = app.textFields["trusted-contact-phone"]
+        revealForm(name, app); name.tap(); name.typeText("Alex")
+        app.buttons["Done"].firstMatch.tap()
+        revealForm(phone, app); phone.tap(); phone.typeText("2025550102")
+        app.buttons["Done"].firstMatch.tap()
+        let send = app.buttons["trusted-contact-send"]
+        revealForm(send, app); XCTAssertTrue(send.isEnabled)
+    }
+
+    private func revealForm(_ element: XCUIElement, _ app: XCUIApplication) {
+        for _ in 0..<12 {
+            let top = app.navigationBars.firstMatch.frame.maxY
+            let bottom = app.staticTexts["caretaker-fixture-state"].frame.minY - 8
+            if element.exists, element.isHittable, element.frame.minY >= top, element.frame.maxY <= bottom { return }
+            let down = element.exists && !element.frame.isEmpty && element.frame.minY < top
+            // Short drags avoid jumping past a large field and then oscillating back below the footer.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.42 : 0.68))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: down ? 0.68 : 0.42)))
+        }
+        XCTAssertTrue(element.isHittable, "The form control must be visible before interacting with it.")
+        XCTAssertLessThanOrEqual(element.frame.maxY, app.staticTexts["caretaker-fixture-state"].frame.minY - 8)
     }
 
     private func holdRefresh(_ app: XCUIApplication) {

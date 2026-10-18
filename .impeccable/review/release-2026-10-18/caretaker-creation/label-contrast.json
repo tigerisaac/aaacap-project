@@ -1,0 +1,98 @@
+[
+  {
+    "phase": "before-label-correction",
+    "appearance": "standard-light",
+    "privateCapture": "artifacts/private/caretaker-creation-oct18/corrected-ios27-captures/9EC807AF-F0E9-4640-BDE6-7798F98B66F5.png",
+    "captureSha256": "909801298702a69bc2fb40defcca49a616fd12f99ae1982bab7ce55878458aca",
+    "foregroundRGB": [
+      255,
+      255,
+      255
+    ],
+    "backgroundRGB": [
+      198,
+      206,
+      218
+    ],
+    "sampleRegion": [
+      257,
+      1417,
+      912,
+      1696
+    ],
+    "contrastRatio": 1.5858551240411214,
+    "method": "Representative opaque text/background pairs in the unmodified native sRGB PNG; not a whole-screen accessibility certification."
+  },
+  {
+    "phase": "before-label-correction",
+    "appearance": "largest-dark",
+    "privateCapture": "artifacts/private/caretaker-creation-oct18/corrected-ios27-captures/48A8AF2E-602A-4DC1-B2CB-18C9184A600C.png",
+    "captureSha256": "44b0305584eada635f0c08fe4385e9170457b1169b8eae804f2b3549802f8e34",
+    "foregroundRGB": [
+      20,
+      31,
+      56
+    ],
+    "backgroundRGB": [
+      58,
+      71,
+      93
+    ],
+    "sampleRegion": [
+      257,
+      1417,
+      912,
+      1696
+    ],
+    "contrastRatio": 1.7455484794343423,
+    "method": "Representative opaque text/background pairs in the unmodified native sRGB PNG; not a whole-screen accessibility certification."
+  },
+  {
+    "phase": "after-label-correction",
+    "appearance": "standard-light",
+    "privateCapture": "artifacts/private/caretaker-creation-oct18/post-contrast-ios27-captures/62791E13-CD7B-48E2-8E31-A51EE1C88CF9.png",
+    "captureSha256": "8071058faeab2a57aaa262e2bf356cc89282ef76d0405438507f38d13f19b41b",
+    "foregroundRGB": [
+      0,
+      38,
+      100
+    ],
+    "backgroundRGB": [
+      198,
+      206,
+      218
+    ],
+    "sampleRegion": [
+      257,
+      1417,
+      912,
+      1696
+    ],
+    "contrastRatio": 9.0620554035338,
+    "method": "Representative opaque text/background pairs in the unmodified native sRGB PNG; not a whole-screen accessibility certification."
+  },
+  {
+    "phase": "after-label-correction",
+    "appearance": "largest-dark",
+    "privateCapture": "artifacts/private/caretaker-creation-oct18/post-contrast-ios27-captures/0AEFEC54-82A7-408C-ABC2-77FCBC838BDA.png",
+    "captureSha256": "603253d5b3fcebd7ae4390ae216e65db9999ee332e1ffa647a563857f3492e61",
+    "foregroundRGB": [
+      185,
+      205,
+      242
+    ],
+    "backgroundRGB": [
+      58,
+      71,
+      93
+    ],
+    "sampleRegion": [
+      257,
+      1417,
+      912,
+      1696
+    ],
+    "contrastRatio": 5.840104063782445,
+    "method": "Representative opaque text/background pairs in the unmodified native sRGB PNG; not a whole-screen accessibility certification."
+  }
+]
