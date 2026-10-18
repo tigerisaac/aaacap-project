@@ -15,13 +15,14 @@ import { MESSAGE_CAPTURE_SECONDS } from './message-audio.js';
 import { ANNOUNCEMENT_BACKUP_VOICE, CAPTURE_GREETING, CAPTURE_VOICEMAIL, failedPlayback, rejectedAudioCommand, requiredAnnouncementAudio } from './announcements.js';
 import { queueCallJob } from './call-jobs.js';
 import { prepareBridge } from './bridge-startup.js';
+import { WarningHandoff } from './warning-handoff.js';
 
 const eventSchema = z.object({ data: z.object({ id: z.string().min(1).max(200), event_type: z.string().max(100),
   occurred_at: z.string().datetime({ offset: true }), payload: z.object({ call_control_id: z.string().refine(validControlId),
     call_leg_id: z.string().min(1).max(200), connection_id: z.string(), from: z.string().optional(), to: z.string().optional(),
     direction: z.string().optional(), client_state: z.string().max(400).nullable().optional(), sip_headers: z.unknown().optional(),
     digits: z.string().max(128).optional(), digit: z.string().max(1).optional(), recording_id: z.string().optional(), recording_started_at: z.string().optional(), recording_ended_at: z.string().optional(),
-    status: z.string().max(100).optional(),
+    status: z.string().max(100).optional(), conference_id: z.string().max(100).optional(),
     transcription_data: z.object({ is_final: z.boolean().optional(), transcript: z.string().max(8000).optional(), transcription_track: z.string().optional() }).optional()
   }) }) });
 type Event = z.infer<typeof eventSchema>['data'];
@@ -195,6 +196,10 @@ export class SharedCallControl {
     });
   }
   async warning(id: string) {
+    if ((await this.call(id))?.monitorWarningVersion === 2) {
+      if (!await new WarningHandoff(this.f, this.provider).run(id)) throw new Error('warning_handoff_pending');
+      return;
+    }
     return this.exclusive(id, async () => {
       const c = await this.call(id), now = this.store.now();
       if (!c || c.transport !== 'call-control' || c.state !== 'accepted' || !c.childSid || !c.monitorIntervenedAt ||
@@ -236,6 +241,34 @@ export class SharedCallControl {
     const lock = c?.id ?? sid;
     const receipt = s.db.collection('callControlEvents').doc(s.vault.hash(e.id));
     const boundInbound = c?.transport === 'call-control' && c.parentSid === sid && c.parentLegId === p.call_leg_id;
+    if (c?.monitorWarningVersion === 2 && c.monitorIntervenedAt && Date.parse(e.occurred_at) >= c.monitorIntervenedAt) {
+      // These bound signed receipts must survive executor contention during the handoff.
+      if (boundInbound && e.event_type === 'call.hangup') {
+        await this.f.transition(c.id, current => current.state === 'accepted' && !current.monitorCallerEndedAt
+          ? { monitorCallerEndedAt: s.now() } : undefined);
+        await receipt.set({ expiresAt: s.now() + TTL });
+        return;
+      }
+      if (c.childSid === sid && e.event_type === 'call.hangup') {
+        await this.stop(c);
+        await receipt.set({ expiresAt: s.now() + TTL });
+        return;
+      }
+      if (e.event_type.startsWith('conference.')) {
+        if (c.childSid !== sid || !c.monitorWarningConferenceId || p.conference_id !== c.monitorWarningConferenceId
+          || !c.monitorWarningSubmittedAt || Date.parse(e.occurred_at) < c.monitorWarningSubmittedAt) return;
+        const started = e.event_type === 'conference.participant.playback.started';
+        const ended = e.event_type === 'conference.participant.playback.ended';
+        if (!started && !ended) return;
+        if ((await receipt.get()).exists) return;
+        await s.callRef(c.id).update({ [started ? 'monitorWarningStartedAt' : 'monitorWarningCompletedAt']: Date.parse(e.occurred_at) });
+        if (ended && c.state !== 'ended') await this.stop(c);
+        await receipt.set({ expiresAt: s.now() + TTL });
+        return;
+      }
+      // Old direct-play/Polly callbacks cannot affect the new conference path.
+      if (c.childSid === sid && ['call.playback.started', 'call.playback.ended', 'call.speak.started', 'call.speak.ended'].includes(e.event_type)) return;
+    }
     if (boundInbound && e.event_type === 'call.hangup') {
       // Telnyx can exhaust all retries in less than a second. An executor lease
       // is not grounds to discard proof that this unconnected call has ended.

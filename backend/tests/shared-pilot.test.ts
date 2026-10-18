@@ -17,6 +17,7 @@ import { ForwardingProbes } from '../src/cloud/forwarding-probes.js';
 import { enroll } from './enroll.js';
 import { announcementAudio, ANNOUNCEMENT_BACKUP_VOICE, CAPTURE_GREETING, CAPTURE_VOICEMAIL, SOUND_CHECK_MESSAGE } from '../src/cloud/announcements.js';
 import { CallMonitor, warningText } from '../src/cloud/monitoring.js';
+import { WarningHandoff } from '../src/cloud/warning-handoff.js';
 
 it('accepts one normalized forwarding identity and rejects missing, malformed, conflicting, or injected headers', () => {
   expect(forwardingIdentity([{ name: 'Diversion', value: '<sip:+12025550101@carrier.example>;reason=no-answer' }])).toBe('+12025550101');
@@ -55,6 +56,17 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     const c = await arrive(n), live = new ForwardingLive(f); await live.claim(c.id); await live.finish(c.id, approve); await cc.outcome(c.id);
     await cc.handle(event(c.parentSid, 'call.playback.ended', { client_state: provider.state(c.id, 'offer') }));
     return (await f.find(c.parentSid))!;
+  }
+  // Compatibility fixtures model interventions produced by the previous worker during rollout.
+  async function legacyIntervention(id: string, concern: string) {
+    await s.callRef(id).update({ monitorIntervenedAt: now, monitorConcern: concern, monitorWarningWaitForPark: true });
+    await cc.deadline((await cc.call(id))!, 30);
+  }
+  async function acceptedWarningCall(n = 0) {
+    const c = await offer(n);
+    await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
+    await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
+    return c;
   }
   beforeEach(async () => {
     if (!/^127\.0\.0\.1:\d+$/.test(process.env.FIRESTORE_EMULATOR_HOST!)) throw new Error('local_emulator_required');
@@ -274,12 +286,105 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     expect(action).toHaveBeenCalledWith(c.parentSid, 'playback_start', expect.objectContaining({ audio_url: announcementAudio(CAPTURE_VOICEMAIL)!.url }));
     expect(action.mock.calls.some(x => x[1] === 'speak' || x[1] === 'gather_using_speak' || x[1] === 'bridge')).toBe(false);
   });
-  it('plays the monitoring warning with Grace, with Joanna only after media failure', async () => {
+  it('moves only the accepted recipient before caller removal, then plays the recording once after its signed receipt', async () => {
+    const c = await acceptedWarningCall(), room = randomUUID();
+    const calls: string[] = [];
+    const providerRequest = vi.spyOn(CallControlProvider.prototype, 'request').mockImplementation(async path => {
+      calls.push(path);
+      if (path === '/conferences') return { id: room };
+      if (path.endsWith('/participants')) return [{ call_control_id: c.childSid, status: 'joined', on_hold: false, muted: false }];
+      if (path.startsWith('/calls/')) return { is_alive: false };
+      return {};
+    });
+    const providerAction = vi.spyOn(CallControlProvider.prototype, 'action').mockImplementation(async () => {
+      calls.push('hangup'); throw new Error('telnyx_http_422');
+    });
+    try {
+      await new CallMonitor(f).intervene(c.id, 'payment_or_transfer');
+      expect(calls.slice(0, 3)).toEqual(['/conferences', `/conferences/${room}/participants`, 'hangup']);
+      expect(await cc.call(c.id)).toMatchObject({ state: 'accepted', monitorWarningVersion: 2, monitorWarningConferenceId: room });
+      expect((await db.doc(`callControlJobs/${callJobId(c.id, 'warning')}`).get()).exists).toBe(true);
+      expect((await db.doc(`callControlJobs/${callJobId(c.id, 'deadline', now + 30_000)}`).get()).exists).toBe(true);
+      request.mockImplementation(path => providerRequest(path));
+      await expect(cc.runJob(callJobId(c.id, 'warning'))).rejects.toThrow('warning_handoff_pending');
+      expect(calls.some(x => x.endsWith('/actions/play'))).toBe(false);
+      await cc.exclusive(c.id, async () => { await cc.handle(event(c.parentSid, 'call.hangup')); });
+      await cc.runJob(callJobId(c.id, 'warning')); await cc.runJob(callJobId(c.id, 'warning'));
+      expect(request.mock.calls.filter(x => x[0].endsWith('/actions/play'))).toHaveLength(1);
+      expect(request).toHaveBeenCalledWith(`/conferences/${room}/actions/play`, {
+        audio_url: announcementAudio(warningText('payment_or_transfer'))!.url, call_control_ids: [c.childSid], loop: 1
+      });
+      expect(action.mock.calls.some(x => x[1] === 'speak')).toBe(false);
+      expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeDefined();
+      await cc.handle(event(c.childSid!, 'conference.participant.playback.ended', { conference_id: randomUUID() }));
+      expect((await cc.call(c.id))?.state).toBe('accepted');
+      await cc.exclusive(c.id, async () => {
+        await cc.handle(event(c.childSid!, 'conference.participant.playback.started', { conference_id: room }));
+        const end = event(c.childSid!, 'conference.participant.playback.ended', { conference_id: room });
+        await cc.handle(end); await cc.handle(end);
+      });
+      expect(await cc.call(c.id)).toMatchObject({ state: 'ended', monitorWarningStartedAt: now, monitorWarningCompletedAt: now });
+      expect((await db.doc('sharedCapacity/calls').get()).data()?.leases[c.id]).toBeUndefined();
+    } finally { providerRequest.mockRestore(); providerAction.mockRestore(); }
+  });
+  it('fences uncertain room creation and never retries it or sends backup speech', async () => {
+    const c = await acceptedWarningCall();
+    await s.callRef(c.id).update({ monitorIntervenedAt: now, monitorWarningVersion: 2, monitorConcern: 'secrecy' });
+    request.mockClear().mockRejectedValue(new Error('timeout'));
+    const handoff = new WarningHandoff(f, provider);
+    await expect(handoff.run(c.id)).rejects.toThrow('timeout');
+    await handoff.run(c.id);
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(action.mock.calls.some(x => x[1] === 'speak')).toBe(false);
+    expect((await cc.call(c.id))?.state).toBe('ended');
+  });
+  it('waits for an unheld isolated recipient and fails closed for an unexpected participant', async () => {
+    const c = await acceptedWarningCall(), room = randomUUID();
+    await s.callRef(c.id).update({ monitorIntervenedAt: now, monitorWarningVersion: 2, monitorWarningConferenceId: room, monitorCallerEndedAt: now });
+    const handoff = new WarningHandoff(f, provider);
+    for (const flags of [{ on_hold: true }, { muted: true }, { status: 'joining' }]) {
+      request.mockResolvedValue([{ call_control_id: c.childSid, status: 'joined', ...flags }]);
+      expect(await handoff.run(c.id)).toBe(false);
+    }
+    request.mockResolvedValue([{ call_control_id: randomUUID(), status: 'joined' }]);
+    await expect(handoff.run(c.id)).rejects.toThrow('warning_participant_unexpected');
+    expect((await cc.call(c.id))?.state).toBe('ended');
+    expect(request.mock.calls.some(x => x[0].endsWith('/actions/play'))).toBe(false);
+  });
+  it('does not replay an uncertain conference playback, and never revives an ended or expired recipient', async () => {
+    const c = await acceptedWarningCall(), room = randomUUID();
+    await s.callRef(c.id).update({ monitorIntervenedAt: now, monitorWarningVersion: 2, monitorWarningConferenceId: room, monitorCallerEndedAt: now });
+    request.mockImplementation(async path => {
+      if (path.endsWith('/participants')) return [{ call_control_id: c.childSid, status: 'joined' }];
+      throw new Error('play_timeout');
+    });
+    const handoff = new WarningHandoff(f, provider);
+    await expect(handoff.run(c.id)).rejects.toThrow('play_timeout');
+    await handoff.run(c.id);
+    expect(request.mock.calls.filter(x => x[0].endsWith('/actions/play'))).toHaveLength(1);
+    request.mockImplementation(async () => ({ call_control_id: randomUUID() }));
+    const d = await acceptedWarningCall(1);
+    await s.callRef(d.id).update({ monitorIntervenedAt: now, monitorWarningVersion: 2 });
+    now += 30_000; request.mockClear();
+    await handoff.run(d.id);
+    expect(request).not.toHaveBeenCalled();
+    expect((await cc.call(d.id))?.state).toBe('ended');
+  });
+  it('fences simultaneous handoff workers before creating a room', async () => {
+    const c = await acceptedWarningCall();
+    await s.callRef(c.id).update({ monitorIntervenedAt: now, monitorWarningVersion: 2 });
+    const room = randomUUID();
+    request.mockImplementation(async path => path === '/conferences' ? { id: room } : [{ call_control_id: c.childSid, status: 'joined' }]);
+    await Promise.all([new WarningHandoff(f, provider).run(c.id), new WarningHandoff(f, provider).run(c.id)]);
+    expect(request.mock.calls.filter(x => x[0] === '/conferences')).toHaveLength(1);
+    expect(request.mock.calls.some(x => x[0].endsWith('/actions/play'))).toBe(false);
+  });
+  it('preserves the legacy monitoring warning fallback during rollout', async () => {
     const c = await offer(); await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
     await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
     const warningAction = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
     try {
-      await new CallMonitor(f).intervene(c.id, 'secrecy');
+      await legacyIntervention(c.id, 'secrecy');
       expect(warningAction.mock.calls.some(x => x[1] === 'playback_start')).toBe(false);
       await cc.handle(event(c.parentSid, 'call.hangup'));
       await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
@@ -297,7 +402,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
     const warningAction = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
     try {
-      await new CallMonitor(f).intervene(c.id, 'secrecy');
+      await legacyIntervention(c.id, 'secrecy');
       expect((await db.doc(`callControlJobs/${callJobId(c.id, 'deadline', now + 30_000)}`).get()).exists).toBe(true);
       await cc.exclusive(c.id, async () => {
         await cc.handle(event(c.childSid!, 'call.playback.started', { client_state: provider.state(c.id, 'warning') }));
@@ -319,7 +424,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
     const hangup = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
     try {
-      await new CallMonitor(f).intervene(c.id, 'secrecy'); action.mockClear();
+      await legacyIntervention(c.id, 'secrecy'); action.mockClear();
       expect(await cc.call(c.id)).toMatchObject({ state: 'accepted', monitorWarningWaitForPark: true });
       await cc.handle(event(randomUUID(), 'call.hold', { client_state: provider.state(c.id, 'recipient') }));
       expect((await cc.call(c.id))?.monitorRecipientParkedAt).toBeUndefined();
@@ -343,7 +448,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
       const c = await offer(expired ? 1 : 0); await cc.handle(event(c.childSid!, 'call.answered', { client_state: provider.state(c.id, 'recipient') }));
       await cc.handle(event(c.childSid!, 'call.gather.ended', { client_state: provider.state(c.id, 'accept'), digits: '1' }));
       const hangup = vi.spyOn(CallControlProvider.prototype, 'action').mockResolvedValue({});
-      try { await new CallMonitor(f).intervene(c.id, 'secrecy'); } finally { hangup.mockRestore(); }
+      try { await legacyIntervention(c.id, 'secrecy'); } finally { hangup.mockRestore(); }
       await cc.handle(event(c.parentSid, 'call.hangup')); await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
       if (expired) now += 30_000;
       else { await cc.handle(event(c.childSid!, 'call.hangup', { client_state: provider.state(c.id, 'accept') })); now += 750; }
@@ -382,7 +487,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
       return {};
     });
     try {
-      await new CallMonitor(f).intervene(c.id, 'remote_access');
+      await legacyIntervention(c.id, 'remote_access');
       action.mockImplementation(async (_sid, name) => { if (name === 'playback_start') throw new Error('telnyx_http_422'); return {}; });
       await cc.handle(event(c.childSid!, 'call.hold', { client_state: provider.state(c.id, 'accept') }));
       await cc.handle(event(c.parentSid, 'call.hangup'));
@@ -443,7 +548,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('25 users on one shared nu
     await cc.handle(init); const bound = (await f.find(sid))!;
     await expect(cc.runJob(callJobId(bound.id, 'start'))).rejects.toThrow('timeout'); await cc.runJob(callJobId(bound.id, 'start'));
     expect(action.mock.calls[0]![2].command_id).toBe(action.mock.calls[1]![2].command_id);
-    request.mockRejectedValue(new Error('timeout'));
+    request.mockClear().mockRejectedValue(new Error('timeout'));
     const c = (await f.find(sid))!, live = new ForwardingLive(f); await live.claim(c.id); await live.finish(c.id, approve); await cc.outcome(c.id);
     const e = event(sid, 'call.playback.ended', { client_state: provider.state(c.id, 'offer') });
     await cc.handle(e); await cc.handle(e); expect(request).toHaveBeenCalledTimes(1); expect((await cc.call(c.id))?.state).toBe('voicemail');
