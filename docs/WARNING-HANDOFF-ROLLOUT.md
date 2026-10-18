@@ -1,6 +1,6 @@
 # Warning-audio handoff rollout — October 17, 2026
 
-The owner approved deployment after the corrected isolated browser test delivered the prerecorded warning. This release changes warning transport only. Screening/monitoring prompts, warning wording and recordings remain unchanged; it does not release the unqualified screening-latency experiments.
+**Approved, deployed and verified October 17 at 21:19 Central.** The owner approved deployment after the corrected isolated browser test delivered the prerecorded warning. This release changes warning transport only. Screening/monitoring prompts, warning wording and recordings remain unchanged; it does not release the unqualified screening-latency experiments.
 
 ## Behavior and verification
 
@@ -28,4 +28,17 @@ Rollback starts with the two monitor producers, waits until active warning/call 
 
 ## Release evidence
 
-Deployment is not yet recorded in this document. See the subsequent dated receipt before assuming this release is live.
+The staged source-only rollout completed once per function. Final verification at **21:19:50 Central** confirmed the exact uploaded source archive, preserved configuration/IAM and 100% revision traffic for all four:
+
+| Function | Previous revision | Verified live revision |
+|---|---|---|
+| `runSharedCallJob` | `runsharedcalljob-00003-nog` | `runsharedcalljob-00004-red` |
+| `shieldApi` | `shieldapi-00032-zun` | `shieldapi-00033-nuk` |
+| `monitorConnectedCall` | `monitorconnectedcall-00007-yek` | `monitorconnectedcall-00008-hem` |
+| `monitorScheduledCall` | `monitorscheduledcall-00002-wuv` | `monitorscheduledcall-00003-riq` |
+
+Other functions, the bridge, schedules, Hosting, public flags and consent configuration remained unchanged. Readiness returned 200 and four unauthenticated protected reads returned 401. Read-only Telnyx comparisons confirmed preserved provider settings and number bindings. Warning-related values in existing runtime versions 6 and 8 match each other and the successful test runtime; no secret was changed. The exact monitor-worker package retains its existing consent constant while replacing only intervention delivery.
+
+The implementation is committed as `8c0092a`. [Sanitized final verification](evidence/warning-handoff-deployed-2026-10-17.json) records the actual per-package manifest and ZIP hashes. The private operator script historically labeled the release identifier `warning-handoff-v2` as `sourceManifestSha256`; the published receipt separates that identifier from the actual SHA-256 values. This metadata correction does not change the verified archives.
+
+No paid test call, owner-phone operation, AI evaluation, message, manual cleanup invocation or carrier-forwarding change was performed during release. Synthetic warning audibility was verified before deployment; physical handset audibility remains unverified. The earlier 14.301¢ investigation estimate is unchanged by additional call testing, but does not reconcile cloud build/deployment charges.

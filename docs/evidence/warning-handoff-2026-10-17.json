@@ -1,7 +1,7 @@
 {
   "preparedAt": "2026-10-18",
   "deploymentApproved": true,
-  "deployed": false,
+  "deployed": true,
   "functions": {
     "runSharedCallJob": {
       "manifestSha256": "9e35b490e3fe7998993397220d33e0cc77022560a400f129cec97a0de8d1430c",
@@ -373,5 +373,6 @@
         "lib/cloud/announcement-audio/02-hold.wav": "05f7ee2e32709261f42261d43265476fd5f8ac0457133be1d1b8b0cc83ef654c"
       }
     }
-  }
+  },
+  "deploymentVerifiedAt": "2026-10-18T02:19:50.799Z"
 }

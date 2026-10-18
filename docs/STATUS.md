@@ -1,5 +1,11 @@
 # Status
 
+## October 17 — prerecorded intervention warning deployed
+
+The owner-approved warning handoff is live and verified at **21:19 Central** on API `shieldapi-00033-nuk`, call worker `runsharedcalljob-00004-red`, and monitoring workers `monitorconnectedcall-00008-hem` / `monitorscheduledcall-00003-riq`. The recipient moves into a bounded private conference before caller teardown; the existing recording plays only after confirmed caller removal and isolated-recipient checks. New warnings use no Polly. Durable work, recipient binding, at-most-once commands and 30-second cleanup cover interruption/retries. [Scope, tests, source hashes and rollout](WARNING-HANDOFF-ROLLOUT.md).
+
+The corrected browser test captured the warning at the synthetic recipient; physical-phone audibility remains unverified. Required typecheck/build and 360 unit tests passed; the full emulator suite passed 266/267 with only the previously recorded stopped-history transaction failure. All 67 shared-call tests and four exact-package checks passed. Deployed sources, settings/IAM and full traffic were verified; routing, unrelated functions, bridge, schedules, Hosting and optional flags were preserved. No additional paid calls or AI evaluations were made for release.
+
 ## October 17 — approved retention and pagination backend deployed
 
 The owner approved the exact combined update. Fresh preflight at **20:24 Central** confirmed the baseline, then the two source-only deployments completed once each. At **20:34–20:37 Central**, API **`shieldapi-00032-zun`** and cleanup **`cleanupshield-00015-nek`** matched the frozen 86-file package and served 100% of traffic. Their settings/IAM, the other 12 functions, bridge, six schedules and Hosting are unchanged. Readiness and unauthenticated guards passed; live privacy text matches the approved handler byte for byte. The exact package had passed 124 integration tests, and `bf60a60` passed [independent CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39085753282). [Rollout and verification corrections](RETENTION-PAGINATION-ROLLOUT.md).

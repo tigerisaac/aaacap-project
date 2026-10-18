@@ -1,0 +1,94 @@
+{
+  "verifiedAt": "2026-10-18T02:19:50.799Z",
+  "approved": true,
+  "deployed": true,
+  "archives": {
+    "runSharedCallJob": "8555fcf7dfcb4972a9d9738fafc9060bcf23b9e7ef3c468fbbb0c701f9c8e38e",
+    "shieldApi": "774c5cdad9db119ed14b10ca017a6a7b8ca0a5bce9a9a7131fc3c0b8d0b33aad",
+    "monitorConnectedCall": "4e4f1a13261c368f2ca7544d66bd9c408f85b2f60e4ed24e5cef8b273aa6d6dd",
+    "monitorScheduledCall": "75855fca208ad85d07a4fb8be58e5bfc4983a340bf96e3bbdc4973d335f059dc"
+  },
+  "functions": [
+    {
+      "verifiedAt": "2026-10-18T02:19:36.330Z",
+      "function": "runSharedCallJob",
+      "revision": "runsharedcalljob-00004-red",
+      "previousRevision": "runsharedcalljob-00003-nog",
+      "sourceManifestSha256": "9e35b490e3fe7998993397220d33e0cc77022560a400f129cec97a0de8d1430c",
+      "archiveSha256": "8555fcf7dfcb4972a9d9738fafc9060bcf23b9e7ef3c468fbbb0c701f9c8e38e",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "verifiedAt": "2026-10-18T02:19:39.128Z",
+      "function": "shieldApi",
+      "revision": "shieldapi-00033-nuk",
+      "previousRevision": "shieldapi-00032-zun",
+      "sourceManifestSha256": "0139a0e055cd9f7fbf9dcab0c38bc8e4657f3aa0b020a36269011bc3ab651084",
+      "archiveSha256": "774c5cdad9db119ed14b10ca017a6a7b8ca0a5bce9a9a7131fc3c0b8d0b33aad",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "verifiedAt": "2026-10-18T02:19:40.634Z",
+      "function": "monitorConnectedCall",
+      "revision": "monitorconnectedcall-00008-hem",
+      "previousRevision": "monitorconnectedcall-00007-yek",
+      "sourceManifestSha256": "b336331c4a4a13f9962bbbf02e3bbd5bcb11f98b96b301aaf14ca5bcc15831ab",
+      "archiveSha256": "4e4f1a13261c368f2ca7544d66bd9c408f85b2f60e4ed24e5cef8b273aa6d6dd",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "verifiedAt": "2026-10-18T02:19:41.733Z",
+      "function": "monitorScheduledCall",
+      "revision": "monitorscheduledcall-00003-riq",
+      "previousRevision": "monitorscheduledcall-00002-wuv",
+      "sourceManifestSha256": "b336331c4a4a13f9962bbbf02e3bbd5bcb11f98b96b301aaf14ca5bcc15831ab",
+      "archiveSha256": "75855fca208ad85d07a4fb8be58e5bfc4983a340bf96e3bbdc4973d335f059dc",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    }
+  ],
+  "unrelatedFunctionsPreserved": true,
+  "bridgePreserved": true,
+  "schedulesPreserved": true,
+  "hostingPreserved": true,
+  "publicConfigurationPreserved": true,
+  "publicReadiness": 200,
+  "privacyStatus": 200,
+  "privacyBytes": 8895,
+  "authenticationGuards": [
+    {
+      "path": "/api/blocked-numbers",
+      "status": 401
+    },
+    {
+      "path": "/api/blocked-numbers?cursor=invalid",
+      "status": 401
+    },
+    {
+      "path": "/api/access",
+      "status": 401
+    },
+    {
+      "path": "/api/account/deletion",
+      "status": 401
+    }
+  ],
+  "noCallsOrMessagesSent": true,
+  "cleanupManuallyInvoked": false,
+  "releaseVersion": "warning-handoff-v2",
+  "implementationCommit": "8c0092a",
+  "runtimeConsistencyVerified": true,
+  "providerSettingsPreserved": true,
+  "numberBindingsPreserved": true
+}

@@ -1,5 +1,9 @@
 # October 17 call silence and missing monitoring warning
 
+## Approved deployment — October 17, 21:19 Central
+
+The owner approved deploying the verified warning path. The smaller intervention-only handoff is now integrated and deployed across the API, call-job worker and both monitoring workers, with source/configuration/traffic verification. New warnings use the existing recording, durable caller/recipient binding and bounded cleanup. [Release details and remaining handset-verification limit](WARNING-HANDOFF-ROLLOUT.md). No additional paid test was run. The diagnostic findings below describe their observation times; earlier “not deployed” statements are superseded by this scoped release.
+
 ## Latest result — October 17, 20:56 Central
 
 **Matching warning audio has now reached an isolated synthetic recipient after caller removal.** A private conference established at acceptance, instead of the direct bridge/parking path, delivered the unchanged Soniox recording. Recipient capture contained six matching one-second sections in their expected order (waveform correlations 0.452–0.734), amplitude-envelope correlation 0.808, and warning-window RMS 0.12627 versus the earlier silent captures around 0.003–0.004. No recipient hold occurred. This demonstrates a working delivery path and strengthens bridge teardown/parking as the regression boundary; it does not identify every internal Telnyx failure mechanism or verify a physical handset.

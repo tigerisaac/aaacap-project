@@ -1,5 +1,9 @@
 # Architecture
 
+## Connected-call warning delivery — deployed October 17
+
+New monitoring interventions use a versioned, bounded handoff of the existing recipient into a private conference before caller teardown. A durable warning job requires a signed caller-hangup receipt and an isolated, unheld recipient before submitting the existing prerecorded Soniox warning once. The recipient binding is persisted before conference creation; matching signed conference playback receipts finish the call, with independent 30-second cleanup. No new leg or Polly speech is used for this path. The usual conversation remains a direct bridge after press-1 acceptance. [Verified revisions, exact scope and synthetic-versus-handset evidence](WARNING-HANDOFF-ROLLOUT.md).
+
 ## 25-user capacity — deployed October 16; outbound carrier ceiling remains 10
 
 The current source uses shared limits for 25 enrolled people/active incoming calls, per-person and global daily quotas, and four maximum bridge instances with ten sessions each. Admission queues locally to reduce contention; Firestore remains authoritative across API instances. Call endings atomically remove only their own reservation. Readiness exposes the limits version. Following the approved reliability fixes, the scoped release is live on bridge `shield-live-00017-qrw` and API `shieldapi-00025-wec`, preserving screening v158 and message policy v4. Offered calls that fall back to voicemail now enqueue a durable announcement-recovery job; expiry cleanup drains multiple batches, and accepted calls retain their history status past 7½ minutes. Telnyx application channels are 30/30, but its profile/account outbound ceiling remains 10 after higher limits were rejected. Phone sign-in was activated October 17; caretaker text delivery remains unavailable (see the dated section below). [Deployment, validation and activation gates](PAID-PILOT-25.md).
