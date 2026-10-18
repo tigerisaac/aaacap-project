@@ -662,5 +662,26 @@
       "sha256": "2d931188f59f23d80df13fd9cf361c997fc72db60270962877a07af071e79281"
     },
     "releaseGateOpen": true
+  },
+  "integrationCheckpoint": {
+    "commit": "d84f756a46108e558228a4d44d96a0ca3176a898",
+    "pushed": true,
+    "concurrentCommitPreserved": "5c42fb6653ebf7c5eec250ef3978ab2d34ecf0df",
+    "iosDifferencesFromFrozenArchive": [
+      "ios/Shield/Features/Calls/CallDetailView.swift"
+    ],
+    "interpretation": "The push was initially rejected after a concurrent Call detail context-menu change. Only the unpushed audit commit was rebased; a normal push succeeded. The earlier frozen archive predates that one separate UI change. Caretaker source and assertions were unchanged by integration."
+  },
+  "committedCI": {
+    "commit": "d84f756a46108e558228a4d44d96a0ca3176a898",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39140629638",
+    "result": "success",
+    "attempt": 1,
+    "unitPassed": 382,
+    "firestorePassed": 284,
+    "accountPassed": 8,
+    "receiptSha256": "04185208965ecacdf8d3865d1c4f09ca6952e948488611103ddac78062ddde0b",
+    "logSha256": "15ec659902abd0c060363b520fc6457a4f1e2f6a35b3431c6ef5ab8d3c3c2254",
+    "scope": "Independent backend workflow; does not run Swift simulator tests."
   }
 }

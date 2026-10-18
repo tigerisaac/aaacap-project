@@ -6,14 +6,19 @@ struct ContactAlertChoiceView: View {
     let request: ContactAlertRequest
     let textAvailable: Bool
     let appAvailable: Bool
+    let onChangeStarted: () -> Void
+    let onUnconfirmed: (Error) -> Void
     let onSaved: (Bool, Bool, Bool) async -> Void
     @State private var textAlerts: Bool
     @State private var appAlerts: Bool
     @State private var working = false
     @State private var error: String?
     @State private var notificationsDenied = false
-    init(request: ContactAlertRequest, textAvailable: Bool, appAvailable: Bool, onSaved: @escaping (Bool, Bool, Bool) async -> Void) {
+    init(request: ContactAlertRequest, textAvailable: Bool, appAvailable: Bool,
+         onChangeStarted: @escaping () -> Void, onUnconfirmed: @escaping (Error) -> Void,
+         onSaved: @escaping (Bool, Bool, Bool) async -> Void) {
         self.request = request; self.textAvailable = textAvailable; self.appAvailable = appAvailable; self.onSaved = onSaved
+        self.onChangeStarted = onChangeStarted; self.onUnconfirmed = onUnconfirmed
         _textAlerts = State(initialValue: request.textAlerts && textAvailable)
         _appAlerts = State(initialValue: request.appAlerts && appAvailable)
     }
@@ -59,6 +64,7 @@ struct ContactAlertChoiceView: View {
     private func save(accept: Bool) async {
         guard !working else { return }
         let generation = model.sessionGeneration
+        var submitted = false
         working = true; error = nil; notificationsDenied = false
         defer { working = false }
         do {
@@ -72,6 +78,8 @@ struct ContactAlertChoiceView: View {
             }
             if !model.isPreview {
                 guard generation == model.sessionGeneration, model.signedIn else { return }
+                onChangeStarted()
+                submitted = true
                 let _: APIResponses.Empty = try await model.api.send("/api/contact-alerts/\(request.id.uuidString.lowercased())", method: "POST",
                     body: APIClient.payload(["accept": accept, "textAlerts": accept && textAlerts, "appAlerts": accept && appAlerts]))
                 // A recipient without their own protected phone may register only
@@ -81,6 +89,15 @@ struct ContactAlertChoiceView: View {
             guard generation == model.sessionGeneration else { return }
             await onSaved(accept, accept && textAlerts, accept && appAlerts)
         } catch is CancellationError { return }
-        catch { self.error = error.localizedDescription; model.handleSessionFailure(error) }
+        catch {
+            guard generation == model.sessionGeneration else { return }
+            if submitted {
+                // A failed response cannot prove the server left the previous choice unchanged.
+                onUnconfirmed(error)
+            } else {
+                self.error = error.localizedDescription
+                model.handleSessionFailure(error)
+            }
+        }
     }
 }

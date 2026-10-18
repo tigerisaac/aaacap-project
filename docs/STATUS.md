@@ -1,5 +1,11 @@
 # Status
 
+## October 18 — lost caretaker-choice responses recover without repeating a change
+
+Four controlled cases reproduced a false **Alert choices not saved** message after the server had accepted, declined or stopped alerts. The correction presents **Status not confirmed**, rejects older reads and offers a fresh status check. All four recover with exactly one saved change. On iOS 27, **20/21** methods passed; one existing VoiceOver journey hit an automation-command error and then passed an unchanged isolated run. All **18/18** applicable methods passed on iOS 26.5, with zero runtime warnings. The failed run is retained, and its automation cause remains unproved.
+
+The unsigned Release archive passes, and twenty before/after captures were inspected. This is source/simulator evidence; physical installation, APNs delivery and full accessibility acceptance remain open. The separate add-caretaker creation-response concern is queued for controlled reproduction. [Exact results and boundaries](IOS-CARETAKER-RECOVERY.md#lost-mutation-response-follow-up--october-18).
+
 ## October 18 — caretaker refresh and recipient recovery verified on both iOS runtimes
 
 After the owner completed Xcode setup, all five controlled ordering regressions failed against the original views and passed after correction. Pausing/removing a caretaker now requires a fresh confirmation, and older success/error responses cannot restore obsolete state. Two further regressions exposed hidden post-decline feedback; the recipient now sees readable **Status not confirmed** feedback and can check the server without repeating the decline.

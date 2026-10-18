@@ -47,6 +47,22 @@ final class CaretakerRefreshUITests: XCTestCase {
         checkRecipientConfirmationFailure(arguments: ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
     }
 
+    func testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange() {
+        checkLostChangeResponse(accept: false)
+    }
+
+    func testLostDeclineResponseIsRecoverableAtLargestText() {
+        checkLostChangeResponse(accept: false, arguments: ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+    }
+
+    func testLostAcceptResponseRevealsTheAcceptedChoices() {
+        checkLostChangeResponse(accept: true)
+    }
+
+    func testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange() {
+        checkLostChangeResponse(accept: false, alreadyAccepted: true)
+    }
+
     func testFailedConfirmationRetainsItsErrorUntilAnExplicitFreshRead() {
         let app = launch(arguments: ["--caretaker-refresh-fresh-fails"])
         let toggle = app.switches["Send protection alerts"]
@@ -116,6 +132,49 @@ final class CaretakerRefreshUITests: XCTestCase {
         XCTAssertFalse(notice.exists)
         inspect(app, containing: "reads:4", "changes:1", "contacts:0")
         capture(app, "Recipient confirmation failure recovered")
+    }
+
+    private func checkLostChangeResponse(accept: Bool, alreadyAccepted: Bool = false, arguments: [String] = []) {
+        let initial = alreadyAccepted ? ["--caretaker-refresh-recipient-accepted"] : []
+        let app = launch(recipient: true, arguments: ["--caretaker-refresh-change-response-lost"] + initial + arguments)
+        XCTAssertTrue(app.buttons["Start held refresh"].appears(timeout: 10))
+        holdRefresh(app)
+        if accept {
+            let texts = app.switches["contact-text-alerts"]
+            for _ in 0..<6 where !texts.isHittable { app.collectionViews.firstMatch.swipeUp() }
+            texts.tap()
+        }
+        let action = app.buttons[accept ? "Accept request" : alreadyAccepted ? "Stop these alerts" : "Decline request"]
+        for _ in 0..<6 where !action.isHittable { app.collectionViews.firstMatch.swipeUp() }
+        action.tap()
+        inspect(app, containing: "reads:2", "changes:1", accept ? "contacts:1" : "contacts:0")
+        let notice = app.descendants(matching: .any)["contact-alert-load-error"]
+        let check = app.buttons["Check current status"]
+        let appeared = notice.appears(timeout: 5)
+        capture(app, "Recipient lost change response before recovery")
+        XCTAssertTrue(appeared, "A lost response cannot establish that the server did not save the change.")
+        XCTAssertFalse(app.descendants(matching: .any)["contact-alert-error"].exists, "Do not claim alert choices were not saved after a response was lost.")
+        // Preserve the useful baseline failure without trying to tap a missing recovery action.
+        guard appeared else { return }
+        XCTAssertTrue(notice.isHittable)
+        XCTAssertTrue(check.exists)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Your connection was interrupted. Check your internet connection.")).firstMatch.exists)
+        releaseRefresh(app)
+        XCTAssertTrue(notice.exists, "An older read cannot dismiss an unconfirmed change.")
+        let footer = app.staticTexts["caretaker-fixture-state"]
+        for _ in 0..<4 where check.frame.maxY > footer.frame.minY - 8 { app.collectionViews.firstMatch.swipeUp() }
+        XCTAssertTrue(check.isHittable)
+        XCTAssertLessThanOrEqual(check.frame.maxY, footer.frame.minY - 8)
+        capture(app, "Recipient lost change response status action")
+        check.tap()
+        XCTAssertTrue(notice.waitForNonExistence(timeout: 5))
+        if accept {
+            XCTAssertTrue(app.staticTexts["You’re a caretaker."].appears(timeout: 5))
+            XCTAssertEqual(app.switches["contact-text-alerts"].value as? String, "1")
+            XCTAssertTrue(app.buttons["Save alert choices"].exists)
+        } else { XCTAssertTrue(app.staticTexts["No requests"].appears(timeout: 5)) }
+        inspect(app, containing: "reads:3", "changes:1", accept ? "contacts:1" : "contacts:0")
+        capture(app, "Recipient lost change response reconciled")
     }
 
     private func launch(recipient: Bool = false, arguments: [String] = []) -> XCUIApplication {

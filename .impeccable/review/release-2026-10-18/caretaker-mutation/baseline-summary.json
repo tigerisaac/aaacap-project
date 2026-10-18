@@ -1,0 +1,85 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+        "deviceName" : "iPhone 17e",
+        "modelName" : "iPhone 17e",
+        "osBuildNumber" : "24A434",
+        "osVersion" : "27.0",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 4,
+      "passedTests" : 0,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "Shield · Built with macOS 27.0",
+  "expectedFailures" : 0,
+  "failedTests" : 4,
+  "finishTime" : 1792337553.475,
+  "passedTests" : 0,
+  "result" : "Failed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1792337460.335,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+    {
+      "failureText" : "XCTAssertTrue failed - A lost response cannot establish that the server did not save the change.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 1,
+      "testIdentifierString" : "CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices",
+      "testName" : "testLostAcceptResponseRevealsTheAcceptedChoices()"
+    },
+    {
+      "failureText" : "XCTAssertTrue failed - A lost response cannot establish that the server did not save the change.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 2,
+      "testIdentifierString" : "CaretakerRefreshUITests/testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/CaretakerRefreshUITests/testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange",
+      "testName" : "testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange()"
+    },
+    {
+      "failureText" : "XCTAssertTrue failed - A lost response cannot establish that the server did not save the change.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 3,
+      "testIdentifierString" : "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText",
+      "testName" : "testLostDeclineResponseIsRecoverableAtLargestText()"
+    },
+    {
+      "failureText" : "XCTAssertTrue failed - A lost response cannot establish that the server did not save the change.",
+      "targetName" : "ShieldUITests",
+      "testIdentifier" : 4,
+      "testIdentifierString" : "CaretakerRefreshUITests/testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "testIdentifierURL" : "test://com.apple.xcode/Shield/ShieldUITests/CaretakerRefreshUITests/testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange",
+      "testName" : "testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange()"
+    }
+  ],
+  "title" : "Test - Shield",
+  "topInsights" : [
+    {
+      "category" : "Common Failures",
+      "impact" : "100% of failures",
+      "text" : "4 runs of 4 tests failed with XCTAssertTrue failed - A lost response cannot establish that the server did not save the change."
+    },
+    {
+      "category" : "Common Failures",
+      "impact" : "100% of failures",
+      "text" : "4 runs of 4 tests failed with XCTAssertFalse failed - Do not claim alert choices were not saved after a response was lost."
+    }
+  ],
+  "totalTestCount" : 4
+}

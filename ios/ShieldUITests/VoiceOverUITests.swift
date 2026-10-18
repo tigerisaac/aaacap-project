@@ -83,6 +83,23 @@ final class VoiceOverUITests: XCTestCase {
         walk.checkpoint("decline-confirmed-without-repeating-change")
     }
 
+    func testVoiceOverCanReconcileALostCaretakerChangeResponse() throws {
+        guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
+        let walk = try VoiceOverWalkthrough(self, name: "caretaker-change-response", arguments: ["--uitesting-caretaker-refresh",
+            "--caretaker-refresh-recipient", "--caretaker-refresh-change-response-lost"], large: true)
+        defer { walk.finish() }
+        try walk.activate("Start held refresh")
+        try walk.activate("Decline request")
+        try walk.find("Status not confirmed")
+        try walk.find("Your connection was interrupted")
+        walk.checkpoint("lost-response-status-readable")
+        try walk.activate("Release older response")
+        try walk.activate("Check current status")
+        try walk.find("No requests")
+        XCTAssertFalse(walk.app.descendants(matching: .any)["contact-alert-load-error"].exists)
+        walk.checkpoint("lost-response-reconciled")
+    }
+
     func testVoiceOverPilotAccessHasNoStoreActions() throws {
         guard #available(iOS 27.0, *) else { throw XCTSkip("VoiceOver service requires iOS 27.") }
         let walk = try VoiceOverWalkthrough(self, name: "pilot-access", arguments: ["--uitesting-preview", "--uitesting-subscription", "pilot"], large: true)

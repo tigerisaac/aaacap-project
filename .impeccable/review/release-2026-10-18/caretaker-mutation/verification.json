@@ -1,0 +1,370 @@
+{
+  "recordedAt": "2026-10-18T15:52:56.939093+00:00",
+  "status": "Source correction verified in scoped simulator journeys; wider release acceptance remains open.",
+  "baseCommit": "d84f756a46108e558228a4d44d96a0ca3176a898",
+  "sourceInventory": "corrected-source.json",
+  "sourceInventorySha256": "a37dbd495002062f9de47b7bb263aa480af75a08a74b8630d90c681ff3272b2c",
+  "trackedIOSFiles": 279,
+  "allInputHashesMatchAtSignoff": true,
+  "baselineInventory": "baseline-source.json",
+  "baselineInventorySha256": "91ad323f8c0eedfe4632f71e3b2fc8fd20712edb2f03a6b15886841a440c4316",
+  "baselineToCorrectionChanges": [
+    "ios/Shield/Features/TrustedContacts/ContactAlertChoiceView.swift",
+    "ios/Shield/Features/TrustedContacts/ContactAlertsView.swift",
+    "ios/ShieldUITests/VoiceOverUITests.swift"
+  ],
+  "sameFourRegressionAssertionsAndTransportBeforeAfter": true,
+  "defect": "The server may save an accept, decline or stop-alerts change before the reply is lost. The previous view incorrectly said Alert choices not saved and provided no status check.",
+  "correction": "Submitted-change errors use the parent Status not confirmed notice and fresh-read action. Reads begun before or during the change are invalidated; session changes fence errors. Pre-submission permission errors remain separate.",
+  "registration": "After a confirmed accepted app-alert read, existing notification authorization is checked before requesting device registration. This path was compiled, not exercised by these texts-only synthetic tests; APNs and backend token delivery remain unverified.",
+  "runs": [
+    {
+      "name": "baseline",
+      "summary": "baseline-summary.json",
+      "summarySha256": "5a43cd44133a75c5432855c1644ac14bcb8134184e0b12e203bfa93a4aacfdbb",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 4,
+      "runtimeWarnings": 0,
+      "startedAt": "2026-10-18T15:31:00.335000+00:00",
+      "finishedAt": "2026-10-18T15:32:33.475000+00:00",
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 4,
+          "passedTests": 0,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "note": "Original production views; four lost-response methods fail eight assertions. Synthetic server saved each change before dropping its reply.",
+      "privateResult": "artifacts/private/caretaker-mutation-oct18/baseline.xcresult",
+      "privateLog": "artifacts/private/caretaker-mutation-oct18/baseline.log",
+      "logSha256": "47b4e1d2090c7959f396e01c4de83f24fce174e1a5e6f2e43518efa8defc1928"
+    },
+    {
+      "name": "corrected-ios27",
+      "summary": "corrected-ios27-summary.json",
+      "summarySha256": "bec234c7af3e9784966266994fa263dfb14ea32cecee0249e4f731969551fee8",
+      "result": "Failed",
+      "passed": 20,
+      "failed": 1,
+      "runtimeWarnings": 0,
+      "startedAt": "2026-10-18T15:36:20.928000+00:00",
+      "finishedAt": "2026-10-18T15:44:25.799000+00:00",
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 1,
+          "passedTests": 20,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "note": "All eleven caretaker regressions, seven existing release-readiness journeys and two VoiceOver methods passed. The third VoiceOver method failed with AXVoiceOverAutomationErrorDomain code 3: Failed to send moveForward command. This failed run is retained.",
+      "privateResult": "artifacts/private/caretaker-mutation-oct18/corrected-ios27.xcresult",
+      "privateLog": "artifacts/private/caretaker-mutation-oct18/corrected-ios27.log",
+      "logSha256": "ada47de8d70346661c6359901abd825496ec3b694353fe20602e46b87a582e6f"
+    },
+    {
+      "name": "voiceover-isolated-ios27",
+      "summary": "voiceover-isolated-ios27-summary.json",
+      "summarySha256": "9683cfa4066b8bd52c2fae082cfc359cef9dd82b6ae1e5132fa943785511215f",
+      "result": "Passed",
+      "passed": 1,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "startedAt": "2026-10-18T15:45:44.524000+00:00",
+      "finishedAt": "2026-10-18T15:47:40.329000+00:00",
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 1,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "note": "One isolated rerun of the failed existing VoiceOver method passed with no source or assertion change. The automation error cause remains unproved; this does not replace the initial failure.",
+      "privateResult": "artifacts/private/caretaker-mutation-oct18/voiceover-isolated-ios27.xcresult",
+      "privateLog": "artifacts/private/caretaker-mutation-oct18/voiceover-isolated-ios27.log",
+      "logSha256": "e7ff337f126c73e295e0f24ef683f7b611c0cf03e8945112d7c870f0f4a78937"
+    },
+    {
+      "name": "corrected-ios26",
+      "summary": "corrected-ios26-summary.json",
+      "summarySha256": "8da3528664b1795c1f34794c548cd481e8be1e8f8c044dd6aa1c9e82eae2d89b",
+      "result": "Passed",
+      "passed": 18,
+      "failed": 0,
+      "runtimeWarnings": 0,
+      "startedAt": "2026-10-18T15:48:01.495000+00:00",
+      "finishedAt": "2026-10-18T15:52:33.338000+00:00",
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "4E5B0E5C-582E-4939-A9CA-F71342045F44",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "23F77",
+            "osVersion": "26.5",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 18,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "note": "All eleven caretaker regressions and seven existing release-readiness journeys on iOS 26.5. VoiceOver testing service requires iOS 27 and was not run here.",
+      "privateResult": "artifacts/private/caretaker-mutation-oct18/corrected-ios26.xcresult",
+      "privateLog": "artifacts/private/caretaker-mutation-oct18/corrected-ios26.log",
+      "logSha256": "b8b6bbfe04e40f1f60bbf11a13db0ad5000e24e64e0bb1e7431bfa2cecf54f28"
+    }
+  ],
+  "captures": [
+    {
+      "file": "before-accept.png",
+      "sha256": "a9752f003a5ac46605a16c119fbc2aeb8be1e0093303519ce622da421b6edddd",
+      "run": "baseline",
+      "test": "CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices()",
+      "attachment": "Recipient lost change response before recovery_0_2D73C38C-1A0B-4BC8-8CC4-60ED2AB5483A.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-accept-notice.png",
+      "sha256": "b6e380f121058bc848c662053685fb2693cfb1de62f899f442f35869757183bd",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices()",
+      "attachment": "Recipient lost change response before recovery_0_2DEDF919-776A-4116-A083-38F9718F2F61.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-accept-confirmed.png",
+      "sha256": "b49bfed7bb9897deb3d4499546b4c503f9411e1559456ec6e8df72353432cdaa",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices()",
+      "attachment": "Recipient lost change response reconciled_0_B4C8DBB7-2DE8-4FDD-A96D-230E11C01511.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "before-decline.png",
+      "sha256": "76e999cc9b7ff8eb4a18fddeefe7a593bda3a126c46962f5ead62efff95ca4f9",
+      "run": "baseline",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "attachment": "Recipient lost change response before recovery_0_D55D7244-4A18-4FB2-9116-FF0F7A6B4612.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-decline-notice.png",
+      "sha256": "111730412b30ad3f7416905c25f51ed5655e7ae30df4ee033d19c69f97c87e02",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "attachment": "Recipient lost change response before recovery_0_B1DA5EAC-F918-4BE5-9A01-37C7E37962A8.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-decline-confirmed.png",
+      "sha256": "da0129eae6cc94ce140ad61ab63cdc91f79db7f0ba3baa04bea8c0f16cc826a9",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "attachment": "Recipient lost change response reconciled_0_C69F2B14-FA52-4745-9E29-F04914577D3E.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "before-decline-largest.png",
+      "sha256": "748251456b420a977a6cd07dca363cffce447d19841d2a0df8b5a45994915317",
+      "run": "baseline",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "attachment": "Recipient lost change response before recovery_0_1845D774-BC68-4A2F-9303-779DB235469F.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-decline-largest-notice.png",
+      "sha256": "c1cfc0b6c58b55abb43de9ceb30ff92e648503ce45639addc31383be679aba94",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "attachment": "Recipient lost change response before recovery_0_B29AD6E1-1E42-4723-B46F-17FD4675144C.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-decline-largest-confirmed.png",
+      "sha256": "ebade341ab05cff54a60ee72f8024887c6d5358277e229ae005b2ca85c99c845",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "attachment": "Recipient lost change response reconciled_0_8365F560-F2E5-45E1-9112-2F470C51BF6C.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "before-stop.png",
+      "sha256": "04286907a245f105d02a6565fe4e193a92a044d39ceae8008e615441373abf1b",
+      "run": "baseline",
+      "test": "CaretakerRefreshUITests/testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "attachment": "Recipient lost change response before recovery_0_E10031AB-CF90-4911-A084-C7D19517A172.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-stop-notice.png",
+      "sha256": "6f520a06d17937a85138f2905f0c077eed3affb77734efeada14bb9aeb1ee081",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "attachment": "Recipient lost change response before recovery_0_CA2A139A-3267-43BD-A2EB-1F98CD824B04.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-stop-confirmed.png",
+      "sha256": "82db23c2fbd3590035c8a1300d88608d7f94f904d819f8113cdfc1d49f84cf7d",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostStopAlertsResponseCanBeReconciledWithoutRepeatingTheChange()",
+      "attachment": "Recipient lost change response reconciled_0_799DB64D-5564-43B6-BA50-223558EE8A36.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "after-decline-largest-action.png",
+      "sha256": "37dc4adfed37f8f7b9bcaa8c5e9b97b8002aa4d050504c7825c939a0dde13f6f",
+      "run": "corrected-ios27",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "attachment": "Recipient lost change response status action_0_ED6A458E-32BF-4A01-8058-E2F54E053B0A.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "voiceover-lost-response-notice.png",
+      "sha256": "a64964ca594b21b209d052adf994c632e2b124c3c2b59b80e96f42527809c85b",
+      "run": "corrected-ios27",
+      "test": "VoiceOverUITests/testVoiceOverCanReconcileALostCaretakerChangeResponse()",
+      "attachment": "voiceover-caretaker-change-response-lost-response-status-readable_0_47531F67-04CF-47F4-83D6-9D548118B210.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "voiceover-lost-response-confirmed.png",
+      "sha256": "6c053376ff79c0564d6998933511a3976a9ef885a30e686c49c67dcbd6e01bc9",
+      "run": "corrected-ios27",
+      "test": "VoiceOverUITests/testVoiceOverCanReconcileALostCaretakerChangeResponse()",
+      "attachment": "voiceover-caretaker-change-response-lost-response-reconciled_0_C2D5837E-7D16-472A-90C0-934742FA8111.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "voiceover-isolated-notice.png",
+      "sha256": "0852cc99dcf36144f8a2e3cdd2b1f2abd0fc9d3079066066eaaf95dadb356063",
+      "run": "voiceover-isolated-ios27",
+      "test": "VoiceOverUITests/testVoiceOverCanRecoverAnUnconfirmedCaretakerDecline()",
+      "attachment": "voiceover-caretaker-decline-confirmation-unconfirmed-status-readable_0_27C9BB0E-908D-45D5-955F-354252C1A187.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "voiceover-isolated-confirmed.png",
+      "sha256": "ba0edccaec5a6ea2c64e67efcc38f2e744d27528ac625cfbd285bc8a5d6dc7ba",
+      "run": "voiceover-isolated-ios27",
+      "test": "VoiceOverUITests/testVoiceOverCanRecoverAnUnconfirmedCaretakerDecline()",
+      "attachment": "voiceover-caretaker-decline-confirmation-decline-confirmed-without-repeating-change_0_A978D273-C618-411A-B50F-5B9B2F54CE80.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "ios26-accept-confirmed.png",
+      "sha256": "4d9993f8ab0c641a5875d5f00e960ab0b8115f49f3aed138afa0c42edfa143b0",
+      "run": "corrected-ios26",
+      "test": "CaretakerRefreshUITests/testLostAcceptResponseRevealsTheAcceptedChoices()",
+      "attachment": "Recipient lost change response reconciled_0_FAE5863A-87D3-4C38-AFCB-DFA5D3C40D6D.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "ios26-largest-action.png",
+      "sha256": "38387e4344f297a65e94d3c93c1de3c0e19636eae8f10fd808f30d9604785896",
+      "run": "corrected-ios26",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "attachment": "Recipient lost change response status action_0_326B683A-6B35-4EAD-B501-36E26C88FF9A.png",
+      "manuallyInspected": true
+    },
+    {
+      "file": "ios26-largest-confirmed.png",
+      "sha256": "3e7f08af45a2583953413f832a2330c4216c87108e28231afc3349b333232b36",
+      "run": "corrected-ios26",
+      "test": "CaretakerRefreshUITests/testLostDeclineResponseIsRecoverableAtLargestText()",
+      "attachment": "Recipient lost change response reconciled_0_E3F2D370-B5A9-4402-8318-4277C3748205.png",
+      "manuallyInspected": true
+    }
+  ],
+  "archive": {
+    "receipt": "release-archive-verification.json",
+    "receiptSha256": "0fb0df870e4f1deb0a91ac789134d2276659c6906663548b5dfbd0d2bea9abbb",
+    "logSha256": "685990290cba846f2ea5a5f476c2cff39b24f706ef95f0a08bf265b4101a54f2",
+    "archive": "/tmp/shield-caretaker-mutation-oct18.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "6c42b3cc7f66268af464329fbae34bef5142994d3404916a07cff74bafacf5fb"
+  },
+  "boundaries": [
+    "Only Debug simulator builds include the synthetic transport and held-read controls. All executed fixtures used local state, no real account or network transport, and appAlerts false.",
+    "Four regression cases confirm reads=3 and changes=1 after recovery; no mutation is repeated by the status-check button.",
+    "Actual Simulator VoiceOver speech/focus is checked; direct UI actions temporarily disable VoiceOver. Physical gestures and immediate announcement timing are not certified.",
+    "The initial VoiceOver automation failure is retained despite the unchanged isolated pass. Its exact cause remains unproved.",
+    "The prior restored-theme unfiltered audit remains failed with ten contrast observations; it was not rerun for this non-layout follow-up.",
+    "No physical installation, provider message, production deployment, Apple upload or distribution-signing acceptance occurred.",
+    "The current inputs include the concurrently requested pre-Andrew theme restoration, Home figure and Call detail copy-number change.",
+    "Lost caretaker-creation responses in AddTrustedContactView remain a separate source-review lead, not a verified passing journey."
+  ]
+}

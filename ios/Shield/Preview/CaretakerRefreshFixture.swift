@@ -7,6 +7,9 @@ actor CaretakerRefreshFixture {
     private var changes = 0
     private var enabled = true
     private var hasContact = true
+    private var recipientAccepted = ProcessInfo.processInfo.arguments.contains("--caretaker-refresh-recipient-accepted")
+    private var recipientTexts = ProcessInfo.processInfo.arguments.contains("--caretaker-refresh-recipient-accepted")
+    private var recipientAppAlerts = false
     private var released = false
     private var pending: CheckedContinuation<Void, Never>?
 
@@ -19,9 +22,23 @@ actor CaretakerRefreshFixture {
             changes += 1
             return Data("{}".utf8)
         }
-        if method == "DELETE" || (method == "POST" && path.hasPrefix("/api/contact-alerts/")) {
+        if method == "DELETE" {
             hasContact = false
             changes += 1
+            return Data("{}".utf8)
+        }
+        if method == "POST", path.hasPrefix("/api/contact-alerts/") {
+            let payload = try JSONSerialization.jsonObject(with: body ?? Data()) as? [String: Bool]
+            guard let accept = payload?["accept"] else { throw APIError.invalidResponse }
+            hasContact = accept
+            recipientAccepted = accept
+            recipientTexts = accept && payload?["textAlerts"] == true
+            recipientAppAlerts = accept && payload?["appAlerts"] == true
+            changes += 1
+            // The server applied the change, but the client did not receive its response.
+            if ProcessInfo.processInfo.arguments.contains("--caretaker-refresh-change-response-lost") {
+                throw URLError(.networkConnectionLost)
+            }
             return Data("{}".utf8)
         }
         guard method == "GET" else { throw APIError.invalidResponse }
@@ -29,8 +46,9 @@ actor CaretakerRefreshFixture {
         let read = reads
         let recipient = path == "/api/contact-alerts"
         let contact: [String: Any] = ["id": "00000000-0000-4000-8000-000000000001", "name": "Jamie",
-            "phone": "+12025550101", "status": recipient ? "pending" : "accepted",
-            "textAlerts": !recipient, "appAlerts": false, "requestDelivery": "submitted", "ownerPaused": false]
+            "phone": "+12025550101", "status": recipient && !recipientAccepted ? "pending" : "accepted",
+            "textAlerts": recipient ? recipientTexts : true, "appAlerts": recipient && recipientAppAlerts,
+            "requestDelivery": "submitted", "ownerPaused": false]
         let contacts = hasContact ? [contact] : []
         let result: [String: Any] = recipient
             ? ["requests": contacts, "textAvailable": true, "appAvailable": true, "textsStopped": false]

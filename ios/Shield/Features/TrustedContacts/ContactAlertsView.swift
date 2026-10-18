@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 struct ContactAlertsView: View {
     @Environment(AppState.self) private var model
@@ -33,7 +34,8 @@ struct ContactAlertsView: View {
                         }
                     }
                     ForEach(response.requests) { request in
-                        ContactAlertChoiceView(request: request, textAvailable: response.textAvailable && !response.textsStopped, appAvailable: response.appAvailable) { accept, texts, appAlerts in
+                        ContactAlertChoiceView(request: request, textAvailable: response.textAvailable && !response.textsStopped,
+                            appAvailable: response.appAvailable, onChangeStarted: beginChange, onUnconfirmed: showUnconfirmedChange) { accept, texts, appAlerts in
                             if model.isPreview {
                                 self.response = .init(requests: accept ? [.init(id: request.id, name: request.name, status: "accepted", textAlerts: texts, appAlerts: appAlerts, ownerPaused: false)] : [], textAvailable: true, appAvailable: true, textsStopped: false)
                             } else { await load() }
@@ -87,11 +89,34 @@ struct ContactAlertsView: View {
             let loaded: ContactAlertsResponse = try await model.api.send("/api/contact-alerts")
             guard revision == loadRevision, generation == model.sessionGeneration else { return }
             response = loaded
+            if loaded.appAvailable, loaded.requests.contains(where: { $0.status == "accepted" && $0.appAlerts }) {
+                let settings = await UNUserNotificationCenter.current().notificationSettings()
+                guard revision == loadRevision, generation == model.sessionGeneration, model.signedIn else { return }
+                if settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional {
+                    // Reconciliation also completes registration when an accepted choice's reply was lost.
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
         } catch is CancellationError { return }
         catch {
             guard revision == loadRevision, generation == model.sessionGeneration else { return }
-            self.error = error is URLError ? "Your connection was interrupted. Check your internet connection." : error.localizedDescription
-            model.handleSessionFailure(error)
+            showFailure(error)
         }
+    }
+
+    private func beginChange() {
+        loadRevision += 1
+        error = nil
+    }
+
+    private func showUnconfirmedChange(_ failure: Error) {
+        // Also reject reads started during the change, before its outcome was known.
+        loadRevision += 1
+        showFailure(failure)
+    }
+
+    private func showFailure(_ failure: Error) {
+        error = failure is URLError ? "Your connection was interrupted. Check your internet connection." : failure.localizedDescription
+        model.handleSessionFailure(failure)
     }
 }
