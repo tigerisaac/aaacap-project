@@ -1,6 +1,6 @@
 # Complete blocked-number retrieval — October 17, 2026
 
-The repository fixes the server's silent 200-row limit and makes the iPhone wait for a complete list before replacing its screen or Call Directory handoff. The API must be deployed before distributing this client. This is a local implementation and verification record; physical CallKit operation and production pagination are not yet verified.
+The repository fixes the server's silent 200-row limit and makes the iPhone wait for a complete list before replacing its screen or Call Directory handoff. The matching API is deployed on **`shieldapi-00032-zun`**, with source identity and public guards verified October 17 at 20:34–20:37 Central. Signed-in production pagination and physical CallKit operation still need acceptance before distributing this client.
 
 ## Behavior
 
@@ -29,4 +29,6 @@ Final simulator, visual and unsigned archive results are recorded with their exa
 
 ## Deployment boundary
 
-The [combined rollout review](RETENTION-PAGINATION-ROLLOUT.md) adds exactly one compiled API file to the existing four-file retention proposal. Its original frozen package remains unchanged. The new package requires approval of its expanded scope and a fresh baseline check before deployment. Deploy backend pagination first, then distribute the matching app. No backend deployment, physical installation, phone operation, Apple change or message delivery occurred in this checkpoint.
+The owner approved the [combined rollout](RETENTION-PAGINATION-ROLLOUT.md), adding exactly one compiled API file to the existing four-file retention proposal. Its original frozen package remains unchanged. The API and cleanup deployment completed after a fresh baseline check; downloaded source hashes, configuration, IAM and 100% traffic match the approved package, and unrelated services remain unchanged. [Deployment evidence](../.impeccable/review/release-2026-10-17/blocked-pagination/deployment/verification.json) is separate from the earlier local checkpoint.
+
+No authorized production test-account session was available to exercise all pages. No production test data, physical installation, phone operation, Apple change or message delivery occurred. Finish authenticated production and physical acceptance before distributing the matching app. If the backend is rolled back to the old pagination contract, withhold or roll back this client too.

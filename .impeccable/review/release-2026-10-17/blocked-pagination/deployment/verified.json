@@ -1,0 +1,61 @@
+{
+  "verifiedAt": "2026-10-18T01:34:52.667Z",
+  "approved": true,
+  "deployed": true,
+  "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+  "archiveSha256": "bff350542275f1193faae7ff83e871deae80213da26d993c8b27f8256f8341b4",
+  "functions": [
+    {
+      "verifiedAt": "2026-10-18T01:34:45.536Z",
+      "function": "cleanupShield",
+      "revision": "cleanupshield-00015-nek",
+      "previousRevision": "cleanupshield-00014-ruf",
+      "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+      "archiveSha256": "bff350542275f1193faae7ff83e871deae80213da26d993c8b27f8256f8341b4",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    },
+    {
+      "verifiedAt": "2026-10-18T01:34:46.529Z",
+      "function": "shieldApi",
+      "revision": "shieldapi-00032-zun",
+      "previousRevision": "shieldapi-00031-cif",
+      "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+      "archiveSha256": "bff350542275f1193faae7ff83e871deae80213da26d993c8b27f8256f8341b4",
+      "sourceVerified": true,
+      "configurationPreserved": true,
+      "iamPreserved": true,
+      "trafficPercent": 100
+    }
+  ],
+  "unrelatedFunctionsPreserved": true,
+  "bridgePreserved": true,
+  "schedulesPreserved": true,
+  "hostingPreserved": true,
+  "publicConfigurationPreserved": true,
+  "publicReadiness": 200,
+  "privacyStatus": 200,
+  "privacyBytes": 8895,
+  "authenticationGuards": [
+    {
+      "path": "/api/blocked-numbers",
+      "status": 401
+    },
+    {
+      "path": "/api/blocked-numbers?cursor=invalid",
+      "status": 401
+    },
+    {
+      "path": "/api/access",
+      "status": 401
+    },
+    {
+      "path": "/api/account/deletion",
+      "status": 401
+    }
+  ],
+  "noCallsOrMessagesSent": true,
+  "cleanupManuallyInvoked": false
+}

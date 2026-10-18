@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-18T01:33:03.613Z",
+  "readOnly": true,
+  "start": "2026-10-17T01:32:59.074Z",
+  "end": "2026-10-18T01:32:59.073Z",
+  "services": [
+    "shieldapi",
+    "ingestforwardingvoicemail",
+    "runsharedcalljob"
+  ],
+  "entries": 7,
+  "pages": 1,
+  "truncated": false,
+  "counts": {
+    "runsharedcalljob": {
+      "entries": 3,
+      "knownCategories": {
+        "unclassified": 3
+      },
+      "firstTimestamp": "2026-10-17T03:39:55.024749Z",
+      "lastTimestamp": "2026-10-17T22:03:09.549872Z"
+    },
+    "ingestforwardingvoicemail": {
+      "entries": 4,
+      "knownCategories": {
+        "unclassified": 4
+      },
+      "firstTimestamp": "2026-10-17T01:33:47.496870Z",
+      "lastTimestamp": "2026-10-17T01:35:25.960729Z"
+    }
+  },
+  "rawEntriesSaved": false,
+  "rawPayloadsPrinted": false,
+  "limitation": "Only allowlisted error-name matching; unknown entries remain unclassified. Absent error logs do not disprove HTTP failures, and Cloud Run request logs are excluded by the existing sink."
+}

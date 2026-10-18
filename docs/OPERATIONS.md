@@ -2,6 +2,8 @@
 
 How to deploy, switch features, run supervised test calls, and inspect what happened. Everything targets the Google Cloud and Firebase project `shield-calls-isaac`. It's the shared live project, not a sandbox.
 
+The [October 17 operational-readiness audit](OPERATIONAL-READINESS.md) found no configured project alerts, notification channels, uptime checks or Shield cloud budget. It records aggregate backlog/HTTP-error observations, their limits and the required configuration/acceptance work. These release gates remain open; the audit changed no production settings.
+
 ## Access and secrets
 
 - **Google identity.** Operator scripts reuse your Firebase CLI login through `scripts/firebase-client.mjs`, which loads `firebase-tools` from this repo's dev dependencies. Sign in once with `npx firebase login`. The scripts call Google REST APIs directly; `gcloud` isn't needed.

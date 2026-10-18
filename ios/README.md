@@ -2,6 +2,8 @@
 
 Current release work: [iOS verification record](../docs/IOS-RELEASE-VERIFICATION.md) and [RevenueCat/pilot integration](../docs/REVENUECAT.md). Apple setup is deferred; no public paid release is enabled.
 
+The current blocked-number client requires pagination version 1. Its matching [backend rollout](../docs/RETENTION-PAGINATION-ROLLOUT.md) is deployed and source-verified; signed-in production pagination and physical Call Directory acceptance remain required before distribution. Withhold or roll back this client if restoring the older first-page-only API.
+
 Native SwiftUI, iOS 26+, Swift 6, with the pinned RevenueCat Purchases SDK. The project contains the Shield app, a Call Directory extension and UI tests. The unfinished Message Filter development target is excluded from the shipped app.
 
 ## Open and run

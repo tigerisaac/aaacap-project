@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-10-18T01:21:28.855Z",
+  "readOnly": true,
+  "project": "shield-calls-isaac",
+  "observations": {
+    "alertPolicies": {
+      "available": true,
+      "count": 0,
+      "pages": 1,
+      "policies": []
+    },
+    "notificationChannels": {
+      "available": true,
+      "count": 0,
+      "pages": 1,
+      "channels": []
+    },
+    "uptimeChecks": {
+      "available": true,
+      "count": 0,
+      "pages": 1,
+      "checks": []
+    },
+    "billing": {
+      "available": true,
+      "billingEnabled": true,
+      "billingAccountAttached": true,
+      "budgetsAvailable": false,
+      "budgetReadError": {
+        "available": false,
+        "status": 500
+      }
+    },
+    "metricsScopes": {
+      "available": true,
+      "count": 1,
+      "scopes": [
+        {
+          "name": "locations/global/metricsScopes/562628621854",
+          "monitoredProjectCount": 0
+        }
+      ]
+    },
+    "logMetrics": {
+      "available": true,
+      "count": 0,
+      "pages": 1,
+      "metrics": []
+    }
+  },
+  "rawRecordsSaved": false,
+  "notificationsSent": false,
+  "configurationChanged": false
+}

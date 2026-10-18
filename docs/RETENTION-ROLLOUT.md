@@ -1,6 +1,6 @@
 # Retention and commercial configuration rollout review
 
-Prepared October 17, 2026. **Awaiting owner approval; not deployed.** This is a two-function update on the verified live package, separate from the earlier approved iOS backend rollout. It does not constitute public-release sign-off.
+Prepared October 17, 2026. **Historical four-file proposal, superseded by the approved and deployed [combined retention/pagination rollout](RETENTION-PAGINATION-ROLLOUT.md).** The combined package adds one API file and was verified at 20:34–20:37 Central on `shieldapi-00032-zun` and `cleanupshield-00015-nek`. This original candidate, manifest, preflight and test evidence remain unchanged; its procedure below is retained as the earlier proposal, not a pending approval request. Neither rollout constitutes public-release sign-off.
 
 ## Proposed change
 

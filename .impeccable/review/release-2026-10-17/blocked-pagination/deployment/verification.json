@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-18T01:37:31.577Z",
+  "sourceCommit": "bf60a6009f345f3aa488ab42050aa447b985282c",
+  "review": "docs/RETENTION-PAGINATION-ROLLOUT.md",
+  "approved": true,
+  "deployed": true,
+  "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+  "frozenPackageFiles": 86,
+  "filesChangedFromRecordedLiveBaseline": 5,
+  "independentCI": {
+    "run": 39085753282,
+    "conclusion": "success",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39085753282",
+    "headSha": "bf60a6009f345f3aa488ab42050aa447b985282c"
+  },
+  "checks": [
+    "Both deployment operation handles completed successfully",
+    "Downloaded source archives match the uploaded approved archive",
+    "Both services ACTIVE at 100% traffic with unchanged configuration and IAM",
+    "Other 12 function sources/revisions/configuration preserved",
+    "Bridge, six schedules and Hosting release preserved",
+    "Public configuration unchanged; phone sign-in on, caretakers/APNs/message filtering off",
+    "Four unauthenticated read guards return 401",
+    "Public readiness 200 and privacy body matches frozen handler byte for byte"
+  ],
+  "verificationCorrections": [
+    "First final comparison flagged reordered event-filter arrays on untouched functions. Field-by-field inspection proved equal filter contents and unchanged sources/revisions; final comparison sorts filters by attribute. No production repair or resubmission occurred.",
+    "Initial local privacy-text helper tried a TypeScript compiler API unavailable in the installed native compiler package. It failed before any live request. The final helper uses the actual frozen Fastify handler with prohibited database access."
+  ],
+  "remaining": [
+    "Authenticated production pagination with an existing authorized test account",
+    "Physical client distribution/CallKit acceptance",
+    "Completed cleanup and provider erasure under real failures; no cleanup worker manually invoked",
+    "Broader Apple, legal, carrier, accessibility and operational release gates"
+  ],
+  "noChangesTo": [
+    "Screening/monitoring/call-control policies",
+    "Runtime secret versions",
+    "Carrier forwarding or owner phones",
+    "Apple/RevenueCat configuration",
+    "Operational alerting/budgets"
+  ],
+  "privateEvidence": [
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/deployment/compare-untouched.mjs",
+      "sha256": "7f69feba0eb123d8bed3f5f22e2de75210e7208187fd06c07014aec509591a8c"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/deployment/public-acceptance-initial.mjs",
+      "sha256": "933cf0605b95b886038db8aa88f6508c358fb1e2d9c4fd2690d185530c413930"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/deployment/public-acceptance.mjs",
+      "sha256": "b56dbce54db2924bc7f4bae6420ac89ac53cfbe22cc36bc4167b388d8b252f04"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/deployment/candidate.zip",
+      "sha256": "bff350542275f1193faae7ff83e871deae80213da26d993c8b27f8256f8341b4"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/deploy-approved.mjs",
+      "sha256": "23eafda896d88342852945d15fc9b614303e523931a8adb11f93062b28ae32ac"
+    },
+    {
+      "path": "artifacts/private/blocked-pagination-oct17/preflight.mjs",
+      "sha256": "ec9e578da1d8ff69587f986f399da6c9464ceab95a2a47ea5a3d24cec4099f35"
+    }
+  ]
+}

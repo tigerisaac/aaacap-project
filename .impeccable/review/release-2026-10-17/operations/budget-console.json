@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-18T01:30:06.177Z",
+  "method": "Read-only Google Cloud Console Budgets & caps table",
+  "linkedAccountMatchedByAPI": true,
+  "unfilteredTable": true,
+  "visibleBudgetRows": 1,
+  "rowsTargetingAnotherProject": 1,
+  "shieldBudgetListed": false,
+  "shieldSpendCapListed": false,
+  "configurationChanged": false,
+  "unrelatedBudgetDetailsOmitted": true,
+  "screenshotPrivate": "artifacts/private/operations-readiness-oct17/budgets-console.png",
+  "screenshotSha256": "83e7cce4b045340f99f2301eabdafa387d7c991179da73cad35ce1da610182dc"
+}

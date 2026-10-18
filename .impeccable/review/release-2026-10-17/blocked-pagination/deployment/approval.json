@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-18T01:26:37.908Z",
+  "approved": true,
+  "humanResponse": "Approve the combined backend update",
+  "review": "docs/RETENTION-PAGINATION-ROLLOUT.md",
+  "sourceManifestSha256": "bfcea911c64aed1109491bf892d03a3422ca4e7aeeef75da9382af66cef5b798",
+  "functions": [
+    "cleanupShield",
+    "shieldApi"
+  ]
+}

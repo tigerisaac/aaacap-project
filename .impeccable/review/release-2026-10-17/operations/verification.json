@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-17",
+  "timezone": "America/Chicago",
+  "readOnly": true,
+  "sourceCommit": "bf60a6009f345f3aa488ab42050aa447b985282c",
+  "findings": {
+    "cloudMonitoringAlertPolicies": 0,
+    "notificationChannels": 0,
+    "validUptimeChecks": 0,
+    "logBasedMetrics": 0,
+    "shieldBudgetListedInMatchedBillingAccount": false,
+    "backlogCountsAtObservation": 0,
+    "serverErrorsInObserved24HourWindow": 63,
+    "serverErrorsInLastHourOfWindow": 0,
+    "errorLogEntriesMatched": 7,
+    "errorLogEntriesClassifiedByAllowlist": 0
+  },
+  "scope": [
+    "Shield project Cloud Monitoring metadata and its metric scope",
+    "Billing API state and unfiltered budget table in the matching linked account",
+    "Aggregate database counts and selected numeric access-review metadata",
+    "Cloud Run request metrics; bounded error-name counts without saved raw log payloads"
+  ],
+  "limitations": [
+    "No alert routing or notification delivery was tested or configured",
+    "Budgets API was disabled; budget absence is a console observation, not a successful Budget API list",
+    "An unrelated project budget is omitted from public evidence",
+    "Metrics are sampled/delayed, and HTTP success is not business-operation completion",
+    "Historical 5xx requests are not attributed to a root cause by these checks",
+    "Cloud Run request logs remain excluded by the existing sink",
+    "No account/provider erasure was invoked; zero backlogs are a snapshot",
+    "External vendor budgets/alarms and manual/organization-level monitoring were not inspected"
+  ],
+  "queryCorrections": [
+    "Initial library wrapper reported budget failure as 500; direct HTTP read established 403 SERVICE_DISABLED and Service Usage confirmed DISABLED",
+    "Initial mask-array and encoded metric-resource queries returned 400; corrected query forms passed for access review and known metrics",
+    "Guessed Cloud Scheduler attempt metric returned 404 and is not used as evidence or a proposed alert source"
+  ],
+  "configurationChanged": false,
+  "notificationsSent": false,
+  "privateSourceHashes": [
+    {
+      "path": "artifacts/private/operations-readiness-oct17/budget-recheck.mjs",
+      "sha256": "9eeb1c89ed76c8e5e56f089d4ae30e072c7b2d80baff0bc198695afdaef56cc5"
+    },
+    {
+      "path": "artifacts/private/operations-readiness-oct17/error-categories.mjs",
+      "sha256": "cf3a2f42cea45e5ae1195f54694bf2fbc9e425c62768cc3ee88975f388a2b11c"
+    },
+    {
+      "path": "artifacts/private/operations-readiness-oct17/health-followup.mjs",
+      "sha256": "2e19ed180701d08928e776752b46179cd513b751833d33d313e6fa75968fca56"
+    },
+    {
+      "path": "artifacts/private/operations-readiness-oct17/health.mjs",
+      "sha256": "20e42307b80decc157156e8967d45d971ec0a1b67bac9a75cd25c9f7e6ba714d"
+    },
+    {
+      "path": "artifacts/private/operations-readiness-oct17/inventory.mjs",
+      "sha256": "dec70ccc193172ac7473a3a138e09386d6070cc0cf3b0131b1b08d5b6f225677"
+    }
+  ],
+  "releaseGateClosed": false
+}

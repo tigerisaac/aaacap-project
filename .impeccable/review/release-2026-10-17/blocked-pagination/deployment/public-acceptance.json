@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-18T01:37:31.577Z",
+  "readOnly": true,
+  "status": 200,
+  "contentType": "text/plain",
+  "cacheControl": "no-store",
+  "privacyTextMatchesApprovedPackage": true,
+  "privacyBytes": 8895,
+  "privacySha256": "39381a0cd4f598ca21e5f61aa59f52ab4c0798f565cdb7894e427b078a638df9",
+  "sourceSha256": "f16a876167a4f55aef559800f9ec210dde9a2f6c286e054e5b81260c68ec7a7e",
+  "commercialPolicyVersion": "2026-10-17-v2",
+  "localDatabaseCalls": 0,
+  "authenticatedPaginationVerified": false,
+  "physicalAppInstalled": false,
+  "limitation": "No authorized production test-account session was available. No owner impersonation, synthetic production account or blocked-number data was created."
+}

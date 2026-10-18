@@ -1,0 +1,102 @@
+[
+  {
+    "name": "dailySetupChecks",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "expireMessageDeliveries",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "checkForwardingVoicemail",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "ingestForwardingVoicemail",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "dispatchSharedCallJob",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "monitorConnectedCall",
+    "differingFields": [
+      "event.eventFilters.0.attribute",
+      "event.eventFilters.0.value",
+      "event.eventFilters.0.operator",
+      "event.eventFilters.1.attribute",
+      "event.eventFilters.1.value",
+      "event.eventFilters.1.operator",
+      "event.eventFilters.2.attribute"
+    ],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "expireSharedCalls",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "finishAccountDeletions",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "runSharedCallJob",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "monitorScheduledCall",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "reviewServiceAccess",
+    "differingFields": [],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  },
+  {
+    "name": "sendShieldAlert",
+    "differingFields": [
+      "event.eventFilters.0.attribute",
+      "event.eventFilters.0.value",
+      "event.eventFilters.0.operator",
+      "event.eventFilters.1.attribute",
+      "event.eventFilters.2.attribute",
+      "event.eventFilters.2.value",
+      "event.eventFilters.2.operator"
+    ],
+    "equalAfterSortingEventFilters": true,
+    "revisionUnchanged": true,
+    "sourceUnchanged": true
+  }
+]

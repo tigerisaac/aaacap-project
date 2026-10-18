@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-18T01:22:10.144Z",
+  "readOnly": true,
+  "budgetRead": {
+    "httpStatus": 403,
+    "errorCode": 403,
+    "errorStatus": "PERMISSION_DENIED",
+    "reasons": [
+      "SERVICE_DISABLED"
+    ],
+    "state": null
+  },
+  "budgetService": {
+    "httpStatus": 200,
+    "errorCode": null,
+    "errorStatus": null,
+    "reasons": [],
+    "state": "DISABLED"
+  }
+}

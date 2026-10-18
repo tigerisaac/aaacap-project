@@ -1,6 +1,6 @@
 # Retention and blocked-number rollout review — October 17, 2026
 
-**Prepared and tested; not approved or deployed.** This new proposal combines the pending [retention rollout](RETENTION-ROLLOUT.md) with the verified blocked-number pagination fix. Approval of the earlier four-file package alone does not authorize this additional change. The earlier package and manifest remain frozen and available.
+**Approved and deployed October 17, 2026.** The owner explicitly approved the combined update. At **20:34–20:37 Central**, the exact package was verified on API **`shieldapi-00032-zun`** and cleanup **`cleanupshield-00015-nek`**, both ACTIVE at 100% traffic. This combines the [retention rollout](RETENTION-ROLLOUT.md) with blocked-number pagination. The earlier four-file package and manifest remain frozen. Authenticated production pagination and physical iPhone acceptance remain open; this is not public-release sign-off.
 
 ## Exact scope
 
@@ -26,7 +26,9 @@ At **20:02 Central**, read-only preflight confirmed the original live sources an
 
 Preserve runtime secret versions (API 8, cleanup 6), API's OpenAI secret version 2, IAM, schedules, region, instance limits, service accounts and all traffic settings. Screening, monitoring, voicemail and call-control logic, consent versions, the bridge, Hosting and other functions are outside this scope. Purchases, caretaker SMS and APNs remain disabled. Do not invoke cleanup manually or send a call, notification or text as part of deployment verification.
 
-## Execution after expanded approval
+## Approved execution procedure
+
+The source-only deployment below completed after the owner's “Approve the combined backend update” response. Fresh preflight at **20:24 Central** reconfirmed the baseline. Each operation was submitted once, saved and followed to completion; cleanup was verified before the API submission.
 
 1. Re-run `artifacts/private/blocked-pagination-oct17/preflight.mjs`. It verifies both frozen manifests, exact live source references/service settings, traffic, schedule, readiness and zero active reservations. Stop and review any changed baseline; never overwrite another release.
 2. Deploy only cleanup from the exact combined package, preserving all recorded settings, then wait on the returned operation handle and verify its active source/settings/traffic before proceeding.
@@ -34,4 +36,21 @@ Preserve runtime secret versions (API 8, cleanup 6), API's OpenAI secret version
 4. Verify both final source hashes/revisions, traffic, readiness and unchanged optional-feature flags/schedules. Do not claim completed erasure or real-call behavior from a healthy endpoint.
 5. Record deployment receipts and verify authenticated pagination using an existing authorized test account before installing/distributing the matching client. Creating or seeding production test data is outside this deployment scope. Old clients continue receiving their first page. The new client intentionally refuses to publish a partial list from an old server, so a backend rollback also requires withholding or rolling back that client.
 
-Rollback uses the original recorded source archive and service settings. If the earlier retention-only package has been deployed before this proposal is approved, rebuild/review the baseline instead of reusing this preflight unchanged. Production completion, physical iPhone acceptance and the broader [release gates](APP-STORE-RELEASE.md) remain open.
+Rollback uses the original recorded source archive and service settings. Withhold or roll back the matching client if restoring the old first-page-only API. A source rollback cannot restore already erased data. Physical iPhone acceptance and the broader [release gates](APP-STORE-RELEASE.md) remain open.
+
+## Deployment verification — October 17, 20:34–20:37 Central
+
+| Target | Previous revision | Verified revision | Result |
+|---|---|---|---|
+| `cleanupShield` | `cleanupshield-00014-ruf` | `cleanupshield-00015-nek` | Source, configuration, IAM and 100% traffic verified |
+| `shieldApi` | `shieldapi-00031-cif` | `shieldapi-00032-zun` | Source, configuration, IAM and 100% traffic verified |
+
+The downloaded deployed archives match the uploaded ZIP SHA-256 **`bff350542275f1193faae7ff83e871deae80213da26d993c8b27f8256f8341b4`** and the approved 86-file manifest above. All other **12 functions**, the bridge, **six schedules** and the Hosting release are preserved. Runtime/secret versions and optional-feature settings are unchanged. Purchases, caretaker SMS and APNs remain disabled.
+
+Readiness returned 200. Four unauthenticated reads—blocked numbers, blocked numbers with an invalid cursor, access and account deletion—returned 401. Live `/privacy` returned the exact frozen handler's 8,895-byte response, SHA-256 **`39381a0cd4f598ca21e5f61aa59f52ab4c0798f565cdb7894e427b078a638df9`**. The handler comparison prohibited database access. Commercial metadata version `2026-10-17-v2` is in the verified deployed package; this does not create Apple products or enable purchases. Source commit `bf60a60` independently passed [CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39085753282).
+
+Two verification-tool corrections are retained in the evidence. The first final comparison flagged Google's reordered event-filter arrays on two untouched functions; field comparison established identical contents and unchanged sources/revisions, and sorting those arrays made the final check pass. No service repair or deployment resubmission was needed. The first local privacy helper used an unavailable compiler API and failed before making a live request; the successful replacement compared the actual frozen handler response.
+
+There was no authorized production test-account session available for signed-in pagination. No owner impersonation, production test-data creation, manual cleanup invocation, physical installation, call, text or notification occurred. The emulator's multi-page tests and deployed-source identity do not replace that acceptance check or prove provider erasure.
+
+[Sanitized deployment verification](../.impeccable/review/release-2026-10-17/blocked-pagination/deployment/verification.json) · [revision/source/configuration receipt](../.impeccable/review/release-2026-10-17/blocked-pagination/deployment/verified.json) · [public-policy acceptance](../.impeccable/review/release-2026-10-17/blocked-pagination/deployment/public-acceptance.json). Private operation handles, baselines and rollback archives remain under ignored `artifacts/private/blocked-pagination-oct17/deployment/`. The separate [operations audit](OPERATIONAL-READINESS.md) found release gaps; this deployment does not close them.

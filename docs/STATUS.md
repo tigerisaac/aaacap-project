@@ -1,5 +1,15 @@
 # Status
 
+## October 17 — approved retention and pagination backend deployed
+
+The owner approved the exact combined update. Fresh preflight at **20:24 Central** confirmed the baseline, then the two source-only deployments completed once each. At **20:34–20:37 Central**, API **`shieldapi-00032-zun`** and cleanup **`cleanupshield-00015-nek`** matched the frozen 86-file package and served 100% of traffic. Their settings/IAM, the other 12 functions, bridge, six schedules and Hosting are unchanged. Readiness and unauthenticated guards passed; live privacy text matches the approved handler byte for byte. The exact package had passed 124 integration tests, and `bf60a60` passed [independent CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39085753282). [Rollout and verification corrections](RETENTION-PAGINATION-ROLLOUT.md).
+
+This publishes completed sign-in scrubbing, completed provider-job expiry, corrected privacy wording, $9.99/$99.99 intended-price metadata and blocked-number pagination. Purchases and caretaker delivery remain disabled. Signed-in production pagination has no authorized test-session evidence yet; physical client/CallKit and actual erasure acceptance remain open. No manual cleanup, test-data creation, call, message, physical installation or Apple change occurred. Earlier pending-rollout notes below are historical and superseded by this deployment.
+
+## October 17 — operations audit found missing alerts and a Shield budget
+
+Read-only checks at **20:21–20:33 Central** found zero Cloud Monitoring alert policies, notification channels, uptime checks or log-based metrics. The linked billing account's unfiltered budget table lists no Shield budget or spend cap. Selected deletion, expired-audio, provider-erasure and assisted-review backlogs were zero at the observation; this is not erasure proof. Cloud Run metrics show **63 historical 5xx requests** in the preceding 24 hours (API 37, ingestion 23, call worker 3), with zero in the last observed hour. Their causes remain unclassified. Existing exclusions remove all Cloud Run request logs, including errors, so absent request-log failures are not health evidence. [Scope, sanitized evidence and required operations work](OPERATIONAL-READINESS.md). No alerts, budgets or notification routing were configured by this audit.
+
 ## October 17 — complete blocked-number retrieval and retry recovery (local)
 
 The [pagination correction](IOS-BLOCKED-NUMBERS.md) replaces the silent 200-row limit with authorized, bounded pages. The app follows expired empty pages, publishes only complete results, fences account/mutation changes and lets the owner unblock older entries. Failed or interrupted later pages offer retry; legacy server responses are not accepted as a complete phone list.

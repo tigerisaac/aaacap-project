@@ -1,0 +1,125 @@
+{
+  "checkedAt": "2026-10-18T01:30:07.737Z",
+  "readOnly": true,
+  "observations": {
+    "backlogs": {
+      "pendingAccountDeletions": {
+        "available": true,
+        "count": 0
+      },
+      "expiredAudioManifests": {
+        "available": true,
+        "count": 0
+      },
+      "expiredAudioChunks": {
+        "available": true,
+        "count": 0
+      },
+      "pendingProviderErasure": {
+        "available": true,
+        "count": 0
+      },
+      "overdueProviderErasure": {
+        "available": true,
+        "count": 0
+      },
+      "assistedAccessReviewNeeded": {
+        "available": true,
+        "count": 0
+      },
+      "subscriptionReview": {
+        "available": false,
+        "exists": false,
+        "httpStatus": 400
+      }
+    },
+    "requestCounts": {
+      "available": true,
+      "start": "2026-10-17T01:30:03.794Z",
+      "end": "2026-10-18T01:30:03.794Z",
+      "pages": 1,
+      "services": {
+        "checkforwardingvoicemail": {
+          "2xx": 3
+        },
+        "cleanupshield": {
+          "2xx": 1
+        },
+        "dailysetupchecks": {
+          "2xx": 1
+        },
+        "dispatchsharedcalljob": {
+          "2xx": 41
+        },
+        "expiremessagedeliveries": {
+          "2xx": 290,
+          "4xx": 1
+        },
+        "expiresharedcalls": {
+          "2xx": 1439
+        },
+        "finishaccountdeletions": {
+          "2xx": 310,
+          "4xx": 6
+        },
+        "ingestforwardingvoicemail": {
+          "5xx": 23,
+          "2xx": 8
+        },
+        "monitorconnectedcall": {
+          "2xx": 6
+        },
+        "monitorscheduledcall": {
+          "2xx": 6
+        },
+        "reviewserviceaccess": {
+          "2xx": 6
+        },
+        "runsharedcalljob": {
+          "2xx": 41,
+          "4xx": 3,
+          "5xx": 3
+        },
+        "shield-live": {
+          "2xx": 15,
+          "1xx": 4
+        },
+        "shieldapi": {
+          "2xx": 1212,
+          "4xx": 83,
+          "5xx": 37
+        }
+      },
+      "limitation": "Cloud Run request metrics, including expected authentication failures and deployment/readiness requests; HTTP success does not establish business-operation success."
+    },
+    "metricDescriptors": [
+      {
+        "type": "run.googleapis.com/request_count",
+        "httpStatus": 400,
+        "available": false,
+        "kind": null,
+        "valueType": null,
+        "labels": []
+      },
+      {
+        "type": "cloudscheduler.googleapis.com/job/attempt_count",
+        "httpStatus": 400,
+        "available": false,
+        "kind": null,
+        "valueType": null,
+        "labels": []
+      },
+      {
+        "type": "cloudtasks.googleapis.com/queue/depth",
+        "httpStatus": 400,
+        "available": false,
+        "kind": null,
+        "valueType": null,
+        "labels": []
+      }
+    ]
+  },
+  "customerContentRead": false,
+  "configurationChanged": false,
+  "rolloutInProgress": true
+}
