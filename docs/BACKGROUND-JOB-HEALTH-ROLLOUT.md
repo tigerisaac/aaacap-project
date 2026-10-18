@@ -1,10 +1,10 @@
-# Background-job health — deployed October 17, 2026
+# Background-job health — deployed October 17; activated October 18, 2026
 
-**Owner-approved source/configuration deployed and verified. Two new policies are staged disabled; natural-completion and activation acceptance remain pending. R5 remains open.** The live email route has owner-confirmed delivery. This update addresses a different gap: a successful scheduled HTTP request could conceal incomplete account deletion or subscription review, and an empty queue could conceal a stopped schedule.
+**Owner-approved source/configuration deployed and verified. All four natural completions, both enabled policies and a fresh post-activation counter signal are accepted as of 08:50 Central October 18. R5 remains open.** The live email route has owner-confirmed delivery. This update addresses a different gap: a successful scheduled HTTP request could conceal incomplete account deletion or subscription review, and an empty queue could conceal a stopped schedule.
 
 At **22:05 Central**, a read-only snapshot found zero pending account deletions, overdue audio manifests/chunks, pending/overdue provider-recording erasures, overdue call deadlines and overdue monitoring checks. All six schedules were enabled. The saved subscription review had checked zero accounts and failed zero. These observations do not prove historical completion or provider erasure. [Dated evidence and package hashes](../.impeccable/review/release-2026-10-17/operations/background-health.json).
 
-Read-only follow-up at **00:29 Central October 18** still found three fresh workers, zero overdue counts and no recorded worker failures. Daily cleanup is pending its 04:00 natural run; acceptance and the two disabled policies are unchanged. The separate [database retry proposal](FIRESTORE-RETRY-ROLLOUT.md) has not been deployed and does not replace these receipts.
+Read-only follow-up at **00:29 Central October 18** found three fresh workers, zero overdue counts and no recorded worker failures. That checkpoint preceded the 04:00 natural cleanup; the morning acceptance below resolves its pending gates. The separate [database retry proposal](FIRESTORE-RETRY-ROLLOUT.md) has not been deployed and does not replace these receipts.
 
 ## Exact approved scope
 
@@ -27,7 +27,7 @@ The accompanying configuration adds:
 - One authenticated Scheduler job every five minutes, with no retry, invoking that new function as the runtime service account. Existing schedules and their retry settings are preserved.
 - One log counter, `shield_maintenance_heartbeat`, and two policies routed to the existing enabled email channel for `isaac.cw.zhang@gmail.com`. [Exact configuration draft](../deploy/firebase/maintenance-monitoring.json).
 
-The four existing workers retain their settings and IAM. The new function permits only the scheduled runtime identity to invoke it. The four permanent service policies and $50 budget are preserved. The two new policies would bring the policy count to six; the new function and schedule would bring their counts to fifteen and seven.
+The four existing workers retain their settings and IAM. The new function permits only the scheduled runtime identity to invoke it. The four permanent service policies and $50 budget are preserved. The verified totals are six policies, fifteen functions and seven schedules.
 
 ## Completion and overdue-work contract
 
@@ -95,6 +95,18 @@ Natural deletion, subscription-review and audio-expiry completions have been obs
 The exact second-review commit `a0619b2` passed [independent CI](https://github.com/tigerisaac/aaacap-project/actions/runs/39094590443), including build/unit, Firestore and Auth/account-lifecycle checks. [Deployment receipts and pending gates](../.impeccable/review/release-2026-10-17/operations/background-health.json) separate deployed configuration from operational acceptance.
 
 Verification-tool corrections are retained: Eventarc filter arrays were compared independent of order; the existing Budgets API needed Shield's quota project rather than the CLI OAuth project; and Scheduler canonicalized its target URI by appending `/` while preserving the exact OIDC audience. The initial schedule read-back assertion was too strict. A fresh read reconciled the same existing job; it was not submitted twice. These corrections changed verification code, not the approved runtime archives or scope.
+
+## Natural completion and activation acceptance — October 18
+
+The 08:39 Central read-only check found that daily cleanup started naturally at **04:00:38** and completed at **04:00:43**, before its original **04:20:02** deadline. All four workers' first accepted runs began after their new revisions became active and completed before their recorded deadlines. No failed/partial results were found in the scoped checks. The 08:35 observer reported four fresh workers and zero for all six overdue counts. Serving source hashes, settings/IAM, full traffic and surrounding resources were reverified at 08:41 before activation.
+
+Under the existing owner approval, **only `enabled` was patched** on the two staged policies at **08:44:50 and 08:44:51 Central**. Final policy and resource comparisons passed at **08:48**. Conditions, thresholds, notification routing, the four prior policies, all functions/schedules, index, metric, bridge, Hosting, budget, channel, readiness check and public flags were preserved.
+
+At **08:50:41**, the read-only acceptance check matched the real **08:45:15** healthy observation on `checkbackgroundhealth-00001-not` to a positive one-minute counter interval after activation, and verified one positive aggregated series using the policy's actual filter, ten-minute alignment and sum reduction. A further healthy observation occurred at 08:50:11. This met the **09:05** deadline derived from the first five-minute schedule boundary after activation. Natural completion and activation acceptance are complete; actual failure/recovery and alert-condition delivery are still unverified.
+
+Two verification corrections are retained. The initial preservation comparison rejected a reordered Eventarc filter array; comparing those arrays by their unique attribute preserved all values/operators and passed without another production write. The first counter query used fractional-second interval boundaries and could not match the event timestamp; a whole-minute query matched it without relaxing the filter or positive-sample requirement. Both original results remain in private evidence. No worker was manually invoked, synthetic event written, test email sent, phone operated or new automation created.
+
+[Sanitized acceptance and private receipt hashes](../.impeccable/review/release-2026-10-17/operations/background-health.json). The pending database-retry rollout must preserve these now-enabled policies and revalidate health after any approved worker replacement.
 
 ## Approved-rollout procedure and acceptance
 

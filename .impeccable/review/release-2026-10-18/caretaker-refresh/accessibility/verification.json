@@ -1,0 +1,224 @@
+{
+  "recordedAt": "2026-10-18T15:26:44.423433+00:00",
+  "sourceManifest": {
+    "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/source-input.json",
+    "sha256": "6325e3006e42a8b28102fc231045ac530dd110ebe4484461a3c82c83ab7a9458"
+  },
+  "runtime": "iOS 27.0",
+  "result": "Failed",
+  "methodsFailed": 2,
+  "methodsPassed": 0,
+  "runtimeWarnings": [],
+  "auditTypes": [
+    "contrast",
+    "textClipped",
+    "hitRegion",
+    "sufficientElementDescription"
+  ],
+  "suppressed": 0,
+  "observations": [
+    {
+      "capture": "release-sharing-contacts-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{119.3, 582.0}, {193.3, 187.3}}, label: 'Remove from iPhone', Disabled"
+    },
+    {
+      "capture": "release-sharing-trusted-contacts-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Add caretaker",
+      "disabled": false,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 196.7}, {273.3, 145.3}}, label: 'Add caretaker'"
+    },
+    {
+      "capture": "release-sharing-contact-alerts-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Text messages",
+      "disabled": false,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 8.3}, {326.0, 161.3}}, label: 'Text messages'"
+    },
+    {
+      "capture": "release-sharing-sharing-access-largest-dark-scrolled",
+      "kind": "Contrast failed",
+      "label": "Waiting for them to join",
+      "disabled": false,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 18.3}, {242.0, 116.7}}, label: 'Waiting for them to join'"
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light",
+      "kind": "Contrast nearly passed",
+      "label": "Share contacts once",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 176.0}, {326.0, 56.0}}, label: 'Share contacts once', Disabled"
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 451.2}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 625.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light-scrolled",
+      "kind": "Contrast failed",
+      "label": "Share contacts once",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{32.0, 52.3}, {326.0, 56.0}}, label: 'Share contacts once', Disabled"
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light-scrolled",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 327.5}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+    },
+    {
+      "capture": "release-sharing-contacts-standard-light-scrolled",
+      "kind": "Contrast failed",
+      "label": "Remove from iPhone",
+      "disabled": true,
+      "elementDetail": "Attributes: StaticText, <element>, {{79.7, 501.8}, {157.7, 20.3}}, label: 'Remove from iPhone', Disabled"
+    }
+  ],
+  "counts": {
+    "total": 10,
+    "contrastFailed": 9,
+    "contrastNearlyPassed": 1,
+    "disabledControlReports": 7,
+    "otherReports": 3,
+    "captures": 16
+  },
+  "interpretation": "All observations retained. Seven reports explicitly identify disabled contact controls. The three other labels intersect the native top scrolling boundary in inspected captures. These classifications do not waive diagnostics or establish full accessibility acceptance. Earlier theme counts are historical, not directly comparable current-build results.",
+  "summary": {
+    "path": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-summary.json",
+    "sha256": "bc4f0e17d6069ad09439646fc394a270122f279e95abcd7e8905191e42b2a6d0"
+  },
+  "log": {
+    "path": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27.log",
+    "sha256": "969f42a48bc9fb6bee6a850649edc4e83454609d395a97676ba7d34f7e29c148"
+  },
+  "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27.xcresult",
+  "captures": [
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-sharing-access-largest-dark-scrolled.png",
+      "sha256": "3c58fcc73d13eb9163614cfdc84995cba1b9ac9f84d6bb8f01d6ffb7fb06c724",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/84A05054-616E-4E0A-A797-BF33C067AD64.png",
+      "reportedLocationManuallyInspected": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-sharing-access-largest-dark.png",
+      "sha256": "49af8d2f0e617f35ccd8d97611e8b09735fb8d69fdd08646ef3b38637bb8f240",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/81FFBC7D-D5EE-437C-B56C-227B3261B3BE.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contact-alerts-largest-dark-scrolled.png",
+      "sha256": "eb7408273796c699657c2107a153f274422f70b1fc71f2c7c5e9d62b0f13fa3a",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/0BF0D6E1-00CD-442F-A3AC-8671919F3CF0.png",
+      "reportedLocationManuallyInspected": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contact-alerts-largest-dark.png",
+      "sha256": "96945009e17c846973bedcf1af03079a90e3a3c8812c9c50a9f3f10f97c49026",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/0C114151-5A59-497A-8F94-A67753C5E7D5.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-trusted-contacts-largest-dark-scrolled.png",
+      "sha256": "88dc7f76ccfb8a9923292ccf0d54365f0f1c3c66ed1b0e74626728decfa31f74",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/D301971C-5306-45F9-A9AE-E3F07C8538C6.png",
+      "reportedLocationManuallyInspected": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-trusted-contacts-largest-dark.png",
+      "sha256": "448c296ed45e9efb3d1278e8ff7e4ad12376633ec78cca8efaec5ee7c78b41a7",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/A0A84491-E2FB-4A90-B571-C24B372409BE.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contacts-largest-dark-scrolled.png",
+      "sha256": "dc3f02ca7fa297353837dd6a380dd6cc5573528b7a55a70e91e6f2695228f685",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/A57C523B-E10F-4D9E-8A1E-D19CFD3A5D2C.png",
+      "reportedLocationManuallyInspected": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contacts-largest-dark.png",
+      "sha256": "a6486c6f320f4429abe887191567dbcb6a22f7b38618c54ed85699a1aa548df1",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersLargestDarkAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/33F8A6F3-9BEF-4767-AEC6-1D993C43BA21.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-sharing-access-standard-light-scrolled.png",
+      "sha256": "b15fa8f4b01f5d46be68f086a42ce97676e189861582ed26c26c6ee9c53ec1f8",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/AA3B40F4-39B4-43D5-A5BD-FED167F2C0FF.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-sharing-access-standard-light.png",
+      "sha256": "b15fa8f4b01f5d46be68f086a42ce97676e189861582ed26c26c6ee9c53ec1f8",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/A1A19B6E-9243-4C8B-B319-33D05D205271.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contact-alerts-standard-light-scrolled.png",
+      "sha256": "9ca9e6ee73c5ea01ec6efd233e33e5a1a0fdcc89a2465c09efdb4278b1b85c96",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/254F304E-B83C-47A0-BC13-C4FAA91FC710.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contact-alerts-standard-light.png",
+      "sha256": "2762f7eafd39f55efd39adf419e29875e1a21ef81f498c3a53d3f6da62436213",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/9DAC01A5-79C5-4D81-9869-65156A0ECA28.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-trusted-contacts-standard-light-scrolled.png",
+      "sha256": "f21586b0f6dd093765e9ddb59a734d6395fbe37006693d3fb1fa97093831e1f7",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/23CB06BF-1728-4D58-9149-3C416CD1124D.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-trusted-contacts-standard-light.png",
+      "sha256": "f21586b0f6dd093765e9ddb59a734d6395fbe37006693d3fb1fa97093831e1f7",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/2DEADA98-1DBB-4E85-ADF1-944AA5B6E587.png",
+      "reportedLocationManuallyInspected": false
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contacts-standard-light-scrolled.png",
+      "sha256": "361bd064ec69dcd7503aef82b38e0dcd9af54312e2f5944d17b828445575df07",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/E089BCE1-FB5A-470C-BEC8-5BAC74A62455.png",
+      "reportedLocationManuallyInspected": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/release-sharing-contacts-standard-light.png",
+      "sha256": "05efd95644a6a845d255e3045120b3626f1f7509bf0f406880f10c96e838939e",
+      "test": "SeniorAccessibilityUITests/testContactsAndCaretakersStandardLightAudit()",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-contact-audit-ios27-captures/43D0A19C-F635-497F-BDD8-DB22D9B9441E.png",
+      "reportedLocationManuallyInspected": true
+    }
+  ],
+  "releaseGateOpen": true
+}

@@ -13,6 +13,7 @@ actor APIClient {
     private var cacheOwners: Set<UUID> = []
     #if DEBUG && targetEnvironment(simulator)
     private var blockedPaginationFixture = BlockedPaginationFixture()
+    let caretakerRefreshFixture = CaretakerRefreshFixture()
     #endif
 
     init(configuration: BackendConfiguration) {
@@ -200,6 +201,8 @@ actor APIClient {
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
+        if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh"),
+           let result = try await caretakerRefreshFixture.response(path: path, method: method, body: body) { return result }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-blocked-pagination"),
            let result = try blockedPaginationFixture.response(path: path, method: method) { return result }
         if configuration.baseURL == nil, ProcessInfo.processInfo.arguments.contains("--uitesting-cold-launch"), path == "/api/people" {

@@ -255,7 +255,7 @@
     "Require an actual observer metric sample after policy creation before claiming absence coverage."
   ],
   "limits": [
-    "Prepared local changes, not deployed or operationally accepted.",
+    "Source/configuration deployed; natural-run and activation acceptance completed October 18. Full release acceptance remains open.",
     "Native/log alert condition evaluation and actual failure recovery remain unverified.",
     "This covers four maintenance schedules and six aggregate backlog types, not every background business operation.",
     "A zero backlog does not prove vendor erasure or historical job completion.",
@@ -470,7 +470,7 @@
     "phoneCallsOrTexts": false,
     "syntheticEmailTest": false
   },
-  "deploymentStatus": "source and configuration verified; two policies staged disabled; natural cleanup and activation acceptance pending",
+  "deploymentStatus": "source and configuration verified; all four natural completions and both enabled policies accepted with a positive post-activation counter sample",
   "deploymentPreflight": {
     "at": "2026-10-18T04:06:24.554Z",
     "candidateArchivesVerified": 5,
@@ -717,7 +717,7 @@
     "policiesStillDisabled": true,
     "postActivationEvidence": false
   },
-  "operationalAcceptance": false,
+  "operationalAcceptance": true,
   "manualWorkerInvocation": false,
   "callsOrMessagesSentByAgent": 0,
   "deploymentHelperSha256": "a02b8c24de28c960935e18ec491798e5004025d6632b7ce089598e446da22d89",
@@ -732,7 +732,9 @@
     "allWorkersThenHealthyObservationRequired": true,
     "postActivationPositiveCounterRequired": true,
     "overnightAutomationCreated": false,
-    "overnightAutomationApprovalRequested": true
+    "overnightAutomationApprovalRequested": true,
+    "resolvedAt": "2026-10-18T13:50:41.602Z",
+    "remainingRolloutGates": []
   },
   "followupReadOnlyObservation": {
     "at": "2026-10-18T05:29:52.981Z",
@@ -765,5 +767,185 @@
     "cleanupExpectedAt": "2026-10-18T09:00:02.502898Z",
     "cleanupDeadline": "2026-10-18T09:20:02.502Z",
     "manualWorkerInvocations": 0
+  },
+  "operationalAcceptanceScope": "Natural scheduled completion, healthy backlog observation, exact policy activation, preserved resources and post-activation metric stream. Actual alert-condition delivery, failure/recovery and full R5 remain open.",
+  "activationAcceptance": {
+    "at": "2026-10-18T13:50:41.602Z",
+    "ownerApprovalUnchanged": true,
+    "candidateSetManifestSha256": "fe47426ff545c718c49d96e9aefc983352c63de1d109c3669cac0d62b64d17b6",
+    "firstNaturalCompletions": {
+      "cleanupShield": {
+        "observedAt": "2026-10-18T13:39:47.065Z",
+        "startedAt": 1792314038689,
+        "finishedAt": 1792314043125,
+        "status": "complete"
+      },
+      "finishAccountDeletions": {
+        "observedAt": "2026-10-18T04:22:04.768Z",
+        "startedAt": 1792297321509,
+        "finishedAt": 1792297321589,
+        "status": "complete"
+      },
+      "reviewServiceAccess": {
+        "observedAt": "2026-10-18T04:22:04.769Z",
+        "startedAt": 1792297321009,
+        "finishedAt": 1792297322022,
+        "status": "complete"
+      },
+      "expireMessageDeliveries": {
+        "observedAt": "2026-10-18T04:22:04.769Z",
+        "startedAt": 1792297203811,
+        "finishedAt": 1792297204599,
+        "status": "complete"
+      }
+    },
+    "allFirstRunsAfterRevisionActivation": true,
+    "allFirstCompletionsBeforeOriginalDeadlines": true,
+    "configurationReverifiedAt": "2026-10-18T13:41:00.214Z",
+    "policiesActivatedAt": "2026-10-18T13:44:51.190103553Z",
+    "policyUpdates": "enabled only",
+    "policiesEnabled": 2,
+    "existingPolicyCount": 4,
+    "totalPolicies": 6,
+    "totalFunctions": 15,
+    "totalSchedules": 7,
+    "resourcesPreserved": true,
+    "preservationVerifiedAt": "2026-10-18T13:48:07.510Z",
+    "firstScheduledAfterActivation": "2026-10-18T13:45:00.000Z",
+    "scheduleTimingEvidence": "Next five-minute boundary of the verified */5 minute schedule",
+    "metricDeadline": "2026-10-18T14:05:00.000Z",
+    "acceptedBeforeDeadline": true,
+    "healthyObservations": [
+      {
+        "timestamp": "2026-10-18T13:45:15.487724Z",
+        "revision": "checkbackgroundhealth-00001-not",
+        "payload": {
+          "jobStates": {
+            "finishAccountDeletions": "fresh",
+            "reviewServiceAccess": "fresh",
+            "expireMessageDeliveries": "fresh",
+            "cleanupShield": "fresh"
+          },
+          "event": "shield_maintenance_health",
+          "healthy": true,
+          "available": true,
+          "overdue": {
+            "accountDeletions": 0,
+            "audioChunks": 0,
+            "audioManifests": 0,
+            "providerRecordings": 0,
+            "monitoringChecks": 0,
+            "callDeadlines": 0
+          }
+        }
+      },
+      {
+        "timestamp": "2026-10-18T13:50:11.552489Z",
+        "revision": "checkbackgroundhealth-00001-not",
+        "payload": {
+          "healthy": true,
+          "overdue": {
+            "audioChunks": 0,
+            "audioManifests": 0,
+            "monitoringChecks": 0,
+            "callDeadlines": 0,
+            "providerRecordings": 0,
+            "accountDeletions": 0
+          },
+          "available": true,
+          "event": "shield_maintenance_health",
+          "jobStates": {
+            "cleanupShield": "fresh",
+            "finishAccountDeletions": "fresh",
+            "expireMessageDeliveries": "fresh",
+            "reviewServiceAccess": "fresh"
+          }
+        }
+      }
+    ],
+    "matchedPositivePoints": [
+      {
+        "observation": "2026-10-18T13:45:15.487724Z",
+        "interval": {
+          "startTime": "2026-10-18T13:45:00Z",
+          "endTime": "2026-10-18T13:46:00Z"
+        },
+        "count": 1,
+        "revision": "checkbackgroundhealth-00001-not"
+      }
+    ],
+    "aggregatedSeries": 1,
+    "aggregatedPositivePoints": [
+      {
+        "interval": {
+          "startTime": "2026-10-18T13:40:00Z",
+          "endTime": "2026-10-18T13:50:00Z"
+        },
+        "count": 2
+      }
+    ],
+    "actualAlertConditionDeliveryVerified": false,
+    "manualJobs": 0,
+    "syntheticEvents": 0,
+    "testEmails": 0,
+    "automationCreated": false,
+    "verificationCorrections": [
+      "Initial preservation comparison rejected reordered Eventarc eventFilters. Canonical comparison by unique attribute preserves all values/operators and every other field; read-only verification then passed. No repeated policy mutation.",
+      "Initial metric query used fractional-second interval boundaries. Whole-minute query boundaries matched the actual event to its positive interval; filter, aggregation and acceptance threshold unchanged."
+    ],
+    "privateEvidence": [
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation/acceptance.json",
+        "sha256": "7cbeea4f5df296cd1190f83c928f095c3c22436d20360e5b849e6e1a740ddd21"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation/activated.json",
+        "sha256": "4959272d6d99ba2536ea22ce7344de281309142081f506210e3cf586dc81e72e"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/latest-observation.json",
+        "sha256": "35688d43fe3b0213bccd1ddf240279893d36ddb3e43e144cee1bcea822a26349"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/configuration-verified.json",
+        "sha256": "a0cd5687cd77c5ae3ec07afd7ebd56b15ab69258704f7e539133ec5183de3ab4"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation/intent.json",
+        "sha256": "f5da744f844514cd0836318913030252e9e8346fef47aed27a32de4299673dbd"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation/policy-0-verified.json",
+        "sha256": "622998c33cc69b6833a855836a1e02778c35b0b844c1b70c8726192b96ed29a9"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation/policy-1-verified.json",
+        "sha256": "b2dd229e729701d4a09922fee8f3946bbbfd8dd548babde8f01a5b218e136a34"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation-apply.log",
+        "sha256": "a3c06915cc47bbf6b4277010868e6257738a3b93b5e0bbc8b74f396ae0f8ec25"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/activation-verification-corrected.log",
+        "sha256": "57f31b0b5bb40bd9b354cc22c32bede025df880dc24ea4beeaa37dcb0bd4cbb2"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/post-activation-check.log",
+        "sha256": "910894430874a6144d767441f729881a66eb4518ed3849babb74b2346c85b643"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/deployment/post-activation-aligned-check.log",
+        "sha256": "b37de3519c8bfcb938c9fa76cfa578b3dc8d195d89f5bddfae171a8ef4da141b"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/activate-approved.mjs",
+        "sha256": "5f32ba2ab2e17026dd7b4d18542195f93e353721dc9389ea0afe544968f0ced1"
+      },
+      {
+        "path": "artifacts/private/background-health-oct17/check-activated.mjs",
+        "sha256": "3f4c6bdfacfbd0966759ee5085e33ed4f52e2bd335cc1ce24bac8e88239034d7"
+      }
+    ]
   }
 }

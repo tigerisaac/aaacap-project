@@ -67,7 +67,8 @@ final class AppState {
 
     init(configuration: BackendConfiguration = .bundled, callDirectory: CallDirectoryCoordinator? = nil) {
         #if DEBUG && targetEnvironment(simulator)
-        let configuration = ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") ? BackendConfiguration(baseURL: nil) : configuration
+        let configuration = ProcessInfo.processInfo.arguments.contains("--uitesting-offline-history") || ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh")
+            ? BackendConfiguration(baseURL: nil) : configuration
         #endif
         self.configuration = configuration
         self.callDirectory = callDirectory ?? CallDirectorySync.coordinator
@@ -95,7 +96,7 @@ final class AppState {
             people = people.filter { $0.id == selectedPersonID }
         }
         let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("--uitesting-call-directory") || arguments.contains("--uitesting-blocked-pagination") {
+        if arguments.contains("--uitesting-call-directory") || arguments.contains("--uitesting-blocked-pagination") || arguments.contains("--uitesting-caretaker-refresh") {
             isRestoringSession = false
             isPreview = true
             signedIn = true

@@ -7,6 +7,7 @@ struct TrustedContactsView: View {
     @State private var error: String?
     @State private var loadingVisible = false
     @State private var loading = false
+    @State private var loadRevision = 0
     @State private var working = false
     @State private var removing: TrustedContact?
     @State private var confirmRemoval = false
@@ -21,6 +22,11 @@ struct TrustedContactsView: View {
     var body: some View {
         ScrollViewReader { proxy in
             List {
+                #if DEBUG && targetEnvironment(simulator)
+                if ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh") {
+                    Button("Start held refresh") { Task { await load() } }
+                }
+                #endif
                 if let response {
                     if !response.available {
                         ShieldGroup {
@@ -118,10 +124,11 @@ struct TrustedContactsView: View {
         }
     }
     private func load() async {
-        guard !loading else { return }
+        loadRevision += 1
+        let revision = loadRevision
         loading = true
         error = nil
-        defer { loading = false }
+        defer { if revision == loadRevision { loading = false } }
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if response == nil {
@@ -142,32 +149,53 @@ struct TrustedContactsView: View {
         let generation = model.sessionGeneration
         do {
             let loaded: TrustedContactsResponse = try await model.api.send("/api/trusted-contacts", participantID: id)
-            guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
+            guard revision == loadRevision, generation == model.sessionGeneration, model.selectedPersonID == id else { return }
             response = loaded
         } catch is CancellationError { return }
-        catch { showFailure(error) }
+        catch {
+            guard revision == loadRevision, generation == model.sessionGeneration, model.selectedPersonID == id else { return }
+            showFailure(error)
+        }
     }
     private func setEnabled(_ enabled: Bool) async {
         guard !working, model.isOwner, let id = model.selectedPersonID else { return }
+        let generation = model.sessionGeneration
+        invalidateOlderLoads()
         working = true; error = nil; defer { working = false }
         do {
             try failPreviewChangeIfRequested()
             if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/choice", method: "POST", body: APIClient.payload(["enabled": enabled]), participantID: id) }
+            guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
             if model.isPreview, let response { self.response = .init(available: true, choiceRecorded: true, enabled: enabled, contacts: response.contacts) }
             await load()
         } catch is CancellationError { return }
-        catch { showFailure(error) }
+        catch {
+            guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
+            showFailure(error)
+        }
     }
     private func remove() async {
         guard let removing, !working, model.isOwner, let id = model.selectedPersonID else { return }
+        let generation = model.sessionGeneration
+        invalidateOlderLoads()
         working = true; error = nil; defer { working = false; self.removing = nil }
         do {
             try failPreviewChangeIfRequested()
             if !model.isPreview { let _: APIResponses.Empty = try await model.api.send("/api/trusted-contacts/\(removing.id.uuidString.lowercased())", method: "DELETE", participantID: id) }
+            guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
             if model.isPreview, let response { self.response = .init(available: true, choiceRecorded: true, enabled: response.enabled, contacts: response.contacts.filter { $0.id != removing.id }) }
             await load()
         } catch is CancellationError { return }
-        catch { showFailure(error) }
+        catch {
+            guard generation == model.sessionGeneration, model.selectedPersonID == id else { return }
+            showFailure(error)
+        }
+    }
+
+    private func invalidateOlderLoads() {
+        // A pre-change read must not replace the status or error confirmed by a later action.
+        loadRevision += 1
+        loading = false
     }
 
     private func showFailure(_ failure: Error) {

@@ -1,47 +1,621 @@
 {
-  "recordedAt": "2026-10-18T05:49:46.577334+00:00",
-  "baseCommit": "56424e621011c64c5152284becd75bced0446860",
-  "status": "Local draft; Swift changes have not compiled or run. Not committed, pushed, deployed or installed on a physical phone.",
+  "recordedAt": "2026-10-18T15:24:30.944763+00:00",
+  "status": "Source and simulator checks complete for the scoped caretaker correction. Unsigned Release archive inspected. No physical installation of this correction, Apple validation or caretaker delivery claim.",
+  "releaseReady": false,
+  "source": {
+    "baseCommit": "1b968ab35908cb85fa1f8e9b596218bc12164b3f",
+    "sourceFileCount": 279,
+    "manifest": {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/source-input.json",
+      "sha256": "6325e3006e42a8b28102fc231045ac530dd110ebe4484461a3c82c83ab7a9458"
+    },
+    "allCurrentFilesMatchManifest": true,
+    "archiveCheckSha256": "1ce240f989f552fa660571888aaef7d312cdfe5d2084529b1083694f8d6fccd7",
+    "concurrentDesignWorkPreserved": [
+      "b17a6a2d839dc963d4306f5375a5457d08bcf73b",
+      "5ae87e89bef5548cb474c6a200606f30958e31d2",
+      "1b968ab35908cb85fa1f8e9b596218bc12164b3f"
+    ],
+    "provenance": "Original controlled failures and early passes used ef41b8c with the earlier Apple-style theme. The passing seven-method restored-design run used 5ae87e8 plus this correction. Only OverviewView changed when advancing to 1b968ab; the 11/16-method runs and archive use the final manifest. The separately installed b17a6a2 phone build excluded this correction."
+  },
   "findings": [
+    "An owner pause/removal could skip its confirmation read while an earlier refresh was pending, then display the old state.",
+    "A recipient could see a declined request or obsolete error return from an older response.",
+    "A failed post-decline confirmation could leave unreadable connection feedback below the visible request with no revealed recovery action."
+  ],
+  "correction": "Read revisions reject obsolete success/error results; owner mutations invalidate older reads and fence account/participant changes. Recipient confirmation failures reveal readable status feedback, request accessibility focus and offer a fresh status read without repeating the mutation.",
+  "fixtureSafety": "DEBUG and simulator only, nil backend for outer and inner models, synthetic identity and transport, no provider/network/notification requests. Test controls reserve separate layout space and retain normal text size while the production view uses the requested size.",
+  "initialDraft": {
+    "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/initial-draft.json",
+    "sha256": "6725739156d4ecccdd074ce2945f26cc9f0712331bc4530fdbc415d5a2a34627"
+  },
+  "testRuns": [
     {
-      "screen": "Caretakers",
-      "evidence": "Source review: load() returns while loading, so a successful pause/remove can skip its confirmation read and a pre-change refresh can later publish the old state."
+      "name": "baseline-controlled",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 5,
+      "total": 5,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792331290.994,
+      "finishTime": 1792332020.715,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 5,
+          "passedTests": 0,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Original production views with direct held-load test control. All five regressions failed; 12 assertions. Preserved original result, not an interrupted test run.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/baseline-controlled-summary.json",
+        "sha256": "9261863558a8167e08b04b7abd254f9295b26387e0399c1b1705bb7a40a3ab5c"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/baseline-controlled.log",
+        "sha256": "0f3bd6b3619bca99f15a9c3b5c249b69d172e5c204d6eb81e8301ab12ef9e735"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/baseline-controlled.xcresult"
     },
     {
-      "screen": "Alerts for others",
-      "evidence": "Source review: concurrent reads lack ordering, so a pre-decline response can replace the newer empty requests list, or an older failure can publish an obsolete error."
+      "name": "corrected-ios27",
+      "result": "Passed",
+      "passed": 13,
+      "failed": 0,
+      "total": 13,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792332066.434,
+      "finishTime": 1792332364.484,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 13,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "First ordering correction: five new regressions, seven existing release-readiness methods and one owner VoiceOver method passed. Pre-restoration design; predates recipient error-feedback correction.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/corrected-ios27-summary.json",
+        "sha256": "c9e5f58dd9a496b09976b4e19f304858b816755fcda5bc57c76d368e61107474"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/corrected-ios27.log",
+        "sha256": "82d246e8ecbb1dfb12bf477a64bafbb0466756eb25e64d4bebe3549a9c079961"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/corrected-ios27.xcresult"
+    },
+    {
+      "name": "recipient-feedback-baseline",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 2,
+      "total": 2,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792332386.933,
+      "finishTime": 1792332497.398,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 2,
+          "passedTests": 0,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Both methods failed. Standard-size run exposed hidden/raw confirmation feedback; largest-size run could not reach Decline because fixture controls expanded and the gesture targeted the whole app.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/recipient-feedback-baseline-summary.json",
+        "sha256": "e1584e104cdf6f026adc2e91f2aedbd0943b637a9f3860021d595d596baa0119"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/recipient-feedback-baseline.log",
+        "sha256": "2197d3b4d63d3df5aa014bc7a052dbb0381764a72e87f7509c23f347b622b8d7"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/recipient-feedback-baseline.xcresult"
+    },
+    {
+      "name": "recipient-feedback-controlled",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 2,
+      "total": 2,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792332564.791,
+      "finishTime": 1792332672.091,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 2,
+          "passedTests": 0,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Fixture controls held to normal text size, scrolling targeted the actual List, and combined accessibility text matched correctly. Both tests reproduced the recipient feedback defect without changing production code.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/recipient-feedback-controlled-summary.json",
+        "sha256": "482307728e48adb32cfdedc6ed91ddec2f42783905ea3ac9cad0d9e201fedf6f"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/recipient-feedback-controlled.log",
+        "sha256": "bbd9ccf91c12138137354327d6ff5f5e6920ae9a10dbc4285a9bd9108b5dffa5"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/recipient-feedback-controlled.xcresult"
+    },
+    {
+      "name": "final-ios27",
+      "result": "Failed",
+      "passed": 15,
+      "failed": 1,
+      "total": 16,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792332730.178,
+      "finishTime": 1792333156.886,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 1,
+          "passedTests": 15,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Final production ordering and readable-feedback correction, pre-restoration design. Fifteen methods passed; largest-text recovery tap hit the overlapping test footer. Notice visibility and both VoiceOver methods passed.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/final-ios27-summary.json",
+        "sha256": "60fa98df110d21cd6e09f1fd30d6de8723a01d6a0d08ea46ec19679ddfeaaebc"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/final-ios27.log",
+        "sha256": "9c2ac97e9101a33e51b6b1b863c58f94462bc6b58642916ba77afc94e36b7f1c"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/final-ios27.xcresult"
+    },
+    {
+      "name": "recipient-recovery-ios27",
+      "result": "Failed",
+      "passed": 0,
+      "failed": 2,
+      "total": 2,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792333238.359,
+      "finishTime": 1792333356.286,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 2,
+          "passedTests": 0,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Both real recovery actions passed, including read 4/change 1 and disappearance of the error. Both methods failed only the added full-button bounds assertion: the test footer overlapped its bottom by about 26 points.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/recipient-recovery-ios27-summary.json",
+        "sha256": "00928d316c1f5e5108e04e71b6147c6bb6c1bbfe7db39fe248f478f5cc57a07a"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/recipient-recovery-ios27.log",
+        "sha256": "51a4cca7bd3935e57ce957b852e5a82d65193b4dfdf3cacf9835d6020409cc3c"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/recipient-recovery-ios27.xcresult"
+    },
+    {
+      "name": "fixture-layout-ios27",
+      "result": "Passed",
+      "passed": 7,
+      "failed": 0,
+      "total": 7,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792335856.471,
+      "finishTime": 1792336030.441,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 7,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "The fixture reserves separate VStack space for diagnostics. Production code and visibility/bounds assertions unchanged. Seven regressions passed on the restored design at 5ae87e8. Subsequent source comparison found only the concurrent Home heading change.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-summary.json",
+        "sha256": "16a6e98817f224a6930b6b2e8f2ece019f8ca2dd358aa9f953fc06a0ad77efe0"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27.log",
+        "sha256": "d3d9ebe57db9f1df27b2a131f6be658f146dd4819454c844787c6babb6c61dba"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27.xcresult"
+    },
+    {
+      "name": "current-ios27",
+      "result": "Passed",
+      "passed": 11,
+      "failed": 0,
+      "total": 11,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792336306.574,
+      "finishTime": 1792336668.532,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "6E3C4291-0F15-4E42-9812-8E6813DEDC4B",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "24A434",
+            "osVersion": "27.0",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 11,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Current 1b968ab-based source: seven existing release-readiness methods, two actual Simulator VoiceOver methods and two Home status/readability methods.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/current-ios27-summary.json",
+        "sha256": "d2b30160ad60acda9fa6ba2b08c7a2c7394573f984731b1813a6edf0b9240fdb"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/current-ios27.log",
+        "sha256": "50982a43a93f2ce003f0c1b6ab67568956884378ef1578689efc9fb377b29fee"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/current-ios27.xcresult"
+    },
+    {
+      "name": "current-ios26",
+      "result": "Passed",
+      "passed": 16,
+      "failed": 0,
+      "total": 16,
+      "skipped": 0,
+      "runtimeWarnings": [],
+      "startTime": 1792336709.204,
+      "finishTime": 1792336948.892,
+      "devices": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "4E5B0E5C-582E-4939-A9CA-F71342045F44",
+            "deviceName": "iPhone 17e",
+            "modelName": "iPhone 17e",
+            "osBuildNumber": "23F77",
+            "osVersion": "26.5",
+            "platform": "iOS Simulator"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 16,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "interpretation": "Current 1b968ab-based source: all seven new regressions, seven existing release-readiness methods and two Home status/readability methods.",
+      "summary": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26-summary.json",
+        "sha256": "3a88e49b785dea3f64a7a3e03d62166a644606ffab856c0626005578930cdd2a"
+      },
+      "log": {
+        "path": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26.log",
+        "sha256": "95b4ca65495f42f766102ff77605c75316eacd056811001dc64b8bf84a0bc370"
+      },
+      "resultBundle": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26.xcresult"
     }
   ],
-  "draftCorrection": "Each load has a revision; only the current revision publishes success or failure. Owner mutations invalidate earlier loads and request fresh confirmation. Session/participant checks fence owner mutation results.",
-  "draftSourceSha256": {
-    "ios/Shield/Features/TrustedContacts/TrustedContactsView.swift": "22835644c07008e0ed61e10ea0962d594d0a38eb604f3723fcc88213ab496016",
-    "ios/Shield/Features/TrustedContacts/ContactAlertsView.swift": "6ab523266ac11754a171258acd2b0eaeaa311ea1e65965475a79c570282b55e8",
-    "ios/Shield/App/AppState.swift": "6d5404a7644acff97a9e8c546659324c2902b2897bff28b0da8fa6eb76470874",
-    "ios/Shield/App/RootView.swift": "880b24bf010ed01c0ce4d7a443317006ef8704d37dda4d06578da9093c85120d",
-    "ios/Shield/Networking/APIClient.swift": "ad71a2078c20329b4cc64a629ffbece3a0455487154d6b005f9dd958fff36da7",
-    "ios/Shield/Preview/CaretakerRefreshFixture.swift": "264da3b30907df22001c8fee86af399f9b1357da32e82df8bc2a0d8b927d9929",
-    "ios/Shield/Preview/CaretakerRefreshCheckView.swift": "f1ff4cf0663344879b428bfaaef588a6820083363494c82f3e9f198951ebb97d",
-    "ios/ShieldUITests/CaretakerRefreshUITests.swift": "af53a439d42a82f57ecfc207077f772cfbf96b020dc41031ef619d2e95abcdd3",
-    "ios/Shield.xcodeproj/project.pbxproj": "9bc470bf76d5c12d905793f388a33d1c0327dd5ad49f77e378cb752cd7f0dd85"
+  "currentDesignAcceptance": {
+    "ios27": {
+      "newRegressionMethods": 7,
+      "existingReleaseMethods": 7,
+      "voiceOverMethods": 2,
+      "homeMethods": 2,
+      "allPassed": true
+    },
+    "ios26_5": {
+      "newRegressionMethods": 7,
+      "existingReleaseMethods": 7,
+      "homeMethods": 2,
+      "allPassed": true
+    },
+    "runtimeWarnings": 0,
+    "voiceOverLimit": "Actual Simulator VoiceOver speech/focus checks use direct actions with VoiceOver temporarily disabled. No physical gesture or immediate-announcement-timing certification."
   },
-  "regressionsPrepared": [
-    "pause during held refresh",
-    "removal during held refresh",
-    "decline during held refresh",
-    "older refresh failure after decline",
-    "failed confirmation followed by explicit recovery"
+  "toolingCorrections": [
+    "The initial Xcode 27.1/CoreSimulator version mismatch exited 70 with zero tests; the owner completed local component authorization.",
+    "The first resumed attempt used an intentionally held native refresh animation, preventing XCTest interaction. That exact owned test process was stopped (exit 143); it is not a completed baseline. The direct test button invokes the same production load method without the held animation.",
+    "The complete controlled baseline naturally failed all five tests. Optional simctl diagnostics delayed result finalization; later runs disabled optional diagnostics. The diagnostic child exited naturally before a proposed targeted stop; no signal was sent to that child.",
+    "Initial summary export attempts encountered an unfinished bundle and then local reporting-cache permissions; the complete result was subsequently exported successfully.",
+    "A source-manifest attempt against the old asset inventory failed after the concurrent restoration. A new tracked-plus-owned-file manifest recorded the restored design before the successful result was accepted.",
+    "An attachment export mistakenly selected failures only and returned no passing captures. Re-export into that directory refused to overwrite its manifest. A fresh directory with the PNG filter exported all captures; tests and source were unchanged."
   ],
-  "fixtureSafety": "DEBUG simulator-only, nil backend configuration for outer and inner app models; synthetic person and phone; no provider or notification calls.",
-  "uiAttempt": {
-    "command": "xcodebuild test, existing compact iOS 27 simulator, existing derived data/package caches, CaretakerRefreshUITests only",
-    "exitCode": 70,
-    "testsRun": 0,
-    "result": "Requested simulator unavailable before compilation because CoreSimulator is out of date.",
-    "xcode": "27.1 (27A9275)",
-    "runningCoreSimulator": "1171.7",
-    "requiredCoreSimulator": "1174.9.2",
-    "logSha256": "0eff5b4c728ac722bee1875480463d4f1e822a3874c3c18a376f46d1dc7ddb00",
-    "followup": "xcrun simctl list invoked automatic xcodebuild -runFirstLaunch; macOS authorization pending. Protected SecurityAgent UI cannot be controlled by the computer tool. Owner asked to complete local setup."
+  "captures": [
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/recipient-error-light.png",
+      "sha256": "53328352c60f2ba5ad08d40ab30c270266d7f3c6257cc6b50c65791d652f9a9c",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/31C2169D-050F-4D6D-9274-BCC15FAC5BD1.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/recipient-action-light.png",
+      "sha256": "c21f3d8a1225ed4db9737a75d1600060a7935034cebd6b9135c511ded55eed61",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/783207E7-02C8-4A21-A2ED-A1C0DC7C1866.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/recipient-recovered-light.png",
+      "sha256": "1c523250cbdc32e06ed2f8a33e3b025e489508cceaef4a0e1038e51fed06bed5",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/786C1B0A-C60D-474F-92C6-11B2FB681E28.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/recipient-error-largest-dark.png",
+      "sha256": "da0a76aaa540d30394b728fcd40131322ea5009217f76c94d9e6d2444355e106",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/24735171-BF42-40F7-BCFA-8D42BEA5C431.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/recipient-action-largest-dark.png",
+      "sha256": "f55048f1b7effc1f1a61317f4e61e094d30f1de4cfadb0c8586d5e098d71e02c",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/ACF1B274-754D-4617-949A-173B735C9FE3.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/recipient-recovered-largest-dark.png",
+      "sha256": "b3252e76ed3f4e14e21e0fceddb8d10ea5315574bccb20db52bd0907859b1d83",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/46C11059-0A70-40A1-A4ED-808C841ECBF0.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/decline-after-old-response.png",
+      "sha256": "d2a10be377b9e9bae6d9ddea2d7cfcb977037faaac6664858691d17cfdd043dc",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/20046B48-414C-4DF2-B9CF-D2E73B89F28C.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/decline-after-old-error.png",
+      "sha256": "d2a10be377b9e9bae6d9ddea2d7cfcb977037faaac6664858691d17cfdd043dc",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/BB9C0D99-6DD6-4165-A1FA-44B18363CB51.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/removal-after-old-response.png",
+      "sha256": "77f0cddf609c8773d6e8a7e532d3cf6ab20bba6b018bee50f4f98cd5145a66f6",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/fixture-layout-ios27-captures/D74DB776-837B-4AC1-89E7-9ABF51220102.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/voiceover-recipient-error-largest.png",
+      "sha256": "f9dfc7221adb0f64839dc35a0a719907e0b51154a39bcd46025ab92411d6af2a",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios27-captures/2AF94223-2A74-4947-973A-89DB0FC77A11.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/voiceover-recipient-recovered-largest.png",
+      "sha256": "53733f9f0af9e5233a93ba4e27f2f608d14b7da054d09ec96a22a66cd26846e3",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios27-captures/8B2E082A-76AB-4D1F-B2D1-54D686F5DD1E.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/voiceover-owner-error-largest.png",
+      "sha256": "6f23a294385d2c568589bbab72f9ec3cfdf41ae0f55232eba877a7835a93a499",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios27-captures/7285D9A8-FEE5-48E9-AFA4-5144A142F0C2.png",
+      "reviewed": true,
+      "runtime": "iOS 27.0",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/ios26-recipient-error-light.png",
+      "sha256": "c8abb0c064ab5aff23cf82436d4536f9ed94cf2f0a41eef52308bde617b71644",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26-captures/0BA9CBFE-9AB4-461D-B6A6-DD2062C5ABCA.png",
+      "reviewed": true,
+      "runtime": "iOS 26.5",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/ios26-recipient-error-largest-dark.png",
+      "sha256": "c55b6797e55b8d66c979e99b262cc102cfc4424678ebfb86856b6eb58b066ac6",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26-captures/CABC0460-325A-42E4-924E-A415614A94E2.png",
+      "reviewed": true,
+      "runtime": "iOS 26.5",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/ios26-recipient-action-largest-dark.png",
+      "sha256": "1ec8d853263e3a486ec70c183a235df49846c8c3444ccbcc54cef388c2a108df",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26-captures/0B6BC84F-4BA7-4AC1-9541-38C6321B6689.png",
+      "reviewed": true,
+      "runtime": "iOS 26.5",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    },
+    {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/ios26-recipient-recovered-largest-dark.png",
+      "sha256": "199723cb417059de2ea5a02412a5cafa7b616ec6c805dfbef0d1ba962a6a9bb9",
+      "privateSource": "artifacts/private/caretaker-refresh-oct18/resume/current-ios26-captures/ACC3468E-99B9-499A-85EC-5D3365C2A12C.png",
+      "reviewed": true,
+      "runtime": "iOS 26.5",
+      "theme": "restored pre-Andrew design",
+      "synthetic": true
+    }
+  ],
+  "archive": {
+    "archive": "/tmp/shield-caretaker-refresh-oct18.xcarchive",
+    "verified": true,
+    "distributionSigningVerified": false,
+    "version": "0.1.0",
+    "build": "1",
+    "minimumOS": "26.0",
+    "apiHost": "shield-calls-isaac.web.app",
+    "developmentNetworkingException": false,
+    "messageFilterEmbedded": false,
+    "bundles": [
+      {
+        "path": ".",
+        "identifier": "org.isaaczhang.Shield",
+        "architecture": "arm64"
+      },
+      {
+        "path": "PlugIns/ShieldCallDirectory.appex",
+        "identifier": "org.isaaczhang.Shield.CallDirectory",
+        "architecture": "arm64"
+      }
+    ],
+    "privacyManifests": [
+      "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+      "PrivacyInfo.xcprivacy",
+      "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+    ],
+    "appBinarySha256": "489194ec42cfb48d2787eda223c1cf21940b4815488581e3f3ffc54526fb2d17"
+  },
+  "archiveBuildLog": {
+    "path": "artifacts/private/caretaker-refresh-oct18/resume/release-archive.log",
+    "sha256": "f3ad073db81f433ced235527199bb78a3e14056a3f1e4044317664568b83cfdc"
+  },
+  "archiveReceipt": {
+    "path": "artifacts/private/caretaker-refresh-oct18/resume/release-archive-verification.json",
+    "sha256": "1b391c4689638dcd2d64605c1affc71c310d65d1745477df125c8f31f3fef801"
   },
   "backendChecks": {
     "command": "npm run check",
@@ -60,20 +634,33 @@
       "pending": 0,
       "reportSha256": "ce013a0a3e35d1ed094e04689497c028dc331626919d438ae8a3f28fdd4c82ea"
     },
-    "scope": "Backend unchanged. These checks do not compile or verify the Swift draft."
+    "scope": "Unchanged backend source: required local checks completed before the resumed iOS verification. Separate from the app results."
   },
-  "baselineCI": {
-    "commit": "56424e621011c64c5152284becd75bced0446860",
+  "precedingCI": {
+    "commit": "ef41b8c3c96d76fdc47acc8aae4d193ec05161e3",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39101975629",
     "result": "success",
-    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39101053129",
-    "scope": "Previously committed source; not this local draft."
+    "attempt": 1,
+    "scope": "Unchanged backend; 382 unit, 284 Firestore and 8 account checks. Predates this uncommitted iOS correction."
   },
-  "nextAcceptance": [
-    "Finish Xcode local component setup",
-    "Run the controlled regressions against both original and corrected view sources",
-    "Run existing caretaker recovery journeys on both supported simulator runtimes",
-    "Build and inspect an unsigned Release archive",
-    "Review and commit the tested iOS correction"
+  "remainingAcceptance": [
+    "Recipient mutation-response loss: ContactAlertChoiceView still labels a thrown POST response as choices not saved. Exercise a server-applied change with a lost response and verify safe status reconciliation; current tests cover a successful POST followed by a failed GET.",
+    "Full accessibility findings on the restored design; old-theme contrast counts remain historical and are not current-build acceptance.",
+    "Physical device, native VoiceOver gestures, older-adult usability, Contacts/iCloud, Call Directory and background audio acceptance.",
+    "Caretaker sender/APNs setup, approved end-to-end delivery and service conditions; channels remain disabled.",
+    "Separate approved production retry deployment, incident-condition/spending-alert acceptance and unexplained historical API failures.",
+    "Real-carrier calls, recording/consent/legal gates, public enrollment/capacity and Apple distribution/store requirements."
   ],
-  "releaseGate": "Open; previous 11 raw contrast findings, physical-device acceptance, caretaker delivery and all other release requirements remain unchanged."
+  "unfilteredAccessibility": {
+    "result": "Failed",
+    "failedMethods": 2,
+    "reports": 10,
+    "captures": 16,
+    "suppressed": 0,
+    "evidence": {
+      "path": ".impeccable/review/release-2026-10-18/caretaker-refresh/accessibility/verification.json",
+      "sha256": "2d931188f59f23d80df13fd9cf361c997fc72db60270962877a07af071e79281"
+    },
+    "releaseGateOpen": true
+  }
 }
