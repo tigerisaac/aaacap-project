@@ -78,6 +78,8 @@ The unsigned Release archive passes packaging checks: two arm64 bundles, three p
 
 All **nine completed runs** report zero runtime warnings; their failures and the native runner-restart message are retained separately. **109 capture files** were visually inspected, including before/after screens, diagnostic crops and the completed speech-focus checkpoints. All **282 final source-input hashes** match. The shared component also serves existing filter-specific empty states; the three preserved recovery/filter checks are narrower than an audit of every possible filter and device combination.
 
+The committed checkpoint **`b8399f3`** also passed [independent CI on its first attempt](https://github.com/tigerisaac/aaacap-project/actions/runs/39156014787): **382 unit + 284 Firestore + 8 account checks**, including typecheck and build. The [receipt](../.impeccable/review/release-2026-10-18/empty-everyday-contrast/backend-ci-final-receipt.json) retains the exact commit, count lines and log digest. The following evidence/documentation update changes no application or test inputs.
+
 No physical installation, backend deployment, real call or Apple operation occurred in this follow-up. Full accessibility, physical-device acceptance, purchases, delivery activation and the wider release gates remain open.
 
 ## Product decisions applied
@@ -90,6 +92,8 @@ No physical installation, backend deployment, real call or Apple operation occur
 - RevenueCat handles public purchases; the app and backend implementation, exact saved configuration and remaining store work are in [RevenueCat and Shield access](REVENUECAT.md). The owner revised intended prices to **USD $9.99/month or $99.99/year**. Pilot accounts remain separate, including after expiry and failed/offline lookups.
 
 ## Verification matrix
+
+This table records the original October 17 broad verification. The dated source checkpoints above and their linked records contain later corrections and expanded test counts; they do not turn the original failures or remaining acceptance gates into passes.
 
 | Area | Evidence in this audit | Limit / remaining acceptance |
 |---|---|---|

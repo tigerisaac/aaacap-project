@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "attempt": 1,
+    "conclusion": "success",
+    "databaseId": 39156014787,
+    "headSha": "b8399f3b08efaf69d0af414c28ff4106e795db17",
+    "jobs": [
+      {
+        "completedAt": "2026-10-18T18:54:57Z",
+        "conclusion": "success",
+        "databaseId": 117759278572,
+        "name": "backend",
+        "startedAt": "2026-10-18T18:50:36Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-18T18:50:39Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-18T18:50:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:50:45Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v6",
+            "number": 2,
+            "startedAt": "2026-10-18T18:50:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:50:49Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v6",
+            "number": 3,
+            "startedAt": "2026-10-18T18:50:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:51:05Z",
+            "conclusion": "success",
+            "name": "Run npm ci",
+            "number": 4,
+            "startedAt": "2026-10-18T18:50:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:51:36Z",
+            "conclusion": "success",
+            "name": "Run npm run check",
+            "number": 5,
+            "startedAt": "2026-10-18T18:51:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:51:36Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-java@v5",
+            "number": 6,
+            "startedAt": "2026-10-18T18:51:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:54:26Z",
+            "conclusion": "success",
+            "name": "Run npm run test:firebase",
+            "number": 7,
+            "startedAt": "2026-10-18T18:51:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:54:54Z",
+            "conclusion": "success",
+            "name": "Run npm run test:accounts",
+            "number": 8,
+            "startedAt": "2026-10-18T18:54:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:54:54Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-java@v5",
+            "number": 14,
+            "startedAt": "2026-10-18T18:54:54Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:54:54Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v6",
+            "number": 15,
+            "startedAt": "2026-10-18T18:54:54Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:54:54Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v6",
+            "number": 16,
+            "startedAt": "2026-10-18T18:54:54Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-18T18:54:54Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 17,
+            "startedAt": "2026-10-18T18:54:54Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39156014787/job/117759278572"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39156014787"
+  },
+  "counts": {
+    "unit": 382,
+    "firestore": 284,
+    "account": 8
+  },
+  "exactCountLines": [
+    "backend\tRun npm run check\t2026-10-18T18:51:34.4959490Z       Tests  382 passed | 283 skipped (665)",
+    "backend\tRun npm run test:firebase\t2026-10-18T18:54:25.0347966Z       Tests  284 passed (284)",
+    "backend\tRun npm run test:accounts\t2026-10-18T18:54:53.2332494Z       Tests  8 passed (8)"
+  ],
+  "countLineNormalization": "Only ANSI terminal color/control sequences removed.",
+  "logSha256": "aa00c7f574c3c754e0e9628995fb4138f3eda125444d884ad213d25075522b82",
+  "boundary": "First-attempt independent CI on committed UI checkpoint b8399f3. It runs npm run check, the Firestore emulator suite, and the Auth/Firestore account-lifecycle suite. This workflow does not compile Swift. Subsequent receipt/documentation changes do not change application or test inputs."
+}

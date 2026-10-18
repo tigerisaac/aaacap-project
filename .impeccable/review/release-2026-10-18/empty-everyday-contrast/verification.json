@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-18T18:49:14.282396+00:00",
+  "recordedAt": "2026-10-18T18:56:09.231629+00:00",
   "scope": "Seven empty states: calls, messages, saved numbers, blocked numbers, calling list, sample phone setup, contact search. Native heading wrapping and adaptive secondary guidance; no live data, routing or permission changes.",
   "releaseReady": false,
   "runs": [
@@ -1280,5 +1280,18 @@
     "The native VoiceOver diagnostic log reports a runner restart after the failed method. Its result bundle records one failed test and no passing tests; the empty restarted suite is not counted as a pass.",
     "The archive is unsigned; device installation, distribution signing, Apple acceptance and real calls remain open.",
     "Independent CI receipt is for base 048272b; it checks the unchanged backend, not Swift."
-  ]
+  ],
+  "postCommitCI": {
+    "receipt": "backend-ci-final-receipt.json",
+    "sourceCommit": "b8399f3b08efaf69d0af414c28ff4106e795db17",
+    "url": "https://github.com/tigerisaac/aaacap-project/actions/runs/39156014787",
+    "attempt": 1,
+    "result": "success",
+    "counts": {
+      "unit": 382,
+      "firestore": 284,
+      "account": 8
+    },
+    "compilesSwift": false
+  }
 }
