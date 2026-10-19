@@ -4,6 +4,7 @@ import { HttpError } from '../auth.js';
 import type { CloudStore, Person } from './store.js';
 import { ForwardingStore } from './forwarding-store.js';
 import { routeRef } from './shared-routing.js';
+import { readRestorationGuide } from './restoration-guide.js';
 
 export type RestorationStep = { id: string; kind: 'code' | 'carrier' | 'settings' | 'voicemailSettings' | 'call' | 'voicemail'; code?: string };
 export function restorationSteps(control: DocumentData | undefined): RestorationStep[] {
@@ -17,10 +18,10 @@ export function restorationSteps(control: DocumentData | undefined): Restoration
     { id: 'settings', kind: 'settings' }, { id: 'voicemail-settings', kind: 'voicemailSettings' },
     { id: 'call', kind: 'call' }, { id: 'voicemail', kind: 'voicemail' }];
 }
-export function restorationDTO(person: DocumentData, control: DocumentData | undefined) {
+export function restorationDTO(person: DocumentData, control: DocumentData | undefined, store?: CloudStore) {
   const progress = person.restoration;
   return { id: progress?.id ?? null, settingsChanged: progress?.settingsChanged === true || (progress?.index ?? 0) > 0, index: progress?.index ?? 0, completed: !!progress?.completedAt,
-    steps: progress?.steps ?? restorationSteps(control), instructions: control?.restorationGuide ?? [],
+    steps: progress?.steps ?? restorationSteps(control), instructions: store ? readRestorationGuide(store, person.id, control) : control?.restorationGuide ?? [],
     carrier: person.carrier === 'tmobile' ? 'T-Mobile' : person.carrier === 'tello' ? 'Tello' : 'your carrier',
     required: !!person.forwardingConsent, evidence: progress?.completedAt ? 'owner_confirmed' : null };
 }
@@ -31,7 +32,7 @@ export async function startRestoration(s: CloudStore, uid: string, id: string, r
     const [doc, control] = await tx.getAll(ref, f.controlRef(id));
     const p = doc!.data();
     if (!p || p.ownerUid !== uid || p.status === 'offboarded') throw new HttpError(403, 'owner_required');
-    if (p.restoration && !restart) return restorationDTO(p, control!.data());
+    if (p.restoration && !restart) return restorationDTO(p, control!.data(), s);
     const calls = await tx.get(s.db.collection('callSessions').where('participantId', '==', id));
     if (calls.docs.some(d => d.data().state !== 'ended' && d.data().expiresAt > s.now() && !d.data().inboundEndedAt)) throw new HttpError(409, 'call_still_active');
     const restoration = { id: randomUUID(), index: 0, startedAt: s.now(),
@@ -41,7 +42,7 @@ export async function startRestoration(s: CloudStore, uid: string, id: string, r
     // Keep existing service available while the person changes their carrier settings.
     // Starting instructions is neither a carrier reset nor permission to stop calls.
     tx.update(ref, { restoration, forwardingStage: 'restore' });
-    return restorationDTO({ ...p, restoration }, control!.data());
+    return restorationDTO({ ...p, restoration }, control!.data(), s);
   });
 }
 
@@ -56,7 +57,7 @@ export async function confirmRestoration(s: CloudStore, uid: string, id: string,
     const steps = r.steps as RestorationStep[];
     const requested = steps.findIndex(value => value.id === step);
     if (requested < 0 || requested > r.index) throw new HttpError(409, 'restoration_changed');
-    if (requested < r.index || r.completedAt) return restorationDTO(p, control!.data()); // lost-response retry
+    if (requested < r.index || r.completedAt) return restorationDTO(p, control!.data(), s); // lost-response retry
     const index = r.index + 1, last = index === steps.length;
     const calls = last ? await tx.get(s.db.collection('callSessions').where('participantId', '==', id)) : undefined;
     if (last && calls!.docs.some(d => d.data().state !== 'ended' && d.data().expiresAt > s.now() && !d.data().inboundEndedAt)) {
@@ -78,7 +79,7 @@ export async function confirmRestoration(s: CloudStore, uid: string, id: string,
     }
     // This records explicit carrier/reset and real-service confirmations by the
     // owner, corroborated against Shield's inbound records. It is not carrier telemetry.
-    return restorationDTO({ ...p, restoration, ...(last ? { forwardingConsent: undefined } : {}) }, control!.data());
+    return restorationDTO({ ...p, restoration, ...(last ? { forwardingConsent: undefined } : {}) }, control!.data(), s);
   });
 }
 

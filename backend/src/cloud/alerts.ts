@@ -4,6 +4,8 @@ import { createPrivateKey, sign, type KeyObject } from 'node:crypto';
 import type { DocumentData, DocumentReference } from 'firebase-admin/firestore';
 import type { CloudStore, Person } from './store.js';
 import { TelnyxTextSender, type TextSender } from './text-alerts.js';
+import { CARETAKER_EVENT_RETENTION_MS } from './caretaker-inbox.js';
+import { deletionRef } from './deletion-jobs.js';
 
 // Push alerts for the person and the helpers they share with. An alert is queued as a contentless job in the same
 // write as the event that causes it; `sendShieldAlert` composes fixed wording and sends it through APNs.
@@ -30,7 +32,8 @@ export type PushEnvironment = 'development' | 'production';
 type Writer = { create(ref: DocumentReference, data: DocumentData): unknown };
 /** Queue an alert atomically with the event. Does nothing when neither delivery channel is configured. */
 export function queueAlert(store: CloudStore, writer: Writer, participantId: string, kind: AlertKind) {
-  if (!store.config.APNS && !store.config.SMS_ALERTS) return;
+  if (!store.config.APNS && !store.config.SMS_ALERTS
+    && !(kind === 'monitor_intervened' && store.config.TELNYX_VERIFY_PROFILE_ID)) return;
   const now = store.now();
   writer.create(store.db.collection('alerts').doc(), { participantId, kind, createdAt: now, expiresAt: now + ALERT_TTL_MS });
 }
@@ -92,12 +95,15 @@ export class AlertDelivery {
   constructor(readonly store: CloudStore, readonly sender: PushSender, readonly textSender: TextSender = new TelnyxTextSender(store)) {}
   async deliver(alertId: string) {
     const s = this.store, ref = s.db.collection('alerts').doc(alertId);
-    try {
+    {
       const alert = (await ref.get()).data();
-      if (!alert || alert.expiresAt <= s.now() || !(alert.kind in ALERTS)) return;
+      if (!alert) return;
+      if (alert.expiresAt <= s.now() || !(alert.kind in ALERTS)) { await ref.delete(); return; }
       const spec: AlertSpec = ALERTS[alert.kind as AlertKind];
       const person = (await s.personRef(alert.participantId).get()).data() as Person | undefined;
-      if (!person || person.status === 'offboarded') return;
+      if (!person || person.status === 'offboarded') { await ref.delete(); return; }
+      // Save the opted-in inbox record before attempting external delivery.
+      await this.deliverContacts(alertId, person, alert.kind as AlertKind, spec, alert.createdAt);
       const targets: { uid: string; body: string }[] = [];
       if (spec.person) targets.push({ uid: person.ownerUid, body: spec.person() });
       if (helperAlertsEnabled(person) && alert.kind === 'monitor_intervened') {
@@ -114,8 +120,10 @@ export class AlertDelivery {
         for (const key of ['sent', 'unregistered', 'failed'] as const) tally[key] += result[key];
       }
       console.info(JSON.stringify({ event: 'alert_delivered', kind: alert.kind, recipients: targets.length, ...tally }));
-      await this.deliverContacts(alertId, person, alert.kind as AlertKind, spec, alert.createdAt);
-    } finally { await ref.delete(); }
+      // Transient database failures leave the job available for the trigger retry.
+      // Channel receipts still prevent duplicate external submissions.
+      await ref.delete();
+    }
   }
 
   /** One push attempt per event/account, even when a caretaker also has a sharing
@@ -125,7 +133,7 @@ export class AlertDelivery {
     const receipt = s.db.collection('alertDeliveries').doc(s.vault.hash(`push:${alertId}:${uid}`));
     const claimed = await s.db.runTransaction(async tx => {
       if ((await tx.get(receipt)).exists) return false;
-      tx.create(receipt, { participantId, startedAt: s.now(), expiresAt: s.now() + 30 * 86400_000 });
+      tx.create(receipt, { participantId, recipientUid: uid, startedAt: s.now(), expiresAt: s.now() + 30 * 86400_000 });
       return true;
     });
     if (!claimed) return tally;
@@ -154,7 +162,14 @@ export class AlertDelivery {
         const d = contactDoc!.data(), p = personDoc!.data();
         if (old!.exists || !p || p.status === 'offboarded' || p.trustedContactsChoice?.enabled !== true || d?.status !== 'accepted' || !d.recipientUid || d.respondedAt > createdAt || p.trustedContactsChoice.updatedAt > createdAt) return;
         const optOut = (await tx.get(s.db.collection('smsOptOuts').doc(d.phoneHash))).data();
-        tx.create(receipt, { participantId: person.id, startedAt: s.now(), expiresAt: s.now() + 30 * 86400_000 });
+        if ((await tx.get(deletionRef(s, d.recipientUid))).exists) return;
+        tx.create(receipt, { participantId: person.id, recipientUid: d.recipientUid,
+          startedAt: s.now(), expiresAt: s.now() + 30 * 86400_000 });
+        if (d.inbox === true && (d.inboxAcceptedAt ?? d.respondedAt) <= createdAt) {
+          tx.create(s.db.collection('caretakerEvents').doc(receipt.id), { participantId: person.id,
+            contactId: contact.id, recipientUid: d.recipientUid, kind: 'monitor_intervened', createdAt,
+            expiresAt: createdAt + CARETAKER_EVENT_RETENTION_MS });
+        }
         return { phoneHash: d.phoneHash as string, phoneEnc: d.phoneEnc as string, recipientUid: d.recipientUid as string,
           push: d.push === true, sms: d.sms === true && !optOut?.stopped };
       });

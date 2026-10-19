@@ -33,6 +33,11 @@ struct SettingsView: View {
             }
             ShieldSection("Account") {
                 let leavesSample = model.isDemo && !model.isTestAccount
+                if !model.people.contains(where: \.isOwner), !model.isDemo, model.service?.publicEnrollmentSupported == true {
+                    NavigationLink(value: AppRoute.publicEnrollment) {
+                        ActionRow(title: "Connect my phone", symbol: "phone.badge.plus")
+                    }
+                }
                 if model.subscription.showsAccess {
                     NavigationLink { SubscriptionView() } label: {
                         ActionRow(title: "Shield access", symbol: "checkmark.shield")

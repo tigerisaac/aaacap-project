@@ -18,6 +18,7 @@ import { deleteMessageAudio, readMessageAudio } from './message-audio.js';
 import { registerAudioDelivery } from './audio-delivery.js';
 import { startRestoration, confirmRestoration, cancelRestoration, setupReviewRequired, restorationDTO } from './restoration.js';
 import { ServiceAccess } from './service-access.js';
+import { hasRestorationGuide, readRestorationGuide } from './restoration-guide.js';
 
 const at = (n?: number) => n ? new Date(n).toISOString() : null;
 const stages = ['overview', 'consent', 'save', 'ring', 'settings', 'liveVoicemail', 'forward0', 'forward1', 'forward2', 'test', 'checks', 'restore'] as const;
@@ -33,13 +34,13 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   };
   app.get('/api/forwarding', async request => {
     const ctx = await owner(request), p = ctx.participant, control = (await f.controlRef(p.id).get()).data();
-    const prepared = !!control?.provisioned && !!control.dataPlanConfirmed && !!control.restorationGuide?.length;
+    const prepared = !!control?.provisioned && !!control.dataPlanConfirmed && hasRestorationGuide(control);
     const active = prepared && control?.enabled === true && control.expiresAt > store.now() && control.used < 10 && p.status === 'setup';
     const carrier = carrierFor(p.carrier);
     const recent = await store.db.collection('callSessions').where('participantId', '==', p.id)
       .orderBy('createdAt', 'desc').limit(10).get();
     return { participantId: p.id, carrier: carrier?.name ?? 'your carrier', carrierVerified: !!carrier?.verified, phone: store.phone(p), shieldNumber: p.shieldNumber,
-      alwaysOn: p.alwaysOn === true, quietHours: p.quietHours ?? DEFAULT_QUIET_HOURS,
+      alwaysOn: p.alwaysOn === true, publicEnrollment: !!p.publicEnrollment, quietHours: p.quietHours ?? DEFAULT_QUIET_HOURS,
       setupCheckNumber: store.config.SETUP_CHECK_NUMBER ?? null,
       lastSetupCheck: control?.lastSetupCheck ? { at: at(control.lastSetupCheck.at), result: control.lastSetupCheck.result } : null,
       prepared, active, probe: probes.publicState(control), contactsSyncedAt: at(p.contactsSyncedAt), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),
@@ -51,12 +52,12 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       setupReviewRequired: setupReviewRequired(control),
       restorationRequested: p.status === 'restoring' || !!p.restoration, lastTestAt: at(control?.lastTestAt),
       activationCodes: active ? activationCodes(p.carrier, p.shieldNumber) : [],
-      restorationSteps: control?.restorationGuide ?? [],
+      restorationSteps: readRestorationGuide(store, p.id, control),
       readiness: control?.blocker === 'provider_upgrade_required' ? 'Phone service needs an upgrade before setup can start.'
         : !control?.provisioned ? 'The forwarding service is being prepared. Keep your phone settings unchanged.'
         : !carrier?.verified ? 'Shield hasn’t been tested with your carrier yet. Staff will help you set it up.'
         : !control.dataPlanConfirmed ? `Confirm your ${carrier.name} plan includes mobile data before forwarding.`
-        : !control.restorationGuide?.length ? 'Your original phone settings must be saved before setup can start.'
+        : !hasRestorationGuide(control) ? 'Your original phone settings must be saved before setup can start.'
         : !active ? 'Ready for a 30-minute call test. Start it here when you’re ready.'
         : 'The supervised call-test window is open.',
       latestEvents: recent.docs.filter(d => d.data().source === 'forwarding' && d.data().expiresAt > store.now()).slice(0, 3).reverse()
@@ -123,7 +124,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
     if (stage.startsWith('forward')) {
       await serviceAccess.requireActivation(ctx.uid, ctx.participant.id);
       const c = (await f.controlRef(ctx.participant.id).get()).data();
-      if (!c?.provisioned || !c.dataPlanConfirmed || !c.restorationGuide?.length || !c.enabled || c.expiresAt <= store.now() || !ctx.participant.phoneVerifiedAt || ctx.participant.forwardingConsent !== consent) throw new HttpError(409, 'setup_not_ready');
+      if (!c?.provisioned || !c.dataPlanConfirmed || !hasRestorationGuide(c) || !c.enabled || c.expiresAt <= store.now() || !ctx.participant.phoneVerifiedAt || ctx.participant.forwardingConsent !== consent) throw new HttpError(409, 'setup_not_ready');
     }
     if (stage === 'checks') await serviceAccess.activatePilot(ctx.uid, ctx.participant.id);
     await store.personRef(ctx.participant.id).update({ forwardingStage: stage }); return { saved: true };
@@ -135,7 +136,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
   });
   app.get('/api/forwarding/restoration', async request => {
     const ctx = await owner(request);
-    return restorationDTO(ctx.participant, (await f.controlRef(ctx.participant.id).get()).data());
+    return restorationDTO(ctx.participant, (await f.controlRef(ctx.participant.id).get()).data(), store);
   });
   app.post('/api/forwarding/restoration/confirm', async request => {
     const ctx = await owner(request);

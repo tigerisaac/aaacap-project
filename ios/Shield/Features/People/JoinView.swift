@@ -17,9 +17,16 @@ struct JoinView: View {
                     ShieldPageHeader {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                             Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                            Text("Your phone isn’t connected yet. Contact Shield to set it up.")
+                            Text(model.service?.publicEnrollmentSupported == true ? "Your phone isn’t connected yet. Check whether setup is available for your carrier." : "Your phone isn’t connected yet. Contact Shield to set it up.")
                                 .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
                         }.padding(.vertical, ShieldTheme.Spacing.compact)
+                    }
+                    if model.service?.publicEnrollmentSupported == true {
+                        ShieldGroup {
+                            NavigationLink { PublicEnrollmentView() } label: {
+                                ActionRow(title: "Connect my phone", symbol: "phone.badge.plus")
+                            }
+                        }
                     }
                     if let email = model.service?.supportEmail, let url = URL(string: "mailto:\(email)") {
                         ShieldGroup {

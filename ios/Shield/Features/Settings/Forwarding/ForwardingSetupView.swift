@@ -22,8 +22,22 @@ struct ForwardingSetupView: View {
                     .navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
             } else if model.step == .restore, let id = model.status?.participantId {
                 DisconnectView(participantID: id)
+            } else if model.status?.publicEnrollment == true, app.subscription.access?.isActive != true {
+                List {
+                    ShieldSection("Confirm your Shield access") {
+                        Text("Confirm access before changing your phone settings. After that, this guide checks your phone and connects your carrier.")
+                        NavigationLink { SubscriptionView() } label: {
+                            ActionRow(title: "Check Shield access", symbol: "checkmark.shield")
+                        }
+                    }
+                }.shieldListStyle().navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
             } else { setupBody }
-        }.task { if !app.isDemo || model.isUITest { await model.load(app) } }
+        }.task {
+            if !app.isDemo || model.isUITest {
+                await model.load(app)
+                if model.status?.publicEnrollment == true, !app.isPreview { await app.subscription.load(api: app.api) }
+            }
+        }
     }
     private var setupBody: some View {
         ScrollViewReader { proxy in

@@ -18,6 +18,8 @@ export const cloudSchema = z.object({
   TELNYX_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9+/]{43}=$/),
   TELNYX_APPLICATION_ID: z.string().regex(/^\d{6,30}$/),
   SHARED_NUMBER_ENABLED: z.boolean().default(false),
+  // Enable only after a scoped rollout, carrier acceptance and Apple purchase setup.
+  PUBLIC_ENROLLMENT_ENABLED: z.boolean().default(false),
   TELNYX_SHARED_APPLICATION_ID: z.string().regex(/^\d{6,30}$/).optional(),
   TELNYX_NUMBER: z.string().regex(/^\+1[2-9]\d{9}$/).default('+15074731802'),
   // Each person's Shield number and verified phone live in Firestore (shieldNumbers, participants), not here.

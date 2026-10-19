@@ -91,7 +91,7 @@ export const checkForwardingVoicemail = onDocumentCreated({ ...options, secrets:
 });
 
 // Contentless alert jobs support both app notifications and opted-in trusted-contact texts.
-export const sendShieldAlert = onDocumentCreated({ ...options, document: 'alerts/{alertId}', retry: false, concurrency: 4 }, async event => {
+export const sendShieldAlert = onDocumentCreated({ ...options, document: 'alerts/{alertId}', retry: true, concurrency: 4 }, async event => {
   const { AlertDelivery, APNsSender } = await import('./alerts.js');
   const s = getStore();
   const sender = s.config.APNS ? new APNsSender(s.config.APNS, s.config.IOS_BUNDLE_ID) : { send: async () => 'failed' as const };

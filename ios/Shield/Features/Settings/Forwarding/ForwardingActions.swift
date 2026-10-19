@@ -11,7 +11,9 @@ struct ForwardingActions: View {
         VStack(spacing: 4) {
             if model.step != .restore {
                 Button {
-                    if model.step == .checks { dismiss(); Task { await app.refresh() } }
+                    if model.step == .checks, model.status?.publicEnrollment == true, model.status?.alwaysOn != true {
+                        Task { await model.startPublicProtection(app) }
+                    } else if model.step == .checks { dismiss(); Task { await app.refresh() } }
                     else { Task { await model.primaryAction(app) } }
                 } label: {
                     ShieldActionLabel(title: label, isWorking: model.working || model.probeWaiting && (model.step == .ring || model.step == .test))
@@ -50,7 +52,7 @@ struct ForwardingActions: View {
             if model.probeWaiting { return "Waiting for your call…" }
             if model.probe != nil { return "Try the call again" }
             return model.step == .ring ? "Call me now" : "Check my calls"
-        case .checks: return "Done"
+        case .checks: return model.status?.publicEnrollment == true && model.status?.alwaysOn != true ? "Start protection" : "Done"
         default: return "Continue"
         }
     }

@@ -23,7 +23,15 @@ struct TrustedContactOnboardingView: View {
                     if let added {
                         Text("\(added.name) gets alerts only after accepting, and chooses how to get them.")
                         if added.requestDelivery != "submitted" {
-                            ShieldNotice(title: "Your contact is saved", detail: "We couldn’t confirm the request text was sent. They can open Shield and sign in with their number to review it.", symbol: "info.circle")
+                            ShieldNotice(title: "Your contact is saved", detail: model.service?.trustedContactTextsAvailable == false
+                                ? "Share the invitation with them. They sign in with the mobile number you entered."
+                                : "We couldn’t confirm the request text was sent. They can open Shield and sign in with their number to review it.", symbol: "info.circle")
+                        }
+                        if let url = model.service?.trustedContactsInvitationURL {
+                            ShareLink(item: url, message: Text("Please review my caretaker request in Shield. Sign in with the mobile number I used for your invitation.")) {
+                                Label("Share invitation", systemImage: "square.and.arrow.up").shieldWrappingLabel()
+                                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                            }.shieldSecondaryButton()
                         }
                         Text("You can change this in Settings → Caretakers.")
                             .foregroundStyle(ShieldTheme.secondaryText)
@@ -32,7 +40,8 @@ struct TrustedContactOnboardingView: View {
                     } else {
                         Text("Shield can alert a caretaker if checks while you talk detect a possible scam request and intervene. Those checks must be on.")
                         VStack(spacing: ShieldTheme.Spacing.regular) {
-                            NavigationLink { AddTrustedContactView(participantID: participantID) { added = $0 } } label: {
+                            NavigationLink { AddTrustedContactView(participantID: participantID,
+                                textAvailable: model.service?.trustedContactTextsAvailable != false) { added = $0 } } label: {
                                 ChoiceCard(title: "Add a caretaker", detail: "Your calls and messages stay private.", symbol: "person.badge.plus")
                             }.buttonStyle(.plain).accessibilityIdentifier("trusted-contact-yes").disabled(working || choiceUnconfirmed)
                             Button { Task { await finish(enabled: false) } } label: {

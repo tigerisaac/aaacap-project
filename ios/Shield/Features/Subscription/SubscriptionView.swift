@@ -23,6 +23,13 @@ struct SubscriptionView: View {
                         }
                         if access.billingIssue { Text("Apple needs you to check your payment details. Open Manage subscription for help.") }
                     }
+                    if access.isActive, app.isOwner {
+                        ShieldGroup {
+                            NavigationLink { ForwardingSetupView() } label: {
+                                ActionRow(title: "Continue phone setup", symbol: "phone.badge.plus")
+                            }
+                        }
+                    }
                     if access.purchaseAllowed {
                         ForEach(app.subscription.plans) { plan in
                             ShieldSection(plan.title) {

@@ -356,6 +356,13 @@
 			"path" = "Shield/Features/People/PeopleView.swift";
 			"sourceTree" = "<group>";
 		};
+		"8D5B94EAC3149B046376B024" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "PublicEnrollmentView.swift";
+			"path" = "Shield/Features/People/PublicEnrollmentView.swift";
+			"sourceTree" = "<group>";
+		};
 		"B7E2860891D96B4590CF4096" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -902,6 +909,13 @@
 			"path" = "Shield/Models/ContactAlertsResponse.swift";
 			"sourceTree" = "<group>";
 		};
+		"F22CAFFF61EB65ACE855906A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ContactInterventionAlert.swift";
+			"path" = "Shield/Models/ContactInterventionAlert.swift";
+			"sourceTree" = "<group>";
+		};
 		"B7DA7E37E4390FCC9EA6E703" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -956,6 +970,13 @@
 			"lastKnownFileType" = "sourcecode.swift";
 			"name" = "PrivacyCopy.swift";
 			"path" = "Shield/Models/PrivacyCopy.swift";
+			"sourceTree" = "<group>";
+		};
+		"A038F681F0138E9A06E4F4D9" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "PublicEnrollmentStatus.swift";
+			"path" = "Shield/Models/PublicEnrollmentStatus.swift";
 			"sourceTree" = "<group>";
 		};
 		"8FD98A6E0C55C3741EC25D4C" = {
@@ -1971,6 +1992,7 @@
 			"children" = (
 				"F957AC3F90384A858CB751D5",
 				"284A57C690E4E284F708056F",
+				"8D5B94EAC3149B046376B024",
 				"B7E2860891D96B4590CF4096",
 			);
 			"sourceTree" = "<group>";
@@ -2108,6 +2130,7 @@
 				"BC7159B94391067416F8614E",
 				"C678220BC2EB32E89B1942CC",
 				"D3F72E0AFF1757D88A61A696",
+				"F22CAFFF61EB65ACE855906A",
 				"B7DA7E37E4390FCC9EA6E703",
 				"E7899CAF510BE85B62504B90",
 				"D2AC1D2AF54AC01BBF51CF8F",
@@ -2116,6 +2139,7 @@
 				"ABF4CF47218104243D0E7D19",
 				"A8A2F9232101546A14736E55",
 				"6DF71AB6690E34CDAC55F3DC",
+				"A038F681F0138E9A06E4F4D9",
 				"8FD98A6E0C55C3741EC25D4C",
 				"00FFE53181DB46A8440A5A07",
 				"C61BF43D499566FD5601527A",
@@ -2648,6 +2672,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "284A57C690E4E284F708056F";
 		};
+		"BDADABAA11191CD9B34BEA6C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "8D5B94EAC3149B046376B024";
+		};
 		"6A7DEF4B0062F095E96033B3" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "B7E2860891D96B4590CF4096";
@@ -2960,6 +2988,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "D3F72E0AFF1757D88A61A696";
 		};
+		"5309E5FCA22D4685A3C6F3E8" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F22CAFFF61EB65ACE855906A";
+		};
 		"5869D0FDCB763276F4ED4974" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "B7DA7E37E4390FCC9EA6E703";
@@ -2991,6 +3023,10 @@
 		"78D4FBAC815CE14BD0167D77" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "6DF71AB6690E34CDAC55F3DC";
+		};
+		"88D88F5CA4C5F8AA772F81BB" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A038F681F0138E9A06E4F4D9";
 		};
 		"6C54EB9D699AE3DF71D4BE8B" = {
 			"isa" = "PBXBuildFile";
@@ -3238,6 +3274,7 @@
 				"E34A536483F709383490678A",
 				"66C805635822E7EB5EF60EA8",
 				"C2B7E8437348A0A0BFDAAAC2",
+				"BDADABAA11191CD9B34BEA6C",
 				"6A7DEF4B0062F095E96033B3",
 				"CAE00817242637E25B73DA63",
 				"AF06522608BB16F0711F221E",
@@ -3316,6 +3353,7 @@
 				"33D6FDDE30353ED7159396D5",
 				"FF65B51989E798A432A894B4",
 				"327F522F7F9C38EA346B2420",
+				"5309E5FCA22D4685A3C6F3E8",
 				"5869D0FDCB763276F4ED4974",
 				"8828DBDF61D1EA2FDAECEA2E",
 				"6A77F03A035546F3BF2208E6",
@@ -3324,6 +3362,7 @@
 				"0B56B04569FFDE10C2B783D9",
 				"7CBE8278DDB3A472E459ABEC",
 				"78D4FBAC815CE14BD0167D77",
+				"88D88F5CA4C5F8AA772F81BB",
 				"6C54EB9D699AE3DF71D4BE8B",
 				"5812CEFF8E218EC8D73E9EEC",
 				"8B2EBA542FA1AB8C4993D6CD",

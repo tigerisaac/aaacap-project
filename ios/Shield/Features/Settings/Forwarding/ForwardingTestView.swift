@@ -4,6 +4,10 @@ struct ForwardingTestView: View {
     let status: ForwardingStatus
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            if status.publicEnrollment == true {
+                Text(status.alwaysOn == true ? "Protection is on." : "When these checks are complete, choose Start protection. Until then, screening is limited to your setup window.")
+                    .font(.headline)
+            }
             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
                 Label(status.ringTestAt == nil ? "Sound check still needed" : "You heard Shield", systemImage: status.ringTestAt == nil ? "circle" : "checkmark.circle.fill")
                 Label(status.forwardingTestAt == nil ? "Call check still needed" : "A call reached Shield", systemImage: status.forwardingTestAt == nil ? "circle" : "checkmark.circle.fill")

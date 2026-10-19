@@ -10,6 +10,7 @@ import { RevenueCatProvider, type SubscriptionProvider, type SubscriptionSnapsho
 import commercial from './commercial-policy.json' with { type: 'json' };
 import { carrierFor } from './carriers.js';
 import { forwardingConsent } from './forwarding-store.js';
+import { hasRestorationGuide } from './restoration-guide.js';
 
 type AccessAccount = {
   uid: string; audience: 'public' | 'pilot'; customerId?: string; allowSandbox?: boolean;
@@ -127,7 +128,7 @@ export class ServiceAccess {
         || person!.data()?.status !== 'setup' || person!.data()?.carrier !== input.carrier
         || !carrierFor(input.carrier)?.verified || !carrierFor(input.carrier)?.countries.includes(input.country)
         || country !== input.country || !commercial.countries.includes(input.country)
-        || !control!.data()?.provisioned || !control!.data()?.dataPlanConfirmed || !control!.data()?.restorationGuide?.length
+        || !control!.data()?.provisioned || !control!.data()?.dataPlanConfirmed || !hasRestorationGuide(control!.data())
         || !input.operator.trim()) throw new HttpError(409, 'verified_setup_required');
       if (existing!.exists) {
         if (existing!.data()!.audience === input.audience && existing!.data()!.participantId === input.participantId) return { audience: input.audience, existing: true, dryRun };

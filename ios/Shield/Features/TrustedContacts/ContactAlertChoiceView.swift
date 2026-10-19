@@ -6,21 +6,25 @@ struct ContactAlertChoiceView: View {
     let request: ContactAlertRequest
     let textAvailable: Bool
     let appAvailable: Bool
+    let inboxAvailable: Bool
     let onChangeStarted: () -> Void
     let onUnconfirmed: (Error) -> Void
-    let onSaved: (Bool, Bool, Bool) async -> Void
+    let onSaved: (Bool, Bool, Bool, Bool) async -> Void
     @State private var textAlerts: Bool
     @State private var appAlerts: Bool
+    @State private var inAppAlerts: Bool
     @State private var working = false
     @State private var error: String?
     @State private var notificationsDenied = false
-    init(request: ContactAlertRequest, textAvailable: Bool, appAvailable: Bool,
+    init(request: ContactAlertRequest, textAvailable: Bool, appAvailable: Bool, inboxAvailable: Bool = false,
          onChangeStarted: @escaping () -> Void, onUnconfirmed: @escaping (Error) -> Void,
-         onSaved: @escaping (Bool, Bool, Bool) async -> Void) {
+         onSaved: @escaping (Bool, Bool, Bool, Bool) async -> Void) {
         self.request = request; self.textAvailable = textAvailable; self.appAvailable = appAvailable; self.onSaved = onSaved
         self.onChangeStarted = onChangeStarted; self.onUnconfirmed = onUnconfirmed
+        self.inboxAvailable = inboxAvailable
         _textAlerts = State(initialValue: request.textAlerts && textAvailable)
         _appAlerts = State(initialValue: request.appAlerts && appAvailable)
+        _inAppAlerts = State(initialValue: request.inAppAlerts == true && inboxAvailable)
     }
     var body: some View {
         ShieldSection(request.name) {
@@ -30,6 +34,16 @@ struct ContactAlertChoiceView: View {
             }.padding(.vertical, 6)
             Toggle("Text messages", isOn: $textAlerts).disabled(working || !textAvailable).accessibilityIdentifier("contact-text-alerts")
             Toggle("App notifications", isOn: $appAlerts).disabled(working || !appAvailable).accessibilityIdentifier("contact-app-alerts")
+            if inboxAvailable {
+                Toggle("Save alerts in Shield", isOn: $inAppAlerts).disabled(working)
+                    .accessibilityIdentifier("contact-inbox-alerts")
+                Text("Open Alerts for others to see saved alerts. This choice alone does not send a notification or a text.")
+                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            }
+            if !textAvailable && !appAvailable {
+                Text("Texts and notifications aren’t available right now.")
+                    .foregroundStyle(ShieldTheme.secondaryText)
+            }
             ShieldDisclosure("About alerts") {
                 Text("Shield alerts you only when checks while they talk detect a possible scam request and intervene. Alerts include their name. Calls, messages, and recordings stay private. Message frequency varies; message and data rates may apply.")
                     .foregroundStyle(ShieldTheme.secondaryText)
@@ -48,7 +62,7 @@ struct ContactAlertChoiceView: View {
                 Button { Task { await save(accept: true) } } label: {
                     ShieldActionLabel(title: request.status == "accepted" ? "Save alert choices" : "Accept request", isWorking: working)
                 }
-                .shieldPrimaryButton().disabled(working || (!textAlerts && !appAlerts)).accessibilityIdentifier("contact-accept")
+                .shieldPrimaryButton().disabled(working || (!textAlerts && !appAlerts && !inAppAlerts)).accessibilityIdentifier("contact-accept")
                 Button(role: .destructive) { Task { await save(accept: false) } } label: {
                     Text(request.status == "accepted" ? "Stop these alerts" : "Decline request").font(.headline)
                         .foregroundStyle(ShieldTheme.held)
@@ -72,7 +86,7 @@ struct ContactAlertChoiceView: View {
                 let allowed = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
                 guard allowed else {
                     notificationsDenied = true
-                    error = "Allow Shield notifications in Settings, or turn off App notifications and choose texts. Your alert choices haven’t been saved."
+                    error = "Allow Shield notifications in Settings, or turn off App notifications and choose another available option. Your alert choices haven’t been saved."
                     return
                 }
             }
@@ -80,14 +94,16 @@ struct ContactAlertChoiceView: View {
                 guard generation == model.sessionGeneration, model.signedIn else { return }
                 onChangeStarted()
                 submitted = true
+                var choices: [String: Any] = ["accept": accept, "textAlerts": accept && textAlerts, "appAlerts": accept && appAlerts]
+                if inboxAvailable { choices["inAppAlerts"] = accept && inAppAlerts }
                 let _: APIResponses.Empty = try await model.api.send("/api/contact-alerts/\(request.id.uuidString.lowercased())", method: "POST",
-                    body: APIClient.payload(["accept": accept, "textAlerts": accept && textAlerts, "appAlerts": accept && appAlerts]))
+                    body: APIClient.payload(choices))
                 // A recipient without their own protected phone may register only
                 // after the server has accepted their caretaker relationship.
                 if accept && appAlerts { UIApplication.shared.registerForRemoteNotifications() }
             }
             guard generation == model.sessionGeneration else { return }
-            await onSaved(accept, accept && textAlerts, accept && appAlerts)
+            await onSaved(accept, accept && textAlerts, accept && appAlerts, accept && inAppAlerts)
         } catch is CancellationError { return }
         catch {
             guard generation == model.sessionGeneration else { return }

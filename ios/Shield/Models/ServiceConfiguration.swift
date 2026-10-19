@@ -9,4 +9,7 @@ struct ServiceConfiguration: Codable, Sendable {
     let notificationsAvailable: Bool
     let privacyPath: String
     let termsPath: String
+    var publicEnrollmentSupported: Bool? = nil
+    var trustedContactTextsAvailable: Bool? = nil
+    var trustedContactsInvitationURL: URL? = nil
 }

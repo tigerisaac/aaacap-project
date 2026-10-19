@@ -1,0 +1,93 @@
+{
+  "baseCommit": "a13e0d88bac7a959ecfa36251c6990e5494eaafb",
+  "status": "implemented_not_deployed_not_functionally_verified",
+  "ownerConstraints": {
+    "testsStopped": true,
+    "appleDeferred": true
+  },
+  "automatedTestsExecuted": false,
+  "callsOrMessagesSent": false,
+  "liveChanges": false,
+  "nativeCompilation": {
+    "result": "passed",
+    "configuration": "unsigned Debug arm64 simulator build only",
+    "finishedAt": "2026-10-19T01:41:48.888005+00:00",
+    "changedInputs": [],
+    "inputCount": 249,
+    "boundary": "Compiled the working tree, including previously pending contact-confirmation edits. Those unrelated edits are preserved outside this change. No simulator launch or test execution.",
+    "priorAttempt": "Generic architecture build interrupted to avoid unnecessary Intel dependency compilation on limited disk."
+  },
+  "staticChecks": [
+    {
+      "name": "backend-typecheck",
+      "exitCode": 0
+    },
+    {
+      "name": "browser-syntax",
+      "exitCode": 0
+    },
+    {
+      "name": "patch-whitespace",
+      "exitCode": 0
+    }
+  ],
+  "ci": "Skipped for this publication at owner request. No current-candidate CI pass is claimed.",
+  "sourceSHA256": {
+    "backend/src/cloud/account-deletion.ts": "b9a54e2261f0973f32f63b8f7c31faa8d68675db080eb875ffec80e464a09829",
+    "backend/src/cloud/alerts.ts": "ecf8d5aa6c5d7eabfc04f79b14a708038aff2d167843712e12b92f2d0a2de929",
+    "backend/src/cloud/api.ts": "5b55c4b0afc20b1b0ab87b2bf45ab4359768175e81e834f73f38405d66c718b0",
+    "backend/src/cloud/app.ts": "49888a0d7e41ff71e3d6816deed9ef3d8c35fbf7d4d1b55cd6084917c8caf3b5",
+    "backend/src/cloud/caretaker-inbox.ts": "8a8e1185fd6c8eeec00bc4e10e636fcf69d96beb49346c49265ad3d7213b7c57",
+    "backend/src/cloud/config.ts": "4df59f36c6881a4ea244a96a4b5ae926bc619e22f39c167ff750a9dbeedd976c",
+    "backend/src/cloud/forwarding-api.ts": "544e9c52ae96ed5a24e861740a0cbf7123ef234220c06a5460ca05b720510575",
+    "backend/src/cloud/forwarding-probes.ts": "3960a6f11a88d7e0e6ca7f1f5e5e23fe00d7e0f7a99b956c9906319f19dc9e81",
+    "backend/src/cloud/index.ts": "bdf5a4a1bac5df4db30b7ee24bc486f19b5528f21d8f356fc434857d8dad55f0",
+    "backend/src/cloud/public-enrollment.ts": "2481d1c30ae72048969da03e485884c0547c20b22a28b2c07eff0a059cae6bee",
+    "backend/src/cloud/restoration-guide.ts": "f781d1c9c53f3917cdbc85e17853da1d2b7598647141fc05d255083ad8d2901b",
+    "backend/src/cloud/restoration.ts": "8c7b0ad6a1c1f5d432800e2c327e3be2892e1d6d41da5e7ba07af5bed171fc51",
+    "backend/src/cloud/service-access.ts": "139acd8ac39deb48144e209d5cd235af240ce61b72b556c15734b64944b4414a",
+    "backend/src/cloud/store.ts": "ae441c04dad5f138770c39b534b9e67a82e62266cf8a52f0cf0f2a3aeec8c99b",
+    "backend/src/cloud/trusted-contacts.ts": "c0d1120d8dc1ed5d09102ef2638d5beb12dffda54ba902b531bcf1b78472eb2e",
+    "deploy/firebase/firestore.indexes.json": "4217f102399e8aafb6bea3a4f0311543040ad8820162fd422c32d2c1498c57e6",
+    "deploy/firebase/public/trusted-contacts.html": "e36052da4773a39d763e8be2d47fc1f1ce7d7fdfd1325a45e21f7f915499bb58",
+    "deploy/firebase/public/trusted-contacts.js": "12e9196a612ea3d115397322adc15a1f616a36786bd80c2057751dd705aa01a3",
+    "docs/APP-STORE-RELEASE.md": "f252b9cbb965e0c3736c1596d00734658fe80b09722255322eeb1649d6d77d24",
+    "docs/ARCHITECTURE.md": "34782619a6fb3fe1efe6e2d6f22055a9d7cc00e242713b9de91a1e3a0acb06cf",
+    "docs/DATA-INVENTORY.md": "0e18572329603a637d5049dac59c00819c2678b4d5e8dc0e295ee2002c093459",
+    "docs/STATUS.md": "12f2f80d7fa97fd79d0f5b47df218a4a19218bfe8c7118e233c8177202f17f06",
+    "ios/Shield/Features/People/JoinView.swift": "7275b95cf8d5d1f42fae0d38ec3b2ff61e5d3660a1a1b893138195fd2d46e12d",
+    "ios/Shield/Features/People/PublicEnrollmentView.swift": "3616cc29cc91bada33f79f1208219f480210b835f192623d3c7f939217e952c3",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingActions.swift": "0b81a5c14acfde7de03a2f0838771be1849ba0feecd3db3b5b249d9e155dd9da",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingSetupModel.swift": "d52ceaa662319a63d1b125f2ad0b5b78c0b265855b1c6024c070739c75373462",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingSetupView.swift": "54ffb09e3465e926f07bcf3cc3ee215a81a1f7059d267ad4d401600f0640c6a5",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingStatus.swift": "a74dbe51b4ac7c9a8d86f7e6e1e996cded184ff8a1d72eacbecf8fc67d1b472e",
+    "ios/Shield/Features/Settings/Forwarding/ForwardingTestView.swift": "07dde419a2d6fbcbf1636f5a63b88c7429dec8284962a0a6792f9277780546b1",
+    "ios/Shield/Features/Settings/SettingsView.swift": "6ed744936dec258ddcbeaa4f25e912a1853cfb4392bf67a3483bf9ebd102e548",
+    "ios/Shield/Features/Subscription/SubscriptionView.swift": "395d9b9de4b0fb71884baf6ccdd8eb509de834bfb4b0b88380947f53fcc18ec5",
+    "ios/Shield/Features/TrustedContacts/AddTrustedContactView.swift": "b7487444a30d094ead3440b1e09c9f8932705d3b72292cf428ef40a87d31de8b",
+    "ios/Shield/Features/TrustedContacts/ContactAlertChoiceView.swift": "6587641745292ed6f75c67457d8ad03de3026031c5f7b3cf325ff0bdf86f5ab3",
+    "ios/Shield/Features/TrustedContacts/ContactAlertsView.swift": "10ca30377c390cbf4cb327d62e09ed37a663801eb1aa435f0acd871a0c5575ef",
+    "ios/Shield/Features/TrustedContacts/TrustedContactOnboardingView.swift": "825bd076ea292a000a0f337104faa16386a51acc0121f4a3118d799d16f29933",
+    "ios/Shield/Features/TrustedContacts/TrustedContactsView.swift": "6aaa1ff4808a5c1f9a3664d096363d599d2107b8996d271982f10acbcb29cd7b",
+    "ios/Shield/Models/ContactAlertRequest.swift": "224cacd41e0df2702584d4357b7960251c3372b7b4849fc71faf4f90008ebfed",
+    "ios/Shield/Models/ContactAlertsResponse.swift": "da1ca2d747cd3faaea3a9504c535e179df58e6dba03d93e549422bbb7a13d6b1",
+    "ios/Shield/Models/ContactInterventionAlert.swift": "15e81703a72eb419b2359ece851986cb5151be3e12abcf92ec4eedfa99e9171d",
+    "ios/Shield/Models/PublicEnrollmentStatus.swift": "e7771e36a645b684d8ad375feba5c52176a92e3f5130b1b6395d5b0ca52dcde2",
+    "ios/Shield/Models/ServiceConfiguration.swift": "2c6642d15e729717a1da1bc6a153f9e9c45967f3e89c045ae85da0279b739248",
+    "ios/Shield/Models/TrustedContact.swift": "5764effd65c5fccae6bb6196287d5d60c7362e956b86b5bc29bc718044dc3ee9",
+    "ios/Shield/Models/TrustedContactsResponse.swift": "18a4b4aee9eb71c6ab147e4e0ec3c5bae6dc2b0df4e4a8e78e256cbf1120c983",
+    "ios/Shield/Navigation/AppRoute.swift": "e3ff02997c85e5decbc33a16ef8d10526a6174465f25d1645837e1b1f1544f6b",
+    "ios/Shield/Navigation/NavigationShell.swift": "976584b0e6631bf24123f83f19345401884462ee28a48811afabdf74d92cb98c",
+    "ios/Shield/Networking/APIError.swift": "efda92ecc12afad0af49cc55c09abc18486cf25655cd7777900e92a2e4a843fa",
+    "ios/Shield/App/AppState.swift": "4de0e32fd14fd4ff51fdd67bd70fe640c8ec131716dea43da916911af90a1380",
+    "ios/Shield.xcodeproj/project.pbxproj": "5f5cda0c5ed951b71f6945b6a55496c48f606947b42c85ac98138ec55b61e21f"
+  },
+  "remainingGates": [
+    "Functional and failure/concurrency tests are intentionally paused.",
+    "Actual SMS/APNs configuration and delivery; inbox-only recipients must open Shield or the web page.",
+    "Public enrollment remains disabled by default; Apple purchases are deferred.",
+    "Carrier eligibility and owner restoration instructions require real-phone acceptance; no Canadian carrier is verified.",
+    "Current signed-in production, routing, monitoring, privacy/consent and deletion/cleanup acceptance.",
+    "Freeze exact deployment packages and obtain scoped owner approval before changing the live pilot."
+  ]
+}

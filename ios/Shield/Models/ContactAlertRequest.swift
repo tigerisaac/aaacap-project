@@ -7,4 +7,5 @@ struct ContactAlertRequest: Decodable, Identifiable, Sendable {
     let textAlerts: Bool
     let appAlerts: Bool
     let ownerPaused: Bool
+    var inAppAlerts: Bool? = nil
 }

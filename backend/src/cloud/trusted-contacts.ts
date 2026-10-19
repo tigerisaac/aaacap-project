@@ -6,11 +6,14 @@ import { normalizePhone } from '../crypto.js';
 import type { CloudStore, Person } from './store.js';
 import { verifyTelnyx } from './forwarding-provider.js';
 import { TelnyxTextSender, type TextSender } from './text-alerts.js';
+import { caretakerInbox } from './caretaker-inbox.js';
 
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
 const current = (d: FirebaseFirestore.DocumentData, now: number) => d.status === 'accepted' || (d.status === 'pending' && d.expiresAt > now);
 const textAvailable = (store: CloudStore) => !!store.config.SMS_ALERTS;
-export const trustedContactsAvailable = (store: CloudStore) => !!store.config.TELNYX_VERIFY_PROFILE_ID && textAvailable(store);
+// Keep the legacy availability flag meaningful to apps without an inbox UI.
+export const trustedContactsAvailable = (store: CloudStore) => !!store.config.TELNYX_VERIFY_PROFILE_ID
+  && (textAvailable(store) || !!store.config.APNS);
 export const contactPhoneHash = (store: CloudStore, phone: string) => store.vault.hash(`alert-contact:${phone}`);
 
 /** Alerts-only relationships never create grants or memberships, and never authorize call or audio APIs. */
@@ -26,13 +29,16 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
   const ownerDTO = (id: string, d: FirebaseFirestore.DocumentData) => ({ id,
     name: store.vault.open(d.nameEnc, `alert-contact:${id}:name`), phone: store.vault.open(d.phoneEnc, `alert-contact:${id}:phone`),
     status: d.status === 'pending' && d.expiresAt <= store.now() ? 'expired' : d.status, textAlerts: !!d.sms, appAlerts: !!d.push,
-    requestDelivery: d.requestDelivery ?? 'not_sent' });
+    inAppAlerts: d.inbox === true, requestDelivery: d.requestDelivery ?? 'not_sent' });
 
   app.get('/api/trusted-contacts', async request => {
     const ctx = await owner(request);
     const docs = await store.db.collection('alertContacts').where('participantId', '==', ctx.participant.id).get();
     return { available: trustedContactsAvailable(store), choiceRecorded: ctx.participant.trustedContactsChoice?.enabled !== undefined,
       enabled: ctx.participant.trustedContactsChoice?.enabled === true,
+      textAvailable: textAvailable(store), appAvailable: !!store.config.APNS,
+      inboxAvailable: !!store.config.TELNYX_VERIFY_PROFILE_ID,
+      invitationURL: `${store.config.PUBLIC_BASE_URL}/trusted-contacts.html`,
       contacts: docs.docs.filter(d => d.data().status !== 'revoked').map(d => ownerDTO(d.id, d.data())) };
   });
   app.post('/api/trusted-contacts/choice', async request => {
@@ -47,15 +53,17 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
   });
   app.post('/api/trusted-contacts', async request => {
     const ctx = await owner(request);
-    if (!trustedContactsAvailable(store)) throw new HttpError(503, 'trusted_contacts_unavailable');
-    const input = z.object({ id: uuid, name: z.string().trim().min(1).max(60).regex(/^[^\p{Cc}]+$/u), phone: z.string().max(25), consent: z.literal(true) }).strict().parse(request.body);
+    if (!store.config.TELNYX_VERIFY_PROFILE_ID) throw new HttpError(503, 'trusted_contacts_unavailable');
+    const input = z.object({ id: uuid, name: z.string().trim().min(1).max(60).regex(/^[^\p{Cc}]+$/u), phone: z.string().max(25),
+      consent: z.literal(true), sendText: z.boolean().optional() }).strict().parse(request.body);
     const phone = normalizePhone(input.phone);
     if (!phone) throw new HttpError(400, 'invalid_phone');
     if (phone === store.phone(ctx.participant)) throw new HttpError(400, 'trusted_contact_self');
     const ref = store.db.collection('alertContacts').doc(input.id), hash = contactPhoneHash(store, phone);
     const existing = (await ref.get()).data();
     if (existing) {
-      if (existing.ownerUid !== ctx.uid || existing.participantId !== ctx.participant.id || existing.phoneHash !== hash) throw new HttpError(409, 'trusted_contact_conflict');
+      if (existing.ownerUid !== ctx.uid || existing.participantId !== ctx.participant.id || existing.phoneHash !== hash
+        || store.vault.open(existing.nameEnc, `alert-contact:${ref.id}:name`) !== input.name) throw new HttpError(409, 'trusted_contact_conflict');
       return { contact: ownerDTO(ref.id, existing) };
     }
     await store.quota([[`contact-requests:${ctx.uid}`, 10], [`contact-recipient:${hash}`, 3], ['contact-requests:global', pilotLimits.contactRequestsTotalPerDay]]);
@@ -63,19 +71,25 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
     const data = { participantId: ctx.participant.id, ownerUid: ctx.uid, nameEnc: store.vault.seal(input.name, `alert-contact:${ref.id}:name`),
       phoneEnc: store.vault.seal(phone, `alert-contact:${ref.id}:phone`), phoneHash: hash, status: 'pending', sms: false, push: false,
       recipientUid: null, requestedAt: store.now(), expiresAt: store.now() + 30 * 86400_000, requestDelivery: 'not_sent' };
-    await store.db.runTransaction(async tx => {
+    const created = await store.db.runTransaction(async tx => {
       const [person, duplicate, contacts] = await Promise.all([tx.get(store.personRef(ctx.participant.id)), tx.get(ref),
         tx.get(store.db.collection('alertContacts').where('participantId', '==', ctx.participant.id))]);
       if (!person.exists || person.data()?.status === 'offboarded' || person.data()?.ownerUid !== ctx.uid) throw new HttpError(403, 'owner_required');
-      if (duplicate.exists) throw new HttpError(409, 'trusted_contact_conflict');
+      if (duplicate.exists) {
+        const d = duplicate.data()!;
+        if (d.ownerUid !== ctx.uid || d.participantId !== ctx.participant.id || d.phoneHash !== hash
+          || store.vault.open(d.nameEnc, `alert-contact:${ref.id}:name`) !== input.name) throw new HttpError(409, 'trusted_contact_conflict');
+        return false;
+      }
       const active = contacts.docs.filter(d => current(d.data(), store.now()));
       if (active.some(d => d.data().phoneHash === hash)) throw new HttpError(409, 'trusted_contact_exists');
       if (active.length >= 5) throw new HttpError(409, 'trusted_contact_limit');
       tx.create(ref, data);
       tx.update(person.ref, { trustedContactsChoice: { enabled: true, updatedAt: store.now() } });
+      return true;
     });
     // Generic invitation: no owner name or call details are disclosed before the recipient verifies their number.
-    if (textAvailable(store) && !optOut?.stopped) {
+    if (created && input.sendText !== false && textAvailable(store) && !optOut?.stopped) {
       await ref.update({ requestDelivery: 'sending' });
       const result = await sender.send(phone, `Someone added you as a caretaker in Shield. Choose whether to receive alerts: ${store.config.PUBLIC_BASE_URL}/trusted-contacts.html Reply STOP to stop texts.`);
       await ref.update({ requestDelivery: result });
@@ -87,7 +101,7 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
     await store.db.runTransaction(async tx => {
       const d = (await tx.get(ref)).data();
       if (!d || d.participantId !== ctx.participant.id) throw new HttpError(404, 'trusted_contact_unavailable');
-      tx.update(ref, { status: 'revoked', sms: false, push: false, revokedAt: store.now(), expiresAt: store.now() + 30 * 86400_000 });
+      tx.update(ref, { status: 'revoked', sms: false, push: false, inbox: false, revokedAt: store.now(), expiresAt: store.now() + 30 * 86400_000 });
     });
     return { removed: true };
   });
@@ -102,16 +116,18 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
       const person = (await store.personRef(d.participantId).get()).data() as Person | undefined;
       if (!person || person.status === 'offboarded') continue;
       requests.push({ id: doc.id, name: store.name(person), status: d.status, textAlerts: !!d.sms, appAlerts: !!d.push,
-        ownerPaused: person.trustedContactsChoice?.enabled !== true });
+        inAppAlerts: d.inbox === true, ownerPaused: person.trustedContactsChoice?.enabled !== true });
     }
     const stopped = (await store.db.collection('smsOptOuts').doc(hash).get()).data()?.stopped === true;
-    return { requests, textAvailable: textAvailable(store), appAvailable: !!store.config.APNS, textsStopped: stopped };
+    return { requests, textAvailable: textAvailable(store), appAvailable: !!store.config.APNS, textsStopped: stopped,
+      inboxAvailable: !!store.config.TELNYX_VERIFY_PROFILE_ID, events: await caretakerInbox(store, user.subject, hash) };
   });
   app.post('/api/contact-alerts/:id', async request => {
     const user = await verified(request), hash = contactPhoneHash(store, user.verifiedPhone);
-    const input = z.object({ accept: z.boolean(), textAlerts: z.boolean(), appAlerts: z.boolean() }).strict().parse(request.body);
-    if (input.accept && !input.textAlerts && !input.appAlerts) throw new HttpError(400, 'alert_channel_required');
+    const input = z.object({ accept: z.boolean(), textAlerts: z.boolean(), appAlerts: z.boolean(), inAppAlerts: z.boolean().default(false) }).strict().parse(request.body);
+    if (input.accept && !input.textAlerts && !input.appAlerts && !input.inAppAlerts) throw new HttpError(400, 'alert_channel_required');
     if (input.accept && ((input.textAlerts && !textAvailable(store)) || (input.appAlerts && !store.config.APNS))) throw new HttpError(503, 'alert_channel_unavailable');
+    if (input.accept && input.inAppAlerts && !store.config.TELNYX_VERIFY_PROFILE_ID) throw new HttpError(503, 'alert_channel_unavailable');
     const ref = store.db.collection('alertContacts').doc(uuid.parse((request.params as { id: string }).id));
     await store.db.runTransaction(async tx => {
       const [contact, optOut] = await tx.getAll(ref, store.db.collection('smsOptOuts').doc(hash));
@@ -121,7 +137,10 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
       if (!person || person.status === 'offboarded' || person.ownerUid === user.subject) throw new HttpError(404, 'trusted_contact_unavailable');
       if (input.accept && input.textAlerts && optOut!.data()?.stopped) throw new HttpError(409, 'texts_stopped');
       tx.update(ref, { status: input.accept ? 'accepted' : 'declined', recipientUid: user.subject,
-        sms: input.accept && input.textAlerts, push: input.accept && input.appAlerts, respondedAt: store.now(),
+        sms: input.accept && input.textAlerts, push: input.accept && input.appAlerts,
+        inbox: input.accept && input.inAppAlerts,
+        inboxAcceptedAt: input.accept && input.inAppAlerts ? d.inbox === true ? d.inboxAcceptedAt ?? d.respondedAt : store.now() : null,
+        respondedAt: store.now(),
         // Accepted consent is bound to this verified account; it is not transferable to a recycled number's account.
         expiresAt: input.accept ? null : store.now() + 30 * 86400_000 });
     });

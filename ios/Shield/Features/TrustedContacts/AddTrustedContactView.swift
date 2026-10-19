@@ -4,6 +4,7 @@ struct AddTrustedContactView: View {
     @Environment(AppState.self) private var model
     @Environment(\.dismiss) private var dismiss
     let participantID: UUID
+    var textAvailable = true
     let onSaved: (TrustedContact) -> Void
     @State private var requestID = UUID()
     @State private var requestedDetails: String?
@@ -44,6 +45,10 @@ struct AddTrustedContactView: View {
                     }.disabled(working || requestUnconfirmed)
                     Text("Ask them first. They choose how to receive alerts.")
                         .foregroundStyle(ShieldTheme.secondaryText)
+                    if !textAvailable {
+                        Text("After creating the request, share its invitation from Caretakers. No request text will be sent.")
+                            .foregroundStyle(ShieldTheme.secondaryText)
+                    }
                     if let error {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                             ShieldNotice(title: "Request not confirmed", detail: error, symbol: "exclamationmark.circle")
@@ -59,7 +64,7 @@ struct AddTrustedContactView: View {
                         }.id("trusted-contact-create-error")
                     }
                     Button { Task { await save() } } label: {
-                        ShieldActionLabel(title: requestUnconfirmed ? "Try sending again" : "Send request", isWorking: working && !checkingStatus)
+                        ShieldActionLabel(title: requestUnconfirmed ? textAvailable ? "Try sending again" : "Try creating again" : textAvailable ? "Send request" : "Create request", isWorking: working && !checkingStatus)
                     }.shieldPrimaryButton().disabled(!canSend)
                         .accessibilityIdentifier("trusted-contact-send")
                     ShieldDisclosure("What is shared?") {
@@ -98,9 +103,12 @@ struct AddTrustedContactView: View {
             if model.isPreview {
                 contact = TrustedContact(id: requestID, name: savedName, phone: phone, status: "pending", textAlerts: false, appAlerts: false, requestDelivery: "submitted")
             } else {
-                let response: TrustedContactCreated = try await model.api.send("/api/trusted-contacts", method: "POST", body: APIClient.payload([
+                var payload: [String: Any] = [
                     "id": requestID.uuidString.lowercased(), "name": savedName, "phone": phone, "consent": true
-                ]), participantID: participantID)
+                ]
+                if model.service?.trustedContactsInvitationURL != nil { payload["sendText"] = textAvailable }
+                let response: TrustedContactCreated = try await model.api.send("/api/trusted-contacts", method: "POST",
+                    body: APIClient.payload(payload), participantID: participantID)
                 contact = response.contact
             }
             guard generation == model.sessionGeneration, model.selectedPersonID == participantID else { return }

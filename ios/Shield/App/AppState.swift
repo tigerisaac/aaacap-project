@@ -296,7 +296,7 @@ final class AppState {
         guard let status = try? await api.forwardingSnapshot(participantID: id).status,
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,
               signedIn, selectedPersonID == id else { return }
-        // Offer optional contacts only when their request-delivery service is configured.
+        // Older services require delivery setup; the new inbox supports a manually shared invitation.
         let contacts: TrustedContactsResponse? = try? await api.send("/api/trusted-contacts", participantID: id)
         guard generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration, signedIn, selectedPersonID == id else { return }
         if let monitoring = status.monitoring, monitoring.available, monitoring.choiceRecorded == false {
@@ -304,7 +304,7 @@ final class AppState {
         } else {
             protectionOnboarding = nil
         }
-        trustedContactsOnboarding = contacts?.available == true && contacts?.choiceRecorded == false
+        trustedContactsOnboarding = contacts?.supportsRequests == true && contacts?.choiceRecorded == false
             && status.ringTestAt != nil && status.forwardingTestAt != nil && status.stage == "checks" && !status.restorationRequested && status.setupReviewRequired != true
         protectionParticipantID = protectionOnboarding != nil || trustedContactsOnboarding ? id : nil
     }

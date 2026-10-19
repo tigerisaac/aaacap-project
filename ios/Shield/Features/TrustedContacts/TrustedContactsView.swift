@@ -28,7 +28,7 @@ struct TrustedContactsView: View {
                 }
                 #endif
                 if let response {
-                    if !response.available {
+                    if !response.supportsRequests {
                         ShieldGroup {
                             ContentUnavailableView {
                                 Label {
@@ -45,13 +45,13 @@ struct TrustedContactsView: View {
                             Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         }
                     }
-                    if response.available, response.contacts.isEmpty {
+                    if response.supportsRequests, response.contacts.isEmpty {
                         ShieldGroup { Text("Alert someone you trust when checks while you talk detect a possible scam request and intervene.") }
                     }
                     if !response.contacts.isEmpty {
                         ShieldGroup {
                             Toggle("Send protection alerts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
-                                .disabled(working || !response.available || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
+                                .disabled(working || !response.supportsRequests || (!response.enabled && !response.contacts.contains { ["pending", "accepted"].contains($0.status) }))
                         }
                     }
                     ForEach(response.contacts) { contact in
@@ -64,14 +64,20 @@ struct TrustedContactsView: View {
                                 }
                             }.padding(.vertical, 4)
                             if contact.status == "pending", contact.requestDelivery != "submitted" {
-                                Text("The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                Text(response.textAvailable == false ? "Share the invitation with them. They sign in with this mobile number to review it." : "The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            }
+                            if contact.status == "pending", let url = response.invitationURL {
+                                ShareLink(item: url, message: Text("Please review my caretaker request in Shield. Sign in with the mobile number I used for your invitation.")) {
+                                    Label("Share invitation", systemImage: "square.and.arrow.up").shieldWrappingLabel()
+                                        .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                }
                             }
                             Button("Remove contact", role: .destructive) { removing = contact; confirmRemoval = true }.frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
                         }
                     }
-                    if response.available, let id = model.selectedPersonID {
+                    if response.supportsRequests, let id = model.selectedPersonID {
                         ShieldGroup {
-                            NavigationLink { AddTrustedContactView(participantID: id) { contact in
+                            NavigationLink { AddTrustedContactView(participantID: id, textAvailable: response.textAvailable != false) { contact in
                                 if model.isPreview {
                                     self.response = .init(available: true, choiceRecorded: true, enabled: true, contacts: response.contacts + [contact])
                                 } else { Task { await load() } }
@@ -80,11 +86,11 @@ struct TrustedContactsView: View {
                             }
                         } footer: { Text("They must accept first. Calls and messages stay private.") }
                     }
-                    if response.available {
+                    if response.supportsRequests {
                         ShieldGroup {
                             ShieldDisclosure("When are alerts sent?") {
                                 Text("Only when checks while you talk detect a possible scam request and intervene. Those checks must be on.")
-                                Text("They choose texts, app alerts, or both. You can pause alerts or remove a caretaker here.")
+                                Text("They can save alerts to see when they open Shield, and choose texts or notifications when available. You can pause alerts or remove a caretaker here.")
                                     .foregroundStyle(ShieldTheme.secondaryText)
                             }
                             NavigationLink(value: AppRoute.callProtection) {

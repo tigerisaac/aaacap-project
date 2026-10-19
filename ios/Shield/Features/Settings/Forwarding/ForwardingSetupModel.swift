@@ -90,6 +90,28 @@ final class ForwardingSetupModel {
         errorRevision += 1
     }
 
+    func startPublicProtection(_ app: AppState) async {
+        guard !working, !app.isPreview, app.isOwner, let id = status?.participantId,
+              id == app.selectedPersonID, status?.publicEnrollment == true else { return }
+        let generation = app.sessionGeneration
+        working = true; error = nil
+        defer { working = false }
+        do {
+            let _: APIResponses.Empty = try await app.api.send("/api/enrollment/activate", method: "POST",
+                body: APIClient.payload(["participantId": id.uuidString.lowercased()]), participantID: id)
+            guard generation == app.sessionGeneration, app.selectedPersonID == id else { return }
+            await app.api.invalidateNavigationCache()
+            await load(app)
+        } catch {
+            guard generation == app.sessionGeneration, app.selectedPersonID == id else { return }
+            // An activation reply may have been lost. Read before inviting another deliberate attempt.
+            await load(app)
+            guard generation == app.sessionGeneration, app.selectedPersonID == id else { return }
+            if status?.alwaysOn != true { reportError("Protection wasn’t confirmed. " + error.localizedDescription) }
+            app.handleSessionFailure(error)
+        }
+    }
+
     func load(_ app: AppState) async {
         #if DEBUG
         if isUITest {

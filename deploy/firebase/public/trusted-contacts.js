@@ -36,7 +36,7 @@ async function requestCode() {
 }
 el('phone-form').addEventListener('submit', event => { event.preventDefault(); action(requestCode); });
 el('resend').addEventListener('click', () => action(requestCode));
-el('change').addEventListener('click', () => { challenge = undefined; el('code-form').hidden = true; el('phone-form').hidden = false; el('error').textContent = ''; el('heading').textContent = 'Review your request'; el('intro').textContent = 'Sign in with the mobile number that received it.'; el('phone').focus(); });
+el('change').addEventListener('click', () => { challenge = undefined; el('code-form').hidden = true; el('phone-form').hidden = false; el('error').textContent = ''; el('heading').textContent = 'Review your request'; el('intro').textContent = 'Sign in with the mobile number used for your invitation.'; el('phone').focus(); });
 el('code-form').addEventListener('submit', event => {
   event.preventDefault(); action(async () => {
     const session = await api('/auth/phone/verify', { challenge, code: el('code').value.trim() });
@@ -53,6 +53,18 @@ async function loadRequests() {
   el('intro').hidden = true; el('about').hidden = result.requests.length === 0;
   if (result.textsStopped) el('requests').append(text('p', errors.texts_stopped));
   if (!result.requests.length) el('requests').append(text('p', 'No requests for this mobile number.'));
+  if (result.inboxAvailable) {
+    const inbox = document.createElement('article');
+    inbox.append(text('h2', 'Recent protection alerts'));
+    inbox.append(text('p', 'Open this page or Alerts for others in Shield to see saved alerts. Saved alerts alone do not send a notification or a text. Up to 50 recent alerts from the past 30 days are shown.'));
+    if (!result.events?.length) inbox.append(text('p', 'No saved protection alerts.'));
+    for (const event of result.events ?? []) {
+      inbox.append(text('h3', event.name));
+      inbox.append(text('p', 'Shield detected a possible scam request during a call. Check in with them.'));
+      inbox.append(text('p', new Date(event.occurredAt).toLocaleString()));
+    }
+    el('requests').append(inbox);
+  }
   for (const request of result.requests) {
     const card = document.createElement('article');
     if (result.requests.length > 1) card.append(text('h2', request.name));
@@ -62,18 +74,29 @@ async function loadRequests() {
     checkbox.type = 'checkbox'; checkbox.checked = request.textAlerts && !result.textsStopped;
     checkbox.disabled = !result.textAvailable || result.textsStopped;
     label.append(checkbox, document.createTextNode('Text messages')); card.append(label);
+    const inboxLabel = document.createElement('label'), inboxChoice = document.createElement('input');
+    inboxChoice.type = 'checkbox'; inboxChoice.checked = request.inAppAlerts === true && result.inboxAvailable === true;
+    inboxChoice.disabled = !result.inboxAvailable;
+    if (result.inboxAvailable) {
+      inboxLabel.append(inboxChoice, document.createTextNode('Save alerts to view in Shield')); card.append(inboxLabel);
+      card.append(text('p', 'You need to open this page or Shield to see saved alerts.'));
+    }
     const terms = text('p', 'Rates may apply. Reply STOP to stop texts.'); terms.className = 'detail'; card.append(terms);
     if (request.appAlerts) card.append(text('p', 'App notifications are also on. Manage them in Shield for iPhone.'));
     const save = text('button', request.status === 'accepted' ? 'Save alert choices' : 'Accept request');
-    save.dataset.unavailable = String(!request.appAlerts && !checkbox.checked);
+    const noChannel = () => !(request.appAlerts && result.appAvailable) && !checkbox.checked && !inboxChoice.checked;
+    save.dataset.unavailable = String(noChannel());
     save.disabled = save.dataset.unavailable === 'true';
-    checkbox.addEventListener('change', () => { save.dataset.unavailable = String(!request.appAlerts && !checkbox.checked); save.disabled = busy || save.dataset.unavailable === 'true'; });
+    const changed = () => { save.dataset.unavailable = String(noChannel()); save.disabled = busy || save.dataset.unavailable === 'true'; };
+    checkbox.addEventListener('change', changed); inboxChoice.addEventListener('change', changed);
     save.addEventListener('click', () => action(async () => {
-      await api(`/api/contact-alerts/${request.id}`, { accept: true, textAlerts: checkbox.checked, appAlerts: request.appAlerts }); await loadRequests();
+      await api(`/api/contact-alerts/${request.id}`, { accept: true, textAlerts: checkbox.checked, appAlerts: request.appAlerts && result.appAvailable,
+        ...(result.inboxAvailable ? { inAppAlerts: inboxChoice.checked } : {}) }); await loadRequests();
     }));
     const decline = text('button', request.status === 'accepted' ? 'Stop these alerts' : 'Decline request'); decline.className = 'secondary';
     decline.addEventListener('click', () => action(async () => {
-      await api(`/api/contact-alerts/${request.id}`, { accept: false, textAlerts: false, appAlerts: false }); await loadRequests();
+      await api(`/api/contact-alerts/${request.id}`, { accept: false, textAlerts: false, appAlerts: false,
+        ...(result.inboxAvailable ? { inAppAlerts: false } : {}) }); await loadRequests();
     }));
     const buttons = document.createElement('div'); buttons.className = 'buttons'; buttons.append(save, decline); card.append(buttons); el('requests').append(card);
   }
@@ -81,7 +104,7 @@ async function loadRequests() {
 el('refresh').addEventListener('click', () => action(loadRequests));
 el('logout').addEventListener('click', () => action(async () => {
   try { await api('/auth/logout', {}); } finally {
-    accessToken = undefined; challenge = undefined; el('account').hidden = true; el('requests').replaceChildren(); el('phone-form').hidden = false; el('phone').value = ''; el('heading').textContent = 'Review your request'; el('intro').hidden = false; el('intro').textContent = 'Sign in with the mobile number that received it.'; el('about').hidden = true; el('phone').focus();
+    accessToken = undefined; challenge = undefined; el('account').hidden = true; el('requests').replaceChildren(); el('phone-form').hidden = false; el('phone').value = ''; el('heading').textContent = 'Review your request'; el('intro').hidden = false; el('intro').textContent = 'Sign in with the mobile number used for your invitation.'; el('about').hidden = true; el('phone').focus();
   }
 }));
 function tick() { const remaining = Math.max(0, Math.ceil((resendAt - Date.now()) / 1000)); el('resend').textContent = remaining ? `Resend code in ${remaining}s` : 'Resend code'; el('resend').disabled = busy || remaining > 0; }

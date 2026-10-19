@@ -57,7 +57,9 @@ export async function registerCloudAPI(app: FastifyInstance, store: CloudStore, 
 
   app.get('/public/config', async () => ({ mode: 'trial', signInMethod: store.config.TELNYX_VERIFY_PROFILE_ID ? 'phone' : 'email-link', consentVersion: CONSENT_VERSION,
     phoneSignInAvailable: !!store.config.TELNYX_VERIFY_PROFILE_ID, trustedContactsAvailable: trustedContactsAvailable(store),
-    supportEmail: commercial.supportEmail, messageFilteringAvailable: false, notificationsAvailable: !!store.config.APNS,
+    trustedContactTextsAvailable: !!store.config.SMS_ALERTS,
+    trustedContactsInvitationURL: `${store.config.PUBLIC_BASE_URL}/trusted-contacts.html`,
+    publicEnrollmentSupported: true, supportEmail: commercial.supportEmail, messageFilteringAvailable: false, notificationsAvailable: !!store.config.APNS,
     privacyPath: '/privacy', termsPath: '/service-info' }));
   app.post('/auth/request-code', async request => {
     const { email } = z.object({ email: z.string().email().max(254) }).parse(request.body);

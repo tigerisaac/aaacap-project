@@ -3,6 +3,7 @@ import { HttpError, type AuthProvider, type Identity } from '../auth.js';
 import type { CloudStore } from './store.js';
 import { contactPhoneHash } from './trusted-contacts.js';
 import { ServiceAccess } from './service-access.js';
+import { numberRef } from './numbers.js';
 
 /** Account-wide deletion; selecting a shared person must never delete that person's account. */
 export async function deleteAccount(store: CloudStore, auth: AuthProvider, identity: Identity, selected?: string, rememberedIds: string[] = [], serviceAccess = new ServiceAccess(store)) {
@@ -52,7 +53,7 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
         await remove(store.db.collection(collection).where('callId', '==', call.id));
       }
     }
-    for (const collection of ['callSessions', 'memberships', 'alertContacts', 'alertDeliveries', 'alerts',
+    for (const collection of ['callSessions', 'memberships', 'alertContacts', 'alertDeliveries', 'alerts', 'caretakerEvents',
       'forwardingAudio', 'forwardingAudioChunks', 'voicemailChecks', 'monitoredCalls', 'monitorChecks', 'forwardingProbes', 'setupChecks']) {
       await remove(store.db.collection(collection).where('participantId', '==', person.id));
     }
@@ -60,6 +61,15 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
     // Missing/offboarded participants prevent those jobs from recreating saved audio.
     await store.db.recursiveDelete(person);
   }
+  // Release only this account's already-erased routes; abandoned setup must not
+  // permanently exhaust the shared enrollment limit.
+  await store.db.runTransaction(async tx => {
+    const ref = numberRef(store, store.config.TELNYX_NUMBER), pool = await tx.get(ref);
+    const removed = new Set(people.map(person => person.id));
+    if (removed.size && pool.exists && Array.isArray(pool.data()?.members)) {
+      tx.update(ref, { members: pool.data()!.members.filter((id: string) => !removed.has(id)) });
+    }
+  });
   await removeGrants(store.db.collection('grants').where('granteeUid', '==', uid));
   await remove(store.db.collection('memberships').where('granteeUid', '==', uid));
   await remove(store.db.collection('alertContacts').where('ownerUid', '==', uid));
@@ -69,6 +79,7 @@ export async function deleteAccount(store: CloudStore, auth: AuthProvider, ident
     await remove(store.db.collection('alertContacts').where('phoneHash', '==', contactPhoneHash(store, identity.verifiedPhone)).where('recipientUid', '==', null));
   }
   await remove(store.db.collection('alertDeliveries').where('recipientUid', '==', uid));
+  await remove(store.db.collection('caretakerEvents').where('recipientUid', '==', uid));
   await remove(store.db.collection('devices').where('uid', '==', uid));
   // Account deletion is separate from cancelling an Apple subscription; the UI explains this.
   // Keep the durable deletion job retryable until RevenueCat has erased the customer profile.

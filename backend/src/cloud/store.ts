@@ -83,6 +83,7 @@ export class CloudStore {
     // A recording job must survive account/call expiry until the provider copy is erased.
     await drain(this.db.collection('forwardingRecordings'), undefined, data => data.status === 'done');
     await drain(this.db.collection('billingWebhookReceipts'));
+    await drain(this.db.collection('caretakerEvents'));
     await drain(this.db.collectionGroup('blocked-numbers'));
   }
 }

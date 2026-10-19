@@ -3,6 +3,7 @@ import { HttpError } from '../auth.js';
 import { CloudStore } from './store.js';
 import { routeRef } from './shared-routing.js';
 import { ForwardingStore, forwardingConsent } from './forwarding-store.js';
+import { hasRestorationGuide } from './restoration-guide.js';
 
 export type ProbeKind = 'ring' | 'forwarding';
 export type SetupProbe = { id: string; kind: ProbeKind; state: 'waiting' | 'passed' | 'failed'; expiresAt: number;
@@ -40,7 +41,7 @@ export class ForwardingProbes {
     });
   }
   private requireReady(c: FirebaseFirestore.DocumentData | undefined, p: FirebaseFirestore.DocumentData | undefined) {
-    if (!c?.provisioned || !c.dataPlanConfirmed || !c.restorationGuide?.length || p?.status !== 'setup' || p?.restoration
+    if (!c?.provisioned || !c.dataPlanConfirmed || !hasRestorationGuide(c) || p?.status !== 'setup' || p?.restoration
       || !p.phoneVerifiedAt || p.forwardingConsent !== forwardingConsent || !this.f.endpoints(p)) throw new HttpError(409, 'setup_not_ready');
   }
   async reserve(participantId: string, kind: ProbeKind) {

@@ -19,6 +19,22 @@ struct ContactAlertsView: View {
                 }
                 #endif
                 if let response {
+                    if response.inboxAvailable == true {
+                        ShieldSection("Recent protection alerts") {
+                            if let events = response.events, !events.isEmpty {
+                                ForEach(events) { event in
+                                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                                        Text(event.name).font(.headline)
+                                        Text("Shield detected a possible scam request during a call. Check in with them.")
+                                        Text(event.occurredAt.formatted(date: .abbreviated, time: .shortened))
+                                            .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                                    }.padding(.vertical, ShieldTheme.Spacing.compact)
+                                }
+                            } else { Text("No saved protection alerts.") }
+                        } footer: {
+                            Text("Up to 50 recent alerts from the past 30 days. Open this screen or pull to refresh; saved alerts alone do not notify you.")
+                        }
+                    }
                     if response.textsStopped { ShieldGroup { Text("You stopped Shield texts. Reply START to Shield’s text number to resume them. App notifications can stay on.") } }
                     if response.requests.isEmpty {
                         ShieldGroup {
@@ -36,12 +52,13 @@ struct ContactAlertsView: View {
                     }
                     ForEach(response.requests) { request in
                         ContactAlertChoiceView(request: request, textAvailable: response.textAvailable && !response.textsStopped,
-                            appAvailable: response.appAvailable, onChangeStarted: beginChange, onUnconfirmed: showUnconfirmedChange) { accept, texts, appAlerts in
+                            appAvailable: response.appAvailable, inboxAvailable: response.inboxAvailable == true,
+                            onChangeStarted: beginChange, onUnconfirmed: showUnconfirmedChange) { accept, texts, appAlerts, inbox in
                             if model.isPreview {
-                                self.response = .init(requests: accept ? [.init(id: request.id, name: request.name, status: "accepted", textAlerts: texts, appAlerts: appAlerts, ownerPaused: false)] : [], textAvailable: true, appAvailable: true, textsStopped: false)
+                                self.response = .init(requests: accept ? [.init(id: request.id, name: request.name, status: "accepted", textAlerts: texts, appAlerts: appAlerts, ownerPaused: false, inAppAlerts: inbox)] : [], textAvailable: true, appAvailable: true, textsStopped: false, inboxAvailable: response.inboxAvailable)
                             } else { await load() }
                         }
-                            .id("\(request.id)-\(request.status)-\(request.textAlerts)-\(request.appAlerts)")
+                            .id("\(request.id)-\(request.status)-\(request.textAlerts)-\(request.appAlerts)-\(request.inAppAlerts == true)")
                     }
                 } else if error == nil, loadingVisible { ShieldGroup { ShieldLoadingView(title: "Getting your requests…") } }
                 if let error {

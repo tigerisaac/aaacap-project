@@ -26,6 +26,8 @@ The separately approved [API diagnostic update](API-DIAGNOSTICS-ROLLOUT.md) was 
 
 ## Data held by Shield
 
+**October 18 source-only additions (not deployed; tests paused):** `caretakerEvents` stores participant/contact/recipient IDs, a fixed intervention kind and occurrence/expiry times. Names are read from the protected account. No caller, transcript, audio or notification body is stored. It is readable only under current accepted inbox consent and verified recipient identity, unavailable at 30 days, removed by daily cleanup, and included in owner/recipient account erasure. Public enrollment stores the owner's original unanswered/busy/unreachable restoration instructions encrypted in forwarding control, plus setup/activation timestamps, an idempotency request UUID and keyed input fingerprint in the access record. These last for the account's lifetime and are removed by account deletion. No independent public entitlement or client-controlled pilot grant is introduced. Exact retention/delivery/deletion behavior remains untested for this candidate.
+
 | Data and purpose | Processing/storage | Retention and deletion |
 |---|---|---|
 | Account identity and sign-in | Telnyx Verify receives the mobile number and code. Firebase Auth holds the verified phone or legacy email and account identity. The API uses phone verification to mint a Firebase session; the iOS entry is phone-only. | Firebase identity remains until account deletion. Shield does not persist sign-in codes. Provider-side verification records need separate retention confirmation. [Auth](../backend/src/firebase-auth.ts) |
