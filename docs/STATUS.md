@@ -1,5 +1,11 @@
 # Status
 
+## October 19 — setup decision accepted; privacy review opened
+
+The owner explicitly accepted the existing Shortcut/Settings method and asked to mark that release item complete. R3 is closed as an owner-accepted decision; it does not assert that Apple approved the undocumented Settings destinations. The native helper, manual Live Voicemail action and explicit confirmations are unchanged.
+
+The source privacy review confirms explicit text-check consent naming OpenAI, named forwarding providers, default-off optional monitoring, local screenshot text recognition and separation of caretaker alerts from history/audio access. Remaining work is caller-notice/processing timing, final policy/App Privacy/provider alignment, production/other-device deletion acceptance, and a message/sender preview before caretaker SMS activation. [Exact findings and limits](DATA-INVENTORY.md#october-19--app-privacy-review). No app/backend code, public legal text, store answers or live service changed; no new tests, messages or calls ran in this documentation-only review.
+
 ## October 19 — local app release checks resumed; new setup and inbox coverage
 
 The owner resumed release preparation, then narrowed the request to app work and explicitly excluded legal documents and Apple/store setup. No legal copy, store configuration, purchase, phone call, message, carrier setting or production deployment was changed. Existing uncommitted iPhone/contact work was preserved.
