@@ -23,7 +23,7 @@
     "test:call-directory": "node scripts/test-call-directory.mjs",
     "test:blocked-numbers": "node scripts/test-blocked-numbers.mjs",
     "firebase:package": "npm run build && node scripts/package-firebase.mjs && node scripts/check-ios-release-package.mjs",
-    "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts backend/tests/alerts.test.ts backend/tests/phone-contacts.test.ts backend/tests/voicemail.test.ts backend/tests/pilot.test.ts backend/tests/setup-check.test.ts backend/tests/shared-pilot.test.ts backend/tests/live-startup-emulator.test.ts backend/tests/backend-reliability.test.ts backend/tests/service-access.test.ts backend/tests/maintenance-health.test.ts'",
+    "test:firebase": "firebase emulators:exec --only firestore --project demo-shield 'npx vitest run backend/tests/cloud.test.ts backend/tests/forwarding.test.ts backend/tests/monitoring.test.ts backend/tests/alerts.test.ts backend/tests/phone-contacts.test.ts backend/tests/voicemail.test.ts backend/tests/pilot.test.ts backend/tests/setup-check.test.ts backend/tests/shared-pilot.test.ts backend/tests/live-startup-emulator.test.ts backend/tests/backend-reliability.test.ts backend/tests/service-access.test.ts backend/tests/public-enrollment.test.ts backend/tests/caretaker-inbox.test.ts backend/tests/maintenance-health.test.ts'",
     "check": "node scripts/check-contact-phone-parser.mjs && npm run typecheck && npm test && npm run build",
     "test:subscriptions": "node scripts/test-subscriptions.mjs",
     "test:contacts": "npm run build && node scripts/test-contact-sharing.mjs",

@@ -1,0 +1,34 @@
+{
+  "archive": "/tmp/shield-app-release-20261019.xcarchive",
+  "verified": true,
+  "distributionSigningVerified": false,
+  "version": "0.1.0",
+  "build": "1",
+  "minimumOS": "26.0",
+  "apiHost": "shield-calls-isaac.web.app",
+  "developmentNetworkingException": false,
+  "messageFilterEmbedded": false,
+  "bundles": [
+    {
+      "path": ".",
+      "identifier": "org.isaaczhang.Shield",
+      "architecture": "arm64"
+    },
+    {
+      "path": "PlugIns/ShieldCallDirectory.appex",
+      "identifier": "org.isaaczhang.Shield.CallDirectory",
+      "architecture": "arm64"
+    }
+  ],
+  "privacyManifests": [
+    "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+    "PrivacyInfo.xcprivacy",
+    "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+  ],
+  "appBinarySha256": "abda7018336901085905b9d7227e73d3e06c0bd5215e8a186feeca4a052ae073",
+  "contactPhoneParser": {
+    "version": "1.13.13",
+    "verified": true,
+    "licenseIncluded": true
+  }
+}

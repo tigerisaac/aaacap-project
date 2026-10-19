@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-19",
+  "baseCommit": "fe538dc71d11303ac022f98bcf16e2d01e93af28",
+  "scope": "Local app validation; existing uncommitted iPhone changes preserved. No runtime source changes in this task.",
+  "results": {
+    "unitTests": 394,
+    "firestoreTests": 313,
+    "newEnrollmentTests": 11,
+    "newCaretakerInboxTests": 9,
+    "nativeSubscriptionHarness": "passed",
+    "subscriptionUITests": 8,
+    "subscriptionUITestFailures": 0,
+    "simulator": "iPhone 17e / iOS 27",
+    "typecheck": "passed",
+    "build": "passed",
+    "unsignedReleaseArchiveInspection": "passed"
+  },
+  "limits": [
+    "Synthetic providers and preview purchases only",
+    "Unsigned archive includes pre-existing iPhone overlays",
+    "No real calls, messages, carrier changes or phone installation",
+    "No production deployment, Apple/store configuration or legal edits",
+    "Prior whole-app accessibility findings remain open"
+  ],
+  "logs": [
+    {
+      "path": "/tmp/shield-app-store-check-20261019.log",
+      "sha256": "d5ab7c4aa0699a6ed315b6b4511df45760393eced177a4f003062b53d2454951"
+    },
+    {
+      "path": "/tmp/shield-app-store-check-permitted-20261019.log",
+      "sha256": "4b5a4914274b5e211c0b09cb357a6c211d3896b902cbc667fef61ce77c3932f2"
+    },
+    {
+      "path": "/tmp/shield-app-store-check-final-20261019.log",
+      "sha256": "06ab753504c4e3d612d6cc496cc53941d8162d5b53d35d89e3971866118cdacc"
+    },
+    {
+      "path": "/tmp/shield-app-store-firebase-20261019.log",
+      "sha256": "b470781d357e89175158ed260bc76d20511dc30dc7037abecdaa9c6f371dfbd2"
+    },
+    {
+      "path": "/tmp/shield-app-flows-20261019.log",
+      "sha256": "b7901a050916207027d83623bf850788db5deeb38dfc17b21fa8ed8edb9ad2be"
+    },
+    {
+      "path": "/tmp/shield-subscriptions-20261019.log",
+      "sha256": "dd294227e6a911c6b3b8994e7c4286ea9ff12984961bbaca5159fbb5bba0a95c"
+    },
+    {
+      "path": "/tmp/shield-app-release-20261019.log",
+      "sha256": "67906a0bed68505a938ba696b475bd033e2f021e9de703399834eddd7403751f"
+    },
+    {
+      "path": "/tmp/shield-app-subscriptions-ui-20261019.log",
+      "sha256": "7044ba2ce3bf791ab2dcbdcef14cdb44b7fc99488937ab6ff9fce77793525ce7"
+    }
+  ],
+  "archiveReport": "archive.json",
+  "uiResultBundle": "/tmp/shield-app-subscriptions-20261019.xcresult",
+  "inspectedScreenshots": [
+    "/tmp/shield-app-subscriptions-20261019-attachments/D90E5AD2-3A87-4329-AA25-CD6730954AFB.png",
+    "/tmp/shield-app-subscriptions-20261019-attachments/C9E8878D-8B31-4BF3-A9C8-1D657B35D270.png",
+    "/tmp/shield-app-subscriptions-20261019-attachments/A39AF969-3FCE-4168-A6B0-79EA14FF7D9F.png"
+  ]
+}

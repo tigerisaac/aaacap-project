@@ -1,5 +1,15 @@
 # Status
 
+## October 19 — local app release checks resumed; new setup and inbox coverage
+
+The owner resumed release preparation, then narrowed the request to app work and explicitly excluded legal documents and Apple/store setup. No legal copy, store configuration, purchase, phone call, message, carrier setting or production deployment was changed. Existing uncommitted iPhone/contact work was preserved.
+
+Twenty new emulator checks cover the October 18 public-enrollment and caretaker-inbox source. Eleven enrollment checks verify authentication, supported carriers, encrypted inactive setup, lost-response retries, concurrent registration/capacity, server-owned access and activation prerequisites. Nine inbox checks verify explicit consent without SMS/APNs, intervention-only events, deduplication, relationship/account isolation, revocation/pause, expiry/cleanup, deletion fencing and database-failure retry. Both suites now run under `npm run test:firebase`, including CI.
+
+The final local `npm run check` passes typecheck/build and **394 unit tests**. The complete database suite passes **313 tests**. The native subscription harness also passes. The unsigned arm64 Release archive passes all existing package assertions, including the Call Directory extension, three privacy manifests, bundled parser/license, fixture exclusion and production networking settings. Its binary SHA-256 is `abda7018336901085905b9d7227e73d3e06c0bd5215e8a186feeca4a052ae073`; it includes the pre-existing uncommitted iPhone changes and is not a distribution-signed release. [Archive inspection](../.impeccable/review/app-release-2026-10-19/archive.json).
+
+All **eight subscription UI tests** pass on iPhone 17e/iOS 27, including largest-text pilot/pending states, annual billing, access recovery, billing grace and deletion reminders. Three exported preview captures were inspected. These are local source/package and synthetic UI checks; Apple transactions, physical contacts and blocking, real-call/carrier acceptance, public activation and the broader release gates remain separate. The earlier October 18 test-pause entry and its incomplete full-app results below remain historical evidence. [Current local evidence and limits](IOS-RELEASE-VERIFICATION.md#october-19--app-only-release-validation).
+
 ## October 18 — caretaker inbox and public enrollment implemented; tests remain stopped
 
 At the owner's request, the broad iOS run was interrupted after **230 passes, 24 failures and two skips** against its frozen pre-correction build. It is not a complete suite result. No new automated tests, simulator journeys, phone calls or messages have run for the following changes. Apple work remains deferred.
