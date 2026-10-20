@@ -44,6 +44,7 @@ enum APIError: LocalizedError {
             case "trusted_contact_required": "Add a caretaker before turning on alerts."
             case "trusted_contact_self": "Use your caretaker’s number, rather than your own."
             case "trusted_contact_exists": "This number is already in your caretakers."
+            case "invitation_preview_required": "The request text changed. Review the updated text before sending again."
             case "trusted_contact_limit": "You can have up to five caretakers. Remove one before adding another."
             case "trusted_contact_unavailable": "This request is no longer available. Refresh to see current requests."
             case "texts_stopped": "You stopped Shield texts. Reply START to Shield’s text number to resume, or choose app alerts."

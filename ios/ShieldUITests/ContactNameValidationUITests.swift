@@ -4,6 +4,49 @@ import XCTest
 final class ContactNameValidationUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
 
+    func testCaretakerInvitationPreviewNamesSenderBeforeSending() {
+        checkInvitationPreview(large: false)
+    }
+
+    func testCaretakerInvitationPreviewWrapsAtLargestText() {
+        checkInvitationPreview(large: true)
+    }
+
+    func testCaretakerCannotSendWithoutAnInvitationPreview() {
+        let app = launch(["--uitesting-trusted-contacts", "--uitesting-invitation-preview-fails"])
+        app.buttons["trusted-contact-yes"].tap()
+        let name = app.textFields["trusted-contact-name"], phone = app.textFields["trusted-contact-phone"]
+        XCTAssertTrue(name.appears(timeout: 5)); name.tap(); name.typeText("Alex"); done(app)
+        phone.tap(); phone.typeText("2025550182"); done(app)
+        let retry = app.buttons["Try preview again"]
+        for _ in 0..<8 where !retry.isHittable { app.swipeUp() }
+        XCTAssertTrue(retry.exists)
+        let send = app.buttons["trusted-contact-send"]
+        for _ in 0..<4 where !send.isHittable { app.swipeUp() }
+        XCTAssertFalse(send.isEnabled)
+        capture(app, "Caretaker preview unavailable blocks sending")
+    }
+
+    private func checkInvitationPreview(large: Bool) {
+        let app = launch(["--uitesting-trusted-contacts"] + (large
+            ? ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+        app.buttons["trusted-contact-yes"].tap()
+        let preview = app.staticTexts["caretaker-invitation-preview"]
+        for _ in 0..<12 where !preview.isHittable { app.swipeUp() }
+        XCTAssertTrue(preview.exists)
+        XCTAssertTrue(preview.label.contains("Someone added you as a caretaker in Shield."))
+        XCTAssertTrue(preview.label.contains("Reply STOP to stop texts."))
+        XCTAssertTrue(app.staticTexts["From Shield’s text-message number, not your phone."].exists)
+        capture(app, large ? "Caretaker invitation largest dark" : "Caretaker invitation preview")
+        let send = app.buttons["trusted-contact-send"]
+        for step in 0..<12 where !send.isHittable {
+            app.swipeUp()
+            if large && (step == 1 || step == 3) { capture(app, "Caretaker invitation largest dark continuation \(step)") }
+        }
+        XCTAssertTrue(send.exists)
+        // Preview fixtures do not send a text or submit a request.
+    }
+
     func testManualNumberAndContactRejectOverlongNamesAndRecoverAfterEditing() {
         for screen in ["add-number", "add-contact"] {
             let app = launch(["--uitesting-screen", screen])

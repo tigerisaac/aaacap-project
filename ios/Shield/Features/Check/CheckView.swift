@@ -54,7 +54,7 @@ struct CheckView: View {
                             Button(model.isDemo ? "Show sample answer" : "Check text") { Task { await check() } }
                             Button("Cancel", role: .cancel) {}
                         } message: {
-                            Text(model.isDemo ? "This shows a sample answer. Your text won’t be checked." : "This text goes to Shield and OpenAI for a scam check. Leave out passwords and codes.")
+                            Text(model.isDemo ? "This shows a sample answer. Your text won’t be checked." : "This text goes to Shield and OpenAI for a scam check. Shield doesn’t save the submitted text. Providers may retain service and security records. Leave out passwords and codes.")
                         }
                         .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
                     }

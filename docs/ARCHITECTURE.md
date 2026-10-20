@@ -1,5 +1,9 @@
 # Architecture
 
+## Caretaker invitation preview — source only, October 19
+
+Authenticated caretaker reads expose the exact SMS template, sender and a server-derived version when texting is configured. Creation requires that version before a new SMS-backed request can be stored/sent; manual requests without texting do not require it. Existing idempotent requests return before this gate and do not resend. The iPhone loads and displays that preview, disables sending on load failure and requires a new tap after a stale-template refresh. New clients require the matching API before SMS activation; no SMS service was enabled. October 19 verification supersedes the test pause for the local candidate below, but does not establish deployment or real delivery.
+
 ## Caretaker inbox and public enrollment — source only, October 18
 
 The owner's test pause remains in effect. A new `caretakerEvents` collection records only opted-in, connected-call interventions (relationship/account identifiers, fixed kind and time). Names are resolved at read time; no caller details or audio are exposed. An authenticated read checks the recipient's verified phone and current accepted relationship. Events expire after 30 days; cleanup and account erasure include them. New clients can create a manually shared invitation and accept inbox delivery without SMS or APNs. Older clients retain the proactive-delivery availability flag. A transient alert-processing failure preserves its job for retry; per-channel receipts prevent repeating external submissions. This supplies an inbox, **not** background delivery while the app/page is closed.

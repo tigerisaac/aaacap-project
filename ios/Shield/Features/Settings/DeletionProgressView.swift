@@ -16,6 +16,8 @@ struct DeletionProgressView: View {
                         Text("Your carrier and iPhone settings stay as you restored them. You can now remove the Shield app.")
                         Text("Phone-provider recording deletion continues separately if needed. Minimal text-message opt-out records and temporary security records follow the privacy policy.")
                             .foregroundStyle(ShieldTheme.secondaryText)
+                        Text("Other phones may still have downloaded recordings or history. Remove those local copies on each phone. Provider service and security records follow their own retention policies.")
+                            .foregroundStyle(ShieldTheme.secondaryText)
                         Button { app.clearDeletionReceipt() } label: { ShieldActionLabel(title: "Done") }.shieldPrimaryButton()
                     } else {
                         Text(app.deletionSubmitted ? "You don’t need to keep this screen open. Shield will keep working on your request." : "We haven’t confirmed your request yet. Connect to the internet, then check again.").font(.title3)

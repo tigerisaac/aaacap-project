@@ -95,8 +95,9 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
     const protectedPerson = await person(other.uid, otherPhone), contactID = randomUUID();
     await store.personRef(protectedPerson).update({ shieldNumber: '+12025550108' });
     const ownerHeaders = { ...headers(other), 'x-shield-participant': protectedPerson };
+    const preview = (await app.inject({ url: '/api/trusted-contacts', headers: ownerHeaders })).json().invitationPreview;
     const created = await app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: ownerHeaders,
-      payload: { id: contactID, name: 'Synthetic caretaker', phone, consent: true } });
+      payload: { id: contactID, name: 'Synthetic caretaker', phone, consent: true, invitationPreviewVersion: preview.version } });
     expect(created.statusCode).toBe(200);
     const accepted = await app.inject({ method: 'POST', url: `/api/contact-alerts/${contactID}`, headers: headers(),
       payload: { accept: true, textAlerts: true, appAlerts: false } });
@@ -140,7 +141,13 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
       for (const id of owned) {
         await store.personRef(id).collection('trusted-numbers').doc('saved').set({ marker: 'private-contact' });
         await store.callRef(randomUUID()).set({ participantId: id, marker: 'owned-history' });
+        await savedMessage(id);
+        await db.collection('caretakerEvents').doc(`owned-${id}`).set({ participantId: id, recipientUid: other.uid });
+        await db.collection('forwardingRecordings').doc(`provider-${id}`).set({ participantId: id, status: 'pending', marker: 'provider-erasure-must-retry' });
       }
+      await db.collection('shieldNumbers').doc(config.TELNYX_NUMBER).set({ members: [...owned, otherPerson] });
+      await db.collection('caretakerEvents').doc('unrelated-event').set({ participantId: otherPerson, recipientUid: other.uid });
+      await db.collection('caretakerEvents').doc('recipient-event').set({ participantId: otherPerson, recipientUid: current.uid });
       if (role === 'helper') {
         await db.collection('grants').doc('history-grant').set({ participantId: otherPerson, granteeUid: current.uid });
         await store.memberRef(otherPerson, current.uid).set({ participantId: otherPerson, granteeUid: current.uid, grantId: 'history-grant' });
@@ -173,14 +180,21 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
       expect((await db.collection('memberships').where('granteeUid', '==', current.uid).get()).empty).toBe(true);
       expect((await db.collection('alertContacts').get()).empty).toBe(true);
       expect((await db.collection('alertDeliveries').where('recipientUid', '==', current.uid).get()).empty).toBe(true);
+      expect((await db.collection('caretakerEvents').where('recipientUid', '==', current.uid).get()).empty).toBe(true);
+      expect((await db.collection('shieldNumbers').doc(config.TELNYX_NUMBER).get()).data()?.members).toEqual([otherPerson]);
       for (const id of owned) {
         expect((await store.personRef(id).collection('trusted-numbers').get()).empty).toBe(true);
         expect((await db.collection('callSessions').where('participantId', '==', id).get()).empty).toBe(true);
+        for (const collection of ['forwardingAudio', 'forwardingAudioChunks', 'caretakerEvents']) {
+          expect((await db.collection(collection).where('participantId', '==', id).get()).empty, collection).toBe(true);
+        }
+        expect((await db.collection('forwardingRecordings').doc(`provider-${id}`).get()).data()?.marker).toBe('provider-erasure-must-retry');
       }
       expect((await identityProvider.getUser(other.uid)).uid).toBe(other.uid);
       expect((await store.personRef(otherPerson).get()).exists).toBe(true);
       expect((await store.callRef(otherCall).get()).data()?.marker).toBe('other-person-history');
       expect((await db.collection('devices').doc('other-phone').get()).exists).toBe(true);
+      expect((await db.collection('caretakerEvents').doc('unrelated-event').get()).exists).toBe(true);
       expect((await app!.inject({ url: '/api/people', headers: headers(other) })).statusCode).toBe(200);
     });
 
@@ -285,7 +299,7 @@ describe.skipIf(!enabled)('Account lifecycle with Firebase Auth and Firestore em
     expect(deletion.json().phones.map((p: { id: string }) => p.id)).toEqual(ownPerson ? [ownPerson] : []);
     const incoming = await app!.inject({ url: '/api/contact-alerts', headers: headers() });
     expect(incoming.statusCode).toBe(200); expect(incoming.json().requests).toHaveLength(1);
-    expect(Object.keys(incoming.json().requests[0]).sort()).toEqual(['appAlerts', 'id', 'name', 'ownerPaused', 'status', 'textAlerts']);
+    expect(Object.keys(incoming.json().requests[0]).sort()).toEqual(['appAlerts', 'id', 'inAppAlerts', 'name', 'ownerPaused', 'status', 'textAlerts']);
   });
 
   it('keeps caretaker consent separate from explicit history and listening grants through revocation', async () => {

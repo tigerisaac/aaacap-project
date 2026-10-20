@@ -9,5 +9,12 @@ struct TrustedContactsResponse: Decodable, Sendable {
     var appAvailable: Bool? = nil
     var invitationURL: URL? = nil
     var inboxAvailable: Bool? = nil
+    var invitationPreview: InvitationPreview? = nil
     var supportsRequests: Bool { available || inboxAvailable == true }
+
+    struct InvitationPreview: Decodable, Sendable {
+        let sender: String
+        let message: String
+        let version: String
+    }
 }

@@ -29,7 +29,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
   const start = vi.fn(async (_phone: string) => PERSON), verify = vi.fn(async (_id: string, code: string, _phone: string) => code === '123456');
   let now: number, store: CloudStore, app: Awaited<ReturnType<typeof buildCloudApp>>;
   const headers = (uid = 'owner', selected = true) => ({ authorization: `Bearer ${uid}`, ...(selected ? { 'x-shield-participant': PERSON } : {}) });
-  const create = (id = randomUUID(), phone = PHONE, uid = 'owner') => app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: headers(uid), payload: { id, name: 'Alex', phone, consent: true } });
+  const create = async (id = randomUUID(), phone = PHONE, uid = 'owner') => {
+    const preview = (await app.inject({ url: '/api/trusted-contacts', headers: headers(uid) })).json().invitationPreview;
+    return app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: headers(uid),
+      payload: { id, name: 'Alex', phone, consent: true, invitationPreviewVersion: preview?.version } });
+  };
   const respond = (id: string, accept = true, textAlerts = true, appAlerts = true, uid = 'contact') => app.inject({ method: 'POST', url: `/api/contact-alerts/${id}`, headers: headers(uid, false), payload: { accept, textAlerts, appAlerts } });
   const list = (uid = 'contact') => app.inject({ url: '/api/contact-alerts', headers: headers(uid, false) });
   const queue = async (kind: AlertKind = 'monitor_intervened') => { const batch = db.batch(); queueAlert(store, batch, PERSON, kind); await batch.commit(); return (await db.collection('alerts').get()).docs[0]!.id; };
@@ -63,6 +67,28 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
   });
   afterEach(async () => { await app.close(); });
   afterAll(async () => { await db.terminate(); await deleteApp(admin); });
+
+  it('sends the exact invitation preview and identifies Shield without disclosing the owner', async () => {
+    const preview = (await app.inject({ url: '/api/trusted-contacts', headers: headers() })).json().invitationPreview;
+    expect(preview.sender).toBe('Shield'); expect(preview.message).not.toContain('Margaret');
+    expect(preview.message).not.toContain(OWNER_PHONE); expect(preview.version).toMatch(/^[a-f0-9]{64}$/);
+    expect((await create()).statusCode).toBe(200);
+    expect(sms).toHaveBeenCalledExactlyOnceWith(PHONE, preview.message);
+  });
+  it('rejects absent or stale preview confirmation before saving or submitting a text', async () => {
+    for (const version of [undefined, 'stale-preview']) {
+      const response = await app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: headers(),
+        payload: { id: randomUUID(), name: 'Alex', phone: PHONE, consent: true, invitationPreviewVersion: version } });
+      expect(response.statusCode).toBe(409); expect(response.json().error.code).toBe('invitation_preview_required');
+    }
+    expect(sms).not.toHaveBeenCalled(); expect((await db.collection('alertContacts').get()).empty).toBe(true);
+  });
+  it('allows a manually shared request without SMS preview or submission', async () => {
+    const response = await app.inject({ method: 'POST', url: '/api/trusted-contacts', headers: headers(),
+      payload: { id: randomUUID(), name: 'Alex', phone: PHONE, consent: true, sendText: false } });
+    expect(response.statusCode).toBe(200); expect(sms).not.toHaveBeenCalled();
+    expect(response.json().contact.requestDelivery).toBe('not_sent');
+  });
 
   it('issues opaque expiring challenges, throttles resends, and never mints a session for an incorrect code', async () => {
     const response = await app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone: PHONE } });

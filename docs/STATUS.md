@@ -1,5 +1,11 @@
 # Status
 
+## October 19 — privacy alignment and invitation preview implemented locally
+
+The owner accepted recording-from-answer timing. App consent and prepared public privacy wording now identify processing/retention accurately, including Soniox during monitoring, provider service/security records, linked operational diagnostics and other-device copies. Three diagnostic/usage categories join the app manifest. No zero-retention promise is made. The caretaker form previews the exact SMS and sender; a server version check blocks missing/stale previews before sending. SMS remains disabled. These source changes are not deployed and App Store Connect answers are unchanged.
+
+Required checks pass **394 unit + 316 Firestore tests**. The expanded **12 account-lifecycle cases** pass against actual Auth/Firestore emulators; native contact/deletion recovery, local audio/history and blocking lifecycle checks pass. All **10 focused UI executions** pass across iOS 26.5/27. A fresh unsigned arm64 archive passes package inspection. Read-only production counts show natural cleanup completion and no selected overdue deletion/audio jobs, without deleting any account or invoking a worker. Provider erasure, offline-device cleanup, physical phone acceptance and distribution signing remain separate. [Privacy findings and verification boundaries](DATA-INVENTORY.md#october-19--privacy-alignment-and-deletion-verification), [evidence](../.impeccable/review/privacy-2026-10-19/verification.json).
+
 ## October 19 — setup decision accepted; privacy review opened
 
 The owner explicitly accepted the existing Shortcut/Settings method and asked to mark that release item complete. R3 is closed as an owner-accepted decision; it does not assert that Apple approved the undocumented Settings destinations. The native helper, manual Live Voicemail action and explicit confirmations are unchanged.

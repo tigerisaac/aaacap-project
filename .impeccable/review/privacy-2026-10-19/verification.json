@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-19",
+  "scope": "Local source, synthetic/emulator tests, unsigned archive, read-only aggregate production health. No deployment, store edits, calls, SMS or production erasure.",
+  "checks": {
+    "npm run check": {
+      "passed": true,
+      "unitTests": 394
+    },
+    "npm run test:firebase": {
+      "passed": true,
+      "tests": 316
+    },
+    "npm run test:accounts": {
+      "passed": true,
+      "tests": 12
+    },
+    "npm run test:contact-recovery": {
+      "passed": true,
+      "checks": 23
+    },
+    "npm run test:audio-storage": {
+      "passed": true
+    },
+    "npm run test:call-directory": {
+      "passed": true,
+      "checks": 12
+    },
+    "focusedUI": {
+      "passed": true,
+      "executions": 10,
+      "iOS": [
+        "26.5",
+        "27"
+      ]
+    },
+    "unsignedReleaseArchive": {
+      "passed": true,
+      "distributionSigningVerified": false,
+      "appManifestMatchesSource": true,
+      "appDataCategories": 13
+    },
+    "focusedUIConfirmation": {
+      "passed": true,
+      "executions": 4,
+      "iOS": [
+        "26.5",
+        "27"
+      ],
+      "scope": "Final disclosure wording and maximum-text invitation continuation"
+    }
+  },
+  "logs": {
+    "check": {
+      "path": "/tmp/shield-privacy-check-20261019.log",
+      "sha256": "94bd6a1e38c2b6aec682befd62dd96d466707ca0b35a44a557762c86102964b6"
+    },
+    "firebase": {
+      "path": "/tmp/shield-privacy-firebase-20261019.log",
+      "sha256": "a4abd4cf4f68db69ccb4f5e2626a60abc169f5db0afa7127b93d45f49cda5561"
+    },
+    "accounts": {
+      "path": "/tmp/shield-privacy-accounts-20261019.log",
+      "sha256": "b2b1320d8612c20c395ea3350271fb0bc898f55e21078e739c40bd4bcd1600ad"
+    },
+    "native-deletion": {
+      "path": "/tmp/shield-privacy-native-deletion-20261019.log",
+      "sha256": "768d780a8da9e4631a79cc5d5077ca1b2d2e77a1a6516e302401b260c0088718"
+    },
+    "audio": {
+      "path": "/tmp/shield-privacy-audio-20261019.log",
+      "sha256": "c184448918c9a61ce01181fb82609a9ac144da2993e70e22f47bf1c3c15f2df3"
+    },
+    "blocking": {
+      "path": "/tmp/shield-privacy-blocking-20261019.log",
+      "sha256": "7dac418bd4512372e06ba664ea7f77b19ec00035ebfd4d2ad1e67be4ddce80ec"
+    },
+    "ui": {
+      "path": "/tmp/shield-privacy-ui-20261019.log",
+      "sha256": "9a9f6f6effecf5611086df7101f783f8459658aee7001e43f8176e552ece3e8a"
+    },
+    "archive": {
+      "path": "/tmp/shield-privacy-archive-20261019.log",
+      "sha256": "588036978a6c8495754bc4dff26720edce1756285a3db4e173946d4f0a25c41f"
+    },
+    "uiConfirmation": {
+      "path": "/tmp/shield-privacy-ui-confirm-20261019.log",
+      "sha256": "b802a704aa576d5ec427d239a8fad45da45089fe20987ab5860c0272bf5dadf5"
+    }
+  },
+  "baseline": {
+    "accountTests": "10 passed, 2 failed: exact DTO expectations missing pre-existing inAppAlerts; corrected contract assertions without weakening permissions.",
+    "log": "/tmp/shield-privacy-accounts-baseline-20261019.log"
+  },
+  "limits": [
+    "Offline-device and provider erasure not certified",
+    "App Store Connect declarations not submitted",
+    "Public privacy route and native changes not deployed",
+    "No physical-phone or real-call acceptance",
+    "Other pre-existing uncommitted iPhone work is included in the archive but excluded from this commit"
+  ],
+  "visualReview": {
+    "passed": true,
+    "scope": "Standard invitation, failed-preview disabled sending, maximum-text dark scroll continuation, final forwarding retention copy; no clipping found in inspected sections."
+  }
+}

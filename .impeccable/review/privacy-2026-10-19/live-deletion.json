@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-10-20T02:17:58.472Z",
+  "readOnly": true,
+  "jobs": {
+    "finishAccountDeletions": {
+      "status": "complete",
+      "lastSucceededAt": "2026-10-20T02:17:14.657Z"
+    },
+    "cleanupShield": {
+      "status": "complete",
+      "lastSucceededAt": "2026-10-19T09:00:36.680Z"
+    },
+    "expireMessageDeliveries": {
+      "status": "complete",
+      "lastSucceededAt": "2026-10-20T02:15:19.853Z"
+    }
+  },
+  "pendingAccountDeletions": 0,
+  "accountDeletionsOlderThan20Minutes": 0,
+  "expiredAudioOlderThan20Minutes": 0,
+  "pendingProviderRecordingJobs": 0,
+  "storedProviderRecordingJobs": 0,
+  "limitation": "Counts and natural completion receipts only; no customer content read, no worker invoked, no provider-erasure or other-device proof."
+}

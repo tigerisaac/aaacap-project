@@ -17,11 +17,15 @@ struct AddTrustedContactView: View {
     @State private var requestUnconfirmed = false
     @State private var retryAvailable = false
     @State private var feedbackRevision = 0
+    @State private var invitationPreview: TrustedContactsResponse.InvitationPreview?
+    @State private var previewLoading = false
+    @State private var previewFailed = false
     @AccessibilityFocusState private var errorFocused: Bool
     @FocusState private var field: Field?
     private enum Field { case name, phone }
     private var nameProblem: String? { ContactName.problem(name, disallowControls: true) }
-    private var canSend: Bool { !working && (!requestUnconfirmed || retryAvailable) && nameProblem == nil && MobileNumber.normalized(phone) != nil }
+    private var canSend: Bool { !working && (!requestUnconfirmed || retryAvailable) && nameProblem == nil && MobileNumber.normalized(phone) != nil
+        && (!textAvailable || invitationPreview != nil) }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -48,6 +52,25 @@ struct AddTrustedContactView: View {
                     if !textAvailable {
                         Text("After creating the request, share its invitation from Caretakers. No request text will be sent.")
                             .foregroundStyle(ShieldTheme.secondaryText)
+                    } else {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
+                            Text("Request text").font(.headline).accessibilityAddTraits(.isHeader)
+                            if let invitationPreview {
+                                Text("From \(invitationPreview.sender)’s text-message number, not your phone.")
+                                    .foregroundStyle(ShieldTheme.secondaryText)
+                                Text(invitationPreview.message)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityIdentifier("caretaker-invitation-preview")
+                                Text("Your name and phone number aren’t included.")
+                                    .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            } else if previewFailed {
+                                Text("The request text couldn’t be loaded. Check it before sending.")
+                                Button("Try preview again") { Task { await loadInvitationPreview() } }
+                                    .shieldSecondaryButton().disabled(previewLoading)
+                            } else {
+                                ShieldLoadingView(title: "Loading request text…")
+                            }
+                        }
                     }
                     if let error {
                         VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
@@ -75,6 +98,7 @@ struct AddTrustedContactView: View {
                     .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }.background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
                 .navigationTitle("Add caretaker").navigationBarTitleDisplayMode(.inline)
+                .task { await loadInvitationPreview() }
                 .navigationBarBackButtonHidden(working).interactiveDismissDisabled(working)
                 .toolbar {
                     if field != nil { ToolbarItem(placement: .confirmationAction) { Button("Done") { field = nil } } }
@@ -86,6 +110,35 @@ struct AddTrustedContactView: View {
                     proxy.scrollTo("trusted-contact-create-error", anchor: .top)
                     errorFocused = true
                 }
+        }
+    }
+
+    private func loadInvitationPreview() async {
+        guard textAvailable, !previewLoading else { return }
+        #if DEBUG && targetEnvironment(simulator)
+        if model.isPreview || model.configuration.baseURL == nil {
+            if ProcessInfo.processInfo.arguments.contains("--uitesting-invitation-preview-fails") {
+                previewFailed = true
+                return
+            }
+            invitationPreview = .init(sender: "Shield",
+                message: "Someone added you as a caretaker in Shield. Choose whether to receive alerts: https://shield-calls-isaac.web.app/trusted-contacts.html Reply STOP to stop texts.", version: "preview-only")
+            return
+        }
+        #endif
+        let generation = model.sessionGeneration
+        previewLoading = true; previewFailed = false
+        defer { previewLoading = false }
+        do {
+            let response: TrustedContactsResponse = try await model.api.send("/api/trusted-contacts", participantID: participantID)
+            guard generation == model.sessionGeneration, model.selectedPersonID == participantID else { return }
+            invitationPreview = response.invitationPreview
+            previewFailed = invitationPreview == nil
+        } catch is CancellationError { return }
+        catch {
+            guard generation == model.sessionGeneration, model.selectedPersonID == participantID else { return }
+            previewFailed = true
+            model.handleSessionFailure(error)
         }
     }
     private func save() async {
@@ -107,6 +160,7 @@ struct AddTrustedContactView: View {
                     "id": requestID.uuidString.lowercased(), "name": savedName, "phone": phone, "consent": true
                 ]
                 if model.service?.trustedContactsInvitationURL != nil { payload["sendText"] = textAvailable }
+                if textAvailable, let invitationPreview { payload["invitationPreviewVersion"] = invitationPreview.version }
                 let response: TrustedContactCreated = try await model.api.send("/api/trusted-contacts", method: "POST",
                     body: APIClient.payload(payload), participantID: participantID)
                 contact = response.contact
@@ -119,6 +173,9 @@ struct AddTrustedContactView: View {
             // A server rejection can be corrected in the form. A missing/invalid response
             // must first be reconciled, keeping the submitted details and request ID stable.
             switch error {
+            case APIError.service(let code, _) where code == "invitation_preview_required":
+                invitationPreview = nil
+                await loadInvitationPreview()
             case APIError.service(_, let status) where (400..<500).contains(status): break
             default: requestUnconfirmed = true
             }

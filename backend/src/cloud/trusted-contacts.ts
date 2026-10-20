@@ -16,6 +16,13 @@ export const trustedContactsAvailable = (store: CloudStore) => !!store.config.TE
   && (textAvailable(store) || !!store.config.APNS);
 export const contactPhoneHash = (store: CloudStore, phone: string) => store.vault.hash(`alert-contact:${phone}`);
 
+/** One source for the owner's preview and the exact text submitted to Telnyx. */
+export function caretakerInvitationPreview(store: CloudStore) {
+  const sender = 'Shield';
+  const message = `Someone added you as a caretaker in Shield. Choose whether to receive alerts: ${store.config.PUBLIC_BASE_URL}/trusted-contacts.html Reply STOP to stop texts.`;
+  return { sender, message, version: store.vault.hash(`caretaker-invitation:${sender}:${message}`) };
+}
+
 /** Alerts-only relationships never create grants or memberships, and never authorize call or audio APIs. */
 export function registerTrustedContacts(app: FastifyInstance, store: CloudStore, auth: AuthProvider, sender: TextSender = new TelnyxTextSender(store)) {
   const identity = (request: FastifyRequest) => auth.identify(bearer(request));
@@ -39,6 +46,7 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
       textAvailable: textAvailable(store), appAvailable: !!store.config.APNS,
       inboxAvailable: !!store.config.TELNYX_VERIFY_PROFILE_ID,
       invitationURL: `${store.config.PUBLIC_BASE_URL}/trusted-contacts.html`,
+      invitationPreview: textAvailable(store) ? caretakerInvitationPreview(store) : null,
       contacts: docs.docs.filter(d => d.data().status !== 'revoked').map(d => ownerDTO(d.id, d.data())) };
   });
   app.post('/api/trusted-contacts/choice', async request => {
@@ -55,7 +63,7 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
     const ctx = await owner(request);
     if (!store.config.TELNYX_VERIFY_PROFILE_ID) throw new HttpError(503, 'trusted_contacts_unavailable');
     const input = z.object({ id: uuid, name: z.string().trim().min(1).max(60).regex(/^[^\p{Cc}]+$/u), phone: z.string().max(25),
-      consent: z.literal(true), sendText: z.boolean().optional() }).strict().parse(request.body);
+      consent: z.literal(true), sendText: z.boolean().optional(), invitationPreviewVersion: z.string().max(128).optional() }).strict().parse(request.body);
     const phone = normalizePhone(input.phone);
     if (!phone) throw new HttpError(400, 'invalid_phone');
     if (phone === store.phone(ctx.participant)) throw new HttpError(400, 'trusted_contact_self');
@@ -66,8 +74,11 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
         || store.vault.open(existing.nameEnc, `alert-contact:${ref.id}:name`) !== input.name) throw new HttpError(409, 'trusted_contact_conflict');
       return { contact: ownerDTO(ref.id, existing) };
     }
-    await store.quota([[`contact-requests:${ctx.uid}`, 10], [`contact-recipient:${hash}`, 3], ['contact-requests:global', pilotLimits.contactRequestsTotalPerDay]]);
     const optOut = (await store.db.collection('smsOptOuts').doc(hash).get()).data();
+    const preview = caretakerInvitationPreview(store);
+    const sendText = input.sendText !== false && textAvailable(store) && !optOut?.stopped;
+    if (sendText && input.invitationPreviewVersion !== preview.version) throw new HttpError(409, 'invitation_preview_required');
+    await store.quota([[`contact-requests:${ctx.uid}`, 10], [`contact-recipient:${hash}`, 3], ['contact-requests:global', pilotLimits.contactRequestsTotalPerDay]]);
     const data = { participantId: ctx.participant.id, ownerUid: ctx.uid, nameEnc: store.vault.seal(input.name, `alert-contact:${ref.id}:name`),
       phoneEnc: store.vault.seal(phone, `alert-contact:${ref.id}:phone`), phoneHash: hash, status: 'pending', sms: false, push: false,
       recipientUid: null, requestedAt: store.now(), expiresAt: store.now() + 30 * 86400_000, requestDelivery: 'not_sent' };
@@ -89,9 +100,9 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
       return true;
     });
     // Generic invitation: no owner name or call details are disclosed before the recipient verifies their number.
-    if (created && input.sendText !== false && textAvailable(store) && !optOut?.stopped) {
+    if (created && sendText) {
       await ref.update({ requestDelivery: 'sending' });
-      const result = await sender.send(phone, `Someone added you as a caretaker in Shield. Choose whether to receive alerts: ${store.config.PUBLIC_BASE_URL}/trusted-contacts.html Reply STOP to stop texts.`);
+      const result = await sender.send(phone, preview.message);
       await ref.update({ requestDelivery: result });
     }
     return { contact: ownerDTO(ref.id, (await ref.get()).data()!) };

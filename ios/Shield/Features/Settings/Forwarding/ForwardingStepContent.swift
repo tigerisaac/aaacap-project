@@ -30,8 +30,9 @@ struct ForwardingStepContent: View {
                          ? "Shield checks unfamiliar calls. Press 1 to take a call. Shield can’t prove who is calling."
                          : "Call checks are off. Callers can leave voicemail instead.")
                     Text(PrivacyCopy.messageRetention)
+                    Text(PrivacyCopy.providerRetention)
                     Text("Shield may stop suspicious or silent calls and can make mistakes.")
-                    Text("Messages may be captured from the start of the call. Answered calls and clear scam messages aren’t saved. Full transcripts aren’t kept.")
+                    Text("Messages may be captured from the start of the call. Answered calls and clear scam messages aren’t saved. Message summaries can be saved, but full message transcripts aren’t.")
                     Text("Calls you take aren’t recorded. Their words are checked only if you choose checks while you talk.")
                     Text("Your usual \(status.carrier) charges apply. Deleting the app won’t disconnect Shield.")
                     Link("Privacy details", destination: URL(string: "https://shield-calls-isaac.web.app/privacy")!)

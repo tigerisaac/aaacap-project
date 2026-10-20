@@ -42,7 +42,7 @@ struct CallProtectionView: View {
             Button("Turn on") { Task { await save(enabled: true) } }
             Button("Not now", role: .cancel) {}
         } message: {
-            Text("Telnyx and its transcription provider will turn both people’s speech into words for OpenAI to check. Shield may warn you and end the call. Checks can be wrong. The caller is told first.")
+            Text("Telnyx uses Soniox to turn both people’s speech into words for OpenAI to check. Shield may warn you and end the call. Checks can be wrong. The caller is told first.")
         }
         .task { await load() }
     }
