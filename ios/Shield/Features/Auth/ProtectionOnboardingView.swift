@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProtectionOnboardingView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var typeSize
     let monitoring: ForwardingStatus.Monitoring?
     let participantID: UUID
     @State private var enabled = false
@@ -18,11 +19,12 @@ struct ProtectionOnboardingView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
-                        Text("Help while you talk").shieldPageHeading().accessibilityAddTraits(.isHeader)
+                        ShieldWelcomeHeader(title: "Help while you talk", symbol: "phone.badge.waveform")
                         CallProtectionExplanation(includesConsentDetails: true)
                         Toggle("Check calls while I talk", isOn: $enabled)
-                            .font(.headline).padding(ShieldTheme.Spacing.content)
-                            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+                            .font(.headline).padding(.horizontal, ShieldTheme.Spacing.content)
+                            .padding(.vertical, ShieldTheme.Spacing.tight)
+                            .background(ShieldTheme.welcomeElement, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
                             .accessibilityIdentifier("onboarding-protection-toggle").disabled(working || choiceUnconfirmed)
                         if let error {
                             VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
@@ -31,26 +33,38 @@ struct ProtectionOnboardingView: View {
                                 if choiceUnconfirmed {
                                     Button { Task { await checkStatus() } } label: {
                                         Label(checkingStatus ? "Checking…" : "Check current status", systemImage: "arrow.clockwise")
-                                            .shieldWrappingLabel().frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                            .shieldWrappingLabel().frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                                     }.shieldSecondaryButton().disabled(working)
                                 }
                             }.id("onboarding-choice-error")
                         }
-                        Button { Task { await save() } } label: {
-                            ShieldActionLabel(title: choiceUnconfirmed ? "Try saving again" : "Save my choice", isWorking: working && !checkingStatus)
-                        }.shieldPrimaryButton().disabled(working || (choiceUnconfirmed && !retryAvailable) || monitoring == nil)
-                            .accessibilityIdentifier("onboarding-protection-continue")
-                    }.padding(ShieldTheme.Spacing.page)
+                        if typeSize.isAccessibilitySize { saveButton }
+                    }.shieldWelcomeMargins().padding(.vertical, ShieldTheme.Spacing.card)
                         .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
-                }.background(ShieldTheme.surface)
-                    .navigationTitle("Your choices").navigationBarTitleDisplayMode(.inline)
-                    .onChange(of: feedbackRevision) { _, _ in
-                        proxy.scrollTo("onboarding-choice-error", anchor: .top)
-                        errorFocused = true
+                }
+                // At accessibility sizes the tray would cover the page, so the action scrolls inline.
+                .safeAreaInset(edge: .bottom) {
+                    if !typeSize.isAccessibilitySize {
+                        saveButton.frame(maxWidth: ShieldTheme.Layout.readableWidth)
+                            .padding(.horizontal, ShieldTheme.Spacing.card).shieldBottomTray(over: ShieldTheme.welcomePage)
                     }
+                }
+                .background(ShieldTheme.welcomePage)
+                .toolbar(.hidden, for: .navigationBar)
+                .onChange(of: feedbackRevision) { _, _ in
+                    proxy.scrollTo("onboarding-choice-error", anchor: .top)
+                    errorFocused = true
+                }
             }
         }
     }
+    private var saveButton: some View {
+        Button { Task { await save() } } label: {
+            ShieldActionLabel(title: choiceUnconfirmed ? "Try saving again" : "Save my choice", isWorking: working && !checkingStatus)
+        }.shieldPrimaryButton().disabled(working || (choiceUnconfirmed && !retryAvailable) || monitoring == nil)
+            .accessibilityIdentifier("onboarding-protection-continue")
+    }
+
     private func save() async {
         guard let monitoring, !working, !choiceUnconfirmed || retryAvailable else { return }
         let generation = model.sessionGeneration

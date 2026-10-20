@@ -8,7 +8,7 @@ struct PhoneCodeGuide: View {
     @AccessibilityFocusState private var resultFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
             if returned {
                 if showingHeading {
                     Text("Did \(carrier) say it worked?").shieldHeading(.title)

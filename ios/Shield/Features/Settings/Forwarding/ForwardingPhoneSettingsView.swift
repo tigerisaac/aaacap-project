@@ -8,7 +8,7 @@ struct ForwardingPhoneSettingsView: View {
         if model.usingManualPhoneSettings {
             ManualPhoneSettingsGuide(model: model)
         } else {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                 if model.addingPhoneHelper {
                     Text("Add Shield’s helper once. It selects Silence for you.")
                     Text("On the next screen, tap **Add Shortcut**. Then tap **Shield** at the top left to come back.")

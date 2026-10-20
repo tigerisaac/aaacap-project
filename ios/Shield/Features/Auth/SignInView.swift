@@ -26,26 +26,18 @@ struct SignInView: View {
         NavigationStack {
             ScrollViewReader { proxy in
             ScrollView {
-                // One left edge for every state: brand, headline, form and links read down a single line.
-                VStack(alignment: .leading, spacing: 28) {
-                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
-                        ShieldBrand(compact: true)
-                        if !codeSent {
-                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.regular) {
-                                Text("Help with unfamiliar calls")
-                                    .shieldHeading(.hero).foregroundStyle(ShieldTheme.ink)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .accessibilityAddTraits(.isHeader)
-                                Text("Shield asks why someone is calling. You choose whether to answer.")
-                                    .font(.title3).foregroundStyle(ShieldTheme.secondaryText)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
+                // A centered welcome header, then one left edge for the form and its feedback.
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
+                    if !codeSent {
+                        ShieldWelcomeHeader(title: "Help with unfamiliar calls",
+                                            detail: "Shield asks why someone is calling. You choose whether to answer.")
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading).padding(.top, ShieldTheme.Spacing.card)
 
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
                         if waitingForLink {
+                            // The welcome header's icon and position; the heading keeps its own focus.
+                            ShieldWelcomeIcon(symbol: "envelope.badge")
+                                .padding(.top, ShieldTheme.Spacing.section)
                             Text("Check your email").shieldPageHeading()
                                 .accessibilityAddTraits(.isHeader).accessibilityFocused($statusFocused, equals: .emailSent)
                             Text(email).font(.headline).textSelection(.enabled)
@@ -57,8 +49,8 @@ struct SignInView: View {
                             Text("No email? Check Junk or Spam.")
                                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             ViewThatFits(in: .horizontal) {
-                                HStack(spacing: 24) { emailActions }
-                                VStack(alignment: .leading, spacing: 4) { emailActions }
+                                HStack(spacing: ShieldTheme.Spacing.page) { emailActions }
+                                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) { emailActions }
                             }
                         } else {
                             if codeSent {
@@ -97,8 +89,7 @@ struct SignInView: View {
                                         }
                                     }
                                 }
-                                .frame(minHeight: ShieldTheme.Layout.minimumTarget)
-                                .shieldField(focused: focusedField != nil)
+                                .shieldField(focused: focusedField != nil, fill: ShieldTheme.welcomeElement)
                                 .disabled(working).submitLabel(codeSent ? .go : .send)
                                 .onSubmit { if canSubmit { Task { await submit() } } }
                             }
@@ -136,24 +127,19 @@ struct SignInView: View {
                             Link(destination: origin.appending(path: "privacy")) {
                                 Text("Privacy").foregroundStyle(ShieldTheme.action)
                                     .fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.systemTarget)
                                     .contentShape(.rect)
                             }.buttonStyle(.plain)
                         }
                     }
                 }
-                .padding(24)
+                .shieldWelcomeMargins().padding(.vertical, ShieldTheme.Spacing.card)
                 .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading)
                 .frame(maxWidth: .infinity)
             }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                Color.clear.frame(height: 1)
-                    .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .top))
-                    .accessibilityHidden(true)
-            }
             .scrollDismissesKeyboard(.interactively)
             .shieldKeyboardDone(!allowsDismissal && focusedField != nil) { focusedField = nil }
-            .background(ShieldTheme.surface)
+            .background(ShieldTheme.welcomePage)
             .onChange(of: feedbackRevision) { _, _ in
                 if !keyboardVisible { revealFeedback(using: proxy) }
             }
@@ -170,7 +156,7 @@ struct SignInView: View {
             .toolbar(allowsDismissal ? .visible : .hidden, for: .navigationBar)
             .toolbar {
                 if allowsDismissal {
-                    ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(working) }
+                    ToolbarItem(placement: .cancellationAction) { Button(role: .close) { dismiss() }.disabled(working).accessibilityInputLabels(["Close"]) }
                 }
                 if allowsDismissal, focusedField != nil {
                     ToolbarItem(placement: .confirmationAction) { Button("Done") { focusedField = nil } }
@@ -214,7 +200,7 @@ struct SignInView: View {
     @ViewBuilder
     private var emailActions: some View {
         Button { Task { await submit() } } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: ShieldTheme.Spacing.compact) {
                 if working { ProgressView() }
                 Text(working ? "Sending…" : "Resend link")
             }

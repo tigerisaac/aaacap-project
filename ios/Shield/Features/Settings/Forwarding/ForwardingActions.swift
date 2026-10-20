@@ -8,7 +8,7 @@ struct ForwardingActions: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: ShieldTheme.Spacing.tight) {
             if model.step != .restore {
                 Button {
                     if model.step == .checks, model.status?.publicEnrollment == true, model.status?.alwaysOn != true {
@@ -24,11 +24,8 @@ struct ForwardingActions: View {
                 .accessibilityIdentifier("forwarding-continue")
             }
         }
-        .tint(ShieldTheme.action)
-        // Pinned, the button's edges line up with the page's text column.
-        .padding(.horizontal, inline ? 0 : ShieldTheme.Spacing.page)
-        .padding(.top, inline ? 0 : 12).padding(.bottom, inline ? 0 : 8)
-        .background(ShieldTheme.surface)
+        // Pinned, the button's edges line up with the page's text column (system scene margins).
+        .modifier(BottomTray(enabled: !inline))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("forwarding-action-area")
     }
@@ -55,5 +52,12 @@ struct ForwardingActions: View {
         case .checks: return model.status?.publicEnrollment == true && model.status?.alwaysOn != true ? "Start protection" : "Done"
         default: return "Continue"
         }
+    }
+}
+
+private struct BottomTray: ViewModifier {
+    let enabled: Bool
+    func body(content: Content) -> some View {
+        if enabled { content.shieldBottomTray() } else { content }
     }
 }

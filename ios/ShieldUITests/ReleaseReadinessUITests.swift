@@ -55,7 +55,9 @@ final class ReleaseReadinessUITests: XCTestCase {
         let remove = app.buttons["Remove contact"]; reveal(remove, app); remove.tap()
         XCTAssertTrue(app.alerts["Remove this caretaker?"].appears(timeout: 3))
         app.alerts.buttons["Cancel"].tap()
-        XCTAssertTrue(app.staticTexts["Alex"].exists)
+        // At the largest size Remove contact sits a screen below the name, and List unloads off-screen rows.
+        let listed = app.staticTexts["Alex"]; reveal(listed, app, fromBelow: true)
+        XCTAssertTrue(listed.exists)
     }
 
     func testUnavailableCaretakerCannotSendRequests() {

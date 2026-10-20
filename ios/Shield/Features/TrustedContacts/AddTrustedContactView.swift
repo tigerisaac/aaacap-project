@@ -33,7 +33,7 @@ struct AddTrustedContactView: View {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                     Button { showingPicker = true } label: {
                         Label("Choose from Contacts", systemImage: "person.text.rectangle").shieldWrappingLabel()
-                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                     }
                     .shieldSecondaryButton().disabled(working || requestUnconfirmed)
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
@@ -58,17 +58,25 @@ struct AddTrustedContactView: View {
                             if let invitationPreview {
                                 Text("From \(invitationPreview.sender)’s text-message number, not your phone.")
                                     .foregroundStyle(ShieldTheme.secondaryText)
+                                // Set apart as the message itself, not more of the form's instructions.
                                 Text(invitationPreview.message)
                                     .fixedSize(horizontal: false, vertical: true)
+                                    .shieldCard()
                                     .accessibilityIdentifier("caretaker-invitation-preview")
                                 Text("Your name and phone number aren’t included.")
                                     .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             } else if previewFailed {
                                 Text("The request text couldn’t be loaded. Check it before sending.")
-                                Button("Try preview again") { Task { await loadInvitationPreview() } }
-                                    .shieldSecondaryButton().disabled(previewLoading)
+                                Button { Task { await loadInvitationPreview() } } label: {
+                                    Label(previewLoading ? "Loading…" : "Try preview again", systemImage: "arrow.clockwise")
+                                        .shieldWrappingLabel()
+                                        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
+                                }
+                                .shieldSecondaryButton().disabled(previewLoading)
                             } else {
-                                ShieldLoadingView(title: "Loading request text…")
+                                // Inline: the full-page loading block would leave a tall gap in the form.
+                                Label { Text("Loading request text…") } icon: { ProgressView() }
+                                    .foregroundStyle(ShieldTheme.secondaryText)
                             }
                         }
                     }
@@ -81,7 +89,7 @@ struct AddTrustedContactView: View {
                                 Button { Task { await checkStatus() } } label: {
                                 Label(checkingStatus ? "Checking…" : "Check current status", systemImage: "arrow.clockwise")
                                     .shieldWrappingLabel()
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                                 }.shieldSecondaryButton().disabled(working)
                             }
                         }.id("trusted-contact-create-error")
@@ -94,7 +102,7 @@ struct AddTrustedContactView: View {
                         Text("They hear only when checks while you talk detect a possible scam request and intervene. Those checks must be on. Alerts include your name; calls, recordings, and messages stay private. Message and data rates may apply.")
                             .foregroundStyle(ShieldTheme.secondaryText)
                     }
-                }.padding(ShieldTheme.Spacing.page)
+                }.shieldPageMargins()
                     .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }.background(ShieldTheme.surface).scrollDismissesKeyboard(.interactively)
                 .navigationTitle("Add caretaker").navigationBarTitleDisplayMode(.inline)

@@ -151,7 +151,7 @@ final class OnboardingRecoveryUITests: XCTestCase {
 
     private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
         for _ in 0..<24 {
-            let top = app.navigationBars.firstMatch.frame.maxY
+            let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : 0
             let bottom = app.staticTexts["onboarding-fixture-state"].frame.minY - 8
             if element.exists, element.isHittable, element.frame.minY >= top, element.frame.maxY <= bottom { return }
             let down = element.exists && !element.frame.isEmpty && element.frame.minY < top

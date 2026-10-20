@@ -29,28 +29,19 @@ struct ShieldGroup<Content: View, Header: View, Footer: View>: View {
     }
 
     var body: some View {
-        // Footers default to the same supporting size used inside groups, not the smaller native footnote.
-        Section { content } header: { header } footer: {
-            footer.font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-        }
+        // Native section metrics with an adaptive, higher-contrast supporting color.
+        Section { content } header: { header } footer: { footer.foregroundStyle(ShieldTheme.secondaryText) }
+            .headerProminence(.increased)
             .listRowBackground(background)
     }
 }
 
 extension View {
-    /// Apply to a List, including pushed Settings screens, for one shared grouped surface.
+    /// Inset groups with native backgrounds, separators, spacing and scroll edges.
     func shieldListStyle() -> some View {
         listStyle(.insetGrouped)
-            .listSectionSpacing(ShieldTheme.Spacing.section)
-            .environment(\.defaultMinListRowHeight, ShieldTheme.Layout.rowHeight)
-            .scrollContentBackground(.hidden)
-            .scrollEdgeEffectHidden(for: .all)
-            .background(ShieldTheme.surface)
-            .safeAreaPadding(.bottom, ShieldTheme.Spacing.content)
-            // Keep the scroll view flush with the navigation bar so native large
-            // titles participate in the push/pop transition. Space the content inside it.
-            .contentMargins(.vertical, ShieldTheme.Spacing.compact, for: .scrollContent)
-            .background(ShieldTheme.surface.ignoresSafeArea(.container, edges: .vertical))
+            .environment(\.defaultMinListRowHeight, ShieldTheme.Layout.minimumTarget)
+            .environment(\.shieldInListRow, true)
     }
 
     /// Native button behavior and disabled feedback; labels remain free to wrap.
@@ -58,13 +49,53 @@ extension View {
         buttonStyle(.borderedProminent)
             .controlSize(.large)
             .buttonBorderShape(.capsule)
-            .tint(ShieldTheme.action)
+            .tint(ShieldTheme.actionFill)
     }
 
+    /// A standalone grouped container, shaped like an inset-grouped section.
     func shieldCard() -> some View {
-        padding(ShieldTheme.Spacing.card)
+        padding(ShieldTheme.Spacing.content)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+            .containerShape(.rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+    }
+
+    /// A standalone text field, shaped like an inset-grouped row. The 26-point corner clamps
+    /// to a capsule on a single line, as with the iOS 26 search field.
+    func shieldField(focused: Bool = false, increasedContrast: Bool = false, fill: Color = ShieldTheme.card) -> some View {
+        modifier(ShieldFieldSurface(focused: focused, increasedContrast: increasedContrast, fill: fill))
+    }
+
+    /// A bottom action tray: scene margins, one grid step above and below, and a backdrop that
+    /// fades content out beneath the buttons, like the iOS 26 soft scroll edge.
+    func shieldBottomTray(over page: Color = ShieldTheme.surface) -> some View {
+        scenePadding(.horizontal)
+            .padding(.vertical, ShieldTheme.Spacing.compact)
+            .shieldTrayBackdrop(over: page)
+    }
+
+    /// The tray's fading backdrop alone, for trays that supply their own margins.
+    func shieldTrayBackdrop(over page: Color = ShieldTheme.surface) -> some View {
+        background {
+            page
+                .mask(LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.4)],
+                                     startPoint: .top, endPoint: .bottom))
+                .padding(.top, -ShieldTheme.Spacing.content)
+                .ignoresSafeArea(edges: .bottom)
+                .allowsHitTesting(false)
+        }
+    }
+
+    /// Welcome pages give their text and actions extra space inside the scene margins.
+    func shieldWelcomeMargins() -> some View {
+        scenePadding(.horizontal)
+            .padding(.horizontal, ShieldTheme.Spacing.card)
+    }
+
+    /// A full-page scroll layout: system scene margins at the sides, grid steps above and below.
+    func shieldPageMargins() -> some View {
+        scenePadding(.horizontal)
+            .padding(.vertical, ShieldTheme.Spacing.card)
     }
 
     func shieldPageHeading() -> some View {
@@ -78,9 +109,9 @@ extension View {
         modifier(ShieldNavigationTitle(title: title))
     }
 
-    /// Serif heading type with slightly tight tracking, scaled with Dynamic Type.
+    /// System heading type, scaled with Dynamic Type.
     func shieldHeading(_ level: ShieldHeadingLevel) -> some View {
-        modifier(ShieldHeadingType(level: level))
+        font(level.font)
     }
 
     func shieldSecondaryButton() -> some View {
@@ -89,12 +120,6 @@ extension View {
             .controlSize(.large)
             .buttonBorderShape(.capsule)
             .tint(ShieldTheme.action)
-    }
-
-    /// The shared text-field surface: Card fill and a visible boundary that turns Action and
-    /// thickens while focused, so the person can always see where typing goes.
-    func shieldField(focused: Bool) -> some View {
-        modifier(ShieldFieldSurface(focused: focused))
     }
 
     /// For icon-and-title action labels that can wrap: see `ShieldWrappingLabelStyle`.
@@ -115,14 +140,18 @@ struct ShieldWrappingLabelStyle: LabelStyle {
         let configuration: LabelStyleConfiguration
 
         var body: some View {
-            if typeSize.isAccessibilitySize {
-                configuration.title.fixedSize(horizontal: false, vertical: true)
-            } else {
-                HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.compact) {
-                    configuration.icon
+            Group {
+                if typeSize.isAccessibilitySize {
                     configuration.title.fixedSize(horizontal: false, vertical: true)
+                } else {
+                    HStack(alignment: .firstTextBaseline, spacing: ShieldTheme.Spacing.compact) {
+                        configuration.icon
+                        configuration.title.fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
+            // In a capsule button this makes one line 52 points, like ShieldActionLabel.
+            .frame(minHeight: ShieldTheme.Layout.capsuleLabelHeight)
         }
     }
 }
@@ -130,60 +159,33 @@ struct ShieldWrappingLabelStyle: LabelStyle {
 private struct ShieldFieldSurface: ViewModifier {
     @Environment(\.colorSchemeContrast) private var contrast
     let focused: Bool
+    let increasedContrast: Bool
+    let fill: Color
 
     func body(content: Content) -> some View {
         content
-            .padding(ShieldTheme.Spacing.content)
-            .background(ShieldTheme.card, in: .rect(cornerRadius: 14))
+            .padding(.horizontal, ShieldTheme.Spacing.content)
+            .padding(.vertical, ShieldTheme.Spacing.regular)
+            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+            .background(fill, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
             .overlay {
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(focused ? ShieldTheme.action : ShieldTheme.fieldBorder, lineWidth: focused || contrast == .increased ? 2 : 1)
+                RoundedRectangle(cornerRadius: ShieldTheme.Layout.cardRadius, style: .continuous)
+                    .strokeBorder(focused ? ShieldTheme.action : ShieldTheme.fieldBorder, lineWidth: focused || increasedContrast || contrast == .increased ? 2 : 1)
             }
     }
 }
 
 enum ShieldHeadingLevel {
-    /// The first screen's headline only: display, a step larger.
+    /// The first screen's headline, as on Apple's welcome screens.
     case hero
     case display, title, section
 
     var font: Font {
         switch self {
-        case .hero: ShieldTheme.Typography.display.scaled(by: 1.2)
-        case .display: ShieldTheme.Typography.display
+        case .hero, .display: ShieldTheme.Typography.display
         case .title: ShieldTheme.Typography.title
         case .section: ShieldTheme.Typography.section
         }
-    }
-    fileprivate var textStyle: Font.TextStyle {
-        switch self {
-        case .hero, .display: .largeTitle
-        case .title: .title
-        case .section: .title3
-        }
-    }
-    /// About 2% tighter than the font's own tracking at the default size.
-    fileprivate var tracking: CGFloat {
-        switch self {
-        case .hero: -1.0
-        case .display: -0.7
-        case .title: -0.5
-        case .section: -0.25
-        }
-    }
-}
-
-private struct ShieldHeadingType: ViewModifier {
-    let level: ShieldHeadingLevel
-    @ScaledMetric private var tracking: CGFloat
-
-    init(level: ShieldHeadingLevel) {
-        self.level = level
-        _tracking = ScaledMetric(wrappedValue: level.tracking, relativeTo: level.textStyle)
-    }
-
-    func body(content: Content) -> some View {
-        content.font(level.font).tracking(tracking)
     }
 }
 
@@ -206,6 +208,7 @@ struct ShieldDisclosure<Content: View>: View {
     private let isExpanded: Binding<Bool>?
     private let content: Content
     @State private var expanded = false
+    @Environment(\.shieldInListRow) private var inListRow
 
     init(_ title: String, isExpanded: Binding<Bool>? = nil, @ViewBuilder content: () -> Content) {
         self.title = title; self.isExpanded = isExpanded; self.content = content()
@@ -230,11 +233,12 @@ struct ShieldDisclosure<Content: View>: View {
         })
     }
 
-    // Stacked disclosures outside a List keep a full touch target each.
+    // A list row already measures 52 points around one line, as its neighbors do; stacked
+    // disclosures outside a List supply that target themselves.
     private var label: some View {
         Text(title).multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: inListRow ? nil : ShieldTheme.Layout.minimumTarget, alignment: .leading)
             .contentShape(.rect)
     }
 }
@@ -259,7 +263,9 @@ struct ShieldActionLabel: View {
         }
         .font(.headline)
         .foregroundStyle(isEnabled ? ShieldTheme.actionInk : Color.primary)
-        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+        // A Headline line is about 20 points, so a bare label would make a 50-point button; the
+        // 22-point minimum brings one line to the 52-point target used for every row and field.
+        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(isWorking ? "In progress" : "")
@@ -328,4 +334,9 @@ struct ShieldLoadingView: View {
         .frame(maxWidth: .infinity, minHeight: 180)
         .accessibilityElement(children: .combine)
     }
+}
+
+extension EnvironmentValues {
+    /// Set by `shieldListStyle()`: the row supplies a 52-point height, so its content shouldn't add one.
+    @Entry var shieldInListRow = false
 }

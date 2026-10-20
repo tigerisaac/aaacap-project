@@ -27,22 +27,21 @@ struct CheckView: View {
                                 if text.isEmpty {
                                     Text("Paste the message here…").fixedSize(horizontal: false, vertical: true).foregroundStyle(ShieldTheme.secondaryText)
                                         // Match TextEditor's own text inset so typing starts where the prompt was.
-                                        .padding(.top, 8).padding(.leading, 5)
+                                        .padding(.top, ShieldTheme.Spacing.compact).padding(.leading, ShieldTheme.Spacing.tight)
                                         .allowsHitTesting(false).accessibilityHidden(true)
                                 }
                             }
                         ViewThatFits(in: .horizontal) {
-                            HStack(spacing: 12) { inputActions }
-                            VStack(alignment: .leading, spacing: 8) { inputActions }
+                            HStack(spacing: ShieldTheme.Spacing.regular) { inputActions }
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) { inputActions }
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, ShieldTheme.Spacing.tight)
                     } footer: {
-                        VStack(alignment: .leading, spacing: 6) {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                             Text("Leave out passwords and private numbers.").foregroundStyle(ShieldTheme.secondaryText)
                             if text.count > 6000 { Text("Too much text. Try a shorter part.").foregroundStyle(ShieldTheme.held) }
                         }
                         .foregroundStyle(ShieldTheme.secondaryText)
-                        .font(.subheadline)
                     }
                     ShieldGroup {
                         Button { editing = false; showConsent = true } label: {
@@ -74,7 +73,7 @@ struct CheckView: View {
                     }
                     if let result {
                         ShieldGroup {
-                            VStack(alignment: .leading, spacing: 16) {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
                                 Label {
                                     Text(result.title).foregroundStyle(ShieldTheme.ink)
                                 } icon: {
@@ -87,9 +86,9 @@ struct CheckView: View {
                                 .accessibilityFocused($resultFocused)
                                 Text(result.detail)
                                 Divider()
-                                Text("What to do next").shieldHeading(.section).foregroundStyle(ShieldTheme.ink)
+                                Text("What to do next").font(.headline)
                                 Text(result.nextStep)
-                            }.padding(.vertical, 12)
+                            }.padding(.vertical, ShieldTheme.Spacing.regular)
                                 .id("check-result")
                             Button { text = ""; self.result = nil; editing = true } label: {
                                 Label("Check another text", systemImage: "plus.bubble")
@@ -129,7 +128,7 @@ struct CheckView: View {
         PasteButton(payloadType: String.self) { values in text = values.joined(separator: "\n") }
             .tint(ShieldTheme.pasteFill).buttonBorderShape(.capsule)
             .controlSize(.large)
-            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+            .frame(minHeight: ShieldTheme.Layout.systemTarget)
             .disabled(checking || readingPhoto)
         PhotosPicker(selection: $selectedPhoto, matching: .images) { [readingPhoto, wide = typeSize.isAccessibilitySize] in
             Label(readingPhoto ? "Reading picture…" : "Choose picture", systemImage: "photo")

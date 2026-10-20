@@ -35,7 +35,7 @@ struct DisconnectView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
                     if let cancellation = model.cancellation {
                         Text("Disconnection cancelled").shieldPageHeading().accessibilityAddTraits(.isHeader)
                             .id("disconnect-top").accessibilityFocused($headingFocused)
@@ -81,7 +81,7 @@ struct DisconnectView: View {
                             Button("Try again") { Task { await model.load(app, id: participantID) } }
                         }
                     }
-                }.padding(24).frame(maxWidth: 560, alignment: .leading).frame(maxWidth: .infinity)
+                }.shieldPageMargins().frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
             }
             .onChange(of: model.status?.index) { _, _ in
                 prepared = false; phoneBanner = false; guide.stop()
@@ -96,11 +96,15 @@ struct DisconnectView: View {
         .background(ShieldTheme.surface)
         .safeAreaInset(edge: .bottom) {
             if !cancellationRequested && model.status != nil && model.cancellation == nil && !typeSize.isAccessibilitySize {
-                action.padding(.horizontal, 24).padding(.vertical, 12).background(ShieldTheme.surface)
+                action.shieldBottomTray()
             }
         }
         .navigationTitle(cancellationRequested ? "Keep using Shield" : "Disconnect Shield").navigationBarTitleDisplayMode(.inline)
-        .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Close") { dismiss() }.disabled(model.working) } }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(role: .close) { dismiss() }.disabled(model.working).accessibilityInputLabels(["Close"])
+            }
+        }
         .phoneLauncherBanner(isPresented: $phoneBanner)
         .task { await model.load(app, id: participantID, refresh: true) }
         .onDisappear { guide.stop() }
@@ -120,12 +124,12 @@ struct DisconnectView: View {
             }
         }
         .navigationDestination(isPresented: $showVoicemailPreference) {
-            ScrollView { RestorationSettingsGuide(index: $settingsIndex).padding(24) }
+            ScrollView { RestorationSettingsGuide(index: $settingsIndex).shieldPageMargins() }
                 .background(ShieldTheme.surface).navigationTitle("Live Voicemail")
         }
     }
     private var cancellationContent: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.page) {
             Text("Keep using Shield?").shieldPageHeading().accessibilityAddTraits(.isHeader)
                 .id("disconnect-top").accessibilityFocused($headingFocused)
             Text("If you only opened the guide and haven’t changed any carrier or iPhone settings, cancel your disconnection here.")
@@ -175,10 +179,10 @@ struct DisconnectView: View {
     }
 
     private var introduction: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
             Text("We’ll take this one step at a time.").font(.title3)
             ShieldDisclosure("Read all phone steps") {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
                     Text("Restore carrier forwarding").font(.headline)
                     if model.localInstructions.isEmpty {
                         Text("Ask your carrier to restore ordinary calls and voicemail for the line you connected to Shield, including busy, unanswered and unreachable calls. Use the instructions for your line; reset codes differ by carrier.")
@@ -204,7 +208,7 @@ struct DisconnectView: View {
         }
     }
     private var completion: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
             Text("You confirmed that calls reach you and a message reaches your carrier voicemail. Shield’s call service is now off.")
             Text("These checks are based on what you told us. Shield cannot read your carrier or iPhone settings.").foregroundStyle(ShieldTheme.secondaryText)
             if forDeletion { Text("Your account is still here. Next, review what will be deleted.") }
@@ -284,7 +288,7 @@ private struct DisconnectInstruction: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     var body: some View {
         if typeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                 Text("Step \(number)").font(.headline).foregroundStyle(ShieldTheme.action)
                 Text(title).font(.headline)
                 if !detail.isEmpty { Text(detail).foregroundStyle(ShieldTheme.secondaryText) }

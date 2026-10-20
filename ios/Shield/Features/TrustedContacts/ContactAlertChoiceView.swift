@@ -28,10 +28,10 @@ struct ContactAlertChoiceView: View {
     }
     var body: some View {
         ShieldSection(request.name) {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                 Text(request.status == "accepted" ? "You’re a caretaker." : "Receive protection alerts?").font(.headline)
                 if request.ownerPaused { Text("\(request.name) has paused these alerts.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
-            }.padding(.vertical, 6)
+            }.padding(.vertical, ShieldTheme.Spacing.tight)
             Toggle("Text messages", isOn: $textAlerts).disabled(working || !textAvailable).accessibilityIdentifier("contact-text-alerts")
             Toggle("App notifications", isOn: $appAlerts).disabled(working || !appAvailable).accessibilityIdentifier("contact-app-alerts")
             if inboxAvailable {

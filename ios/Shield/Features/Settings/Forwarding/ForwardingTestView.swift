@@ -3,7 +3,7 @@ import SwiftUI
 struct ForwardingTestView: View {
     let status: ForwardingStatus
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
             if status.publicEnrollment == true {
                 Text(status.alwaysOn == true ? "Protection is on." : "When these checks are complete, choose Start protection. Until then, screening is limited to your setup window.")
                     .font(.headline)
@@ -17,7 +17,7 @@ struct ForwardingTestView: View {
                     .foregroundStyle(ForwardingStyle.secondaryText)
             }
             ShieldDisclosure("How do I disconnect later?") {
-                Text("Choose Disconnect Shield in Setup options. Keep the app until ordinary calls and voicemail work.")
+                Text("Open More at the top, then Disconnect Shield. Keep the app until ordinary calls and voicemail work.")
             }
             ShieldDisclosure("Other calls to check") {
                 Text("Ask a helper to call from a number you haven’t saved. Answer Shield’s call and press 1. Check that you can hear each other.")

@@ -1,33 +1,140 @@
 import SwiftUI
 
+/// The app icon and name, sized like the icon on Apple's welcome screens.
 struct ShieldBrand: View {
     var compact = false
+    @ScaledMetric(relativeTo: .largeTitle) private var iconSize = 64.0
+    @ScaledMetric(relativeTo: .title2) private var compactIconSize = 32.0
+
     var body: some View {
-        HStack(spacing: 12) {
+        let size = compact ? compactIconSize : iconSize
+        HStack(spacing: ShieldTheme.Spacing.regular) {
             Image("ShieldMark").resizable().scaledToFit()
-                .frame(width: compact ? 32 : 60, height: compact ? 32 : 60)
-                .clipShape(.rect(cornerRadius: (compact ? 32 : 60) * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
+                .frame(width: size, height: size)
+                .clipShape(.rect(cornerRadius: size * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
                 .accessibilityHidden(true)
-            Text("Shield").font(compact ? .system(.title2, design: .serif) : ShieldTheme.Typography.display)
+            // The wordmark is always New York, at the size of the heading it sits beside.
+            Text("Shield").font(compact ? ShieldTheme.Typography.title : ShieldTheme.Typography.display)
                 .foregroundStyle(ShieldTheme.ink)
         }
         .accessibilityElement(children: .combine)
     }
 }
 
-/// The quiet symbol tile that leads call, message, action and status rows, so their text
-/// starts on one shared column.
-struct ShieldRowSymbol: View {
-    let systemName: String
-    var color: Color = ShieldTheme.action
-    @ScaledMetric(relativeTo: .body) private var size = 36.0
+/// The top of an iOS 26 welcome screen, as in Health, Messages and Reminders: an icon, then a
+/// heading, then one secondary sentence, all on the leading edge. The heading names the screen,
+/// so it takes the brand serif at Title size, the same as every page heading: New York's smaller
+/// x-height reads a step below SF, so Title 2 would look smaller than the sentence beneath it.
+/// The sentence is Title 3 SF, a 28:20 ratio (1.4) between the two.
+struct ShieldWelcomeHeader: View {
+    let title: String
+    var detail = ""
+    /// An SF Symbol in place of the app icon, for later onboarding pages.
+    var symbol: String?
 
     var body: some View {
-        Image(systemName: systemName)
-            .font(.body.weight(.medium)).foregroundStyle(color)
-            .frame(width: size, height: size)
-            .background(ShieldTheme.quietSurface, in: .rect(cornerRadius: 10))
-            .accessibilityHidden(true)
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.card) {
+            ShieldWelcomeIcon(symbol: symbol)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title).font(ShieldTheme.Typography.title).foregroundStyle(ShieldTheme.ink)
+                    .accessibilityAddTraits(.isHeader)
+                if !detail.isEmpty {
+                    Text(detail).font(.title3).foregroundStyle(ShieldTheme.secondaryText)
+                }
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, ShieldTheme.Spacing.section)
+    }
+}
+
+/// The welcome header's icon alone, for pages whose heading needs its own focus handling.
+/// 64 points, growing with text to 96, then giving way at accessibility sizes.
+struct ShieldWelcomeIcon: View {
+    var symbol: String?
+    @ScaledMetric(relativeTo: .title2) private var iconSize = 64.0
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    var body: some View {
+        // The icon grows with the text up to half again its size, then holds, so the title stays in view.
+        let iconSize = min(self.iconSize, 96)
+        // Decorative, so at accessibility sizes it gives its space to the content, as row symbols do.
+        if typeSize.isAccessibilitySize {
+            EmptyView()
+        } else if let symbol {
+            Image(systemName: symbol)
+                .font(.system(size: iconSize * 0.75, weight: .regular))
+                .foregroundStyle(ShieldTheme.action)
+                .frame(height: iconSize)
+                .accessibilityHidden(true)
+        } else {
+            Image("ShieldMark").resizable().scaledToFit()
+                .frame(width: iconSize, height: iconSize)
+                .clipShape(.rect(cornerRadius: iconSize * ShieldTheme.Layout.iconCornerRatio, style: .continuous))
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+struct ScreenIntro: View {
+    let title: String
+    let detail: String
+    let symbol: String
+    var color: Color = ShieldTheme.action
+    var body: some View {
+        HStack(alignment: .top, spacing: ShieldTheme.Spacing.content) {
+            ShieldRowSymbol(systemName: symbol, color: color, size: 44)
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).accessibilityAddTraits(.isHeader)
+                Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, ShieldTheme.Spacing.compact)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// The leading symbol of a row. `.tile` is the Settings icon: a white glyph on a filled,
+/// continuous-cornered square whose corner is 7/30 of its side. `.avatar` is the circle
+/// Phone and Messages use for people, tinted rather than filled so outcome colors stay calm.
+struct ShieldRowSymbol: View {
+    enum Style { case tile, avatar }
+    let systemName: String
+    var color: Color = ShieldTheme.action
+    var style: Style = .tile
+    @ScaledMetric(relativeTo: .body) private var size: CGFloat = ShieldTheme.Layout.symbolTile
+
+    init(systemName: String, color: Color = ShieldTheme.action, style: Style = .tile, size: CGFloat? = nil) {
+        self.systemName = systemName; self.color = color; self.style = style
+        _size = ScaledMetric(wrappedValue: size ?? (style == .tile ? ShieldTheme.Layout.symbolTile : ShieldTheme.Layout.avatar), relativeTo: .body)
+    }
+
+    var body: some View {
+        Group {
+            switch style {
+            case .tile:
+                Image(systemName: systemName)
+                    .font(.system(size: size * 0.6, weight: .medium))
+                    .foregroundStyle(.white)
+                    .frame(width: size, height: size)
+                    .background {
+                        // Tiles keep their Light fill in Dark Mode, as Settings tiles do, so the white
+                        // glyph holds at least 5.8:1 instead of fading on the paler Dark tints.
+                        RoundedRectangle(cornerRadius: size * ShieldTheme.Layout.symbolTileRadius / ShieldTheme.Layout.symbolTile, style: .continuous)
+                            .fill(color.gradient)
+                            .environment(\.colorScheme, .light)
+                    }
+            case .avatar:
+                Image(systemName: systemName)
+                    .font(.system(size: size * 0.45, weight: .semibold))
+                    .foregroundStyle(color)
+                    .frame(width: size, height: size)
+                    .background(color.opacity(ShieldTheme.tintFillOpacity), in: .circle)
+            }
+        }
+        .accessibilityHidden(true)
     }
 }
 
@@ -43,16 +150,17 @@ struct ActionRow: View {
             if !typeSize.isAccessibilitySize {
                 ShieldRowSymbol(systemName: symbol, color: color)
             }
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.body.weight(.medium)).foregroundStyle(ShieldTheme.ink)
+            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
+                Text(title).font(.body).foregroundStyle(ShieldTheme.ink)
                 if !detail.isEmpty {
                     Text(detail).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+        // A one-line tile row is 52 points, as in Settings; a detail line adds grid steps.
+        .padding(.vertical, detail.isEmpty ? (typeSize.isAccessibilitySize ? 0 : -ShieldTheme.Layout.rowInsetCorrection) : ShieldTheme.Spacing.tight)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(.rect)
         .opacity(isEnabled ? 1 : 0.5)
         .accessibilityElement(children: .combine)
@@ -64,7 +172,7 @@ struct FlowProgress: View {
     let current: Int
     let total: Int
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
             Text("Step \(current) of \(total)")
                 .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -75,7 +183,7 @@ struct FlowProgress: View {
     }
 }
 
-/// Native grouping with Shield's display heading and adaptive card surface.
+/// Native grouping with the system's prominent section header (title 3, semibold).
 struct ShieldSection<Content: View, Footer: View>: View {
     let title: String
     let content: Content
@@ -87,8 +195,9 @@ struct ShieldSection<Content: View, Footer: View>: View {
         self.title = title; self.content = content(); self.footer = footer()
     }
     var body: some View {
-        Section { content } header: { Text(title).shieldHeading(.section).foregroundStyle(ShieldTheme.ink).textCase(nil).accessibilityAddTraits(.isHeader) }
-            footer: { footer.font(.subheadline).foregroundStyle(ShieldTheme.secondaryText) }
+        Section { content } header: { Text(title).textCase(nil).accessibilityAddTraits(.isHeader) }
+            footer: { footer.foregroundStyle(ShieldTheme.secondaryText) }
+            .headerProminence(.increased)
             .listRowBackground(ShieldTheme.card)
     }
 }

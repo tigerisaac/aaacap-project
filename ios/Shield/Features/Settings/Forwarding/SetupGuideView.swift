@@ -19,7 +19,7 @@ struct SetupGuideView: View {
             }
         }
         .aspectRatio(1.5, contentMode: .fit)
-        .clipShape(.rect(cornerRadius: 12))
+        .clipShape(.rect(cornerRadius: ShieldTheme.Layout.innerRadius))
         .accessibilityHidden(true)
         .task(id: guide.rawValue + String(reduceMotion || showingResult)) {
             await player.prepare(guide, reduceMotion: reduceMotion || showingResult)

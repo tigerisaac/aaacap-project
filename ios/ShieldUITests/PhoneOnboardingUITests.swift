@@ -12,7 +12,8 @@ final class PhoneOnboardingUITests: XCTestCase {
             XCTAssertFalse(app.textFields["Email address"].exists)
             XCTAssertTrue(app.buttons["Privacy"].exists || app.links["Privacy"].exists)
             XCTAssertGreaterThanOrEqual(app.textFields["sign-in-phone"].frame.height, 52)
-            XCTAssertGreaterThanOrEqual(app.buttons["phone-sign-in-submit"].frame.height, 52)
+            // The native large capsule supplies its height; retain the 44-point minimum target.
+            XCTAssertGreaterThanOrEqual(app.buttons["phone-sign-in-submit"].frame.height, 44)
             capture(app, "Phone-only sign-in \(appearance)")
         }
     }

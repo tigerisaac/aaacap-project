@@ -42,7 +42,7 @@ struct PhoneOptionsView: View {
                 }
                 ShieldSection("Phone check") {
                     HStack(spacing: ShieldTheme.Spacing.regular) {
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                             Text(setup.phoneVerified ? "Your phone has been checked" : "Your phone needs a check")
                             if let date = setup.lastTestAt {
                                 Text("Last checked \(date.formatted(date: .abbreviated, time: .omitted))")
@@ -55,7 +55,7 @@ struct PhoneOptionsView: View {
                             .font(.title3).foregroundStyle(setup.phoneVerified ? ShieldTheme.connected : ShieldTheme.held)
                             .accessibilityHidden(true)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, ShieldTheme.Spacing.tight)
                     .accessibilityElement(children: .combine)
                     if !setup.consented {
                         Button("Agree to use Shield") { confirmConsent = true }

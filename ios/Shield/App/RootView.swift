@@ -167,8 +167,6 @@ struct RootView: View {
                             }
                         }
                         .tabBarMinimizeBehavior(.never)
-                        .toolbarBackground(ShieldTheme.surface, for: .tabBar)
-                        .toolbarBackgroundVisibility(.visible, for: .tabBar)
                         .demoAccessory(model.isDemo)
                     }
                 }

@@ -4,7 +4,7 @@ struct SetupInfoCard: View {
     let title: String
     let detail: String
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
             Text(title).font(.headline)
             Text(detail).foregroundStyle(ForwardingStyle.secondaryText)
         }

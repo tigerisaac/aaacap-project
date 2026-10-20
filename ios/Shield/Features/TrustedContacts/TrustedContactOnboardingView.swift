@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TrustedContactOnboardingView: View {
     @Environment(AppState.self) private var model
+    @Environment(\.dynamicTypeSize) private var typeSize
     let participantID: UUID
     @State private var added: TrustedContact?
     @State private var working = false
@@ -18,8 +19,8 @@ struct TrustedContactOnboardingView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.section) {
-                    Text(added == nil ? "Would you like someone to help?" : "Waiting for confirmation")
-                        .shieldPageHeading().accessibilityAddTraits(.isHeader)
+                    ShieldWelcomeHeader(title: added == nil ? "Would you like someone to help?" : "Waiting for confirmation",
+                                        symbol: added == nil ? "person.2.fill" : "hourglass")
                     if let added {
                         Text("\(added.name) gets alerts only after accepting, and chooses how to get them.")
                         if added.requestDelivery != "submitted" {
@@ -30,13 +31,12 @@ struct TrustedContactOnboardingView: View {
                         if let url = model.service?.trustedContactsInvitationURL {
                             ShareLink(item: url, message: Text("Please review my caretaker request in Shield. Sign in with the mobile number I used for your invitation.")) {
                                 Label("Share invitation", systemImage: "square.and.arrow.up").shieldWrappingLabel()
-                                    .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                             }.shieldSecondaryButton()
                         }
                         Text("You can change this in Settings → Caretakers.")
                             .foregroundStyle(ShieldTheme.secondaryText)
-                        Button { Task { await finish(enabled: true) } } label: { ShieldActionLabel(title: choiceUnconfirmed ? "Try saving again" : "Continue", isWorking: working && !checkingStatus) }
-                            .shieldPrimaryButton().disabled(!canSave).accessibilityIdentifier("trusted-contact-finish")
+                        if typeSize.isAccessibilitySize { finishButton }
                     } else {
                         Text("Shield can alert a caretaker if checks while you talk detect a possible scam request and intervene. Those checks must be on.")
                         VStack(spacing: ShieldTheme.Spacing.regular) {
@@ -56,22 +56,37 @@ struct TrustedContactOnboardingView: View {
                             if choiceUnconfirmed {
                                 Button { Task { await checkStatus() } } label: {
                                     Label(checkingStatus ? "Checking…" : "Check current status", systemImage: "arrow.clockwise")
-                                        .shieldWrappingLabel().frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                        .shieldWrappingLabel().frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                                 }.shieldSecondaryButton().disabled(working)
                             }
                         }.id("onboarding-choice-error")
                     }
-                }.padding(ShieldTheme.Spacing.page)
+                }.shieldWelcomeMargins().padding(.vertical, ShieldTheme.Spacing.card)
                     .frame(maxWidth: ShieldTheme.Layout.readableWidth, alignment: .leading).frame(maxWidth: .infinity)
-            }.background(ShieldTheme.surface)
-                .navigationTitle("Your choice").navigationBarTitleDisplayMode(.inline)
+            }
+            // Once a caretaker is added, Continue is the page's one action and pins to the bottom,
+            // as on the other welcome pages; at accessibility sizes it scrolls inline instead.
+            .safeAreaInset(edge: .bottom) {
+                if added != nil, !typeSize.isAccessibilitySize {
+                    finishButton.frame(maxWidth: ShieldTheme.Layout.readableWidth)
+                        .padding(.horizontal, ShieldTheme.Spacing.card).shieldBottomTray(over: ShieldTheme.welcomePage)
+                }
+            }
+            .background(ShieldTheme.welcomePage)
+            .toolbar(.hidden, for: .navigationBar)
                 .onChange(of: feedbackRevision) { _, _ in
                     proxy.scrollTo("onboarding-choice-error", anchor: .top)
                     errorFocused = true
                 }
         }
     }
-    /// One of two equal choices: the shared row symbol and text, on its own card.
+    private var finishButton: some View {
+        Button { Task { await finish(enabled: true) } } label: { ShieldActionLabel(title: choiceUnconfirmed ? "Try saving again" : "Continue", isWorking: working && !checkingStatus) }
+            .shieldPrimaryButton().disabled(!canSave).accessibilityIdentifier("trusted-contact-finish")
+    }
+
+    /// One of two equal choices: the shared row symbol and text on a grouped element, shaped
+    /// like the toggle on the previous page.
     private struct ChoiceCard: View {
         let title: String
         let detail: String
@@ -82,8 +97,8 @@ struct TrustedContactOnboardingView: View {
                 Image(systemName: "chevron.right").font(.subheadline.weight(.semibold))
                     .foregroundStyle(.tertiary).accessibilityHidden(true)
             }
-            .padding(.horizontal, ShieldTheme.Spacing.content).padding(.vertical, 6)
-            .background(ShieldTheme.card, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+            .padding(.horizontal, ShieldTheme.Spacing.content).padding(.vertical, ShieldTheme.Spacing.compact)
+            .background(ShieldTheme.welcomeElement, in: .rect(cornerRadius: ShieldTheme.Layout.cardRadius))
             .contentShape(.rect)
         }
     }

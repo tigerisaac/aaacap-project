@@ -6,7 +6,7 @@ struct HistoryBrowseLabel: View {
 
     var body: some View {
         HStack(spacing: ShieldTheme.Spacing.content) {
-            Text(title).font(.body.weight(.medium))
+            Text(title).font(.body)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
             // Drawn like the native row disclosure so stacked rows share one chevron.
@@ -14,8 +14,8 @@ struct HistoryBrowseLabel: View {
                 .font(.footnote.weight(.semibold)).imageScale(.large)
                 .foregroundStyle(Color(uiColor: .tertiaryLabel)).accessibilityHidden(true)
         }
-        .padding(.vertical, ShieldTheme.Spacing.content)
-        .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget, alignment: .leading)
+        // The list row supplies the 52-point height, as for the navigation rows above it.
+        .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(.rect)
     }
 }

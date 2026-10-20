@@ -45,9 +45,6 @@ struct TrustedContactsView: View {
                             Button("Done") { dismiss() }.frame(minHeight: ShieldTheme.Layout.minimumTarget)
                         }
                     }
-                    if response.supportsRequests, response.contacts.isEmpty {
-                        ShieldGroup { Text("Alert someone you trust when checks while you talk detect a possible scam request and intervene.") }
-                    }
                     if !response.contacts.isEmpty {
                         ShieldGroup {
                             Toggle("Send protection alerts", isOn: Binding(get: { response.enabled }, set: { value in Task { await setEnabled(value) } }))
@@ -56,13 +53,13 @@ struct TrustedContactsView: View {
                     }
                     ForEach(response.contacts) { contact in
                         ShieldSection(contact.name) {
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: ShieldTheme.Spacing.tight) {
                                 Text(PhoneDisplay.format(contact.phone)).monospacedDigit()
                                 Text(contact.statusLabel).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 if contact.status == "accepted" {
                                     Text("Protection alerts only").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 }
-                            }.padding(.vertical, 4)
+                            }.padding(.vertical, ShieldTheme.Spacing.tight)
                             if contact.status == "pending", let label = contact.invitationDeliveryLabel {
                                 Text(label).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             } else if contact.status == "pending" {
@@ -86,7 +83,13 @@ struct TrustedContactsView: View {
                             } } label: {
                                 ActionRow(title: "Add caretaker", symbol: "person.badge.plus")
                             }
-                        } footer: { Text("They must accept first. Calls and messages stay private.") }
+                        } footer: {
+                            // With no caretakers, Add caretaker leads and the purpose sits under it, as in
+                            // Settings: a sentence card or empty state above pushed it off screen at large text.
+                            Text(response.contacts.isEmpty
+                                 ? "Alert someone you trust when checks while you talk detect a possible scam request and intervene. They must accept first. Calls and messages stay private."
+                                 : "They must accept first. Calls and messages stay private.")
+                        }
                     }
                     if response.supportsRequests {
                         ShieldGroup {
@@ -111,7 +114,7 @@ struct TrustedContactsView: View {
                             Button { Task { await load() } } label: {
                                 Label(response == nil ? "Try again" : "Check current status", systemImage: "arrow.clockwise")
                                     .shieldWrappingLabel()
-                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
+                                    .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.capsuleLabelHeight)
                             }.shieldSecondaryButton()
                         }.padding(.vertical, ShieldTheme.Spacing.compact)
                     }

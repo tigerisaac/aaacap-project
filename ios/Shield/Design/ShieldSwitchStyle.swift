@@ -2,7 +2,15 @@ import SwiftUI
 
 /// Retain the familiar iPhone switch, with the entire labeled row as its touch target.
 struct ShieldSwitchStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration: Configuration) -> some View { SwitchRow(configuration: configuration) }
+
+    private struct SwitchRow: View {
+        let configuration: Configuration
+        @Environment(\.shieldInListRow) private var inListRow
+        var body: some View { ShieldSwitchStyle.body(configuration, inListRow: inListRow) }
+    }
+
+    fileprivate static func body(_ configuration: Configuration, inListRow: Bool) -> some View {
         Button { configuration.isOn.toggle() } label: {
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: ShieldTheme.Spacing.content) {
@@ -20,7 +28,8 @@ struct ShieldSwitchStyle: ToggleStyle {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
-            .frame(minHeight: ShieldTheme.Layout.minimumTarget)
+            // A list row already measures 52 points; standalone switches supply it themselves.
+            .frame(minHeight: inListRow ? nil : ShieldTheme.Layout.minimumTarget)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -28,7 +37,7 @@ struct ShieldSwitchStyle: ToggleStyle {
         // would give the label a separate layout that cannot follow this wrapping.
     }
 
-    private func indicator(_ configuration: Configuration) -> some View {
+    private static func indicator(_ configuration: Configuration) -> some View {
         Toggle("", isOn: configuration.$isOn)
             .toggleStyle(.switch).labelsHidden()
             .fixedSize().allowsHitTesting(false).accessibilityHidden(true)
