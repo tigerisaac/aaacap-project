@@ -5,7 +5,7 @@ import { bearer, HttpError, type AuthProvider, type Identity } from '../auth.js'
 import { normalizePhone } from '../crypto.js';
 import type { CloudStore, Person } from './store.js';
 import { verifyTelnyx } from './forwarding-provider.js';
-import { TelnyxTextSender, type TextSender } from './text-alerts.js';
+import { TelnyxTextSender, isMessageID, submissionStatus, type TextSender } from './text-alerts.js';
 import { caretakerInbox } from './caretaker-inbox.js';
 
 const uuid = z.string().uuid().transform(value => value.toLowerCase());
@@ -103,7 +103,8 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
     if (created && sendText) {
       await ref.update({ requestDelivery: 'sending' });
       const result = await sender.send(phone, preview.message);
-      await ref.update({ requestDelivery: result });
+      await ref.update({ requestDelivery: submissionStatus(result),
+        ...(typeof result === 'object' ? { requestMessageHash: store.vault.hash(`sms:${result.messageId}`) } : {}) });
     }
     return { contact: ownerDTO(ref.id, (await ref.get()).data()!) };
   });
@@ -161,9 +162,40 @@ export function registerTrustedContacts(app: FastifyInstance, store: CloudStore,
   app.post('/public/messaging/webhook', async (request, reply) => {
     if (!request.rawFormBody || !verifyTelnyx(store.config.TELNYX_PUBLIC_KEY, request.headers['telnyx-signature-ed25519'], request.headers['telnyx-timestamp'], request.rawFormBody, store.now())) return reply.code(403).send({});
     const event = z.object({ data: z.object({ event_type: z.string(), occurred_at: z.string().datetime({ offset: true }),
-      payload: z.object({ from: z.object({ phone_number: z.string() }).optional(), to: z.array(z.object({ phone_number: z.string() })).optional(),
+      payload: z.object({ id: z.string().optional(), direction: z.string().optional(),
+        from: z.object({ phone_number: z.string() }).optional(), to: z.array(z.object({ phone_number: z.string(), status: z.string().optional() })).optional(),
         text: z.string().max(2000).optional(), messaging_profile_id: z.string().optional() }) }) }).parse(request.body).data;
     const sms = store.config.SMS_ALERTS, p = event.payload;
+    if (sms && event.event_type === 'message.finalized') {
+      if (p.from?.phone_number !== sms.from || p.direction !== 'outbound'
+        || (p.messaging_profile_id && p.messaging_profile_id !== sms.messagingProfileId)
+        || !isMessageID(p.id) || p.to?.length !== 1) return { received: true };
+      const recipient = p.to[0]!, phone = normalizePhone(recipient.phone_number);
+      // Telnyx profile redaction masks the destination's final four digits.
+      // Signature, sender/profile and the known message ID still bind the receipt.
+      if ((!phone && !/^\+1\d{6}\*{4}$/.test(recipient.phone_number))
+        || !['delivered', 'delivery_failed', 'delivery_unconfirmed'].includes(recipient.status ?? '')) return { received: true };
+      const hash = store.vault.hash(`sms:${p.id.toLowerCase()}`), phoneHash = phone ? contactPhoneHash(store, phone) : undefined;
+      const [contacts, alerts] = await Promise.all([
+        store.db.collection('alertContacts').where('requestMessageHash', '==', hash).limit(1).get(),
+        store.db.collection('alertDeliveries').where('textMessageHash', '==', hash).limit(1).get()]);
+      const at = Date.parse(event.occurred_at);
+      // A receipt can beat persistence of the send response. Ask Telnyx to retry
+      // briefly, without retaining the incoming body or reviving erased records.
+      if (contacts.empty && alerts.empty && at <= store.now() && store.now() - at < 60_000) return reply.code(503).send({ retry: true });
+      for (const doc of [...contacts.docs, ...alerts.docs]) {
+        await store.db.runTransaction(async tx => {
+          const d = (await tx.get(doc.ref)).data();
+          const invitation = doc.ref.parent.id === 'alertContacts';
+          if (!d || (phoneHash && (invitation ? d.phoneHash : d.textPhoneHash) !== phoneHash)
+            || (invitation ? d.requestDeliveryFinalizedAt : d.textFinalizedAt) !== undefined) return;
+          tx.update(doc.ref, invitation
+            ? { requestDelivery: recipient.status, requestDeliveryFinalizedAt: at }
+            : { textResult: recipient.status, textFinalizedAt: at });
+        });
+      }
+      return { received: true };
+    }
     if (!sms || event.event_type !== 'message.received' || p.messaging_profile_id !== sms.messagingProfileId || !p.to?.some(v => v.phone_number === sms.from)) return { received: true };
     const phone = p.from?.phone_number && normalizePhone(p.from.phone_number), word = p.text?.trim().toUpperCase();
     if (!phone || !word || !['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT', 'START', 'UNSTOP'].includes(word)) return { received: true };

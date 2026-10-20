@@ -1,5 +1,9 @@
 # Architecture
 
+## Caretaker SMS delivery receipts — source only, October 19
+
+Telnyx send responses return a provider message ID that is stored only as a keyed hash on an existing contact/alert receipt. Signed final callbacks match the configured sender/profile and known message hash, check an unredacted destination against the stored phone hash, and record delivered/failed/unconfirmed status without storing message content. Unknown submissions are never automatically repeated. A callback beating response persistence receives a bounded retry response; callbacks do not recreate erased records. Terminal state survives replays and alert-worker completion. The owner’s Caretakers screen exposes invitation delivery separately from recipient acceptance. The existing mobile-auth flow and alert/phone quotas remain. These changes and the [existing-number activation plan](CARETAKER-MESSAGING.md) are not deployed; no SMS sender was configured.
+
 ## Caretaker invitation preview — source only, October 19
 
 Authenticated caretaker reads expose the exact SMS template, sender and a server-derived version when texting is configured. Creation requires that version before a new SMS-backed request can be stored/sent; manual requests without texting do not require it. Existing idempotent requests return before this gate and do not resend. The iPhone loads and displays that preview, disables sending on load failure and requires a new tap after a stale-template refresh. New clients require the matching API before SMS activation; no SMS service was enabled. October 19 verification supersedes the test pause for the local candidate below, but does not establish deployment or real delivery.

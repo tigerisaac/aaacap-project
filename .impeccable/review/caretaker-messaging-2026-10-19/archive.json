@@ -1,0 +1,34 @@
+{
+  "archive": "/tmp/shield-caretaker-release-20261019.xcarchive",
+  "verified": true,
+  "distributionSigningVerified": false,
+  "version": "0.1.0",
+  "build": "1",
+  "minimumOS": "26.0",
+  "apiHost": "shield-calls-isaac.web.app",
+  "developmentNetworkingException": false,
+  "messageFilterEmbedded": false,
+  "bundles": [
+    {
+      "path": ".",
+      "identifier": "org.isaaczhang.Shield",
+      "architecture": "arm64"
+    },
+    {
+      "path": "PlugIns/ShieldCallDirectory.appex",
+      "identifier": "org.isaaczhang.Shield.CallDirectory",
+      "architecture": "arm64"
+    }
+  ],
+  "privacyManifests": [
+    "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+    "PrivacyInfo.xcprivacy",
+    "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+  ],
+  "appBinarySha256": "069cc040187bb044d9d354d64c6c01083185d05c1a279b1f07a65aa664cba562",
+  "contactPhoneParser": {
+    "version": "1.13.13",
+    "verified": true,
+    "licenseIncluded": true
+  }
+}

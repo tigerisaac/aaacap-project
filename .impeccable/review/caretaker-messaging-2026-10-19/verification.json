@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-19",
+  "scope": "Local caretaker SMS implementation, native synthetic UI, unsigned archive and read-only provider checks; no calls, texts, deployment or provider mutation.",
+  "checks": {
+    "npm run check": {
+      "passed": true,
+      "unitTests": 395
+    },
+    "npm run test:firebase": {
+      "passed": true,
+      "tests": 323
+    },
+    "finalFocusedPhoneContacts": {
+      "passed": true,
+      "tests": 30
+    },
+    "focusedUI": {
+      "iOS26.5": {
+        "passed": true,
+        "tests": 4
+      },
+      "iOS27": {
+        "passed": true,
+        "tests": 4
+      }
+    },
+    "visualInspection": {
+      "passed": true,
+      "scope": "Standard and maximum-text dark delivery feedback; content scrolls and manual sharing remains available."
+    },
+    "unsignedReleaseArchive": {
+      "passed": true,
+      "distributionSigningVerified": false,
+      "version": "0.1.0",
+      "build": "1",
+      "appBinarySha256": "069cc040187bb044d9d354d64c6c01083185d05c1a279b1f07a65aa664cba562"
+    }
+  },
+  "earlierRuns": [
+    {
+      "path": "/tmp/shield-caretaker-ui-20261019.xcresult",
+      "result": "Interrupted: new test initially selected onboarding instead of Caretakers; navigation corrected."
+    },
+    {
+      "path": "/tmp/shield-caretaker-ui-final-20261019.xcresult",
+      "result": "All four iOS26.5 methods passed; iOS27 test service lost connection/terminated before bootstrapping. Restarted simulator and reran only iOS27 without rebuilding."
+    }
+  ],
+  "provider": {
+    "existingNumberSelectedByOwner": true,
+    "profileCreated": false,
+    "SMSActivated": false,
+    "automaticReview": {
+      "action": "Create a disabled Telnyx messaging profile with a $2/day SMS cap",
+      "result": "Rejected before execution",
+      "reason": "Live provider configuration may incur costs and needs explicit owner approval."
+    }
+  },
+  "limits": [
+    "Registration/fees and business details remain pending",
+    "Source is not deployed",
+    "No provider or handset text delivery established",
+    "Existing voice configuration and limits were read-only observed, not changed",
+    "Pre-existing uncommitted iPhone work is included in the working-tree build but excluded from this commit"
+  ],
+  "logs": {
+    "check-final": {
+      "path": "/tmp/shield-caretaker-check-final-20261019.log",
+      "sha256": "a17f1f96482aadb98cea13ed97ca4fb55252b073f19e02a4a9428d4bc3a54fab"
+    },
+    "firebase-final": {
+      "path": "/tmp/shield-caretaker-firebase-final-20261019.log",
+      "sha256": "2cbb4fdef3e2aed0c3f90c7bc2ea8ff6ec746f1562da6501c4d34edda2cc6464"
+    },
+    "race": {
+      "path": "/tmp/shield-caretaker-race-20261019.log",
+      "sha256": "b49bf5352a2961d46d8fa66de1a0950adb7fd47da189a919e427f9254495ed02"
+    },
+    "ui-final": {
+      "path": "/tmp/shield-caretaker-ui-final-20261019.log",
+      "sha256": "05fdeccbfb56bc434873c4e7d25c19ef6c8c6d411be8c20c0ff480231629e529"
+    },
+    "ui-ios27": {
+      "path": "/tmp/shield-caretaker-ui-ios27-20261019.log",
+      "sha256": "de9dfe570b913270c3e9ef0d749959c2c9fcdcbc831f83564f9918c930a78a61"
+    },
+    "archive": {
+      "path": "/tmp/shield-caretaker-archive-20261019.log",
+      "sha256": "2674f5442d7f76acad92ed2851d4ab73b71f889e68b9779a0d0d2256966a3fc8"
+    }
+  }
+}

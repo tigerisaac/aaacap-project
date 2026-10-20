@@ -1,0 +1,36 @@
+{
+  "activationReady": false,
+  "sender": "Use Shield’s existing Telnyx number; do not buy, port or replace a number",
+  "preserveVoice": [
+    "Attach only messaging_profile_id through the messaging settings endpoint",
+    "Preserve the voice connection, webhooks, application, outbound profile, channel limits and voice spend cap",
+    "Read back and compare all voice settings before and after activation"
+  ],
+  "sharedAccountBalance": "SMS and voice use the same Telnyx balance; keep a separate SMS spending cap and sufficient credit",
+  "profile": {
+    "name": "Shield caretaker alerts",
+    "enabled": false,
+    "whitelisted_destinations": [
+      "US",
+      "CA"
+    ],
+    "webhook_api_version": "2",
+    "webhook_url": "https://shield-calls-isaac.web.app/public/messaging/webhook",
+    "mobile_only": true,
+    "daily_spend_limit_enabled": true,
+    "daily_spend_limit": "2.00"
+  },
+  "proposedSpendLimitRequiresApproval": true,
+  "prerequisites": [
+    "Complete provider brand/campaign approval for Shield’s existing sender",
+    "Verify STOP/START handling and signed delivery webhooks",
+    "Approve the scoped API, worker and Hosting rollout",
+    "Approve consenting test recipients before actual SMS testing"
+  ],
+  "runtimeSettingAfterApproval": {
+    "SMS_ALERTS": {
+      "messagingProfileId": "<approved profile>",
+      "from": "<approved sender>"
+    }
+  }
+}

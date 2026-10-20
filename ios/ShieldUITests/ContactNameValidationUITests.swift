@@ -4,6 +4,32 @@ import XCTest
 final class ContactNameValidationUITests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
 
+    func testCaretakerDeliveryStatusKeepsManualInvitationAvailable() {
+        checkDeliveryStatus(large: false)
+    }
+
+    func testCaretakerDeliveryStatusAtLargestText() {
+        checkDeliveryStatus(large: true)
+    }
+
+    private func checkDeliveryStatus(large: Bool) {
+        let app = launch(["--uitesting-screen", "trusted-contacts", "--uitesting-caretaker-delivery"] + (large
+            ? ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : []))
+        XCTAssertTrue(app.navigationBars["Caretakers"].appears(timeout: 5))
+        let delivered = app.staticTexts["Request text delivered"]
+        for _ in 0..<12 where !delivered.isHittable { app.swipeUp() }
+        XCTAssertTrue(delivered.exists)
+        let failed = app.staticTexts["Request text couldn’t be delivered. Share the invitation instead."]
+        for _ in 0..<12 where !failed.isHittable { app.swipeUp() }
+        XCTAssertTrue(failed.exists)
+        XCTAssertTrue(app.buttons["Share invitation"].firstMatch.exists)
+        capture(app, "Caretaker text delivery failure and manual invitation")
+        let unknown = app.staticTexts["Text delivery isn’t confirmed. Share the invitation if needed."]
+        for _ in 0..<8 where !unknown.isHittable { app.swipeUp() }
+        XCTAssertTrue(unknown.exists)
+        capture(app, "Caretaker text delivery uncertain")
+    }
+
     func testCaretakerInvitationPreviewNamesSenderBeforeSending() {
         checkInvitationPreview(large: false)
     }

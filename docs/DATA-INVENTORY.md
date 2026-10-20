@@ -1,5 +1,9 @@
 # Shield data and retention inventory
 
+## October 19 — caretaker SMS receipt follow-up
+
+The next local candidate correlates signed provider final delivery outcomes using keyed message-ID hashes and recipient hashes on the existing contact/delivery records. It stores status/timing, not callback text or raw message IDs, and follows the existing account/contact lifecycle and 30-day alert-receipt expiry. Provider redaction of destination numbers is supported. The owner can distinguish submitted/delivered/failed/unconfirmed invitation texts. No provider sender was activated and no message was sent. [Scope, retention and activation boundary](CARETAKER-MESSAGING.md).
+
 ## October 19 — privacy alignment and deletion verification
 
 The owner accepted the existing recording-from-answer timing and asked to keep it. This closes the requested implementation decision; it is not Apple approval or a legal determination. No call-control, greeting, monitoring defaults or consent-version constants changed.

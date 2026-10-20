@@ -37,11 +37,17 @@ describe('Phone provider boundaries', () => {
     await expect(verifier.start(phone)).rejects.toMatchObject({ code: 'phone_verification_unavailable' });
     expect(request).toHaveBeenCalledTimes(2);
   });
-  it.each([[200, 'submitted'], [400, 'failed'], [500, 'unknown']] as const)('records submission rather than delivery, and never retries (%s)', async (status, result) => {
-    const request = vi.fn<typeof fetch>().mockResolvedValue(Response.json({}, { status }));
-    expect(await new TelnyxTextSender(store, request).send(phone, 'Synthetic alert')).toBe(result);
+  it.each([[200, { status: 'submitted', messageId: id }], [400, 'failed'], [500, 'unknown']] as const)('records submission rather than delivery, and never retries (%s)', async (status, result) => {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ data: { id } }, { status }));
+    expect(await new TelnyxTextSender(store, request).send(phone, 'Synthetic alert')).toEqual(result);
     expect(request).toHaveBeenCalledTimes(1);
     expect(JSON.parse(request.mock.calls[0]![1]!.body as string)).toMatchObject({ to: phone, text: 'Synthetic alert', messaging_profile_id: id, use_profile_webhooks: true });
+  });
+  it('does not claim submission after an invalid success response or send when SMS is disabled', async () => {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(Response.json({}));
+    expect(await new TelnyxTextSender(store, request).send(phone, 'Synthetic')).toBe('unknown');
+    expect(await new TelnyxTextSender({ config: {} } as CloudStore, request).send(phone, 'Synthetic')).toBe('failed');
+    expect(request).toHaveBeenCalledTimes(1);
   });
   it('does not repeat an SMS whose submission outcome is unknown', async () => {
     const request = vi.fn<typeof fetch>().mockRejectedValue(new Error('private network detail'));

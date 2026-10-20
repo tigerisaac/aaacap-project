@@ -1,5 +1,13 @@
 # Status
 
+## October 19 — caretaker SMS implementation and existing-number activation plan
+
+Caretaker invitations and intervention texts now support signed provider delivery outcomes, content-free message correlation, duplicate/out-of-order protection and an owner-facing delivery explanation with manual sharing. The existing phone sign-in and explicit recipient acceptance remain the entry point. The owner selected Shield’s existing number; its voice setup and all call limits are unchanged. Read-only provider checks show SMS is unconfigured, no messaging profile and no registered 10DLC brand. A disabled-profile proposal preserves voice routing and proposes a separate $2/day text cap; SMS still shares the account balance.
+
+Local validation passes **395 unit + 323 Firestore tests**, the final 30-case phone/caretaker suite, four focused UI methods on each iOS version and the unsigned Release archive inspection. The initial test navigation and later simulator-service failure are retained with successful correction/retry.
+
+Automatic approval review rejected creating that disabled provider profile because live configuration/cost requires explicit approval; no provider resource was created. Local code and the read-only checker continue independently. [Implementation, voice limits, registration prerequisites and exact activation boundary](CARETAKER-MESSAGING.md). No deployment, number purchase, call or message occurred.
+
 ## October 19 — privacy alignment and invitation preview implemented locally
 
 The owner accepted recording-from-answer timing. App consent and prepared public privacy wording now identify processing/retention accurately, including Soniox during monitoring, provider service/security records, linked operational diagnostics and other-device copies. Three diagnostic/usage categories join the app manifest. No zero-retention promise is made. The caretaker form previews the exact SMS and sender; a server version check blocks missing/stale previews before sending. SMS remains disabled. These source changes are not deployed and App Store Connect answers are unchanged.

@@ -1,0 +1,27 @@
+{
+  "observedAt": "2026-10-20T02:53:46.754Z",
+  "readOnly": true,
+  "activationReady": false,
+  "apiRevision": "shieldapi-00036-win",
+  "phoneSignInConfigured": true,
+  "textAlertsConfigured": false,
+  "usingShieldVoiceNumber": true,
+  "selectedNumberFound": true,
+  "numberType": "local",
+  "hasMessagingProfile": false,
+  "messagingProfileCount": 0,
+  "registeredBrandCount": 0,
+  "configuredProfileEnabled": false,
+  "configuredProfileWebhookMatches": false,
+  "configuredSpendLimitEnabled": false,
+  "voice": {
+    "expectedConnectionAttached": true,
+    "applicationActive": true,
+    "inboundChannels": 30,
+    "outboundChannels": 30,
+    "accountOutboundChannels": 10,
+    "voiceSpendCapEnabled": true,
+    "noVoiceSettingsChanged": true
+  },
+  "limits": "Configuration observations do not establish campaign approval, deployed source parity, STOP/START or handset delivery. Activation is never inferred automatically."
+}

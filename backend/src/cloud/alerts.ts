@@ -3,7 +3,7 @@ import { connect } from 'node:http2';
 import { createPrivateKey, sign, type KeyObject } from 'node:crypto';
 import type { DocumentData, DocumentReference } from 'firebase-admin/firestore';
 import type { CloudStore, Person } from './store.js';
-import { TelnyxTextSender, type TextSender } from './text-alerts.js';
+import { TelnyxTextSender, submissionStatus, type TextSender } from './text-alerts.js';
 import { CARETAKER_EVENT_RETENTION_MS } from './caretaker-inbox.js';
 import { deletionRef } from './deletion-jobs.js';
 
@@ -179,14 +179,21 @@ export class AlertDelivery {
       if (claimed.sms) {
         try {
           await s.quota([[`contact-alerts:${claimed.phoneHash}`, 20], ['contact-alerts:global', pilotLimits.contactAlertsTotalPerDay]]);
-          textResult = await this.textSender.send(s.vault.open(claimed.phoneEnc, `alert-contact:${contact.id}:phone`), `Shield: ${body} Reply STOP to stop texts.`);
         } catch { textResult = 'limited'; }
+        if (textResult !== 'limited') {
+          const result = await this.textSender.send(s.vault.open(claimed.phoneEnc, `alert-contact:${contact.id}:phone`), `Shield: ${body} Reply STOP to stop texts.`).catch(() => 'unknown' as const);
+          textResult = submissionStatus(result);
+          if (typeof result === 'object') await receipt.update({ textMessageHash: s.vault.hash(`sms:${result.messageId}`), textPhoneHash: claimed.phoneHash });
+        }
       }
       let pushSent = 0;
       if (claimed.push && s.config.APNS) {
         pushSent = (await this.deliverPush(alertId, person.id, claimed.recipientUid, body, kind)).sent;
       }
-      await receipt.update({ textResult, pushSent, finishedAt: s.now() });
+      await s.db.runTransaction(async tx => {
+        const d = (await tx.get(receipt)).data();
+        if (d) tx.update(receipt, { ...(d.textFinalizedAt === undefined ? { textResult } : {}), pushSent, finishedAt: s.now() });
+      });
     }
   }
 }

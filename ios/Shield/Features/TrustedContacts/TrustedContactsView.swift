@@ -63,7 +63,9 @@ struct TrustedContactsView: View {
                                     Text("Protection alerts only").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                                 }
                             }.padding(.vertical, 4)
-                            if contact.status == "pending", contact.requestDelivery != "submitted" {
+                            if contact.status == "pending", let label = contact.invitationDeliveryLabel {
+                                Text(label).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
+                            } else if contact.status == "pending" {
                                 Text(response.textAvailable == false ? "Share the invitation with them. They sign in with this mobile number to review it." : "The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             }
                             if contact.status == "pending", let url = response.invitationURL {
@@ -139,12 +141,15 @@ struct TrustedContactsView: View {
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if response == nil {
-                let contacts: [TrustedContact] = usesChangeFailureFixture ? ["Jamie", "Morgan", "Alex"].enumerated().map { index, name in
+                let deliveryFixture = ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-delivery")
+                let contacts: [TrustedContact] = usesChangeFailureFixture || deliveryFixture ? ["Jamie", "Morgan", "Alex"].enumerated().map { index, name in
                     TrustedContact(id: UUID(uuidString: "00000000-0000-4000-8000-00000000000\(index + 1)")!, name: name,
-                        phone: "+1202555010\(index + 1)", status: "accepted", textAlerts: true, appAlerts: false, requestDelivery: "submitted")
+                        phone: "+1202555010\(index + 1)", status: deliveryFixture ? "pending" : "accepted", textAlerts: !deliveryFixture, appAlerts: false,
+                        requestDelivery: deliveryFixture ? ["delivered", "delivery_failed", "unknown"][index] : "submitted")
                 } : []
                 response = .init(available: !ProcessInfo.processInfo.arguments.contains("--uitesting-caretakers-unavailable"),
-                    choiceRecorded: usesChangeFailureFixture, enabled: usesChangeFailureFixture, contacts: contacts)
+                    choiceRecorded: usesChangeFailureFixture || deliveryFixture, enabled: usesChangeFailureFixture || deliveryFixture, contacts: contacts,
+                    textAvailable: true, invitationURL: URL(string: "https://shield-calls-isaac.web.app/trusted-contacts.html"))
             }
             #endif
             return
