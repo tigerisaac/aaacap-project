@@ -1,5 +1,17 @@
 # Status
 
+## October 24 — backend deployed from main (owner-approved)
+
+The owner said to "just deploy all the backend stuff". Preflight (read-only): no call in progress; one live participant (always-on, connected-call protection on); live `shieldApi` still carried the October 16 pre-privacy consent constants (`shield-pilot-2026-09-v1`, monitoring `2026-10-v1`) and voicemail policy v4. Snapshot for rollback: `SHIELD_RUNTIME` v8, bridge `shield-live-retry-352ba27e0a07`, Hosting version `d62ef31f0f12c172`, previous function revisions from October 18 (API `shieldapi-00036-win`).
+
+- **Functions:** all 15 deployed from main at 20:47 UTC (API `shieldapi-00037-kil`); the owner confirmed the CLI prompt that turns on retries for `sendShieldAlert`. The package's own lockfile was brought to the patched dependencies first (production audit zero). `finalize-firebase.mjs` re-applied invokers and scheduler targets.
+- **Firestore:** rules unchanged (already current); indexes deployed. The existing `screeningJobs.transcriptEnc` index exemption is now in `firestore.indexes.json`, so it's kept rather than deleted.
+- **Hosting:** 62 files from main, including `/support/` and the caretaker inbox page that matches the new API.
+- **Bridge:** not redeployed. It already runs screening policy v158 (same as main), none of its own code changed since October 18, and its one alert path (`blocked_caller`) writes the job shape the new `sendShieldAlert` reads.
+- **Not changed:** `SHIELD_RUNTIME` (still v8; `PUBLIC_ENROLLMENT_ENABLED` and purchases stay off). Writing the App Review sign-in was blocked by auto mode; the owner can run `node scripts/set-app-review-sign-in.mjs`, then redeploy Functions.
+
+Verified after deploy: `/public/health`, `/public/ready`, `/public/shared-ready` (enabled, capacity 25), `/support/`, `/privacy`, `/service-info` return 200; new authenticated routes return 401 without a token; every function is on a new revision; the serving API source carries the new consent constants and review-sign-in code; `check-monitoring.mjs` reports zero errors in the last hour and no pending checks; bridge `/ready` reports v158. **Consequence for the live line:** its stored consents are the old versions, so the app shows a one-time setup review and connected-call protection is off until it's switched back on in Settings → Checks while you talk; screening continues meanwhile. Two calls on October 20 and 23 (before this deploy) were held as `screening_unavailable`; not investigated here. No call, text or carrier change was made.
+
 ## October 24 — App Store submission material prepared locally
 
 The owner asked to get Shield ready for the App Store. Code and documents changed; **nothing was deployed, uploaded, configured in Apple/RevenueCat or sent**, and no call or carrier setting changed.

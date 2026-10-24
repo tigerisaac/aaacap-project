@@ -88,6 +88,11 @@
       "indexes": []
     },
     {
+      "collectionGroup": "screeningJobs",
+      "fieldPath": "transcriptEnc",
+      "indexes": []
+    },
+    {
       "collectionGroup": "blocked-numbers",
       "fieldPath": "expiresAt",
       "indexes": [
