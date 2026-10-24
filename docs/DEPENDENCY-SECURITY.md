@@ -1,5 +1,7 @@
 # Dependency security — October 18, 2026
 
+**October 24 update.** CI on `bc212a3` failed its production audit gate: advisories published after October 18 affect five runtime packages. Fixed in source with patch and minor updates only, lockfile regenerated with npm 11.4.2: `fastify` 5.12.5 → **5.12.7** and `zod` 4.6.5 → **4.6.7** (both pinned in `package.json`), plus in-range transitive updates `undici` 6.28.1 → 6.29.1 (via `openai`), `body-parser` 2.3.0 → 2.4.0, `fast-uri` 4.2.1 → 4.2.3 and 3.1.8 → 3.1.9, and `qs` 6.16.0 → 6.16.1. The production audit is back to **zero**; the `gaxios@6` → UUID 11.1.1 override is unchanged and `npm ci` accepts the lockfile. **Not deployed:** serving functions and the bridge still run the older packages until a scoped, approved rollout.
+
 The root dependency audit initially reports **18 affected packages: nine high and nine moderate**. All affected lockfile nodes are development dependencies. A separate production-only audit reports **zero known vulnerabilities**. The passing caretaker CI retained these warnings; passing tests did not clear them.
 
 The scoped update pins `firebase-tools` from 15.10.1 to **15.34.0** and refreshes compatible development dependencies, including MCP SDK 1.32.1, source-map-js 1.2.2 and optional RE2 1.27.0. The final audit reports **five affected development packages: three high and two moderate**, representing the two advisory chains below. Production-only audit remains zero. This is a dated registry result, not proof that a package has no defects.
