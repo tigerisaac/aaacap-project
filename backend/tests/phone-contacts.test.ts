@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { randomUUID, generateKeyPairSync, sign } from 'node:crypto';
+import { createHash, randomUUID, generateKeyPairSync, sign } from 'node:crypto';
 import { initializeApp, deleteApp } from 'firebase-admin/app';
 import { getShieldFirestore } from '../src/cloud/firestore.js';
 import { CloudStore } from '../src/cloud/store.js';
@@ -230,6 +230,23 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Phone sign-in and optiona
     expect(mint).not.toHaveBeenCalled();
     const current = (await db.collection('phoneAuthChallenges').doc(store.vault.hash(challenge)).get()).data()!;
     expect(current.phoneEnc).toBeDefined(); expect(current.providerID).toBeDefined();
+  });
+  it('signs App Review in with its fixed code under the same challenge limits, without texting anyone', async () => {
+    const REVIEW = '+12025550199', code = '73914682';
+    await app.close();
+    store = new CloudStore(db, { ...config, APP_REVIEW_SIGN_IN: { phone: REVIEW, codeSha256: createHash('sha256').update(code).digest('hex') } }, () => now);
+    app = await buildCloudApp(store, { auth, phoneVerifier: { start, verify }, textSender: { send: sms } });
+    const begin = (phone = REVIEW) => app.inject({ method: 'POST', url: '/auth/phone/start', payload: { phone } });
+    const { challenge } = (await begin()).json();
+    const check = (value: string, id = challenge) => app.inject({ method: 'POST', url: '/auth/phone/verify', payload: { challenge: id, code: value } });
+    expect((await check('123456')).json().error.code).toBe('phone_code_incorrect');
+    expect((await check(code)).statusCode).toBe(200); expect(mint).toHaveBeenCalledExactlyOnceWith(REVIEW);
+    expect((await check(code)).json().error.code).toBe('phone_code_expired');
+    expect((await begin()).statusCode).toBe(429);
+    expect(start).not.toHaveBeenCalled(); expect(verify).not.toHaveBeenCalled(); expect(sms).not.toHaveBeenCalled();
+    const other = (await begin(PHONE)).json().challenge;
+    expect(start).toHaveBeenCalledExactlyOnceWith(PHONE);
+    expect((await check(code, other)).statusCode).toBe(401); expect(mint).toHaveBeenCalledTimes(1);
   });
   it('limits active contacts to five and keeps declined contacts from consuming a slot', async () => {
     const ids: string[] = [];

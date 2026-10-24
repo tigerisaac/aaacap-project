@@ -426,6 +426,13 @@
 			"path" = "Shield/Features/Settings/ContactPhoneParser.swift";
 			"sourceTree" = "<group>";
 		};
+		"FBBD6954E93011CEF419D126" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"name" = "ContactRemovalConfirmation.swift";
+			"path" = "Shield/Features/Settings/ContactRemovalConfirmation.swift";
+			"sourceTree" = "<group>";
+		};
 		"D1577BE04A3E1CB18293FA4B" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -2056,6 +2063,7 @@
 				"F6FD79817C774E79FB5A3176",
 				"BE99D2AF8776B1F7B15B6989",
 				"718D29F1836DFCEA33B79C36",
+				"FBBD6954E93011CEF419D126",
 				"D1577BE04A3E1CB18293FA4B",
 				"E6FE24A9DF26DC5462906C05",
 				"58750779E8C4555C376C5D44",
@@ -2712,6 +2720,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "718D29F1836DFCEA33B79C36";
 		};
+		"79D9B190F7A4F7606AFEC82C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "FBBD6954E93011CEF419D126";
+		};
 		"24366F353254DA726CA38BA3" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "D1577BE04A3E1CB18293FA4B";
@@ -3284,6 +3296,7 @@
 				"06F0A9F04E4019BE87299274",
 				"323A9B09D7173235670CBA7E",
 				"007FC3E60614AF6D084AC79C",
+				"79D9B190F7A4F7606AFEC82C",
 				"24366F353254DA726CA38BA3",
 				"F3C103821A87EDC20BAA18AC",
 				"ADB9CC0ADC84E1ED0719C395",

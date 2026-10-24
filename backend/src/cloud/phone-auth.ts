@@ -1,5 +1,5 @@
 import pilotLimits from './pilot-limits.json' with { type: 'json' };
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { FieldValue } from 'firebase-admin/firestore';
 import { z } from 'zod';
@@ -40,7 +40,24 @@ export class TelnyxPhoneVerifier implements PhoneVerifier {
   }
 }
 
-export function registerPhoneAuth(app: FastifyInstance, store: CloudStore, auth: AuthProvider, verifier: PhoneVerifier = new TelnyxPhoneVerifier(store)) {
+const APP_REVIEW_PROVIDER_ID = 'app-review';
+
+/** The configured App Review number checks its fixed code without the provider; every other number goes to the provider. */
+export class AppReviewPhoneVerifier implements PhoneVerifier {
+  constructor(readonly store: CloudStore, readonly provider: PhoneVerifier) {}
+  async start(phone: string) {
+    return this.store.config.APP_REVIEW_SIGN_IN?.phone === phone ? APP_REVIEW_PROVIDER_ID : this.provider.start(phone);
+  }
+  async verify(id: string, code: string, phone: string) {
+    if (id !== APP_REVIEW_PROVIDER_ID) return this.provider.verify(id, code, phone);
+    const review = this.store.config.APP_REVIEW_SIGN_IN;
+    if (review?.phone !== phone) return false;
+    return timingSafeEqual(createHash('sha256').update(code).digest(), Buffer.from(review.codeSha256, 'hex'));
+  }
+}
+
+export function registerPhoneAuth(app: FastifyInstance, store: CloudStore, auth: AuthProvider, provider: PhoneVerifier = new TelnyxPhoneVerifier(store)) {
+  const verifier = new AppReviewPhoneVerifier(store, provider);
   const ready = () => { if (!store.config.TELNYX_VERIFY_PROFILE_ID || !auth.signInVerifiedPhone) throw new HttpError(503, 'phone_verification_unavailable'); };
   app.post('/auth/phone/start', async request => {
     ready();

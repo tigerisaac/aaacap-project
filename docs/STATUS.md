@@ -1,5 +1,17 @@
 # Status
 
+## October 24 — App Store submission material prepared locally
+
+The owner asked to get Shield ready for the App Store. Code and documents changed; **nothing was deployed, uploaded, configured in Apple/RevenueCat or sent**, and no call or carrier setting changed.
+
+- **Listing:** [APP-STORE-LISTING.md](APP-STORE-LISTING.md) drafts every App Store Connect field within Apple's length limits, the App Privacy answers from the data inventory, subscription metadata, review notes and the ordered owner-only submission steps. Wording avoids features that aren't live (text filtering, push or caretaker texts) and carriers beyond T-Mobile and Tello.
+- **App:** version 1.0.0 (build 1); `ITSAppUsesNonExemptEncryption = NO` (only OS-provided HTTPS, Keychain, file protection and SHA-256), now asserted by `npm run ios:verify-archive`. The October 18 contact-removal confirmation sheet is finished; testing found it opened as "Remove this number?" when the user chose **Keep number removed**, because the mode was a separate state value. The sheet item now carries its mode.
+- **Reviewer sign-in (source only):** `APP_REVIEW_SIGN_IN` in `SHIELD_RUNTIME` lets one fictional 555-01XX number sign in with a fixed code stored as SHA-256, without Telnyx. All existing challenge limits still apply; it's off unless configured.
+- **Support page (source only):** `deploy/firebase/public/support/` gives contact, carrier restoration, deletion and cancellation help for the App Store Support URL.
+- **Simulator audio:** the Shield scheme now mutes the test simulator before each test action (`scripts/mute-simulator.sh`, `devicectl … --volume 0`), so VoiceOver tests no longer speak through the Mac.
+
+Checks: `npm run check` passes typecheck/build and **397 unit tests**; `npm run test:firebase` passes **324/324**. All **13** affected UI tests pass on iPhone 17e/iOS 27, covering contact recovery, the removal confirmation, account deletion and both VoiceOver walkthroughs. The first run had two failures: the wrong-mode sheet above, and a largest-text recovery test that failed once and passed unchanged on rerun. Five 6.9-inch screenshots come from sample mode ([record](../.impeccable/review/app-store-2026-10-24/README.md)). The unsigned arm64 Release archive passes `npm run ios:verify-archive` as 1.0.0 (1) ([inspection](../.impeccable/review/app-store-2026-10-24/archive.json)); it isn't distribution-signed. Not run: `npm run test:accounts` (account code unchanged), iOS 26.5 UI tests and any physical-phone check.
+
 ## October 19 — caretaker SMS implementation and existing-number activation plan
 
 Caretaker invitations and intervention texts now support signed provider delivery outcomes, content-free message correlation, duplicate/out-of-order protection and an owner-facing delivery explanation with manual sharing. The existing phone sign-in and explicit recipient acceptance remain the entry point. The owner selected Shield’s existing number; its voice setup and all call limits are unchanged. Read-only provider checks show SMS is unconfigured, no messaging profile and no registered 10DLC brand. A disabled-profile proposal preserves voice routing and proposes a separate $2/day text cap; SMS still shares the account balance.

@@ -61,9 +61,6 @@ final class AppState {
         protectionChoiceRequest?.session == sessionGeneration && protectionChoiceRequest?.participant == selectedPersonID
     }
     private(set) var sessionGeneration = 0
-    #if DEBUG && targetEnvironment(simulator)
-    private var accountFixtureInitialRefresh = true
-    #endif
 
     var person: Person? { people.first { $0.id == selectedPersonID } }
     var canListen: Bool { person?.canListen ?? false }
@@ -230,8 +227,8 @@ final class AppState {
     func refresh(force: Bool = true) async {
         #if DEBUG && targetEnvironment(simulator)
         if isPreview, ProcessInfo.processInfo.arguments.contains("--uitesting-account-error") {
-            // The app refreshes once on activation; leave the failed state for the explicit retry.
-            if accountFixtureInitialRefresh { accountFixtureInitialRefresh = false; return }
+            // Preview sessions skip foreground refresh; the first explicit retry must recover.
+            guard force else { return }
             exploreDemo()
             return
         }

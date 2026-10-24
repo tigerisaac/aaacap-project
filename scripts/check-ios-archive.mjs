@@ -14,6 +14,8 @@ const info = plist(join(app, 'Info.plist'));
 assert.equal(info.ShieldAPIScheme, 'https');
 assert.ok(info.ShieldAPIHost && !/localhost|127\.|\.example$|\$\(/.test(info.ShieldAPIHost));
 assert.equal(info.ShieldAPNSEnvironment, 'production');
+// HTTPS, Keychain, file protection and CryptoKit hashing are all OS-provided, exempt encryption.
+assert.equal(info.ITSAppUsesNonExemptEncryption, false);
 assert.notEqual(info.NSAppTransportSecurity?.NSAllowsLocalNetworking, true);
 assert.notEqual(info.NSAppTransportSecurity?.NSAllowsArbitraryLoads, true);
 

@@ -389,14 +389,56 @@ final class SeniorPolishUITests: XCTestCase {
             XCTAssertGreaterThan(remove.frame.width, 250)
             capture(app, "walkthrough-contact-removal-scope-\(large ? "large" : "standard")")
             remove.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-            XCTAssertTrue(app.buttons["Remove contact"].appears(timeout: 5))
+            XCTAssertTrue(app.navigationBars["Contacts"].appears(timeout: 5))
             capture(app, "walkthrough-contact-after-edge-tap")
-            XCTAssertTrue(app.buttons["Keep contact"].exists)
-            XCTAssertTrue(app.staticTexts["This can also remove the contact from your other devices through iCloud. A restore copy stays on this phone."].exists)
+            let keep = app.navigationBars["Contacts"].buttons["Keep number"]
+            XCTAssertTrue(keep.isHittable)
+            for (identifier, text) in [
+                ("contact-removal-scope", "This removes the number and its extensions from every matching contact."),
+                ("contact-removal-icloud", "Other contact details stay. iCloud may sync the removal to your other devices."),
+                ("contact-removal-backup", "A restore copy stays on this phone until you add the number back.")
+            ] {
+                let paragraph = app.staticTexts[identifier]
+                XCTAssertEqual(paragraph.label, text)
+                exposeContactConfirmation(paragraph, in: app)
+                XCTAssertTrue(keep.isHittable)
+                capture(app, "contact-confirmation-\(identifier)-\(large ? "largest" : "standard")")
+            }
+            let confirmation = app.buttons["confirm-contact-removal"]
+            exposeContactConfirmation(confirmation, in: app)
             capture(app, "walkthrough-contact-removal-confirmation")
-            app.buttons["Keep contact"].tap()
+            keep.tap()
+            XCTAssertTrue(app.navigationBars["Contacts"].waitForNonExistence(timeout: 5))
             XCTAssertTrue(app.staticTexts["Jamie"].exists)
         }
+    }
+
+    private func exposeContactConfirmation(_ element: XCUIElement, in app: XCUIApplication) {
+        let top = app.navigationBars["Contacts"].frame.maxY + 8
+        let bottom = app.frame.maxY - 44
+        for _ in 0..<24 {
+            var delta: CGFloat = 100
+            if element.exists {
+                let frame = element.frame
+                if frame.minY >= top, frame.maxY <= bottom { break }
+                delta = frame.minY < top ? frame.minY - top : frame.maxY - bottom
+            }
+            // Account for the scroll gesture's initial drag threshold, including fine corrections.
+            let distance = min(max(abs(delta) + 12, 20), 110) * (delta < 0 ? -1 : 1)
+            let origin = app.coordinate(withNormalizedOffset: .zero)
+            let start = origin.withOffset(CGVector(dx: app.frame.midX, dy: (top + bottom) / 2))
+            start.press(forDuration: 0.1,
+                        thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: (top + bottom) / 2 - distance)),
+                        withVelocity: .slow, thenHoldForDuration: 0.2)
+        }
+        XCTAssertTrue(element.exists)
+        guard element.exists else { return }
+        let geometry = XCTAttachment(string: "Target: \(element.label)\nFrame: \(element.frame)\nVisible bounds: \(top)...\(bottom)")
+        geometry.name = "contact-confirmation-geometry"; geometry.lifetime = .keepAlways; add(geometry)
+        capture(app, "contact-confirmation-geometry-\(element.identifier)")
+        XCTAssertTrue(element.isHittable)
+        XCTAssertGreaterThanOrEqual(element.frame.minY, top)
+        XCTAssertLessThanOrEqual(element.frame.maxY, bottom)
     }
 
     func testGetStartedAsksForHelpWithoutInvitations() {

@@ -1,0 +1,34 @@
+{
+  "archive": "/private/tmp/claude-501/-Users-isaaczhang--claude-spares-spare-MlShAw/aeb75bdd-f2eb-4939-a853-e828ec4c9579/scratchpad/Shield-1.0.0.xcarchive",
+  "verified": true,
+  "distributionSigningVerified": false,
+  "version": "1.0.0",
+  "build": "1",
+  "minimumOS": "26.0",
+  "apiHost": "shield-calls-isaac.web.app",
+  "developmentNetworkingException": false,
+  "messageFilterEmbedded": false,
+  "bundles": [
+    {
+      "path": ".",
+      "identifier": "org.isaaczhang.Shield",
+      "architecture": "arm64"
+    },
+    {
+      "path": "PlugIns/ShieldCallDirectory.appex",
+      "identifier": "org.isaaczhang.Shield.CallDirectory",
+      "architecture": "arm64"
+    }
+  ],
+  "privacyManifests": [
+    "PlugIns/ShieldCallDirectory.appex/PrivacyInfo.xcprivacy",
+    "PrivacyInfo.xcprivacy",
+    "RevenueCat_RevenueCat.bundle/PrivacyInfo.xcprivacy"
+  ],
+  "appBinarySha256": "00f141d1417ef091269a6a26ff8239c4fd1721eb3747765468afe87723f0f982",
+  "contactPhoneParser": {
+    "version": "1.13.13",
+    "verified": true,
+    "licenseIncluded": true
+  }
+}

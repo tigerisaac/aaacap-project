@@ -15,6 +15,9 @@ export const cloudSchema = z.object({
   // Absent until the owner configures verification and an approved messaging sender.
   TELNYX_VERIFY_PROFILE_ID: telnyxVerifyIDSchema.optional(),
   SMS_ALERTS: z.object({ messagingProfileId: z.string().uuid(), from: z.string().regex(/^\+1[2-9]\d{9}$/) }).strict().optional(),
+  // App Review can't receive texts. One fictional 555-01XX number signs in with a fixed code (stored as its SHA-256);
+  // every other phone sign-in limit still applies. Absent: no review sign-in.
+  APP_REVIEW_SIGN_IN: z.object({ phone: z.string().regex(/^\+1[2-9]\d{2}55501\d{2}$/), codeSha256: z.string().regex(/^[a-f0-9]{64}$/) }).strict().optional(),
   TELNYX_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9+/]{43}=$/),
   TELNYX_APPLICATION_ID: z.string().regex(/^\d{6,30}$/),
   SHARED_NUMBER_ENABLED: z.boolean().default(false),

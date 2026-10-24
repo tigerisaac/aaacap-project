@@ -290,10 +290,10 @@ final class VoiceOverUITests: XCTestCase {
         let walk = try VoiceOverWalkthrough(self, name: "contacts", arguments: ["--uitesting-screen", "contacts", "--uitesting-contact-removal"], large: true)
         defer { walk.finish() }
         try walk.activate("Remove Jamie from Contacts")
-        try walk.find("Remove Jamie from iPhone Contacts?")
-        try walk.find("This can also remove")
-        XCTAssertTrue(walk.app.alerts.firstMatch.staticTexts.matching(NSPredicate(format: "label CONTAINS 'iCloud'")).firstMatch.exists)
-        try walk.activate("Keep contact")
+        try walk.find("Remove this number?")
+        try walk.find("This removes the number")
+        XCTAssertTrue(walk.app.staticTexts["contact-removal-icloud"].exists)
+        try walk.activate("Keep number")
         XCTAssertTrue(walk.app.staticTexts["Jamie"].exists)
         walk.checkpoint("safe-contact")
     }

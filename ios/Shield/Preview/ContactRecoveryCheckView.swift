@@ -25,6 +25,14 @@ struct ContactRecoveryCheckView: View {
                     try await PhoneContacts.shared.prepareRecoveryFixture()
                     try await ContactChangeStore.shared.removeAccount(account)
                 }
+                if ProcessInfo.processInfo.arguments.contains("--contact-recovery-missing-restoration") {
+                    let item = SavedNumber(id: ContactRecoveryFixture.row, label: "Synthetic contact recovery",
+                                           phone: ContactRecoveryFixture.phone, provenance: "contacts", createdAt: .now, enabled: false)
+                    let change = PendingContactChange(item: item, enabled: true, expectedRevision: 1)
+                    let lease = try await ContactChangeStore.shared.beginWork(account: account, person: ContactRecoveryFixture.person)
+                    try await ContactChangeStore.shared.save(change, account: account, person: ContactRecoveryFixture.person, lease: lease)
+                    await ContactChangeStore.shared.finishWork(account: account, person: ContactRecoveryFixture.person, lease: lease)
+                }
                 value.signedIn = true; value.isPreview = false; value.isDemo = false
                 value.people = [Person(id: ContactRecoveryFixture.person, name: "Synthetic owner", isOwner: true, canListen: true)]
                 value.selectedPersonID = ContactRecoveryFixture.person

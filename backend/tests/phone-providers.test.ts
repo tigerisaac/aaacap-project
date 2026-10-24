@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { TelnyxPhoneVerifier } from '../src/cloud/phone-auth.js';
+import { createHash } from 'node:crypto';
+import { AppReviewPhoneVerifier, TelnyxPhoneVerifier, type PhoneVerifier } from '../src/cloud/phone-auth.js';
 import { TelnyxTextSender } from '../src/cloud/text-alerts.js';
 import type { CloudStore } from '../src/cloud/store.js';
 import { cloudSchema } from '../src/cloud/config.js';
@@ -53,5 +54,29 @@ describe('Phone provider boundaries', () => {
     const request = vi.fn<typeof fetch>().mockRejectedValue(new Error('private network detail'));
     expect(await new TelnyxTextSender(store, request).send(phone, 'Synthetic')).toBe('unknown');
     expect(request).toHaveBeenCalledTimes(1);
+  });
+  it('accepts only a fictional 555-01XX number for App Review sign-in', () => {
+    const codeSha256 = 'a'.repeat(64), schema = cloudSchema.shape.APP_REVIEW_SIGN_IN;
+    expect(schema.safeParse({ phone: '+15125550199', codeSha256 }).success).toBe(true);
+    for (const reviewPhone of ['+15125551234', '+15125550200', '+1512555019', '5125550199'])
+      expect(schema.safeParse({ phone: reviewPhone, codeSha256 }).success).toBe(false);
+    expect(schema.safeParse({ phone: '+15125550199', codeSha256: '123456' }).success).toBe(false);
+  });
+  it('checks the App Review code itself and sends every other number to the provider', async () => {
+    const review = '+15125550199', code = '73914682';
+    const provider = { start: vi.fn<PhoneVerifier['start']>().mockResolvedValue(id), verify: vi.fn<PhoneVerifier['verify']>().mockResolvedValue(true) };
+    const configured = { config: { APP_REVIEW_SIGN_IN: { phone: review, codeSha256: createHash('sha256').update(code).digest('hex') } } } as CloudStore;
+    const verifier = new AppReviewPhoneVerifier(configured, provider);
+    expect(await verifier.start(review)).toBe('app-review');
+    expect(await verifier.verify('app-review', code, review)).toBe(true);
+    expect(await verifier.verify('app-review', '73914683', review)).toBe(false);
+    expect(await verifier.verify('app-review', code, phone)).toBe(false);
+    expect(provider.start).not.toHaveBeenCalled(); expect(provider.verify).not.toHaveBeenCalled();
+    expect(await verifier.start(phone)).toBe(id);
+    expect(await verifier.verify(id, code, phone)).toBe(true);
+    expect(provider.verify).toHaveBeenCalledExactlyOnceWith(id, code, phone);
+    // Removing the setting invalidates review challenges that were already issued.
+    expect(await new AppReviewPhoneVerifier({ config: {} } as CloudStore, provider).verify('app-review', code, review)).toBe(false);
+    expect(await new AppReviewPhoneVerifier({ config: {} } as CloudStore, provider).start(review)).toBe(id);
   });
 });

@@ -16,10 +16,11 @@ actor ContactRecoveryFixture {
 
     init() {
         let resume = ProcessInfo.processInfo.arguments.contains("--contact-recovery-resume")
-        enabled = resume ? UserDefaults.standard.bool(forKey: Self.savedKey) : true
-        revision = enabled ? 0 : 1
-        failFirst = !resume
-        if !resume { UserDefaults.standard.set(true, forKey: Self.savedKey) }
+        let missing = ProcessInfo.processInfo.arguments.contains("--contact-recovery-missing-restoration")
+        enabled = missing ? false : resume ? UserDefaults.standard.bool(forKey: Self.savedKey) : true
+        revision = missing ? 2 : enabled ? 0 : 1
+        failFirst = !resume && !missing
+        if !resume { UserDefaults.standard.set(enabled, forKey: Self.savedKey) }
     }
     func restoreConnection() { connected = true; failFirst = false }
     func status() async -> String {
@@ -42,6 +43,10 @@ actor ContactRecoveryFixture {
         }
         if method == "POST" { shares += 1; throw APIError.invalidResponse }
         guard method == "GET", connected else { throw URLError(.notConnectedToInternet) }
+        if ProcessInfo.processInfo.arguments.contains("--contact-recovery-missing-restoration") {
+            return try JSONSerialization.data(withJSONObject: ["changeContract": "revision-v1", "revision": revision,
+                "sharedAt": NSNull(), "items": []])
+        }
         return try JSONSerialization.data(withJSONObject: ["changeContract": "revision-v1", "revision": revision,
             "sharedAt": NSNull(), "items": [["id": Self.row.uuidString, "label": "Synthetic contact recovery", "phone": Self.phone,
                 "createdAt": "2026-10-18T12:00:00.000Z", "enabled": enabled]]])

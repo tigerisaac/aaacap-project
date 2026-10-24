@@ -7,7 +7,7 @@ final class ContactRecoveryUITests: XCTestCase {
         let walk = try VoiceOverWalkthrough(self, name: "contact-change-recovery", arguments: ["--uitesting-preview", "--uitesting-contact-recovery"], large: true)
         defer { walk.finish() }
         try walk.activate("Remove Synthetic contact recovery from Contacts")
-        try walk.activate("Remove contact")
+        try walk.activate("Remove number")
         try walk.find("Finish contact change")
         try walk.find("Check saved change")
         walk.checkpoint("contact-recovery-controls-readable")
@@ -28,6 +28,28 @@ final class ContactRecoveryUITests: XCTestCase {
     func testSavedChangeWithLostReplySettlesWithoutAnotherEdit() { checkRecovery() }
     func testSavedChangeRecoveryIsUsableAtLargestTextInDarkMode() {
         checkRecovery(arguments: ["--uitesting-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+    }
+    func testMissingRestoredNumberCanBeCancelledOrKeptRemovedAtLargestText() {
+        let app = launch(["--contact-recovery-missing-restoration", "--uitesting-dark",
+                          "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        inspect(app, "phone:true;server:false;patches:0;shares:0")
+        let keepRemoved = app.buttons["Keep number removed"]
+        reveal(keepRemoved, app); keepRemoved.tap()
+        XCTAssertTrue(app.navigationBars["Contacts"].appears(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Keep this number removed?"].exists)
+        capture(app, "Missing contact removal explanation")
+        app.navigationBars["Contacts"].buttons["Cancel"].tap()
+        inspect(app, "phone:true;server:false;patches:0;shares:0")
+        let pending = app.staticTexts["Finish contact change"]
+        for _ in 0..<8 where !pending.isHittable { app.swipeDown() }
+        XCTAssertTrue(pending.isHittable)
+        capture(app, "Cancelling keeps the contact change pending")
+        reveal(keepRemoved, app); keepRemoved.tap()
+        let confirm = app.buttons["confirm-contact-removal"]
+        reveal(confirm, app); confirm.tap()
+        XCTAssertTrue(app.staticTexts["Finish contact change"].waitForNonExistence(timeout: 5))
+        inspect(app, "phone:false;server:false;patches:0;shares:0")
+        capture(app, "Missing contact settled without a server edit")
     }
     func testUnsavedChangeRequiresAnExplicitRetry() {
         let app = launch(["--contact-recovery-before-save"])
@@ -73,7 +95,8 @@ final class ContactRecoveryUITests: XCTestCase {
     private func remove(_ app: XCUIApplication) {
         let button = app.buttons["Remove Synthetic contact recovery from Contacts"]
         reveal(button, app); XCTAssertTrue(button.isEnabled); button.tap()
-        app.alerts.buttons["Remove contact"].tap()
+        let confirmation = app.buttons["confirm-contact-removal"]
+        reveal(confirmation, app); confirmation.tap()
         let heading = app.staticTexts["Finish contact change"]
         for _ in 0..<6 where !heading.isHittable { app.swipeDown() }
         XCTAssertTrue(heading.appears(timeout: 5))

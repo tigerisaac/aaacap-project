@@ -25,6 +25,8 @@ On macOS with Xcode installed, `npm run test:contacts` compiles the actual Swift
 
 Keep Device Hub's **Capture Keyboard** off while collaborating with the owner. It redirects the Mac's typing into the simulator; leaving it enabled interrupted the owner's keyboard on October 15. Use the existing UI-test tooling without enabling keyboard capture.
 
+Keep simulators muted too. VoiceOver tests speak through the Mac's speakers otherwise. The Shield scheme runs `scripts/mute-simulator.sh` for the test destination before every test action, which sets the simulator's volume to 0 with `xcrun devicectl device settings audio --volume 0`. The volume resets when a simulator boots, so run the script yourself after booting one outside the scheme (for example, for screenshots).
+
 Use one existing simulator and the normal Xcode build cache. For the accessibility suite:
 
 ```sh

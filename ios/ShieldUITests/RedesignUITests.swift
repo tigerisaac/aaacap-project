@@ -6,9 +6,11 @@ final class RedesignUITests: XCTestCase {
         let app = launch(["--uitesting-account-error"])
         XCTAssertTrue(app.staticTexts["Your account couldn’t load"].appears(timeout: 5))
         XCTAssertFalse(app.staticTexts["Welcome to Shield"].exists)
+        capture(app, "Account error before explicit retry")
         app.buttons["Try again"].tap()
         XCTAssertTrue(app.navigationBars["Home"].appears(timeout: 5))
         XCTAssertFalse(app.staticTexts["Your account couldn’t load"].exists)
+        capture(app, "Account recovered after one explicit retry")
     }
 
     func testSuccessfulCallsPullToRefreshClearsPreviousError() {
@@ -383,14 +385,28 @@ final class RedesignUITests: XCTestCase {
 
         app = launch(large + ["--uitesting-preview"])
         openMore(app, "Settings")
+        XCTAssertTrue(app.navigationBars["Settings"].appears(timeout: 5))
         let sharing = app.staticTexts["Call sharing"].firstMatch
-        for _ in 0..<10 { if sharing.isHittable { break }; app.swipeUp() }
+        for _ in 0..<24 {
+            if sharing.isHittable { break }
+            let downward = sharing.exists && sharing.frame.maxY < app.navigationBars["Settings"].frame.maxY
+            let origin = app.coordinate(withNormalizedOffset: .zero)
+            let start = origin.withOffset(CGVector(dx: app.frame.midX, dy: app.frame.midY))
+            start.press(forDuration: 0.1,
+                        thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: app.frame.midY + (downward ? 100 : -100))),
+                        withVelocity: .slow, thenHoldForDuration: 0.2)
+        }
         XCTAssertTrue(sharing.isHittable); sharing.tap()
         XCTAssertTrue(app.navigationBars["Call sharing"].appears(timeout: 5))
-        let sharedPerson = app.staticTexts["Sign in to manage sharing."]
-        for _ in 0..<10 { if sharedPerson.isHittable { break }; app.swipeUp() }
-        XCTAssertTrue(sharedPerson.isHittable)
+        let privateCalls = app.staticTexts["Your calls are private"]
+        XCTAssertTrue(privateCalls.appears(timeout: 5))
+        let accessDescription = app.staticTexts["No one has shared access to your calls or messages."]
+        exposeSharingContent(accessDescription, in: app)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Stop sharing with '")).firstMatch.exists)
         capture(app, "Audit review Sharing largest text")
+        let caretaker = app.buttons["Caretaker alerts, Alerts without call or message access"]
+        exposeSharingContent(caretaker, in: app)
+        capture(app, "Audit review Separate caretaker alerts largest text")
         let tree = XCTAttachment(string: app.debugDescription)
         tree.name = "Sharing largest text accessibility tree"; tree.lifetime = .keepAlways; add(tree)
 
@@ -400,6 +416,30 @@ final class RedesignUITests: XCTestCase {
         capture(app, "Audit review Settings largest text")
         XCTAssertFalse(app.buttons["Turn on message alerts"].exists)
         capture(app, "Audit review Settings availability largest text")
+    }
+
+    private func exposeSharingContent(_ element: XCUIElement, in app: XCUIApplication) {
+        let top = app.navigationBars.firstMatch.frame.maxY + 8
+        let bottom = app.tabBars.firstMatch.frame.minY - 8
+        for _ in 0..<24 {
+            var delta: CGFloat = 100
+            if element.exists {
+                let frame = element.frame
+                if frame.minY >= top, frame.maxY <= bottom { break }
+                delta = frame.minY < top ? frame.minY - top : frame.maxY - bottom
+            }
+            let distance = min(max(abs(delta) + 12, 20), 110) * (delta < 0 ? -1 : 1)
+            let origin = app.coordinate(withNormalizedOffset: .zero)
+            let start = origin.withOffset(CGVector(dx: app.frame.midX, dy: (top + bottom) / 2))
+            start.press(forDuration: 0.1,
+                        thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: (top + bottom) / 2 - distance)),
+                        withVelocity: .slow, thenHoldForDuration: 0.2)
+        }
+        XCTAssertTrue(element.exists)
+        guard element.exists else { return }
+        XCTAssertTrue(element.isHittable)
+        XCTAssertGreaterThanOrEqual(element.frame.minY, top)
+        XCTAssertLessThanOrEqual(element.frame.maxY, bottom)
     }
 
     private func auditScreen(_ app: XCUIApplication, types: XCUIAccessibilityAuditType) throws {
