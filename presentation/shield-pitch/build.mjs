@@ -78,7 +78,7 @@ export async function build({presentation,input}) {
     }
     if(index===4){
       heading(s,'Benchmark performance');
-      text(s,'Comparison scope','MASC F1 (%)   Selected published baselines\nZoomed scale: 95–100. Different evaluation methods.',76,155,1128,76,24,colors.muted);
+      text(s,'Comparison scope','MASC F1 (%)',76,165,1128,44,25,colors.muted);
       s.charts.add('bar',{
         position:{left:68,top:245,width:1140,height:410},
         categories:['Shield','RoBERTa','BERT-Large','BERT-Base','DistilBERT'],
@@ -94,13 +94,20 @@ export async function build({presentation,input}) {
       note(s,'The strongest defensible headline is near-perfect benchmark classification, not an industry-leading production accuracy claim. This is the separate MASC binary classifier v3, not deployed screening v158. On original labels: test split 958/960 correct, F1 0.9979209979, 480 true positives, 478 true negatives, two false positives, zero false negatives. The 960 trials repeat 320 unique conversations three times. Prior test outcomes informed v3 development, so this is benchmark-adapted evidence. The additional 1,280 dialogues are MASC’s published training split, unused in our development: 1,275 correct, 639 true positives, 636 true negatives, four false positives, one false negative, F1 0.9961028839. Both sets are synthetic and share a generator. Model pretraining exposure is unknown. Published MASC models report 96.97–99.92% F1 with different training/evaluation protocols, including results above ours, so these numbers do not establish a direct ranking. Sources: artifacts/masc-classifier/masc-v3-three-passes/summary.json; artifacts/masc-classifier/masc-train-v3/summary.json; docs/PUBLIC-SCAM-BENCHMARKS.md. Published context: https://supreme-lab.github.io/ai-in-the-loop/ ; dataset: https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation . Runs completed October 11, 2026.');
     }
     if(index===5){
-      heading(s,'Screening harmful calls');
-      text(s,'Scope','Policy v158 on the synthetic MASC text benchmark',76,177,1128,47,29,colors.muted);
-      text(s,'Scam percentage','98.1%',72,270,1000,175,140,colors.navy,'Georgia');
-      text(s,'Scam metric','157 of 160 harmful calls stopped',78,474,1100,58,40);
-      text(s,'Remaining outcomes','The remaining three received follow-up questions',78,560,1120,58,28,colors.muted);
-      foot(s,'October 13 regression run. Three harmful calls received questions. Synthetic text does not verify real-call reliability.');
-      note(s,'Keep the two objectives equally visible. MASC v158 stops 157/160 harmful calls, comprising 155 blocks and two holds; three receive questions. No harmful MASC call was approved or saved. Among 80 ordinary calls: 69 offered, six saved unverified, three blocked and two questioned. Ads are separate: 40/40 blocked. The percentages are rounded to one decimal. The reused benchmark is a regression test, not an unseen independent validation. On the separate FTC/NC State unwanted-call set, v158 stopped 530/724 distinct recordings, saved 146 unverified, asked 47 questions and retained one timeout, with zero live approvals. Saves and questions are not counted as completed stops. This set contains no legitimate controls. v158 was deployed to the existing pilot on October 13, 2026, with owner approval, as recorded in docs/STATUS.md; that deployment does not transform text evaluation into real-call evidence. Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md and docs/PUBLIC-SCAM-BENCHMARKS.md. Close by explaining that Shield combines conversational screening with a recipient-controlled connection, while real-call validation remains essential.');
+      heading(s,'FTC robocall benchmark');
+      text(s,'FTC comparison scope','Historical Shield identification vs. published recall (%)\nShield includes clarification questions',76,155,1128,76,24,colors.muted);
+      s.charts.add('bar',{
+        position:{left:68,top:245,width:1140,height:410},
+        categories:['Shield','RoboKA','HuBERT + BERT\nfusion','BERT (text)','WavLM (audio)'],
+        series:[{name:'Reported result',values:[99.1,82.2,67.2,58.1,46.6],fill:'#C7CFD8',points:[{idx:0,fill:colors.navy}],line:{fill:'none',width:0},dataLabelOverrides:[{idx:0,showValue:true,position:'outEnd',textStyle:{fontSize:29,bold:true,fill:colors.navy}}]}],
+        hasLegend:false,barOptions:{direction:'column',grouping:'clustered',gapWidth:90},
+        chartFill:colors.bg,plotAreaFill:colors.bg,chartLine:{fill:'none',width:0},plotAreaLine:{fill:'none',width:0},
+        xAxis:{visible:true,textStyle:{fontSize:21,fill:colors.ink},line:{fill:'#AAB5C2',width:1},majorGridlines:null},
+        yAxis:{visible:true,min:0,max:100,majorUnit:25,numberFormatCode:'0',textStyle:{fontSize:17,fill:colors.muted},line:{fill:'none',width:0},majorGridlines:{fill:'#DCE1E7',width:1}},
+        dataLabels:{showValue:true,position:'outEnd',numberFormatCode:'0.0"%"',textStyle:{fontSize:25,bold:true,fill:colors.muted}}
+      });
+      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy historical Shield benchmark bar',fit:'contain',position:{left:194,top:421,width:72,height:72}});
+      note(s,'The owner selected the historical v20 identification result, not current v158 completed stops. Shield v20, October 11, 2026: 724 distinct English FTC/NC State recording transcripts repeated three times, weighted to 1,378 English source calls per pass. Identification credits blocks plus clarification questions: 4,098/4,134 weighted trials = 99.129%, displayed as 99.1%. Weighted completed stops are 3,919/4,134 = 94.8%, and weighted approvals are 36. Questions do not establish completed stops. Unique-trial results are 2,086 stops, 79 questions and seven approvals out of 2,172. This is a historical transcript test with benchmark-informed development, not current deployment accuracy or an end-to-end real-call test. Current v158 instead records 530/724 completed stops, 146 unverified saves, 47 questions, zero approvals and one timeout; those outcomes remain separate. The four comparison values come from the user-provided chart and are verified against RoboKA Table I, T4 unwanted recall: RoboKA best model 82.21%, HuBERT cross-modal-attention BERT fusion 67.21%, BERT text 58.13%, WavLM audio 46.62%. The slide rounds them to one decimal as supplied. RoboKA uses 1,378 positive-only unwanted calls and its own input/evaluation pipeline. Shield identification with clarification credit and published classifier recall use different success rules, so this is research context, not a controlled head-to-head ranking. There are no legitimate controls in this dataset; it cannot establish precision or false-positive rate. Sources: artifacts/public-benchmarks/robocall-v20/summary.json; docs/PUBLIC-SCAM-BENCHMARKS.md, FTC robocall benchmark; docs/SCREENING-PRODUCTION-CANDIDATE.md; https://github.com/wspr-ncsu/robocall-audio-dataset ; https://arxiv.org/html/2605.00156v1#S4.T1 .');
     }
   }
   return {slides:presentation.slides.items.length};
