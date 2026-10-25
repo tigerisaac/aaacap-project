@@ -68,13 +68,24 @@ export async function build({presentation,input}) {
       note(s,'Shield’s team developed the custom AI backend: the live WebSocket bridge, screening policy and decision orchestration, evidence checks, bounded clarification, call-control state machine and Firebase integration. This is custom application/backend engineering using OpenAI models, not a claim that the team trained a foundation model. Apple supplies the SwiftUI/iPhone platform. Telnyx Call Control routes and connects calls. The current hybrid screening bridge runs on Cloud Run: Soniox stt-rt-v5 transcribes speech, GPT-6 Luna assesses the screening policy, and GPT Live handles useful clarification. The custom bridge and backend are TypeScript. The visible list groups technologies by their role rather than listing unrelated development tools. Google Cloud and Firebase support hosting, backend functions, Firestore and Authentication. The recipient is fixed, screening timers are bounded and a failure never connects a call. Sources: docs/ARCHITECTURE.md; docs/HYBRID-SCREENING.md; package.json; backend/src/live/policy.ts; backend/src/live/session.ts. Connected-call protection is separate and opt-in. Logos identify technologies used, not endorsements or commercial partnerships. Apple logo: the navigation SVG at https://www.apple.com/ . Telnyx black logo: official download linked from https://telnyx.com/media-kit . OpenAI wordmark: https://commons.wikimedia.org/wiki/File:OpenAI_logo_2025_(wordmark).svg, attributed there to https://openai.com/brand/ . Google wordmark: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png . The logos belong to their respective owners.');
     }
     if(index===3){
-      heading(s,'Red teaming shaped the design');
-      const rows=[['01','Challenge','Pair scam tactics with similar legitimate calls.'],['02','Document','Keep failures, versioned prompts and frozen run records.'],['03','Validate','Test fresh scripted and adaptive conversations.'],['04','Audit','Report scam stops and legitimate offers separately.']];
-      rows.forEach((r,i)=>{let y=205+i*91;text(s,'Step '+i,r[0],76,y-4,80,55,37,colors.navy,'Georgia');text(s,'Action '+i,r[1],180,y,245,47,30,colors.ink,'Georgia');text(s,'Detail '+i,r[2],440,y+2,760,58,27);});
-      line(s,76,581,1128);
-      text(s,'Evidence statement','40 fresh scripted cases + 16 adaptive profiles',76,600,1100,44,28,colors.teal);
-      foot(s,'v158, October 13. Each ran twice. Reused public benchmarks are regression checks, not unseen tests.');
-      note(s,'Our red-team process probes impersonation, payment requests, outside-contact bait, ordinary callbacks, recordings and prompt injection using synthetic callers. Every run records policy and request hashes, planned identities, raw outcomes and failures. The v158 fresh scripted set had 40 cases repeated twice: 80/80 intended final outcomes, but 76/80 strict sequences. The four strict misses were early holds after refusal. The adaptive set had 16 profiles repeated twice, reaching 32/32 final outcomes. Question review still found pronoun reversals and awkward questions. Same-model simulation is not independent human realism. Public MASC feedback informed v158; repeated public sets are honestly described as regression checks. We do not tune on existing held-out probes. Main benchmark remains 24 cases. Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md, sections Iteration and evaluation provenance, Results, Checks; docs/SCREENING.md.');
+      heading(s,'Red teaming and validation');
+      const metrics=[
+        ['245','Development cases','Scams and legitimate callers'],
+        ['112','Fresh simulated trials','56 scenarios, each run twice'],
+        ['77','Question turns reviewed','Meaning, wording and role errors']
+      ];
+      metrics.forEach(([value,label,detail],i)=>{
+        const x=76+i*390;
+        text(s,'Redteam metric '+i,value,x,198,350,112,88,colors.navy,'Georgia');
+        text(s,'Redteam label '+i,label,x,328,350,44,27,colors.ink);
+        text(s,'Redteam detail '+i,detail,x,379,350,62,22,colors.muted);
+      });
+      line(s,76,467,1128);
+      text(s,'Adversarial testing','Adversarial testing',76,504,340,44,29,colors.ink,'Georgia');
+      text(s,'Attack coverage','Impersonation, payment pressure and prompt injection',440,506,764,56,25,colors.muted);
+      text(s,'Audit trail','An auditable process',76,594,340,44,29,colors.ink,'Georgia');
+      text(s,'Audit practice','Frozen prompts and labels. Every failure retained.',440,596,764,56,25,colors.muted);
+      note(s,'Visible counts refer to v158 validation: the existing development adapter has 245 cases; fresh scripted validation is 40 cases run twice (80 trials), and separately frozen adaptive validation is 16 profiles run twice (32 trials), totaling 112 trials over 56 scenarios. These are synthetic text trials, not 112 independent real callers. Manual review covers all 44 scripted and 33 adaptive question turns, totaling 77. Cases and question turns measure different parts of the work and must not be summed as independent tests. Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md, Iteration and evaluation provenance and Results. Our red-team process probes impersonation, payment requests, outside-contact bait, ordinary callbacks, recordings and prompt injection using synthetic callers. Every run records policy and request hashes, planned identities, raw outcomes and failures. The v158 fresh scripted set had 40 cases repeated twice: 80/80 intended final outcomes, but 76/80 strict sequences. The four strict misses were early holds after refusal. The adaptive set had 16 profiles repeated twice, reaching 32/32 final outcomes. Question review still found pronoun reversals and awkward questions. Same-model simulation is not independent human realism. Public MASC feedback informed v158; repeated public sets are honestly described as regression checks. We do not tune on existing held-out probes. Main benchmark remains 24 cases. Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md, sections Iteration and evaluation provenance, Results, Checks; docs/SCREENING.md.');
     }
     if(index===4){
       heading(s,'Benchmark performance');
@@ -96,6 +107,7 @@ export async function build({presentation,input}) {
     }
     if(index===5){
       heading(s,'FTC robocall benchmark');
+      text(s,'FTC definition','Detection on transcripts from 1,378 FTC-released robocalls.',76,174,1128,50,26,colors.muted);
       s.charts.add('bar',{
         position:{left:68,top:245,width:1140,height:410},
         categories:['Shield','RoboKA','HuBERT + BERT\nfusion','BERT (text)','WavLM (audio)'],
