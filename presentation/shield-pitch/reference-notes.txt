@@ -28,7 +28,7 @@ The first slide identifies the product. The next four cover the requested crisis
 
 TECHNOLOGY SLIDE REVISION
 
-At the user’s request, the technology slide now centers “Our custom AI backend” and replaces the technology descriptions with Apple, Telnyx, OpenAI and Google company logos. The backend claim refers to Shield’s custom screening orchestration, decision policy, evidence validation, call-control logic and cloud integration, using external foundation models. It does not claim training a foundation model.
+The technology slide now lists the stack by role in Shield’s existing gray/navy serif theme. A left column identifies the team-built TypeScript backend and its screening policy, live conversation handling and recipient-approval safeguards. A right column pairs existing company logos with specific technologies: Swift/SwiftUI for the iPhone app, Telnyx Call Control for routing, GPT-6 Luna/GPT Live and Soniox transcription for voice AI, and Cloud Run/Firebase/Firestore/Authentication for cloud services. The supplied Technologies Used image informs the clearer categorization, not the design or claims about tools used. Current hybrid architecture is checked against docs/HYBRID-SCREENING.md. The backend claim refers to Shield’s custom screening orchestration, decision policy, evidence validation, call-control logic and cloud integration, using external foundation models. It does not claim training a foundation model.
 
 Logo provenance:
 Apple: original navigation SVG from https://www.apple.com/ , rendered as PNG with transparent padding trimmed.

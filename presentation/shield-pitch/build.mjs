@@ -46,11 +46,26 @@ export async function build({presentation,input}) {
     }
     if(index===2){
       heading(s,'The technology behind Shield');
-      text(s,'Custom backend','Our custom AI backend',74,255,1130,110,76,colors.navy,'Georgia');
-      text(s,'Backend purpose','Developed by our team for real-time call screening',78,382,1110,62,31,colors.muted);
-      const logos=[['apple',142,535,76,93],['telnyx',368,549,226,70],['openai',686,554,222,60],['google',1001,548,205,70]];
-      for(const [name,x,y,w,h] of logos)s.images.add({path:root+'/presentation/shield-pitch/assets/'+name+'.png',alt:name+' company logo',fit:'contain',position:{left:x,top:y,width:w,height:h}});
-      note(s,'Shield’s team developed the custom AI backend: the live WebSocket bridge, screening policy and decision orchestration, evidence checks, bounded clarification, call-control state machine and Firebase integration. This is custom application/backend engineering using OpenAI models, not a claim that the team trained a foundation model. Apple supplies the SwiftUI/iPhone platform. Telnyx Call Control routes and connects calls. A Cloud Run WebSocket bridge carries audio to gpt-live-1, which delegates decisions to gpt-6-luna. Google Cloud and Firebase support hosting, backend functions, Firestore and Authentication. The recipient is fixed, screening timers are bounded and a failure never connects a call. Sources: docs/ARCHITECTURE.md; backend/src/live/policy.ts; backend/src/live/session.ts. Connected-call protection is separate and opt-in. Logos identify technologies used, not endorsements or commercial partnerships. Apple logo: the navigation SVG at https://www.apple.com/ . Telnyx black logo: official download linked from https://telnyx.com/media-kit . OpenAI wordmark: https://commons.wikimedia.org/wiki/File:OpenAI_logo_2025_(wordmark).svg, attributed there to https://openai.com/brand/ . Google wordmark: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png . The logos belong to their respective owners.');
+      text(s,'Custom backend','Our custom\nAI backend',74,209,480,140,57,colors.navy,'Georgia');
+      text(s,'Backend authorship','Built by our team in TypeScript',78,368,465,42,26,colors.muted);
+      const capabilities=[['Screening policy','Scam assessment and evidence checks'],['Live conversations','Audio streaming and follow-up questions'],['Call safeguards','Recipient approval before connection']];
+      capabilities.forEach(([name,detail],i)=>{
+        const y=439+i*74;
+        text(s,'Custom '+name,name,78,y,470,34,26,colors.ink,'Helvetica Neue',true);
+        text(s,'Custom '+name+' detail',detail,78,y+35,470,35,22,colors.muted);
+      });
+      const stack=[
+        {name:'apple',y:207,w:45,h:55,title:'iPhone app',detail:'Swift + SwiftUI'},
+        {name:'telnyx',y:318,w:137,h:43,title:'Call routing',detail:'Telnyx Call Control'},
+        {name:'openai',y:429,w:139,h:38,title:'Voice AI',detail:'GPT-6 Luna + GPT Live\nSoniox speech transcription'},
+        {name:'google',y:566,w:133,h:45,title:'Cloud services',detail:'Cloud Run + Firebase\nFirestore + Authentication'}
+      ];
+      for(const row of stack){
+        s.images.add({path:root+'/presentation/shield-pitch/assets/'+row.name+'.png',alt:row.name+' company logo',fit:'contain',position:{left:636+(140-row.w)/2,top:row.y+9,width:row.w,height:row.h}});
+        text(s,row.title,row.title,816,row.y,390,39,29,colors.ink,'Georgia');
+        text(s,row.title+' technologies',row.detail,816,row.y+44,390,65,23,colors.muted);
+      }
+      note(s,'Shield’s team developed the custom AI backend: the live WebSocket bridge, screening policy and decision orchestration, evidence checks, bounded clarification, call-control state machine and Firebase integration. This is custom application/backend engineering using OpenAI models, not a claim that the team trained a foundation model. Apple supplies the SwiftUI/iPhone platform. Telnyx Call Control routes and connects calls. The current hybrid screening bridge runs on Cloud Run: Soniox stt-rt-v5 transcribes speech, GPT-6 Luna assesses the screening policy, and GPT Live handles useful clarification. The custom bridge and backend are TypeScript. The visible list groups technologies by their role rather than listing unrelated development tools. Google Cloud and Firebase support hosting, backend functions, Firestore and Authentication. The recipient is fixed, screening timers are bounded and a failure never connects a call. Sources: docs/ARCHITECTURE.md; docs/HYBRID-SCREENING.md; package.json; backend/src/live/policy.ts; backend/src/live/session.ts. Connected-call protection is separate and opt-in. Logos identify technologies used, not endorsements or commercial partnerships. Apple logo: the navigation SVG at https://www.apple.com/ . Telnyx black logo: official download linked from https://telnyx.com/media-kit . OpenAI wordmark: https://commons.wikimedia.org/wiki/File:OpenAI_logo_2025_(wordmark).svg, attributed there to https://openai.com/brand/ . Google wordmark: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png . The logos belong to their respective owners.');
     }
     if(index===3){
       heading(s,'Red teaming shaped the design');
