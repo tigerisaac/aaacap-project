@@ -255,6 +255,11 @@ final class AppState {
             guard generation == sessionGeneration, signedIn, !isPreview else { return }
             people = response.people
             isDemo = response.isDemo
+            // Resolve access before anything renders behind it: a new public account starts at the plans.
+            if people.contains(where: \.isOwner) {
+                await subscription.load(api: api)
+                guard generation == sessionGeneration, signedIn, !isPreview else { return }
+            }
             if !people.contains(where: { $0.id == selectedPersonID }) {
                 selectedPersonID = people.first?.id
                 loadedCallFilters.removeAll()
@@ -282,8 +287,6 @@ final class AppState {
             }
             await loadProtectionOnboarding(generation: generation)
             await syncCallDirectory(generation: generation)
-            guard generation == sessionGeneration, signedIn, !isPreview else { return }
-            await subscription.load(api: api)
         } catch { if generation == sessionGeneration { contextError = error.localizedDescription; handleSessionFailure(error) } }
     }
 
@@ -297,7 +300,7 @@ final class AppState {
     }
 
     private func loadProtectionOnboarding(generation: Int) async {
-        guard let id = selectedPersonID, isOwner, !isDemo, !protectionChoicePending else { return }
+        guard let id = selectedPersonID, isOwner, !isDemo, !protectionChoicePending, !needsPlan else { return }
         let choiceGeneration = protectionChoiceGeneration
         guard let status = try? await api.forwardingSnapshot(participantID: id).status,
               generation == sessionGeneration, choiceGeneration == protectionChoiceGeneration,

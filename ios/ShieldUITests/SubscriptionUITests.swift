@@ -96,6 +96,14 @@ final class SubscriptionUITests: XCTestCase {
             app.terminate()
         }
     }
+    func testPlansComeBeforeProtectionOnboarding() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-protection-onboarding", "--uitesting-subscription", "offer", "--uitesting-plan-gate"]
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Choose a plan"].appears(timeout: 5))
+        XCTAssertFalse(app.tabBars.firstMatch.exists)
+        capture(app, "Plans before protection onboarding")
+    }
     private func gated(_ state: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview", "--uitesting-subscription", state, "--uitesting-plan-gate"]

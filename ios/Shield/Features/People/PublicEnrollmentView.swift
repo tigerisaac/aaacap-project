@@ -29,7 +29,8 @@ struct PublicEnrollmentView: View {
                 ShieldPageHeader {
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                         Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
-                        Text("First, check that Shield works with your phone. Then choose a plan.")
+                        Text(status?.status == "unavailable" ? "Your phone isn’t connected yet."
+                             : "First, check that Shield works with your phone. Then choose a plan.")
                             .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
                     }.padding(.vertical, ShieldTheme.Spacing.compact)
                 }

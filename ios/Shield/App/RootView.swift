@@ -63,6 +63,10 @@ struct RootView: View {
             #endif
             #endif
         }
+        // Onboarding waits behind the plan gate; load it once a purchase lifts the gate.
+        .onChange(of: model.needsPlan) { _, needsPlan in
+            if !needsPlan, model.signedIn, !model.isPreview { Task { await model.refresh(force: false) } }
+        }
         .alert("Couldn’t finish that", isPresented: $model.showingError) {
             Button("OK") { model.errorMessage = nil }
         } message: {
@@ -138,6 +142,12 @@ struct RootView: View {
                 NavigationStack {
                     ForwardingSetupView()
                 }
+            } else if model.signedIn, !model.people.isEmpty, model.needsPlan {
+                // A new public account chooses a plan before any onboarding or the tabs.
+                VStack(spacing: 0) {
+                    if model.isDemo { DemoBanner().background(.bar) }
+                    NavigationStack { SubscriptionView(isFirstScreen: true) }
+                }
             } else if model.signedIn, model.protectionOnboarding != nil, let participantID = model.protectionParticipantID {
                 ProtectionOnboardingView(monitoring: model.protectionOnboarding, participantID: participantID)
             } else if model.signedIn, model.trustedContactsOnboarding, let participantID = model.protectionParticipantID {
@@ -150,11 +160,6 @@ struct RootView: View {
                         VStack(spacing: 0) {
                             if model.isDemo { DemoBanner().background(.bar) }
                             JoinView()
-                        }
-                    } else if model.needsPlan {
-                        VStack(spacing: 0) {
-                            if model.isDemo { DemoBanner().background(.bar) }
-                            NavigationStack { SubscriptionView(isFirstScreen: true) }
                         }
                     } else {
                         TabView(selection: $model.selectedTab) {
