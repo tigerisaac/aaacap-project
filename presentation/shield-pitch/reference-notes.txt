@@ -26,6 +26,17 @@ Six editable slides keep the reference’s simple hierarchy and horizontal techn
 
 The first slide identifies the product. The next four cover the requested crisis, technology, red teaming and research benchmark. The final slide separates deployed screening results from the research classifier. After review, the user requested removal of visible footers and the ordinary-call percentage. Sources and the complete outcome breakdown remain in speaker notes. The benchmark slide now uses an editable vertical bar graph: Shield in navy with its original logo, and the published research models in muted gray. The axis begins at zero and the strongest published result remains visible.
 
+TECHNOLOGY SLIDE REVISION
+
+At the user’s request, the technology slide now centers “Our custom AI backend” and replaces the technology descriptions with Apple, Telnyx, OpenAI and Google company logos. The backend claim refers to Shield’s custom screening orchestration, decision policy, evidence validation, call-control logic and cloud integration, using external foundation models. It does not claim training a foundation model.
+
+Logo provenance:
+Apple: original navigation SVG from https://www.apple.com/ , rendered as PNG with transparent padding trimmed.
+Telnyx: black PNG in the official media-kit ZIP linked from https://telnyx.com/media-kit . Resized proportionally.
+OpenAI: https://commons.wikimedia.org/wiki/File:OpenAI_logo_2025_(wordmark).svg , credited to OpenAI’s official brand page; rendered as PNG.
+Google: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png .
+Logos are unaltered company marks used to identify technologies, not partnerships or endorsements.
+
 FACTS AND CLAIM BOUNDARIES
 
 Texas crisis: FBI IC3 2025 Annual Report, printed pp. 49–50.
