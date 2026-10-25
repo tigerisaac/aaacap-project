@@ -1,0 +1,55 @@
+SHIELD PRESENTATION — REFERENCE AND EVIDENCE NOTES
+Prepared October 25, 2026
+
+REFERENCE VIDEO
+CareLoop, Texas District 37 Congressional App Challenge winner
+https://www.congressionalappchallenge.us/25-TX37/
+Embedded video: https://vimeo.com/1131555481
+Duration: approximately 2 minutes 57 seconds.
+
+Visual notes from playback and timestamp inspection:
+
+0:00 — A white title slide places the logo, introduction and short purpose on the left. A collage of overlapping phone screens occupies the right.
+0:07 — The crisis slide uses an oversized dark heading, four large statistics and selective bold emphasis. The small logo stays in the upper-right corner.
+0:16–0:19 — Research appears as short action headings with supporting sentences, followed by a concrete research artifact beside a large explanation.
+0:37 — A shift in focus becomes a visual comparison: two photos, a central arrow and a short statement.
+1:05 — Large side-by-side phone recordings demonstrate functionality with little slide text.
+1:35 — A real team photograph adds evidence of the development process.
+2:13 — Technologies appear in labeled horizontal bands with logos and thin purple dividers.
+2:38 — The roadmap uses a large heading and a few bold priorities with smaller descriptions.
+
+Overall: white space, dark sans-serif headings, purple accents, recurring corner branding, and frequent changes between explanatory slides and product evidence. Visual inspection does not establish the exact font or animation timings.
+
+HOW SHIELD ADAPTS IT
+
+Six editable slides keep the reference’s simple hierarchy and horizontal technology rows. Shield’s existing design supplies the light gray background (#F2F3F4), navy action color (#002664), ink (#101E32), green (#076C5C), serif headings and sans-serif body text. Georgia approximates the app’s system serif in the deck. The artwork is the original ShieldMark.png and the October 17 Home sample-app capture. No AI-generated images, borrowed CareLoop photography or fabricated product screens are used.
+
+The first slide identifies the product. The next four cover the requested crisis, technology, red teaming and research benchmark. The final slide separates deployed screening results from the research classifier. After review, the user requested removal of visible footers and the ordinary-call percentage. Sources and the complete outcome breakdown remain in speaker notes. The benchmark slide now uses an editable vertical bar graph: Shield in navy with its original logo, and the published research models in muted gray. The axis begins at zero and the strongest published result remains visible.
+
+FACTS AND CLAIM BOUNDARIES
+
+Texas crisis: FBI IC3 2025 Annual Report, printed pp. 49–50.
+https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf
+14,410 complaints from Texans age 60+; $678,564,081 reported losses, rounded to $678.6M; third by losses among states. These are reported internet-crime figures, not a phone-only estimate or all elder fraud.
+
+Research classifier: original-label MASC v3 results from October 11, 2026.
+Test: 958/960 correct, 99.79% F1; 320 unique synthetic dialogues repeated three times. Development used prior test feedback.
+Additional split: 1,275/1,280 correct, 99.61% F1. This was MASC’s published training split, unseen during our classifier development, from the same generator. Model pretraining exposure is unknown.
+Sources: artifacts/masc-classifier/masc-v3-three-passes/summary.json and artifacts/masc-classifier/masc-train-v3/summary.json.
+
+No defensible blanket “best in the industry” ranking exists in the evidence. Published MASC F1 values reach 99.92%, under different protocols. The deck therefore uses “near-perfect benchmark classification” and keeps the separate research classifier distinct from the product.
+Chart values (F1 percent): DistilBERT 96.97; BERT-Base 98.12; RoBERTa 99.32; BiGRU 99.92; Shield research classifier v3 99.79. This is published research context, not a controlled head-to-head comparison.
+Published context: https://supreme-lab.github.io/ai-in-the-loop/
+Dataset: https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation
+
+Deployed policy v158: October 13 MASC text regression has 157/160 harmful stops and 69/80 ordinary offers. Three harmful cases receive questions. Ordinary remainder: six saved, three blocked, two questioned. These are not real-call accuracy results.
+Red teaming: 40 fresh scripted cases and 16 adaptive profiles, each repeated twice. Question-quality defects remain documented even where final outcomes pass. Reused public data is regression evidence, not untouched validation.
+Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md, docs/PUBLIC-SCAM-BENCHMARKS.md, docs/SCREENING.md and docs/ARCHITECTURE.md.
+
+DELIVERABLE
+
+Live editable presentation Page: page_38bf7ea1948c819180db376347de8da2
+Artifact: artifact_external_99229d69-c96a-49d9-b7b0-2b270d0bbc28
+Programmatic source: presentation/shield-pitch/build.mjs
+The module exports an Artifact Session callback, build({presentation,input}).
+On a fresh presentation containing one blank slide, run indices [0], then [1,2], then [3,4,5]. Set input.replace=true to rebuild selected existing slides in place. Without replace, creation batches append slides. Speaker notes contain full source references and speaking context.
