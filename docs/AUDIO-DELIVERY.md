@@ -2,6 +2,18 @@
 
 **Deployed with owner approval on October 16, 2026.** The matching signed iPhone app is installed and launched. Audio uses temporary delivery followed by deletion; cloud screening remains on demand. See also [offline call history](IOS-OFFLINE.md).
 
+## October 25 — recording-origin configuration restored
+
+The background-worker error email was actionable: `ingestforwardingvoicemail-00011-kuq` repeatedly rejected authenticated Telnyx recording metadata with `unapproved_recording_origin`. Two jobs remained pending. Their metadata matched the expected recording, call and application, and named the already-approved `https://s3.amazonaws.com/telephony-recorder-prod/` storage location. No audio, transcript, signed URL or private phone number was exposed to development tools.
+
+The October 24 deployment had bound the ingester to `SHIELD_RUNTIME` version 8, which omitted `TELNYX_RECORDING_HOSTS`; version 7 contained the approved host. Latest version 9 also omitted it. The empty default correctly refused the download, but repeated delivery failures triggered the 20-errors-in-15-minutes alert.
+
+With explicit owner approval, runtime version **10** was created from the complete current version 9 with only `TELNYX_RECORDING_HOSTS: ["s3.amazonaws.com"]` added. Only the ingester was updated. At **18:11:52 Central October 25**, revision **`ingestforwardingvoicemail-00012-cab`** was ACTIVE at 100% traffic; source archive checksum/size, all other service settings and IAM bindings matched the baseline. Google Cloud recopied the source archive under a new storage generation without changing its bytes. The latest runtime retains the host for future deployments; preserve this field when preparing subsequent versions. The version-9 App Review configuration was preserved, not rolled back to the older runtime.
+
+The strict bucket/path, HTTPS, ownership, completion, duration and no-redirect checks remain unchanged. Alerts remain enabled. No manual worker replay, phone call, carrier change, screening change or local audio download was performed. Private content-free rollout receipts are in `artifacts/private/recording-origin-oct25/`.
+
+The 18 focused origin/provider tests, `npm run check` (399 unit tests, typecheck and build), and the complete Firestore suite (326 tests) pass. The first restricted check could not open local test ports; the unrestricted rerun passed. The default Firestore emulator port was occupied by other work; the unchanged suite passed on isolated ports. Test counts include the concurrent subscription work; none of that source was deployed by this repair. At **18:15:26 Central**, both originally stuck jobs had completed naturally and recorded provider deletion (18:11:51 and 18:15:08); all seven recording jobs returned by the bounded since-17:30 inventory were done, including three newer jobs completed by the replacement worker. No `unapproved_recording_origin` appeared in the complete log query since 18:10. Seven `capture_outcome_pending` retries belonged to the newer captures, which subsequently completed; these are retained rather than claiming zero errors. The delayed metrics showed nine 5xx responses in the rolling 15-minute worker window, below the threshold of 20. Metric delay and incident notification delivery remain distinct from job completion; no claim of inbox closure or phone playback acceptance is made.
+
 ## Storage contract
 
 - Telnyx captures the unconnected inbound call. Ingestion deletes the provider copy after securely copying it, or directly when the call should be discarded. An independent five-minute expiry sweep retries overdue provider jobs, including jobs whose original event retries ended. Recording deletion does not run in call admission or call recovery.
