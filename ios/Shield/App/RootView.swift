@@ -151,6 +151,11 @@ struct RootView: View {
                             if model.isDemo { DemoBanner().background(.bar) }
                             JoinView()
                         }
+                    } else if model.needsPlan {
+                        VStack(spacing: 0) {
+                            if model.isDemo { DemoBanner().background(.bar) }
+                            NavigationStack { SubscriptionView(isFirstScreen: true) }
+                        }
                     } else {
                         TabView(selection: $model.selectedTab) {
                             Tab("Home", systemImage: "house.fill", value: 0) {

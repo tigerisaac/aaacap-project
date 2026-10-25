@@ -3,6 +3,8 @@ import StoreKit
 
 struct SubscriptionView: View {
     @Environment(AppState.self) private var app
+    /// Shown before the main app for a public account that hasn't subscribed yet.
+    var isFirstScreen = false
     @State private var managing = false
 
     var body: some View {
@@ -77,8 +79,9 @@ struct SubscriptionView: View {
                 Button("Check access again") { Task { await app.subscription.load(api: app.api, includePlans: true) } }
                     .disabled(app.subscription.working || app.isPreview)
             }
+            if isFirstScreen { AccountActionsGroup(showsAccess: false) }
         }
-        .shieldListStyle().navigationTitle("Shield access").navigationBarTitleDisplayMode(.inline)
+        .shieldListStyle().navigationTitle(isFirstScreen ? "Choose a plan" : "Shield access").navigationBarTitleDisplayMode(.inline)
         .task { if !app.isPreview { await app.subscription.load(api: app.api, includePlans: true) } }
         .manageSubscriptionsSheet(isPresented: $managing)
         .onChange(of: managing) { _, showing in

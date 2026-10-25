@@ -120,6 +120,30 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Public purchase-to-activa
     expect((await register()).json().error.code).toBe('phone_already_enrolled');
     expect((await accessRef(store, 'owner').get()).exists).toBe(false);
   });
+  it('registers without restore instructions and requires them, from the owner, before activation', async () => {
+    const { originalSettingsRecorded: _recorded, restorationInstructions, ...short } = payload();
+    expect((await register({ ...short, restorationInstructions } as ReturnType<typeof payload>)).statusCode).toBe(400);
+    const id = (await register(short as ReturnType<typeof payload>)).json().participantId as string;
+    const control = store.personRef(id).collection('forwarding').doc('control');
+    expect((await control.get()).data()!.restorationGuideEnc).toBeUndefined();
+    const forwarding = async () => (await app.inject({ url: '/api/forwarding', headers: { ...headers(), 'x-shield-participant': id } })).json();
+    expect(await forwarding()).toMatchObject({ restorationGuideNeeded: true, prepared: false });
+    await store.personRef(id).update({ forwardingConsent });
+    await control.update({ ringTestAt: now, forwardingTestAt: now });
+    await routeRef(store, config.TELNYX_NUMBER, phones.owner!).update({ enabled: true, qualification: 'forwarding_nonce', qualifiedAt: now });
+    expect((await activate(id)).json().error.code).toBe('setup_not_ready');
+    const save = (body: object = {}, uid = 'owner') => app.inject({ method: 'POST', url: '/api/enrollment/restoration', headers: headers(uid),
+      payload: { participantId: id, originalSettingsRecorded: true, restorationInstructions, ...body } });
+    expect((await save({}, 'other')).json().error.code).toBe('setup_not_ready');
+    expect((await save({ restorationInstructions: ['short', 'short', 'short'] })).statusCode).toBe(400);
+    expect((await save({ originalSettingsRecorded: false })).statusCode).toBe(400);
+    expect((await control.get()).data()!.restorationGuideEnc).toBeUndefined();
+    expect((await save()).json()).toEqual({ saved: true });
+    expect(store.vault.open((await control.get()).data()!.restorationGuideEnc, `restoration:${id}`)).toBe(JSON.stringify(restorationInstructions));
+    expect(await forwarding()).toMatchObject({ restorationGuideNeeded: false, prepared: true });
+    expect((await activate(id)).json()).toEqual({ active: true });
+    expect((await save()).json().error.code).toBe('setup_not_ready');
+  });
   it('requires fresh paid access and signed route checks before explicit activation', async () => {
     const id = (await register()).json().participantId;
     expect((await activate(id)).statusCode).toBe(409);

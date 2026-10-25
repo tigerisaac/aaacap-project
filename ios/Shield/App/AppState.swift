@@ -66,6 +66,15 @@ final class AppState {
     var canListen: Bool { person?.canListen ?? false }
     var isOwner: Bool { person?.isOwner ?? false }
     var isTrial: Bool { service?.mode == "trial" && !isDemo }
+    /// A public account that has never subscribed chooses a plan before using Shield. Only the server's access
+    /// lookup can set this: pilot, assisted, helper and lapsed accounts keep the app, so restoration stays reachable.
+    var needsPlan: Bool {
+        guard isOwner, let access = subscription.access, access.isPublic, !access.isActive, !access.hasSubscription else { return false }
+        #if DEBUG && targetEnvironment(simulator)
+        if isPreview { return ProcessInfo.processInfo.arguments.contains("--uitesting-plan-gate") }
+        #endif
+        return !isPreview
+    }
 
     init(configuration: BackendConfiguration = .bundled, callDirectory: CallDirectoryCoordinator? = nil) {
         #if DEBUG && targetEnvironment(simulator)

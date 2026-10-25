@@ -31,6 +31,8 @@ struct ForwardingSetupView: View {
                         }
                     }
                 }.shieldListStyle().navigationTitle("Phone setup").navigationBarTitleDisplayMode(.inline)
+            } else if model.status?.restorationGuideNeeded == true, let id = model.status?.participantId {
+                RestorationInstructionsView(participantID: id) { await model.load(app) }
             } else { setupBody }
         }.task {
             if !app.isDemo || model.isUITest {

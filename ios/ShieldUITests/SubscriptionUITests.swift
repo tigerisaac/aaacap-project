@@ -76,6 +76,31 @@ final class SubscriptionUITests: XCTestCase {
         XCTAssertTrue(remove.isEnabled)
         capture(app, "Deletion with billing lookup unavailable")
     }
+    func testUnsubscribedPublicAccountStartsAtThePlans() {
+        let app = gated("offer")
+        XCTAssertTrue(app.navigationBars["Choose a plan"].appears(timeout: 5))
+        XCTAssertFalse(app.tabBars.firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["$9.99 / month"].exists)
+        capture(app, "Plans before the app")
+        reveal(app.buttons["Sign out"], app)
+        XCTAssertTrue(app.buttons["Alerts for others"].exists)
+        XCTAssertTrue(app.buttons["Delete account"].exists)
+        XCTAssertTrue(app.buttons["Sign out"].isHittable)
+        capture(app, "Plans keep caretaker, deletion and sign-out")
+    }
+    func testPilotSubscribedAndLapsedAccountsSkipThePlans() {
+        for state in ["pilot", "subscribed", "billing-issue"] {
+            let app = gated(state)
+            XCTAssertTrue(app.tabBars.buttons["Home"].appears(timeout: 5), state)
+            XCTAssertFalse(app.navigationBars["Choose a plan"].exists, state)
+            app.terminate()
+        }
+    }
+    private func gated(_ state: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-preview", "--uitesting-subscription", state, "--uitesting-plan-gate"]
+        app.launch(); return app
+    }
     private func launch(_ state: String, large: Bool = false, extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-preview", "--uitesting-subscription", state] + extra + (large

@@ -14,15 +14,17 @@ import { forwardingConsent } from './forwarding-store.js';
 import { hasRestorationGuide } from './restoration-guide.js';
 import commercial from './commercial-policy.json' with { type: 'json' };
 
+// Three original conditions: unanswered, busy and unreachable. Never infer reset codes.
+const restorationSchema = z.array(z.string().trim().min(10).max(1000).regex(/^[^\p{Cc}]+$/u)).length(3);
 const inputSchema = z.object({
   requestId: z.string().uuid().transform(value => value.toLowerCase()),
   name: z.string().trim().min(1).max(60).regex(/^[^\p{Cc}]+$/u),
   carrier: z.enum(['tello', 'tmobile', 'att', 'verizon']),
-  dataPlanConfirmed: z.literal(true), originalSettingsRecorded: z.literal(true),
-  // Three original conditions: unanswered, busy and unreachable. Never infer reset codes.
-  restorationInstructions: z.array(z.string().trim().min(10).max(1000).regex(/^[^\p{Cc}]+$/u)).length(3),
+  dataPlanConfirmed: z.literal(true),
+  // Optional here: phone setup collects them later, and forwarding can't start until they're saved.
+  originalSettingsRecorded: z.literal(true).optional(), restorationInstructions: restorationSchema.optional(),
   consentVersion: z.literal(CONSENT_VERSION), accepted: z.literal(true),
-}).strict();
+}).strict().refine(input => (input.originalSettingsRecorded === undefined) === (input.restorationInstructions === undefined));
 
 const phoneFor = (identity: Identity) => {
   const phone = identity.verifiedPhone && parsePhoneNumberFromString(identity.verifiedPhone);
@@ -98,8 +100,9 @@ export function registerPublicEnrollment(app: FastifyInstance, store: CloudStore
         // Missing monitoring consent stays off and lets the existing explicit choice appear.
         publicEnrollment: { createdAt: now, activatedAt: null } });
       tx.create(person.collection('forwarding').doc('control'), { provisioned: true, provider: 'telnyx', preparedAt: now,
-        enabled: false, used: 0, dataPlanConfirmed: true, originalSettingsRecordedAt: now,
-        restorationGuideEnc: store.vault.seal(JSON.stringify(input.restorationInstructions), `restoration:${personId}`) });
+        enabled: false, used: 0, dataPlanConfirmed: true,
+        ...(input.restorationInstructions ? { originalSettingsRecordedAt: now,
+          restorationGuideEnc: store.vault.seal(JSON.stringify(input.restorationInstructions), `restoration:${personId}`) } : {}) });
       tx.create(route!.ref, { participantId: personId, carrier: input.carrier, version, enrolledAt: now, enabled: false });
       members.add(personId); tx.update(pool!.ref, { members: [...members] });
       tx.create(key, { uid: identity.subject, audience: 'public', participantId: personId, country, carrier: input.carrier,
@@ -107,6 +110,24 @@ export function registerPublicEnrollment(app: FastifyInstance, store: CloudStore
       tx.create(key.collection('audit').doc('approval'), { action: 'public_setup_created', at: now, source: 'verified_phone' });
       tx.create(store.db.collection('billingCustomers').doc(customerId), { accessKey: key.id });
       return { participantId: personId, created: true };
+    });
+  });
+
+  // Saves or corrects the owner's original carrier settings before the first forwarding change.
+  app.post('/api/enrollment/restoration', async request => {
+    const identity = await identify(request);
+    const input = z.object({ participantId: z.string().uuid().transform(value => value.toLowerCase()),
+      originalSettingsRecorded: z.literal(true), restorationInstructions: restorationSchema }).strict().parse(request.body);
+    await store.quota([[`enrollment-restoration:${identity.subject}`, 20]]);
+    return store.db.runTransaction(async tx => {
+      const [person, control, deleting] = await tx.getAll(store.personRef(input.participantId),
+        store.personRef(input.participantId).collection('forwarding').doc('control'), deletionRef(store, identity.subject));
+      const p = person!.data(), c = control!.data();
+      if (deleting!.exists || !p || p.ownerUid !== identity.subject || !p.publicEnrollment || p.publicEnrollment.activatedAt
+        || p.status !== 'setup' || p.restoration || !c?.provisioned || c.enabled || c.activeCallId) throw new HttpError(409, 'setup_not_ready');
+      tx.update(control!.ref, { originalSettingsRecordedAt: store.now(),
+        restorationGuideEnc: store.vault.seal(JSON.stringify(input.restorationInstructions), `restoration:${p.id}`) });
+      return { saved: true };
     });
   });
 

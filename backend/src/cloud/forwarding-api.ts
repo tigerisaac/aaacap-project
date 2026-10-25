@@ -41,6 +41,7 @@ export async function registerForwardingAPI(app: FastifyInstance, store: CloudSt
       .orderBy('createdAt', 'desc').limit(10).get();
     return { participantId: p.id, carrier: carrier?.name ?? 'your carrier', carrierVerified: !!carrier?.verified, phone: store.phone(p), shieldNumber: p.shieldNumber,
       alwaysOn: p.alwaysOn === true, publicEnrollment: !!p.publicEnrollment, quietHours: p.quietHours ?? DEFAULT_QUIET_HOURS,
+      restorationGuideNeeded: !!p.publicEnrollment && !!control?.provisioned && !hasRestorationGuide(control),
       setupCheckNumber: store.config.SETUP_CHECK_NUMBER ?? null,
       lastSetupCheck: control?.lastSetupCheck ? { at: at(control.lastSetupCheck.at), result: control.lastSetupCheck.result } : null,
       prepared, active, probe: probes.publicState(control), contactsSyncedAt: at(p.contactsSyncedAt), ringTestAt: at(control?.ringTestAt), forwardingTestAt: at(control?.forwardingTestAt), expiresAt: at(control?.expiresAt), remainingCalls: Math.max(0, 10 - (control?.used ?? 10)),

@@ -1,15 +1,14 @@
 import SwiftUI
 
+/// Checks the verified number's carrier and creates inactive setup. Choosing a plan comes next;
+/// original carrier settings are saved later, in phone setup, before anything is forwarded.
 struct PublicEnrollmentView: View {
     @Environment(AppState.self) private var app
+    var isFirstScreen = false
     @State private var status: PublicEnrollmentStatus?
     @State private var name = ""
     @State private var carrier = ""
-    @State private var unanswered = ""
-    @State private var busy = ""
-    @State private var unreachable = ""
     @State private var dataPlan = false
-    @State private var originalSettings = false
     @State private var consent = false
     @State private var requestID = UUID()
     @State private var working = false
@@ -17,30 +16,30 @@ struct PublicEnrollmentView: View {
     @State private var requestUnconfirmed = false
     @State private var error: String?
 
-    private var instructions: [String] {
-        [unanswered, busy, unreachable].map { $0.split(whereSeparator: \.isWhitespace).joined(separator: " ") }
-    }
     private var canSave: Bool {
         !working && !requestUnconfirmed && status?.status == "available"
             && ContactName.problem(name, disallowControls: true) == nil
             && status?.carriers.contains(where: { $0.id == carrier }) == true
-            && instructions.allSatisfy { (10...1000).contains($0.count) }
-            && dataPlan && originalSettings && consent
+            && dataPlan && consent
     }
 
     var body: some View {
         List {
+            if isFirstScreen {
+                ShieldPageHeader {
+                    VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
+                        Text("Welcome to Shield").shieldPageHeading().accessibilityAddTraits(.isHeader)
+                        Text("First, check that Shield works with your phone. Then choose a plan.")
+                            .foregroundStyle(ShieldTheme.secondaryText).fixedSize(horizontal: false, vertical: true)
+                    }.padding(.vertical, ShieldTheme.Spacing.compact)
+                }
+            }
             if let status {
                 if status.status == "enrolled" {
-                    ShieldSection("Phone setup saved") {
-                        Text("Your phone is registered for setup. Protection starts only after access and phone checks are complete.")
-                        Text("Check your access here, then open your account and choose Phone setup from Home.")
-                            .foregroundStyle(ShieldTheme.secondaryText)
-                        NavigationLink { SubscriptionView() } label: {
-                            ActionRow(title: "Check Shield access", symbol: "checkmark.shield")
-                        }
+                    ShieldSection("Your phone works with Shield") {
+                        Text("Next, choose a plan. Protection starts after phone setup is complete.")
                         Button { Task { await continueSetup(status.participantId) } } label: {
-                            ShieldActionLabel(title: "Open my account", isWorking: working)
+                            ShieldActionLabel(title: "Continue", isWorking: working)
                         }.shieldPrimaryButton().disabled(working)
                     }
                 } else if status.status == "available" {
@@ -65,8 +64,9 @@ struct PublicEnrollmentView: View {
                         .frame(minHeight: ShieldTheme.Layout.minimumTarget).disabled(working)
                 }
             }
+            if isFirstScreen { AccountActionsGroup(showsAccess: false) }
         }
-        .shieldListStyle().navigationTitle("Connect my phone").navigationBarTitleDisplayMode(.inline)
+        .shieldListStyle().navigationTitle(isFirstScreen ? "Get started" : "Connect my phone").navigationBarTitleDisplayMode(.inline)
         .scrollDismissesKeyboard(.interactively)
         .task { await load() }
         .refreshable { await load() }
@@ -84,17 +84,8 @@ struct PublicEnrollmentView: View {
             }
             Toggle("My plan includes mobile data", isOn: $dataPlan)
         }.disabled(working || requestUnconfirmed)
-        ShieldSection("Save your current carrier settings") {
-            Text("Before changing forwarding, ask your carrier how to restore your current voicemail or forwarding for each situation. Save their instructions below. Don’t guess reset codes.")
-            TextField("Restore unanswered calls", text: $unanswered, axis: .vertical).lineLimit(3...8)
-            TextField("Restore busy calls", text: $busy, axis: .vertical).lineLimit(3...8)
-            TextField("Restore calls with no signal", text: $unreachable, axis: .vertical).lineLimit(3...8)
-            Toggle("These instructions restore my original settings", isOn: $originalSettings)
-            Text("Use 10–1,000 characters for each instruction. Shield saves them privately with your setup.")
-                .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-        }.disabled(working || requestUnconfirmed)
         ShieldSection("Before continuing") {
-            Text("Creating setup does not start a subscription or change forwarding. A subscription and separate phone checks are required before protection starts.")
+            Text("Checking your phone doesn’t start a subscription or change any phone settings.")
             if let base = app.configuration.baseURL {
                 Link("Privacy", destination: base.appending(path: "privacy"))
                 Link("How Shield works", destination: base.appending(path: "service-info"))
@@ -102,7 +93,7 @@ struct PublicEnrollmentView: View {
             Toggle("I agree to Shield storing these details for my setup", isOn: $consent)
                 .disabled(working || requestUnconfirmed)
             Button { Task { await save(status) } } label: {
-                ShieldActionLabel(title: "Save phone setup", isWorking: working)
+                ShieldActionLabel(title: "Check my phone", isWorking: working)
             }.shieldPrimaryButton().disabled(!canSave)
         }
     }
@@ -132,12 +123,13 @@ struct PublicEnrollmentView: View {
         do {
             let _: APIResponses.Empty = try await app.api.send("/api/enrollment", method: "POST", body: APIClient.payload([
                 "requestId": requestID.uuidString.lowercased(), "name": ContactName.cleaned(name), "carrier": carrier,
-                "dataPlanConfirmed": dataPlan, "originalSettingsRecorded": originalSettings,
-                "restorationInstructions": instructions, "consentVersion": status.consentVersion, "accepted": consent,
+                "dataPlanConfirmed": dataPlan, "consentVersion": status.consentVersion, "accepted": consent,
             ]))
             guard generation == app.sessionGeneration else { working = false; return }
             working = false
             await load()
+            // The new setup makes this a known account; the app now asks for a plan.
+            if self.status?.status == "enrolled" { await continueSetup(self.status?.participantId) }
         } catch {
             guard generation == app.sessionGeneration else { working = false; return }
             // Keep the submitted form until a current read establishes whether it saved.

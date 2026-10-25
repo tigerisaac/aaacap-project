@@ -1,5 +1,15 @@
 # Status
 
+## October 25 — sign-up goes from phone check to plans (source only)
+
+The owner chose this order: verify the phone, let known accounts in, and send an unknown number through a carrier check and then the paywall, without prices for caretakers or pilot accounts.
+
+- **Unknown number** (no participant) with public setup available: the first screen is now the carrier check (name, carrier, data plan, consent), with caretaker alerts, deletion and sign-out below it. With public setup unavailable, the existing "Contact Shield" screen is unchanged.
+- **After registration** the account owns an unpaid public setup, so the app opens on **Choose a plan** (the subscription screen) instead of the tabs. The gate comes only from the server's access lookup: public, not active and never subscribed. Pilot and assisted accounts, helpers viewing someone else's line, and lapsed subscribers keep the app, so Disconnect and Delete stay reachable.
+- **Restore instructions** moved out of registration. `POST /api/enrollment` accepts them as an optional pair; `POST /api/enrollment/restoration` saves them for the owner's own public setup before activation; `/api/forwarding` reports `restorationGuideNeeded`, and phone setup asks for them before any forwarding step. The existing server guards still refuse forwarding tests and activation without a saved guide.
+
+Checks: `npm run check` (397 unit) and `npm run test:firebase` (**325**, one new case covering registration without instructions, other-owner and malformed saves, activation refused until saved, and no change after activation) pass. 14 UI tests pass on iPhone 17e/iOS 27, including two new ones: the unsubscribed public account starts at the plans with account actions and no tab bar, and pilot, subscribed and billing-grace accounts go straight to Home. **Not deployed**; the live API still requires restore instructions at registration, and public setup and purchases stay off in production.
+
 ## October 24 — backend deployed from main (owner-approved)
 
 The owner said to "just deploy all the backend stuff". Preflight (read-only): no call in progress; one live participant (always-on, connected-call protection on); live `shieldApi` still carried the October 16 pre-privacy consent constants (`shield-pilot-2026-09-v1`, monitoring `2026-10-v1`) and voicemail policy v4. Snapshot for rollback: `SHIELD_RUNTIME` v8, bridge `shield-live-retry-352ba27e0a07`, Hosting version `d62ef31f0f12c172`, previous function revisions from October 18 (API `shieldapi-00036-win`).
