@@ -20,12 +20,12 @@ class FakeSocket extends EventEmitter {
   json() { return this.sent.filter((s): s is string => typeof s === 'string' && s.startsWith('{')).map(s => JSON.parse(s)); }
 }
 const drain = () => new Promise(resolve => setImmediate(resolve));
-function harness(decision = ask, recentScamStopped = false) {
+function harness(decision = ask, recentScamStopped = false, waitForGreeting = false) {
   let now = 1000, chunk = 0, audioMs = 0;
   const sockets: { kind: string; socket: FakeSocket }[] = [];
   const requests: any[] = [];
   const fetcher = vi.fn(async (_url: any, options: any) => { requests.push(JSON.parse(options.body)); return Response.json(response(decision)); });
-  const io = { telnyx: vi.fn(), finish: vi.fn().mockResolvedValue(undefined), close: vi.fn(), timing: vi.fn(), acknowledgementAudio: Buffer.alloc(8800, 10) };
+  const io = { telnyx: vi.fn(), finish: vi.fn().mockResolvedValue(undefined), close: vi.fn(), timing: vi.fn(), acknowledgementAudio: Buffer.alloc(8800, 10), waitForGreeting };
   const session = new HybridScreeningSession(io, { openai: 'test', soniox: 'test' }, { recentScamStopped }, {
     now: () => now, fetch: fetcher as any, socket: kind => { const socket = new FakeSocket(); sockets.push({ kind, socket }); return socket as unknown as WebSocket; }
   });
@@ -140,6 +140,31 @@ describe('Production hybrid screening', () => {
   it('distinguishes true silence from unheard speech and stalled ASR', () => {
     const quiet = harness(); quiet.advance(8000); expect(quiet.io.finish).toHaveBeenCalledExactlyOnceWith('silent_caller');
     const stalled = harness(); stalled.input(); stalled.advance(8000); expect(stalled.io.finish).toHaveBeenCalledExactlyOnceWith('screening_unavailable');
+  });
+  it('gives the caller a full response window after the greeting despite earlier background noise', () => {
+    const h = harness(ask, false, true);
+    // Healthy recognition advances throughout the greeting; a brief early noise produces no words.
+    for (let i = 1; i <= 500; i++) {
+      h.input(i <= 5);
+      h.stt.message({ final_audio_proc_ms: i * 20, total_audio_proc_ms: i * 20, tokens: [] });
+      h.advance(20);
+    }
+    h.session.listen(); h.session.tick();
+    expect(h.io.finish).not.toHaveBeenCalled();
+    h.advance(7999); expect(h.io.finish).not.toHaveBeenCalled();
+    h.advance(1); expect(h.io.finish).toHaveBeenCalledExactlyOnceWith('screening_unavailable');
+  });
+  it('assesses a caller who answers after the greeting instead of timing out on pre-greeting noise', async () => {
+    const h = harness(approve, false, true);
+    for (let i = 1; i <= 500; i++) {
+      h.input(i <= 5);
+      h.stt.message({ final_audio_proc_ms: i * 20, total_audio_proc_ms: i * 20, tokens: [] });
+      h.advance(20);
+    }
+    h.session.listen(); h.session.tick(); h.advance(1000);
+    h.input(); h.asr('This is Anna about lunch tomorrow.'); h.advance(800);
+    await drain(); h.session.tick();
+    expect(h.io.finish).toHaveBeenCalledExactlyOnceWith(approve);
   });
   it('allows long provisional speech while the recognizer is processing audio', () => {
     const h = harness();

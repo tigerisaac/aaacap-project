@@ -7,7 +7,7 @@ import { handoffInput, initialAssessment } from './hybrid-policy.js';
 import { researchScamPattern, type ResearchResult, type ResearchTopic } from './research.js';
 import { responseUsage, type TimingPhase, type TimingMetrics } from './timing.js';
 
-export const HYBRID_SCREENING_VERSION = 'soniox-luna-live-v2';
+export const HYBRID_SCREENING_VERSION = 'soniox-luna-live-v3';
 type Kind = 'soniox' | 'live';
 type Dependencies = { now?: () => number; fetch?: typeof fetch; socket?: (kind: Kind, key: string) => WebSocket };
 type HybridIO = Omit<ScreeningIO, 'openai' | 'research'> & {
@@ -258,7 +258,10 @@ export class HybridScreeningSession {
       if (this.listeningAt !== undefined && this.callerLastAt === undefined && now - this.listeningAt >= LIVE_LIMITS.initialSilenceMs) { void this.stop('silent_caller'); return; }
       if (this.callerLastAt !== undefined && this.finalizedMs < this.lastSoundMs && now - this.progressAt >= LIVE_LIMITS.idleMs) { void this.stop('screening_unavailable'); return; }
       this.gate.tick();
-      if (!this.gate.waiting && this.callerLastAt !== undefined && now - this.callerLastAt >= LIVE_LIMITS.idleMs && !this.text.trim()) {
+      // Noise while the disclosure is playing must not consume the caller's
+      // response window before the greeting has invited them to speak.
+      if (!this.gate.waiting && this.callerLastAt !== undefined
+        && now - Math.max(this.callerLastAt, this.listeningAt ?? this.startedAt) >= LIVE_LIMITS.idleMs && !this.text.trim()) {
         void this.stop('screening_unavailable'); return;
       }
     } else if (this.phase === 'handoff' && now - this.handoffAt! >= LIVE_LIMITS.startupMs) { void this.stop('screening_unavailable'); return; }
