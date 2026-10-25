@@ -1,0 +1,383 @@
+{
+  "scope": "Completed, full-set FTC transcript evaluations retained in local artifacts, across historical policy versions. Not unique calls or people protected.",
+  "deduplication": "Exact result-file copies counted once; identical serialized result records counted once across selected files. Incomplete sets excluded. Conservative archival count, not an exhaustive total of all project testing.",
+  "complete_result_sets": 61,
+  "distinct_retained_test_records": 55684,
+  "outcomes": {
+    "message": 9174,
+    "block": 45075,
+    "continue": 1169,
+    "approve": 174,
+    "failure": 16,
+    "hold": 62,
+    "no_decision": 14
+  },
+  "sources": [
+    {
+      "summary": "artifacts/screening-hardening/observed-v110-boundary-snapshot/artifacts/ftc-v110/summary.json",
+      "results_sha256": "0ae463eb54a4acbfb42327b76f9a2677ef7fb7ac05e1032a0641bd5d5c10aff5",
+      "trials": 724,
+      "blocked": 347
+    },
+    {
+      "summary": "artifacts/screening-hardening/clarification-guidance-snapshot/artifacts/clarification-guidance-ftc-v151/summary.json",
+      "results_sha256": "0dfd7f33750e702b68cc956a4cd49659460f9613d1779cbeb9bc5f8f4c471beb",
+      "trials": 724,
+      "blocked": 586
+    },
+    {
+      "summary": "artifacts/v30-v57-public/v57/ftc/summary.json",
+      "results_sha256": "0e0d35bff0766e6a5ec90148c351c9ae4c65d92806a33f0e8b5d03640560b520",
+      "trials": 724,
+      "blocked": 706
+    },
+    {
+      "summary": "artifacts/screening-hardening/payment-context-evaluation-snapshot/artifacts/v98-ftc/summary.json",
+      "results_sha256": "10d6f48ce74554b3bf0d517c19b3c1a3b2534aba28c4c0dbf1291b4268927800",
+      "trials": 724,
+      "blocked": 315
+    },
+    {
+      "summary": "artifacts/screening-hardening/charge-contact-v127-snapshot/artifacts/public-ftc-v127/summary.json",
+      "results_sha256": "1563f0590ffdecaf3b14d167164deabccddb162daeab17fdb9f500286a89e288",
+      "trials": 724,
+      "blocked": 533
+    },
+    {
+      "summary": "artifacts/screening-hardening/order-audit-evaluation-snapshot/artifacts/v94-ftc/summary.json",
+      "results_sha256": "18b68aa1bbc40a323f376f56d0cfd778d3a46f402d494714b8b99298e65f9a5c",
+      "trials": 724,
+      "blocked": 238
+    },
+    {
+      "summary": "artifacts/screening-hardening/observed-v117-schema-snapshot/artifacts/ftc-v117/summary.json",
+      "results_sha256": "19c149f323683cdad34ed04fdafe6f0d4e2c51106535f7ad1e814ac36aa8dda1",
+      "trials": 724,
+      "blocked": 297
+    },
+    {
+      "summary": "artifacts/screening-hardening/recording-consistency-snapshot/artifacts/recording-consistency-ftc-v150/summary.json",
+      "results_sha256": "20b7a6bfc0844f546d45137253f126fe1bd67d7f49857009584044aa911d5055",
+      "trials": 724,
+      "blocked": 579
+    },
+    {
+      "summary": "artifacts/screening-hardening/purpose-contract-snapshot/artifacts/purpose-contract-ftc-v140/summary.json",
+      "results_sha256": "217d123a4c6264d1c94c6cd90b41ea0c6ee91279fe697d5ebde31ff1085e34b2",
+      "trials": 724,
+      "blocked": 586
+    },
+    {
+      "summary": "artifacts/screening-hardening/observed-v120-context-snapshot/artifacts/ftc-v120/summary.json",
+      "results_sha256": "2516e2395c9a0bd0445475ff53e13af60f2724b8e28609dce2ba73fa9ffab5e9",
+      "trials": 724,
+      "blocked": 344
+    },
+    {
+      "summary": "artifacts/screening-hardening/contact-destination-v135-snapshot/artifacts/contact-destination-ftc-v135/summary.json",
+      "results_sha256": "2bb5ae1e278a8e3c9f1466e76cecb7c7e2732edf8b4d02c3163ace3a34ada8ec",
+      "trials": 724,
+      "blocked": 611
+    },
+    {
+      "summary": "artifacts/screening-hardening/current-hardening-evaluation-snapshot/artifacts/current-v91/ftc/summary.json",
+      "results_sha256": "2d245f8299ef1ed9359f945f9ba9a0dd034a64f7e577540a73b3d2ba4c1f177f",
+      "trials": 724,
+      "blocked": 248
+    },
+    {
+      "summary": "artifacts/screening-hardening/v79-repair-evaluation-snapshot/artifacts/v84-public/ftc/summary.json",
+      "results_sha256": "2d62f617c4899cd471a8248dea099e9d69642cc6746fcd78f908b2e09c4911fa",
+      "trials": 724,
+      "blocked": 709
+    },
+    {
+      "summary": "artifacts/v50-public-final/ftc/summary.json",
+      "results_sha256": "2ecc46d571f13bde8c36d1f879ba033d35c497aad4689ab9cc8fab061612b710",
+      "trials": 724,
+      "blocked": 703
+    },
+    {
+      "summary": "artifacts/screening-hardening/event-attribution-v137-snapshot/artifacts/event-attribution-ftc-v137/summary.json",
+      "results_sha256": "31d904ea90618f6df1a06f6ebf99cf06eb4b8bd09132e762194942595336c5cf",
+      "trials": 724,
+      "blocked": 595
+    },
+    {
+      "summary": "artifacts/screening-hardening/contact-initiator-snapshot/artifacts/contact-initiator-ftc-v143/summary.json",
+      "results_sha256": "33cd434b3b75ed068368bdfe94746230326758fdca17bc5b1a5f6de47dab565e",
+      "trials": 724,
+      "blocked": 595
+    },
+    {
+      "summary": "artifacts/v79-public/ftc/summary.json",
+      "results_sha256": "340aaf991ed3df9ad500bfbff92d4b7c651354c92bf15f4c5461d44f3d374aa0",
+      "trials": 724,
+      "blocked": 711
+    },
+    {
+      "summary": "artifacts/screening-hardening/financial-purpose-snapshot/artifacts/financial-purpose-ftc-v147/summary.json",
+      "results_sha256": "36735b1edf4a7f340d631f2ae12137b384a83836854f441dbee0af767d9bc3f9",
+      "trials": 724,
+      "blocked": 587
+    },
+    {
+      "summary": "artifacts/screening-hardening/purpose-routing-evaluation-snapshot/artifacts/ftc-v99-completion/summary.json",
+      "results_sha256": "3b48c79ebb67d5437bb1b4f0388aa417139f98b4b5a0da4b53cc2fdcfb4345f1",
+      "trials": 724,
+      "blocked": 169
+    },
+    {
+      "summary": "artifacts/v74-public-control/ftc/summary.json",
+      "results_sha256": "3f1c55122e983776c8db1964edbd136bf26ca92d87b8e97162fb075b22b4682c",
+      "trials": 724,
+      "blocked": 704
+    },
+    {
+      "summary": "artifacts/notice-v30/candidate-ftc/summary.json",
+      "results_sha256": "3fd0be34ebef77191223da3c1a25fd7afdc89c3dcfa884bca24241fc68e4db41",
+      "trials": 724,
+      "blocked": 691
+    },
+    {
+      "summary": "artifacts/screening-hardening/contact-priority-snapshot/artifacts/contact-priority-ftc-v145/summary.json",
+      "results_sha256": "3ffa9fffadf5bfd73612b839414d7510244bcb861ad6a2e0b859d414133e6009",
+      "trials": 724,
+      "blocked": 584
+    },
+    {
+      "summary": "artifacts/screening-hardening/v79-repair-evaluation-snapshot/artifacts/v79-control/ftc/summary.json",
+      "results_sha256": "474ec081cb0cdf8133ed757228067427f6c76c53fe4287461a3a9a482a691b22",
+      "trials": 724,
+      "blocked": 707
+    },
+    {
+      "summary": "artifacts/distilled-v38/ftc/summary.json",
+      "results_sha256": "49d6fb20866eed570770bb127d2757578d172cf31bb0125ce6b53bf1007c0bdd",
+      "trials": 724,
+      "blocked": 711
+    },
+    {
+      "summary": "artifacts/screening-hardening/direct-v124-charge-snapshot/artifacts/direct-ftc/summary.json",
+      "results_sha256": "4cf8d5daf96c51845420a7f42d3649ec73cda8fe50a4a34e0fec3e559bb8f994",
+      "trials": 724,
+      "blocked": 489
+    },
+    {
+      "summary": "artifacts/screening-hardening/endorsed-action-v138-snapshot/artifacts/endorsed-action-ftc-v138/summary.json",
+      "results_sha256": "526ec5f6d83a4c54427a72db4bc25f6509940e373b946be020df06f6b63cb35c",
+      "trials": 724,
+      "blocked": 601
+    },
+    {
+      "summary": "artifacts/public-benchmarks/robocall-v20/summary.json",
+      "results_sha256": "547d8f10f7e6451abfcc5c198f3175dd59c86264ee82d5ec691c12ddef4d096a",
+      "trials": 2172,
+      "blocked": 2085
+    },
+    {
+      "summary": "artifacts/screening-hardening/observed-v104-completion-evaluation-snapshot/artifacts/ftc-v104-completion/summary.json",
+      "results_sha256": "60548eb142252694dcf7b8af8cdfe7913f607ceb11903ceaddb7347a626e6a27",
+      "trials": 724,
+      "blocked": 342
+    },
+    {
+      "summary": "artifacts/lean-v23/robocall/summary.json",
+      "results_sha256": "67566eae94fc1bd134a18ce9e87bf4fe22873fbc161c2a79fc331d21ee3c0d44",
+      "trials": 2172,
+      "blocked": 2069
+    },
+    {
+      "summary": "artifacts/notice-v30/baseline-ftc/summary.json",
+      "results_sha256": "69d685e4f2d6942700c1a438661cc8705314402837c2e8fd9c870a0c4c24b31f",
+      "trials": 724,
+      "blocked": 693
+    },
+    {
+      "summary": "artifacts/public-benchmarks/robocall-v19/summary.json",
+      "results_sha256": "6aa9cd9e4d79922cceb049257195c926d5f4a7d89d2ec727cc6b39ec38fd142c",
+      "trials": 2172,
+      "blocked": 2091
+    },
+    {
+      "summary": "artifacts/production-v155/v158-ftc-complete/summary.json",
+      "results_sha256": "6c9a5d6298b96e0027daf70d18ac7242f1084c88710c160eb1e5192737d10202",
+      "trials": 724,
+      "blocked": 524
+    },
+    {
+      "summary": "artifacts/lean-v24/codex-baseline-robocall/summary.json",
+      "results_sha256": "737a66563be4b1380890e8c1eb086a26c1e5b5cb600a4870060b1e16bfe8baf7",
+      "trials": 2172,
+      "blocked": 2106
+    },
+    {
+      "summary": "artifacts/screening-hardening/actor-transaction-v132-snapshot/artifacts/actor-transaction-ftc-v132/summary.json",
+      "results_sha256": "778be7c2d1c9229a01b1938e9ce422b2c2e114f64e928f1a4c4abe2c6b6d69af",
+      "trials": 724,
+      "blocked": 563
+    },
+    {
+      "summary": "artifacts/screening-hardening/observed-v103-evaluation-snapshot/artifacts/ftc-v103/summary.json",
+      "results_sha256": "7abc3638086a8b993aa6971cd5ff28dbfaf39297fc0d85ffd17d1ffcc3623f0d",
+      "trials": 724,
+      "blocked": 334
+    },
+    {
+      "summary": "artifacts/screening-hardening/charge-schema-v131-snapshot/artifacts/ftc-v131/summary.json",
+      "results_sha256": "8019da106a5a7e143ca704f34cbddfc4f3fb0568ab3f018f25383e58f30e3930",
+      "trials": 724,
+      "blocked": 586
+    },
+    {
+      "summary": "artifacts/notice-v29/subscription-candidate-ftc/summary.json",
+      "results_sha256": "87175f1e48587ef2789ecab1ea3730431d56f79e6bc8ce3f94a7315df6701415",
+      "trials": 724,
+      "blocked": 701
+    },
+    {
+      "summary": "artifacts/lean-v23/baseline-robocall/summary.json",
+      "results_sha256": "8833f02b5fc4cbd832b0723610572b7b894bb2c560e4cd96eea94e39ef52625e",
+      "trials": 2172,
+      "blocked": 2082
+    },
+    {
+      "summary": "artifacts/public-benchmarks/robocall-v18/summary.json",
+      "results_sha256": "89fa5823ce830f5e3bf4892f33efa23f00d52325a4274e54a3bdcdf6372b2198",
+      "trials": 2172,
+      "blocked": 2078
+    },
+    {
+      "summary": "artifacts/v30-v57-public/v30/ftc/summary.json",
+      "results_sha256": "8ddb41a890179f7dd8b4b2f3bf5ab4899d6fd7d825b44c57a936a7549b629993",
+      "trials": 724,
+      "blocked": 702
+    },
+    {
+      "summary": "artifacts/screening-hardening/joint-correction-snapshot/artifacts/joint-correction-ftc-v146/summary.json",
+      "results_sha256": "8ebbb336a4a6a6be198c97c05c43cbb37cd6dece89bfe61c5a33d484ebf4eecc",
+      "trials": 724,
+      "blocked": 597
+    },
+    {
+      "summary": "artifacts/screening-hardening/purpose-routing-evaluation-snapshot/artifacts/ftc-v101/summary.json",
+      "results_sha256": "93c63e67e8d76b85032788b9c533291f12c83d804d9e2a67cd47f131e5cc188b",
+      "trials": 724,
+      "blocked": 497
+    },
+    {
+      "summary": "artifacts/screening-hardening/observed-v119-context-snapshot/artifacts/ftc-v119/summary.json",
+      "results_sha256": "96eafb4d4cd5094bfafcfc9f7bf0083df803b1fa2c0391f81f3a6d9e9b20c9b7",
+      "trials": 724,
+      "blocked": 349
+    },
+    {
+      "summary": "artifacts/screening-hardening/purpose-contact-snapshot/artifacts/purpose-contact-ftc-v153/summary.json",
+      "results_sha256": "988af36d48daed886009500e0b70b8193939c62d09a81f91ca6ca03711cbae3d",
+      "trials": 724,
+      "blocked": 602
+    },
+    {
+      "summary": "artifacts/screening-hardening/purpose-contract-snapshot/artifacts/purpose-contract-ftc-v139/summary.json",
+      "results_sha256": "99b34ac4b11e1de8fca9c09dea8b5f1cb1851125f36cfffb8b77b267a36925af",
+      "trials": 724,
+      "blocked": 596
+    },
+    {
+      "summary": "artifacts/screening-hardening/current-hardening-evaluation-snapshot/artifacts/current-v31-public/ftc/summary.json",
+      "results_sha256": "9dad8b1537a705e3bd378156670f038c8c5711edae4496ee4363b94fb35745d1",
+      "trials": 724,
+      "blocked": 168
+    },
+    {
+      "summary": "artifacts/production-v155/v157-ftc/summary.json",
+      "results_sha256": "a17dd579f573e55c0ab6932f0539bf036e9ed35f55acf797cef0346f0161d28e",
+      "trials": 724,
+      "blocked": 484
+    },
+    {
+      "summary": "artifacts/screening-hardening/observed-v119-context-snapshot/artifacts/ftc-v111/summary.json",
+      "results_sha256": "a7e31d354b164f498631cf239dd4f84c03748fe9fd86a26be6b548a663e85fd1",
+      "trials": 724,
+      "blocked": 357
+    },
+    {
+      "summary": "artifacts/screening-hardening/self-identity-continuation-snapshot/artifacts/self-identity-ftc-v154/summary.json",
+      "results_sha256": "aa355f63d594f63d7efe216c1c9c2379e08bedd79795013a1cf3345cf6312433",
+      "trials": 724,
+      "blocked": 618
+    },
+    {
+      "summary": "artifacts/screening-hardening/direct-priority-snapshot/artifacts/direct-priority-ftc-v142/summary.json",
+      "results_sha256": "b54bdfa2db6e9b07ce67b80d553f67d5428c84d19471aca3b8fd2c2aa9919d06",
+      "trials": 724,
+      "blocked": 514
+    },
+    {
+      "summary": "artifacts/public-benchmarks/robocall-v19-draft/summary.json",
+      "results_sha256": "bdb84c647188ae8c3fe7f26b88f1465b59db5849c4e494000d590f3d271e40d1",
+      "trials": 2172,
+      "blocked": 2083
+    },
+    {
+      "summary": "artifacts/screening-hardening/greeting-context-snapshot/artifacts/greeting-context-ftc-v149/summary.json",
+      "results_sha256": "c7987256b4d6f5c0f02a762afb683b37f2c42667a764062273b3d41b0f08ff13",
+      "trials": 724,
+      "blocked": 579
+    },
+    {
+      "summary": "artifacts/screening-hardening/claim-action-v129-snapshot/artifacts/ftc-v129/summary.json",
+      "results_sha256": "c7fae9b5f9a97b27ba089470a5cfebb802a571322d7c8772c3c9fa85f2796876",
+      "trials": 724,
+      "blocked": 565
+    },
+    {
+      "summary": "artifacts/screening-hardening/payment-context-evaluation-snapshot/artifacts/v97-ftc/summary.json",
+      "results_sha256": "c910129055c84eff22eca9449b4307c133a51f84cbd81acc4dfef680990552ed",
+      "trials": 724,
+      "blocked": 416
+    },
+    {
+      "summary": "artifacts/distilled-v37/ftc/summary.json",
+      "results_sha256": "ccc9c5a8b323181e7c087097821300d5a5a5824a3962a266c390646dd55bde0d",
+      "trials": 724,
+      "blocked": 719
+    },
+    {
+      "summary": "artifacts/v78-public/ftc/summary.json",
+      "results_sha256": "cef6764742ac8cf93e81ccc5845bc90dec63948dcd73d0e3b8240f7a01ca29bf",
+      "trials": 724,
+      "blocked": 705
+    },
+    {
+      "summary": "artifacts/distilled-v36/ftc/summary.json",
+      "results_sha256": "d68f7700ee1156cbcc5b1677d262ec07d9b3dbc8a2b0de21d00f605ec007a692",
+      "trials": 724,
+      "blocked": 715
+    },
+    {
+      "summary": "artifacts/lean-v24/codex-robocall/summary.json",
+      "results_sha256": "ed564bedf6245aa65721a4e235300110bba0de4c3e68829c0275f6c1837045cf",
+      "trials": 2172,
+      "blocked": 2111
+    },
+    {
+      "summary": "artifacts/screening-hardening/current-hardening-evaluation-snapshot/artifacts/current-v88/ftc/summary.json",
+      "results_sha256": "f0a7f6ec0a64c06a86020330fabeb1aeffb890528073f85e2bdb9fb0b22a59af",
+      "trials": 724,
+      "blocked": 274
+    },
+    {
+      "summary": "artifacts/screening-hardening/request-clarification-snapshot/artifacts/request-clarification-ftc-v152/summary.json",
+      "results_sha256": "f6f4f5cd74c1e99790c99edf5f6cb1c3cf0d2dd73abc992427bd8dd5282b53a1",
+      "trials": 724,
+      "blocked": 572
+    },
+    {
+      "summary": "artifacts/distilled-v32/ftc/summary.json",
+      "results_sha256": "f90a517e6f3a3459dd5356cc5c6c91c63a6e00e1b9904de1cc89e764c53cc18c",
+      "trials": 724,
+      "blocked": 710
+    }
+  ]
+}

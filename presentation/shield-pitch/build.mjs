@@ -1,126 +1,135 @@
-// Reusable Artifact Session callback. Run batches with input.indices.
-// Assets come from the existing Shield application and sample-app captures.
-import { fileURLToPath } from 'node:url';
-const root = fileURLToPath(new URL('../../', import.meta.url)).replace(/\/$/, '');
-const colors = { bg:'#F2F3F4', ink:'#101E32', navy:'#002664', muted:'#515E70', teal:'#076C5C', red:'#B53742' };
-function text(slide, name, value, x,y,w,h,size=28,color=colors.ink,font='Helvetica Neue',bold=false) {
-  const s=slide.shapes.add({name,geometry:'textbox',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:'none',width:0}});
-  s.text=value;
-  s.text.style={fontSize:size,typeface:font,color,bold,insets:0,autoFit:'none',verticalAlignment:'top'};
-  return s;
+// Live presentation callback: ten timed video beats, then three optional evidence slides.
+import {fileURLToPath} from 'node:url';
+import {readFileSync,existsSync} from 'node:fs';
+import {buildEvidence} from './evidence-slides.mjs';
+const root=fileURLToPath(new URL('../../',import.meta.url)).replace(/\/$/,'');
+const C={bg:'#F2F3F4',navy:'#002664',ink:'#101E32',muted:'#515E70',teal:'#076C5C'};
+function text(s,name,value,x,y,w,h,size=28,color=C.ink,font='Helvetica Neue',bold=false){
+ const shape=s.shapes.add({name,geometry:'textbox',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:'none',width:0}});
+ shape.text=value;shape.text.style={fontSize:size,typeface:font,color,bold,insets:0,autoFit:'none',verticalAlignment:'top'};return shape;
 }
-function mark(slide){slide.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo',fit:'contain',position:{left:1150,top:48,width:58,height:58}});}
-function heading(slide,title){text(slide,'Title',title,72,60,1040,105,54,colors.ink,'Georgia');mark(slide);}
-function foot(slide,value){ /* References and detailed qualifications live in speaker notes. */ }
-function line(slide,x,y,w,color='#D5DBE2'){slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:1.5},fill:color,line:{fill:'none',width:0}});}
-function note(slide,value){slide.speakerNotes.text=value;}
-export async function build({presentation,input}) {
-  for (const index of input.indices) {
-    const s=input.replace || index===0 ? presentation.slides.getItem(index) : presentation.slides.add({width:1280,height:720});
-    if(input.replace){
-      for(const item of [...s.shapes.items,...s.images.items]) item.delete();
-      const chartInspection=await presentation.inspect({kind:'chart',maxChars:20000});
-      const chartIds=chartInspection.records.filter(r=>r.slideIndex===index).map(r=>r.id);
-      if(chartIds.length) presentation.delete(chartIds);
-    }
-    s.background.fill=colors.bg;
-    if(index===0){
-      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield app identity',fit:'contain',position:{left:76,top:70,width:88,height:88}});
-      text(s,'Brand','Shield',72,205,670,128,108,colors.navy,'Georgia');
-      text(s,'Purpose','A safer phone call\nfor Texas seniors',77,367,670,138,49,colors.ink,'Georgia');
-      text(s,'Description','AI call screening with the recipient in control',78,554,670,60,25,colors.muted);
-      s.images.add({path:root+'/presentation/shield-pitch/assets/home-light.png',alt:'Shield Home screen with synthetic sample data',fit:'contain',position:{left:855,top:55,width:280,height:609}});
-      note(s,'Shield is an iPhone application and call-screening service designed to help older adults handle unknown calls. The image is an existing sample-app capture, not a real customer record. Unknown calls that reach Shield are screened; an offered call connects only after the recipient presses 1. Source: docs/ARCHITECTURE.md and docs/SCREENING.md. Visual reference: https://www.congressionalappchallenge.us/25-TX37/ and https://vimeo.com/1131555481.');
-    }
-    if(index===1){
-      heading(s,'Financial fraud in Texas seniors');
-      text(s,'Texas loss','$678.6M',68,198,760,150,120,colors.navy,'Georgia');
-      text(s,'Loss definition','reported lost by Texans age 60+ in 2025',76,367,980,55,34);
-      line(s,76,457,1128);
-      text(s,'Complaint count','14,410',76,487,380,74,58,colors.ink,'Georgia');
-      text(s,'Complaint label','complaints from Texans age 60+',78,571,505,44,23,colors.muted);
-      text(s,'State rank','3rd',744,487,320,74,58,colors.ink,'Georgia');
-      text(s,'Rank label','highest reported losses among states',746,571,460,44,23,colors.muted);
-      foot(s,'FBI IC3, 2025 Annual Report, pp. 49–50. Reported internet-crime losses, not a phone-fraud-only total.');
-      note(s,'Texas residents age 60 and over filed 14,410 IC3 complaints and reported $678,564,081 in losses in 2025. Texas ranked third in this age group by reported losses. The headline rounds the exact amount to $678.6 million. These are reported internet-crime figures, not all elder fraud and not a phone-only estimate. They establish the scale of financial harm; they do not estimate how much Shield could prevent. Source: https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf, printed pages 49 and 50, accessed October 25, 2026.');
-    }
-    if(index===2){
-      heading(s,'The technology behind Shield');
-      text(s,'Custom backend','Our custom\nAI backend',74,209,480,140,57,colors.navy,'Georgia');
-      text(s,'Backend authorship','Built by our team in TypeScript',78,368,465,42,26,colors.muted);
-      const capabilities=[['Screening policy','Scam assessment and evidence checks'],['Live conversations','Audio streaming and follow-up questions'],['Call safeguards','Recipient approval before connection']];
-      capabilities.forEach(([name,detail],i)=>{
-        const y=439+i*74;
-        text(s,'Custom '+name,name,78,y,470,34,26,colors.ink,'Helvetica Neue',true);
-        text(s,'Custom '+name+' detail',detail,78,y+35,470,35,22,colors.muted);
-      });
-      const stack=[
-        {name:'apple',y:207,w:45,h:55,title:'iPhone app',detail:'Swift + SwiftUI'},
-        {name:'telnyx',y:318,w:137,h:43,title:'Call routing',detail:'Telnyx Call Control'},
-        {name:'openai',y:429,w:139,h:38,title:'Voice AI',detail:'GPT-6 Luna + GPT Live\nSoniox speech transcription'},
-        {name:'google',y:566,w:133,h:45,title:'Cloud services',detail:'Cloud Run + Firebase\nFirestore + Authentication'}
-      ];
-      for(const row of stack){
-        s.images.add({path:root+'/presentation/shield-pitch/assets/'+row.name+'.png',alt:row.name+' company logo',fit:'contain',position:{left:636+(140-row.w)/2,top:row.y+9,width:row.w,height:row.h}});
-        text(s,row.title,row.title,816,row.y,390,39,29,colors.ink,'Georgia');
-        text(s,row.title+' technologies',row.detail,816,row.y+44,390,65,23,colors.muted);
-      }
-      note(s,'Shield’s team developed the custom AI backend: the live WebSocket bridge, screening policy and decision orchestration, evidence checks, bounded clarification, call-control state machine and Firebase integration. This is custom application/backend engineering using OpenAI models, not a claim that the team trained a foundation model. Apple supplies the SwiftUI/iPhone platform. Telnyx Call Control routes and connects calls. The current hybrid screening bridge runs on Cloud Run: Soniox stt-rt-v5 transcribes speech, GPT-6 Luna assesses the screening policy, and GPT Live handles useful clarification. The custom bridge and backend are TypeScript. The visible list groups technologies by their role rather than listing unrelated development tools. Google Cloud and Firebase support hosting, backend functions, Firestore and Authentication. The recipient is fixed, screening timers are bounded and a failure never connects a call. Sources: docs/ARCHITECTURE.md; docs/HYBRID-SCREENING.md; package.json; backend/src/live/policy.ts; backend/src/live/session.ts. Connected-call protection is separate and opt-in. Logos identify technologies used, not endorsements or commercial partnerships. Apple logo: the navigation SVG at https://www.apple.com/ . Telnyx black logo: official download linked from https://telnyx.com/media-kit . OpenAI wordmark: https://commons.wikimedia.org/wiki/File:OpenAI_logo_2025_(wordmark).svg, attributed there to https://openai.com/brand/ . Google wordmark: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png . The logos belong to their respective owners.');
-    }
-    if(index===3){
-      heading(s,'Red teaming and validation');
-      const metrics=[
-        ['245','Development cases','Scams and legitimate callers'],
-        ['112','Fresh simulated trials','56 scenarios, each run twice'],
-        ['77','Question turns reviewed','Meaning, wording and role errors']
-      ];
-      metrics.forEach(([value,label,detail],i)=>{
-        const x=76+i*390;
-        text(s,'Redteam metric '+i,value,x,198,350,112,88,colors.navy,'Georgia');
-        text(s,'Redteam label '+i,label,x,328,350,44,27,colors.ink);
-        text(s,'Redteam detail '+i,detail,x,379,350,62,22,colors.muted);
-      });
-      line(s,76,467,1128);
-      text(s,'Adversarial testing','Adversarial testing',76,504,340,44,29,colors.ink,'Georgia');
-      text(s,'Attack coverage','Impersonation, payment pressure and prompt injection',440,506,764,56,25,colors.muted);
-      text(s,'Audit trail','An auditable process',76,594,340,44,29,colors.ink,'Georgia');
-      text(s,'Audit practice','Frozen prompts and labels. Every failure retained.',440,596,764,56,25,colors.muted);
-      note(s,'Visible counts refer to v158 validation: the existing development adapter has 245 cases; fresh scripted validation is 40 cases run twice (80 trials), and separately frozen adaptive validation is 16 profiles run twice (32 trials), totaling 112 trials over 56 scenarios. These are synthetic text trials, not 112 independent real callers. Manual review covers all 44 scripted and 33 adaptive question turns, totaling 77. Cases and question turns measure different parts of the work and must not be summed as independent tests. Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md, Iteration and evaluation provenance and Results. Our red-team process probes impersonation, payment requests, outside-contact bait, ordinary callbacks, recordings and prompt injection using synthetic callers. Every run records policy and request hashes, planned identities, raw outcomes and failures. The v158 fresh scripted set had 40 cases repeated twice: 80/80 intended final outcomes, but 76/80 strict sequences. The four strict misses were early holds after refusal. The adaptive set had 16 profiles repeated twice, reaching 32/32 final outcomes. Question review still found pronoun reversals and awkward questions. Same-model simulation is not independent human realism. Public MASC feedback informed v158; repeated public sets are honestly described as regression checks. We do not tune on existing held-out probes. Main benchmark remains 24 cases. Sources: docs/SCREENING-PRODUCTION-CANDIDATE.md, sections Iteration and evaluation provenance, Results, Checks; docs/SCREENING.md.');
-    }
-    if(index===4){
-      heading(s,'Benchmark performance');
-      text(s,'Comparison scope','MASC F1 (%)',76,165,1128,44,25,colors.muted);
-      text(s,'MASC definition','Scam detection on simulated conversations, balancing precision and recall.',76,204,1128,38,24,colors.muted);
-      s.charts.add('bar',{
-        position:{left:68,top:245,width:1140,height:410},
-        categories:['Shield','RoBERTa','BERT-Large','BERT-Base','DistilBERT'],
-        series:[{name:'F1',values:[99.79,99.32,98.83,98.12,96.97],fill:'#C7CFD8',points:[{idx:0,fill:colors.navy}],line:{fill:'none',width:0},dataLabelOverrides:[{idx:0,showValue:true,position:'outEnd',textStyle:{fontSize:29,bold:true,fill:colors.navy}}]}],
-        hasLegend:false,barOptions:{direction:'column',grouping:'clustered',gapWidth:90},
-        chartFill:colors.bg,plotAreaFill:colors.bg,chartLine:{fill:'none',width:0},plotAreaLine:{fill:'none',width:0},
-        xAxis:{visible:true,textStyle:{fontSize:22,fill:colors.ink},line:{fill:'#AAB5C2',width:1},majorGridlines:null},
-        yAxis:{visible:true,min:95,max:100,majorUnit:1,numberFormatCode:'0',textStyle:{fontSize:17,fill:colors.muted},line:{fill:'none',width:0},majorGridlines:{fill:'#DCE1E7',width:1}},
-        dataLabels:{showValue:true,position:'outEnd',numberFormatCode:'0.00',textStyle:{fontSize:25,bold:true,fill:colors.muted}}
-      });
-      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy Shield research-classifier bar',fit:'contain',position:{left:194,top:431,width:72,height:72}});
-      foot(s,'Separate research classifier v3. Original labels. Test-informed development. These are text results, not live-call accuracy.');
-      note(s,'MASC evaluates scam classification on simulated conversations. F1 is the harmonic mean of precision and recall: precision measures how often a scam flag is correct, and recall measures how many labeled scams are detected. The strongest defensible headline is near-perfect benchmark classification, not an industry-leading production accuracy claim. This is the separate MASC binary classifier v3, not deployed screening v158. On original labels: test split 958/960 correct, F1 0.9979209979, 480 true positives, 478 true negatives, two false positives, zero false negatives. The 960 trials repeat 320 unique conversations three times. Prior test outcomes informed v3 development, so this is benchmark-adapted evidence. The additional 1,280 dialogues are MASC’s published training split, unused in our development: 1,275 correct, 639 true positives, 636 true negatives, four false positives, one false negative, F1 0.9961028839. Both sets are synthetic and share a generator. Model pretraining exposure is unknown. Published MASC models report 96.97–99.92% F1 with different training/evaluation protocols, including results above ours, so these numbers do not establish a direct ranking. Sources: artifacts/masc-classifier/masc-v3-three-passes/summary.json; artifacts/masc-classifier/masc-train-v3/summary.json; docs/PUBLIC-SCAM-BENCHMARKS.md. Published context: https://supreme-lab.github.io/ai-in-the-loop/ ; dataset: https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation . Runs completed October 11, 2026.');
-    }
-    if(index===5){
-      heading(s,'FTC robocall benchmark');
-      text(s,'FTC definition','Detection on transcripts from 1,378 FTC-released robocalls.',76,174,1128,50,26,colors.muted);
-      s.charts.add('bar',{
-        position:{left:68,top:245,width:1140,height:410},
-        categories:['Shield','RoboKA','HuBERT + BERT\nfusion','BERT (text)','WavLM (audio)'],
-        series:[{name:'Reported result',values:[99.1,82.2,67.2,58.1,46.6],fill:'#C7CFD8',points:[{idx:0,fill:colors.navy}],line:{fill:'none',width:0},dataLabelOverrides:[{idx:0,showValue:true,position:'outEnd',textStyle:{fontSize:29,bold:true,fill:colors.navy}}]}],
-        hasLegend:false,barOptions:{direction:'column',grouping:'clustered',gapWidth:90},
-        chartFill:colors.bg,plotAreaFill:colors.bg,chartLine:{fill:'none',width:0},plotAreaLine:{fill:'none',width:0},
-        xAxis:{visible:true,textStyle:{fontSize:21,fill:colors.ink},line:{fill:'#AAB5C2',width:1},majorGridlines:null},
-        yAxis:{visible:true,min:0,max:100,majorUnit:25,numberFormatCode:'0',textStyle:{fontSize:17,fill:colors.muted},line:{fill:'none',width:0},majorGridlines:{fill:'#DCE1E7',width:1}},
-        dataLabels:{showValue:true,position:'outEnd',numberFormatCode:'0.0"%"',textStyle:{fontSize:25,bold:true,fill:colors.muted}}
-      });
-      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy historical Shield benchmark bar',fit:'contain',position:{left:194,top:421,width:72,height:72}});
-      note(s,'Historical Shield identification vs. published recall (%). Shield includes clarification questions. The Shield score comes from historical v20 identification, not current v158 completed stops. Shield v20, October 11, 2026: 724 distinct English FTC/NC State recording transcripts repeated three times, weighted to 1,378 English source calls per pass. Identification credits blocks plus clarification questions: 4,098/4,134 weighted trials = 99.129%, displayed as 99.1%. Weighted completed stops are 3,919/4,134 = 94.8%, and weighted approvals are 36. Questions do not establish completed stops. Unique-trial results are 2,086 stops, 79 questions and seven approvals out of 2,172. This is a historical transcript test with benchmark-informed development, not current deployment accuracy or an end-to-end real-call test. Current v158 instead records 530/724 completed stops, 146 unverified saves, 47 questions, zero approvals and one timeout; those outcomes remain separate. The four comparison values come from the user-provided chart and are verified against RoboKA Table I, T4 unwanted recall: RoboKA best model 82.21%, HuBERT cross-modal-attention BERT fusion 67.21%, BERT text 58.13%, WavLM audio 46.62%. The slide rounds them to one decimal as supplied. RoboKA uses 1,378 positive-only unwanted calls and its own input/evaluation pipeline. Shield identification with clarification credit and published classifier recall use different success rules, so this is research context, not a controlled head-to-head ranking. There are no legitimate controls in this dataset; it cannot establish precision or false-positive rate. Sources: artifacts/public-benchmarks/robocall-v20/summary.json; docs/PUBLIC-SCAM-BENCHMARKS.md, FTC robocall benchmark; docs/SCREENING-PRODUCTION-CANDIDATE.md; https://github.com/wspr-ncsu/robocall-audio-dataset ; https://arxiv.org/html/2605.00156v1#S4.T1 .');
-    }
+function image(s,file,alt,x,y,w,h){return s.images.add({path:root+'/'+file,alt,fit:'contain',position:{left:x,top:y,width:w,height:h}});}
+const markFile='ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png';
+const asset=n=>'presentation/shield-pitch/assets/'+n;
+function heading(s,title){text(s,'Title',title,72,60,1040,110,54,C.ink,'Georgia');image(s,markFile,'Shield logo',1150,48,58,58);}
+function notes(s,time,speaker,script,direction,source=''){s.speakerNotes.text=`VIDEO: ${time}. SPEAKER: ${speaker}.\n\nNARRATION: ${script}\n\nEDITING: ${direction}\n\nEVIDENCE: ${source}`;}
+const common='Original Shield app artwork and synthetic sample-app captures. No new AI-generated visuals. Sample screens show design and workflow, not real customer outcomes.';
+export async function build({presentation,input}){
+ for(const index of input.indices){
+  if(index>=10){
+   const original={10:4,11:5,12:3}[index];
+   await buildEvidence({presentation,input:{indices:[original],targets:{[original]:index},replace:true}});
+   const slide=presentation.slides.getItem(index);
+   slide.speakerNotes.text='OPTIONAL EVIDENCE CUTAWAY. Outside the ten-beat 2:55 sequence; use only within the existing technology or learning allocation, not as additional runtime.\n\n'+slide.speakerNotes.text;
+   continue;
   }
-  return {slides:presentation.slides.items.length};
+  while(presentation.slides.items.length<=index)presentation.slides.add({width:1280,height:720});
+  const s=presentation.slides.getItem(index);
+  for(const item of [...s.shapes.items,...s.images.items])item.delete();
+  const charts=(await presentation.inspect({kind:'chart',maxChars:20000})).records.filter(r=>r.slideIndex===index).map(r=>r.id);
+  if(charts.length)presentation.delete(charts);
+  s.background.fill=C.bg;
+  if(index===0){
+   image(s,markFile,'Shield logo',76,68,94,94);
+   text(s,'App name','Shield',72,205,1000,140,112,C.navy,'Georgia');
+   text(s,'Purpose','A safer phone call for older adults',78,378,1100,65,40,C.ink,'Georgia');
+   ['Aarav\nKarumanchi','Ishaan\nSagar','Andrew\nChen','Isaac\nZhang'].forEach((name,i)=>text(s,'Team member '+i,name,78+i*292,540,270,100,31));
+   notes(s,'0:00–0:08 (8 seconds)','AK, IS, AC, IZ','Aarav: “I’m Aarav Karumanchi.” Ishaan: “I’m Ishaan Sagar.” Andrew: “I’m Andrew Chen.” Isaac: “And I’m Isaac Zhang.”','Two seconds per member. Show each person on camera with their full name as a lower third, preserving Shield on screen. This card supplies the typography and exact spelling. Names provided by the owner.');
+  }
+  if(index===1){
+   heading(s,'Convincing calls. Real consequences.');
+   text(s,'Purpose sentence','Shield helps older adults\nscreen unknown calls\nbefore they answer.',76,198,760,218,51,C.navy,'Georgia');
+   text(s,'Texas loss','$678.6M',76,475,620,101,76,C.navy,'Georgia');
+   text(s,'Texas context','reported lost by Texans age 60+ in 2025',78,595,710,48,26,C.muted);
+   image(s,asset('home-current.png'),'Shield Home with sample activity',906,181,225,488);
+   notes(s,'0:08–0:21 (13 seconds)','AK','Convincing scam calls make it hard for older adults to know whom to trust. Shield helps older adults screen unknown calls before they answer.','Hold on the app and problem statement. The loss figure is supporting on-screen context; do not read every word. The figure covers reported internet crime, not phone fraud alone.','FBI IC3 2025 Annual Report, printed pages 49–50: Texas age 60+, $678,564,081 reported losses. https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf . PRODUCT.md and docs/SCREENING.md. '+common);
+  }
+  if(index===2){
+   heading(s,'AAACAP');
+   text(s,'Agency full name','Area Agency on Aging\nof the Capital Area',76,195,1100,142,52,C.navy,'Georgia');
+   text(s,'Agency mission','Supporting older adults and caregivers\nacross the Capital Area',78,370,1060,95,31,C.muted);
+   text(s,'Our outreach','We discussed free access for seniors.',78,526,1110,54,35);
+   text(s,'Interest','AAACAP expressed interest in a potential partnership.',78,598,1120,48,27,C.muted);
+   notes(s,'0:21–0:31 (10 seconds)','IS','AAACAP supports older adults and caregivers across the Capital Area. We discussed free access for seniors, and they expressed interest in a potential partnership.','Display the agency’s full name. This is a conversation and expression of interest, not a signed partnership or endorsement. Use Shield styling rather than unapproved AAACAP co-branding.','Agency role: https://www.capcog.org/divisions/area-agency-on-aging/ . Team involvement is owner-provided on October 25, 2026: the team called AAACAP, explored free app access for seniors, and received interest and recognition of its significance.');
+  }
+  if(index===3){
+   heading(s,'Protection you can understand');
+   image(s,asset('calls-current.png'),'Sample call history showing screening outcomes',220,168,195,423);
+   image(s,asset('messages-current.png'),'Sample saved messages inbox',864,168,195,423);
+   text(s,'Feature 1','Screen unfamiliar calls',76,610,540,48,35,C.navy,'Georgia');
+   text(s,'Feature 2','Review useful messages',720,610,500,48,35,C.navy,'Georgia');
+   notes(s,'0:31–0:40 (9 seconds)','IS','Shield screens unfamiliar calls before offering them to you. Useful messages stay easy to review, so you can decide what to do next.','Preview two working feature areas with one short label each. Keep these as brief visual previews; save taps and playback for Isaac’s walkthrough. Screens are synthetic sample activity, not live-call evidence.','PRODUCT.md; ios/README.md, Calls and Messages. Sources: .impeccable/review/andrew-compare-2026-10-24/main/calls-light.png and messages-light.png. '+common);
+  }
+  if(index===4){
+   heading(s,'The technology behind Shield');
+   image(s,asset('apple.png'),'Apple platform logo',165,199,48,59);
+   image(s,asset('openai.png'),'OpenAI logo',478,210,145,40);
+   image(s,asset('google.png'),'Google logo',668,208,140,48);
+   image(s,asset('telnyx.png'),'Telnyx logo',1008,211,143,45);
+   const a=text(s,'Interface','iPhone app',76,301,275,52,37,C.ink,'Georgia');
+   const b=text(s,'Processing','Our custom AI backend',450,301,425,52,35,C.navy,'Georgia');
+   const c=text(s,'Calling','Calling service',944,301,268,52,35,C.ink,'Georgia');
+   s.shapes.connect(a,b,{kind:'straight',fromSide:'right',toSide:'left',line:{fill:'#AAB5C2',width:2},tail:{type:'arrow',width:'sm',length:'sm'}});
+   s.shapes.connect(b,c,{kind:'straight',fromSide:'right',toSide:'left',line:{fill:'#AAB5C2',width:2},tail:{type:'arrow',width:'sm',length:'sm'}});
+   text(s,'Interface stack','Swift + SwiftUI',76,387,300,46,27,C.muted);
+   text(s,'Backend stack','TypeScript\nCloud Run + Firebase\nOpenAI + Soniox',450,387,430,135,26,C.muted);
+   text(s,'Calling stack','Telnyx Call Control\nRoutes and connects calls',944,387,275,114,25,C.muted);
+   text(s,'Accessibility','Designed for readable controls',76,566,1090,54,37,C.navy,'Georgia');
+   text(s,'Accessibility example','Large text and full-row tap targets',78,630,1110,42,27,C.muted);
+   notes(s,'0:40–1:05 (25 seconds)','AC','We built the iPhone interface in SwiftUI and our custom AI backend in TypeScript. Cloud Run hosts screening, and Firebase stores call history and handles sign-in. Soniox transcribes speech, while OpenAI models assess risk and ask follow-up questions. Telnyx routes calls. We also made controls readable with larger text and full-row tap targets.','Follow the diagram from interface to processing to calling. It is a simplified integration diagram, not the direction of caller audio. Point to one visible accessibility choice. If using benchmark cutaways, fit them inside this 25-second allocation and shorten narration.','docs/ARCHITECTURE.md; docs/HYBRID-SCREENING.md; PRODUCT.md; docs/IOS-POLISH-AUDIT.md S55: full labeled switch rows tappable. Sources distinguish source/simulator verification from older-participant validation. Foundation models are external; the orchestration, screening policy, evidence checks and call-state handling are team-built. Company marks identify technologies, not endorsements. Logo provenance retained in reference-notes.txt.');
+  }
+  if(index===5){
+   heading(s,'A message, made easy to review');
+   text(s,'Demo step 1','Open a message.',76,243,720,65,47,C.navy,'Georgia');
+   text(s,'Demo step 2','Read the summary.',76,351,720,65,47,C.navy,'Georgia');
+   text(s,'Demo step 3','Listen when you choose.',76,459,740,65,47,C.navy,'Georgia');
+   image(s,asset('message-current.png'),'Sample message playback screen',914,174,224,486);
+   notes(s,'1:05–1:40 (35 seconds)','IZ','From Home, I open Messages and choose a saved message. Shield gives me a short summary, so I can understand the purpose before listening. I tap Listen to message, and I can pause or start over whenever I need.','Use a continuous screen recording: Home (0–5s), Messages (5–10s), select a prepared sample message (10–16s), read summary (16–22s), play/pause (22–29s), explain result (29–35s). Keep Sample app labeling visible. Use the implemented playback controls, not the sample-only Keep action. This slide is a visual opening/closing plate; the actual screen recording is still to be supplied.','ios/README.md; docs/IOS-POLISH-AUDIT.md S49. Existing screenshot is sample audio for pause/resume tests, not a customer’s voicemail. '+common);
+  }
+  if(index===6){
+   heading(s,'How hard did we test Shield?');
+   text(s,'Block volume','45,000+',72,193,1120,154,120,C.navy,'Georgia');
+   text(s,'Metric definition','blocked outcomes in repeated robocall tests',78,369,1110,62,36);
+   text(s,'Test scope','55,000+ transcript trials across historical policy versions',78,452,1110,48,26,C.muted);
+   text(s,'Learning','We added evidence checks before treating\na caller as a recording.',78,558,1120,100,35,C.ink,'Georgia');
+   notes(s,'1:40–1:48 (8 seconds)','AC','Over fifty-five thousand transcript trials taught us to require evidence before treating a caller as a recording.','Hold the large count while Andrew gives one concrete lesson. Do not call this 45,000 distinct calls or people protected. Do not call it a current accuracy or industry-leading result. The count communicates engineering effort.','testing-count-audit.json and audit-testing.py: 61 complete FTC result sets, exact file copies removed, identical serialized result rows removed across files; 55,684 retained test records, including 45,075 block outcomes, 62 holds, 1,169 questions/continues, 9,174 saved messages, 174 approvals, 16 failures, 14 no-decisions. This is a conservative archival count, excluding incomplete sets, and not all testing ever performed. Repeated source calls and historical policy versions remain separate test trials. Learning/change: docs/SCREENING-PRODUCTION-CANDIDATE.md, v158 recording-evidence correction followed ordinary caller routing misses. No new inference was run.');
+  }
+  if(index===7){
+   heading(s,'Can Shield stop this scam?');
+   text(s,'Test disclosure','Test call',78,198,650,50,30,C.teal);
+   text(s,'Call cue','Listen to the caller.\nWatch Shield respond.',76,297,800,166,55,C.navy,'Georgia');
+   image(s,markFile,'Shield identity for the controlled test-call segment',947,300,180,180);
+   notes(s,'1:48–2:23 (35 seconds)','IS introduces and explains; IZ participates','Intro: “This is a controlled test call. Isaac will play a caller making a suspicious request.” Outcome: describe only the response and app result captured in the recording.','5 seconds context, 25 seconds uninterrupted test-call audio and footage, 5 seconds actual result. Keep “Test call” visible throughout. Replace this transition plate with supplied footage. Do not use the animated secretary clips as real-call evidence. No call is placed by this presentation task. Obtain the recording before choosing the outcome caption.','User’s production plan. Shield requires recipient press-1 approval to connect. This slide makes no claim about an unrecorded test outcome.');
+  }
+  if(index===8){
+   heading(s,'In their own words');
+   const manifest=root+'/artifacts/private/shield-video-review/selected/quotes.json';
+   if(existsSync(manifest)){
+    const selected=JSON.parse(readFileSync(manifest,'utf8'));
+    text(s,'Feedback context','Community feedback on scam calls and Shield',78,151,1100,44,27,C.muted);
+    selected.forEach((p,i)=>{
+     const x=76+i*386;
+     image(s,p.portrait,p.name+' interview still',x,231,186,186);
+     text(s,'Participant '+i,p.name,x,440,350,38,24,C.muted);
+     text(s,'Quotation '+i,'“'+p.quote+'”',x,502,350,167,i===0?29:38,C.navy,'Georgia');
+     if(i===1)text(s,'Question context','On using or recommending Shield',x,606,350,56,22,C.muted);
+    });
+    notes(s,'2:23–2:44 (21 seconds)','Three interview participants, seven seconds each',selected.map(p=>p.name+': “'+p.quote+'”').join('\n'),'Use artifacts/private/shield-video-review/selected/Shield-community-feedback-21s.mp4. It contains three continuous original excerpts, subtitles and short silent final-frame holds to fit seven seconds each. The first quote concerns avoiding unknown calls; the second answers whether he would use or recommend Shield; the third expresses enthusiasm after hearing about Shield. Do not describe these interviews as hands-on usability validation. Location-based attribution retained at the owner’s request.',selected.map(p=>p.source+': '+p.start.toFixed(2)+'–'+p.end.toFixed(2)+' seconds.').join('\n')+'\nAll 12 supplied recordings reviewed with local transcription and frame inspection; selected wording cross-checked with local models. No synthesized speech or AI-generated imagery. Recordings, transcripts and quote manifests remain private and excluded from Git.');
+   }else{
+    text(s,'Senior voices','Community feedback',76,264,1100,122,76,C.navy,'Georgia');
+    notes(s,'2:23–2:44 (21 seconds)','Three interview participants','Restore the private quote manifest to rebuild the approved testimonial slide.','Private source footage and quote text are deliberately excluded from the repository.','Owner-supplied interviews, October 25, 2026.');
+   }
+  }
+  if(index===9){
+   heading(s,'What comes next');
+   text(s,'Roadmap 1','More testing with older adults',76,207,1100,77,47,C.navy,'Georgia');
+   text(s,'Roadmap 2','Clearer follow-up questions',76,312,1100,77,47,C.navy,'Georgia');
+   text(s,'Goal','Helping older adults answer with confidence.',78,472,1120,60,34);
+   image(s,markFile,'Shield logo',78,576,65,65);
+   text(s,'Closing brand','Shield',171,573,580,80,61,C.navy,'Georgia');
+   text(s,'Thanks','Thank you',918,602,280,49,31,C.muted);
+   notes(s,'2:44–2:55 (11 seconds)','AK leads; all four appear together','Next, we’ll test with more older adults and make follow-up questions clearer. Our goal is to help older adults answer with confidence. We’re Shield. Thank you.','End with all four team members together. The two roadmap items are proposed priorities based on documented open work; the owner can replace them with confirmed priorities. Keep Shield visible through the final frame.','docs/SCREENING-PRODUCTION-CANDIDATE.md records question wording/role defects; PRODUCT.md and ios/README.md distinguish simulator checks from older-participant usability evidence. These are future intentions, not completed validation.');
+  }
+ }
+ return {slides:presentation.slides.items.length,videoBeats:10,durationSeconds:175,optionalEvidenceSlides:3};
 }
