@@ -1,4 +1,4 @@
-// Live presentation callback: ten timed video beats, then three optional evidence slides.
+// Live presentation callback: nine video slides, then three optional evidence slides.
 import {fileURLToPath} from 'node:url';
 import {readFileSync,existsSync} from 'node:fs';
 import {buildEvidence} from './evidence-slides.mjs';
@@ -16,11 +16,11 @@ function notes(s,time,speaker,script,direction,source=''){s.speakerNotes.text=`V
 const common='Original Shield app artwork and synthetic sample-app captures. No new AI-generated visuals. Sample screens show design and workflow, not real customer outcomes.';
 export async function build({presentation,input}){
  for(const index of input.indices){
-  if(index>=10){
-   const original={10:4,11:5,12:3}[index];
+  if(index>=9){
+   const original={9:4,10:5,11:3}[index];
    await buildEvidence({presentation,input:{indices:[original],targets:{[original]:index},replace:true}});
    const slide=presentation.slides.getItem(index);
-   slide.speakerNotes.text='OPTIONAL EVIDENCE CUTAWAY. Outside the ten-beat 2:55 sequence; use only within the existing technology or learning allocation, not as additional runtime.\n\n'+slide.speakerNotes.text;
+   slide.speakerNotes.text='OPTIONAL EVIDENCE CUTAWAY. Outside the nine-slide video sequence; use only within the existing technology or learning allocation, not as additional runtime.\n\n'+slide.speakerNotes.text;
    continue;
   }
   while(presentation.slides.items.length<=index)presentation.slides.add({width:1280,height:720});
@@ -46,11 +46,12 @@ export async function build({presentation,input}){
   }
   if(index===2){
    heading(s,'AAACAP');
-   text(s,'Agency full name','Area Agency on Aging\nof the Capital Area',76,195,1100,142,52,C.navy,'Georgia');
-   text(s,'Agency mission','Supporting older adults and caregivers\nacross the Capital Area',78,370,1060,95,31,C.muted);
-   text(s,'Our outreach','We discussed free access for seniors.',78,526,1110,54,35);
-   text(s,'Interest','AAACAP expressed interest in a potential partnership.',78,598,1120,48,27,C.muted);
-   notes(s,'0:21–0:31 (10 seconds)','IS','AAACAP supports older adults and caregivers across the Capital Area. We discussed free access for seniors, and they expressed interest in a potential partnership.','Display the agency’s full name. This is a conversation and expression of interest, not a signed partnership or endorsement. Use Shield styling rather than unapproved AAACAP co-branding.','Agency role: https://www.capcog.org/divisions/area-agency-on-aging/ . Team involvement is owner-provided on October 25, 2026: the team called AAACAP, explored free app access for seniors, and received interest and recognition of its significance.');
+   image(s,asset('aaacap-official.png'),'Official Area Agency on Aging of the Capital Area logo',76,237,330,190);
+   text(s,'Agency quote','“This would be a valuable asset to the seniors that we care for.”',486,226,714,216,47,C.navy,'Georgia');
+   text(s,'Quote attribution','Jennifer Scott',490,480,700,46,29);
+   text(s,'Quote role','Director of Aging Services',490,528,700,40,25,C.muted);
+   text(s,'Outreach context','Exploring free access for seniors',78,622,1100,42,27,C.muted);
+   notes(s,'0:21–0:31 (10 seconds)','IS','AAACAP supports older adults and caregivers across the Capital Area. We discussed free access for seniors, and their director saw its value.','Let the quote carry the slide. Describe the outreach as partnership discussions; no signed partnership is claimed.','Quote and attribution supplied directly by the owner on October 25, 2026. The quote is from the team’s conversation, not represented as a quotation published on the agency website. Jennifer Scott’s role confirmed in the official staff directory: https://www.capcog.org/about/staff/ . Official logo downloaded unaltered from https://www.capcog.org/wp-content/uploads/2024/02/AAACAP-Color-2.png , linked on https://www.capcog.org/divisions/area-agency-on-aging/ .');
   }
   if(index===3){
    heading(s,'Protection you can understand');
@@ -66,11 +67,10 @@ export async function build({presentation,input}){
    image(s,asset('openai.png'),'OpenAI logo',478,210,145,40);
    image(s,asset('google.png'),'Google logo',668,208,140,48);
    image(s,asset('telnyx.png'),'Telnyx logo',1008,211,143,45);
-   const a=text(s,'Interface','iPhone app',76,301,275,52,37,C.ink,'Georgia');
-   const b=text(s,'Processing','Our custom AI backend',450,301,425,52,35,C.navy,'Georgia');
+   const a=text(s,'Interface','iPhone app',76,301,250,52,37,C.ink,'Georgia');
+   const b=text(s,'Processing','Our custom\nAI backend',450,287,385,88,35,C.navy,'Georgia');
    const c=text(s,'Calling','Calling service',944,301,268,52,35,C.ink,'Georgia');
-   s.shapes.connect(a,b,{kind:'straight',fromSide:'right',toSide:'left',line:{fill:'#AAB5C2',width:2},tail:{type:'arrow',width:'sm',length:'sm'}});
-   s.shapes.connect(b,c,{kind:'straight',fromSide:'right',toSide:'left',line:{fill:'#AAB5C2',width:2},tail:{type:'arrow',width:'sm',length:'sm'}});
+   for(const [x,w] of [[350,60],[865,45]])s.shapes.add({name:'Flow arrow '+x,geometry:'connector',kind:'straight',position:{left:x,top:327,width:w,height:0},line:{fill:'#AAB5C2',width:2},tail:{type:'arrow',width:'sm',length:'sm'}});
    text(s,'Interface stack','Swift + SwiftUI',76,387,300,46,27,C.muted);
    text(s,'Backend stack','TypeScript\nCloud Run + Firebase\nOpenAI + Soniox',450,387,430,135,26,C.muted);
    text(s,'Calling stack','Telnyx Call Control\nRoutes and connects calls',944,387,275,114,25,C.muted);
@@ -106,30 +106,20 @@ export async function build({presentation,input}){
    const manifest=root+'/artifacts/private/shield-video-review/selected/quotes.json';
    if(existsSync(manifest)){
     const selected=JSON.parse(readFileSync(manifest,'utf8'));
-    text(s,'Feedback context','Community feedback on scam calls and Shield',78,151,1100,44,27,C.muted);
+    text(s,'Feedback context','Why protection matters',78,151,1100,44,27,C.muted);
     selected.forEach((p,i)=>{
-     const x=76+i*386;
-     image(s,p.portrait,p.name+' interview still',x,231,186,186);
-     text(s,'Participant '+i,p.name,x,440,350,38,24,C.muted);
-     text(s,'Quotation '+i,'“'+p.quote+'”',x,502,350,167,i===0?29:38,C.navy,'Georgia');
-     if(i===1)text(s,'Question context','On using or recommending Shield',x,606,350,56,22,C.muted);
+     const y=214+i*153;
+     image(s,p.portrait,p.name+' interview still',76,y,108,108);
+     text(s,'Participant '+i,p.name,276,y+108,900,34,22,C.muted);
+     text(s,'Quotation '+i,'“'+p.quote+'”',276,y+8,900,126,34,C.navy,'Georgia');
     });
-    notes(s,'2:23–2:44 (21 seconds)','Three interview participants, seven seconds each',selected.map(p=>p.name+': “'+p.quote+'”').join('\n'),'Use artifacts/private/shield-video-review/selected/Shield-community-feedback-21s.mp4. It contains three continuous original excerpts, subtitles and short silent final-frame holds to fit seven seconds each. The first quote concerns avoiding unknown calls; the second answers whether he would use or recommend Shield; the third expresses enthusiasm after hearing about Shield. Do not describe these interviews as hands-on usability validation. Location-based attribution retained at the owner’s request.',selected.map(p=>p.source+': '+p.start.toFixed(2)+'–'+p.end.toFixed(2)+' seconds.').join('\n')+'\nAll 12 supplied recordings reviewed with local transcription and frame inspection; selected wording cross-checked with local models. No synthesized speech or AI-generated imagery. Recordings, transcripts and quote manifests remain private and excluded from Git.');
+    notes(s,'2:23–2:44 (21 seconds)','Three interview participants',selected.map(p=>p.name+': “'+p.quote+'”').join('\n'),'Use artifacts/private/shield-video-review/selected/Shield-community-feedback-21s.mp4. Coach Jim gets 6.6 seconds, the Round Rock participant 8.4 seconds, and Joe Harris 6 seconds so the stronger statements fit the 21-second segment. Joe’s two excerpts come from the same answer in original order; the slide marks the omission with an ellipsis. Captions retain the spoken wording. These are personal experiences and reactions to the app concept, not hands-on usability validation. Location-based attribution retained at the owner’s request.',selected.map(p=>p.source+': '+(p.sourceRanges || p.start.toFixed(2)+'–'+p.end.toFixed(2)+' seconds.')).join('\n')+'\nThe unexpected bill is the participant’s recollection; no independent financial-loss verification is claimed. No synthesized speech or AI-generated imagery. Private recordings, transcripts and quote manifests are excluded from Git.');
    }else{
     text(s,'Senior voices','Community feedback',76,264,1100,122,76,C.navy,'Georgia');
     notes(s,'2:23–2:44 (21 seconds)','Three interview participants','Restore the private quote manifest to rebuild the approved testimonial slide.','Private source footage and quote text are deliberately excluded from the repository.','Owner-supplied interviews, October 25, 2026.');
    }
   }
-  if(index===9){
-   heading(s,'What comes next');
-   text(s,'Roadmap 1','More testing with older adults',76,207,1100,77,47,C.navy,'Georgia');
-   text(s,'Roadmap 2','Clearer follow-up questions',76,312,1100,77,47,C.navy,'Georgia');
-   text(s,'Goal','Helping older adults answer with confidence.',78,472,1120,60,34);
-   image(s,markFile,'Shield logo',78,576,65,65);
-   text(s,'Closing brand','Shield',171,573,580,80,61,C.navy,'Georgia');
-   text(s,'Thanks','Thank you',918,602,280,49,31,C.muted);
-   notes(s,'2:44–2:55 (11 seconds)','AK leads; all four appear together','Next, we’ll test with more older adults and make follow-up questions clearer. Our goal is to help older adults answer with confidence. We’re Shield. Thank you.','End with all four team members together. The two roadmap items are proposed priorities based on documented open work; the owner can replace them with confirmed priorities. Keep Shield visible through the final frame.','docs/SCREENING-PRODUCTION-CANDIDATE.md records question wording/role defects; PRODUCT.md and ios/README.md distinguish simulator checks from older-participant usability evidence. These are future intentions, not completed validation.');
-  }
+
  }
- return {slides:presentation.slides.items.length,videoBeats:10,durationSeconds:175,optionalEvidenceSlides:3};
+ return {slides:presentation.slides.items.length,videoBeats:9,durationSeconds:164,optionalEvidenceSlides:3};
 }
