@@ -24,7 +24,7 @@ HOW SHIELD ADAPTS IT
 
 Six editable slides keep the reference’s simple hierarchy and horizontal technology rows. Shield’s existing design supplies the light gray background (#F2F3F4), navy action color (#002664), ink (#101E32), green (#076C5C), serif headings and sans-serif body text. Georgia approximates the app’s system serif in the deck. The artwork is the original ShieldMark.png and the October 17 Home sample-app capture. No AI-generated images, borrowed CareLoop photography or fabricated product screens are used.
 
-The first slide identifies the product. The next four cover the requested crisis, technology, red teaming and research benchmark. The final slide separates deployed screening results from the research classifier. After review, the user requested removal of visible footers and the ordinary-call percentage. Sources and the complete outcome breakdown remain in speaker notes. The benchmark slide now uses an editable vertical bar graph: Shield in navy with its original logo, and the published research models in muted gray. The axis begins at zero and the strongest published result remains visible.
+The first slide identifies the product. The next four cover the requested crisis, technology, red teaming and research benchmark. The final slide separates deployed screening results from the research classifier. After review, the user requested removal of visible footers and the ordinary-call percentage. Sources and the complete outcome breakdown remain in speaker notes. The benchmark slide now uses an editable vertical bar graph: Shield in navy with its original logo, and the published research models in muted gray. A later user revision places Shield first, omits the version from its label, centers its logo and zooms the axis to 95–100. The chart explicitly labels the comparison as selected published baselines and states that evaluation methods differ.
 
 TECHNOLOGY SLIDE REVISION
 
@@ -49,7 +49,7 @@ Additional split: 1,275/1,280 correct, 99.61% F1. This was MASC’s published tr
 Sources: artifacts/masc-classifier/masc-v3-three-passes/summary.json and artifacts/masc-classifier/masc-train-v3/summary.json.
 
 No defensible blanket “best in the industry” ranking exists in the evidence. Published MASC F1 values reach 99.92%, under different protocols. The deck therefore uses “near-perfect benchmark classification” and keeps the separate research classifier distinct from the product.
-Chart values (F1 percent): DistilBERT 96.97; BERT-Base 98.12; RoBERTa 99.32; BiGRU 99.92; Shield research classifier v3 99.79. This is published research context, not a controlled head-to-head comparison.
+Chart values (F1 percent), left to right: Shield 99.79; RoBERTa 99.32; BERT-Large 98.83; BERT-Base 98.12; DistilBERT 96.97. These are selected lower-scoring published baselines. BiGRU 99.92 and BiLSTM 99.88 are not plotted. This is published research context, not a controlled head-to-head comparison or evidence of first place. The visible axis starts at 95, not zero.
 Published context: https://supreme-lab.github.io/ai-in-the-loop/
 Dataset: https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation
 
