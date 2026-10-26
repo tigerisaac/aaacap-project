@@ -4,13 +4,16 @@ private struct TestFailure: Error { let message: String }
 private func require(_ condition: Bool, _ message: String) throws { if !condition { throw TestFailure(message: message) } }
 private let firstID = "22fce9c6-5c0f-4c40-b600-73710aaad7a1"
 private let secondID = "b10cf105-d4e4-4613-8c6e-d03a5bf69be8"
-private func state(_ audience: String = "public", active: Bool = false, eligible: Bool = true, id: String = firstID) -> ServiceAccessStatus {
+private func state(_ audience: String = "public", active: Bool = false, eligible: Bool = true, id: String = firstID, trials: Bool = false) -> ServiceAccessStatus {
     .init(audience: audience, status: active ? "active" : audience == "pilot" ? "awaiting_activation" : "inactive",
           purchaseAllowed: audience == "public" && eligible && !active, hasSubscription: active,
           expiresAt: active ? Date.now.addingTimeInterval(86400) : nil, accessUntil: active ? Date.now.addingTimeInterval(86400) : nil,
           willRenew: audience == "public" && active, billingIssue: false,
           revenueCat: audience == "public" ? .init(customerId: id, publicSDKKey: "appl_synthetic", entitlementId: "shield_access",
-                                                  offeringId: "default", monthlyProductId: "shield_monthly", annualProductId: "shield_annual") : nil)
+                                                  offeringId: "default", monthlyProductId: "shield_monthly", annualProductId: "shield_annual",
+                                                  trialOfferingId: trials ? "shield_week_trial" : nil,
+                                                  trialMonthlyProductId: trials ? "shield_monthly_trial" : nil,
+                                                  trialAnnualProductId: trials ? "shield_annual_trial" : nil) : nil)
 }
 
 @MainActor private final class AccessAPI: ServiceAccessAPI {
@@ -27,6 +30,7 @@ private func state(_ audience: String = "public", active: Bool = false, eligible
 }
 @MainActor private final class PurchaseClient: SubscriptionClient {
     var events: [String] = []
+    var offeredPlans: [SubscriptionPlan]?
     var result = SubscriptionPurchaseResult.purchased
     var failure: Error?
     var purchaseContinuation: CheckedContinuation<SubscriptionPurchaseResult, Never>?
@@ -37,6 +41,7 @@ private func state(_ audience: String = "public", active: Bool = false, eligible
     func plans(_ configuration: ServiceAccessStatus.RevenueCatConfiguration) async throws -> [SubscriptionPlan] {
         events.append("plans")
         if let failure { throw failure }
+        if let offeredPlans { return offeredPlans }
         return [.init(id: "shield_monthly", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil),
                 .init(id: "shield_annual", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33")]
     }
@@ -69,6 +74,56 @@ private func state(_ audience: String = "public", active: Bool = false, eligible
             api.value = state(eligible: false)
             await model.purchase("shield_monthly", api: api)
             try require(!client.events.contains("purchase:shield_monthly") && model.plans.isEmpty, "stale eligibility allowed a purchase")
+            model.reset()
+        }
+        do {
+            let monthly = SubscriptionPlan(id: "m", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil, amount: 9.99, currencyCode: "USD")
+            var annual = SubscriptionPlan(id: "a", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33", amount: 99.99, currencyCode: "USD")
+            try require(annual.annualSavingsPercent(comparedTo: monthly) == 16, "savings must round down, never inflate")
+            annual.currencyCode = "CAD"
+            try require(annual.annualSavingsPercent(comparedTo: monthly) == nil, "cross-currency savings claim")
+            annual.currencyCode = "USD"; annual.amount = 150
+            try require(annual.annualSavingsPercent(comparedTo: monthly) == nil, "more expensive annual claimed savings")
+            annual.amount = nil
+            try require(annual.annualSavingsPercent(comparedTo: monthly) == nil, "missing numeric price fabricated savings")
+        }
+        do {
+            let configuration = state(trials: true).revenueCat!
+            try require(configuration.products(forOffering: "default")?.monthly == "shield_monthly", "control changed products")
+            try require(configuration.products(forOffering: "shield_week_trial")?.annual == "shield_annual", "trial offering must use regular annual product")
+            try require(!configuration.allowedProductIds.contains("shield_annual_trial"), "annual trial must not be purchasable")
+            try require(configuration.products(forOffering: "unapproved") == nil, "unapproved offering accepted")
+            try require(state().revenueCat!.products(forOffering: "shield_week_trial") == nil, "old backend enabled trials")
+            for approved in [true, false] {
+                let api = AccessAPI(), client = PurchaseClient(), model = SubscriptionModel(client: client)
+                api.value = state(trials: approved); client.result = .cancelled
+                client.offeredPlans = [.init(id: "shield_monthly_trial", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil, hasFreeWeek: true)]
+                await model.load(api: api, includePlans: true)
+                await model.purchase("shield_monthly_trial", api: api)
+                try require(client.events.contains("purchase:shield_monthly_trial") == approved, "trial purchase bypassed server product configuration")
+                model.reset()
+            }
+            let api = AccessAPI(), client = PurchaseClient(), model = SubscriptionModel(client: client)
+            api.value = state(trials: true)
+            client.offeredPlans = [.init(id: "shield_annual_trial", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33", hasFreeWeek: true)]
+            await model.load(api: api, includePlans: true)
+            api.value = state(trials: false)
+            await model.purchase("shield_annual_trial", api: api)
+            try require(!client.events.contains("purchase:shield_annual_trial"), "revoked trial configuration allowed stale purchase")
+            model.reset()
+        }
+        do {
+            let api = AccessAPI(), client = PurchaseClient(), model = SubscriptionModel(client: client)
+            await model.load(api: api, includePlans: true)
+            api.next = { api.error = APIError.service(code: "offline", status: 503); return state() }
+            await model.purchase("shield_monthly", api: api)
+            try require(model.pendingPurchase && model.error != nil && model.message?.contains("went through") == true,
+                        "completed purchase with failed verification must explain that payment succeeded")
+            try require(model.errorActionTitle == "Check purchase status", "purchase retry must not buy twice")
+            api.error = nil; api.value = state(active: true)
+            await model.retry(api: api)
+            try require(model.access?.isActive == true && client.events.filter { $0 == "purchase:shield_monthly" }.count == 1,
+                        "verification recovery repeated purchase")
             model.reset()
         }
         for result in [SubscriptionPurchaseResult.cancelled, .pending, .purchased] {

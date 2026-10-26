@@ -10,6 +10,21 @@ struct SubscriptionPlan: Identifiable, Sendable {
     let price: String
     let billingPeriod: String
     let monthlyEquivalent: String?
+    var hasFreeWeek = false
+    var amount: Decimal? = nil
+    var currencyCode: String? = nil
+
+    /// Compare regular recurring prices in the same currency, never formatted strings or trial prices.
+    func annualSavingsPercent(comparedTo monthly: SubscriptionPlan) -> Int? {
+        guard billingPeriod == "year", monthly.billingPeriod == "month",
+              let currencyCode, currencyCode == monthly.currencyCode,
+              let amount, let monthlyAmount = monthly.amount, amount > 0, monthlyAmount > 0 else { return nil }
+        var fraction = (1 - amount / (monthlyAmount * 12)) * 100
+        var rounded = Decimal()
+        NSDecimalRound(&rounded, &fraction, 0, .down)
+        guard let percent = Int(rounded.description), percent > 0, percent < 100 else { return nil }
+        return percent
+    }
 }
 
 enum SubscriptionPurchaseResult { case purchased, cancelled, pending }

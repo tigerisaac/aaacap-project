@@ -96,7 +96,9 @@ export class ServiceAccess {
       willRenew: snapshot.willRenew && active, billingIssue: snapshot.billingIssue,
       revenueCat: config && account.customerId ? { customerId: account.customerId, publicSDKKey: config.applePublicKey,
         entitlementId: config.entitlementId, offeringId: config.offeringId,
-        monthlyProductId: config.monthlyProductId, annualProductId: config.annualProductId } : null };
+        monthlyProductId: config.monthlyProductId, annualProductId: config.annualProductId,
+        trialOfferingId: config.trialOfferingId, trialMonthlyProductId: config.trialMonthlyProductId,
+        trialAnnualProductId: config.trialAnnualProductId } : null };
   }
 
   /** Enforce on new activation/resume, while keeping restoration, history, deletion and existing call routing available. */

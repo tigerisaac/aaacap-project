@@ -49,8 +49,17 @@ export const cloudSchema = z.object({
     offeringId: z.string().min(1).max(100).default('default'),
     monthlyProductId: z.string().min(1).max(200).default('shield_monthly'),
     annualProductId: z.string().min(1).max(200).default('shield_annual'),
+    trialOfferingId: z.string().min(1).max(100).optional(),
+    trialMonthlyProductId: z.string().min(1).max(200).optional(),
+    trialAnnualProductId: z.string().min(1).max(200).optional(),
     purchasesEnabled: z.boolean().default(false),
-  }).strict().refine(value => value.monthlyProductId !== value.annualProductId, 'Distinct subscription products required').optional(),
+  }).strict().refine(value => {
+    const trial = [value.trialOfferingId, value.trialMonthlyProductId];
+    const count = trial.filter(Boolean).length;
+    const products = [value.monthlyProductId, value.annualProductId, value.trialMonthlyProductId, value.trialAnnualProductId].filter(Boolean);
+    return (count === 0 || count === 2) && (!value.trialAnnualProductId || count === 2) && new Set(products).size === products.length
+      && (!value.trialOfferingId || value.trialOfferingId !== value.offeringId);
+  }, 'Distinct products and a complete monthly-trial offering required').optional(),
 });
 export type CloudConfig = z.infer<typeof cloudSchema>;
 export const CONSENT_VERSION = 'shield-2026-10-16-privacy-v2';

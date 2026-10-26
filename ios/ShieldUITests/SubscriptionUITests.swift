@@ -8,12 +8,40 @@ final class SubscriptionUITests: XCTestCase {
         let app = launch("offer")
         XCTAssertTrue(app.staticTexts["$9.99 / month"].exists)
         reveal(app.staticTexts["$99.99 / year"], app)
-        XCTAssertTrue(app.staticTexts["Equivalent to $8.33 per month. Billed in full once a year."].exists)
+        XCTAssertTrue(app.staticTexts["$8.33 / month, billed yearly"].exists)
         capture(app, "Subscription annual billing")
         reveal(app.buttons["Restore purchases"], app)
         XCTAssertTrue(app.buttons["Restore purchases"].exists)
         XCTAssertTrue(app.buttons["Terms of use"].exists || app.links["Terms of use"].exists)
         XCTAssertFalse(app.buttons["Manage subscription"].exists)
+    }
+    func testFreeWeekShowsBothRenewalPricesAndCancellationTerms() {
+        let app = launch("trial")
+        XCTAssertTrue(app.staticTexts["1 week free"].firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["Then $9.99 / month"].exists)
+        reveal(app.staticTexts["$99.99 / year"], app)
+        XCTAssertTrue(app.staticTexts["$99.99 / year"].exists)
+        XCTAssertTrue(app.staticTexts["$8.33 / month, billed yearly"].exists)
+        XCTAssertFalse(app.staticTexts["Then $99.99 / year"].exists)
+        let yearly = app.buttons["plan-year"]; reveal(yearly, app); yearly.tap()
+        let yearlyAction = app.buttons["subscribe-year"]; reveal(yearlyAction, app)
+        XCTAssertTrue(yearlyAction.label.contains("Start yearly"))
+        XCTAssertTrue(app.staticTexts["annual-savings"].label.contains("Save 16 percent"))
+        capture(app, "Monthly trial with yearly selected")
+        let monthly = app.buttons["plan-month"]; revealUp(monthly, app); monthly.tap()
+        let disclosure = app.staticTexts["subscription-renewal-terms"]
+        reveal(disclosure, app)
+        XCTAssertTrue(disclosure.exists)
+        capture(app, "One-week trial renewal disclosure")
+    }
+    func testFreeWeekAtLargestTextKeepsYearlyTotalAndActionReachable() {
+        let app = launch("trial", large: true)
+        let yearly = app.staticTexts["$99.99 / year"]
+        reveal(yearly, app); XCTAssertTrue(yearly.isHittable)
+        let option = app.buttons["plan-year"]; reveal(option, app); option.tap()
+        let action = app.buttons["subscribe-year"]
+        reveal(action, app); XCTAssertTrue(action.isHittable)
+        capture(app, "One-week trial largest text")
     }
     func testPilotNeverSeesMonetaryActionsAtLargestText() {
         let app = launch("pilot", large: true)
@@ -119,6 +147,9 @@ final class SubscriptionUITests: XCTestCase {
     }
     private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
         for _ in 0..<16 where !element.isHittable { app.swipeUp() }
+    }
+    private func revealUp(_ element: XCUIElement, _ app: XCUIApplication) {
+        for _ in 0..<16 { if element.isHittable { return }; app.swipeDown() }
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
         let image = XCTAttachment(screenshot: app.screenshot()); image.name = name; image.lifetime = .keepAlways; add(image)

@@ -31,7 +31,8 @@ export function subscriptionSnapshot(value: unknown, config: RevenueCatConfig, n
   const parsed = subscriberSchema.safeParse(value);
   if (!parsed.success || Math.abs(parsed.data.request_date_ms - now) > 5 * 60_000) throw new HttpError(503, 'subscription_verification_unavailable');
   const { subscriber, request_date_ms: providerAt } = parsed.data;
-  const products = [config.monthlyProductId, config.annualProductId];
+  const products = [config.monthlyProductId, config.annualProductId, config.trialMonthlyProductId,
+    config.trialAnnualProductId].filter((id): id is string => !!id);
   const isSupported = (s: typeof subscriber.subscriptions[string]) => s.store === 'app_store'
     && (!s.is_sandbox || allowSandbox) && s.ownership_type !== 'FAMILY_SHARED';
   const hasPurchased = products.some(id => subscriber.subscriptions[id] && isSupported(subscriber.subscriptions[id]!));

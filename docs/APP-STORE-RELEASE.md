@@ -2,6 +2,10 @@
 
 Updated October 25, 2026. **Shield is being prepared for public App Store distribution, but is not ready to submit or release.** This page supersedes the October 19/24 preparation status previously here. Historical test/deployment records remain in [STATUS.md](STATUS.md) and the linked evidence documents. Do not treat an unchecked item as completed by this rewrite.
 
+## October 25 paywall revision after upload
+
+The owner requested a redesigned paywall and a monthly-only free week. Source now prepares **1.0.0 build 3**; the previously uploaded and selected **build 2 remains unchanged in App Store Connect**. Build 3 must receive its own archive/package verification and upload before submission. The RevenueCat monthly-trial offering now uses the regular annual product; the annual-trial product should not be included in the intended launch offering. A RevenueCat dashboard paywall is an unpublished draft; the app currently uses the redesigned native paywall. See [current billing decision](REVENUECAT.md#october-25--monthly-only-trial-and-redesigned-paywall-latest-decision).
+
 ## Release identity and prepared material
 
 | Item | Current evidence |

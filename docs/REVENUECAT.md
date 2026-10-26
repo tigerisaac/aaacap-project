@@ -1,12 +1,53 @@
 # RevenueCat and Shield access
 
-Updated October 17, 2026. **App integration implemented and scoped server support deployed; purchases are not enabled in production.** The owner selected RevenueCat and explicitly deferred Apple account/upload work. This document does not authorize a deployment, enrollment, charge or store change.
+Updated October 25, 2026. **The app integration and redesigned monthly-trial paywall are implemented; production purchases remain disabled.** Apple build 2 and listing screenshots have been uploaded, and the Apple purchase key is connected to RevenueCat. Build 3 contains the paywall revision below. Historical catalog/deployment entries are dated; current release gates are in [APP-STORE-RELEASE.md](APP-STORE-RELEASE.md). No new production deployment, enrollment, charge or review submission is authorized by this document.
 
 ## Agreed product choices
 
-Wheema Inc. operates Shield; support is `isaac.cw.zhang@gmail.com`. The intended launch countries are the United States and Canada. The baseline prices are USD $9.99 monthly and $99.99 billed annually (approximately $8.33/month equivalent). The app displays Apple's localized prices, including the full annual charge; it never assumes the Canadian price equals the USD price. Carrier eligibility is separate from storefront availability: only Tello and T-Mobile US have current verified carrier entries. No Canadian carrier is enabled for purchase.
+Wheema Inc. operates Shield; support is `isaac.cw.zhang@gmail.com`. The launch storefront is the United States only; Canada remains a future expansion. The baseline prices are USD $9.99 monthly and $99.99 billed annually (approximately $8.33/month equivalent). The app displays Apple's localized prices, including the full annual charge; it never assumes the Canadian price equals the USD price. Carrier eligibility is separate from storefront availability: only Tello and T-Mobile US have current verified carrier entries. No Canadian carrier is enabled for purchase.
 
 Ten selected senior accounts receive two calendar months from successful setup, without automatic billing or conversion. This is a separate account classification, retained after expiry. Pilot screens never initialize RevenueCat, show a price or offer restore/manage/purchase actions. Apple's acceptance of this complimentary access model remains an external release gate.
+
+## October 25 — monthly-only trial and redesigned paywall (latest decision)
+
+The owner superseded the earlier both-plan trial request: **one free week on monthly only; no yearly trial**, with a visible percentage saving for annual billing. The monthly-trial offering `shield_week_trial` now pairs `shield_monthly_trial` with the regular `shield_annual`. The annual-trial product remains in the unsubmitted catalog for history but is no longer attached to this offering or accepted by the iOS purchase allowlist. Legacy server entitlement verification can still recognize it if explicitly configured; it must not be offered to new buyers. The existing internal annual package display name predates this change; product association is authoritative.
+
+A RevenueCat paywall draft was created and inspected: [Shield draft](https://app.revenuecat.com/projects/34b083d4/paywalls/pw4cd37e7a48654411/builder). Monthly is selected by default; free-week copy is conditional; annual has a relative-discount variable and no trial. **Unpublished, not integrated as RevenueCatUI in this build.** The renderer could not retrieve real package prices and used representative values; this is not store-price verification. Its privacy and EULA links are configured. Verify real product rendering and sandbox purchase callbacks before publishing/integrating it.
+
+The iOS app immediately uses a redesigned native screen with RevenueCat/StoreKit prices: compact selectable plan cards, one purchase button, monthly-only eligible trial copy, adjacent operation feedback, full yearly charge, selected-plan renewal terms, and the remaining phone-setup requirement. The annual badge compares 12 regular monthly payments in the same currency and rounds the percentage down (USD baseline: **Save 16%**); it does not discount the trial price or parse localized strings. Missing, mismatched-currency, zero or non-saving prices produce no badge. Unexpected yearly introductory offers fail closed instead of being hidden. Unknown monthly eligibility promises neither a trial nor an immediate charge.
+
+This source prepares build **1.0.0 (3)**. It does not change production purchase/enrollment flags, start an experiment, deploy the backend, submit App Review or replace uploaded build 2. Monthly-only server trial configuration now requires `trialOfferingId` and `trialMonthlyProductId`; the ordinary `annualProductId` is reused by the app. All existing server-owned identity and access checks remain in force.
+
+Verification October 25: simulator and signed device builds passed; build 3 installed on the owner's iPhone 12 Pro Max, with launch blocked by the lock screen. `npm run check` passed (401 unit tests), `npm run test:firebase` passed (326 tests), and native subscription-model tests passed including same-currency savings, no annual-trial purchase, and recovery without repurchasing. The first 13-screen run passed 12 and exposed the savings assertion; after correcting Decimal rounding and the accessible badge selector, the four affected/recovery UI tests passed. A subsequent largest-text screenshot exposed a truncated annual-equivalent label; wrapping was corrected and the focused large-text test passed again with its capture inspected. Screenshots include monthly, yearly selection and largest-text/dark states. No actual Apple transaction or new real call was made. Evidence is in ignored `artifacts/paywall-redesign-2026-10-25/`; the uploaded App Store build is still 2.
+
+## October 25 — owner-selected trial experiment (planned, not enabled)
+
+The owner selected a one-week free introductory offer and asked for an A/B test on both plans. Baseline US prices remain $9.99/month and $99.99/year. Working experiment design: 50% of new eligible public customers see both plans without an introductory offer; 50% see both plans with one week free, then the normal recurring monthly or annual charge. Keep assignment consistent across visits and exclude pilot/helper experiences. Returning or ineligible Apple customers must see their actual purchase terms, without a promised trial.
+
+This historical both-plan trial decision was superseded by the monthly-only decision above. At this planning stage it was not implementation or Apple/RevenueCat configuration. Apple automatically applies an eligible introductory offer on its subscription product, so two offerings containing the same products cannot create a trial-versus-no-trial test. Prepare separate trial and regular products and two RevenueCat offerings, review subscription grouping and switching behavior, and attach all products to the same Shield access entitlement. Do not start enrollment until sandbox acceptance.
+
+Engineering prerequisites: replace the fixed two-product/default-offering assumptions in the iOS adapter and purchase guard with validated experiment offerings; expand the server product allowlist without trusting client access claims; read localized offer terms and Apple eligibility; preserve server-owned RevenueCat identity, purchase recovery and pilot bypass. Validate both variants, ineligible users, reinstall/account changes, restore, renewal, cancellation, deletion and forwarding-safe expiry. Compare paid conversion and revenue per assigned customer over a fixed observation window; trial starts alone are not a success measure.
+
+Apple account access is currently required to continue App Store setup. The current archive preparation predates trial-experiment implementation; it must not be described as experiment-ready.
+
+References: [Apple introductory-offer durations and eligibility](https://developer.apple.com/help/app-store-connect/manage-subscriptions/set-up-introductory-offers-for-auto-renewable-subscriptions), [RevenueCat offerings to test](https://www.revenuecat.com/docs/tools/experiments-v1/creating-offerings-to-test), [RevenueCat automatic offer application](https://www.revenuecat.com/docs/subscription-guidance/subscription-offers).
+
+## October 25 — Apple and RevenueCat catalog prepared
+
+App Store Connect app **6826930320**, **Shield: Call Protection**, bundle `org.isaaczhang.Shield`; subscription group **Shield / 22513571**. The owner chose the listing name after Apple rejected Shield as taken. The following products are saved in Apple, with English (US) display text, US availability only, and regular prices based on USD. Price equivalents calculated for other storefronts do not enable those storefronts. Canada still has no verified carrier. Family Sharing was not enabled.
+
+| Product | Apple ID | Regular US price | Introductory offer |
+|---|---|---|---|
+| `shield_monthly` | `6826933963` | $9.99 / month | None |
+| `shield_annual` | `6826933989` | $99.99 / year, upfront | None |
+| `shield_monthly_trial` | `6826934368` | $9.99 / month | First week free, US, starting October 25, no end date |
+| `shield_annual_trial` | `6826934629` | $99.99 / year, upfront | First week free, US, starting October 25, no end date |
+
+All four were manually registered as App Store subscription products in RevenueCat and attached to `shield_access`. The current `default` offering now maps its monthly/annual packages to the standard Apple products. Separate offering **`shield_week_trial` / `ofrng57d7c9d8ab`** maps annual/monthly packages to their trial products. It was not made current, and no experiment was started. QA products/offering remain separate.
+
+No products have been submitted for App Review; review screenshots, group localization and remaining purchase-option review are still outstanding. Apple Business shows a new Paid Apps agreement pending; the owner will accept it later. RevenueCat reports its Apple In-App Purchase key configuration missing, and its App Store Connect credentials are not connected. Do not enable purchases or enrollment yet. The uploaded 1.0.0 (1) has processed and appears in TestFlight; testing notes are saved, but there are no tester groups or individual testers assigned. No external invitations were sent.
+
+At catalog creation, the trial experiment still required iOS/server support and a new tested build. The implementation and monthly-only revision are recorded above; sandbox transaction acceptance remains outstanding. Catalog creation is not transaction verification. Production flags remain off.
 
 ## Saved RevenueCat configuration
 

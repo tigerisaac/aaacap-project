@@ -49,6 +49,20 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Service access and subscr
   afterEach(async () => { await app.close(); });
   afterAll(async () => { await db.terminate(); await deleteApp(admin); });
 
+  it('returns experiment configuration only for a server-approved public owner', async () => {
+    const trialConfig = cloudSchema.parse({ ...config, REVENUECAT: { ...config.REVENUECAT,
+      trialOfferingId: 'shield_week_trial', trialMonthlyProductId: 'shield_monthly_trial' } });
+    const trialAccess = new ServiceAccess(new CloudStore(db, trialConfig, () => now), provider);
+    expect((await trialAccess.status('owner')).revenueCat).toBe(null);
+    await trialAccess.approve({ uid: 'owner', participantId: personID, country: 'US', carrier: 'tello', audience: 'public', operator: 'synthetic' });
+    expect((await trialAccess.status('owner')).revenueCat).toMatchObject({ trialOfferingId: 'shield_week_trial',
+      trialMonthlyProductId: 'shield_monthly_trial' });
+    expect((await trialAccess.status('other')).revenueCat).toBe(null);
+    await accessRef(store, 'owner').update({ audience: 'pilot' });
+    expect((await trialAccess.status('owner')).revenueCat).toBe(null);
+    expect(() => cloudSchema.parse({ ...trialConfig, REVENUECAT: { ...trialConfig.REVENUECAT, trialMonthlyProductId: undefined } })).toThrow();
+    expect(() => cloudSchema.parse({ ...trialConfig, REVENUECAT: { ...trialConfig.REVENUECAT, trialMonthlyProductId: 'shield_monthly' } })).toThrow();
+  });
   it('leaves existing assisted users alone and rejects client-supplied entitlement flags', async () => {
     expect((await app.inject({ url: '/api/access' })).statusCode).toBe(401);
     const state = (await app.inject({ url: '/api/access', headers: headers() })).json();

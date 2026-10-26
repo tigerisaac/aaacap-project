@@ -33,16 +33,31 @@ final class RevenueCatClient: SubscriptionClient {
         let offerings: Offerings
         do { offerings = try await Purchases.shared.offerings() }
         catch { throw readable(error) }
-        guard let offering = offerings.all[configuration.offeringId] else { throw APIError.service(code: "subscriptions_unavailable", status: 503) }
-        let choices = [(configuration.monthlyProductId, "Monthly", "month", SubscriptionPeriod.Unit.month),
-                       (configuration.annualProductId, "Yearly", "year", SubscriptionPeriod.Unit.year)]
+        packages = [:]
+        // RevenueCat keeps experiment assignment on the backend-owned customer identity.
+        // Older servers omit trial configuration and retain the original fixed offering.
+        let assigned = configuration.trialOfferingId == nil ? offerings.all[configuration.offeringId] : offerings.current
+        guard let offering = assigned, let pair = configuration.products(forOffering: offering.identifier) else {
+            throw APIError.service(code: "subscriptions_unavailable", status: 503)
+        }
+        let choices = [(pair.monthly, "Monthly", "month", SubscriptionPeriod.Unit.month),
+                       (pair.annual, "Yearly", "year", SubscriptionPeriod.Unit.year)]
+        let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(productIdentifiers: [pair.monthly, pair.annual])
         var next: [SubscriptionPlan] = [], nextPackages: [String: Package] = [:]
         for (id, title, period, unit) in choices {
             guard let package = offering.availablePackages.first(where: { $0.storeProduct.productIdentifier == id }),
                   package.storeProduct.subscriptionPeriod?.value == 1,
                   package.storeProduct.subscriptionPeriod?.unit == unit else { throw APIError.service(code: "subscriptions_unavailable", status: 503) }
+            let discount = package.storeProduct.introductoryDiscount
+            // An unexpected yearly intro offer must never be silently hidden from the buyer.
+            guard unit != .year || discount == nil else { throw APIError.service(code: "subscriptions_unavailable", status: 503) }
+            let freeWeek = unit == .month && eligibility[id]?.status == .eligible && discount?.paymentMode == .freeTrial
+                && discount?.numberOfPeriods == 1 && discount?.subscriptionPeriod.value == 1
+                && discount?.subscriptionPeriod.unit == .week
             next.append(.init(id: id, title: title, price: package.localizedPriceString, billingPeriod: period,
-                              monthlyEquivalent: unit == .year ? package.storeProduct.localizedPricePerMonth : nil))
+                              monthlyEquivalent: unit == .year ? package.storeProduct.localizedPricePerMonth : nil,
+                              hasFreeWeek: freeWeek, amount: package.storeProduct.price,
+                              currencyCode: package.storeProduct.currencyCode))
             nextPackages[id] = package
         }
         packages = nextPackages

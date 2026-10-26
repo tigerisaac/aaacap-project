@@ -20,6 +20,19 @@ describe('RevenueCat authoritative subscription verification', () => {
   it.each(['shield_monthly', 'shield_annual'])('accepts an active App Store %s entitlement', product => {
     expect(subscriptionSnapshot(response(product), config, now)).toMatchObject({ active: true, productId: product, hasPurchased: true, willRenew: true });
   });
+  it.each(['shield_monthly_trial', 'shield_annual_trial'])('verifies configured %s access without trusting trial claims from the client', product => {
+    const trialConfig = { ...config, trialOfferingId: 'shield_week_trial',
+      trialMonthlyProductId: 'shield_monthly_trial', trialAnnualProductId: 'shield_annual_trial' };
+    expect(subscriptionSnapshot(response(product), config, now)).toMatchObject({ active: false, hasPurchased: false });
+    expect(subscriptionSnapshot(response(product), trialConfig, now)).toMatchObject({ active: true, productId: product, hasPurchased: true });
+    const body = response(product);
+    body.subscriber.subscriptions[product]!.is_sandbox = true;
+    expect(subscriptionSnapshot(body, trialConfig, now).active).toBe(false);
+    expect(subscriptionSnapshot(body, trialConfig, now, true).active).toBe(true);
+    body.subscriber.subscriptions[product]!.refunded_at = date(-1);
+    expect(subscriptionSnapshot(body, trialConfig, now, true).active).toBe(false);
+    expect(subscriptionSnapshot(response('unapproved_trial'), trialConfig, now).active).toBe(false);
+  });
   it('preserves access after cancellation through the paid expiry, then expires without a new webhook', () => {
     const body = response(); body.subscriber.subscriptions.shield_monthly!.unsubscribe_detected_at = date(-1);
     expect(subscriptionSnapshot(body, config, now)).toMatchObject({ active: true, willRenew: false });

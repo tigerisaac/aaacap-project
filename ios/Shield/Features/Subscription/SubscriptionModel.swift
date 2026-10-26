@@ -11,6 +11,12 @@ final class SubscriptionModel {
     private(set) var pendingPurchase = false
     private(set) var error: String?
     private(set) var message: String?
+    private(set) var workingTitle = "Checking your access…"
+    private(set) var errorTitle = "Your access couldn’t be checked"
+    private var failedOperation = "load"
+    var errorActionTitle: String {
+        failedOperation == "restore" ? "Try restoring again" : failedOperation == "purchase" ? "Check purchase status" : "Try again"
+    }
     private let client: any SubscriptionClient
     private var generation = 0
     private var storeOperationRequested = false
@@ -28,18 +34,25 @@ final class SubscriptionModel {
         // generation checks discard its result, and the next account waits before identifying itself.
     }
 
-    private func serialize(_ action: @escaping @MainActor (Int) async throws -> Void) async {
+    private func serialize(kind: String = "load", _ action: @escaping @MainActor (Int) async throws -> Void) async {
         let previous = operation, current = generation
         let task = Task { @MainActor [weak self] in
             await previous?.value
             guard let self, self.generation == current, !Task.isCancelled else { return }
             self.working = true; self.error = nil
+            self.workingTitle = kind == "purchase" ? "Confirming your purchase…" : kind == "restore" ? "Restoring your purchases…" : "Checking your access…"
             defer { self.working = false }
             do { try await action(current) }
             catch is CancellationError { }
             catch {
                 guard self.generation == current else { return }
                 self.error = error.localizedDescription
+                self.failedOperation = kind
+                self.errorTitle = kind == "purchase" ? "Your purchase couldn’t be confirmed" : kind == "restore" ? "Your purchases couldn’t be restored" : "Your access couldn’t be checked"
+                if kind == "purchase", self.pendingPurchase {
+                    self.message = "Your purchase went through. We still need to confirm your Shield access."
+                    self.errorTitle = "Check your purchase status"
+                }
             }
         }
         operation = task
@@ -88,13 +101,13 @@ final class SubscriptionModel {
         // can otherwise queue another store sheet before `working` becomes true.
         storeOperationRequested = true
         defer { storeOperationRequested = false }
-        await serialize { [self] current in
+        await serialize(kind: "purchase") { [self] current in
             message = nil
             let fresh = try await api.serviceAccess(refresh: true)
             guard current == generation else { throw CancellationError() }
             access = fresh
             guard fresh.isPublic, fresh.purchaseAllowed, let configuration = fresh.revenueCat,
-                  plans.contains(where: { $0.id == id }), [configuration.monthlyProductId, configuration.annualProductId].contains(id) else {
+                  plans.contains(where: { $0.id == id }), configuration.allowedProductIds.contains(id) else {
                 plans = []
                 throw APIError.service(code: "service_access_required", status: 409)
             }
@@ -119,7 +132,7 @@ final class SubscriptionModel {
         guard !working, !storeOperationRequested else { return }
         storeOperationRequested = true
         defer { storeOperationRequested = false }
-        await serialize { [self] current in
+        await serialize(kind: "restore") { [self] current in
             message = nil
             let fresh = try await api.serviceAccess(refresh: false)
             guard current == generation else { throw CancellationError() }
@@ -136,6 +149,14 @@ final class SubscriptionModel {
     func synchronize(api: any ServiceAccessAPI, showResult: Bool = true) async {
         await serialize { [self] current in
             try await syncResult(api: api, generation: current, showResult: showResult)
+        }
+    }
+
+    func retry(api: any ServiceAccessAPI) async {
+        switch failedOperation {
+        case "restore": await restore(api: api)
+        case "purchase": await synchronize(api: api)
+        default: await load(api: api, includePlans: true)
         }
     }
 
@@ -159,8 +180,12 @@ final class SubscriptionModel {
             revenueCat: pilot ? nil : .init(customerId: "22fce9c6-5c0f-4c40-b600-73710aaad7a1", publicSDKKey: "appl_synthetic",
                 entitlementId: "shield_access", offeringId: "default", monthlyProductId: "shield_monthly", annualProductId: "shield_annual"))
         if access?.purchaseAllowed == true {
-            plans = [.init(id: "shield_monthly", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil),
-                .init(id: "shield_annual", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33")]
+            plans = [.init(id: "shield_monthly", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil, amount: 9.99, currencyCode: "USD"),
+                .init(id: "shield_annual", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33", amount: 99.99, currencyCode: "USD")]
+        }
+        if state == "trial" {
+            plans = [.init(id: "shield_monthly_trial", title: "Monthly", price: "$9.99", billingPeriod: "month", monthlyEquivalent: nil, hasFreeWeek: true, amount: 9.99, currencyCode: "USD"),
+                .init(id: "shield_annual", title: "Yearly", price: "$99.99", billingPeriod: "year", monthlyEquivalent: "$8.33", amount: 99.99, currencyCode: "USD")]
         }
         if state == "pending" { pendingPurchase = true; message = "Your purchase is waiting for approval. You won’t need to buy it again." }
         if state == "error" { plans = []; error = "Your connection was interrupted. Please try again." }
