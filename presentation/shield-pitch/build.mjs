@@ -1,4 +1,4 @@
-// Live presentation callback: nine video slides, then three optional evidence slides.
+// Live presentation callback: current eleven-slide order; testing precedes the benchmarks.
 import {fileURLToPath} from 'node:url';
 import {readFileSync,existsSync} from 'node:fs';
 import {buildEvidence} from './evidence-slides.mjs';
@@ -16,8 +16,9 @@ function notes(s,time,speaker,script,direction,source=''){s.speakerNotes.text=`V
 const common='Original Shield app artwork and synthetic sample-app captures. No new AI-generated visuals. Sample screens show design and workflow, not real customer outcomes.';
 export async function build({presentation,input}){
  for(const index of input.indices){
+  if(!Number.isInteger(index)||index<0||index>10)throw new RangeError("The current deck has eleven slides (indexes 0–10).");
   if(index>=9){
-   const original={9:4,10:5,11:3}[index];
+   const original={9:4,10:5}[index];
    await buildEvidence({presentation,input:{indices:[original],targets:{[original]:index},replace:true}});
    const slide=presentation.slides.getItem(index);
    slide.speakerNotes.text='OPTIONAL EVIDENCE CUTAWAY. Outside the nine-slide video sequence; use only within the existing technology or learning allocation, not as additional runtime.\n\n'+slide.speakerNotes.text;
@@ -86,22 +87,22 @@ export async function build({presentation,input}){
    image(s,asset('message-current.png'),'Sample message playback screen',914,174,224,486);
    notes(s,'1:05–1:40 (35 seconds)','IZ','From Home, I open Messages and choose a saved message. Shield gives me a short summary, so I can understand the purpose before listening. I tap Listen to message, and I can pause or start over whenever I need.','Use a continuous screen recording: Home (0–5s), Messages (5–10s), select a prepared sample message (10–16s), read summary (16–22s), play/pause (22–29s), explain result (29–35s). Keep Sample app labeling visible. Use the implemented playback controls, not the sample-only Keep action. This slide is a visual opening/closing plate; the actual screen recording is still to be supplied.','ios/README.md; docs/IOS-POLISH-AUDIT.md S49. Existing screenshot is sample audio for pause/resume tests, not a customer’s voicemail. '+common);
   }
-  if(index===6){
+  if(index===8){
    heading(s,'How hard did we test Shield?');
    text(s,'Block volume','45,000+',72,193,1120,154,120,C.navy,'Georgia');
    text(s,'Metric definition','blocked outcomes in repeated robocall tests',78,369,1110,62,36);
    text(s,'Test scope','55,000+ transcript trials across historical policy versions',78,452,1110,48,26,C.muted);
-   text(s,'Learning','We added evidence checks before treating\na caller as a recording.',78,558,1120,100,35,C.ink,'Georgia');
-   notes(s,'1:40–1:48 (8 seconds)','AC','Over fifty-five thousand transcript trials taught us to require evidence before treating a caller as a recording.','Hold the large count while Andrew gives one concrete lesson. Do not call this 45,000 distinct calls or people protected. Do not call it a current accuracy or industry-leading result. The count communicates engineering effort.','testing-count-audit.json and audit-testing.py: 61 complete FTC result sets, exact file copies removed, identical serialized result rows removed across files; 55,684 retained test records, including 45,075 block outcomes, 62 holds, 1,169 questions/continues, 9,174 saved messages, 174 approvals, 16 failures, 14 no-decisions. This is a conservative archival count, excluding incomplete sets, and not all testing ever performed. Repeated source calls and historical policy versions remain separate test trials. Learning/change: docs/SCREENING-PRODUCTION-CANDIDATE.md, v158 recording-evidence correction followed ordinary caller routing misses. No new inference was run.');
+   text(s,'Red teaming','Red teaming: 112 simulated trials covering\nimpersonation, prompt injection, and legitimate calls.',78,558,1120,100,35,C.ink,'Georgia');
+   notes(s,'Benchmark section','Team voiceover','We challenged Shield with impersonation, prompt injection, and legitimate callers in 112 fresh simulated trials. We reviewed all 77 follow-up question turns and retained failures to identify what needed improvement.','Place immediately before the MASC and FTC benchmark slides. The red-team summary replaces the separate red-teaming slide. Do not call this 45,000 distinct calls or people protected. Do not call it a current accuracy or industry-leading result. The count communicates engineering effort.','testing-count-audit.json and audit-testing.py: 61 complete FTC result sets, exact file copies removed, identical serialized result rows removed across files; 55,684 retained test records, including 45,075 block outcomes, 62 holds, 1,169 questions/continues, 9,174 saved messages, 174 approvals, 16 failures, 14 no-decisions. This is a conservative archival count, excluding incomplete sets, and not all testing ever performed. Repeated source calls and historical policy versions remain separate test trials. Learning/change: docs/SCREENING-PRODUCTION-CANDIDATE.md, v158 recording-evidence correction followed ordinary caller routing misses. Red-team evidence: docs/SCREENING-PRODUCTION-CANDIDATE.md, v158 frozen validation: 40 scripted scenarios and 16 adaptive profiles, each repeated twice (112 trials). All 44 scripted and 33 adaptive question turns were reviewed (77 total). Final outcomes and strict-sequence misses are separate; question wording defects remain documented. These are simulated trials, not independent real callers, and are separate from the cumulative historical FTC trial count. No new inference was run.');
   }
-  if(index===7){
+  if(index===6){
    heading(s,'Can Shield stop this scam?');
    text(s,'Test disclosure','Test call',78,198,650,50,30,C.teal);
    text(s,'Call cue','Listen to the caller.\nWatch Shield respond.',76,297,800,166,55,C.navy,'Georgia');
    image(s,markFile,'Shield identity for the controlled test-call segment',947,300,180,180);
    notes(s,'1:48–2:23 (35 seconds)','IS introduces and explains; IZ participates','Intro: “This is a controlled test call. Isaac will play a caller making a suspicious request.” Outcome: describe only the response and app result captured in the recording.','5 seconds context, 25 seconds uninterrupted test-call audio and footage, 5 seconds actual result. Keep “Test call” visible throughout. Replace this transition plate with supplied footage. Do not use the animated secretary clips as real-call evidence. No call is placed by this presentation task. Obtain the recording before choosing the outcome caption.','User’s production plan. Shield requires recipient press-1 approval to connect. This slide makes no claim about an unrecorded test outcome.');
   }
-  if(index===8){
+  if(index===7){
    heading(s,'In their own words');
    const manifest=root+'/artifacts/private/shield-video-review/selected/quotes.json';
    if(existsSync(manifest)){
@@ -121,5 +122,5 @@ export async function build({presentation,input}){
   }
 
  }
- return {slides:presentation.slides.items.length,videoBeats:9,durationSeconds:164,optionalEvidenceSlides:3};
+ return {slides:presentation.slides.items.length,videoBeats:9,durationSeconds:164,optionalEvidenceSlides:2};
 }

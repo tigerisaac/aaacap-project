@@ -93,3 +93,7 @@ AAACAP: official logo from https://www.capcog.org/wp-content/uploads/2024/02/AAA
 Technology: two separate native arrows have visible whitespace around their endpoints; the custom-backend title wraps intentionally. Former slide 10 (What comes next) is removed.
 
 Community feedback: the revised quotes explain daily interruptions, an unexpected bill recalled by a participant, and why trusting people could benefit from Shield. Joe’s two excerpts are from the same answer and retain their original order; an ellipsis marks the omitted material. The updated captioned cut remains 21 seconds. Exact quotes, source ranges, portraits and video remain private; the public source contains no interview transcript.
+
+MERGED RED-TEAM SUMMARY
+
+The owner removed the separate red-teaming slide and moved How hard did we test Shield? immediately before MASC and FTC benchmarks. The live deck has eleven slides. Preserve that order and the owner’s other live edits. Current source indexes: 0–5 unchanged; 6 test call; 7 community feedback; 8 testing/red teaming; 9 MASC; 10 FTC. The builder rejects index 11 to avoid recreating the deleted slide. The testing slide retains its historical count and uses one short red-team blurb; the 112 simulated trials and 77 reviewed question turns are explained in speaker notes. Future edits should target the live slide ID rather than rebuild unrelated slides from source.
