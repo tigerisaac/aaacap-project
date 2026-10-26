@@ -26,3 +26,13 @@ deploy/firebase/public/speech/
 # Local Firebase cache and design build state
 .firebase/
 .impeccable/build/
+
+# Private keys, signing credentials and local secret stores
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.keystore
+*.mobileprovision
+.secrets/
