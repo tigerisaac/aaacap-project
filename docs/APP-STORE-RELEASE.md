@@ -10,16 +10,16 @@ Updated October 25, 2026. **Shield is being prepared for public App Store distri
 | Signing identity | Wheema Inc., team `6R6HMW3DWN`; bundle `org.isaaczhang.Shield` |
 | Candidate | Version **1.0.0**, build **2**, iPhone/iOS 26.0+ |
 | Distribution | Public App Store, free download with subscriptions; **United States only**; Mac and Vision Pro availability disabled; **manual release** |
-| Uploaded build | Build 1 processed in TestFlight October 25. Build 2 remains local pending upload approval. |
+| Uploaded build | Build 2 uploaded October 25 at **21:01:49 Central**, processed, and attached to the public App Store version 1.0.0. No App Review submission. |
 | Listing | Description, promotional text, subtitle, categories, content rights and age questionnaire saved; calculated **4+**. See [exact listing](APP-STORE-LISTING.md). |
 | Privacy | Policy URL and all 13 data types saved; linked, no tracking; functionality for all, analytics for User ID/Purchase History. **Unpublished draft** pending final verification. |
 | Subscriptions | Four products, all **Prepare for Submission**, equal service **level 1**; English (U.S.) group display name **Shield Call Protection**. Trial experiment stays off. |
 | Public pages | `/support/`, `/privacy`, `/service-info`, `/public/config` and `/public/ready` returned HTTP 200 October 25. |
-| Local artifacts | `artifacts/app-store-2026-10-25/`: signed IPA, four inspected 1320 × 2868 screenshots, browser receipts, hashes and verification logs. This directory is ignored by Git. |
+| Local artifacts | `artifacts/app-store-2026-10-25/`: signed IPA, four inspected screenshots at each of 1320 × 2868 and 1206 × 2622, browser receipts, hashes and verification logs. This directory is ignored by Git. |
 
 The final archive is `/private/tmp/Shield-1.0.0-2-release-candidate.xcarchive`; the durable local export is `artifacts/app-store-2026-10-25/distribution/Shield.ipa`. Its SHA-256 is `93881ae9ec6abfe41a70c7bf333b06e25bb5bae9313733d71fbc56f65fc7ec40`. The archive inspection verifies version/build, arm64 app and Call Directory, three privacy manifests, production networking/APNs configuration, exempt encryption and absence of test fixtures. Xcode App Store export succeeded with the existing cloud-managed distribution signing identity. Archive inspection alone is not signing or Apple acceptance evidence.
 
-The candidate includes pre-existing, uncommitted trial/purchase changes from the earlier release chat. They were preserved and tested, not reverted or folded into this preparation's commit. All **298 recorded iOS/generator input hashes** match after the final archive. Before a later rebuild/upload, reconcile those changes into the intended source checkpoint and recheck the artifact manifest; a clean checkout of this preparation commit alone does not recreate build 2.
+The candidate includes pre-existing, uncommitted trial/purchase changes from the earlier release chat. They were preserved and tested, not reverted or folded into this preparation's commit. All **298 recorded iOS/generator input hashes** match after the final archive. Before a later rebuild, reconcile those changes into the intended source checkpoint and recheck the artifact manifest; a clean checkout of this preparation commit alone does not recreate build 2.
 
 ## Checks performed for this preparation
 
@@ -28,7 +28,7 @@ The candidate includes pre-existing, uncommitted trial/purchase changes from the
 - [x] `npm run test:subscriptions`: native Swift subscription/state/isolation harness passed.
 - [x] Debug simulator build and final Release archive/export succeeded.
 - [x] `npm run ios:verify-archive` passed on the final archive; input hashes remained unchanged.
-- [x] Four fictional-data screenshots inspected. Messages uses the production message-type filters. Prototype and sample-only purchase/audio controls are excluded from the upload set.
+- [x] Four fictional-data screenshots inspected and uploaded at both large- and medium-iPhone sizes. Messages uses the production message-type filters. Prototype and sample-only purchase/audio controls are excluded from the upload set.
 - [x] Screenshot script passes shell syntax validation.
 
 The initial restricted test runs failed because local sockets/emulator resources were unavailable; the authorized full runs above passed. Original failures and final logs are retained. The earlier chat's five subscription UI tests passed; they were inspected, **not rerun in this preparation**. The owner's earlier iPhone Duo acceptance report remains owner-reported evidence. No new physical-phone, real-call or actual Apple transaction verification occurred here.
@@ -38,17 +38,19 @@ The initial restricted test runs failed because local sockets/emulator resources
 | Gate | Remaining action | Owner |
 |---|---|---|
 | Apple business agreement | Accept the outstanding Paid Applications agreement and complete any required banking/tax information. Do not accept legal terms on the owner's behalf. | Account Holder |
-| Purchase verification | Connect existing **Shield RevenueCat** In-App Purchase key to the Shield RevenueCat app. Neither subscription-key nor App Store Connect-key configuration is currently reported as present. Transfer approval is pending. Validate the key afterward. | Owner authorization + Engineering |
+| Purchase verification | **Completed October 25:** owner approved the existing key transfer; RevenueCat saved it and independently validated key format and Apple permissions. Real transaction acceptance remains below. | Owner authorization + Engineering |
 | App Store Connect API | Apple currently restricts requesting API access to the Account Holder. This is required for planned store-management automation, separately from uploading the app through Xcode. | Account Holder |
 | Real Apple purchase path | Test actual Apple sandbox purchase/restore, cancel/pending, trial eligibility, renewal/expiry/refund/grace, account switching and server entitlement verification for the exact candidate. Prior RevenueCat Test Store checks do not close this. | Engineering + Apple |
 | Reviewer access | Configure the deployed review-sign-in capability; provision a functional public review account and safe purchase access. Keep credentials private. Verify sign-in, usable review flows and deletion; do not submit placeholder credentials. | Owner production authorization + Engineering |
 | Carrier-dependent review | Supply precise instructions and approved evidence for features requiring a supported US line. Reviewers must be able to evaluate the app without changing an owner's phone or forwarding. | Owner + Engineering |
 | Privacy publication | Verify providers/SDK collection and retention against [DATA-INVENTORY.md](DATA-INVENTORY.md), confirm policy/legal disclosures and publish the saved 13-type declaration. | Owner + Engineering |
-| Upload/attach | Upload build 2 and four screenshots after approval, attach the processed build, add product-specific purchase review images/notes and selected subscriptions to version 1.0.0. First subscriptions go with the app version. | Engineering |
+| Upload/attach | **Build/screenshots completed:** build 2 is attached; four screenshots are saved at both iPhone sizes. Still add product-specific purchase review images/notes and selected subscriptions to version 1.0.0. First subscriptions go with the app version. | Engineering |
 | Final review details | Complete actual review contact, functional credentials, pilot explanation, supported-carrier limits and purchase/consent/deletion instructions; then run Apple's submission validation. | Owner + Engineering |
 | Submission | Explicitly authorize submission after the gates above are closed. Leave manual release selected. | Owner |
 
-The pending browser approvals are concrete: (1) transfer the existing Apple purchase private key to Shield's RevenueCat app; (2) upload build 2 and the fictional screenshots to App Store Connect. Neither action was performed without a reply. Downloading/transferring a private key can grant purchase API access across the Apple team; use the existing intended key, not the unrelated app's key.
+**Approved uploads completed October 25.** The owner authorized the existing Apple purchase key transfer and build/screenshots upload. RevenueCat app `app8cae3b0fbc` now reports `subscription_key_configured: true`; both format and Apple permission checks return valid. App Store Connect API credentials remain unconfigured. The private key backup is permission-restricted in ignored `artifacts/private/apple/`, never in Git. The unrelated app's key was not changed.
+
+Apple accepted build 2 at **21:01:49 Central**; build ID `a9d8e56a-716b-45a6-a46d-1d6ccf6c26e9` finished processing and is saved on the public version. Media Manager has **4/10 screenshots at each of the large and medium Dynamic Island iPhone sizes**, in Home → Calls → Messages → Caretakers order. The medium set was captured from the same Debug build because the current form designates that size as required. No pixels were rescaled. The version remains Prepare for Submission with manual release selected. These are upload/configuration results, not Apple review or purchase acceptance.
 
 ## Required before public launch
 
@@ -70,7 +72,7 @@ Public enrollment and purchases remain disabled according to the latest recorded
 
 The latest recorded deployment is `shieldApi` **`shieldapi-00038-qay`** on October 25, after all fifteen Functions and Hosting were deployed October 24. `/support/` and review-sign-in code are already live; older instructions saying to create the app record, obtain the first signing certificate or deploy the support page are obsolete. The review runtime configuration and public purchase/enrollment launch are still outstanding. See dated receipts in [STATUS.md](STATUS.md).
 
-`shield-calls-isaac` is the live pilot. AGENTS.md requires owner approval before production deployment/configuration. No production deployment, real call/message, carrier setting change, key transfer, build upload, App Review submission or public release occurred in this preparation.
+`shield-calls-isaac` is the live pilot. AGENTS.md requires owner approval before production deployment/configuration. The owner-approved key transfer and build/screenshot uploads are complete. No production deployment, real call/message, carrier setting change, actual Apple purchase, App Review submission or public release occurred in this preparation.
 
 ## Official references
 

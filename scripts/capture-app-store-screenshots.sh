@@ -1,7 +1,7 @@
 #!/bin/sh
 # Capture App Store screenshots from the Debug build's offline sample screens (never contacts the service).
-# Usage: scripts/capture-app-store-screenshots.sh <6.9-inch simulator UDID> <Debug-iphonesimulator Shield.app> <output dir>
-# Use a 6.9-inch iPhone simulator (1320 × 2868). Check every frame before uploading.
+# Usage: scripts/capture-app-store-screenshots.sh <iPhone simulator UDID> <Debug-iphonesimulator Shield.app> <output dir>
+# Use a matching iPhone simulator: medium 1206 × 2622 or large 1320 × 2868. Check every frame before uploading.
 set -eu
 device=$1 app=$2 out=$3
 root=$(cd "$(dirname "$0")/.." && pwd)

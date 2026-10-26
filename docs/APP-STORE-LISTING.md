@@ -1,6 +1,6 @@
 # App Store listing and review notes
 
-Updated October 25, 2026 for Shield 1.0.0 (build 2). **The listing, app information and availability below are saved in App Store Connect; the app has not been submitted for review or released.** Privacy answers are saved as an unpublished draft. The signed build and screenshots are prepared locally, pending upload approval. See the current [release checklist](APP-STORE-RELEASE.md) for the remaining gates.
+Updated October 25, 2026 for Shield 1.0.0 (build 2). **The listing, app information and availability below are saved in App Store Connect; the app has not been submitted for review or released.** Privacy answers are saved as an unpublished draft. Build 2 and the screenshots are uploaded; build 2 is attached to version 1.0.0. See the current [release checklist](APP-STORE-RELEASE.md) for the remaining gates.
 
 ## App information
 
@@ -78,7 +78,7 @@ The Apple group **Shield** (`22513571`) has English (U.S.) display name **Shield
 
 The existing `default` offering remains current; the trial experiment remains off. All products map to `shield_access`. Do not describe a guaranteed free trial: StoreKit eligibility and the actual offered product govern its terms. Build 2 contains the previously prepared trial eligibility and renewal disclosures. This preparation did not start an experiment or enable purchases.
 
-Each subscription needs a review screenshot of its real purchase presentation, review notes and attachment to the first app version. Do not submit the first subscriptions separately from the app. Apple purchase and App Store Connect credentials are not yet configured in RevenueCat. See [REVENUECAT.md](REVENUECAT.md).
+Each subscription needs a review screenshot of its real purchase presentation, review notes and attachment to the first app version. Do not submit the first subscriptions separately from the app. The Apple purchase key is configured and validates successfully in RevenueCat as of October 25; the separate App Store Connect API key remains unconfigured. See [REVENUECAT.md](REVENUECAT.md).
 
 ## App Privacy answers
 
@@ -122,17 +122,17 @@ Supply the owner's current review contact directly in App Store Connect; private
 
 ## Screenshots and signed build
 
-Four 6.9-inch captures (1320 × 2868) are prepared locally at `artifacts/app-store-2026-10-25/store-screenshots/`: Home, Calls, Messages and Caretakers. They contain fictional sample activity, not customer data. The capture-only flag suppresses the development banner exclusively in Debug simulator builds, while retaining all sample safety gates. Messages uses the shipping message-type filters, not the sample-only Keep feature. A prototype call-protection screen and sample audio detail were rejected and are not in the upload directory.
+Four 6.9-inch captures (1320 × 2868) are uploaded and retained locally at `artifacts/app-store-2026-10-25/store-screenshots/`: Home, Calls, Messages and Caretakers. They contain fictional sample activity, not customer data. The capture-only flag suppresses the development banner exclusively in Debug simulator builds, while retaining all sample safety gates. Messages uses the shipping message-type filters, not the sample-only Keep feature. A prototype call-protection screen and sample audio detail were rejected and are not in the upload directory.
 
-Regenerate using `scripts/capture-app-store-screenshots.sh`. Inspect every image before uploading. These images and build 2 have not been uploaded by this preparation; upload approval is pending. The final signed IPA is `artifacts/app-store-2026-10-25/distribution/Shield.ipa`. Build 1 was previously processed in TestFlight.
+Regenerate using `scripts/capture-app-store-screenshots.sh`. Inspect every image before uploading. With owner approval, all four images were uploaded, along with a second native 1206 × 2622 set in `store-screenshots-medium/` for Apple’s required medium-iPhone slot. Build 2 uploaded at 21:01:49 Central October 25, finished processing and is attached to version 1.0.0. The app remains Prepare for Submission. The final signed IPA is `artifacts/app-store-2026-10-25/distribution/Shield.ipa`. Build 1 was previously processed in TestFlight.
 
 ## Remaining submission sequence
 
 1. Account Holder accepts the outstanding Paid Applications agreement and completes any required business, banking and tax information.
-2. Connect the existing Apple purchase key to RevenueCat with owner approval. The Account Holder must request App Store Connect API access if product-management automation is wanted. Verify credentials and actual Apple sandbox purchase/restore, eligibility and lifecycle behavior.
+2. The existing Apple purchase key is connected and validated after owner approval. The Account Holder must request App Store Connect API access if product-management automation is wanted. Verify credentials and actual Apple sandbox purchase/restore, eligibility and lifecycle behavior.
 3. Complete provider/privacy verification and publish the saved App Privacy declarations. Confirm public policy and legal operator disclosures.
 4. Authorize the scoped production setup for reviewer access and review purchases, with public enrollment still controlled; verify the reviewer path. Resolve or explicitly accept and disclose the Central-time quiet-hours limitation before national rollout.
-5. Upload build 2 and the four screenshots; attach build 2, subscription review screenshots and the selected subscriptions to version 1.0.0. Keep manual release selected.
+5. Build 2 and four screenshots at both iPhone sizes are uploaded, and build 2 is attached. Still add subscription review screenshots and the selected subscriptions to version 1.0.0. Manual release remains selected.
 6. Complete exact-build device/carrier and production acceptance, then authorize submission to App Review. After approval, separately authorize the public service launch and manual App Store release.
 
 The [release checklist](APP-STORE-RELEASE.md) records what is verified versus still outstanding. No backend deployment, forwarding change, real call, message, purchase or release is authorized by this document.
