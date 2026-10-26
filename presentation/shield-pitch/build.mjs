@@ -16,7 +16,7 @@ function notes(s,time,speaker,script,direction,source=''){s.speakerNotes.text=`V
 const common='Original Shield app artwork and synthetic sample-app captures. No new AI-generated visuals. Sample screens show design and workflow, not real customer outcomes.';
 export async function build({presentation,input}){
  for(const index of input.indices){
-  if(!Number.isInteger(index)||index<0||index>11)throw new RangeError("The current deck has twelve slides (indexes 0–11).");
+  if(!Number.isInteger(index)||index<0||index>12)throw new RangeError("The current deck has thirteen slides (indexes 0–12).");
   if(index===9||index===10){
    const original={9:4,10:5}[index];
    await buildEvidence({presentation,input:{indices:[original],targets:{[original]:index},replace:true}});
@@ -128,6 +128,16 @@ export async function build({presentation,input}){
    text(s,'Reliability lesson','Harden for high success rates',76,460,1120,70,45,C.navy,'Georgia');
    text(s,'Reliability detail','Red-team difficult calls, trace failures,\nand retest fixes against benchmarks.',78,545,1110,100,31,C.muted);
    notes(s,'After the benchmark slides','Team voiceover','We learned to coordinate a complex AI backend, then improve its success rate through red teaming, failure analysis, and regression testing.','Keep the two lessons on screen while explaining the engineering work. The neighboring benchmark slides supply the measured results; this slide introduces no new accuracy figure.','docs/ARCHITECTURE.md: streaming speech and model decisions coordinated with call control, durable state and bounded timers. docs/SCREENING-PRODUCTION-CANDIDATE.md: frozen validation, scripted and adaptive red teaming, question review and retained failures. Hardening includes output validation, safe failure behavior and reviewing legitimate-call errors as well as missed scams. The separate research classifier, historical identification scores and deployed call outcomes remain distinct. Benchmark success does not establish a universal real-call success rate.');
+  }
+
+  if(index===12){
+   heading(s,'In-call monitoring');
+   text(s,'Monitoring context','Optional protection after a call connects',78,155,1100,46,28,C.muted);
+   text(s,'Risk detection','Checks for risky requests',76,265,1120,70,45,C.navy,'Georgia');
+   text(s,'Risk examples','Passwords, money transfers,\nor remote access',78,350,1110,100,31,C.muted);
+   text(s,'Intervention','Disconnects and warns',76,495,1120,70,45,C.navy,'Georgia');
+   text(s,'Intervention detail','When a threat is detected, Shield ends the caller’s\nconnection and plays a spoken warning.',78,580,1110,95,30,C.muted);
+   notes(s,'In-call monitoring feature','Team voiceover','A call can become suspicious after it connects. With protection enabled, Shield checks the conversation for risky requests, such as passwords, money transfers, or remote access. When it detects a threat, it disconnects the caller and plays a warning.','Explain the second layer of protection. Monitoring is optional, requires the user’s current consent, and is disclosed to callers. Avoid claiming instant detection or that every scam is caught.','docs/ARCHITECTURE.md, Connected-call protection; backend/src/cloud/monitoring.ts, monitor-v2 instructions and supported-evidence validation; docs/MONITORING-CADENCE.md; docs/WARNING-HANDOFF-ROLLOUT.md. Checks use accumulating transcription in 5/15/20-second windows, with recognition, queue and model latency in addition; there is no guaranteed warning before a person acts. Interventions require a concrete concern and a supporting transcript quote. The October 17 deployed warning path isolates the recipient, ends the caller leg and submits a prerecorded warning; uncertain delivery ends the call rather than replaying. Synthetic warning playback was verified, but physical-handset audibility for this release remains unverified. No new call or deployment was performed for the slide.');
   }
 
  }

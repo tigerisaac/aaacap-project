@@ -101,3 +101,7 @@ The owner removed the separate red-teaming slide and moved How hard did we test 
 WHAT WE LEARNED
 
 A final learning slide follows FTC, bringing the live deck to twelve slides. Source index 11 now builds this new learning slide, not the deleted standalone red-teaming slide. The slide focuses on coordinating the AI backend and hardening for high success rates through adversarial testing, failure analysis and regression checks. It uses no new performance percentage; notes preserve the distinction between benchmark results and verified live-call outcomes. All preceding user edits and ordering are preserved.
+
+IN-CALL MONITORING
+
+Added a matching feature slide at index 12 (slide 13), preserving all existing content and order. It explains optional monitoring after connection, examples of risky requests, and the disconnect-and-warning intervention. Speaker notes preserve current consent, caller disclosure, periodic assessment and deployment/handset-verification boundaries. No new accuracy or latency claim is introduced. Sources: docs/ARCHITECTURE.md; backend/src/cloud/monitoring.ts; docs/MONITORING-CADENCE.md; docs/WARNING-HANDOFF-ROLLOUT.md.
