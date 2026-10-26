@@ -131,6 +131,10 @@ components:
 
 # Design System: Shield
 
+## October 25 — photographic paywall refinement
+
+The paywall retains the navy/serif identity and adds a locally bundled, generated editorial photograph behind its headline. Solid navy offer badges make the eligible monthly free week and calculated annual savings easier to find; the full billed price uses the larger title style and remains stronger than the discount or monthly equivalent. At accessibility text sizes the photograph is omitted and the title returns to the adaptive page surface. All text remains native and scalable. This is a scoped paywall refinement, not a whole-app design approval. Asset and full generation prompt: [paywall artwork provenance](ios/Shield/Resources/PaywallCalm.provenance.json).
+
 ## Overview
 
 **Creative North Star: "Editorial phone companion"**

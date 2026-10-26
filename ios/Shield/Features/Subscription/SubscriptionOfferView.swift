@@ -14,12 +14,8 @@ struct SubscriptionOfferView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("SHIELD", systemImage: "checkmark.shield.fill")
-                    .font(.subheadline.weight(.semibold)).foregroundStyle(ShieldTheme.action)
-                Text("Your calls.\nYour choice.")
-                    .font(ShieldTheme.Typography.display.weight(.semibold))
-                    .accessibilityAddTraits(.isHeader)
+            VStack(alignment: .leading, spacing: 16) {
+                hero
                 Text("Shield checks unfamiliar calls before you decide to answer.")
                     .foregroundStyle(ShieldTheme.secondaryText)
             }
@@ -41,6 +37,7 @@ struct SubscriptionOfferView: View {
                     .controlSize(.large)
                     .tint(ShieldTheme.action)
                     .buttonBorderShape(typeSize.isAccessibilitySize ? .roundedRectangle(radius: 20) : .capsule)
+                    .fixedSize(horizontal: false, vertical: true)
                     .disabled(app.subscription.working || app.subscription.pendingPurchase)
                     .accessibilityIdentifier("subscribe-\(selected.billingPeriod)")
                     .alert("Sample app", isPresented: $explainsPreview) { Button("OK", role: .cancel) {} } message: { Text("This preview cannot make purchases. Your Apple account has not been charged.") }
@@ -58,6 +55,35 @@ struct SubscriptionOfferView: View {
         .foregroundStyle(ShieldTheme.ink)
     }
 
+    @ViewBuilder private var hero: some View {
+        if typeSize.isAccessibilitySize {
+            // Keep decorative photography from stretching behind very large text.
+            heroTitle
+        } else {
+            heroTitle
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 160, alignment: .leading)
+                .padding(20)
+                .background {
+                    Image("PaywallCalm")
+                        .resizable().scaledToFill()
+                        .overlay {
+                            LinearGradient(colors: [.black.opacity(0.72), .black.opacity(0.05)],
+                                           startPoint: .leading, endPoint: .trailing)
+                        }
+                        .accessibilityHidden(true)
+                }
+                .clipShape(.rect(cornerRadius: ShieldTheme.Layout.cardRadius))
+        }
+    }
+
+    private var heroTitle: some View {
+        Text("Your calls.\nYour choice.")
+            .font(ShieldTheme.Typography.display.weight(.semibold))
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityAddTraits(.isHeader)
+    }
+
     private func planOption(_ plan: SubscriptionPlan) -> some View {
         let isSelected = selected?.id == plan.id
         return Button { selectedID = plan.id } label: {
@@ -71,7 +97,7 @@ struct SubscriptionOfferView: View {
                         VStack(alignment: .leading, spacing: 6) { Text(plan.title).font(.headline); badge(plan) }
                     }
                     Text(plan.hasFreeWeek ? "Then \(plan.price) / \(plan.billingPeriod)" : "\(plan.price) / \(plan.billingPeriod)")
-                        .font(.title3.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
+                        .font(.title.bold()).fixedSize(horizontal: false, vertical: true)
                     if let monthly = plan.monthlyEquivalent {
                         Text("\(monthly) / month, billed yearly")
                             .font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
@@ -103,10 +129,10 @@ struct SubscriptionOfferView: View {
     }
 
     private func badgeText(_ text: String) -> some View {
-        Text(text).font(.subheadline.weight(.semibold))
-            .foregroundStyle(ShieldTheme.action)
-            .padding(.horizontal, 10).padding(.vertical, 5)
-            .background(ShieldTheme.action.opacity(0.1), in: .capsule)
+        Text(text).font(.title3.bold())
+            .foregroundStyle(ShieldTheme.actionInk)
+            .padding(.horizontal, 12).padding(.vertical, 7)
+            .background(ShieldTheme.action, in: .rect(cornerRadius: 10))
             .fixedSize(horizontal: false, vertical: true)
     }
 

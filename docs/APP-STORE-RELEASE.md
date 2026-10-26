@@ -39,6 +39,8 @@ The initial restricted test runs failed because local sockets/emulator resources
 
 ## Required before App Review submission
 
+**Subscription-only model (Apple guidance checked October 25).** Apple's [3.1.2 guidelines](https://developer.apple.com/app-store/review/guidelines/#subscriptions) permit subscriptions for ongoing services; they do not generally require a free tier. Shield's ongoing call-screening service is consistent with that permitted model, but this is not an approval or a finding that the current release is submission-ready. The [subscription presentation guidance](https://developer.apple.com/app-store/subscriptions/#clearly-describing-subscriptions) requires clear duration, full renewal price, purchase restoration, and Terms/Privacy links. Full billed prices must be more prominent than savings and annual monthly equivalents. A free trial must disclose duration and the price afterward. Current USD prices save about 16.6% annually versus twelve regular monthly payments; the app conservatively shows 16%, not 19%. Reviewers need full functional access and live backend services under the general review requirements. Existing purchase, agreement, reviewer access and carrier-setup gates below still apply.
+
 | Gate | Remaining action | Owner |
 |---|---|---|
 | Apple business agreement | Accept the outstanding Paid Applications agreement and complete any required banking/tax information. Do not accept legal terms on the owner's behalf. | Account Holder |
