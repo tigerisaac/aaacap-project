@@ -1,6 +1,18 @@
 # App Store release checklist
 
-Updated October 25, 2026. **Shield is being prepared for public App Store distribution, but is not ready to submit or release.** This page supersedes the October 19/24 preparation status previously here. Historical test/deployment records remain in [STATUS.md](STATUS.md) and the linked evidence documents. Do not treat an unchecked item as completed by this rewrite.
+Updated October 26, 2026. **Shield is being prepared for public App Store distribution, but is not ready to submit or release.** The latest dated section takes precedence over historical preparation records below. Do not treat an unchecked item as completed.
+
+## October 26 — build 3 upload and reviewer-access verification
+
+The owner authorized uploading build 3 and the latest screenshots. Xcode archived and exported version **1.0.0 (3)**, then reported **Upload succeeded** at 17:36 Central. App Store Connect independently showed build 3 **Processing**. Processing completion and selection for the public version still need verification. No App Review submission or public release occurred.
+
+The five reviewed v3 screenshots replaced the earlier four at **both** medium and large Dynamic Island iPhone sizes. Media Manager showed five screenshots in the intended order for each size: Home, Calls, Call explanation, Messages, Caretakers. The old assets remain recoverable in Apple's Asset Library. The uploaded files matched the retained v3 checksums and were opaque RGB at 1206 × 2622 and 1320 × 2868. The historical October 25 “not uploaded” statements below are superseded by this verification.
+
+Evidence is retained in ignored `artifacts/app-store-build3-2026-10-26/`: archive/export/upload logs, screenshot proof, verification results and `distribution/Shield.ipa`. Exported IPA SHA-256: `62eb21430d682c44140bd11a439bba2a8f8183b7763af6788f7ecaea25a5831f`. Archive inspection passed (production networking, version/build, extensions, privacy manifests and release fixture exclusion). `npm run check` passed with 401 tests; `npm run test:firebase` passed with 326 tests; `npm run test:subscriptions` passed. These are automated and packaging checks, not Apple transaction or real-call evidence.
+
+The currently signed-in **Isaac Zhang** account has the **Admin** role. **yi zhang** is Wheema's **Account Holder**. Business shows the Paid Apps agreement as Active (New Agreement Available), but this Admin session offers only View Terms. The Account Holder must sign in and use Business → Paid Apps Agreement → View and Agree to Terms, then review and submit. Banking and tax entries show Active; no legal agreement was accepted by this preparation.
+
+The deployed review-number sign-in was verified end to end using the existing private fictional-number credentials. Sign-in succeeded, but `/api/people` returned zero people, enrollment was `unavailable`, access was `setup_required`, purchase permission was false and no RevenueCat configuration was returned. Thus the login alone is **not usable reviewer access**. The deployed `shieldApi` revision is `shieldapi-00039-fim`, bound to runtime secret version 9. Review sign-in is configured; RevenueCat is absent and public enrollment remains disabled. No production configuration was changed during these checks. A functional, clearly disclosed demo account or separate supported test line still needs preparation; do not invent carrier verification or enable routing to the fictional number. Actual Apple sandbox purchase/restore verification remains outstanding.
 
 ## October 25 paywall revision after upload
 
