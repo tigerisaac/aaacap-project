@@ -1,6 +1,7 @@
 // Reusable Artifact Session callback. Run batches with input.indices.
 // Assets come from the existing Shield application and sample-app captures.
 import { fileURLToPath } from 'node:url';
+import {addBenchmarkVectors} from './benchmark-vectors.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url)).replace(/\/$/, '');
 const colors = { bg:'#F2F3F4', ink:'#101E32', navy:'#002664', muted:'#515E70', teal:'#076C5C', red:'#B53742' };
 function text(slide, name, value, x,y,w,h,size=28,color=colors.ink,font='Helvetica Neue',bold=false) {
@@ -93,6 +94,7 @@ export async function buildEvidence({presentation,input}) {
       heading(s,'Benchmark performance');
       text(s,'Comparison scope','MASC F1 (%)',76,165,1128,44,25,colors.muted);
       text(s,'MASC definition','Scam detection on simulated conversations, balancing precision and recall.',76,204,1128,38,24,colors.muted);
+      if(input.nativeCharts){
       s.charts.add('bar',{
         position:{left:68,top:245,width:1140,height:410},
         categories:['Shield','RoBERTa','BERT-Large','BERT-Base','DistilBERT'],
@@ -103,13 +105,15 @@ export async function buildEvidence({presentation,input}) {
         yAxis:{visible:true,min:95,max:100,majorUnit:1,numberFormatCode:'0',textStyle:{fontSize:17,fill:colors.muted},line:{fill:'none',width:0},majorGridlines:{fill:'#DCE1E7',width:1}},
         dataLabels:{showValue:true,position:'outEnd',numberFormatCode:'0.00',textStyle:{fontSize:25,bold:true,fill:colors.muted}}
       });
-      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy Shield research-classifier bar',fit:'contain',position:{left:194,top:431,width:72,height:72}});
+      }else addBenchmarkVectors(s,'masc');
+      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy Shield research-classifier bar',fit:'contain',position:{left:194,top:427.93,width:72,height:72}});
       foot(s,'Separate research classifier v3. Original labels. Test-informed development. These are text results, not live-call accuracy.');
       note(s,'MASC evaluates scam classification on simulated conversations. F1 is the harmonic mean of precision and recall: precision measures how often a scam flag is correct, and recall measures how many labeled scams are detected. The strongest defensible headline is near-perfect benchmark classification, not an industry-leading production accuracy claim. This is the separate MASC binary classifier v3, not deployed screening v158. On original labels: test split 958/960 correct, F1 0.9979209979, 480 true positives, 478 true negatives, two false positives, zero false negatives. The 960 trials repeat 320 unique conversations three times. Prior test outcomes informed v3 development, so this is benchmark-adapted evidence. The additional 1,280 dialogues are MASC’s published training split, unused in our development: 1,275 correct, 639 true positives, 636 true negatives, four false positives, one false negative, F1 0.9961028839. Both sets are synthetic and share a generator. Model pretraining exposure is unknown. Published MASC models report 96.97–99.92% F1 with different training/evaluation protocols, including results above ours, so these numbers do not establish a direct ranking. Sources: artifacts/masc-classifier/masc-v3-three-passes/summary.json; artifacts/masc-classifier/masc-train-v3/summary.json; docs/PUBLIC-SCAM-BENCHMARKS.md. Published context: https://supreme-lab.github.io/ai-in-the-loop/ ; dataset: https://huggingface.co/datasets/BothBosu/multi-agent-scam-conversation . Runs completed October 11, 2026.');
     }
     if(index===5){
       heading(s,'FTC robocall benchmark');
       text(s,'FTC definition','Detection on transcripts from 1,378 FTC-released robocalls.',76,174,1128,50,26,colors.muted);
+      if(input.nativeCharts){
       s.charts.add('bar',{
         position:{left:68,top:245,width:1140,height:410},
         categories:['Shield','RoboKA','HuBERT + BERT\nfusion','BERT (text)','WavLM (audio)'],
@@ -120,7 +124,8 @@ export async function buildEvidence({presentation,input}) {
         yAxis:{visible:true,min:0,max:100,majorUnit:25,numberFormatCode:'0',textStyle:{fontSize:17,fill:colors.muted},line:{fill:'none',width:0},majorGridlines:{fill:'#DCE1E7',width:1}},
         dataLabels:{showValue:true,position:'outEnd',numberFormatCode:'0.0"%"',textStyle:{fontSize:25,bold:true,fill:colors.muted}}
       });
-      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy historical Shield benchmark bar',fit:'contain',position:{left:194,top:421,width:72,height:72}});
+      }else addBenchmarkVectors(s,'ftc');
+      s.images.add({path:root+'/ios/Shield/Resources/Assets.xcassets/ShieldMark.imageset/ShieldMark.png',alt:'Shield logo centered on the navy historical Shield benchmark bar',fit:'contain',position:{left:194,top:422.485,width:72,height:72}});
       note(s,'Historical Shield identification vs. published recall (%). Shield includes clarification questions. The Shield score comes from historical v20 identification, not current v158 completed stops. Shield v20, October 11, 2026: 724 distinct English FTC/NC State recording transcripts repeated three times, weighted to 1,378 English source calls per pass. Identification credits blocks plus clarification questions: 4,098/4,134 weighted trials = 99.129%, displayed as 99.1%. Weighted completed stops are 3,919/4,134 = 94.8%, and weighted approvals are 36. Questions do not establish completed stops. Unique-trial results are 2,086 stops, 79 questions and seven approvals out of 2,172. This is a historical transcript test with benchmark-informed development, not current deployment accuracy or an end-to-end real-call test. Current v158 instead records 530/724 completed stops, 146 unverified saves, 47 questions, zero approvals and one timeout; those outcomes remain separate. The four comparison values come from the user-provided chart and are verified against RoboKA Table I, T4 unwanted recall: RoboKA best model 82.21%, HuBERT cross-modal-attention BERT fusion 67.21%, BERT text 58.13%, WavLM audio 46.62%. The slide rounds them to one decimal as supplied. RoboKA uses 1,378 positive-only unwanted calls and its own input/evaluation pipeline. Shield identification with clarification credit and published classifier recall use different success rules, so this is research context, not a controlled head-to-head ranking. There are no legitimate controls in this dataset; it cannot establish precision or false-positive rate. Sources: artifacts/public-benchmarks/robocall-v20/summary.json; docs/PUBLIC-SCAM-BENCHMARKS.md, FTC robocall benchmark; docs/SCREENING-PRODUCTION-CANDIDATE.md; https://github.com/wspr-ncsu/robocall-audio-dataset ; https://arxiv.org/html/2605.00156v1#S4.T1 .');
     }
   }
