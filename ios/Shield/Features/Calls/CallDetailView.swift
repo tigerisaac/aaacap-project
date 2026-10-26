@@ -20,6 +20,7 @@ struct CallDetailView: View {
     @State private var playbackError: String?
     @State private var showingPlaybackError = false
     @State private var loadingDetails = false
+    @State private var detailsExpanded = PreviewScenario.appStoreCapture
     @State private var playedStatusFailed = false
     @State private var playbackActionsInProgress = false
     @AccessibilityFocusState private var playedStatusFocused: Bool
@@ -204,7 +205,7 @@ struct CallDetailView: View {
                 }
             }
             ShieldGroup {
-                ShieldDisclosure("More about this call") {
+                ShieldDisclosure("More about this call", isExpanded: $detailsExpanded) {
                     Text(call.detail).fixedSize(horizontal: false, vertical: true)
                     Text(call.nextStep).fixedSize(horizontal: false, vertical: true)
                     if call.monitored == true { Text("Shield checked the words while you talked.") }

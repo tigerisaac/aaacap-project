@@ -141,6 +141,14 @@ struct TrustedContactsView: View {
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if response == nil {
+                if PreviewScenario.appStoreCapture {
+                    response = .init(available: true, choiceRecorded: true, enabled: true, contacts: ["Jamie", "Morgan"].enumerated().map { index, name in
+                        TrustedContact(id: UUID(uuidString: "00000000-0000-4000-8000-00000000000\(index + 1)")!, name: name,
+                            phone: "+1202555010\(index + 1)", status: "accepted", textAlerts: false, appAlerts: false,
+                            requestDelivery: "not_requested", inAppAlerts: true)
+                    }, textAvailable: false)
+                    return
+                }
                 let deliveryFixture = ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-delivery")
                 let contacts: [TrustedContact] = usesChangeFailureFixture || deliveryFixture ? ["Jamie", "Morgan", "Alex"].enumerated().map { index, name in
                     TrustedContact(id: UUID(uuidString: "00000000-0000-4000-8000-00000000000\(index + 1)")!, name: name,

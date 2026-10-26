@@ -861,6 +861,11 @@
         "name": "The Native Setup Handoff Rule",
         "body": "Keep direct native Add Shortcut import quiet, start and arm the steady floating reminder only from Open Phone settings, and reset it on return or import. Keep both setting confirmations explicit; a remembered helper choice, opening the public link or returning to Shield establishes neither Add Shortcut acceptance nor a changed switch.",
         "section": "components"
+      },
+      {
+        "name": "The App Store Evidence Rule",
+        "body": "Keep App Store artwork grounded in unretouched native captures with fictional activity, one readable benefit per frame, visible subscription/carrier requirements and truthful caretaker delivery. Capture-only banner suppression must remain Debug/simulator-only; static marketing review is not deployment, accessibility, purchase or real-call evidence.",
+        "section": "components"
       }
     ],
     "dos": [

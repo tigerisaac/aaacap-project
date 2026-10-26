@@ -145,7 +145,7 @@ struct RootView: View {
             } else if model.signedIn, !model.people.isEmpty, model.needsPlan {
                 // A new public account chooses a plan before any onboarding or the tabs.
                 VStack(spacing: 0) {
-                    if model.isDemo { DemoBanner().background(.bar) }
+                    if model.isDemo && !PreviewScenario.appStoreCapture { DemoBanner().background(.bar) }
                     NavigationStack { SubscriptionView(isFirstScreen: true) }
                 }
             } else if model.signedIn, model.protectionOnboarding != nil, let participantID = model.protectionParticipantID {
@@ -158,7 +158,7 @@ struct RootView: View {
                 Group {
                     if model.people.isEmpty {
                         VStack(spacing: 0) {
-                            if model.isDemo { DemoBanner().background(.bar) }
+                            if model.isDemo && !PreviewScenario.appStoreCapture { DemoBanner().background(.bar) }
                             JoinView()
                         }
                     } else {

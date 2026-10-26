@@ -10,7 +10,7 @@ struct ScreenPreview: View {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: "--uitesting-screen"), arguments.indices.contains(index + 1) else { return nil }
         let screen = arguments[index + 1]
-        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts", "contact-alerts", "trusted-contacts", "calls", "messages", "phone-setup"].contains(screen) ? screen : nil
+        return ["numbers", "add-number", "add-contact", "sharing", "sharing-access", "contacts", "quiet", "blocked", "setup", "setup-details", "trial-options", "protection", "join", "help", "automatic-texts", "audio", "alerts-on", "alerts-off", "quiet-alerts", "contact-alerts", "trusted-contacts", "calls", "messages", "phone-setup", "call-review"].contains(screen) ? screen : nil
     }
 
     var body: some View {
@@ -36,6 +36,10 @@ struct ScreenPreview: View {
                     case "setup", "setup-details", "trial-options": PhoneOptionsView()
                     case "phone-setup": ForwardingSetupView()
                     case "protection": CallProtectionView()
+                    case "call-review":
+                        if let call = DemoData.calls.first(where: { $0.outcome == .held && $0.voicemail == nil }) {
+                            CallDetailView(initialCall: call)
+                        }
                     case "help": HelpView()
                     case "automatic-texts": MessageFilterSetupView()
                     case "audio":

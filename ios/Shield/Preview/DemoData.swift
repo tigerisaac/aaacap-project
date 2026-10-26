@@ -46,7 +46,9 @@ enum DemoData {
 
     private static func make(minutes: Int, title: String, outcome: CallOutcome, reason: String, detail: String, next: String, suffix: String,
                              message: Bool = false, removedMessage: Bool = false) -> CallRecord {
-        let time = Date.now.addingTimeInterval(Double(-minutes * 60))
+        let clock = PreviewScenario.appStoreCapture
+            ? Calendar.current.date(bySettingHour: 9, minute: 41, second: 0, of: .now) ?? .now : .now
+        let time = clock.addingTimeInterval(Double(-minutes * 60))
         return CallRecord(id: UUID(), occurredAt: time, callerNumber: "+1512555\(suffix)",
                           title: title, outcome: outcome, reasonCode: reason, detail: detail, nextStep: next,
                           acceptedAt: outcome == .connected ? time.addingTimeInterval(30) : nil,

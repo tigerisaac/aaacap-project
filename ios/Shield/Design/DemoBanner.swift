@@ -26,7 +26,7 @@ struct DemoBanner: View {
 extension View {
     @ViewBuilder
     func demoAccessory(_ isDemo: Bool) -> some View {
-        if isDemo && !isAppStoreCapture {
+        if isDemo && !PreviewScenario.appStoreCapture {
             VStack(spacing: 0) {
                 DemoBanner().padding(.vertical, 8).background(ShieldTheme.surface)
                 self
@@ -34,13 +34,4 @@ extension View {
         } else { self }
     }
 
-    /// Store captures use fictional activity with the normal app layout. This
-    /// removes only the development marker; all sample-mode safety gates remain.
-    private var isAppStoreCapture: Bool {
-        #if DEBUG && targetEnvironment(simulator)
-        ProcessInfo.processInfo.arguments.contains("--uitesting-app-store-capture")
-        #else
-        false
-        #endif
-    }
 }

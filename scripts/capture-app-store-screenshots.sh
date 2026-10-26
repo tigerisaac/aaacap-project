@@ -12,17 +12,17 @@ xcrun simctl ui "$device" appearance light
 xcrun simctl status_bar "$device" override --time 9:41 --dataNetwork wifi --wifiMode active --wifiBars 3 \
   --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
 mkdir -p "$out"
+trap 'xcrun simctl terminate "$device" org.isaaczhang.Shield 2>/dev/null || true; xcrun simctl status_bar "$device" clear' EXIT
 shot() { # name, launch arguments...
   name=$1; shift
   xcrun simctl terminate "$device" org.isaaczhang.Shield 2>/dev/null || true
   xcrun simctl launch "$device" org.isaaczhang.Shield --uitesting-light --uitesting-app-store-capture --uitesting-single-person "$@" >/dev/null
-  sleep 8 # let launch animations and system indicators settle
+  sleep 15 # let launch animations and system indicators settle, including on busy simulators
   xcrun simctl io "$device" screenshot --type=png "$out/$name.png" >/dev/null 2>&1
   echo "$name $(sips -g pixelWidth -g pixelHeight "$out/$name.png" | awk '/pixel/{printf "%s ", $2}')"
 }
-shot 01-home --uitesting-preview
+shot 01-home --uitesting-preview --redesign-state always-on
 shot 02-calls --uitesting-screen calls
-shot 03-messages --uitesting-screen messages --uitesting-message-filters
-shot 04-caretakers --uitesting-screen trusted-contacts
-xcrun simctl terminate "$device" org.isaaczhang.Shield 2>/dev/null || true
-xcrun simctl status_bar "$device" clear
+shot 03-call-review --uitesting-screen call-review
+shot 04-messages --uitesting-screen messages --uitesting-message-filters
+shot 05-caretakers --uitesting-screen trusted-contacts

@@ -2,6 +2,14 @@ import Foundation
 
 /// Offline simulator fixtures. These never apply to a signed-in account, device or Release build.
 enum PreviewScenario {
+    static var appStoreCapture: Bool {
+        #if DEBUG && targetEnvironment(simulator)
+        ProcessInfo.processInfo.arguments.contains("--uitesting-app-store-capture")
+        #else
+        false
+        #endif
+    }
+
     static func emptyData(_ screen: String, preview: Bool) -> Bool {
         #if DEBUG && targetEnvironment(simulator)
         requested(screen, preview: preview) && ProcessInfo.processInfo.arguments.contains("--uitesting-empty-data")

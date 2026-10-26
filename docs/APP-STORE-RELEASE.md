@@ -6,6 +6,25 @@ Updated October 25, 2026. **Shield is being prepared for public App Store distri
 
 The owner requested a redesigned paywall and a monthly-only free week. Source now prepares **1.0.0 build 3**; the previously uploaded and selected **build 2 remains unchanged in App Store Connect**. Build 3 must receive its own archive/package verification and upload before submission. The RevenueCat monthly-trial offering now uses the regular annual product; the annual-trial product should not be included in the intended launch offering. A RevenueCat dashboard paywall is an unpublished draft; the app currently uses the redesigned native paywall. See [current billing decision](REVENUECAT.md#october-25--monthly-only-trial-and-redesigned-paywall-latest-decision).
 
+## October 25 — local marketing screenshot candidate (not uploaded)
+
+A new **five-image set per size** is prepared in `artifacts/app-store-artwork-2026-10-25/`: `large/` contains 1320 × 2868 PNGs and `medium/` contains 1206 × 2622 PNGs. Order: Home → Calls → Call explanation → Messages → Caretakers. The numbered PNGs are the upload candidates; each `overview.png` is a review sheet only. `raw-large/` and `raw-medium/` retain the native captures. The delivery archive is `Shield-App-Store-Screenshots.zip` in the artifact root. This ignored local directory also contains `README.txt`, `verification.txt` and `finish-review.md`.
+
+The original marketing layouts frame unretouched native screens with Shield's navy/serif identity. All activity and people are fictional; example numbers use the reserved 555-01xx range. Capture mode hides Sample app only in Debug simulator builds, fixes 9:41 and fictional call times, expands the call explanation and shows accepted fictional caretakers Jamie and Morgan. Caretaker copy promises alerts **when they open Shield**, matching inbox-only delivery. Home discloses the subscription and compatible-carrier setup requirements. `reference/paywall.png` is a separate native preview with an offline trial fixture, outside the ten marketing exports; it is not live-offer validation.
+
+Independent finish review inspected all ten final PNGs and both overview sheets: **ship**, no material fixes. Provenance inspection covered 23 PNGs with zero missing records. The recorded local checks passed: iOS Debug simulator build, `npm run check` (401 tests, typecheck and build), `npm run test:firebase` (326 tests), and capture-script shell syntax. This establishes simulator, automated-test and static-artwork evidence only. No upload, production deployment, real-call test, actual Apple transaction or App Review approval is established by this candidate. **App Store Connect still has build 2 and the earlier four screenshots per size described below.**
+
+Reproduce from an up-to-date Debug simulator `Shield.app`, replacing the app path and the two simulator identifiers with matching devices. The capture script installs that Debug app and captures offline fixtures; the renderer requires native inputs matching each output size.
+
+```sh
+scripts/capture-app-store-screenshots.sh '<large-simulator-UDID>' '<path-to-Debug-iphonesimulator/Shield.app>' artifacts/app-store-artwork-2026-10-25/raw-large
+scripts/capture-app-store-screenshots.sh '<medium-simulator-UDID>' '<path-to-Debug-iphonesimulator/Shield.app>' artifacts/app-store-artwork-2026-10-25/raw-medium
+swift scripts/render-app-store-artwork.swift artifacts/app-store-artwork-2026-10-25/raw-large artifacts/app-store-artwork-2026-10-25/large 1320 2868
+swift scripts/render-app-store-artwork.swift artifacts/app-store-artwork-2026-10-25/raw-medium artifacts/app-store-artwork-2026-10-25/medium 1206 2622
+```
+
+Inspect every regenerated export before uploading; a previous review does not certify newly captured files. See [design guidance](../DESIGN.md#app-store-marketing-screenshots) for the visual and evidence boundaries.
+
 ## Release identity and prepared material
 
 | Item | Current evidence |
