@@ -55,7 +55,8 @@ enum DemoData {
                           endedAt: time.addingTimeInterval(80),
                           voicemail: removedMessage ? Voicemail(id: UUID(), duration: 31, status: "removed", heardAt: nil,
                                                                 removedAt: time.addingTimeInterval(120))
-                            : message ? Voicemail(id: UUID(), duration: 28, status: "sample", heardAt: nil,
+                            : message ? Voicemail(id: UUID(), duration: PreviewScenario.appStoreCapture ? 20 : 28,
+                                status: PreviewScenario.appStoreCapture ? "ready" : "sample", heardAt: nil,
                                 kind: reason == "automated_notice" ? "notice" : "voicemail",
                                 summary: reason == "automated_notice" ? "An automated caller reported unusual card activity. The sender hasn’t been verified."
                                     : reason == "known_missed" ? "The caller left an appointment reminder for Thursday at 10 a.m." : "The caller asked Pat to get in touch.",

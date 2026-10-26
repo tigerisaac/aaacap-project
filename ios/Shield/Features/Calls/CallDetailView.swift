@@ -31,7 +31,10 @@ struct CallDetailView: View {
     /// Withheld and short service numbers have nothing worth copying.
     private var copyableNumber: String? { call.callerNumber.filter(\.isNumber).count >= 7 ? callerNumber : nil }
     private var messageRemoved: Bool { call.voicemail?.status == "removed" }
-    private var usesAudioFixture: Bool { PreviewScenario.requested("audio", preview: model.isPreview) }
+    private var usesAudioFixture: Bool {
+        PreviewScenario.requested("audio", preview: model.isPreview)
+            || (model.isPreview && PreviewScenario.appStoreCapture)
+    }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -91,7 +94,7 @@ struct CallDetailView: View {
             }
             if let message = call.voicemail, model.canListen, !messageRemoved {
                 if let summary = message.summary {
-                    if model.isDemo { VoicemailPreviewCard(call: call) }
+                    if model.isDemo && !PreviewScenario.appStoreCapture { VoicemailPreviewCard(call: call) }
                     else { ShieldGroup {
                         Text(summary).font(.title3).fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("message-summary")

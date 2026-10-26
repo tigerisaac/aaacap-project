@@ -104,6 +104,14 @@ The latest recorded deployment is `shieldApi` **`shieldapi-00038-qay`** on Octob
 
 `shield-calls-isaac` is the live pilot. AGENTS.md requires owner approval before production deployment/configuration. The owner-approved key transfer and build/screenshot uploads are complete. No production deployment, real call/message, carrier setting change, actual Apple purchase, App Review submission or public release occurred in this preparation.
 
+## Feature recording assets — October 25, 2026
+
+Local exports are in `artifacts/app-feature-videos-2026-10-25/`: a Messages → connected-call protection walkthrough, individual call-management, stopped-call, caretaker and playback clips, and a combined feature walkthrough. Native captures use fictional data on the iPhone 18 Pro Max simulator. The capture-only message fixture now exercises the real player: summary → listen → pause → start over, with a local test tone; screen footage is silent for voiceover editing. Ordinary demo, device and Release behavior are unchanged.
+
+The monitoring segment shows the actual explanatory settings screen. Its appended **example spoken warning** uses the existing `warning-code_or_password.wav` product asset and is explicitly labeled as prerecorded. No live call, threat detection, disconnection, delivery, production change or device installation was performed for these recordings. The assets do not satisfy the real-call acceptance gate above.
+
+Validation: Debug simulator build succeeded; playback pause and restart were verified through the visible controls; `npm run check` passed (401 tests) and `npm run test:firebase` passed (326 tests). Final MP4 files are checked for full decoding and retain native 1320 × 2868 portrait resolution at 30 fps.
+
 ## Official references
 
 - [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
