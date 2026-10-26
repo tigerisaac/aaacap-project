@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f2">
+  <title>Shield — A little more peace when the phone rings.</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Shield — A little more peace when the phone rings.">
+  <meta property="og:description" content="{{SOCIAL_DESCRIPTION}}">
+  <meta property="og:image" content="/assets/quiet-afternoon.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/apple-touch-icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preload" href="/assets/quiet-afternoon.webp" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="brand" href="/" aria-label="Shield home"><img src="/assets/shield-wordmark.webp" alt="Shield" width="160" height="53"></a>
+    <nav aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a>
+      <a class="nav-app" href="{{APP_URL}}">For iPhone <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-image"><img src="/assets/quiet-afternoon.webp" alt="A quiet afternoon, with a phone resting beside a sunlit armchair." width="1536" height="1024" fetchpriority="high"></div>
+      <div class="hero-content">
+        <h1 id="hero-title">Your time.<br>Your peace.<br>Your call.</h1>
+        <p>Let Shield answer unfamiliar calls.<br>You decide who gets through.</p>
+        <a class="button button-light" href="{{APP_URL}}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.5"/><path d="M10 5h4m-3 14h2"/></svg>{{APP_LABEL}}</a>
+      </div>
+      <span class="hero-note">A little less worry. A little more life.</span>
+    </section>
+
+    <section class="introduction wrap" aria-labelledby="intro-title">
+      <h2 id="intro-title">Keep your number.<br>Keep your everyday.</h2>
+      <div><p>Your phone connects you to the people who matter. Shield helps you make room for those conversations by screening the unfamiliar calls your carrier forwards.</p><p class="muted">Your number, Phone app, and Messages stay yours.</p></div>
+    </section>
+
+    <section class="how-section" id="how-it-works" aria-labelledby="how-title">
+      <div class="how-layout wrap">
+        <div class="how-heading"><h2 id="how-title">A thoughtful pause<br>before you pick up.</h2><p>A little help at the other end of the line.</p></div>
+        <div class="steps">
+          <article><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2c0 8.8 7.2 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 3a13 13 0 0 1-7-7l3-2-2-5Z"/></svg><div><h3>Shield answers first.</h3><p>Its AI assistant asks who’s calling and why, and screens for suspected scams.</p></div></article>
+          <article><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/><path d="M20 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8"/></svg><div><h3>You have the final say.</h3><p>For a call it offers, hear a short introduction. Press 1 to connect, or send it to voicemail.</p></div></article>
+          <article><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="11" r="4"/><circle cx="18" cy="11" r="4"/><path d="M6 15h12"/></svg><div><h3>Catch up in your own time.</h3><p>See what happened to each call. Find saved voicemail and helpful summaries in the app.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="release wrap" id="iphone" aria-labelledby="release-title">
+      <img class="app-icon" src="/assets/apple-touch-icon.png" width="72" height="72" alt="Shield app icon" loading="lazy">
+      <h2 id="release-title">{{RELEASE_TITLE}}</h2>
+      <p>{{RELEASE_COPY}}</p>
+      <a class="text-link" href="{{RELEASE_LINK}}">{{RELEASE_LINK_LABEL}} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+      <details class="availability">
+        <summary>Will Shield work with my phone?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div><p>Shield is designed for eligible T-Mobile and Tello lines in the United States. It requires carrier call forwarding, an active data plan, and setup in your iPhone’s settings. A subscription is required; carrier charges may apply.</p><p>Shield only screens forwarded calls. It does not verify a caller’s identity, cannot stop every scam, and may stop a call you wanted. If you’re unsure, call back using a number you trust.</p></div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <a class="footer-brand" href="/" aria-label="Shield home">Shield</a>
+    <p>© 2026 Wheema Inc.</p>
+    <nav aria-label="Footer navigation"><a href="{{PRIVACY_URL}}">Privacy</a><a href="{{SUPPORT_URL}}">Support</a></nav>
+  </footer>
+</body>
+</html>
