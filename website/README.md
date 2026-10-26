@@ -21,3 +21,7 @@ The photograph is an optimized copy of Shield's existing `ios/Shield/Resources/A
 ## Content boundary
 
 Copy follows `docs/APP-STORE-LISTING.md`. The website does not claim guaranteed scam prevention, verified caller identity, public availability, automatic text filtering or support for unverified carriers. Existing Firebase privacy/support pages remain the policy and support destinations.
+
+## Verification — October 25, 2026
+
+Desktop (1440px) and mobile (390px) were visually reviewed; 320px also passed an overflow check. Both release states build correctly, and the privacy/support URLs return HTTP 200. Independent design review: ship. `npm run check` passed 401 unit tests plus typecheck/build. The required Firestore suite passed 326 tests using separate local emulator ports and `METADATA_SERVER_DETECTION=none`. These checks do not establish live Vercel deployment, App Store release, or real-call behavior.
