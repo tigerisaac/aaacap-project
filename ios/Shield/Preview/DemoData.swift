@@ -12,7 +12,7 @@ enum DemoData {
         make(minutes: 24, title: "Call held for review", outcome: .held, reason: "prohibited_request",
              detail: "The caller asked for a secret code. Shield didn’t connect the call.",
              next: "Use a number from your card or bill to check.", suffix: "0123"),
-        make(minutes: 108, title: "Prescription notification", outcome: .connected, reason: "routine",
+        make(minutes: 108, title: PreviewScenario.appStoreCapture ? "Refill reminder" : "Prescription notification", outcome: .connected, reason: "routine",
              detail: "You chose to answer. Shield can’t prove who called.",
              next: "Don’t share secret codes or send money because a caller asks.", suffix: "0124"),
         make(minutes: 196, title: "Appointment message", outcome: .voicemail, reason: "known_missed",

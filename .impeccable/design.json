@@ -864,7 +864,7 @@
       },
       {
         "name": "The App Store Evidence Rule",
-        "body": "Keep App Store artwork grounded in unretouched native captures with fictional activity, one readable benefit per frame, visible subscription/carrier requirements and truthful caretaker delivery. Capture-only banner suppression must remain Debug/simulator-only; static marketing review is not deployment, accessibility, purchase or real-call evidence.",
+        "body": "Keep App Store artwork grounded in unretouched native captures with fictional activity, one readable benefit per frame, visible subscription/carrier requirements and truthful caretaker delivery. Lifestyle imagery must use fictional models with recorded source prompts and must not imply customer endorsements or testimonials. Capture-only banner suppression must remain Debug/simulator-only; static marketing review is not deployment, accessibility, purchase or real-call evidence.",
         "section": "components"
       }
     ],

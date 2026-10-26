@@ -1,15 +1,16 @@
-// swift scripts/render-app-store-artwork.swift <raw-capture-directory> <output-directory> <width> <height>
+// swift scripts/render-app-store-artwork.swift <raw-capture-directory> <output-directory> <width> <height> [lifestyle-asset-directory]
 // Composes original marketing pages around unmodified native simulator captures.
 import AppKit
 import ImageIO
 import UniformTypeIdentifiers
 
 let args = CommandLine.arguments
-guard args.count == 5, let width = Int(args[3]), let height = Int(args[4]),
+guard (5...6).contains(args.count), let width = Int(args[3]), let height = Int(args[4]),
       [(1320, 2868), (1206, 2622)].contains(where: { $0 == (width, height) }) else {
     fatalError("Expected raw directory, output directory, and supported portrait width/height")
 }
 let source = URL(fileURLWithPath: args[1]), output = URL(fileURLWithPath: args[2])
+let assets = URL(fileURLWithPath: args.count == 6 ? args[5] : "presentation/app-store/assets")
 try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
 let navy = NSColor(srgbRed: 0, green: 0.149, blue: 0.392, alpha: 1)
 let paper = NSColor(srgbRed: 0.949, green: 0.953, blue: 0.957, alpha: 1)
@@ -25,6 +26,38 @@ let entries: [(String, String, String, Bool)] = [
 
 func rounded(_ rect: CGRect, radius: CGFloat, color: NSColor) {
     color.setFill(); NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius).fill()
+}
+
+func photo(_ name: String, rect: CGRect) {
+    let url = assets.appendingPathComponent(name + ".png")
+    guard let picture = NSImage(contentsOf: url) else { fatalError("Missing lifestyle asset: \(url.path)") }
+    // Preserve the complete generated 3:2 composition, including hands and faces.
+    picture.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1,
+                 respectFlipped: true, hints: [.interpolation: NSImageInterpolation.high])
+}
+
+func phone(_ screenshot: NSImage, rect: CGRect, angle: CGFloat = 0) {
+    NSGraphicsContext.saveGraphicsState()
+    let transform = AffineTransform(translationByX: rect.midX, byY: rect.midY)
+    var placement = transform
+    placement.rotate(byDegrees: angle)
+    placement.translate(x: -rect.midX, y: -rect.midY)
+    (placement as NSAffineTransform).concat()
+    let scale = rect.width / 980
+    NSGraphicsContext.saveGraphicsState()
+    let shadow = NSShadow(); shadow.shadowColor = .black.withAlphaComponent(0.22)
+    shadow.shadowOffset = NSSize(width: 0, height: 24); shadow.shadowBlurRadius = 42; shadow.set()
+    rounded(rect.insetBy(dx: -18 * scale, dy: -18 * scale), radius: 118 * scale,
+            color: NSColor(white: 0.13, alpha: 1))
+    NSGraphicsContext.restoreGraphicsState()
+    NSGraphicsContext.saveGraphicsState()
+    NSBezierPath(roundedRect: rect, xRadius: 99 * scale, yRadius: 99 * scale).addClip()
+    screenshot.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1,
+                    respectFlipped: true, hints: [.interpolation: NSImageInterpolation.high])
+    NSGraphicsContext.restoreGraphicsState()
+    rounded(CGRect(x: rect.midX - 128 * scale, y: rect.minY + 31 * scale,
+                   width: 256 * scale, height: 73 * scale), radius: 38 * scale, color: .black)
+    NSGraphicsContext.restoreGraphicsState()
 }
 func text(_ value: String, rect: CGRect, size: CGFloat, color: NSColor, serif: Bool = false) {
     let base = NSFont.systemFont(ofSize: size, weight: serif ? .semibold : .regular)
@@ -47,7 +80,7 @@ func render(_ name: String, _ draw: (CGContext) -> Void) throws {
     draw(context)
     NSGraphicsContext.restoreGraphicsState()
     let destination = CGImageDestinationCreateWithURL(output.appendingPathComponent(name + ".png") as CFURL, UTType.png.identifier as CFString, 1, nil)!
-    let origin = "Original Shield marketing layout rendered by scripts/render-app-store-artwork.swift. Native simulator screenshot \(name).png from offline, fictional data. No real account data, third-party artwork, invented UI, or efficacy claims."
+    let origin = "Original Shield marketing layout rendered by scripts/render-app-store-artwork.swift. Native simulator screenshot \(name).png from offline fictional data. Lifestyle photographs use fictional AI models generated with built-in image_gen; prompts in presentation/app-store/assets/prompts.json. No testimonials, real account data, competitor artwork or invented UI."
     CGImageDestinationAddImage(destination, context.makeImage()!, [kCGImagePropertyPNGDictionary: ["Description": origin]] as CFDictionary)
     precondition(CGImageDestinationFinalize(destination))
 }
@@ -59,6 +92,7 @@ for (name, title, description, dark) in entries {
           let screenshot = NSImage(contentsOf: captureURL) else { fatalError("Missing or mismatched native capture: \(name)") }
     try render(name) { context in
         (dark ? navy : paper).setFill(); CGRect(x: 0, y: 0, width: 1320, height: 2880).fill()
+        let lifestyle = name == "01-home" || name == "05-caretakers"
         let titleSize: CGFloat = title.contains("Understand") || title.contains("People") ? 112 : 124
         text(title, rect: CGRect(x: 100, y: 110, width: 1120, height: 325), size: titleSize,
              color: dark ? .white : ink, serif: true)
@@ -68,27 +102,23 @@ for (name, title, description, dark) in entries {
             text("Subscription and compatible carrier setup required.",
                  rect: CGRect(x: 104, y: 598, width: 1112, height: 38), size: 28, color: pale)
         }
-
-        // A restrained device frame; the screenshot itself is never retouched.
-        let screen = CGRect(x: 170, y: 670, width: 980, height: 980 * CGFloat(height) / CGFloat(width))
-        let chassis = screen.insetBy(dx: -19, dy: -19)
-        NSGraphicsContext.saveGraphicsState()
-        let shadow = NSShadow(); shadow.shadowColor = .black.withAlphaComponent(dark ? 0.24 : 0.18)
-        shadow.shadowOffset = NSSize(width: 0, height: 18); shadow.shadowBlurRadius = 32; shadow.set()
-        rounded(chassis, radius: 118, color: NSColor(white: 0.13, alpha: 1))
-        NSGraphicsContext.restoreGraphicsState()
-        NSGraphicsContext.saveGraphicsState()
-        NSBezierPath(roundedRect: screen, xRadius: 99, yRadius: 99).addClip()
-        screenshot.draw(in: screen, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: [.interpolation: NSImageInterpolation.high])
-        NSGraphicsContext.restoreGraphicsState()
-        // The simulator omits the physical Dynamic Island; the frame supplies it.
-        rounded(CGRect(x: 532, y: screen.minY + 31, width: 256, height: 73), radius: 38, color: .black)
+        if lifestyle {
+            photo(name == "01-home" ? "calm-call" : "family-moment", rect: CGRect(x: 0, y: 680, width: 1320, height: 880))
+            let screenWidth: CGFloat = 880
+            phone(screenshot, rect: CGRect(x: 310, y: 1370, width: screenWidth,
+                  height: screenWidth * CGFloat(height) / CGFloat(width)), angle: name == "01-home" ? -5 : 5)
+        } else {
+            let angle: CGFloat = name == "02-calls" ? -4 : (name == "04-messages" ? 4 : 0)
+            phone(screenshot, rect: CGRect(x: 170, y: 710, width: 980,
+                  height: 980 * CGFloat(height) / CGFloat(width)), angle: angle)
+        }
     }
     print("Rendered \(name): \(width) × \(height)")
 }
 
 let manifest: [String: Any] = ["width": width, "height": height, "data": "fictional", "screenshots": entries.map { $0.0 + ".png" },
-    "source": source.path, "generator": "scripts/render-app-store-artwork.swift", "uploaded": false]
+    "source": source.path, "generator": "scripts/render-app-store-artwork.swift", "uploaded": false,
+    "lifestyleAssets": assets.path, "people": "Fictional AI models; not customers or testimonials"]
 try JSONSerialization.data(withJSONObject: manifest, options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent("manifest.json"))
 
 // A compact review sheet, separate from the exact-size upload files.
