@@ -18,7 +18,7 @@ First production deployment verified October 25, 2026 (Central): `dpl_J8CNXzGYAE
 
 ## Asset provenance
 
-The photograph is an optimized copy of Shield's existing `ios/Shield/Resources/Assets.xcassets/PaywallCalm.imageset/PaywallCalm.png`; its exact generation prompt is recorded in `ios/Shield/Resources/PaywallCalm.provenance.json`. The wordmark and icon are derivatives of the owner-selected identity in `artwork/identity/manifest.json`. No customer data, call audio or transcripts are included.
+The gallery uses all five images from the newest v3 App Store artwork set, `artifacts/app-store-artwork-v3-2026-10-25/large/`, in Home → Calls → Call explanation → Messages → Caretakers order. WebP copies preserve each complete composition at 960px width. Source hashes and conversion details are in `assets/app-store/provenance.json`. Native app activity is fictional sample data; the people in the existing Home/Caretakers artwork are fictional AI models, not endorsements. The chair image has been removed, including from social metadata. The wordmark and icon are derivatives of the owner-selected identity in `artwork/identity/manifest.json`. No customer data, call audio or transcripts are included.
 
 ## Content boundary
 
@@ -27,3 +27,7 @@ Copy follows `docs/APP-STORE-LISTING.md`. The website does not claim guaranteed 
 ## Verification — October 25, 2026
 
 Desktop (1440px) and mobile (390px) were visually reviewed; 320px also passed an overflow check. Both release states build correctly, and the privacy/support URLs return HTTP 200. Independent design review: ship. `npm run check` passed 401 unit tests plus typecheck/build. The required Firestore suite passed 326 tests using separate local emulator ports and `METADATA_SERVER_DETECTION=none`. These checks do not establish live Vercel deployment, App Store release, or real-call behavior.
+
+## Screenshot gallery update — October 26, 2026
+
+Replaced the chair hero with the complete five-image v3 App Store set, optimized to 960px-wide WebP. All five appear on desktop; smaller screens use a keyboard-focusable native horizontal gallery. Each image opens at full asset size in a new tab. Desktop (1440px) and mobile (390px) renders were inspected, 320px has no page overflow, all five image links return 200, and the last image is reachable by scrolling. The coming-soon state remains. Website build, `npm run check` (401 tests, typecheck/build), and isolated Firestore checks (326 tests) pass. This changes only the website, not the App Store upload or app behavior.

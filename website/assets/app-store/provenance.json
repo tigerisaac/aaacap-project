@@ -1,0 +1,35 @@
+{
+  "sourceSet": "artifacts/app-store-artwork-v3-2026-10-25/large",
+  "version": "v3",
+  "sourceArtworkDate": "2026-10-25",
+  "websiteUpdateDate": "2026-10-26",
+  "content": "Native simulator app captures with fictional sample activity; existing fictional AI people in Home and Caretakers artwork, not customer endorsements. Complete compositions retained.",
+  "conversion": "cwebp -q 88 -resize 960 0; no cropping or generative changes",
+  "files": [
+    {
+      "file": "01-home.webp",
+      "source": "artifacts/app-store-artwork-v3-2026-10-25/large/01-home.png",
+      "sourceSha256": "f01b21e2517542bc645b2109ce265c694416d71897bb01369dfc64bdad6b1c1b"
+    },
+    {
+      "file": "02-calls.webp",
+      "source": "artifacts/app-store-artwork-v3-2026-10-25/large/02-calls.png",
+      "sourceSha256": "0dc7ff3093f28bacbc5863adb4e78a1b71a80f4ac6be80811578f9276764979b"
+    },
+    {
+      "file": "03-call-review.webp",
+      "source": "artifacts/app-store-artwork-v3-2026-10-25/large/03-call-review.png",
+      "sourceSha256": "cb11b000212cf637ab1ff4b36cb0590121ad596be04ad795b432ab247e6a3c0f"
+    },
+    {
+      "file": "04-messages.webp",
+      "source": "artifacts/app-store-artwork-v3-2026-10-25/large/04-messages.png",
+      "sourceSha256": "480c216c50de4494e3d53403f6e192766feefe53c4578144b285d76cc33da7f2"
+    },
+    {
+      "file": "05-caretakers.webp",
+      "source": "artifacts/app-store-artwork-v3-2026-10-25/large/05-caretakers.png",
+      "sourceSha256": "7eb7a71ee92939dceadb65ef2848b9d46075cbbb6c4141058f6bd6bd398706e6"
+    }
+  ]
+}

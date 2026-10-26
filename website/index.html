@@ -9,11 +9,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Shield — A little more peace when the phone rings.">
   <meta property="og:description" content="{{SOCIAL_DESCRIPTION}}">
-  <meta property="og:image" content="/assets/quiet-afternoon.webp">
+  <meta property="og:image" content="https://shield-call-protection.vercel.app/assets/app-store/01-home.webp">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/apple-touch-icon.png" type="image/png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="preload" href="/assets/quiet-afternoon.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="/assets/app-store/01-home.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -28,13 +28,19 @@
 
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
-      <div class="hero-image"><img src="/assets/quiet-afternoon.webp" alt="A quiet afternoon, with a phone resting beside a sunlit armchair." width="1536" height="1024" fetchpriority="high"></div>
       <div class="hero-content">
-        <h1 id="hero-title">Your time.<br>Your peace.<br>Your call.</h1>
-        <p>Let Shield answer unfamiliar calls.<br>You decide who gets through.</p>
-        <a class="button button-light" href="{{APP_URL}}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.5"/><path d="M10 5h4m-3 14h2"/></svg>{{APP_LABEL}}</a>
+        <h1 id="hero-title"><span>Your time.</span> <span>Your peace.</span><br><span>Your call.</span></h1>
+        <div class="hero-action"><p>Let Shield answer unfamiliar calls.<br>You decide who gets through.</p>
+        <a class="button button-primary" href="{{APP_URL}}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.5"/><path d="M10 5h4m-3 14h2"/></svg>{{APP_LABEL}}</a></div>
       </div>
-      <span class="hero-note">A little less worry. A little more life.</span>
+      <div class="app-gallery" role="region" aria-label="Shield app screenshots. Scroll horizontally to explore all five; select an image to enlarge it." tabindex="0">
+        <a href="/assets/app-store/01-home.webp" target="_blank" rel="noopener" aria-label="Enlarge Home screenshot (opens in a new tab)"><img src="/assets/app-store/01-home.webp" alt="Your calls. Your choice. Shield Home shows call checks, stopped calls, and saved messages. Subscription and compatible carrier setup required." width="960" height="2086" fetchpriority="high"></a>
+        <a href="/assets/app-store/02-calls.webp" target="_blank" rel="noopener" aria-label="Enlarge Calls screenshot (opens in a new tab)"><img src="/assets/app-store/02-calls.webp" alt="Calls, made clear. Call history shows answered calls, stopped calls, and saved messages." width="960" height="2086"></a>
+        <a href="/assets/app-store/03-call-review.webp" target="_blank" rel="noopener" aria-label="Enlarge Call explanation screenshot (opens in a new tab)"><img src="/assets/app-store/03-call-review.webp" alt="Know why it stopped. A sample stopped call explains the request for a secret code and suggests using a trusted number to call back." width="960" height="2086" loading="lazy"></a>
+        <a href="/assets/app-store/04-messages.webp" target="_blank" rel="noopener" aria-label="Enlarge Messages screenshot (opens in a new tab)"><img src="/assets/app-store/04-messages.webp" alt="Messages. Your time. Saved voicemail and notices in the Shield Messages tab." width="960" height="2086" loading="lazy"></a>
+        <a href="/assets/app-store/05-caretakers.webp" target="_blank" rel="noopener" aria-label="Enlarge Caretakers screenshot (opens in a new tab)"><img src="/assets/app-store/05-caretakers.webp" alt="People you trust. Optional caretaker protection alerts, without access to calls or messages." width="960" height="2086" loading="lazy"></a>
+      </div>
+      <div class="gallery-caption"><p>App preview · Sample activity</p><p><span class="swipe-hint">Swipe to explore. </span>Select an image to enlarge.</p></div>
     </section>
 
     <section class="introduction wrap" aria-labelledby="intro-title">
