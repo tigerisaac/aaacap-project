@@ -1,4 +1,4 @@
-// Live presentation callback: current eleven-slide order; testing precedes the benchmarks.
+// Live presentation callback: testing and benchmarks lead into the final learning slide.
 import {fileURLToPath} from 'node:url';
 import {readFileSync,existsSync} from 'node:fs';
 import {buildEvidence} from './evidence-slides.mjs';
@@ -16,8 +16,8 @@ function notes(s,time,speaker,script,direction,source=''){s.speakerNotes.text=`V
 const common='Original Shield app artwork and synthetic sample-app captures. No new AI-generated visuals. Sample screens show design and workflow, not real customer outcomes.';
 export async function build({presentation,input}){
  for(const index of input.indices){
-  if(!Number.isInteger(index)||index<0||index>10)throw new RangeError("The current deck has eleven slides (indexes 0–10).");
-  if(index>=9){
+  if(!Number.isInteger(index)||index<0||index>11)throw new RangeError("The current deck has twelve slides (indexes 0–11).");
+  if(index===9||index===10){
    const original={9:4,10:5}[index];
    await buildEvidence({presentation,input:{indices:[original],targets:{[original]:index},replace:true}});
    const slide=presentation.slides.getItem(index);
@@ -121,6 +121,15 @@ export async function build({presentation,input}){
    }
   }
 
+  if(index===11){
+   heading(s,'What we learned');
+   text(s,'Backend lesson','Coordinate a complex AI backend',76,220,1120,70,45,C.navy,'Georgia');
+   text(s,'Backend detail','Keep live speech, model decisions,\nand call routing in sync.',78,305,1110,100,31,C.muted);
+   text(s,'Reliability lesson','Harden for high success rates',76,460,1120,70,45,C.navy,'Georgia');
+   text(s,'Reliability detail','Red-team difficult calls, trace failures,\nand retest fixes against benchmarks.',78,545,1110,100,31,C.muted);
+   notes(s,'After the benchmark slides','Team voiceover','We learned to coordinate a complex AI backend, then improve its success rate through red teaming, failure analysis, and regression testing.','Keep the two lessons on screen while explaining the engineering work. The neighboring benchmark slides supply the measured results; this slide introduces no new accuracy figure.','docs/ARCHITECTURE.md: streaming speech and model decisions coordinated with call control, durable state and bounded timers. docs/SCREENING-PRODUCTION-CANDIDATE.md: frozen validation, scripted and adaptive red teaming, question review and retained failures. Hardening includes output validation, safe failure behavior and reviewing legitimate-call errors as well as missed scams. The separate research classifier, historical identification scores and deployed call outcomes remain distinct. Benchmark success does not establish a universal real-call success rate.');
+  }
+
  }
- return {slides:presentation.slides.items.length,videoBeats:9,durationSeconds:164,optionalEvidenceSlides:2};
+ return {slides:presentation.slides.items.length,optionalEvidenceSlides:2};
 }

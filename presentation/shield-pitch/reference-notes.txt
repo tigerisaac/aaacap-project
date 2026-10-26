@@ -97,3 +97,7 @@ Community feedback: the revised quotes explain daily interruptions, an unexpecte
 MERGED RED-TEAM SUMMARY
 
 The owner removed the separate red-teaming slide and moved How hard did we test Shield? immediately before MASC and FTC benchmarks. The live deck has eleven slides. Preserve that order and the owner’s other live edits. Current source indexes: 0–5 unchanged; 6 test call; 7 community feedback; 8 testing/red teaming; 9 MASC; 10 FTC. The builder rejects index 11 to avoid recreating the deleted slide. The testing slide retains its historical count and uses one short red-team blurb; the 112 simulated trials and 77 reviewed question turns are explained in speaker notes. Future edits should target the live slide ID rather than rebuild unrelated slides from source.
+
+WHAT WE LEARNED
+
+A final learning slide follows FTC, bringing the live deck to twelve slides. Source index 11 now builds this new learning slide, not the deleted standalone red-teaming slide. The slide focuses on coordinating the AI backend and hardening for high success rates through adversarial testing, failure analysis and regression checks. It uses no new performance percentage; notes preserve the distinction between benchmark results and verified live-call outcomes. All preceding user edits and ordering are preserved.
