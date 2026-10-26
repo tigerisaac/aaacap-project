@@ -1,0 +1,13 @@
+{
+  "mode": "built-in image_gen edit",
+  "calm-call-cutout": {
+    "source": "calm-call.png",
+    "prompt": "Use case: background-extraction. Edit the supplied fictional AI lifestyle photograph. Remove the entire room, sofa, furniture, cushions, plants, window, floor and every background object. Keep only the same silver-haired woman, her cream sweater and jeans, her visible body and hands, and the dark phone she holds to her ear. Preserve her identity, facial expression, anatomy, pose, clothing and photographic lighting. Make a clean professional photographic cutout with fine natural hair edges. Place the isolated person on a genuinely transparent alpha background, with no white backdrop, checkerboard, shadow, outline or glow. Tight portrait-oriented framing around the person, retaining all currently visible limbs and hands and leaving a small transparent margin. Do not add text, UI, objects or people.",
+    "transparent_background": true
+  },
+  "family-moment-cutout": {
+    "source": "family-moment.png",
+    "prompt": "Use case: background-extraction. Edit the supplied fictional AI lifestyle photograph. Remove the entire room, sofa, cushions, furniture, window, plants and every background object. Keep only the same two women together, their clothes, hair, arms and hands, preserving their affectionate pose and natural expressions. Preserve both identities, anatomy, clothing and photographic lighting. Make a clean professional photographic cutout with fine natural hair edges, including transparent gaps between arms where background was visible. Genuinely transparent alpha background, no white backdrop, checkerboard, shadow, outline or glow. Tight framing around both women together, retaining their currently visible bodies and hands, small transparent margin. Do not add text, UI, objects or people.",
+    "transparent_background": true
+  }
+}

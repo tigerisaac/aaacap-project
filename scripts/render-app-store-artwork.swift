@@ -16,12 +16,12 @@ let navy = NSColor(srgbRed: 0, green: 0.149, blue: 0.392, alpha: 1)
 let paper = NSColor(srgbRed: 0.949, green: 0.953, blue: 0.957, alpha: 1)
 let ink = NSColor(srgbRed: 0.063, green: 0.118, blue: 0.196, alpha: 1)
 let pale = NSColor(srgbRed: 0.80, green: 0.86, blue: 0.96, alpha: 1)
-let entries: [(String, String, String, Bool)] = [
-    ("01-home", "Your calls.\nYour choice.", "Screen unfamiliar calls before\nyou decide to answer.", true),
-    ("02-calls", "Every call.\nA clearer picture.", "Review answered calls, stopped calls,\nand messages in one place.", false),
-    ("03-call-review", "Understand why\na call stopped.", "See what happened and\nhow to check independently.", true),
-    ("04-messages", "Messages,\non your time.", "Review saved notices and voicemail\nwhen it works for you.", false),
-    ("05-caretakers", "People you trust.\nOn your terms.", "Choose caretakers. Keep your calls\nand messages private.", true)
+let entries: [(String, String, Bool)] = [
+    ("01-home", "Your calls.\nYour choice.", true),
+    ("02-calls", "Calls,\nmade clear.", false),
+    ("03-call-review", "Know why\nit stopped.", true),
+    ("04-messages", "Messages.\nYour time.", false),
+    ("05-caretakers", "People\nyou trust.", true)
 ]
 
 func rounded(_ rect: CGRect, radius: CGFloat, color: NSColor) {
@@ -31,8 +31,12 @@ func rounded(_ rect: CGRect, radius: CGFloat, color: NSColor) {
 func photo(_ name: String, rect: CGRect) {
     let url = assets.appendingPathComponent(name + ".png")
     guard let picture = NSImage(contentsOf: url) else { fatalError("Missing lifestyle asset: \(url.path)") }
-    // Preserve the complete generated 3:2 composition, including hands and faces.
-    picture.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1,
+    // Fit the complete alpha cutout without stretching its proportions.
+    let size = picture.size
+    let scale = min(rect.width / size.width, rect.height / size.height)
+    let fitted = CGRect(x: rect.midX - size.width * scale / 2, y: rect.maxY - size.height * scale,
+                        width: size.width * scale, height: size.height * scale)
+    picture.draw(in: fitted, from: .zero, operation: .sourceOver, fraction: 1,
                  respectFlipped: true, hints: [.interpolation: NSImageInterpolation.high])
 }
 
@@ -80,12 +84,12 @@ func render(_ name: String, _ draw: (CGContext) -> Void) throws {
     draw(context)
     NSGraphicsContext.restoreGraphicsState()
     let destination = CGImageDestinationCreateWithURL(output.appendingPathComponent(name + ".png") as CFURL, UTType.png.identifier as CFString, 1, nil)!
-    let origin = "Original Shield marketing layout rendered by scripts/render-app-store-artwork.swift. Native simulator screenshot \(name).png from offline fictional data. Lifestyle photographs use fictional AI models generated with built-in image_gen; prompts in presentation/app-store/assets/prompts.json. No testimonials, real account data, competitor artwork or invented UI."
+    let origin = "Original Shield marketing layout rendered by scripts/render-app-store-artwork.swift. Native simulator screenshot \(name).png from offline fictional data. Transparent people cutouts use fictional AI models edited with built-in image_gen; prompts in presentation/app-store/assets/cutout-prompts.json. No testimonials, real account data, competitor artwork or invented UI."
     CGImageDestinationAddImage(destination, context.makeImage()!, [kCGImagePropertyPNGDictionary: ["Description": origin]] as CFDictionary)
     precondition(CGImageDestinationFinalize(destination))
 }
 
-for (name, title, description, dark) in entries {
+for (name, title, dark) in entries {
     let captureURL = source.appendingPathComponent(name + ".png")
     guard let data = try? Data(contentsOf: captureURL), let bitmap = NSBitmapImageRep(data: data),
           bitmap.pixelsWide == width, bitmap.pixelsHigh == height,
@@ -93,20 +97,20 @@ for (name, title, description, dark) in entries {
     try render(name) { context in
         (dark ? navy : paper).setFill(); CGRect(x: 0, y: 0, width: 1320, height: 2880).fill()
         let lifestyle = name == "01-home" || name == "05-caretakers"
-        let titleSize: CGFloat = title.contains("Understand") || title.contains("People") ? 112 : 124
-        text(title, rect: CGRect(x: 100, y: 110, width: 1120, height: 325), size: titleSize,
+        text(title, rect: CGRect(x: 90, y: 100, width: 1140, height: 430), size: 160,
              color: dark ? .white : ink, serif: true)
-        text(description, rect: CGRect(x: 104, y: 452, width: 1112, height: 140), size: 46,
-             color: dark ? pale : NSColor(srgbRed: 0.32, green: 0.37, blue: 0.44, alpha: 1))
         if name == "01-home" {
             text("Subscription and compatible carrier setup required.",
-                 rect: CGRect(x: 104, y: 598, width: 1112, height: 38), size: 28, color: pale)
+                 rect: CGRect(x: 96, y: 570, width: 1128, height: 45), size: 30, color: pale)
         }
         if lifestyle {
-            photo(name == "01-home" ? "calm-call" : "family-moment", rect: CGRect(x: 0, y: 680, width: 1320, height: 880))
-            let screenWidth: CGFloat = 880
-            phone(screenshot, rect: CGRect(x: 310, y: 1370, width: screenWidth,
-                  height: screenWidth * CGFloat(height) / CGFloat(width)), angle: name == "01-home" ? -5 : 5)
+            let canvasHeight = CGFloat(height) * 1320 / CGFloat(width)
+            let screenWidth: CGFloat = 780
+            phone(screenshot, rect: CGRect(x: 470, y: 780, width: screenWidth,
+                  height: screenWidth * CGFloat(height) / CGFloat(width)), angle: 3)
+            photo(name == "01-home" ? "calm-call-cutout" : "family-moment-cutout",
+                  rect: CGRect(x: name == "01-home" ? -230 : -260,
+                               y: canvasHeight - 1500, width: name == "01-home" ? 910 : 1450, height: 1500))
         } else {
             let angle: CGFloat = name == "02-calls" ? -4 : (name == "04-messages" ? 4 : 0)
             phone(screenshot, rect: CGRect(x: 170, y: 710, width: 980,
