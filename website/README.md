@@ -8,7 +8,9 @@ From this directory, run `npm run dev` and open http://127.0.0.1:4173. Restart a
 
 ## Vercel
 
-Import `tigerisaac/aaacap-project` and set **Root Directory** to `website`. Framework: **Other**. The checked-in `vercel.json` supplies the build command (`npm run build`) and output directory (`dist`). No environment variables or secrets are required. Use `main` for production; Vercel can create previews for other branches. Do not deploy the repository root or the Firebase application as this website.
+Live: **https://shield-call-protection.vercel.app**. Project: `shield-call-protection` in `tigerisaacs-projects`, connected to `tigerisaac/aaacap-project`, production branch `main`, **Root Directory** `website`, framework **Other**. The checked-in `vercel.json` supplies the build command (`npm run build`) and output directory (`dist`). No environment variables or secrets are required. GitHub pushes trigger Vercel deployments. Do not deploy the repository root or the Firebase application as this website.
+
+First production deployment verified October 25, 2026 (Central): `dpl_J8CNXzGYAEsw3Np6ZXpQfm9nRkK5`, source `e99ec33d149683a1e63319039dd382160c563e75`. The public homepage, CSS and photograph return HTTP 200; source-only `site.json` and `package.json` return 404. The homepage serves the configured security headers and coming-soon state. No Firebase service or app-release setting changed.
 
 ## App Store release
 
