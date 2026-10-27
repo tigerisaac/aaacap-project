@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "build": "4",
+  "configuration": "Release",
+  "device": "iPhone Duo",
+  "os": "iOS 27.1",
+  "pixelSize": [
+    1398,
+    2034
+  ],
+  "scope": "Bounded native-navigation correction and settled demo identity; see finish-verdict.md.",
+  "captures": [
+    {
+      "path": "verdict-light/demo-welcome.png",
+      "appearance": "Light",
+      "sha256": "6ac7387081fb93acf0e7c70d4b860ec732814aae9ffc40e1dc9257d61ddaf748"
+    },
+    {
+      "path": "verdict-light/demo-home.png",
+      "appearance": "Light",
+      "sha256": "bb0adac4f185ea64b9a57e98c8adc82dfc4745ac9574d2f0a0eb6fd1b3d0d27f"
+    },
+    {
+      "path": "verdict-light/demo-message-largest-paused.png",
+      "appearance": "Light",
+      "sha256": "ead756a0d132f68c6b2f1ebaa5f90b3ab5c89b01e4af88c5fdbc9d529795215e"
+    },
+    {
+      "path": "verdict-light/demo-caretaker-alert-direct.png",
+      "appearance": "Light",
+      "sha256": "52341a522df3ea34e13d577e0988c6b17eb1a04750892e0a8107d48f00fd02c1"
+    },
+    {
+      "path": "verdict-dark/demo-welcome.png",
+      "appearance": "Dark",
+      "sha256": "774b9595051dbcf7170cb73e134d279b494b00c959a5118c9118d6aba24fe649"
+    },
+    {
+      "path": "verdict-dark/demo-home.png",
+      "appearance": "Dark",
+      "sha256": "795e5ea37e2e11defde8311ea5853bef110484b94703ee4218555d6dbb113d88"
+    },
+    {
+      "path": "verdict-dark/demo-message-largest-paused.png",
+      "appearance": "Dark",
+      "sha256": "0fec1a666a27e6e1779772f379dc08aa2c3cd23c8eb5165c91affaf615683559"
+    },
+    {
+      "path": "verdict-dark/demo-caretaker-alert-settled.png",
+      "appearance": "Dark",
+      "sha256": "62008a0c1cd041d12a67018069e3be820f2fdc668e2103679074fb1d739c2a1b"
+    }
+  ],
+  "superseded": [
+    "release-light (misnamed: Dark; pre-fix clipped navigation)",
+    "verdict-light/demo-caretaker-alert.png (unsettled transition)",
+    "verdict-dark/demo-caretaker-alert.png (unsettled transition)"
+  ],
+  "limitations": [
+    "No final iOS 27.0 or physical-device verification",
+    "No Apple transactions, live calls or external alerts"
+  ]
+}

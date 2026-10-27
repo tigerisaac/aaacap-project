@@ -433,6 +433,12 @@ The earlier [trial ship review](.impeccable/review/setup-shortcut-install/finish
 
 The persistent Sample app or Test account · Sample data marker establishes fixture context. Sample summary identifies authored text; Hear sample message is on-device speech, not a caller recording. Sample Keep/filter actions only affect memory. Real messages retain service expiry/deletion and have no permanent Keep action. Permissions still gate listening and owner controls. Sample text-check results retain the explicit example/not-checked explanation without a repeated Sample answer eyebrow.
 
+The public reviewer demo extends this same native visual system. Explore demo uses the existing secondary action with “Fictional calls. No phone setup or purchase.” Its persistent “Demo · No live calls” capsule sits on the shared adaptive surface above the four native tabs; About this demo uses the existing grouped list and navigation. Calls, messages, caretakers and connected-call protection reuse their existing screens. Bundled synthetic message and warning audio use the existing playback controls; the warning identifies itself as a prerecorded example. No new palette, typography or raster artwork is introduced. Source and walkthrough: [reviewer demo](docs/APP-REVIEW-DEMO.md).
+
+**The Reviewer Demo Context Rule.** Keep fictional, no-live-call identity visible throughout the reviewer demo. Explain local-only changes and reset-on-exit in its guide, label synthetic audio as an example, and keep Leave demo reachable. A changed demo choice or played warning never establishes live protection, alert delivery, carrier setup or an Apple purchase.
+
+This describes the local source, not final visual acceptance, build or upload verification, App Review approval or real-call evidence.
+
 The sidecar's self-contained HTML/CSS is a schematic browser preview of the native patterns, not a native pixel specification. Browser fonts, symbols, corner metrics, hover/focus feedback and sizing are illustrative; SwiftUI source is authoritative. No unresolved audit diagnostic, hidden or partially exposed text target, or intermediate low-contrast toolbar rendering is canonized as a design rule.
 
 ### App Store marketing screenshots

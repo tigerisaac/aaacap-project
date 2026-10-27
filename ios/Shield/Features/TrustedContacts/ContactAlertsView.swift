@@ -36,7 +36,7 @@ struct ContactAlertsView: View {
                         }
                     }
                     if response.textsStopped { ShieldGroup { Text("You stopped Shield texts. Reply START to Shield’s text number to resume them. App notifications can stay on.") } }
-                    if response.requests.isEmpty {
+                    if response.requests.isEmpty, !model.isReviewDemo {
                         ShieldGroup {
                             ContentUnavailableView {
                                 Label {
@@ -92,6 +92,11 @@ struct ContactAlertsView: View {
         loadRevision += 1
         let revision = loadRevision
         error = nil
+        if model.isReviewDemo {
+            response = .init(requests: [], textAvailable: false, appAvailable: false, textsStopped: false, inboxAvailable: true,
+                events: [.init(id: "demo-alert", name: "Pat · Sample alert", occurredAt: .now.addingTimeInterval(-3600))])
+            return
+        }
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if ProcessInfo.processInfo.arguments.contains("--uitesting-alert-requests-empty") {

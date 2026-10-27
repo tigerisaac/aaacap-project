@@ -40,5 +40,10 @@ struct JoinView: View {
                 .refreshable { await model.refresh() }
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            if !model.isLoading {
+                DemoEntryButton().padding(ShieldTheme.Spacing.content).background(ShieldTheme.surface)
+            }
+        }
     }
 }

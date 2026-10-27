@@ -22,6 +22,9 @@ struct TrustedContactsView: View {
     var body: some View {
         ScrollViewReader { proxy in
             List {
+                if model.isReviewDemo {
+                    ShieldGroup { Text("Sample caretakers. Changes stay in this demo; no requests or alerts are sent.").foregroundStyle(ShieldTheme.secondaryText) }
+                }
                 #if DEBUG && targetEnvironment(simulator)
                 if ProcessInfo.processInfo.arguments.contains("--uitesting-caretaker-refresh") {
                     Button("Start held refresh") { Task { await load() } }
@@ -65,7 +68,7 @@ struct TrustedContactsView: View {
                             }.padding(.vertical, 4)
                             if contact.status == "pending", let label = contact.invitationDeliveryLabel {
                                 Text(label).font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
-                            } else if contact.status == "pending" {
+                            } else if contact.status == "pending", !model.isReviewDemo {
                                 Text(response.textAvailable == false ? "Share the invitation with them. They sign in with this mobile number to review it." : "The request text wasn’t confirmed. They can sign in to Shield with this number to review it.").font(.subheadline).foregroundStyle(ShieldTheme.secondaryText)
                             }
                             if contact.status == "pending", let url = response.invitationURL {
@@ -80,7 +83,10 @@ struct TrustedContactsView: View {
                     if response.supportsRequests, let id = model.selectedPersonID {
                         ShieldGroup {
                             NavigationLink { AddTrustedContactView(participantID: id, textAvailable: response.textAvailable != false) { contact in
-                                if model.isPreview {
+                                if model.isReviewDemo {
+                                    model.reviewDemo.setCaretakers(contacts: model.reviewDemo.caretakers.contacts + [contact])
+                                    self.response = model.reviewDemo.caretakers
+                                } else if model.isPreview {
                                     self.response = .init(available: true, choiceRecorded: true, enabled: true, contacts: response.contacts + [contact])
                                 } else { Task { await load() } }
                             } } label: {
@@ -138,6 +144,7 @@ struct TrustedContactsView: View {
         loading = true
         error = nil
         defer { if revision == loadRevision { loading = false } }
+        if model.isReviewDemo { response = model.reviewDemo.caretakers; return }
         if model.isPreview {
             #if DEBUG && targetEnvironment(simulator)
             if response == nil {
@@ -179,6 +186,11 @@ struct TrustedContactsView: View {
     }
     private func setEnabled(_ enabled: Bool) async {
         guard !working, model.isOwner, let id = model.selectedPersonID else { return }
+        if model.isReviewDemo {
+            model.reviewDemo.setCaretakers(enabled: enabled)
+            response = model.reviewDemo.caretakers
+            return
+        }
         let generation = model.sessionGeneration
         invalidateOlderLoads()
         working = true; error = nil; defer { working = false }
@@ -196,6 +208,12 @@ struct TrustedContactsView: View {
     }
     private func remove() async {
         guard let removing, !working, model.isOwner, let id = model.selectedPersonID else { return }
+        if model.isReviewDemo {
+            model.reviewDemo.setCaretakers(contacts: model.reviewDemo.caretakers.contacts.filter { $0.id != removing.id })
+            response = model.reviewDemo.caretakers
+            self.removing = nil
+            return
+        }
         let generation = model.sessionGeneration
         invalidateOlderLoads()
         working = true; error = nil; defer { working = false; self.removing = nil }

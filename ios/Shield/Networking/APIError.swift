@@ -50,6 +50,7 @@ enum APIError: LocalizedError {
             case "texts_stopped": "You stopped Shield texts. Reply START to Shield’s text number to resume, or choose app alerts."
             case "alert_channel_required": "Choose an available way to receive or save alerts."
             case "invalid_phone": "Enter a valid US or Canadian phone number."
+            case "demo_only": "This action needs a connected account. Leave the demo to continue."
             case "routing_test_required", "setup_incomplete": "Check that your phone works with Shield before starting again."
             case "setup_not_ready": "Finish phone setup before trying again."
             case "restoration_in_progress", "restore_forwarding_before_deletion": "Disconnect Shield in Phone setup and check ordinary calls and voicemail before deleting your account. If you already disconnected, Shield needs to confirm the restoration."

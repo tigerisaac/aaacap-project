@@ -6,7 +6,7 @@ struct DemoBanner: View {
 
     var body: some View {
         // A quiet tag, so it never reads as the screen's title just below it.
-        Text(model.isTestAccount ? "Test account · Sample data" : "Sample app")
+        Text(model.isReviewDemo ? "Demo · No live calls" : model.isTestAccount ? "Test account · Sample data" : "Sample app")
             .font(.subheadline.weight(.medium))
             .fixedSize(horizontal: false, vertical: true)
             .multilineTextAlignment(.center)
@@ -18,15 +18,22 @@ struct DemoBanner: View {
             .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)
-            .accessibilityLabel(model.isTestAccount ? "Test account, sample activity" : "Sample app, no real calls")
+            .accessibilityLabel(model.isReviewDemo ? "Demo, fictional activity, no live calls" : model.isTestAccount ? "Test account, sample activity" : "Sample app, no real calls")
             .accessibilityIdentifier("demoBanner")
     }
 }
 
 extension View {
     @ViewBuilder
-    func demoAccessory(_ isDemo: Bool) -> some View {
-        if isDemo && !PreviewScenario.appStoreCapture {
+    func demoAccessory(_ isDemo: Bool, review: Bool = false) -> some View {
+        if isDemo && review {
+            VStack(spacing: 0) {
+                DemoBanner().padding(.vertical, 8).background(ShieldTheme.surface)
+                    .fixedSize(horizontal: false, vertical: true).layoutPriority(1).zIndex(1)
+                self.frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+            }
+            .background(ShieldTheme.surface)
+        } else if isDemo && !PreviewScenario.appStoreCapture {
             VStack(spacing: 0) {
                 DemoBanner().padding(.vertical, 8).background(ShieldTheme.surface)
                 self

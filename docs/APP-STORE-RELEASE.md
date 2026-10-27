@@ -2,6 +2,45 @@
 
 Updated October 26, 2026. **Shield is being prepared for public App Store distribution, but is not ready to submit or release.** The latest dated section takes precedence over historical preparation records below. Do not treat an unchecked item as completed.
 
+## October 26 — reviewer demo in build 4
+
+The owner chose a clearly labeled demo before arranging a separate test line.
+Version 1.0.0 build 4 adds **Explore demo** to sign-in and the empty-account
+screen. It supplies fictional calls, three playable voice messages, a sample
+spoken warning, local blocked-number and caretaker controls, and an explanatory
+guide. The local session blocks API requests and does not provision a phone,
+grant a subscription or change the deployed service. See [reviewer walkthrough](APP-REVIEW-DEMO.md).
+
+Build 3 finished processing and was independently verified as **Ready to Submit**
+in TestFlight at 18:01 Central. This is a build-processing status, not public
+App Review approval. Its screenshot uploads remain current.
+
+The corrected build 4 archive and App Store export passed packaging and
+signature verification. All four synthetic audio resources match the source;
+248 recorded app/configuration/resource hashes are unchanged. The test-only
+screenshot helper was subsequently given a settling delay; it is not part of
+the signed app. Exported IPA SHA-256:
+`f99d90c9395dc6528daf592c1e5121e76c03c03832e6e267a2133f2c6d2941d3`.
+Evidence is retained in `artifacts/reviewer-demo-2026-10-26/`, with the current
+export in `distribution-reviewed/Shield.ipa`. Earlier build-4 candidates in
+that directory are superseded. Upload is in progress. The independent visual verdict is **ship**, limited to
+the corrected native navigation and its eight required Light/Dark captures;
+see [bounded verdict](../.impeccable/review/reviewer-demo-2026-10-26/finish-verdict.md).
+
+Five focused Release UI tests passed on iPhone Duo / iOS 27.1. After removing
+whole-tab clipping, the guide-to-alert, largest-text playback and saved-message
+pause/resume/replay checks passed again. The guide and largest-text checks also
+passed in Dark; a final guide run with settled screenshots passed. Direct active-display capture confirms
+visible native tabs, Back and demo identity on the pushed alert. Earlier
+stalled iOS 27.0 runs and interrupted test launches are retained as tooling
+failures; they do not establish final compact-device appearance. The required
+backend checks also passed: `npm run check` (401 tests), `npm run test:firebase`
+(326 tests), and `npm run test:subscriptions`.
+
+Do not submit based on the demo alone. Actual Apple sandbox purchase/restore
+testing, a live reviewer path and the Account Holder's agreement update remain
+release work. No production configuration was changed.
+
 ## October 26 — build 3 upload and reviewer-access verification
 
 The owner authorized uploading build 3 and the latest screenshots. Xcode archived and exported version **1.0.0 (3)**, then reported **Upload succeeded** at 17:36 Central. App Store Connect independently showed build 3 **Processing**. Processing completion and selection for the public version still need verification. No App Review submission or public release occurred.

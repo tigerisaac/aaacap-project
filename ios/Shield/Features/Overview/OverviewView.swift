@@ -23,6 +23,12 @@ struct OverviewView: View {
         NavigationShell {
             List {
                 PersonContextSection()
+                if model.isReviewDemo {
+                    ShieldGroup {
+                        Text("Fictional activity. Your phone is unchanged.").foregroundStyle(ShieldTheme.secondaryText)
+                        NavigationLink(value: AppRoute.demoGuide) { ActionRow(title: "About this demo", symbol: "info.circle") }
+                    }
+                }
                 if !model.isDemo || isStatusFixture {
                     ShieldGroup(background: .clear) {
                         TimelineView(.periodic(from: .now, by: 30)) { context in

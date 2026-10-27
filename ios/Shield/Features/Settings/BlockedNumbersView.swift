@@ -100,6 +100,11 @@ struct BlockedNumbersView: View {
             loadError = failure
             return
         }
+        if model.isReviewDemo {
+            items = model.reviewDemo.blockedNumbers
+            loaded = true
+            return
+        }
         if model.isPreview {
             items = PreviewScenario.emptyData("blocked", preview: model.isPreview) ? [] : [BlockedNumber(id: String(repeating: "a", count: 64), phone: "+13125550199", reason: "scam",
                 blockedAt: .now.addingTimeInterval(-86400), expiresAt: .now.addingTimeInterval(179 * 86400), attempts: 2, lastAttemptAt: .now)]
@@ -138,6 +143,11 @@ struct BlockedNumbersView: View {
         let generation = model.sessionGeneration
         working = true
         defer { working = false }
+        if model.isReviewDemo {
+            model.reviewDemo.blockedNumbers.removeAll { $0.id == item.id }
+            items = model.reviewDemo.blockedNumbers
+            return
+        }
         if model.isPreview { items.removeAll { $0.id == item.id }; return }
         loadRevision += 1
         model.callDirectory.invalidateRequests()

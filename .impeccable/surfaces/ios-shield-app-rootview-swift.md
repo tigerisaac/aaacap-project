@@ -17,7 +17,7 @@ OWN-WORLD: Pale neutral ground, white native grouped surfaces, deep navy actions
 
 STORY: Understand what Shield does, make a clear choice, and review a call or message without decoding visual conventions.
 
-FIRST VIEWPORT: A small Shield identity, a short serif welcome, one sentence about the sign-in code and a clearly bounded phone field. The country label aligns with the field label where it fits, the action follows the form, and Privacy sits directly beneath it. Daily screens have composed native titles, roomy aligned rows and a purposeful historical-total panel.
+FIRST VIEWPORT: Shield identity, serif welcome, phone field and sign-in action. “Explore demo” follows with a fictional-data explanation, then Privacy. Daily screens retain native titles and roomy rows; demo sessions have a persistent label and an About link.
 
 FORM: User-pinned America.gov-inspired direction overrides the cdfd6ff0 roll. Code-led native implementation; typography and controls adapt with Dynamic Type. Signature interaction: explicit choices retain state, with immediate native feedback.
 

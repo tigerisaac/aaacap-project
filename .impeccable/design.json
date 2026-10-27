@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T06:41:28Z",
+  "generatedAt": "2026-10-27T00:05:57Z",
   "title": "Design System: Shield",
   "extensions": {
     "colorMeta": {
@@ -696,7 +696,7 @@
       "name": "Native secondary action",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Native large bordered capsule and adaptive Action tint; native pressed/disabled states. Source: Design/ShieldComponents.swift.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Native large bordered capsule and adaptive Action tint; native pressed/disabled states. Source: Design/ShieldComponents.swift. The public Explore demo entry reuses this action with a fictional-data/no-purchase explanation; it adds no new button variant.",
       "html": "<button class=\"ds-secondary\" type=\"button\">Allow calls again</button>",
       "css": ".ds-secondary{width:100%;max-width:360px;white-space:normal;min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:#E7EBF1;color:#002664;font:600 1rem system-ui;cursor:pointer}.ds-secondary:hover{filter:brightness(.96)}.ds-secondary:focus-visible{outline:2px solid #002664;outline-offset:3px}.ds-secondary:active{filter:brightness(.9)}.ds-secondary:disabled{background:ButtonFace;color:#101E32;cursor:default}@media(prefers-color-scheme:dark){.ds-secondary{background:#28364A;color:#B9CDF2}}@media(prefers-contrast:more){.ds-secondary{background:#DCE2EA;color:#001A45}}@media(prefers-color-scheme:dark) and (prefers-contrast:more){.ds-secondary{background:#34465F;color:#D6E4FF}}"
     },
@@ -712,7 +712,7 @@
       "name": "Four native tabs",
       "kind": "nav",
       "refersTo": "navigation",
-      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Home, Calls, Messages and More native tabs use familiar sans labels. Navigation titles remain native sans; custom content headings use serif. Person context moves into content at accessibility sizes. Source: App/RootView.swift, Design/PersonContextSection.swift and Navigation/NavigationShell.swift.",
+      "description": "Schematic documentation preview; native SwiftUI remains authoritative. Browser pixels, typography, symbols, corners, focus and hover feedback are illustrative. Home, Calls, Messages and More native tabs use familiar sans labels. Navigation titles remain native sans; custom content headings use serif. Person context moves into content at accessibility sizes. Source: App/RootView.swift, Design/PersonContextSection.swift and Navigation/NavigationShell.swift. The reviewer demo retains these tabs beneath a persistent Demo · No live calls marker on the shared adaptive surface, with About this demo and Leave demo in the existing navigation.",
       "html": "<nav class=\"ds-tabs\" aria-label=\"Shield destinations\"><button type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10\"/></svg><span>Home</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 3-4 2C9 19 5 15 3 7 2 5 3 3 5 3z\"/></svg><span>Calls</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 4h14l3 12v5H2v-5zM2 16h6l2 3h4l2-3h6\"/></svg><span>Messages</span></button><button type=\"button\"><svg aria-hidden=\"true\" focusable=\"false\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg><span>More</span></button></nav>",
       "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:390px;padding:8px;background:#F2F3F4}.ds-tabs button{display:grid;justify-items:center;gap:4px;min-height:52px;padding:6px 4px;border:0;border-radius:8px;background:transparent;color:rgb(32% 37% 44%);font:500 .75rem system-ui;cursor:pointer}.ds-tabs svg{width:22px;height:22px}.ds-tabs button[aria-current]{color:#002664}.ds-tabs button:hover{background:rgb(0 38 100 / .08)}.ds-tabs button:focus-visible{outline:2px solid #002664}.ds-tabs button:active{background:rgb(0 38 100 / .12)}@media(prefers-color-scheme:dark){.ds-tabs button{color:rgb(72% 77% 84%)}.ds-tabs button[aria-current]{color:#B9CDF2}}@media(prefers-color-scheme:dark){.ds-tabs{background:#101B2B}}"
     },
@@ -860,6 +860,11 @@
       {
         "name": "The Native Setup Handoff Rule",
         "body": "Keep direct native Add Shortcut import quiet, start and arm the steady floating reminder only from Open Phone settings, and reset it on return or import. Keep both setting confirmations explicit; a remembered helper choice, opening the public link or returning to Shield establishes neither Add Shortcut acceptance nor a changed switch.",
+        "section": "components"
+      },
+      {
+        "name": "The Reviewer Demo Context Rule",
+        "body": "Keep fictional, no-live-call identity visible throughout the reviewer demo. Explain local-only changes and reset-on-exit in its guide, label synthetic audio as an example, and keep Leave demo reachable. A changed demo choice or played warning never establishes live protection, alert delivery, carrier setup or an Apple purchase.",
         "section": "components"
       },
       {

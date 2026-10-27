@@ -27,6 +27,9 @@ final class AppState {
     var deletionSubmitted = false
     var isPreview = false
     var isDemo = false
+    var isReviewDemo = false
+    var reviewDemo = ReviewDemo()
+    var sampleOverview: Overview? { isReviewDemo ? reviewDemo.overview : person.map(DemoData.overview) }
     /// Debug-simulator-only sample account that also shows owner-only screens the demo hides. Never contacts the service.
     var isTestAccount = false
     var people: [Person] = []
@@ -167,6 +170,32 @@ final class AppState {
 
     func exploreDemo() {
         startPreview(testAccount: false)
+    }
+
+    func enterReviewDemo() async {
+        guard !isDeletingAccount, !signedIn || people.isEmpty else { return }
+        isRestoringSession = true
+        sessionGeneration += 1
+        audioSyncTask?.cancel()
+        audioSyncTask = nil
+        await api.isolateForDemo()
+        await messageAudio.activate(nil)
+        await historyStore.activate(nil)
+        localMessages = []
+        offlineHistories = []
+        historySavedAt = nil
+        showingSavedHistory = false
+        service = nil
+        callsError = nil
+        contextError = nil
+        errorMessage = nil
+        showingError = false
+        filter = .all
+        isReviewDemo = true
+        reviewDemo = ReviewDemo()
+        startPreview(testAccount: false)
+        people = [DemoData.participant]
+        selectedTab = 0
     }
 
     private func startPreview(testAccount: Bool) {
@@ -430,7 +459,7 @@ final class AppState {
     /// Change the selected rows in the same update as the picker, before its async task starts.
     private func prepareCallFilter() {
         guard callsFilter != filter else { return }
-        calls = isPreview ? (person.map(DemoData.overview)?.recent ?? []).filter(filter.includes)
+        calls = isPreview ? (sampleOverview?.recent ?? []).filter(filter.includes)
             : offlineHistories.first { $0.person.id == selectedPersonID }?.calls.filter(filter.includes) ?? []
         showingSavedHistory = !isPreview && !calls.isEmpty
         callsError = nil
@@ -456,7 +485,7 @@ final class AppState {
             }
             #endif
             callsError = nil
-            calls = (person.map(DemoData.overview)?.recent ?? []).filter(filter.includes)
+            calls = (sampleOverview?.recent ?? []).filter(filter.includes)
             loadedCallFilters.insert(filter)
             nextCursor = nil
             return
@@ -517,6 +546,8 @@ final class AppState {
         showingSavedHistory = false
         isPreview = false
         isDemo = false
+        isReviewDemo = false
+        reviewDemo = ReviewDemo()
         people = []
         selectedPersonID = nil
         overview = nil
@@ -584,7 +615,7 @@ final class AppState {
 
     private func loadPreview() {
         guard let person else { return }
-        let preview = DemoData.overview(for: person)
+        let preview = isReviewDemo ? reviewDemo.overview : DemoData.overview(for: person)
         overview = preview
         contextError = nil
         callsError = nil

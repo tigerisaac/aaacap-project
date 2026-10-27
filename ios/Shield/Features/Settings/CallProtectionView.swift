@@ -22,17 +22,18 @@ struct CallProtectionView: View {
                     if loadingVisible { ShieldLoadingView(title: "Checking your setting…") }
                 } else {
                 Toggle("Check calls while I talk", isOn: Binding(
-                    get: { monitoring?.enabled == true },
+                    get: { model.isReviewDemo ? model.reviewDemo.monitoringEnabled : monitoring?.enabled == true },
                     set: { on in
                         if on { confirmEnable = true } else { Task { await save(enabled: false) } }
                     }))
-                    .disabled(working || model.isPreview || model.isDemo || monitoring?.available != true)
+                    .disabled(working || (!model.isReviewDemo && (model.isPreview || model.isDemo || monitoring?.available != true)))
                 if working { ProgressView("Saving your choice…") }
                 }
             } footer: {
                 if !footer.isEmpty { Text(footer) }
             }
             ShieldGroup { CallProtectionExplanation() }
+            if model.isReviewDemo { ShieldGroup { DemoWarningView() } }
         }
         .deferredLoading(!loaded && !loadFailed && !model.isPreview && !model.isDemo, visible: $loadingVisible)
         .shieldListStyle()
@@ -42,12 +43,14 @@ struct CallProtectionView: View {
             Button("Turn on") { Task { await save(enabled: true) } }
             Button("Not now", role: .cancel) {}
         } message: {
-            Text("Telnyx uses Soniox to turn both people’s speech into words for OpenAI to check. Shield may warn you and end the call. Checks can be wrong. The caller is told first.")
+            Text(model.isReviewDemo ? "This changes the demo only. No call is monitored, and no audio is sent to a service."
+                : "Telnyx uses Soniox to turn both people’s speech into words for OpenAI to check. Shield may warn you and end the call. Checks can be wrong. The caller is told first.")
         }
         .task { await load() }
     }
 
     private var footer: String {
+        if model.isReviewDemo { return "Demo choice only. No call is monitored and no speech leaves this phone." }
         if model.isPreview || model.isDemo { return "This setting doesn’t change in the sample app." }
         if loadFailed { return "" }
         guard let monitoring else { return loaded ? "This isn’t ready for your phone yet." : "" }
@@ -78,6 +81,7 @@ struct CallProtectionView: View {
     }
 
     private func save(enabled: Bool) async {
+        if model.isReviewDemo { model.reviewDemo.monitoringEnabled = enabled; return }
         guard let id = model.selectedPersonID, let monitoring, !working else { return }
         working = true
         defer { working = false }

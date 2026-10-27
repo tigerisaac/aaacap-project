@@ -35,6 +35,8 @@ struct CallDetailView: View {
         PreviewScenario.requested("audio", preview: model.isPreview)
             || (model.isPreview && PreviewScenario.appStoreCapture)
     }
+    private var usesLocalPlayback: Bool { usesAudioFixture || model.isReviewDemo }
+    private var recordingReady: Bool { call.voicemail?.status == "ready" || (model.isReviewDemo && call.voicemail?.status == "sample") }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -94,7 +96,7 @@ struct CallDetailView: View {
             }
             if let message = call.voicemail, model.canListen, !messageRemoved {
                 if let summary = message.summary {
-                    if model.isDemo && !PreviewScenario.appStoreCapture { VoicemailPreviewCard(call: call) }
+                    if model.isDemo && !model.isReviewDemo && !PreviewScenario.appStoreCapture { VoicemailPreviewCard(call: call) }
                     else { ShieldGroup {
                         Text(summary).font(.title3).fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("message-summary")
@@ -119,11 +121,15 @@ struct CallDetailView: View {
             if inlineMessageActions, hasMessageAction, !playbackActionsInProgress {
                 messageActions().listRowInsets(EdgeInsets()).listRowBackground(ShieldTheme.surface)
             }
-            if model.isDemo, !usesAudioFixture, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
+            if model.isReviewDemo, call.reasonCode == "monitor_intervened" {
+                ShieldGroup { DemoWarningView() }
+            }
+            if model.isDemo, !usesLocalPlayback, model.canListen, call.voicemail != nil, call.voicemail?.summary == nil, call.voicemail?.status != "removed" {
                 VoicemailPreviewCard(call: call)
-            } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen || usesAudioFixture {
+            } else if let voicemail = call.voicemail, !messageRemoved, !model.isDemo || !model.canListen || usesLocalPlayback {
                 ShieldGroup {
-                    if voicemail.status == "ready", model.canListen {
+                    if recordingReady, model.canListen {
+                        if model.isReviewDemo { Text("Fictional voice recording").foregroundStyle(ShieldTheme.secondaryText) }
                         LabeledContent("Length", value: voicemail.durationLabel)
                         if let audioUnavailableReason {
                             ShieldNotice(title: "Recording unavailable", detail: audioUnavailableReason, symbol: "waveform.slash")
@@ -303,12 +309,12 @@ struct CallDetailView: View {
                 } message: { Text("Don’t call a number from the message. Use one you already know.") }
             }
             if let voicemail = call.voicemail, model.canListen, voicemail.status != "removed" {
-                if model.isDemo && !usesAudioFixture {
+                if model.isDemo && !usesLocalPlayback {
                     Button { toggleSample() } label: {
                         ShieldActionLabel(title: samplePlayer?.playing == true ? "Stop sample" : "Hear sample message")
                     }
                     .shieldPrimaryButton().padding(16).background(background)
-                } else if voicemail.status == "ready", audioUnavailableReason == nil {
+                } else if recordingReady, audioUnavailableReason == nil {
                     Button { Task { await togglePlayback(voicemail) } } label: {
                         ShieldActionLabel(title: player.loading ? "Getting message…" : player.playing ? "Pause message" : player.paused ? "Resume message" : "Listen to message", isWorking: player.loading)
                     }
@@ -356,7 +362,7 @@ struct CallDetailView: View {
             catch { playbackError = error.localizedDescription }
             return
         }
-        guard let personID = model.selectedPersonID, !model.isPreview || usesAudioFixture else { return }
+        guard let personID = model.selectedPersonID, !model.isPreview || usesLocalPlayback else { return }
         let request = UUID()
         playbackRequest = request
         do {
@@ -377,6 +383,7 @@ struct CallDetailView: View {
     }
 
     private func playbackAudio() async throws -> Data {
+        if model.isReviewDemo { return try ReviewDemo.audio(for: call) }
         #if DEBUG && targetEnvironment(simulator)
         if usesAudioFixture {
             if ProcessInfo.processInfo.arguments.contains("--uitesting-delayed-audio") { try await Task.sleep(for: .seconds(4)) }
@@ -389,6 +396,7 @@ struct CallDetailView: View {
     }
 
     private func markPlayed(_ voicemail: Voicemail) async {
+        if model.isReviewDemo { playedStatusFailed = false; return }
         guard model.canListen, model.signedIn, let personID = model.selectedPersonID, !updatingPlayedStatus else { return }
         updatingPlayedStatus = true
         defer { updatingPlayedStatus = false }

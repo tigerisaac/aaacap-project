@@ -11,7 +11,7 @@ struct VoicemailView: View {
         #if DEBUG && targetEnvironment(simulator)
         if ProcessInfo.processInfo.arguments.contains("--uitesting-message-filters") { return true }
         #endif
-        return !app.isDemo
+        return !app.isDemo || app.isReviewDemo
     }
     private var initialLoading: Bool { inbox.loading && inbox.calls.isEmpty && !inbox.hasLoaded }
 

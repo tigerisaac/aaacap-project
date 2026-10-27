@@ -64,6 +64,7 @@ struct PhoneSignInView: View {
                         }
                         .shieldPrimaryButton().disabled(!canSubmit)
                         .accessibilityIdentifier("phone-sign-in-submit")
+                        if challenge == nil { DemoEntryButton().disabled(working) }
                         // Secondary choices stack as one quiet group of full-width targets below the action.
                         VStack(alignment: .leading, spacing: 0) {
                             if challenge != nil {

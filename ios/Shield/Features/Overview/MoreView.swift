@@ -6,6 +6,9 @@ struct MoreView: View {
     var body: some View {
         NavigationShell {
             List {
+                if model.isReviewDemo {
+                    ShieldGroup { NavigationLink(value: AppRoute.demoGuide) { ActionRow(title: "About this demo", symbol: "info.circle") } }
+                }
                 ShieldGroup {
                     NavigationLink(value: AppRoute.check) {
                         ActionRow(title: "Check a text", symbol: "text.magnifyingglass")
@@ -27,7 +30,7 @@ struct MoreView: View {
                 if model.isDemo && !model.isTestAccount {
                     ShieldGroup {
                         Button { Task { await model.signOut() } } label: {
-                            ActionRow(title: "Leave sample app", symbol: "rectangle.portrait.and.arrow.right")
+                            ActionRow(title: model.isReviewDemo ? "Leave demo" : "Leave sample app", symbol: "rectangle.portrait.and.arrow.right")
                         }
                     }
                 }

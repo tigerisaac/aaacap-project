@@ -33,6 +33,7 @@ struct SettingsView: View {
             }
             ShieldSection("Account") {
                 let leavesSample = model.isDemo && !model.isTestAccount
+                let leaveTitle = model.isReviewDemo ? "Leave demo" : leavesSample ? "Leave sample app" : "Sign out"
                 if !model.people.contains(where: \.isOwner), !model.isDemo, model.service?.publicEnrollmentSupported == true {
                     NavigationLink(value: AppRoute.publicEnrollment) {
                         ActionRow(title: "Connect my phone", symbol: "phone.badge.plus")
@@ -56,10 +57,10 @@ struct SettingsView: View {
                     ActionRow(title: "Delete account", symbol: "person.badge.minus")
                 }
                 Button { confirmSignOut = true } label: {
-                    ActionRow(title: leavesSample ? "Leave sample app" : "Sign out", symbol: "rectangle.portrait.and.arrow.right")
+                    ActionRow(title: leaveTitle, symbol: "rectangle.portrait.and.arrow.right")
                 }
-                    .alert(leavesSample ? "Leave the sample app?" : "Sign out?", isPresented: $confirmSignOut) {
-                        Button(leavesSample ? "Leave sample app" : "Sign out") { Task { await model.signOut() } }
+                    .alert(model.isReviewDemo ? "Leave the demo?" : leavesSample ? "Leave the sample app?" : "Sign out?", isPresented: $confirmSignOut) {
+                        Button(leaveTitle) { Task { await model.signOut() } }
                         Button("Cancel", role: .cancel) {}
                     } message: {
                         if !model.isDemo { Text("Your phone may still send calls to Shield. Use Phone setup to disconnect it.") }

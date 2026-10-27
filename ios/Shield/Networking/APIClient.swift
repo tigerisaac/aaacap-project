@@ -7,6 +7,7 @@ actor APIClient {
     private var tokens: AuthTokens?
     private var refreshing: Task<AuthTokens, Error>?
     private var sessionGeneration = 0
+    private var demoIsolated = false
     private let navigationCache = NavigationCache()
     private let phoneSetupCache = PhoneSetupCache()
     private var phoneSetupGeneration = 0
@@ -47,6 +48,7 @@ actor APIClient {
 
     /// A local namespace only; the server verifies authorization for every remote operation.
     var localAccountID: String? {
+        guard !demoIsolated else { return nil }
         guard let token = tokens?.accessToken else { return nil }
         let pieces = token.split(separator: ".")
         guard pieces.count == 3 else { return nil }
@@ -157,6 +159,7 @@ actor APIClient {
     }
 
     func send<T: Decodable & Sendable>(_ path: String, method: String = "GET", body: Data? = nil, participantID: UUID? = nil, authenticated: Bool = true) async throws -> T {
+        guard !demoIsolated else { throw APIError.service(code: "demo_only", status: 409) }
         let generation = sessionGeneration
         let setupGeneration = phoneSetupGeneration
         let result: Data
@@ -204,6 +207,7 @@ actor APIClient {
     }
 
     func data(_ path: String, method: String = "GET", body: Data? = nil, participantID: UUID? = nil, authenticated: Bool = true, retried: Bool = false, expectedGeneration: Int? = nil) async throws -> Data {
+        guard !demoIsolated else { throw APIError.service(code: "demo_only", status: 409) }
         let generation = expectedGeneration ?? sessionGeneration
         if authenticated, generation != sessionGeneration { throw CancellationError() }
         #if DEBUG && targetEnvironment(simulator)
@@ -332,6 +336,18 @@ actor APIClient {
         }
     }
 
+    func isolateForDemo() async {
+        demoIsolated = true
+        sessionGeneration += 1
+        refreshing?.cancel()
+        refreshing = nil
+        cacheOwners = []
+        await navigationCache.invalidate()
+        // No request may escape through a forgotten preview guard in a feature view.
+        let tasks = await session.allTasks
+        tasks.forEach { $0.cancel() }
+    }
+
     func signOut() async {
         let previous = tokens?.accessToken
         sessionGeneration += 1
@@ -339,6 +355,7 @@ actor APIClient {
         refreshing?.cancel()
         refreshing = nil
         tokens = nil
+        demoIsolated = false
         keychain.clear()
         await navigationCache.invalidate()
         if let previous, let baseURL = configuration.baseURL {

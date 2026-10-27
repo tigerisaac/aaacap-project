@@ -30,7 +30,7 @@ final class VoicemailInbox {
         error = nil
         defer { if generation == request { loading = false } }
         if preview {
-            calls = PreviewScenario.emptyData("messages", preview: preview) ? [] : DemoData.overview(for: person).recent.filter { $0.voicemail != nil }
+            calls = PreviewScenario.emptyData("messages", preview: preview) ? [] : (app.sampleOverview?.recent ?? []).filter { $0.voicemail != nil }
             nextCursor = nil
             hasLoaded = true
             return

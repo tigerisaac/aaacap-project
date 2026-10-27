@@ -31,11 +31,14 @@ struct AddTrustedContactView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: ShieldTheme.Spacing.content) {
+                    if model.isReviewDemo {
+                        Text("Use a fictional name and number. This creates a sample request only.").foregroundStyle(ShieldTheme.secondaryText)
+                    }
                     Button { showingPicker = true } label: {
                         Label("Choose from Contacts", systemImage: "person.text.rectangle").shieldWrappingLabel()
                             .frame(maxWidth: .infinity, minHeight: ShieldTheme.Layout.minimumTarget)
                     }
-                    .shieldSecondaryButton().disabled(working || requestUnconfirmed)
+                    .shieldSecondaryButton().disabled(working || requestUnconfirmed || model.isReviewDemo)
                     VStack(alignment: .leading, spacing: ShieldTheme.Spacing.compact) {
                         Text("Name").font(.headline)
                         TextField("Name", text: $name, prompt: Text("Name").foregroundStyle(ShieldTheme.secondaryText)).textContentType(.name).focused($field, equals: .name)
@@ -49,7 +52,9 @@ struct AddTrustedContactView: View {
                     }.disabled(working || requestUnconfirmed)
                     Text("Ask them first. They choose how to receive alerts.")
                         .foregroundStyle(ShieldTheme.secondaryText)
-                    if !textAvailable {
+                    if model.isReviewDemo {
+                        Text("No invitation or text will be sent.").foregroundStyle(ShieldTheme.secondaryText)
+                    } else if !textAvailable {
                         Text("After creating the request, share its invitation from Caretakers. No request text will be sent.")
                             .foregroundStyle(ShieldTheme.secondaryText)
                     } else {
@@ -154,7 +159,8 @@ struct AddTrustedContactView: View {
         do {
             let contact: TrustedContact
             if model.isPreview {
-                contact = TrustedContact(id: requestID, name: savedName, phone: phone, status: "pending", textAlerts: false, appAlerts: false, requestDelivery: "submitted")
+                contact = TrustedContact(id: requestID, name: savedName, phone: phone, status: "pending", textAlerts: false, appAlerts: false,
+                    requestDelivery: model.isReviewDemo ? "not_requested" : "submitted")
             } else {
                 var payload: [String: Any] = [
                     "id": requestID.uuidString.lowercased(), "name": savedName, "phone": phone, "consent": true
