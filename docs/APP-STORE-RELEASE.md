@@ -23,7 +23,13 @@ the signed app. Exported IPA SHA-256:
 `f99d90c9395dc6528daf592c1e5121e76c03c03832e6e267a2133f2c6d2941d3`.
 Evidence is retained in `artifacts/reviewer-demo-2026-10-26/`, with the current
 export in `distribution-reviewed/Shield.ipa`. Earlier build-4 candidates in
-that directory are superseded. Upload is in progress. The independent visual verdict is **ship**, limited to
+that directory are superseded. Xcode reported **Upload succeeded** on October 26 at **19:30:25 Central**.
+App Store Connect independently showed build 4 **Processing**; the receipt is
+`artifacts/reviewer-demo-2026-10-26/build4-processing.png`. Processing completion,
+selection for the App Store version and updating its reviewer notes remain
+pending. No App Review submission or public release occurred.
+
+The independent visual verdict is **ship**, limited to
 the corrected native navigation and its eight required Light/Dark captures;
 see [bounded verdict](../.impeccable/review/reviewer-demo-2026-10-26/finish-verdict.md).
 
@@ -39,7 +45,9 @@ backend checks also passed: `npm run check` (401 tests), `npm run test:firebase`
 
 Do not submit based on the demo alone. Actual Apple sandbox purchase/restore
 testing, a live reviewer path and the Account Holder's agreement update remain
-release work. No production configuration was changed.
+release work. Business was rechecked during the final upload: the Paid Apps
+agreement still has a new version available, and this Admin session offers
+only View Terms. No production configuration was changed.
 
 ## October 26 — build 3 upload and reviewer-access verification
 
